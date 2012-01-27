@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, MapActivity!</string>
-    <string name="app_name">Main</string>
+
+    <string name="app_name">Blitzortung View</string>
+    <string name="period">Abfrageperiode [s]</string>
+    <string name="mapMode">Kartenmodus</string>
+
 </resources>

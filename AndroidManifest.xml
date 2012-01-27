@@ -4,12 +4,13 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
 	<application android:icon="@drawable/icon" android:label="@string/app_name">
 		<uses-library android:name="com.google.android.maps" android:required="true"/>
-		<activity android:label="@string/app_name" android:name="org.blitzortung.android.app.Main">
+		<activity android:label="@string/app_name" android:name=".BOView">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+		<receiver android:name=".TimerReceiver"></receiver> 
 	</application>
 	<uses-sdk android:minSdkVersion="8" />
 	<uses-permission android:name="android.permission.INTERNET" />

@@ -4,17 +4,8 @@
 	android:layout_height="fill_parent">
 	<TableRow android:id="@+id/tableRow2" android:layout_width="match_parent"
 		android:layout_height="wrap_content">
-		<TextView android:text="TextView" android:id="@+id/textView1"
+		<TextView android:text="" android:id="@+id/status"
 			android:layout_height="wrap_content" android:layout_width="wrap_content"></TextView>
-	</TableRow>
-	<TableRow android:id="@+id/tableRow1" android:layout_width="match_parent"
-		android:layout_height="wrap_content">
-		<Button android:text="Update" android:id="@+id/button1"
-			android:layout_height="wrap_content" android:layout_width="wrap_content"></Button>
-		<Spinner android:layout_width="match_parent"
-			android:layout_height="wrap_content" android:id="@+id/spinner1"></Spinner>
-		<ProgressBar android:layout_height="wrap_content"
-			android:layout_width="wrap_content" android:id="@+id/progressBar1"></ProgressBar>
 	</TableRow>
 	<org.blitzortung.android.map.StrokesMapView
 		xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/mapview"

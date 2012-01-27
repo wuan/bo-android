@@ -11,7 +11,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
-import android.util.Log;
 
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
@@ -51,11 +50,12 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 		}
 	}
 
-	public void addStrokes(List<Stroke> strokes) {
+	public int addStrokes(List<Stroke> strokes) {
 		for (Stroke stroke : strokes) {
 			items.add(new StrokeOverlayItem(stroke));
 		}
 		populate();
+		return strokes.size();
 	}
 
 	public void clear() {

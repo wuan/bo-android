@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/periodText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/period" />
+
+    <SeekBar
+        android:id="@+id/period"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/mapModeText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/mapMode" />
+
+    <Spinner
+        android:id="@+id/mapMode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
