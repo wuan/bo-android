@@ -32,8 +32,6 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 		super(boundCenter(DefaultDrawable));
 
 		items = new ArrayList<StrokeOverlayItem>();
-
-		populate();
 	}
 
 	@Override

@@ -81,7 +81,7 @@ public class Main extends MapActivity implements LocationListener, DataListener 
 	
     private Runnable timerTask = new Runnable() {
     	
-    	int period = 10;
+    	int period = 60;
     	long lastUpdate = 0;
     	
         @Override 
