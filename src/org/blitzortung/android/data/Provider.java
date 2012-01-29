@@ -1,36 +1,54 @@
 package org.blitzortung.android.data;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.alexd.jsonrpc.JSONRPCClient;
-import org.alexd.jsonrpc.JSONRPCException;
-import org.json.JSONArray;
-import org.json.JSONException;
+import org.blitzortung.android.data.provider.DataProvider;
+import org.blitzortung.android.data.provider.JsonRpcProvider;
+
+import android.os.AsyncTask;
+import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 public class Provider {
 
-	public static List<Stroke> getStrokes() {
-		
-		List<Stroke> strokes = new ArrayList<Stroke>();
-		
-		JSONRPCClient client = JSONRPCClient.create("http://tryb.de:7080/");
+	private DataProvider dataProvider;
 
-		client.setConnectionTimeout(2000);
-		client.setSoTimeout(2000);
+	private ProgressBar progress;
 
-		try {
-			JSONArray response = client.callJSONArray("get_strokes", -60);
-			
-			for (int i = 0; i < response.length(); i++) {
-				strokes.add(new Stroke(response.getJSONArray(i)));
-			}
-		} catch (JSONRPCException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
+	private DataListener listener;
+
+	private class RetrieveStrokesTask extends AsyncTask<Integer, Integer, List<Stroke>> {
+
+		protected void onProgressUpdate(Integer... progress) {
+			Log.v("RetrieveStrokesTask", String.format("update progress %d"));
 		}
-		
-		return strokes;
+
+		protected void onPostExecute(List<Stroke> strokes) {
+			listener.onStrokeDataArrival(strokes);
+
+			progress.setVisibility(View.INVISIBLE);
+			progress.setProgress(progress.getMax());
+		}
+
+		@Override
+		protected List<Stroke> doInBackground(Integer... params) {
+			return dataProvider.getStrokes();
+		}
+	}
+
+	public Provider(Credentials creds, ProgressBar progress, DataListener listener) {
+		dataProvider = new JsonRpcProvider(creds);
+		this.progress = progress;
+		this.listener = listener;
+
+		progress.setVisibility(View.INVISIBLE);
+	}
+
+	public void updateStrokes() {
+		progress.setVisibility(View.VISIBLE);
+		progress.setProgress(0);
+
+		new RetrieveStrokesTask().execute(-60);
 	}
 }

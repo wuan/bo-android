@@ -3,9 +3,12 @@ package org.blitzortung.android.app;
 import java.util.Calendar;
 import java.util.List;
 
+import org.blitzortung.android.data.Credentials;
+import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Provider;
+import org.blitzortung.android.data.Stroke;
 import org.blitzortung.android.map.StrokesMapView;
-import org.blitzortung.android.overlay.StrokesOverlay;
+import org.blitzortung.android.map.overlay.StrokesOverlay;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -16,12 +19,13 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.Overlay;
 
-public class BOView extends MapActivity implements LocationListener {
+public class Main extends MapActivity implements LocationListener, DataListener {
 
 	private static final String TAG = "Main";
 
@@ -31,6 +35,8 @@ public class BOView extends MapActivity implements LocationListener {
 	
 	TextView statusText; 
 
+	Provider provider;
+	
 	StrokesOverlay strokesoverlay;
 	
 	int numberOfStrokes = 0;
@@ -50,7 +56,9 @@ public class BOView extends MapActivity implements LocationListener {
 
 		strokesoverlay = new StrokesOverlay();
 
-		numberOfStrokes = strokesoverlay.addStrokes(Provider.getStrokes());
+		provider = new Provider(new Credentials("asfd", "adsf"),  (ProgressBar) findViewById(R.id.progress), this);
+		
+		//provider.updateStrokes();
 
 		mapView.addZoomListener(new StrokesMapView.ZoomListener() {
 
@@ -66,13 +74,14 @@ public class BOView extends MapActivity implements LocationListener {
 
 		mapView.setSatellite(false);
 
+		mapView.invalidate();
 	}
 
 	private Handler mHandler = new Handler(); 
 	
     private Runnable timerTask = new Runnable() {
     	
-    	final int period = 60;
+    	int period = 10;
     	long lastUpdate = 0;
     	
         @Override 
@@ -80,11 +89,9 @@ public class BOView extends MapActivity implements LocationListener {
             Calendar now = Calendar.getInstance();
             
             if ((now.getTimeInMillis() - lastUpdate) / 1000 >= period) {
-				strokesoverlay.clear();
-				numberOfStrokes = strokesoverlay.addStrokes(Provider.getStrokes());
-				strokesoverlay.refresh();
+            	Log.v(TAG, "update data");
+				provider.updateStrokes();
 				lastUpdate = now.getTimeInMillis();
-				mapView.invalidate();
             }
             
             statusText.setText(String.format("%d/%d, %d strokes", 
@@ -94,7 +101,11 @@ public class BOView extends MapActivity implements LocationListener {
             
             //Schedule the next update in one second
             mHandler.postDelayed(timerTask,1000); 
-        } 
+        }
+        
+        public void setPeriod(int period) {
+        	this.period = period;
+        }
     };
     
     MenuDialog menuDialog; 
@@ -131,13 +142,15 @@ public class BOView extends MapActivity implements LocationListener {
     
     @Override 
     public void onResume() { 
-        super.onResume(); 
+        super.onResume();
+        Log.v(TAG, "onResume()");
         mHandler.post(timerTask); 
     } 
      
     @Override 
     public void onPause() { 
-        super.onPause(); 
+        super.onPause();
+        Log.v(TAG, "onPause()");
         mHandler.removeCallbacks(timerTask); 
     } 
     
@@ -149,7 +162,7 @@ public class BOView extends MapActivity implements LocationListener {
 	@Override
 	public void onLocationChanged(Location location) {
 		presentLocation = location;
-		Log.d(TAG, "New location received");
+		Log.v(TAG, "New location received");
 	}
 
 	@Override
@@ -168,6 +181,15 @@ public class BOView extends MapActivity implements LocationListener {
 	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void onStrokeDataArrival(List<Stroke> strokes) {
+		Log.v(TAG, String.format("received %d strokes", strokes.size()));
+		strokesoverlay.clear();
+		numberOfStrokes = strokesoverlay.addStrokes(strokes);
+		strokesoverlay.refresh();
+		mapView.invalidate();
 	}
 
 }

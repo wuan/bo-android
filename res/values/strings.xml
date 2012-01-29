@@ -4,5 +4,7 @@
     <string name="app_name">Blitzortung View</string>
     <string name="period">Abfrageperiode [s]</string>
     <string name="mapMode">Kartenmodus</string>
+    <color name="Red">#f00</color>
+    <color name="Orange">#f80</color>
 
 </resources>

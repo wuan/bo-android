@@ -12,14 +12,14 @@ import com.google.android.maps.MapView;
 
 public class StrokesMapView extends MapView {
 
+	private static final String TAG = "maps.StrokesMapView";
+
 	public interface ZoomListener {
 		public void onZoom(int zoomLevel);
 	};
 	
 	List<ZoomListener> zoomListeners = new ArrayList<ZoomListener>();
-	
-	private static final String TAG = "maps.StrokesMapView";
-	
+		
 	public StrokesMapView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
@@ -38,7 +38,7 @@ public class StrokesMapView extends MapView {
 	public void dispatchDraw(Canvas canvas) {
 		super.dispatchDraw(canvas);
 		if (getZoomLevel() != oldZoomLevel) {
-			// Log.v(TAG, "old vs. new zoom: " + oldZoomLevel + " -> " + getZoomLevel());
+			Log.d(TAG, "old vs. new zoom: " + oldZoomLevel + " -> " + getZoomLevel());
 			
 			for (ZoomListener zoomListener: zoomListeners)
 				zoomListener.onZoom(getZoomLevel());

@@ -1,4 +1,4 @@
-package org.blitzortung.android.overlay;
+package org.blitzortung.android.map.overlay;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
+import android.util.Log;
 
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
@@ -28,9 +29,11 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 	}
 
 	public StrokesOverlay() {
-		super(DefaultDrawable);
+		super(boundCenter(DefaultDrawable));
 
 		items = new ArrayList<StrokeOverlayItem>();
+
+		populate();
 	}
 
 	@Override
@@ -55,7 +58,7 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 			items.add(new StrokeOverlayItem(stroke));
 		}
 		populate();
-		return strokes.size();
+		return items.size();
 	}
 
 	public void clear() {
@@ -67,11 +70,14 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 	int[] colors = { 0xffff0000, 0xffff9900, 0xffffff00, 0xff88ff22, 0xff00ffff, 0xff0000ff };
 
 	public void updateShapeSize(int shapeSize) {
+		Log.v(TAG, String.format("updateShapeSize(%d)", shapeSize));
 		this.shapeSize = shapeSize;
+		
 		refresh();
 	}
 
 	public void refresh() {
+		Log.v(TAG, String.format("refresh()", shapeSize));
 		Date now = new GregorianCalendar().getTime();
 
 		int current_section = -1;
@@ -100,5 +106,12 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 	private Drawable getDrawable(int section) {
 		Shape shape = new StrokeShape(shapeSize, colors[section]);
 		return new ShapeDrawable(shape);
+	}
+
+	@Override
+	protected boolean onTap(int index) {
+		Log.v(TAG, String.format("onTap(%d)", index));
+
+		return false;
 	}
 }

@@ -1,4 +1,4 @@
-package org.blitzortung.android.overlay;
+package org.blitzortung.android.map.overlay;
 
 import java.util.Date;
 
@@ -12,7 +12,7 @@ public class StrokeOverlayItem extends OverlayItem {
 	Date timestamp;
 	
 	public StrokeOverlayItem(Stroke stroke) {
-		super(Projection.toMercator(stroke.getLatitude(), stroke.getLongitude()), "", "");
+		super(Projection.toMapCoords(stroke.getLatitude(), stroke.getLongitude()), "", "");
 
 		timestamp = stroke.getTime();		
 	}

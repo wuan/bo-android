@@ -1,14 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
-	<TableRow android:id="@+id/tableRow2" android:layout_width="match_parent"
-		android:layout_height="wrap_content">
-		<TextView android:text="" android:id="@+id/status"
-			android:layout_height="wrap_content" android:layout_width="wrap_content"></TextView>
-	</TableRow>
-	<org.blitzortung.android.map.StrokesMapView
-		xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/mapview"
-		android:layout_width="fill_parent" android:layout_height="fill_parent"
-		android:clickable="true" android:apiKey="0H7fqZDUCcfqoCLj_0_5q9_2M6bq_L0G1CxtVBQ" />
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="" >
+        </TextView>
+
+        <ProgressBar
+            android:id="@+id/progress"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </TableRow>
+
+    <org.blitzortung.android.map.StrokesMapView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/mapview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:apiKey="0H7fqZDUCcfqoCLj_0_5q9_2M6bq_L0G1CxtVBQ"
+        android:clickable="true" />
+
 </LinearLayout>
