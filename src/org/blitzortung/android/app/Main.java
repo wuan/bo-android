@@ -1,6 +1,7 @@
 package org.blitzortung.android.app;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.blitzortung.android.data.Credentials;
@@ -81,7 +82,7 @@ public class Main extends MapActivity implements LocationListener, DataListener 
 	
     private Runnable timerTask = new Runnable() {
     	
-    	int period = 60;
+    	int period = 20;
     	long lastUpdate = 0;
     	
         @Override 
@@ -186,8 +187,11 @@ public class Main extends MapActivity implements LocationListener, DataListener 
 	@Override
 	public void onStrokeDataArrival(List<Stroke> strokes) {
 		Log.v(TAG, String.format("received %d strokes", strokes.size()));
-		strokesoverlay.clear();
 		numberOfStrokes = strokesoverlay.addStrokes(strokes);
+		Calendar expireTime = new GregorianCalendar();
+		expireTime.add(Calendar.MINUTE, -60);
+		
+		strokesoverlay.expireStrokes(expireTime.getTime());
 		strokesoverlay.refresh();
 		mapView.invalidate();
 	}

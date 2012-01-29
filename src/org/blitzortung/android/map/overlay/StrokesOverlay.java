@@ -1,6 +1,7 @@
 package org.blitzortung.android.map.overlay;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -111,5 +112,22 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 		Log.v(TAG, String.format("onTap(%d)", index));
 
 		return false;
+	}
+
+	public void expireStrokes(Date expireTime) {
+		List<StrokeOverlayItem> toRemove = new ArrayList<StrokeOverlayItem>();
+		
+		for (StrokeOverlayItem item : items) {
+			if (item.getTimestamp().before(expireTime)) {
+				toRemove.add(item);
+			} else {
+				break;
+			}
+		}
+		
+		if (toRemove.size() > 0) {
+			Log.v(TAG, String.format("expireStrokes() remove %d items", toRemove.size()));
+			items.removeAll(toRemove);
+		}
 	}
 }

@@ -9,10 +9,17 @@ import org.blitzortung.android.data.Credentials;
 import org.blitzortung.android.data.Stroke;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.util.Log;
 
 public class JsonRpcProvider implements DataProvider {
 
+	private final static String TAG = "provider.JsonRpcProvider";
+	
 	private Credentials creds;
+	
+	private Integer nextId = null;
 	
 	public JsonRpcProvider(Credentials creds) {
 		this.creds = creds;
@@ -27,12 +34,21 @@ public class JsonRpcProvider implements DataProvider {
 		client.setConnectionTimeout(2000);
 		client.setSoTimeout(2000);
 
+		Integer start = -60;
+		if (nextId != null)
+			start = nextId;
+		
 		try {
-			JSONArray response = client.callJSONArray("get_strokes", -60);
+			JSONObject response = client.callJSONObject("get_strokes", start);
 			
-			for (int i = 0; i < response.length(); i++) {
-				strokes.add(new Stroke(response.getJSONArray(i)));
+			JSONArray strokes_array = (JSONArray)response.get("strokes");
+			for (int i = 0; i < strokes_array.length(); i++) {
+				strokes.add(new Stroke(strokes_array.getJSONArray(i)));
 			}
+			if (response.has("next")) {
+			  nextId = (Integer)response.get("next");
+			}
+			
 		} catch (JSONRPCException e) {
 			e.printStackTrace();
 		} catch (JSONException e) {
