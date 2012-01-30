@@ -7,7 +7,7 @@ import java.util.List;
 import org.blitzortung.android.data.Credentials;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Provider;
-import org.blitzortung.android.data.Stroke;
+import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.map.StrokesMapView;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 

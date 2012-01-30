@@ -3,7 +3,8 @@ package org.blitzortung.android.data.provider;
 import java.util.List;
 
 import org.blitzortung.android.data.Credentials;
-import org.blitzortung.android.data.Stroke;
+import org.blitzortung.android.data.beans.Station;
+import org.blitzortung.android.data.beans.Stroke;
 
 public class BlitzortungHttpProvider implements DataProvider {
 
@@ -15,6 +16,12 @@ public class BlitzortungHttpProvider implements DataProvider {
 	
 	@Override
 	public List<Stroke> getStrokes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Station> getStations() {
 		// TODO Auto-generated method stub
 		return null;
 	}

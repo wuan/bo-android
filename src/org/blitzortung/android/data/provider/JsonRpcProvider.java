@@ -6,12 +6,11 @@ import java.util.List;
 import org.alexd.jsonrpc.JSONRPCClient;
 import org.alexd.jsonrpc.JSONRPCException;
 import org.blitzortung.android.data.Credentials;
-import org.blitzortung.android.data.Stroke;
+import org.blitzortung.android.data.beans.Station;
+import org.blitzortung.android.data.beans.Stroke;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import android.util.Log;
 
 public class JsonRpcProvider implements DataProvider {
 
@@ -35,6 +34,7 @@ public class JsonRpcProvider implements DataProvider {
 		client.setSoTimeout(2000);
 
 		Integer start = -60;
+		
 		if (nextId != null)
 			start = nextId;
 		
@@ -56,5 +56,11 @@ public class JsonRpcProvider implements DataProvider {
 		}
 		
 		return strokes;
+	}
+
+	@Override
+	public List<Station> getStations() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.blitzortung.android.data.Stroke;
+import org.blitzortung.android.data.beans.Stroke;
 
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;

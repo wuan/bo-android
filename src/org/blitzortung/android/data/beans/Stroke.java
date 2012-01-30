@@ -1,4 +1,4 @@
-package org.blitzortung.android.data;
+package org.blitzortung.android.data.beans;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
