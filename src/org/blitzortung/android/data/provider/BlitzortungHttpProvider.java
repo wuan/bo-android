@@ -15,7 +15,7 @@ public class BlitzortungHttpProvider implements DataProvider {
 	}
 	
 	@Override
-	public List<Stroke> getStrokes() {
+	public List<Stroke> getStrokes(int timeInterval) {
 		// TODO Auto-generated method stub
 		return null;
 	}

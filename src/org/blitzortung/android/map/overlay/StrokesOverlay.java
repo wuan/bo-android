@@ -52,12 +52,11 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 		}
 	}
 
-	public int addStrokes(List<Stroke> strokes) {
+	public void addStrokes(List<Stroke> strokes) {
 		for (Stroke stroke : strokes) {
 			items.add(new StrokeOverlayItem(stroke));
 		}
 		populate();
-		return items.size();
 	}
 
 	public void clear() {

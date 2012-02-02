@@ -24,22 +24,17 @@ public class JsonRpcProvider implements DataProvider {
 		this.creds = creds;
 	}
 	
-	public List<Stroke> getStrokes() {
+	public List<Stroke> getStrokes(int timeInterval) {
 		
 		List<Stroke> strokes = new ArrayList<Stroke>();
 		
 		JSONRPCClient client = JSONRPCClient.create("http://tryb.de:7080/");
 
-		client.setConnectionTimeout(2000);
-		client.setSoTimeout(2000);
-
-		Integer start = -60;
-		
-		if (nextId != null)
-			start = nextId;
+		client.setConnectionTimeout(10000);
+		client.setSoTimeout(10000);
 		
 		try {
-			JSONObject response = client.callJSONObject("get_strokes", start);
+			JSONObject response = client.callJSONObject("get_strokes", timeInterval, nextId);
 			
 			JSONArray strokes_array = (JSONArray)response.get("strokes");
 			for (int i = 0; i < strokes_array.length(); i++) {

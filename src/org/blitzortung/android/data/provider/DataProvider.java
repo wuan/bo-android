@@ -6,7 +6,7 @@ import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Stroke;
 
 public interface DataProvider {
-	public List<Stroke> getStrokes();
+	public List<Stroke> getStrokes(int timeInterval);
 	
 	public List<Station> getStations();
 }

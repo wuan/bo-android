@@ -187,11 +187,15 @@ public class Main extends MapActivity implements LocationListener, DataListener 
 	@Override
 	public void onStrokeDataArrival(List<Stroke> strokes) {
 		Log.v(TAG, String.format("received %d strokes", strokes.size()));
-		numberOfStrokes = strokesoverlay.addStrokes(strokes);
+		
+		strokesoverlay.addStrokes(strokes);
+		
 		Calendar expireTime = new GregorianCalendar();
 		expireTime.add(Calendar.MINUTE, -60);
-		
 		strokesoverlay.expireStrokes(expireTime.getTime());
+		
+		numberOfStrokes = strokesoverlay.size();
+		
 		strokesoverlay.refresh();
 		mapView.invalidate();
 	}
