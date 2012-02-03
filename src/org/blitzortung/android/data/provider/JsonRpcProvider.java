@@ -42,10 +42,10 @@ public class JsonRpcProvider implements DataProvider {
 			}
 			if (response.has("next")) {
 			  nextId = (Integer)response.get("next");
-			}
-			
+			}	
 		} catch (JSONRPCException e) {
 			e.printStackTrace();
+			return null;
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

@@ -11,15 +11,18 @@ import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.map.StrokesMapView;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 
-import android.app.AlertDialog;
-import android.content.Context;
+import android.app.Dialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -29,6 +32,8 @@ import com.google.android.maps.Overlay;
 public class Main extends MapActivity implements LocationListener, DataListener {
 
 	private static final String TAG = "Main";
+	
+	SharedPreferences preferences;
 
 	Location presentLocation;
 	
@@ -48,6 +53,8 @@ public class Main extends MapActivity implements LocationListener, DataListener 
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.main);
+		
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
 		mapView = (StrokesMapView) findViewById(R.id.mapview);
 		
@@ -109,38 +116,30 @@ public class Main extends MapActivity implements LocationListener, DataListener 
         }
     };
     
-    MenuDialog menuDialog; 
-    private class MenuDialog extends AlertDialog { 
-     
-        public MenuDialog(Context context) { 
-            super(context); 
-            setTitle("Menu"); 
-            View menu = getLayoutInflater().inflate(R.layout.menu, null); 
-            setView(menu); 
-        } 
-     
-        @Override 
-        public boolean onKeyUp(int keyCode, KeyEvent event) { 
-            if(keyCode == KeyEvent.KEYCODE_MENU) { 
-                dismiss(); 
-                return true; 
-            } 
-            return super.onKeyUp(keyCode, event); 
-        } 
-    } 
-     
-    @Override 
-    public boolean onKeyUp(int keyCode, KeyEvent event) { 
-        if(keyCode == KeyEvent.KEYCODE_MENU) { 
-            if(menuDialog == null) { 
-                menuDialog = new MenuDialog(this); 
-            } 
-            menuDialog.show(); 
-            return true; 
-        } 
-        return super.onKeyUp(keyCode, event); 
-    } 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate menu from XML resource
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
     
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle all of the possible menu actions.
+        switch (item.getItemId()) {
+        case R.id.menu_info:
+        	showDialog(DIALOG_INFO_ID);
+            break;
+            
+        case R.id.menu_preferences:
+            startActivity(new Intent(this, Preferences.class));
+            break;
+        }
+        return super.onOptionsItemSelected(item);
+        
+    }
     @Override 
     public void onResume() { 
         super.onResume();
@@ -200,4 +199,17 @@ public class Main extends MapActivity implements LocationListener, DataListener 
 		mapView.invalidate();
 	}
 
+	static final int DIALOG_INFO_ID = 0;
+	protected Dialog onCreateDialog(int id) {
+	    Dialog dialog;
+	    switch(id) {
+	    case DIALOG_INFO_ID:
+	        dialog = new InfoDialog(this);
+	        break;
+	    default:
+	        dialog = null;
+	    }
+	    return dialog;
+	}
+	
 }

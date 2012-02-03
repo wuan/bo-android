@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory android:title="User settings">
+        <EditTextPreference android:title="Username" android:persistent="true" android:key="username" android:defaultValue="map"/>
+        <EditTextPreference android:title="Password" android:inputType="textPassword" android:persistent="true" android:key="password"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Map settings">
+        <ListPreference android:entries="@array/map_modes" android:entryValues="@array/map_mode_values" android:persistent="true" android:title="Map Mode" android:key="map_mode"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Data retrieval settings">
+        <Preference android:title="Data retrieval period" android:defaultValue="20" android:persistent="true" android:key="period"/>
+    </PreferenceCategory>
+    
+
+</PreferenceScreen>

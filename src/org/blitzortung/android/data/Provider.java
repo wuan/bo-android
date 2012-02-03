@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.blitzortung.android.app.provider.StrokeData;
-import org.blitzortung.android.app.provider.StrokeData.Strokes;
 import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.JsonRpcProvider;
@@ -53,7 +51,6 @@ public class Provider {
 					lock.unlock();
 				}
 			} else {
-				strokes = null;
 				Log.v("Provider", "could not get lock on update task");
 			}
 			return strokes;
