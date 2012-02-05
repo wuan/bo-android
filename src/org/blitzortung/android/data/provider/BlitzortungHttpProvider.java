@@ -1,51 +1,68 @@
 package org.blitzortung.android.data.provider;
 
-import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-import org.apache.http.HttpException;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.AuthState;
-import org.apache.http.auth.Credentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.ExecutionContext;
-import org.apache.http.protocol.HttpContext;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Stroke;
 
 public class BlitzortungHttpProvider extends DataProvider {
+	
+	class MyAuthenticator extends Authenticator {
 
-	static final String TAG = "BlitzortungHttpProvider";
+		public PasswordAuthentication getPasswordAuthentication() {
+			return new PasswordAuthentication(username, password.toCharArray());
+		}
+	}
 
+	private Date latestTime;
+	
+	//private int latestNanoseconds;
+	
 	@Override
 	public DataResult<Stroke> getStrokes(int timeInterval) {
 
 		DataResult<Stroke> dataResult = new DataResult<Stroke>();
 
-		HttpRequestInterceptor preemptiveAuth = new HttpRequestInterceptor() {
-			public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-				AuthState authState = (AuthState) context.getAttribute(ClientContext.TARGET_AUTH_STATE);
-				CredentialsProvider credsProvider = (CredentialsProvider) context.getAttribute(ClientContext.CREDS_PROVIDER);
-				HttpHost targetHost = (HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
+		if (username != null && password != null) {
 
-				if (authState.getAuthScheme() == null) {
-					AuthScope authScope = new AuthScope(targetHost.getHostName(), targetHost.getPort());
-					Credentials creds = credsProvider.getCredentials(authScope);
-					if (creds != null) {
-						authState.setAuthScheme(new BasicScheme());
-						authState.setCredentials(creds);
-					}
+			Authenticator.setDefault(new MyAuthenticator());
+			URL url;
+			try {
+				url = new URL("http://blitzortung.tmt.de/Data/Protected/strikes.txt");
+				URLConnection connection = url.openConnection();
+				connection.setConnectTimeout(10000);
+				connection.setReadTimeout(10000);
+				connection.setAllowUserInteraction(false);
+				InputStream ins = connection.getInputStream();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
+				
+				List<Stroke> strokes = new ArrayList<Stroke>();
+				
+				String line;
+				while ((line = reader.readLine()) != null) {
+					Stroke stroke = new Stroke(line);
+					if (latestTime == null || stroke.getTime().after(latestTime))
+					  strokes.add(new Stroke(line));
 				}
-			}
-		};
+				
+				if (strokes.size() > 0)
+					latestTime = strokes.get(strokes.size()-1).getTime();
+				
+				dataResult.setData(strokes);
 
-		DefaultHttpClient client = new DefaultHttpClient();
-		client.addRequestInterceptor(preemptiveAuth, 0);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
 
 		return dataResult;
 	}

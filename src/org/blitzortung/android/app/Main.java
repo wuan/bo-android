@@ -7,7 +7,6 @@ import java.util.List;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Provider;
 import org.blitzortung.android.data.beans.Stroke;
-import org.blitzortung.android.data.provider.ProviderType;
 import org.blitzortung.android.map.StrokesMapView;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 
@@ -24,6 +23,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -47,6 +47,8 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 	StrokesOverlay strokesoverlay;
 	
 	int numberOfStrokes = 0;
+	
+	int minutes = 60;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -66,7 +68,7 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 
 		strokesoverlay = new StrokesOverlay();
 
-		provider = new Provider(preferences, (ProgressBar) findViewById(R.id.progress), this);
+		provider = new Provider(preferences, (ProgressBar) findViewById(R.id.progress), (ImageView) findViewById(R.id.error_indicator), this);
 
 		mapView.addZoomListener(new StrokesMapView.ZoomListener() {
 
@@ -97,15 +99,15 @@ public class Main extends MapActivity implements LocationListener, DataListener,
             Calendar now = Calendar.getInstance();
             
             if ((now.getTimeInMillis() - lastUpdate) / 1000 >= period) {
-            	Log.v(TAG, "update data");
 				provider.updateStrokes();
 				lastUpdate = now.getTimeInMillis();
             }
             
-            statusText.setText(String.format("%d/%d, %d strokes", 
+            statusText.setText(String.format("%d/%ds, %d strokes in %d minutes", 
                     (now.getTimeInMillis() - lastUpdate)/1000, 
                     period, 
-                    numberOfStrokes));
+                    numberOfStrokes,
+                    minutes));
             
             //Schedule the next update in one second
             mHandler.postDelayed(timerTask,1000); 
@@ -185,18 +187,22 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 
 	@Override
 	public void onStrokeDataArrival(List<Stroke> strokes) {
-		Log.v(TAG, String.format("received %d strokes", strokes.size()));
-		
 		strokesoverlay.addStrokes(strokes);
 		
 		Calendar expireTime = new GregorianCalendar();
-		expireTime.add(Calendar.MINUTE, -60);
+		expireTime.add(Calendar.MINUTE, -minutes);
 		strokesoverlay.expireStrokes(expireTime.getTime());
 		
 		numberOfStrokes = strokesoverlay.size();
 		
 		strokesoverlay.refresh();
 		mapView.invalidate();
+	}
+	
+	@Override
+	public void onStrokeDataReset() {
+		strokesoverlay.clear();
+		strokesoverlay.refresh();
 	}
 
 	static final int DIALOG_INFO_ID = 0;

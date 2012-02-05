@@ -9,12 +9,12 @@ import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.data.provider.JsonRpcProvider;
 import org.blitzortung.android.data.provider.ProviderType;
 
-import android.R;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 public class Provider implements OnSharedPreferenceChangeListener {
@@ -24,27 +24,32 @@ public class Provider implements OnSharedPreferenceChangeListener {
 	private final Lock lock = new ReentrantLock();
 
 	private static final String DATA_SOURCE_PREFS_KEY = "data_source";
-	private static final String USERNAME_PREFS_KEY = "data_source";
-	private static final String PASSWORD_PREFS_KEY = "data_source";
-	
+	private static final String USERNAME_PREFS_KEY = "username";
+	private static final String PASSWORD_PREFS_KEY = "password";
+
 	private DataProvider dataProvider;
-	
+
 	private String username;
 	private String password;
 
 	private ProgressBar progress;
+	private ImageView error_indicator;
 
 	private DataListener listener;
 
-	public Provider(SharedPreferences sharedPreferences, ProgressBar progress, DataListener listener) {
+	public Provider(SharedPreferences sharedPreferences, ProgressBar progress, ImageView error_indicator, DataListener listener) {
 		dataProvider = new JsonRpcProvider();
 		this.progress = progress;
+		this.error_indicator = error_indicator;
 		this.listener = listener;
 
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+		onSharedPreferenceChanged(sharedPreferences, USERNAME_PREFS_KEY);
+		onSharedPreferenceChanged(sharedPreferences, PASSWORD_PREFS_KEY);
 		onSharedPreferenceChanged(sharedPreferences, DATA_SOURCE_PREFS_KEY);
 
 		progress.setVisibility(View.INVISIBLE);
+		error_indicator.setVisibility(View.INVISIBLE);
 	}
 
 	private class RetrieveStrokesTask extends AsyncTask<Integer, Integer, DataResult<Stroke>> {
@@ -61,6 +66,8 @@ public class Provider implements OnSharedPreferenceChangeListener {
 			if (!strokes.processWasLocked()) {
 				progress.setVisibility(View.INVISIBLE);
 				progress.setProgress(progress.getMax());
+				
+				error_indicator.setVisibility(strokes.hasFailed() ? View.VISIBLE : View.INVISIBLE);				
 			}
 		}
 
@@ -70,8 +77,10 @@ public class Provider implements OnSharedPreferenceChangeListener {
 
 			if (lock.tryLock()) {
 				try {
-					Log.v("RetrieveStrokesTask", String.format("doInBackground(%d)", params[0]));
 					strokes = dataProvider.getStrokes(params[0]);
+				} catch (RuntimeException e) {
+					e.printStackTrace();
+					// handle silently
 				} finally {
 					lock.unlock();
 				}
@@ -97,12 +106,17 @@ public class Provider implements OnSharedPreferenceChangeListener {
 			ProviderType providerType = ProviderType.valueOf(providerTypeString);
 			Log.v(TAG, String.format("update %s to %s", key, providerType.toString()));
 			dataProvider = providerType.getProvider();
-
+			listener.onStrokeDataReset();
 		} else if (key.equals(USERNAME_PREFS_KEY)) {
 			username = sharedPreferences.getString(USERNAME_PREFS_KEY, "");
+			Log.v(TAG, String.format("update %s to %s", key, username));
 		} else if (key.equals(PASSWORD_PREFS_KEY)) {
-			password = sharedPreferences.getString(USERNAME_PREFS_KEY, "");
+			password = sharedPreferences.getString(PASSWORD_PREFS_KEY, "");
+			Log.v(TAG, String.format("update %s to %s", key, password));
 		}
-		dataProvider.setCredentials(username, password);
+
+		if (dataProvider != null) {
+			dataProvider.setCredentials(username, password);
+		}
 	}
 }

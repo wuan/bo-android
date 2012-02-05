@@ -1,7 +1,6 @@
 package org.blitzortung.android.map.overlay;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -33,6 +32,8 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 		super(boundCenter(DefaultDrawable));
 
 		items = new ArrayList<StrokeOverlayItem>();
+		
+		populate();
 	}
 
 	@Override
@@ -68,14 +69,12 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 	int[] colors = { 0xffff0000, 0xffff9900, 0xffffff00, 0xff88ff22, 0xff00ffff, 0xff0000ff };
 
 	public void updateShapeSize(int shapeSize) {
-		Log.v(TAG, String.format("updateShapeSize(%d)", shapeSize));
 		this.shapeSize = shapeSize;
 		
 		refresh();
 	}
 
 	public void refresh() {
-		Log.v(TAG, String.format("refresh()", shapeSize));
 		Date now = new GregorianCalendar().getTime();
 
 		int current_section = -1;
@@ -85,13 +84,8 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 		for (StrokeOverlayItem item : items) {
 			int section = (int) (now.getTime() - item.getTimestamp().getTime()) / 1000 / 60 / 10;
 
-			// Log.v(TAG, "section before " + section + " now: " + now +
-			// " vs time " + item.getTimestamp());
-
 			if (section >= colors.length)
 				section = colors.length - 1;
-
-			// Log.v(TAG, "section after " + section);
 
 			if (current_section != section) {
 				drawable = getDrawable(section);
@@ -125,7 +119,6 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 		}
 		
 		if (toRemove.size() > 0) {
-			Log.v(TAG, String.format("expireStrokes() remove %d items", toRemove.size()));
 			items.removeAll(toRemove);
 		}
 	}

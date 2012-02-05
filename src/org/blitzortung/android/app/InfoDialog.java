@@ -9,7 +9,7 @@ public class InfoDialog extends AlertDialog {
 
 	public InfoDialog(Context context) {
 		super(context);
-		setTitle("Blitzortung.org Viewer");
+		setTitle("Blitzortung.org Viewer V0.1");
 		View menu = getLayoutInflater().inflate(R.layout.info_dialog, null);
 		setView(menu);
 	}

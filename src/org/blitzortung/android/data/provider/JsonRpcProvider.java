@@ -4,16 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.alexd.jsonrpc.JSONRPCClient;
-import org.alexd.jsonrpc.JSONRPCException;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Stroke;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class JsonRpcProvider extends DataProvider {
-
-	private final static String TAG = "provider.JsonRpcProvider";
 	
 	private Integer nextId = null;
 	
@@ -40,10 +36,8 @@ public class JsonRpcProvider extends DataProvider {
 			if (response.has("next")) {
 			  nextId = (Integer)response.get("next");
 			}
-		} catch (JSONRPCException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 		
 		return strokesResult;
