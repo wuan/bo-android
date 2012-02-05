@@ -4,16 +4,17 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.blitzortung.android.data.Credentials;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Provider;
 import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.provider.ProviderType;
 import org.blitzortung.android.map.StrokesMapView;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -29,11 +30,11 @@ import android.widget.TextView;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.Overlay;
 
-public class Main extends MapActivity implements LocationListener, DataListener {
+public class Main extends MapActivity implements LocationListener, DataListener, OnSharedPreferenceChangeListener {
 
 	private static final String TAG = "Main";
 	
-	SharedPreferences preferences;
+	private final static String MAP_TYPE_PREFS_KEY="map_mode";
 
 	Location presentLocation;
 	
@@ -54,7 +55,8 @@ public class Main extends MapActivity implements LocationListener, DataListener 
 		
 		setContentView(R.layout.main);
 		
-		preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		preferences.registerOnSharedPreferenceChangeListener(this);
 
 		mapView = (StrokesMapView) findViewById(R.id.mapview);
 		
@@ -64,9 +66,7 @@ public class Main extends MapActivity implements LocationListener, DataListener 
 
 		strokesoverlay = new StrokesOverlay();
 
-		provider = new Provider(new Credentials("asfd", "adsf"),  (ProgressBar) findViewById(R.id.progress), this);
-		
-		//provider.updateStrokes();
+		provider = new Provider(preferences, (ProgressBar) findViewById(R.id.progress), this);
 
 		mapView.addZoomListener(new StrokesMapView.ZoomListener() {
 
@@ -80,7 +80,7 @@ public class Main extends MapActivity implements LocationListener, DataListener 
 		List<Overlay> mapOverlays = mapView.getOverlays();
 		mapOverlays.add(strokesoverlay);
 
-		mapView.setSatellite(false);
+		onSharedPreferenceChanged(preferences, MAP_TYPE_PREFS_KEY);
 
 		mapView.invalidate();
 	}
@@ -210,6 +210,14 @@ public class Main extends MapActivity implements LocationListener, DataListener 
 	        dialog = null;
 	    }
 	    return dialog;
+	}
+	
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		if (key.equals(MAP_TYPE_PREFS_KEY)) {
+			String mapTypeString = sharedPreferences.getString(MAP_TYPE_PREFS_KEY, "SATELLITE");
+			mapView.setSatellite(mapTypeString.equals("SATELLITE"));
+		}
 	}
 	
 }

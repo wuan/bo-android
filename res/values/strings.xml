@@ -3,19 +3,33 @@
 
     <string name="app_name">Blitzortung View</string>
     <string name="period">Abfrageperiode [s]</string>
-    <string name="mapMode">Kartenmodus</string>
     <string name="preferences">Einstellungen</string>
     <string name="info">Information</string>
+    <string name="copyright_info">© 2012 by Andreas Würl\nblitzortung@tryb.de</string>
+    <string name="username">Benutzername</string>
+    <string name="password">Passwort</string>
+    <string name="user_settings">Benutzereinstellungen</string>
+    <string name="map_settings">Karteneinstellungen</string>
+    <string name="data_settings">Datenübertragung</string>
 
+    <string name="map_mode">Kartenmodus</string>
     <string-array name="map_modes">
-        <item>Satellite</item>
-        <item>Map</item>
-        <item>Geography</item>
+        <item>Satellit</item>
+        <item>Karte</item>
     </string-array>
     <string-array name="map_mode_values">
-        <item>sat</item>
-        <item>map</item>
-        <item>geo</item>
+        <item>SATELLITE</item>
+        <item>STREETMAP</item>
+    </string-array>
+    
+    <string name="data_source">Datenquelle</string>
+    <string-array name="data_sources">
+        <item>Blitzortung.org</item>
+        <item>Webservice</item>
+    </string-array>
+    <string-array name="data_source_values">
+        <item>HTTP</item>
+        <item>RPC</item>
     </string-array>
 
     <color name="Red">#f00</color>

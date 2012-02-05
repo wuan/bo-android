@@ -1,12 +1,22 @@
 package org.blitzortung.android.data.provider;
 
-import java.util.List;
-
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Stroke;
 
-public interface DataProvider {
-	public List<Stroke> getStrokes(int timeInterval);
+public abstract class DataProvider {
 	
-	public List<Station> getStations();
+	private String username;
+	
+	private String password;
+
+	abstract public DataResult<Stroke> getStrokes(int timeInterval);
+	
+	abstract public DataResult<Station> getStations();
+	
+	abstract public ProviderType getType();
+	
+	public void setCredentials(String username, String password) {
+		this.username = username;
+		this.password = password;
+	}
 }
