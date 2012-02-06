@@ -103,11 +103,11 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 				lastUpdate = now.getTimeInMillis();
             }
             
-            statusText.setText(String.format("%d/%ds, %d strokes/%d minutes", 
-                    (now.getTimeInMillis() - lastUpdate)/1000, 
-                    period, 
+            statusText.setText(String.format("%d strokes/%d minutes, %d/%ds", 
                     numberOfStrokes,
-                    minutes));
+                    minutes,
+                    (now.getTimeInMillis() - lastUpdate)/1000, 
+                    period));
             
             //Schedule the next update in one second
             mHandler.postDelayed(timerTask,1000); 
