@@ -3,10 +3,9 @@ package org.blitzortung.android.data.provider;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Stroke;
 
-import android.util.Log;
-
 public abstract class DataProvider {
 	
+	@SuppressWarnings("unused")
 	private static final String TAG = "DataProvider";
 	
 	protected String username;
@@ -20,7 +19,6 @@ public abstract class DataProvider {
 	abstract public ProviderType getType();
 	
 	public void setCredentials(String username, String password) {
-		Log.v(TAG, String.format("set username '%s'", username));
 		this.username = username;
 		this.password = password;
 	}

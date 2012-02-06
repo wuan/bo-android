@@ -44,6 +44,7 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		this.listener = listener;
 
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+		
 		onSharedPreferenceChanged(sharedPreferences, USERNAME_PREFS_KEY);
 		onSharedPreferenceChanged(sharedPreferences, PASSWORD_PREFS_KEY);
 		onSharedPreferenceChanged(sharedPreferences, DATA_SOURCE_PREFS_KEY);
@@ -112,7 +113,7 @@ public class Provider implements OnSharedPreferenceChangeListener {
 			Log.v(TAG, String.format("update %s to %s", key, username));
 		} else if (key.equals(PASSWORD_PREFS_KEY)) {
 			password = sharedPreferences.getString(PASSWORD_PREFS_KEY, "");
-			Log.v(TAG, String.format("update %s to %s", key, password));
+			Log.v(TAG, String.format("update %s to *****", key));
 		}
 
 		if (dataProvider != null) {

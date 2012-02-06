@@ -103,7 +103,7 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 				lastUpdate = now.getTimeInMillis();
             }
             
-            statusText.setText(String.format("%d/%ds, %d strokes in %d minutes", 
+            statusText.setText(String.format("%d/%ds, %d strokes/%d minutes", 
                     (now.getTimeInMillis() - lastUpdate)/1000, 
                     period, 
                     numberOfStrokes,
