@@ -6,12 +6,12 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import com.google.android.maps.MapView;
 
 public class StrokesMapView extends MapView {
 
+	@SuppressWarnings("unused")
 	private static final String TAG = "maps.StrokesMapView";
 
 	public interface ZoomListener {
@@ -38,7 +38,6 @@ public class StrokesMapView extends MapView {
 	public void dispatchDraw(Canvas canvas) {
 		super.dispatchDraw(canvas);
 		if (getZoomLevel() != oldZoomLevel) {
-			Log.d(TAG, "old vs. new zoom: " + oldZoomLevel + " -> " + getZoomLevel());
 			
 			for (ZoomListener zoomListener: zoomListeners)
 				zoomListener.onZoom(getZoomLevel());
