@@ -89,24 +89,26 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 
 	private Handler mHandler = new Handler(); 
 	
-    private Runnable timerTask = new Runnable() {
+    private TimerTask timerTask = new TimerTask();
+    
+    class TimerTask implements Runnable {
     	
     	int period = 20;
-    	long lastUpdate = 0;
+    	long nextUpdate = 0;
     	
         @Override 
         public void run() { 
             Calendar now = Calendar.getInstance();
             
-            if ((now.getTimeInMillis() - lastUpdate) / 1000 >= period) {
+            if (now.getTimeInMillis() >= nextUpdate) {
 				provider.updateStrokes();
-				lastUpdate = now.getTimeInMillis();
+				nextUpdate = now.getTimeInMillis() + period * 1000;
             }
             
             statusText.setText(String.format("%d strokes/%d minutes, %d/%ds", 
                     numberOfStrokes,
                     minutes,
-                    (now.getTimeInMillis() - lastUpdate)/1000, 
+                    (nextUpdate - now.getTimeInMillis())/1000, 
                     period));
             
             //Schedule the next update in one second
@@ -115,6 +117,10 @@ public class Main extends MapActivity implements LocationListener, DataListener,
         
         public void setPeriod(int period) {
         	this.period = period;
+        }
+        
+        public void reset() {
+        	nextUpdate = 0;
         }
     };
     
@@ -202,6 +208,7 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 	@Override
 	public void onStrokeDataReset() {
 		strokesoverlay.clear();
+		timerTask.reset();
 		strokesoverlay.refresh();
 	}
 
