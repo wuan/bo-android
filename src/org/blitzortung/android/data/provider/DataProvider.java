@@ -1,5 +1,7 @@
 package org.blitzortung.android.data.provider;
 
+import java.util.List;
+
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Stroke;
 
@@ -12,9 +14,13 @@ public abstract class DataProvider {
 	
 	protected String password;
 
-	abstract public DataResult<Stroke> getStrokes(int timeInterval);
+	abstract public void setUp();
 	
-	abstract public DataResult<Station> getStations();
+	abstract public void shutDown();
+	
+	abstract public List<Stroke> getStrokes(int timeInterval);
+	
+	abstract public List<Station> getStations();
 	
 	abstract public ProviderType getType();
 	

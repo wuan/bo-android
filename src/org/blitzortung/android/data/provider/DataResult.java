@@ -1,31 +1,47 @@
 package org.blitzortung.android.data.provider;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class DataResult<E> {
+import org.blitzortung.android.data.beans.Station;
+import org.blitzortung.android.data.beans.Stroke;
 
-	List<E> data;
+public class DataResult {
+
+	List<Stroke> strokes;
+	List<Station> stations;
 	
 	boolean fail;
 	
 	boolean processWasLocked;
 	
 	public DataResult() {
-		data = new ArrayList<E>();
-		
 		fail = true;
 		
 		processWasLocked = false;
 	}
 	
-	public void setData(List<E> data) {
-		this.data = data;
+	public void setStrokes(List<Stroke> strokes) {
+		this.strokes = strokes;
 		fail = false;
 	}
 	
-	public List<E> getData() {
-		return data;
+	public boolean containsStrokes() {
+		return strokes != null;
+	}
+	public List<Stroke> getStrokes() {
+		return strokes;
+	}
+	
+	public void setStations(List<Station> stations) {
+		this.stations = stations;
+	}
+	
+	public boolean containsStations() {
+		return stations != null;
+	}
+	
+	public List<Station> getStations() {
+		return stations;
 	}
 	
 	public boolean retrievalWasSuccessful() {

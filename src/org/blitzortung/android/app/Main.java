@@ -6,8 +6,9 @@ import java.util.List;
 
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Provider;
-import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.map.StrokesMapView;
+import org.blitzortung.android.map.overlay.StationsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 
 import android.app.Dialog;
@@ -33,135 +34,149 @@ import com.google.android.maps.Overlay;
 public class Main extends MapActivity implements LocationListener, DataListener, OnSharedPreferenceChangeListener {
 
 	private static final String TAG = "Main";
-	
-	private final static String MAP_TYPE_PREFS_KEY="map_mode";
+
+	private final static String MAP_TYPE_PREFS_KEY = "map_mode";
 
 	Location presentLocation;
-	
+
 	StrokesMapView mapView;
-	
-	TextView statusText; 
+
+	TextView statusText;
 
 	Provider provider;
+
+	StrokesOverlay strokesOverlay;
 	
-	StrokesOverlay strokesoverlay;
-	
+	StationsOverlay stationsOverlay;
+
 	int numberOfStrokes = 0;
-	
+
 	int minutes = 60;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		setContentView(R.layout.main);
-		
+
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		preferences.registerOnSharedPreferenceChangeListener(this);
 
 		mapView = (StrokesMapView) findViewById(R.id.mapview);
-		
+
 		mapView.setBuiltInZoomControls(true);
 
 		statusText = (TextView) findViewById(R.id.status);
 
-		strokesoverlay = new StrokesOverlay();
+		strokesOverlay = new StrokesOverlay();
+		
+		stationsOverlay = new StationsOverlay();
 
-		provider = new Provider(preferences, (ProgressBar) findViewById(R.id.progress), (ImageView) findViewById(R.id.error_indicator), this);
+		provider = new Provider(preferences, (ProgressBar) findViewById(R.id.progress), (ImageView) findViewById(R.id.error_indicator),
+				this);
 
 		mapView.addZoomListener(new StrokesMapView.ZoomListener() {
 
 			@Override
 			public void onZoom(int zoomLevel) {
-				strokesoverlay.updateShapeSize(1 + zoomLevel);
+				strokesOverlay.updateShapeSize(zoomLevel);
+				stationsOverlay.updateShapeSize(zoomLevel);
 			}
-			
+
 		});
 
 		List<Overlay> mapOverlays = mapView.getOverlays();
-		mapOverlays.add(strokesoverlay);
+		mapOverlays.add(strokesOverlay);
+		mapOverlays.add(stationsOverlay);
 
 		onSharedPreferenceChanged(preferences, MAP_TYPE_PREFS_KEY);
 
 		mapView.invalidate();
 	}
 
-	private Handler mHandler = new Handler(); 
-	
-    private TimerTask timerTask = new TimerTask();
-    
-    class TimerTask implements Runnable {
-    	
-    	int period = 20;
-    	long nextUpdate = 0;
-    	
-        @Override 
-        public void run() { 
-            Calendar now = Calendar.getInstance();
-            
-            if (now.getTimeInMillis() >= nextUpdate) {
-				provider.updateStrokes();
-				nextUpdate = now.getTimeInMillis() + period * 1000;
-            }
-            
-            statusText.setText(String.format("%d strokes/%d minutes, %d/%ds", 
-                    numberOfStrokes,
-                    minutes,
-                    (nextUpdate - now.getTimeInMillis())/1000, 
-                    period));
-            
-            //Schedule the next update in one second
-            mHandler.postDelayed(timerTask,1000); 
-        }
-        
-        public void setPeriod(int period) {
-        	this.period = period;
-        }
-        
-        public void reset() {
-        	nextUpdate = 0;
-        }
-    };
-    
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate menu from XML resource
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
+	private Handler mHandler = new Handler();
 
-        return super.onCreateOptionsMenu(menu);
-    }
-    
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle all of the possible menu actions.
-        switch (item.getItemId()) {
-        case R.id.menu_info:
-        	showDialog(DIALOG_INFO_ID);
-            break;
-            
-        case R.id.menu_preferences:
-            startActivity(new Intent(this, Preferences.class));
-            break;
-        }
-        return super.onOptionsItemSelected(item);
-        
-    }
-    @Override 
-    public void onResume() { 
-        super.onResume();
-        Log.v(TAG, "onResume()");
-        mHandler.post(timerTask); 
-    } 
-     
-    @Override 
-    public void onPause() { 
-        super.onPause();
-        Log.v(TAG, "onPause()");
-        mHandler.removeCallbacks(timerTask); 
-    } 
-    
+	private TimerTask timerTask = new TimerTask();
+
+	class TimerTask implements Runnable {
+
+		int period = 20;
+		long nextUpdate = 0;
+		int stationPeriod = 10 * 60;
+		long nextStationUpdate = 0;
+
+
+		@Override
+		public void run() {
+			long now = Calendar.getInstance().getTimeInMillis() / 1000;
+
+			if (now >= nextUpdate) {
+				int updateStations = 0;
+				
+				if (now >= nextStationUpdate) {
+					updateStations = 1;
+					nextStationUpdate = now + stationPeriod;
+				}
+				provider.updateData(minutes, updateStations);
+				nextUpdate = now + period;
+			}
+
+			statusText.setText(String.format("%d strokes/%d minutes, %d/%ds", numberOfStrokes, minutes,
+					nextUpdate - now, period));
+
+			// Schedule the next update in one second
+			mHandler.postDelayed(timerTask, 1000);
+		}
+
+		public void setPeriod(int period) {
+			this.period = period;
+		}
+
+		public void reset() {
+			nextUpdate = 0;
+		}
+	};
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate menu from XML resource
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main_menu, menu);
+
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle all of the possible menu actions.
+		switch (item.getItemId()) {
+		case R.id.menu_info:
+			showDialog(DIALOG_INFO_ID);
+			break;
+
+		case R.id.menu_preferences:
+			startActivity(new Intent(this, Preferences.class));
+			break;
+		}
+		return super.onOptionsItemSelected(item);
+
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		Log.v(TAG, "onResume()");
+		mHandler.post(timerTask);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		Log.v(TAG, "onPause()");
+		mHandler.removeCallbacks(timerTask);
+	}
+
 	@Override
 	protected boolean isRouteDisplayed() {
 		return false;
@@ -192,39 +207,49 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 	}
 
 	@Override
-	public void onStrokeDataArrival(List<Stroke> strokes) {
-		strokesoverlay.addStrokes(strokes);
+	public void onDataUpdate(DataResult result) {
+		if (result.containsStrokes()) {
+			strokesOverlay.addStrokes(result.getStrokes());
+
+			Calendar expireTime = new GregorianCalendar();
+			expireTime.add(Calendar.MINUTE, -minutes);
+			strokesOverlay.expireStrokes(expireTime.getTime());
+
+			numberOfStrokes = strokesOverlay.size();
+
+			strokesOverlay.refresh();
+		}
+
+		if (result.containsStations()) {
+			stationsOverlay.setStations(result.getStations());
+			stationsOverlay.refresh();
+		}
 		
-		Calendar expireTime = new GregorianCalendar();
-		expireTime.add(Calendar.MINUTE, -minutes);
-		strokesoverlay.expireStrokes(expireTime.getTime());
-		
-		numberOfStrokes = strokesoverlay.size();
-		
-		strokesoverlay.refresh();
 		mapView.invalidate();
 	}
-	
+
 	@Override
-	public void onStrokeDataReset() {
-		strokesoverlay.clear();
+	public void onDataReset() {
+		strokesOverlay.clear();
+		stationsOverlay.clear();
 		timerTask.reset();
-		strokesoverlay.refresh();
+		strokesOverlay.refresh();
 	}
 
 	static final int DIALOG_INFO_ID = 0;
+
 	protected Dialog onCreateDialog(int id) {
-	    Dialog dialog;
-	    switch(id) {
-	    case DIALOG_INFO_ID:
-	        dialog = new InfoDialog(this);
-	        break;
-	    default:
-	        dialog = null;
-	    }
-	    return dialog;
+		Dialog dialog;
+		switch (id) {
+		case DIALOG_INFO_ID:
+			dialog = new InfoDialog(this);
+			break;
+		default:
+			dialog = null;
+		}
+		return dialog;
 	}
-	
+
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (key.equals(MAP_TYPE_PREFS_KEY)) {
@@ -232,5 +257,5 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 			mapView.setSatellite(mapTypeString.equals("SATELLITE"));
 		}
 	}
-	
+
 }

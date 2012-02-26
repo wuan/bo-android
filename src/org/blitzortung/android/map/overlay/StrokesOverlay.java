@@ -68,8 +68,8 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 
 	int[] colors = { 0xffff0000, 0xffff9900, 0xffffff00, 0xff88ff22, 0xff00ffff, 0xff0000ff };
 
-	public void updateShapeSize(int shapeSize) {
-		this.shapeSize = shapeSize;
+	public void updateShapeSize(int zoomLevel) {
+		this.shapeSize = zoomLevel + 1;
 		
 		refresh();
 	}

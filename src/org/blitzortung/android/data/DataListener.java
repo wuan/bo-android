@@ -1,12 +1,10 @@
 package org.blitzortung.android.data;
 
-import java.util.List;
-
-import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.provider.DataResult;
 
 public interface DataListener {
 
-	public void onStrokeDataArrival(List<Stroke> strokes);
+	public void onDataUpdate(DataResult result);
 	
-	public void onStrokeDataReset();
+	public void onDataReset();
 }

@@ -10,6 +10,12 @@ import org.json.JSONException;
 
 public class Station {
 	
+	enum Status {
+		ON,
+		DELAYED,
+		OFF
+	}
+	
 	private String name;
 	
 	private float longitude;
@@ -18,16 +24,18 @@ public class Station {
 	
 	Date lastDataTime;
 	
+	Status status;
+	
 	public Station(JSONArray jsonArray) {
 		TimeZone tz = TimeZone.getTimeZone("UTC");
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
 		formatter.setTimeZone(tz);
 		
 		try {
-			name = jsonArray.getString(0);
-			longitude = (float)jsonArray.getDouble(1);
-			latitude = (float)jsonArray.getDouble(2);
-			lastDataTime = formatter.parse(jsonArray.getString(3));
+			name = jsonArray.getString(1);
+			longitude = (float)jsonArray.getDouble(3);
+			latitude = (float)jsonArray.getDouble(4);
+			lastDataTime = formatter.parse(jsonArray.getString(5));
 		} catch (ParseException e) {
 			throw new RuntimeException("error parsing station data");
 		} catch (JSONException e) {

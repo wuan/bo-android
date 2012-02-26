@@ -3,7 +3,6 @@ package org.blitzortung.android.data;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.data.provider.JsonRpcProvider;
@@ -53,32 +52,36 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		error_indicator.setVisibility(View.INVISIBLE);
 	}
 
-	private class RetrieveStrokesTask extends AsyncTask<Integer, Integer, DataResult<Stroke>> {
+	private class RetrieveStrokesTask extends AsyncTask<Integer, Integer, DataResult> {
 
 		protected void onProgressUpdate(Integer... progress) {
 			Log.v("RetrieveStrokesTask", String.format("update progress %d", progress[0]));
 		}
 
-		protected void onPostExecute(DataResult<Stroke> strokes) {
-			if (strokes.retrievalWasSuccessful()) {
-				listener.onStrokeDataArrival(strokes.getData());
+		protected void onPostExecute(DataResult result) {
+			if (!result.hasFailed()) {
+				listener.onDataUpdate(result);
 			}
 
-			if (!strokes.processWasLocked()) {
+			if (!result.processWasLocked()) {
 				progress.setVisibility(View.INVISIBLE);
 				progress.setProgress(progress.getMax());
 				
-				error_indicator.setVisibility(strokes.hasFailed() ? View.VISIBLE : View.INVISIBLE);				
+				error_indicator.setVisibility(result.hasFailed() ? View.VISIBLE : View.INVISIBLE);				
 			}
 		}
 
 		@Override
-		protected DataResult<Stroke> doInBackground(Integer... params) {
-			DataResult<Stroke> strokes = new DataResult<Stroke>();
+		protected DataResult doInBackground(Integer... params) {
+			DataResult result = new DataResult();
 
 			if (lock.tryLock()) {
 				try {
-					strokes = dataProvider.getStrokes(params[0]);
+					dataProvider.setUp();
+					result.setStrokes(dataProvider.getStrokes(params[0]));
+					if (params[1] != 0)
+					  result.setStations(dataProvider.getStations());
+					dataProvider.shutDown();
 				} catch (RuntimeException e) {
 					e.printStackTrace();
 					// handle silently
@@ -86,18 +89,18 @@ public class Provider implements OnSharedPreferenceChangeListener {
 					lock.unlock();
 				}
 			} else {
-				strokes.setProcessWasLocked();
+				result.setProcessWasLocked();
 				Log.v("Provider", "could not get lock on update task");
 			}
-			return strokes;
+			return result;
 		}
 	}
 
-	public void updateStrokes() {
+	public void updateData(int minutes, int updateStations) {
 		progress.setVisibility(View.VISIBLE);
 		progress.setProgress(0);
 
-		new RetrieveStrokesTask().execute(60);
+		new RetrieveStrokesTask().execute(minutes, updateStations);
 	}
 
 	@Override
@@ -107,7 +110,7 @@ public class Provider implements OnSharedPreferenceChangeListener {
 			ProviderType providerType = ProviderType.valueOf(providerTypeString);
 			Log.v(TAG, String.format("update %s to %s", key, providerType.toString()));
 			dataProvider = providerType.getProvider();
-			listener.onStrokeDataReset();
+			listener.onDataReset();
 		} else if (key.equals(USERNAME_PREFS_KEY)) {
 			username = sharedPreferences.getString(USERNAME_PREFS_KEY, "");
 			Log.v(TAG, String.format("update %s to %s", key, username));

@@ -28,9 +28,9 @@ public class BlitzortungHttpProvider extends DataProvider {
 	//private int latestNanoseconds;
 	
 	@Override
-	public DataResult<Stroke> getStrokes(int timeInterval) {
+	public List<Stroke> getStrokes(int timeInterval) {
 
-		DataResult<Stroke> dataResult = new DataResult<Stroke>();
+		List<Stroke> strokes = new ArrayList<Stroke>();
 
 		if (username != null && password != null) {
 
@@ -45,8 +45,6 @@ public class BlitzortungHttpProvider extends DataProvider {
 				InputStream ins = connection.getInputStream();
 				BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
 				
-				List<Stroke> strokes = new ArrayList<Stroke>();
-				
 				String line;
 				while ((line = reader.readLine()) != null) {
 					Stroke stroke = new Stroke(line);
@@ -56,25 +54,31 @@ public class BlitzortungHttpProvider extends DataProvider {
 				
 				if (strokes.size() > 0)
 					latestTime = strokes.get(strokes.size()-1).getTime();
-				
-				dataResult.setData(strokes);
 
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		}
 
-		return dataResult;
+		return strokes;
 	}
 
 	@Override
-	public DataResult<Station> getStations() {
-		return new DataResult<Station>();
+	public List<Station> getStations() {
+		return new ArrayList<Station>();
 	}
 
 	@Override
 	public ProviderType getType() {
 		return ProviderType.HTTP;
+	}
+
+	@Override
+	public void setUp() {
+	}
+
+	@Override
+	public void shutDown() {
 	}
 
 }

@@ -11,27 +11,21 @@ import org.json.JSONObject;
 
 public class JsonRpcProvider extends DataProvider {
 	
+	private JSONRPCClient client;
+	
 	private Integer nextId = null;
 	
-	public DataResult<Stroke> getStrokes(int timeInterval) {
+	public List<Stroke> getStrokes(int timeInterval) {
 		
-		DataResult<Stroke> strokesResult = new DataResult<Stroke>();
-		
-		JSONRPCClient client = JSONRPCClient.create("http://tryb.de:7080/");
-
-		client.setConnectionTimeout(10000);
-		client.setSoTimeout(10000);
+		List<Stroke> strokes = new ArrayList<Stroke>();
 		
 		try {
 			JSONObject response = client.callJSONObject("get_strokes", timeInterval, nextId);
 			JSONArray strokes_array = (JSONArray)response.get("strokes");
 			
-			List<Stroke> strokes = new ArrayList<Stroke>();
-			
 			for (int i = 0; i < strokes_array.length(); i++) {
 				strokes.add(new Stroke(strokes_array.getJSONArray(i)));
 			}
-			strokesResult.setData(strokes);
 			
 			if (response.has("next")) {
 			  nextId = (Integer)response.get("next");
@@ -39,17 +33,40 @@ public class JsonRpcProvider extends DataProvider {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		
-		return strokesResult;
+		return strokes;
 	}
 
 	@Override
-	public DataResult<Station> getStations() {
-		return new DataResult<Station>();
+	public List<Station> getStations() {
+		List<Station> stations = new ArrayList<Station>();
+		
+		try {
+			JSONObject response = client.callJSONObject("get_stations");
+			JSONArray stations_array = (JSONArray)response.get("stations");
+			
+			for (int i = 0; i < stations_array.length(); i++) {
+				stations.add(new Station(stations_array.getJSONArray(i)));
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return stations;
 	}
 
 	@Override
 	public ProviderType getType() {
 		return ProviderType.RPC;
+	}
+
+	@Override
+	public void setUp() {
+		client = JSONRPCClient.create("http://tryb.de:7080/");
+
+		client.setConnectionTimeout(40000);
+		client.setSoTimeout(40000);
+	}
+
+	@Override
+	public void shutDown() {
 	}
 }
