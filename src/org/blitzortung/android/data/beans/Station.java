@@ -47,9 +47,7 @@ public class Station {
 				else if (minutesAgo > 15)
 					state = State.DELAYED;
 				else
-					state = State.ON;
-
-				
+					state = State.ON;				
 			} else {
 				state = State.ON;
 			}

@@ -87,6 +87,7 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 		});
 
 		List<Overlay> mapOverlays = mapView.getOverlays();
+		
 		mapOverlays.add(strokesOverlay);
 		mapOverlays.add(stationsOverlay);
 
@@ -105,7 +106,6 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 		long nextUpdate = 0;
 		int stationPeriod = 10 * 60;
 		long nextStationUpdate = 0;
-
 
 		@Override
 		public void run() {
@@ -135,6 +135,7 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 
 		public void reset() {
 			nextUpdate = 0;
+			nextStationUpdate = 0;
 		}
 	};
 
@@ -234,6 +235,7 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 		stationsOverlay.clear();
 		timerTask.reset();
 		strokesOverlay.refresh();
+		stationsOverlay.refresh();
 	}
 
 	static final int DIALOG_INFO_ID = 0;

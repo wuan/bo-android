@@ -16,7 +16,6 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:text="" >
-
         </TextView>
 
         <ImageView
@@ -32,15 +31,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical" />
-
     </TableRow>
 
-    <org.blitzortung.android.map.StrokesMapView
+    <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/mapview"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:apiKey="0H7fqZDUCcfqoCLj_0_5q9_2M6bq_L0G1CxtVBQ"
-        android:clickable="true" />
+        android:layout_height="fill_parent" >
+
+        <org.blitzortung.android.map.StrokesMapView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/mapview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:apiKey="0H7fqZDUCcfqoCLj_0_5q9_2M6bq_L0G1CxtVBQ"
+            android:clickable="true" />
+
+<!--         <Button -->
+<!--             android:id="@+id/clickBtn" -->
+<!--             android:layout_width="wrap_content" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:layout_alignParentTop="true" -->
+<!--             android:layout_alignParentLeft="true" -->
+<!--             android:text="" /> -->
+    </RelativeLayout>
 
 </LinearLayout>

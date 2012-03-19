@@ -7,8 +7,7 @@
     <PreferenceCategory android:title="@string/map_settings">
         <ListPreference android:entries="@array/map_modes" android:entryValues="@array/map_mode_values" android:persistent="true" android:title="@string/map_mode" android:key="map_mode"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/data_settings">
-        <ListPreference android:entryValues="@array/data_source_values" android:entries="@array/data_sources" android:persistent="true" android:title="@string/data_source" android:key="data_source" android:defaultValue="http"/><Preference android:title="@string/period" android:defaultValue="20" android:persistent="true" android:key="period"/>
+    <PreferenceCategory android:title="@string/data_settings"><Preference android:title="@string/period" android:defaultValue="20" android:persistent="true" android:key="period"/>
         
     </PreferenceCategory>
     

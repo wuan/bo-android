@@ -6,7 +6,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.data.provider.JsonRpcProvider;
-import org.blitzortung.android.data.provider.ProviderType;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -22,7 +21,6 @@ public class Provider implements OnSharedPreferenceChangeListener {
 
 	private final Lock lock = new ReentrantLock();
 
-	private static final String DATA_SOURCE_PREFS_KEY = "data_source";
 	private static final String USERNAME_PREFS_KEY = "username";
 	private static final String PASSWORD_PREFS_KEY = "password";
 
@@ -46,13 +44,12 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		
 		onSharedPreferenceChanged(sharedPreferences, USERNAME_PREFS_KEY);
 		onSharedPreferenceChanged(sharedPreferences, PASSWORD_PREFS_KEY);
-		onSharedPreferenceChanged(sharedPreferences, DATA_SOURCE_PREFS_KEY);
 
 		progress.setVisibility(View.INVISIBLE);
 		error_indicator.setVisibility(View.INVISIBLE);
 	}
 
-	private class RetrieveStrokesTask extends AsyncTask<Integer, Integer, DataResult> {
+	private class FetchDataTask extends AsyncTask<Integer, Integer, DataResult> {
 
 		protected void onProgressUpdate(Integer... progress) {
 			Log.v("RetrieveStrokesTask", String.format("update progress %d", progress[0]));
@@ -100,18 +97,12 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		progress.setVisibility(View.VISIBLE);
 		progress.setProgress(0);
 
-		new RetrieveStrokesTask().execute(minutes, updateStations);
+		new FetchDataTask().execute(minutes, updateStations);
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals(DATA_SOURCE_PREFS_KEY)) {
-			String providerTypeString = sharedPreferences.getString(DATA_SOURCE_PREFS_KEY, ProviderType.HTTP.toString());
-			ProviderType providerType = ProviderType.valueOf(providerTypeString);
-			Log.v(TAG, String.format("update %s to %s", key, providerType.toString()));
-			dataProvider = providerType.getProvider();
-			listener.onDataReset();
-		} else if (key.equals(USERNAME_PREFS_KEY)) {
+		if (key.equals(USERNAME_PREFS_KEY)) {
 			username = sharedPreferences.getString(USERNAME_PREFS_KEY, "");
 			Log.v(TAG, String.format("update %s to %s", key, username));
 		} else if (key.equals(PASSWORD_PREFS_KEY)) {
