@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Station.State;
+import org.blitzortung.android.map.overlay.color.StationColorHandler;
 
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -13,14 +14,16 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.util.Log;
 
-import com.google.android.maps.ItemizedOverlay;
+import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 
-public class StationsOverlay extends ItemizedOverlay<StationOverlayItem> {
+public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
 	
 	private static final String TAG = "overlay.StationsOverlay";
 
 	ArrayList<StationOverlayItem> items;
+	
+	StationColorHandler colorHandler;
 
 	static private Drawable DefaultDrawable;
 	static {
@@ -30,8 +33,10 @@ public class StationsOverlay extends ItemizedOverlay<StationOverlayItem> {
 	
 	EnumMap<State, Drawable> shapes = new EnumMap<State, Drawable>(State.class);
 	
-	public StationsOverlay() {
-		super(boundCenter(DefaultDrawable));
+	public StationsOverlay(MapActivity activity, StationColorHandler colorHandler) {
+		super(activity, boundCenter(DefaultDrawable));
+		
+		this.colorHandler = colorHandler;
 
 		items = new ArrayList<StationOverlayItem>();
 		
@@ -78,10 +83,13 @@ public class StationsOverlay extends ItemizedOverlay<StationOverlayItem> {
 	}
 
 	public void refresh() {
+		
+		int[] colors = colorHandler.getColors();
+		
 		shapes.clear();
-		shapes.put(State.ON, getDrawable(0xff88ff22));
-		shapes.put(State.DELAYED, getDrawable(0xffff9900));
-		shapes.put(State.OFF, getDrawable(0xffff0000));
+		shapes.put(State.ON, getDrawable(colors[0]));
+		shapes.put(State.DELAYED, getDrawable(colors[1]));
+		shapes.put(State.OFF, getDrawable(colors[2]));
 
 		for (StationOverlayItem item : items) {
 			item.setMarker(shapes.get(item.getState()));
@@ -92,11 +100,15 @@ public class StationsOverlay extends ItemizedOverlay<StationOverlayItem> {
 		Shape shape = new StationShape(shapeSize, color);
 		return new ShapeDrawable(shape);
 	}
-
+	
 	@Override
 	protected boolean onTap(int index) {
 		Log.v(TAG, String.format("onTap(%d)", index));
+		
+		StationOverlayItem item = items.get(index);
 
+		showPopup(item.getPoint(), item.getTitle());
+		
 		return false;
 	}
 

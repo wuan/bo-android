@@ -15,7 +15,7 @@ public class StationOverlayItem extends OverlayItem {
 	State state;
 	
 	public StationOverlayItem(Station station) {
-		super(Projection.toMapCoords(station.getLatitude(), station.getLongitude()), "", "");
+		super(Projection.toMapCoords(station.getLatitude(), station.getLongitude()), station.getName(), "");
 
 		lastDataTime = station.getOfflineSince();
 		state = station.getState();

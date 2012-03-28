@@ -6,21 +6,22 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
-import android.util.Log;
 
-import com.google.android.maps.ItemizedOverlay;
+import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 
-public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
+public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
 	private static final String TAG = "overlay.StrokesOverlay";
 
 	ArrayList<StrokeOverlayItem> items;
+	StrokeColorHandler colorHandler;
 
 	static private Drawable DefaultDrawable;
 	static {
@@ -28,8 +29,10 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 		DefaultDrawable = new ShapeDrawable(shape);
 	}
 
-	public StrokesOverlay() {
-		super(boundCenter(DefaultDrawable));
+	public StrokesOverlay(MapActivity activity, StrokeColorHandler colorHandler) {
+		super(activity, boundCenter(DefaultDrawable));
+		
+		this.colorHandler = colorHandler;
 
 		items = new ArrayList<StrokeOverlayItem>();
 		
@@ -66,8 +69,6 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 
 	int shapeSize;
 
-	int[] colors = { 0xffff0000, 0xffff9900, 0xffffff00, 0xff88ff22, 0xff00ffff, 0xff0000ff };
-
 	public void updateShapeSize(int zoomLevel) {
 		this.shapeSize = zoomLevel + 1;
 		
@@ -80,6 +81,8 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 		int current_section = -1;
 
 		Drawable drawable = null;
+		
+		int colors[] = colorHandler.getColors();
 
 		for (StrokeOverlayItem item : items) {
 			int section = (int) (now.getTime() - item.getTimestamp().getTime()) / 1000 / 60 / 10;
@@ -88,22 +91,25 @@ public class StrokesOverlay extends ItemizedOverlay<StrokeOverlayItem> {
 				section = colors.length - 1;
 
 			if (current_section != section) {
-				drawable = getDrawable(section);
+				drawable = getDrawable(section, colors[section]);
 			}
 
 			item.setMarker(drawable);
 		}
 	}
 
-	private Drawable getDrawable(int section) {
-		Shape shape = new StrokeShape(shapeSize, colors[section]);
+	private Drawable getDrawable(int section, int color) {
+		Shape shape = new StrokeShape(shapeSize, color);
 		return new ShapeDrawable(shape);
 	}
 
 	@Override
 	protected boolean onTap(int index) {
-		Log.v(TAG, String.format("onTap(%d)", index));
 
+		StrokeOverlayItem item = items.get(index);
+
+		showPopup(item.getPoint(), item.getTimestamp().toGMTString());
+		
 		return false;
 	}
 

@@ -1,15 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <PreferenceCategory android:title="@string/user_settings">
-        <EditTextPreference android:title="@string/username" android:persistent="true" android:key="username" android:defaultValue="map"/>
-        <EditTextPreference android:title="@string/password" android:inputType="textPassword" android:persistent="true" android:key="password"/>
+    <PreferenceCategory android:title="@string/user_settings" >
+        <EditTextPreference
+            android:defaultValue="map"
+            android:key="username"
+            android:persistent="true"
+            android:title="@string/username" />
+        <EditTextPreference
+            android:inputType="textPassword"
+            android:key="password"
+            android:persistent="true"
+            android:title="@string/password" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/map_settings">
-        <ListPreference android:entries="@array/map_modes" android:entryValues="@array/map_mode_values" android:persistent="true" android:title="@string/map_mode" android:key="map_mode"/>
+    <PreferenceCategory android:title="@string/map_settings" >
+        <ListPreference
+            android:entries="@array/map_modes"
+            android:entryValues="@array/map_mode_values"
+            android:key="map_mode"
+            android:persistent="true"
+            android:title="@string/map_mode" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/data_settings"><Preference android:title="@string/period" android:defaultValue="20" android:persistent="true" android:key="period"/>
-        
+    <PreferenceCategory android:title="@string/data_settings" >
+        <Preference
+            android:defaultValue="20"
+            android:key="period"
+            android:persistent="true"
+            android:title="@string/period" />
     </PreferenceCategory>
-    
 
 </PreferenceScreen>

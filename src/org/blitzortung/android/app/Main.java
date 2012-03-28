@@ -10,6 +10,8 @@ import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.map.StrokesMapView;
 import org.blitzortung.android.map.overlay.StationsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
+import org.blitzortung.android.map.overlay.color.StationColorHandler;
+import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -69,9 +71,9 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 
 		statusText = (TextView) findViewById(R.id.status);
 
-		strokesOverlay = new StrokesOverlay();
+		strokesOverlay = new StrokesOverlay(this, new StrokeColorHandler(preferences));
 		
-		stationsOverlay = new StationsOverlay();
+		stationsOverlay = new StationsOverlay(this, new StationColorHandler(preferences));
 
 		provider = new Provider(preferences, (ProgressBar) findViewById(R.id.progress), (ImageView) findViewById(R.id.error_indicator),
 				this);
@@ -257,6 +259,8 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 		if (key.equals(MAP_TYPE_PREFS_KEY)) {
 			String mapTypeString = sharedPreferences.getString(MAP_TYPE_PREFS_KEY, "SATELLITE");
 			mapView.setSatellite(mapTypeString.equals("SATELLITE"));
+			strokesOverlay.refresh();
+			stationsOverlay.refresh();
 		}
 	}
 

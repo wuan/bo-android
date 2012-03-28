@@ -49,4 +49,5 @@ public class StrokesMapView extends MapView {
 	public void addZoomListener(ZoomListener zoomListener) {
 		zoomListeners.add(zoomListener);
 	}
+	
 }
