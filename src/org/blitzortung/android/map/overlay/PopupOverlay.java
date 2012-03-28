@@ -1,31 +1,32 @@
 package org.blitzortung.android.map.overlay;
 
 import org.blitzortung.android.app.R;
+import org.blitzortung.android.map.MapActivity;
+import org.blitzortung.android.map.MapView;
 
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
 public abstract class PopupOverlay<Item extends OverlayItem> extends AbstractOverlay<Item> {
 
-	private View popUp = null;
-	
 	public PopupOverlay(MapActivity activity, Drawable defaultMarker) {
 		super(activity, defaultMarker);
 	}
 
 	protected void showPopup(GeoPoint location, String text) {
-		MapView map = (MapView) getActivity().findViewById(R.id.mapview);
 		
-		if (popUp == null) {
-			popUp = getActivity().getLayoutInflater().inflate(R.layout.popup, map, false);
-		}
+		MapView map = getActivity().getMapView();
+		
+		View popUp = getActivity().getPopup();
+		
+		Log.v("PopupOverlay", "mapview: " + map);
+		Log.v("PopupOverlay", "popup: " + popUp);
 		
 		map.removeView(popUp);
 
@@ -40,6 +41,7 @@ public abstract class PopupOverlay<Item extends OverlayItem> extends AbstractOve
 		                        0,
 		                        0,
 		                        MapView.LayoutParams.BOTTOM_CENTER);
+		
 		map.addView(popUp, mapParams);
 	}
 }

@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.map.MapActivity;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
 import android.graphics.Canvas;
@@ -13,11 +14,9 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 
-import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapView;
-
 public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
+	@SuppressWarnings("unused")
 	private static final String TAG = "overlay.StrokesOverlay";
 
 	ArrayList<StrokeOverlayItem> items;
@@ -50,7 +49,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 	}
 
 	@Override
-	public void draw(Canvas canvas, MapView mapView, boolean shadow) {
+	public void draw(Canvas canvas, com.google.android.maps.MapView mapView, boolean shadow) {
 		if (!shadow) {
 			super.draw(canvas, mapView, false);
 		}

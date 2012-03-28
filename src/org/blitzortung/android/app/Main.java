@@ -7,7 +7,8 @@ import java.util.List;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Provider;
 import org.blitzortung.android.data.provider.DataResult;
-import org.blitzortung.android.map.StrokesMapView;
+import org.blitzortung.android.map.MapActivity;
+import org.blitzortung.android.map.MapView;
 import org.blitzortung.android.map.overlay.StationsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.blitzortung.android.map.overlay.color.StationColorHandler;
@@ -30,7 +31,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.maps.MapActivity;
 import com.google.android.maps.Overlay;
 
 public class Main extends MapActivity implements LocationListener, DataListener, OnSharedPreferenceChangeListener {
@@ -40,8 +40,6 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 	private final static String MAP_TYPE_PREFS_KEY = "map_mode";
 
 	Location presentLocation;
-
-	StrokesMapView mapView;
 
 	TextView statusText;
 
@@ -65,9 +63,11 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		preferences.registerOnSharedPreferenceChangeListener(this);
 
-		mapView = (StrokesMapView) findViewById(R.id.mapview);
+		MapView mapView = (MapView) findViewById(R.id.mapview);
 
 		mapView.setBuiltInZoomControls(true);
+		setMapView(mapView);
+		
 
 		statusText = (TextView) findViewById(R.id.status);
 
@@ -78,7 +78,7 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 		provider = new Provider(preferences, (ProgressBar) findViewById(R.id.progress), (ImageView) findViewById(R.id.error_indicator),
 				this);
 
-		mapView.addZoomListener(new StrokesMapView.ZoomListener() {
+		mapView.addZoomListener(new MapView.ZoomListener() {
 
 			@Override
 			public void onZoom(int zoomLevel) {
@@ -228,7 +228,7 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 			stationsOverlay.refresh();
 		}
 		
-		mapView.invalidate();
+		getMapView().invalidate();
 	}
 
 	@Override
@@ -258,7 +258,7 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (key.equals(MAP_TYPE_PREFS_KEY)) {
 			String mapTypeString = sharedPreferences.getString(MAP_TYPE_PREFS_KEY, "SATELLITE");
-			mapView.setSatellite(mapTypeString.equals("SATELLITE"));
+			getMapView().setSatellite(mapTypeString.equals("SATELLITE"));
 			strokesOverlay.refresh();
 			stationsOverlay.refresh();
 		}

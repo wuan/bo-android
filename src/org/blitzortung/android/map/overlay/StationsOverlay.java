@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Station.State;
+import org.blitzortung.android.map.MapActivity;
 import org.blitzortung.android.map.overlay.color.StationColorHandler;
 
 import android.graphics.Canvas;
@@ -14,8 +15,6 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.util.Log;
 
-import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapView;
 
 public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
 	
@@ -54,7 +53,7 @@ public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
 	}
 
 	@Override
-	public void draw(Canvas canvas, MapView mapView, boolean shadow) {
+	public void draw(Canvas canvas, com.google.android.maps.MapView mapView, boolean shadow) {
 		if (!shadow) {
 			super.draw(canvas, mapView, false);
 		}
