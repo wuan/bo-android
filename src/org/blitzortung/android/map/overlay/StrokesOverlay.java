@@ -13,6 +13,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
+import android.text.format.DateFormat;
 
 public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
@@ -98,16 +99,17 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 	}
 
 	private Drawable getDrawable(int section, int color) {
+		
 		Shape shape = new StrokeShape(shapeSize, color);
 		return new ShapeDrawable(shape);
 	}
 
 	@Override
 	protected boolean onTap(int index) {
-
+	
 		StrokeOverlayItem item = items.get(index);
 
-		showPopup(item.getPoint(), item.getTimestamp().toGMTString());
+		showPopup(item.getPoint(), DateFormat.getTimeFormat(getActivity().getApplicationContext()).format(item.getTimestamp()));
 		
 		return false;
 	}
