@@ -27,9 +27,6 @@
             </intent-filter>
         </activity>
 
-        <provider
-            android:name=".provider.StrokeDataContentProvider"
-            android:authorities=".Strokes" />
         <activity android:name=".Preferences" android:label="@string/preferences"></activity>
     </application>
 
