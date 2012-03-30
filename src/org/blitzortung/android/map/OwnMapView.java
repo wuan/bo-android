@@ -6,7 +6,9 @@ import java.util.List;
 import android.content.Context;
 import android.util.AttributeSet;
 
-public class MapView extends com.google.android.maps.MapView {
+import com.google.android.maps.MapView;
+
+public class OwnMapView extends MapView {
 
 	@SuppressWarnings("unused")
 	private static final String TAG = "maps.MapView";
@@ -17,15 +19,15 @@ public class MapView extends com.google.android.maps.MapView {
 	
 	List<ZoomListener> zoomListeners = new ArrayList<ZoomListener>();
 		
-	public MapView(Context context, AttributeSet attrs) {
+	public OwnMapView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
-	public MapView(Context context, AttributeSet attrs, int defStyle) {
+	public OwnMapView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
 
-	public MapView(Context context, String apiKey) {
+	public OwnMapView(Context context, String apiKey) {
 		super(context, apiKey);
 	}
 

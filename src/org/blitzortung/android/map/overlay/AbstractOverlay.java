@@ -1,6 +1,6 @@
 package org.blitzortung.android.map.overlay;
 
-import org.blitzortung.android.map.MapActivity;
+import org.blitzortung.android.map.OwnMapActivity;
 
 import android.graphics.drawable.Drawable;
 
@@ -9,14 +9,14 @@ import com.google.android.maps.OverlayItem;
 
 public abstract class AbstractOverlay<Item extends OverlayItem> extends ItemizedOverlay<Item> {
 
-	private MapActivity activity;
+	private OwnMapActivity activity;
 	
-	public AbstractOverlay(MapActivity activity, Drawable defaultMarker) {
+	public AbstractOverlay(OwnMapActivity activity, Drawable defaultMarker) {
 		super(defaultMarker);
 		this.activity = activity;
 	}
 	
-	protected MapActivity getActivity() {
+	protected OwnMapActivity getActivity() {
 		return activity;
 	}
 

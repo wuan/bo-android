@@ -4,9 +4,11 @@ import org.blitzortung.android.app.R;
 
 import android.view.View;
 
-public abstract class MapActivity extends com.google.android.maps.MapActivity {
+import com.google.android.maps.MapActivity;
 
-	private MapView mapView;
+public abstract class OwnMapActivity extends MapActivity {
+
+	private OwnMapView mapView;
 	
 	private View popUp = null;
 	
@@ -17,11 +19,11 @@ public abstract class MapActivity extends com.google.android.maps.MapActivity {
     	return popUp;
     }
     
-    public void setMapView(MapView mapView) {
+    public void setMapView(OwnMapView mapView) {
     	this.mapView = mapView;
     }
     
-    public MapView getMapView() {
+    public OwnMapView getMapView() {
     	return mapView;
     }
 }

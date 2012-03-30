@@ -7,8 +7,8 @@ import java.util.List;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Provider;
 import org.blitzortung.android.data.provider.DataResult;
-import org.blitzortung.android.map.MapActivity;
-import org.blitzortung.android.map.MapView;
+import org.blitzortung.android.map.OwnMapActivity;
+import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.overlay.StationsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.blitzortung.android.map.overlay.color.StationColorHandler;
@@ -33,7 +33,7 @@ import android.widget.TextView;
 
 import com.google.android.maps.Overlay;
 
-public class Main extends MapActivity implements LocationListener, DataListener, OnSharedPreferenceChangeListener {
+public class Main extends OwnMapActivity implements LocationListener, DataListener, OnSharedPreferenceChangeListener {
 
 	private static final String TAG = "Main";
 
@@ -63,7 +63,7 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		preferences.registerOnSharedPreferenceChangeListener(this);
 
-		MapView mapView = (MapView) findViewById(R.id.mapview);
+		OwnMapView mapView = (OwnMapView) findViewById(R.id.mapview);
 
 		mapView.setBuiltInZoomControls(true);
 		setMapView(mapView);
@@ -78,7 +78,7 @@ public class Main extends MapActivity implements LocationListener, DataListener,
 		provider = new Provider(preferences, (ProgressBar) findViewById(R.id.progress), (ImageView) findViewById(R.id.error_indicator),
 				this);
 
-		mapView.addZoomListener(new MapView.ZoomListener() {
+		mapView.addZoomListener(new OwnMapView.ZoomListener() {
 
 			@Override
 			public void onZoom(int zoomLevel) {

@@ -1,8 +1,8 @@
 package org.blitzortung.android.map.overlay;
 
 import org.blitzortung.android.app.R;
-import org.blitzortung.android.map.MapActivity;
-import org.blitzortung.android.map.MapView;
+import org.blitzortung.android.map.OwnMapActivity;
+import org.blitzortung.android.map.OwnMapView;
 
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -11,17 +11,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
 public abstract class PopupOverlay<Item extends OverlayItem> extends AbstractOverlay<Item> {
 
-	public PopupOverlay(MapActivity activity, Drawable defaultMarker) {
+	public PopupOverlay(OwnMapActivity activity, Drawable defaultMarker) {
 		super(activity, defaultMarker);
 	}
 
 	protected void showPopup(GeoPoint location, String text) {
 		
-		MapView map = getActivity().getMapView();
+		OwnMapView map = getActivity().getMapView();
 		
 		View popUp = getActivity().getPopup();
 		

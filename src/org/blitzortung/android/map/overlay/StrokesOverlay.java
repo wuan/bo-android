@@ -6,7 +6,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.blitzortung.android.data.beans.Stroke;
-import org.blitzortung.android.map.MapActivity;
+import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
 import android.graphics.Canvas;
@@ -29,7 +29,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		DefaultDrawable = new ShapeDrawable(shape);
 	}
 
-	public StrokesOverlay(MapActivity activity, StrokeColorHandler colorHandler) {
+	public StrokesOverlay(OwnMapActivity activity, StrokeColorHandler colorHandler) {
 		super(activity, boundCenter(DefaultDrawable));
 		
 		this.colorHandler = colorHandler;

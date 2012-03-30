@@ -58,7 +58,7 @@ public class StrokeDataContentProvider extends ContentProvider {
 			
 			//c = blitzortung.query(STROKES_TABLE_NAME, projection, select, whereArgs, null, null, sortOrder);
 			
-			c.setNotificationUri(getContext().getContentResolver(), uri);
+			//c.setNotificationUri(getContext().getContentResolver(), uri);
 			
 			if (!"".equals(queryText)) {
 				//asyncQueryRequest(queryText, "asdf");

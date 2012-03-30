@@ -38,7 +38,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" >
 
-        <org.blitzortung.android.map.MapView
+        <org.blitzortung.android.map.OwnMapView
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/mapview"
             android:layout_width="fill_parent"
