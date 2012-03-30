@@ -13,11 +13,8 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
-import android.util.Log;
 
 public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
-
-	private static final String TAG = "overlay.StationsOverlay";
 
 	ArrayList<StationOverlayItem> items;
 
