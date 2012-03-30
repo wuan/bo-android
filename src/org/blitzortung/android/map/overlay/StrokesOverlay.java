@@ -31,11 +31,11 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
 	public StrokesOverlay(OwnMapActivity activity, StrokeColorHandler colorHandler) {
 		super(activity, boundCenter(DefaultDrawable));
-		
+
 		this.colorHandler = colorHandler;
 
 		items = new ArrayList<StrokeOverlayItem>();
-		
+
 		populate();
 	}
 
@@ -71,7 +71,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
 	public void updateShapeSize(int zoomLevel) {
 		this.shapeSize = zoomLevel + 1;
-		
+
 		refresh();
 	}
 
@@ -81,7 +81,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		int current_section = -1;
 
 		Drawable drawable = null;
-		
+
 		int colors[] = colorHandler.getColors();
 
 		for (StrokeOverlayItem item : items) {
@@ -99,24 +99,30 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 	}
 
 	private Drawable getDrawable(int section, int color) {
-		
+
 		Shape shape = new StrokeShape(shapeSize, color);
 		return new ShapeDrawable(shape);
 	}
 
 	@Override
 	protected boolean onTap(int index) {
-	
-		StrokeOverlayItem item = items.get(index);
 
-		showPopup(item.getPoint(), DateFormat.getTimeFormat(getActivity().getApplicationContext()).format(item.getTimestamp()));
+		if (index < items.size()) {
+			StrokeOverlayItem item = items.get(index);
+			if (item != null && item.getPoint() != null && item.getTimestamp() != null) {
+				showPopup(item.getPoint(), DateFormat.getTimeFormat(getActivity().getApplicationContext()).format(item.getTimestamp()));
+				return false;
+			}
+		}
 		
+		clearPopup();
+
 		return false;
 	}
 
 	public void expireStrokes(Date expireTime) {
 		List<StrokeOverlayItem> toRemove = new ArrayList<StrokeOverlayItem>();
-		
+
 		for (StrokeOverlayItem item : items) {
 			if (item.getTimestamp().before(expireTime)) {
 				toRemove.add(item);
@@ -124,7 +130,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 				break;
 			}
 		}
-		
+
 		if (toRemove.size() > 0) {
 			items.removeAll(toRemove);
 		}

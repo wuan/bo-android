@@ -5,7 +5,6 @@ import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
 
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -21,28 +20,28 @@ public abstract class PopupOverlay<Item extends OverlayItem> extends AbstractOve
 	}
 
 	protected void showPopup(GeoPoint location, String text) {
-		
+
 		OwnMapView map = getActivity().getMapView();
-		
+
 		View popUp = getActivity().getPopup();
-		
-		Log.v("PopupOverlay", "mapview: " + map);
-		Log.v("PopupOverlay", "popup: " + popUp);
-		
+
 		map.removeView(popUp);
 
-	    TextView statusText = (TextView) popUp.findViewById(R.id.popup_text);
-	    statusText.setBackgroundColor(0x88000000);
-	    statusText.setPadding(5,5,5,5);
-	    statusText.setText(text);
-	    
-		MapView.LayoutParams mapParams = new MapView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 
-		                        ViewGroup.LayoutParams.WRAP_CONTENT,
-		                        location,
-		                        0,
-		                        0,
-		                        MapView.LayoutParams.BOTTOM_CENTER);
-		
+		TextView statusText = (TextView) popUp.findViewById(R.id.popup_text);
+		statusText.setBackgroundColor(0x88000000);
+		statusText.setPadding(5, 5, 5, 5);
+		statusText.setText(text);
+
+		MapView.LayoutParams mapParams = new MapView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+				location, 0, 0, MapView.LayoutParams.BOTTOM_CENTER);
+
 		map.addView(popUp, mapParams);
+	}
+
+	protected void clearPopup() {
+		OwnMapView map = getActivity().getMapView();
+		View popUp = getActivity().getPopup();
+		
+		map.removeView(popUp);
 	}
 }

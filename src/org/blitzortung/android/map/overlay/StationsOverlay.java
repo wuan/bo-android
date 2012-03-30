@@ -15,13 +15,12 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.util.Log;
 
-
 public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
-	
+
 	private static final String TAG = "overlay.StationsOverlay";
 
 	ArrayList<StationOverlayItem> items;
-	
+
 	StationColorHandler colorHandler;
 
 	static private Drawable DefaultDrawable;
@@ -29,16 +28,16 @@ public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
 		Shape shape = new StationShape(1, 0);
 		DefaultDrawable = new ShapeDrawable(shape);
 	}
-	
+
 	EnumMap<State, Drawable> shapes = new EnumMap<State, Drawable>(State.class);
-	
+
 	public StationsOverlay(OwnMapActivity activity, StationColorHandler colorHandler) {
 		super(activity, boundCenter(DefaultDrawable));
-		
+
 		this.colorHandler = colorHandler;
 
 		items = new ArrayList<StationOverlayItem>();
-		
+
 		populate();
 	}
 
@@ -77,14 +76,14 @@ public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
 
 	public void updateShapeSize(int zoomLevel) {
 		this.shapeSize = Math.max(1, zoomLevel - 3);
-		
+
 		refresh();
 	}
 
 	public void refresh() {
-		
+
 		int[] colors = colorHandler.getColors();
-		
+
 		shapes.clear();
 		shapes.put(State.ON, getDrawable(colors[0]));
 		shapes.put(State.DELAYED, getDrawable(colors[1]));
@@ -99,15 +98,22 @@ public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
 		Shape shape = new StationShape(shapeSize, color);
 		return new ShapeDrawable(shape);
 	}
-	
+
 	@Override
 	protected boolean onTap(int index) {
-		Log.v(TAG, String.format("onTap(%d)", index));
-		
-		StationOverlayItem item = items.get(index);
 
-		showPopup(item.getPoint(), item.getTitle());
+		if (index < items.size()) {
+			StationOverlayItem item = items.get(index);
+
+			if (item != null && item.getTitle() != null) {
+
+				showPopup(item.getPoint(), item.getTitle());
+
+				return false;
+			}
+		}
 		
+		clearPopup();
 		return false;
 	}
 

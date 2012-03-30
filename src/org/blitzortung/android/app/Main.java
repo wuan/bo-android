@@ -44,7 +44,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	TextView statusText;
 
 	Provider provider;
-
+	
 	StrokesOverlay strokesOverlay;
 	
 	StationsOverlay stationsOverlay;
@@ -63,11 +63,8 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		preferences.registerOnSharedPreferenceChangeListener(this);
 
-		OwnMapView mapView = (OwnMapView) findViewById(R.id.mapview);
-
-		mapView.setBuiltInZoomControls(true);
-		setMapView(mapView);
-		
+		setMapView((OwnMapView) findViewById(R.id.mapview));
+		getMapView().setBuiltInZoomControls(true);
 
 		statusText = (TextView) findViewById(R.id.status);
 
@@ -78,7 +75,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		provider = new Provider(preferences, (ProgressBar) findViewById(R.id.progress), (ImageView) findViewById(R.id.error_indicator),
 				this);
 
-		mapView.addZoomListener(new OwnMapView.ZoomListener() {
+		getMapView().addZoomListener(new OwnMapView.ZoomListener() {
 
 			@Override
 			public void onZoom(int zoomLevel) {
@@ -88,14 +85,14 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 
 		});
 
-		List<Overlay> mapOverlays = mapView.getOverlays();
+		List<Overlay> mapOverlays = getMapView().getOverlays();
 		
 		mapOverlays.add(strokesOverlay);
 		mapOverlays.add(stationsOverlay);
 
 		onSharedPreferenceChanged(preferences, MAP_TYPE_PREFS_KEY);
 
-		mapView.invalidate();
+		getMapView().invalidate();
 	}
 
 	private Handler mHandler = new Handler();
