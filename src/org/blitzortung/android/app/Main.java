@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
 public class Main extends OwnMapActivity implements LocationListener, DataListener, OnSharedPreferenceChangeListener {
@@ -49,6 +50,8 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	
 	StationsOverlay stationsOverlay;
 
+	MyLocationOverlay myLocationOverlay;
+	
 	int numberOfStrokes = 0;
 
 	int minutes = 60;
@@ -65,6 +68,9 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 
 		setMapView((OwnMapView) findViewById(R.id.mapview));
 		getMapView().setBuiltInZoomControls(true);
+		
+		myLocationOverlay = new MyLocationOverlay(getBaseContext(), getMapView());
+		Log.v(TAG, "my location enabled: " + myLocationOverlay.enableMyLocation());
 
 		statusText = (TextView) findViewById(R.id.status);
 
@@ -89,6 +95,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		
 		mapOverlays.add(strokesOverlay);
 		mapOverlays.add(stationsOverlay);
+		mapOverlays.add(myLocationOverlay);
 
 		onSharedPreferenceChanged(preferences, MAP_TYPE_PREFS_KEY);
 

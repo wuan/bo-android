@@ -103,10 +103,8 @@ public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
 			StationOverlayItem item = items.get(index);
 
 			if (item != null && item.getTitle() != null) {
-
 				showPopup(item.getPoint(), item.getTitle());
-
-				return false;
+				return true;
 			}
 		}
 		

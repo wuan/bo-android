@@ -111,7 +111,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 			StrokeOverlayItem item = items.get(index);
 			if (item != null && item.getPoint() != null && item.getTimestamp() != null) {
 				showPopup(item.getPoint(), DateFormat.getTimeFormat(getActivity().getApplicationContext()).format(item.getTimestamp()));
-				return false;
+				return true;
 			}
 		}
 		
