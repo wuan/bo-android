@@ -68,6 +68,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
 	public void clear() {
 		items.clear();
+		populate();
 	}
 
 	int shapeSize;
@@ -99,6 +100,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
 			item.setMarker(drawable);
 		}
+		populate();
 	}
 
 	private Drawable getDrawable(int section, int color) {
@@ -138,5 +140,6 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		if (toRemove.size() > 0) {
 			items.removeAll(toRemove);
 		}
+		populate();
 	}
 }
