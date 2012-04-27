@@ -1,6 +1,7 @@
 package org.blitzortung.android.map.overlay;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -57,9 +58,11 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 	}
 
 	public void addStrokes(List<Stroke> strokes) {
+		Collections.reverse(items);
 		for (Stroke stroke : strokes) {
 			items.add(new StrokeOverlayItem(stroke));
 		}
+		Collections.reverse(items);
 		populate();
 	}
 

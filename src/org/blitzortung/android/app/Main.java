@@ -95,7 +95,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		
 		mapOverlays.add(strokesOverlay);
 		mapOverlays.add(stationsOverlay);
-		mapOverlays.add(myLocationOverlay);
+		//mapOverlays.add(myLocationOverlay);
 
 		onSharedPreferenceChanged(preferences, MAP_TYPE_PREFS_KEY);
 
