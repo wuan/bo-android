@@ -89,6 +89,7 @@ public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
 		for (StationOverlayItem item : items) {
 			item.setMarker(shapes.get(item.getState()));
 		}
+		populate();
 	}
 
 	private Drawable getDrawable(int color) {
