@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.text.format.DateFormat;
+import android.util.Log;
 
 public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
@@ -57,12 +58,18 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		}
 	}
 
-	public void addStrokes(List<Stroke> strokes) {
+	public void addAndExpireStrokes(List<Stroke> strokes, Date expireTime) {
+		
 		Collections.reverse(items);
+		
 		for (Stroke stroke : strokes) {
 			items.add(new StrokeOverlayItem(stroke));
 		}
+		
+		expireStrokes(expireTime);
+		
 		Collections.reverse(items);
+		
 		populate();
 	}
 
@@ -126,7 +133,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		return false;
 	}
 
-	public void expireStrokes(Date expireTime) {
+	private void expireStrokes(Date expireTime) {
 		List<StrokeOverlayItem> toRemove = new ArrayList<StrokeOverlayItem>();
 
 		for (StrokeOverlayItem item : items) {
@@ -140,6 +147,5 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		if (toRemove.size() > 0) {
 			items.removeAll(toRemove);
 		}
-		populate();
 	}
 }

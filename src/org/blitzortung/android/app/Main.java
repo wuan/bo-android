@@ -216,11 +216,10 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	@Override
 	public void onDataUpdate(DataResult result) {
 		if (result.containsStrokes()) {
-			strokesOverlay.addStrokes(result.getStrokes());
-
 			Calendar expireTime = new GregorianCalendar();
 			expireTime.add(Calendar.MINUTE, -minutes);
-			strokesOverlay.expireStrokes(expireTime.getTime());
+			
+			strokesOverlay.addAndExpireStrokes(result.getStrokes(), expireTime.getTime());
 
 			numberOfStrokes = strokesOverlay.size();
 
