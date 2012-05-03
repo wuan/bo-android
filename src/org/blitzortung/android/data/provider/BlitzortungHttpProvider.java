@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Stroke;
 
@@ -28,9 +29,9 @@ public class BlitzortungHttpProvider extends DataProvider {
 	//private int latestNanoseconds;
 	
 	@Override
-	public List<Stroke> getStrokes(int timeInterval) {
+	public List<AbstractStroke> getStrokes(int timeInterval) {
 
-		List<Stroke> strokes = new ArrayList<Stroke>();
+		List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
 
 		if (username != null && password != null) {
 

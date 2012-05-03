@@ -6,7 +6,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.RasterElement;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
@@ -57,11 +58,15 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		}
 	}
 
-	public void addAndExpireStrokes(List<Stroke> strokes, Date expireTime) {
+	public void addAndExpireStrokes(List<AbstractStroke> strokes, Date expireTime) {
 		
 		Collections.reverse(items);
 		
-		for (Stroke stroke : strokes) {
+		if (strokes.get(0) instanceof RasterElement) {
+			items.clear();
+		}
+		
+		for (AbstractStroke stroke : strokes) {
 			items.add(new StrokeOverlayItem(stroke));
 		}
 		

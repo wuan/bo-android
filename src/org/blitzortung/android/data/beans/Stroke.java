@@ -8,13 +8,7 @@ import java.util.TimeZone;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-public class Stroke {
-	
-	private static final SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss.SSS");
-	static {
-		TimeZone tz = TimeZone.getTimeZone("UTC");
-		DATE_TIME_FORMATTER.setTimeZone(tz);
-	}
+public class Stroke extends AbstractStroke {
 	
 	private Date timestamp;
 	
@@ -69,6 +63,7 @@ public class Stroke {
 		
 	}
 	
+	@Override
 	public Date getTime() {
 		return timestamp;
 	}

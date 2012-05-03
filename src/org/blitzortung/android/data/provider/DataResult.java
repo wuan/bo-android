@@ -2,12 +2,12 @@ package org.blitzortung.android.data.provider;
 
 import java.util.List;
 
+import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Station;
-import org.blitzortung.android.data.beans.Stroke;
 
 public class DataResult {
 
-	List<Stroke> strokes;
+	List<AbstractStroke> strokes;
 	List<Station> stations;
 	
 	boolean fail;
@@ -20,7 +20,7 @@ public class DataResult {
 		processWasLocked = false;
 	}
 	
-	public void setStrokes(List<Stroke> strokes) {
+	public void setStrokes(List<AbstractStroke> strokes) {
 		this.strokes = strokes;
 		fail = false;
 	}
@@ -28,7 +28,7 @@ public class DataResult {
 	public boolean containsStrokes() {
 		return strokes != null;
 	}
-	public List<Stroke> getStrokes() {
+	public List<AbstractStroke> getStrokes() {
 		return strokes;
 	}
 	

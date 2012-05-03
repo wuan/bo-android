@@ -3,6 +3,8 @@ package org.blitzortung.android.data.provider;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.RasterElement;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.jsonrpc.JsonRpcClient;
@@ -15,9 +17,13 @@ public class JsonRpcProvider extends DataProvider {
 	
 	private Integer nextId = null;
 	
-	public List<Stroke> getStrokes(int timeInterval) {
+	public List<AbstractStroke> getStrokes(int timeInterval) {
+		return getStrokesRaster(timeInterval);
+	}
+	
+	public List<AbstractStroke> getIndividualStrokes(int timeInterval) {
 		
-		List<Stroke> strokes = new ArrayList<Stroke>();
+		List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
 		
 		try {
 			JSONObject response = client.call("get_strokes", timeInterval, nextId);
@@ -31,6 +37,27 @@ public class JsonRpcProvider extends DataProvider {
 			if (response.has("next")) {
 			  nextId = (Integer)response.get("next");
 			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return strokes;
+	}
+	
+	public List<AbstractStroke> getStrokesRaster(int timeInterval) {
+		
+		List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
+		
+		nextId = null;
+		
+		try {
+			JSONObject response = client.call("get_strokes_raster", timeInterval);
+
+			JSONArray strokes_array = (JSONArray)response.get("strokes_raster");
+			
+			for (int i = 0; i < strokes_array.length(); i++) {
+				strokes.add(new RasterElement(strokes_array.getJSONArray(i)));
+			}
+			
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
