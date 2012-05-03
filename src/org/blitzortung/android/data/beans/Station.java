@@ -36,18 +36,23 @@ public class Station {
 			latitude = (float) jsonArray.getDouble(4);
 			if (jsonArray.length() >= 6) {
 
-				offlineSince = formatter.parse(jsonArray.getString(5));
-				
-				Date now = new GregorianCalendar().getTime();
-				
-				int minutesAgo = (int) (now.getTime() - offlineSince.getTime()) / 1000 / 60;
-				
-				if (minutesAgo > 24*60)
-					state = State.OFF;
-				else if (minutesAgo > 15)
-					state = State.DELAYED;
-				else
-					state = State.ON;				
+				String offlineSinceString = jsonArray.getString(5);
+				if (offlineSinceString.length() > 0) {
+					offlineSince = formatter.parse(offlineSinceString);
+
+					Date now = new GregorianCalendar().getTime();
+
+					int minutesAgo = (int) (now.getTime() - offlineSince.getTime()) / 1000 / 60;
+
+					if (minutesAgo > 24 * 60)
+						state = State.OFF;
+					else if (minutesAgo > 15)
+						state = State.DELAYED;
+					else
+						state = State.ON;
+				} else {
+					state = State.ON;
+				}
 			} else {
 				state = State.ON;
 			}
@@ -73,7 +78,7 @@ public class Station {
 	public Date getOfflineSince() {
 		return offlineSince;
 	}
-	
+
 	public State getState() {
 		return state;
 	}
