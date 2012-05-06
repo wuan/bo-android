@@ -1,12 +1,9 @@
 package org.blitzortung.android.data.beans;
 
-import java.text.ParseException;
 import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-
-import android.util.Log;
 
 public class RasterElement extends AbstractStroke {
 

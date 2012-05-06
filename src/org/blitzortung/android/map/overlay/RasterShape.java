@@ -4,20 +4,17 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.shapes.Shape;
-import android.util.Log;
 
 public class RasterShape extends Shape {
 
 	private float width;
 	private float height;
-	//private float lineWidth;
 	private int color;
 	private int alpha;
 	
 	public RasterShape(float width, float height, int color) {
 		this.width = width;
 		this.height = height;
-		//lineWidth = size/4;
 		this.color = color;
 		setAlphaValue();
 	}
