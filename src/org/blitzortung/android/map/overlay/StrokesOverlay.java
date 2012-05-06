@@ -78,6 +78,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		
 		Collections.reverse(items);
 		
+		setLastFocusedIndex(-1);
 		populate();
 	}
 
@@ -98,7 +99,9 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 	}
 	
 	public void clear() {
+		clearPopup();
 		items.clear();
+		setLastFocusedIndex(-1);
 		populate();
 	}
 
@@ -131,7 +134,6 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
 			item.setMarker(drawable);
 		}
-		populate();
 	}
 
 	private Drawable getDrawable(GeoPoint point, int section, int color) {
@@ -178,7 +180,6 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 				}
 				showPopup(item.getPoint(), result);
 				return true;
-
 			}
 		}
 		

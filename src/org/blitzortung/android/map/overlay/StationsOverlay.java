@@ -35,6 +35,7 @@ public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
 
 		items = new ArrayList<StationOverlayItem>();
 
+		setLastFocusedIndex(-1);
 		populate();
 	}
 
@@ -65,6 +66,8 @@ public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
 
 	public void clear() {
 		items.clear();
+		setLastFocusedIndex(-1);
+		populate();
 	}
 
 	int shapeSize;
@@ -89,7 +92,6 @@ public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
 		for (StationOverlayItem item : items) {
 			item.setMarker(shapes.get(item.getState()));
 		}
-		populate();
 	}
 
 	private Drawable getDrawable(int color) {

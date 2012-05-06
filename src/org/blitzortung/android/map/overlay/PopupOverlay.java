@@ -41,7 +41,7 @@ public abstract class PopupOverlay<Item extends OverlayItem> extends AbstractOve
 	protected void clearPopup() {
 		OwnMapView map = getActivity().getMapView();
 		View popUp = getActivity().getPopup();
-		
+
 		map.removeView(popUp);
 	}
 }
