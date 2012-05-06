@@ -1,8 +1,11 @@
 package org.blitzortung.android.data;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.data.provider.JsonRpcProvider;
@@ -75,10 +78,16 @@ public class Provider implements OnSharedPreferenceChangeListener {
 			if (lock.tryLock()) {
 				try {
 					dataProvider.setUp();
-					result.setStrokes(dataProvider.getStrokes(params[0]));
+					List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
+					if (params[1] == 0) {
+						strokes = dataProvider.getStrokes(params[0]);
+					} else {
+						strokes = dataProvider.getStrokesRaster(params[0]);
+					}
+					result.setStrokes(strokes);
 					result.setRaster(dataProvider.getRaster());
 					
-					if (params[1] != 0)
+					if (params[2] != 0)
 					  result.setStations(dataProvider.getStations());
 					dataProvider.shutDown();
 				} catch (RuntimeException e) {
@@ -99,7 +108,7 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		progress.setVisibility(View.VISIBLE);
 		progress.setProgress(0);
 
-		new FetchDataTask().execute(minutes, updateStations);
+		new FetchDataTask().execute(minutes, raster ? 1 : 0, updateStations);
 	}
 
 	@Override
@@ -115,5 +124,11 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		if (dataProvider != null) {
 			dataProvider.setCredentials(username, password);
 		}
+	}
+
+	boolean raster = true;
+	
+	public void toggleRaster() {
+		raster = !raster;
 	}
 }

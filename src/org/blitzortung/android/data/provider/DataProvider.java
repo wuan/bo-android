@@ -21,6 +21,8 @@ public abstract class DataProvider {
 	
 	abstract public List<AbstractStroke> getStrokes(int timeInterval);
 	
+	abstract public List<AbstractStroke> getStrokesRaster(int timeInterval);
+	
 	abstract public Raster getRaster();
 	
 	abstract public List<Station> getStations();

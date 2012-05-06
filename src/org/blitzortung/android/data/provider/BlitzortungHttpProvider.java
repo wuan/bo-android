@@ -88,4 +88,10 @@ public class BlitzortungHttpProvider extends DataProvider {
 		return null;
 	}
 
+	@Override
+	public List<AbstractStroke> getStrokesRaster(int timeInterval) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

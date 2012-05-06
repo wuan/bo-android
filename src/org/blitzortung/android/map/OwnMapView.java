@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.util.Log;
 
@@ -18,9 +17,9 @@ public class OwnMapView extends MapView {
 	public interface ZoomListener {
 		public void onZoom(int zoomLevel);
 	};
-	
+
 	List<ZoomListener> zoomListeners = new ArrayList<ZoomListener>();
-		
+
 	public OwnMapView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
@@ -33,23 +32,33 @@ public class OwnMapView extends MapView {
 		super(context, apiKey);
 	}
 
-	int oldZoomLevel = -1;
-	
+	private int oldZoomLevel = -1;
+
+	private float oldPixelSize = -1;
+
 	@Override
-	public void dispatchDraw(Canvas canvas) {
-		super.dispatchDraw(canvas);
-		if (getZoomLevel() != oldZoomLevel) {
-			
-			for (ZoomListener zoomListener: zoomListeners)
-				zoomListener.onZoom(getZoomLevel());
+	public void computeScroll() {
+		super.computeScroll();
 		
-			oldZoomLevel = getZoomLevel();
+		float pixelSize = getProjection().metersToEquatorPixels(1000.0f);
+
+		if (getZoomLevel() != oldZoomLevel) {
+
+			if (oldPixelSize == pixelSize) {
+				for (ZoomListener zoomListener : zoomListeners)
+					zoomListener.onZoom(getZoomLevel());
+				oldPixelSize = -1;
+				oldZoomLevel = getZoomLevel();
+			} else {
+				oldPixelSize = pixelSize;
+			}
+
 		}
 	}
-	
+
 	public void addZoomListener(ZoomListener zoomListener) {
 		Log.v("OwnMapView", "add zoom listener: " + zoomListener.toString());
 		zoomListeners.add(zoomListener);
 	}
-	
+
 }

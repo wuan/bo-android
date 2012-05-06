@@ -17,11 +17,11 @@ public class Raster {
 	}
 
 	public float getCenterLongitude(int offset) {
-		return lon_start + lon_delta * (0.5f + offset);
+		return lon_start + lon_delta * (offset + 0.5f);
 	}
 
 	public float getCenterLatitude(int offset) {
-		return lat_start - lat_delta * (0.5f + offset);
+		return lat_start - lat_delta * (offset + 0.5f);
 	}
 
 	public float getLongitudeDelta() {

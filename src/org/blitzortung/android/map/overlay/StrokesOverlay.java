@@ -12,10 +12,14 @@ import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.text.format.DateFormat;
+
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.Projection;
 
 public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
@@ -121,8 +125,8 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 			if (section >= colors.length)
 				section = colors.length - 1;
 
-			if (current_section != section) {
-				drawable = getDrawable(section, colors[section]);
+			if (isRaster() || current_section != section) {
+				drawable = getDrawable(item.getPoint(), section, colors[section]);
 			}
 
 			item.setMarker(drawable);
@@ -130,13 +134,20 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		populate();
 	}
 
-	private Drawable getDrawable(int section, int color) {
+	private Drawable getDrawable(GeoPoint point, int section, int color) {
 
 		Shape shape = null;
 		
+		Projection projection = this.getActivity().getMapView().getProjection();
+		
 		if (isRaster()) {
-			float scaleFactor = (float)(Math.pow(2, zoomLevel - 1) * 1.1);
-			shape = new RasterShape(scaleFactor * raster.getLongitudeDelta() * 0.63f , scaleFactor * raster.getLatitudeDelta(), color);
+			float lon_delta = raster.getLongitudeDelta()/2.0f * 1e6f;
+			float lat_delta = raster.getLatitudeDelta()/2.0f * 1e6f;
+			Point center = projection.toPixels(point, null);
+			Point topRight = projection.toPixels(new GeoPoint((int) (point.getLatitudeE6() + lat_delta), (int) (point.getLongitudeE6() + lon_delta)), null);
+			Point bottomLeft = projection.toPixels(new GeoPoint((int) (point.getLatitudeE6() - lat_delta), (int) (point.getLongitudeE6() - lon_delta)), null);
+			//Log.v("StrokesOverlay", "" + center + " " + topRight + " " + bottomLeft + " raster: " + raster + " point: " + point);
+			shape = new RasterShape(center, topRight, bottomLeft, color);
 		} else {
 			  shape = new StrokeShape(zoomLevel + 1, color);
 			

@@ -28,13 +28,10 @@ public class JsonRpcProvider extends DataProvider {
 	private Integer nextId = null;
 	
 	public List<AbstractStroke> getStrokes(int timeInterval) {
-		//return getIndividualStrokes(timeInterval);
-		return getStrokesRaster(timeInterval);
-	}
-	
-	public List<AbstractStroke> getIndividualStrokes(int timeInterval) {
 		
 		List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
+		
+		raster = null;
 		
 		try {
 			JSONObject response = client.call("get_strokes", timeInterval, nextId);

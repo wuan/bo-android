@@ -26,6 +26,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -47,6 +49,8 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	StrokesOverlay strokesOverlay;
 	
 	StationsOverlay stationsOverlay;
+	
+	Button rasterPointsSwitch;
 
 	//MyLocationOverlay myLocationOverlay;
 	
@@ -73,7 +77,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		//Log.v(TAG, "my location enabled: " + myLocationOverlay.enableMyLocation());
 
 		statusText = (TextView) findViewById(R.id.status);
-
+		
 		strokesOverlay = new StrokesOverlay(this, new StrokeColorHandler(preferences));
 		
 //		stationsOverlay = new StationsOverlay(this, new StationColorHandler(preferences));
@@ -98,6 +102,19 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		//mapOverlays.add(myLocationOverlay);
 
 		onSharedPreferenceChanged(preferences, MAP_TYPE_PREFS_KEY);
+		
+		rasterPointsSwitch = (Button) findViewById(R.id.clickBtn);
+		
+		rasterPointsSwitch.getBackground().setAlpha(150);
+		
+		rasterPointsSwitch.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                provider.toggleRaster();
+                strokesOverlay.clear();
+                timerTask.reset();
+            }
+        });
+
 
 		getMapView().invalidate();
 	}
