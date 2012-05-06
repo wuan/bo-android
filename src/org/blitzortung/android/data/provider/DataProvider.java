@@ -3,6 +3,7 @@ package org.blitzortung.android.data.provider;
 import java.util.List;
 
 import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.Raster;
 import org.blitzortung.android.data.beans.Station;
 
 public abstract class DataProvider {
@@ -19,6 +20,8 @@ public abstract class DataProvider {
 	abstract public void shutDown();
 	
 	abstract public List<AbstractStroke> getStrokes(int timeInterval);
+	
+	abstract public Raster getRaster();
 	
 	abstract public List<Station> getStations();
 	

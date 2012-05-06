@@ -6,7 +6,7 @@ import java.util.TimeZone;
 
 public abstract class AbstractStroke {
 
-	protected static final SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss.SSS");
+	public static final SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss.SSS");
 	static {
 		TimeZone tz = TimeZone.getTimeZone("UTC");
 		DATE_TIME_FORMATTER.setTimeZone(tz);
@@ -17,4 +17,9 @@ public abstract class AbstractStroke {
 	public abstract float getLatitude();
 
 	public abstract Date getTime();
+	
+	public int getCount() {
+		return 1;
+	}
+	
 }

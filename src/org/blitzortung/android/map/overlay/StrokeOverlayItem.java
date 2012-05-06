@@ -11,14 +11,22 @@ public class StrokeOverlayItem extends OverlayItem {
 
 	Date timestamp;
 	
+	int multitude;
+	
 	public StrokeOverlayItem(AbstractStroke stroke) {
 		super(Projection.toMapCoords(stroke.getLatitude(), stroke.getLongitude()), "", "");
 
 		timestamp = stroke.getTime();		
+		
+		multitude = stroke.getCount();
 	}
 	
 	public Date getTimestamp() {
 		return timestamp;
+	}
+	
+	public int getMultitude() {
+		return multitude;
 	}
 
 }

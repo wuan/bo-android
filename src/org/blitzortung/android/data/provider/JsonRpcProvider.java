@@ -1,9 +1,13 @@
 package org.blitzortung.android.data.provider;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.Raster;
 import org.blitzortung.android.data.beans.RasterElement;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Stroke;
@@ -13,11 +17,18 @@ import org.json.JSONObject;
 
 public class JsonRpcProvider extends DataProvider {
 	
+	public static final SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
+	static {
+		TimeZone tz = TimeZone.getTimeZone("UTC");
+		DATE_TIME_FORMATTER.setTimeZone(tz);
+	}
+
 	private JsonRpcClient client;
 	
 	private Integer nextId = null;
 	
 	public List<AbstractStroke> getStrokes(int timeInterval) {
+		//return getIndividualStrokes(timeInterval);
 		return getStrokesRaster(timeInterval);
 	}
 	
@@ -28,10 +39,13 @@ public class JsonRpcProvider extends DataProvider {
 		try {
 			JSONObject response = client.call("get_strokes", timeInterval, nextId);
 
+			Date timestamp = new Date();
+			timestamp = DATE_TIME_FORMATTER.parse(response.getString("reference_time"));
+			
 			JSONArray strokes_array = (JSONArray)response.get("strokes");
 			
 			for (int i = 0; i < strokes_array.length(); i++) {
-				strokes.add(new Stroke(strokes_array.getJSONArray(i)));
+				strokes.add(new Stroke(timestamp, strokes_array.getJSONArray(i)));
 			}
 			
 			if (response.has("next")) {
@@ -43,6 +57,8 @@ public class JsonRpcProvider extends DataProvider {
 		return strokes;
 	}
 	
+	Raster raster = null;
+	
 	public List<AbstractStroke> getStrokesRaster(int timeInterval) {
 		
 		List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
@@ -52,16 +68,26 @@ public class JsonRpcProvider extends DataProvider {
 		try {
 			JSONObject response = client.call("get_strokes_raster", timeInterval);
 
+			raster = new Raster(response);
+			
+			Date timestamp = new Date();
+			timestamp = DATE_TIME_FORMATTER.parse(response.getString("reference_time"));
+
 			JSONArray strokes_array = (JSONArray)response.get("strokes_raster");
 			
 			for (int i = 0; i < strokes_array.length(); i++) {
-				strokes.add(new RasterElement(strokes_array.getJSONArray(i)));
+				strokes.add(new RasterElement(raster, timestamp, strokes_array.getJSONArray(i)));
 			}
 			
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		
 		return strokes;
+	}
+	
+	public Raster getRaster() {
+		return raster;
 	}
 
 	@Override

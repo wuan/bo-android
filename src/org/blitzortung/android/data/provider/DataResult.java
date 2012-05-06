@@ -3,12 +3,14 @@ package org.blitzortung.android.data.provider;
 import java.util.List;
 
 import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.Raster;
 import org.blitzortung.android.data.beans.Station;
 
 public class DataResult {
 
 	List<AbstractStroke> strokes;
 	List<Station> stations;
+	Raster raster = null;
 	
 	boolean fail;
 	
@@ -58,5 +60,17 @@ public class DataResult {
 	
 	public boolean processWasLocked() {
 		return this.processWasLocked;
+	}
+	
+	public boolean hasRaster() {
+		return raster != null;
+	}
+	
+	public Raster getRaster() {
+		return raster;
+	}
+	
+	public void setRaster(Raster raster) {
+		this.raster = raster;
 	}
 }

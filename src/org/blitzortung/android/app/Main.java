@@ -11,7 +11,6 @@ import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.overlay.StationsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
-import org.blitzortung.android.map.overlay.color.StationColorHandler;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
 import android.app.Dialog;
@@ -31,7 +30,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
 public class Main extends OwnMapActivity implements LocationListener, DataListener, OnSharedPreferenceChangeListener {
@@ -50,9 +48,11 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	
 	StationsOverlay stationsOverlay;
 
-	MyLocationOverlay myLocationOverlay;
+	//MyLocationOverlay myLocationOverlay;
 	
 	int numberOfStrokes = 0;
+	
+	int numberOfElements = 0;
 
 	int minutes = 60;
 
@@ -69,14 +69,14 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		setMapView((OwnMapView) findViewById(R.id.mapview));
 		getMapView().setBuiltInZoomControls(true);
 		
-		myLocationOverlay = new MyLocationOverlay(getBaseContext(), getMapView());
-		Log.v(TAG, "my location enabled: " + myLocationOverlay.enableMyLocation());
+		//myLocationOverlay = new MyLocationOverlay(getBaseContext(), getMapView());
+		//Log.v(TAG, "my location enabled: " + myLocationOverlay.enableMyLocation());
 
 		statusText = (TextView) findViewById(R.id.status);
 
 		strokesOverlay = new StrokesOverlay(this, new StrokeColorHandler(preferences));
 		
-		stationsOverlay = new StationsOverlay(this, new StationColorHandler(preferences));
+//		stationsOverlay = new StationsOverlay(this, new StationColorHandler(preferences));
 
 		provider = new Provider(preferences, (ProgressBar) findViewById(R.id.progress), (ImageView) findViewById(R.id.error_indicator),
 				this);
@@ -85,8 +85,8 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 
 			@Override
 			public void onZoom(int zoomLevel) {
-				strokesOverlay.updateShapeSize(zoomLevel);
-				stationsOverlay.updateShapeSize(zoomLevel);
+				strokesOverlay.updateZoomLevel(zoomLevel);
+//				stationsOverlay.updateShapeSize(zoomLevel);
 			}
 
 		});
@@ -94,7 +94,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		List<Overlay> mapOverlays = getMapView().getOverlays();
 		
 		mapOverlays.add(strokesOverlay);
-		mapOverlays.add(stationsOverlay);
+	//	mapOverlays.add(stationsOverlay);
 		//mapOverlays.add(myLocationOverlay);
 
 		onSharedPreferenceChanged(preferences, MAP_TYPE_PREFS_KEY);
@@ -120,7 +120,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 			if (now >= nextUpdate) {
 				int updateStations = 0;
 				
-				if (now >= nextStationUpdate) {
+				if (stationsOverlay != null && now >= nextStationUpdate) {
 					updateStations = 1;
 					nextStationUpdate = now + stationPeriod;
 				}
@@ -128,8 +128,12 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 				nextUpdate = now + period;
 			}
 
-			statusText.setText(String.format("%d strokes/%d minutes, %d/%ds", numberOfStrokes, minutes,
-					nextUpdate - now, period));
+			String statusString = String.format("%d strokes", numberOfStrokes);
+			if (numberOfStrokes != numberOfElements) {
+				statusString += String.format(", %d elements", numberOfElements);
+			}
+			statusString += String.format("/%d minutes, %d/%ds", minutes, nextUpdate - now, period);
+			statusText.setText(statusString);
 
 			// Schedule the next update in one second
 			mHandler.postDelayed(timerTask, 1000);
@@ -219,14 +223,16 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 			Calendar expireTime = new GregorianCalendar();
 			expireTime.add(Calendar.MINUTE, -minutes);
 			
+			strokesOverlay.setRaster(result.getRaster());
 			strokesOverlay.addAndExpireStrokes(result.getStrokes(), expireTime.getTime());
 
-			numberOfStrokes = strokesOverlay.size();
+			numberOfStrokes = strokesOverlay.getTotalNumberOfStrokes();
+			numberOfElements = strokesOverlay.size();
 
 			strokesOverlay.refresh();
 		}
 
-		if (result.containsStations()) {
+		if (stationsOverlay != null && result.containsStations()) {
 			stationsOverlay.setStations(result.getStations());
 			stationsOverlay.refresh();
 		}
@@ -237,10 +243,12 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	@Override
 	public void onDataReset() {
 		strokesOverlay.clear();
-		stationsOverlay.clear();
 		timerTask.reset();
 		strokesOverlay.refresh();
-		stationsOverlay.refresh();
+		if (stationsOverlay != null) {
+			stationsOverlay.clear();
+			stationsOverlay.refresh();
+		}
 	}
 
 	static final int DIALOG_INFO_ID = 0;
@@ -263,7 +271,9 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 			String mapTypeString = sharedPreferences.getString(MAP_TYPE_PREFS_KEY, "SATELLITE");
 			getMapView().setSatellite(mapTypeString.equals("SATELLITE"));
 			strokesOverlay.refresh();
-			stationsOverlay.refresh();
+			if (stationsOverlay != null) {
+				stationsOverlay.refresh();
+			}
 		}
 	}
 

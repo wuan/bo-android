@@ -7,7 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.RasterElement;
+import org.blitzortung.android.data.beans.Raster;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
@@ -62,7 +62,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		
 		Collections.reverse(items);
 		
-		if (strokes.get(0) instanceof RasterElement) {
+		if (isRaster()) {
 			items.clear();
 		}
 		
@@ -77,15 +77,31 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		populate();
 	}
 
+	private void expireStrokes(Date expireTime) {
+		List<StrokeOverlayItem> toRemove = new ArrayList<StrokeOverlayItem>();
+
+		for (StrokeOverlayItem item : items) {
+			if (item.getTimestamp().before(expireTime)) {
+				toRemove.add(item);
+			} else {
+				break;
+			}
+		}
+
+		if (toRemove.size() > 0) {
+			items.removeAll(toRemove);
+		}
+	}
+	
 	public void clear() {
 		items.clear();
 		populate();
 	}
 
-	int shapeSize;
+	int zoomLevel;
 
-	public void updateShapeSize(int zoomLevel) {
-		this.shapeSize = zoomLevel + 1;
+	public void updateZoomLevel(int zoomLevel) {
+		this.zoomLevel = zoomLevel;
 
 		refresh();
 	}
@@ -116,17 +132,40 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
 	private Drawable getDrawable(int section, int color) {
 
-		Shape shape = new StrokeShape(shapeSize, color);
+		Shape shape = null;
+		
+		if (isRaster()) {
+			float scaleFactor = (float)(Math.pow(2, zoomLevel - 1) * 1.1);
+			shape = new RasterShape(scaleFactor * raster.getLongitudeDelta() * 0.63f , scaleFactor * raster.getLatitudeDelta(), color);
+		} else {
+			  shape = new StrokeShape(zoomLevel + 1, color);
+			
+		}
 		return new ShapeDrawable(shape);
 	}
 
+	Raster raster = null;
+	
+	public void setRaster(Raster raster) {
+		this.raster = raster;
+	}
+	
+	public boolean isRaster() {
+		return raster != null;
+	}
+	
 	@Override
 	protected boolean onTap(int index) {
 
 		if (index < items.size()) {
 			StrokeOverlayItem item = items.get(index);
 			if (item != null && item.getPoint() != null && item.getTimestamp() != null) {
-				showPopup(item.getPoint(), (String) DateFormat.format("kk:mm:ss", item.getTimestamp()));
+				String result = (String) DateFormat.format("kk:mm:ss", item.getTimestamp());
+				
+				if (item.getMultitude() > 1) {
+					result += String.format(", #%d", item.getMultitude());
+				}
+				showPopup(item.getPoint(), result);
 				return true;
 
 			}
@@ -137,19 +176,14 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		return false;
 	}
 
-	private void expireStrokes(Date expireTime) {
-		List<StrokeOverlayItem> toRemove = new ArrayList<StrokeOverlayItem>();
-
+	public int getTotalNumberOfStrokes() {
+		
+		int totalNumberOfStrokes = 0;
+		
 		for (StrokeOverlayItem item : items) {
-			if (item.getTimestamp().before(expireTime)) {
-				toRemove.add(item);
-			} else {
-				break;
-			}
+			totalNumberOfStrokes += item.getMultitude();
 		}
-
-		if (toRemove.size() > 0) {
-			items.removeAll(toRemove);
-		}
+		
+		return totalNumberOfStrokes;
 	}
 }

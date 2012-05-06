@@ -1,9 +1,12 @@
 package org.blitzortung.android.data.beans;
 
+import java.text.ParseException;
 import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import android.util.Log;
 
 public class RasterElement extends AbstractStroke {
 
@@ -15,16 +18,14 @@ public class RasterElement extends AbstractStroke {
 	
 	private int count;
 	
-	public  RasterElement(JSONArray jsonArray) {
-		
+	public  RasterElement(Raster raster, Date referenceTimestamp, JSONArray jsonArray) {
 		try {
-			longitude = (float)jsonArray.getDouble(0);
-			latitude = (float)jsonArray.getDouble(1);
-			count = (int)jsonArray.getInt(2);
+			longitude = raster.getCenterLongitude(jsonArray.getInt(0));
+			latitude = raster.getCenterLatitude(jsonArray.getInt(1));
+			count = jsonArray.getInt(2);
+			
 			timestamp = new Date();
-			//timestamp = DATE_TIME_FORMATTER.parse(jsonArray.getString(3));
-		//} catch (ParseException e) {
-		//	throw new RuntimeException("error parsing stroke data", e);
+			timestamp.setTime(referenceTimestamp.getTime() + 1000 * jsonArray.getInt(3));
 		} catch (JSONException e) {
 			throw new RuntimeException("error with json format while parsing stroke data", e);
 		}
@@ -45,6 +46,7 @@ public class RasterElement extends AbstractStroke {
 		return timestamp;
 	}
 	
+	@Override
 	public int getCount() {
 		return count;
 	}

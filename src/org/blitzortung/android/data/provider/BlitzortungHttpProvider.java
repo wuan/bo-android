@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.Raster;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Stroke;
 
@@ -80,6 +81,11 @@ public class BlitzortungHttpProvider extends DataProvider {
 
 	@Override
 	public void shutDown() {
+	}
+
+	@Override
+	public Raster getRaster() {
+		return null;
 	}
 
 }

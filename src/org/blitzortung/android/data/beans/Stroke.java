@@ -1,9 +1,7 @@
 package org.blitzortung.android.data.beans;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,10 +24,11 @@ public class Stroke extends AbstractStroke {
 	
 	private short type;
 	
-	public Stroke(JSONArray jsonArray) {
+	public Stroke(Date referenceTimestamp, JSONArray jsonArray) {
 		
 		try {
-			timestamp = DATE_TIME_FORMATTER.parse(jsonArray.getString(0));
+			timestamp = new Date();
+			timestamp.setTime(referenceTimestamp.getTime() + 1000 * jsonArray.getInt(0));
 			nanoseconds = jsonArray.getInt(1);
 			longitude = (float)jsonArray.getDouble(2);
 			latitude = (float)jsonArray.getDouble(3);
@@ -37,8 +36,6 @@ public class Stroke extends AbstractStroke {
 			amplitude = (float)jsonArray.getDouble(4);
 			stationCount = (short)jsonArray.getInt(5);
 			type = (short)jsonArray.getInt(6);
-		} catch (ParseException e) {
-			throw new RuntimeException("error parsing stroke data", e);
 		} catch (JSONException e) {
 			throw new RuntimeException("error with json format while parsing stroke data", e);
 		}
@@ -95,5 +92,5 @@ public class Stroke extends AbstractStroke {
 	public short getType() {
 		return type;
 	}
-	
+
 }
