@@ -16,10 +16,10 @@ public class RasterShape extends Shape {
 	private int alpha;
 	
 	public RasterShape(Point center, Point topRight, Point bottomLeft, int color) {
-		x1 = Math.max(Math.abs(center.x - bottomLeft.x), 1.0f);
-		x2 = Math.max(Math.abs(center.x - topRight.x), 1.0f);
-		y1 = Math.max(Math.abs(center.y - bottomLeft.y), 1.0f);
-		y2 = Math.max(Math.abs(center.y - topRight.y), 1.0f);
+		x1 = Math.max(Math.abs(center.x - bottomLeft.x), 1.5f);
+		x2 = Math.max(Math.abs(center.x - topRight.x), 1.5f);
+		y1 = Math.max(Math.abs(center.y - bottomLeft.y), 1.5f);
+		y2 = Math.max(Math.abs(center.y - topRight.y), 1.5f);
 		this.color = color;
 		setAlphaValue();
 		//Log.v("RasterShape", String.format("x1: %.1f, x2: %.1f, y1: %.2f, y2: %.2f, alpha: %d", x1, x2, y1, y2, alpha));
@@ -36,7 +36,7 @@ public class RasterShape extends Shape {
 	}
 	
 	private void setAlphaValue() {
-		float value = (x1+x2) / 30;
+		float value = (x1+x2 - 10) / 30;
 		if (value < 0.0) {
 			value = 0.0f;
 		} else if (value > 1.0) {
