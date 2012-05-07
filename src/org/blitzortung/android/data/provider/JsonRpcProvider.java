@@ -37,9 +37,9 @@ public class JsonRpcProvider extends DataProvider {
 			JSONObject response = client.call("get_strokes", timeInterval, nextId);
 
 			Date timestamp = new Date();
-			timestamp = DATE_TIME_FORMATTER.parse(response.getString("reference_time"));
+			timestamp = DATE_TIME_FORMATTER.parse(response.getString("t"));
 			
-			JSONArray strokes_array = (JSONArray)response.get("strokes");
+			JSONArray strokes_array = (JSONArray)response.get("s");
 			
 			for (int i = 0; i < strokes_array.length(); i++) {
 				strokes.add(new Stroke(timestamp, strokes_array.getJSONArray(i)));
@@ -68,9 +68,9 @@ public class JsonRpcProvider extends DataProvider {
 			raster = new Raster(response);
 			
 			Date timestamp = new Date();
-			timestamp = DATE_TIME_FORMATTER.parse(response.getString("reference_time"));
+			timestamp = DATE_TIME_FORMATTER.parse(response.getString("t"));
 
-			JSONArray strokes_array = (JSONArray)response.get("strokes_raster");
+			JSONArray strokes_array = (JSONArray)response.get("r");
 			
 			for (int i = 0; i < strokes_array.length(); i++) {
 				strokes.add(new RasterElement(raster, timestamp, strokes_array.getJSONArray(i)));

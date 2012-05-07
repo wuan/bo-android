@@ -10,10 +10,10 @@ public class Raster {
 	private float lat_delta;
 
 	public Raster(JSONObject jsonObject) throws JSONException {
-		lon_start = (float) jsonObject.getDouble("lon_start");
-		lat_start = (float) jsonObject.getDouble("lat_start");
-		lon_delta = (float) jsonObject.getDouble("lon_delta");
-		lat_delta = (float) jsonObject.getDouble("lat_delta");
+		lon_start = (float) jsonObject.getDouble("x0");
+		lat_start = (float) jsonObject.getDouble("y1");
+		lon_delta = (float) jsonObject.getDouble("xd");
+		lat_delta = (float) jsonObject.getDouble("yd");
 	}
 
 	public float getCenterLongitude(int offset) {
