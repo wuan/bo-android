@@ -44,9 +44,10 @@ public class OwnMapView extends MapView {
 
 		if (getZoomLevel() != oldZoomLevel) {
 
+			for (ZoomListener zoomListener : zoomListeners)
+				zoomListener.onZoom(getZoomLevel());
+
 			if (oldPixelSize == pixelSize) {
-				for (ZoomListener zoomListener : zoomListeners)
-					zoomListener.onZoom(getZoomLevel());
 				oldPixelSize = -1;
 				oldZoomLevel = getZoomLevel();
 			} else {
