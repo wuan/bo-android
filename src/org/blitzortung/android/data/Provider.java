@@ -86,7 +86,7 @@ public class Provider implements OnSharedPreferenceChangeListener {
 					result.setStrokes(strokes);
 					result.setRaster(dataProvider.getRaster());
 					
-					if (params[2] != 0)
+					if (params.length > 2 && params[2] != 0)
 					  result.setStations(dataProvider.getStations());
 					dataProvider.shutDown();
 				} catch (RuntimeException e) {
