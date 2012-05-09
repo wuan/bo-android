@@ -2,14 +2,21 @@
     android:id="@+id/layout_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:padding="10dp" >
-
+    
     <TextView
         android:id="@+id/info_text"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:text="@string/copyright_info"
+        android:text="@string/info_text"
+        android:textColor="#FFF" />
+    
+    <TextView
+        android:id="@+id/copyright_text"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:text="@string/copyright"
         android:textColor="#FFF" />
 
 </LinearLayout>

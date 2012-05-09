@@ -128,7 +128,7 @@ public class Provider implements OnSharedPreferenceChangeListener {
 
 	boolean raster = true;
 	
-	public void toggleRaster() {
+	/*public void toggleRaster() {
 		raster = !raster;
-	}
+	}*/
 }

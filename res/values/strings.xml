@@ -5,14 +5,15 @@
     <string name="period">Abfrageperiode [s]</string>
     <string name="preferences">Einstellungen</string>
     <string name="info">Information</string>
-    <string name="copyright_info">© 2012 by Andreas Würl\nblitzortung@tryb.de</string>
+    <string name="info_text">Project home:\n\thttps://github.com/wuan/bo-android\n\nData provided by <b>blitzortung.org</b> TOA lightning detection project.\n</string>
+    <string name="copyright">© 2012 by Andreas Würl\nblitzortung@tryb.de</string>
     <string name="username">Benutzername</string>
     <string name="password">Passwort</string>
     <string name="user_settings">Benutzereinstellungen</string>
     <string name="map_settings">Karteneinstellungen</string>
     <string name="data_settings">Datenübertragung</string>
-
     <string name="map_mode">Kartenmodus</string>
+
     <string-array name="map_modes">
         <item>Satellit</item>
         <item>Karte</item>
@@ -21,8 +22,9 @@
         <item>SATELLITE</item>
         <item>STREETMAP</item>
     </string-array>
-    
+
     <string name="data_source">Datenquelle</string>
+
     <string-array name="data_sources">
         <item>Blitzortung.org</item>
         <item>Webservice</item>
@@ -34,5 +36,24 @@
 
     <color name="Red">#f00</color>
     <color name="Orange">#f80</color>
+
+    <string name="query_period">Abfrageperiode</string>
+    <string-array name="query_periods">
+        <item>20 s</item>
+        <item>30 s</item>
+        <item>1 min</item>
+        <item>2 min</item>
+        <item>5 min</item>
+        <item>10 min</item>
+    </string-array>
+    
+    <string-array name="query_period_values">
+        <item>20</item>
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+        <item>300</item>
+        <item>600</item>
+    </string-array>
 
 </resources>

@@ -26,8 +26,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -39,6 +37,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	private static final String TAG = "Main";
 
 	private final static String MAP_TYPE_PREFS_KEY = "map_mode";
+	private final static String PERIOD_PREFS_KEY = "period";
 
 	Location presentLocation;
 
@@ -50,14 +49,12 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	
 	StationsOverlay stationsOverlay;
 	
-	Button rasterPointsSwitch;
+	//Button rasterPointsSwitch;
 
 	//MyLocationOverlay myLocationOverlay;
 	
 	int numberOfStrokes = 0;
 	
-	int numberOfElements = 0;
-
 	int minutes = 60;
 
 	/** Called when the activity is first created. */
@@ -103,7 +100,9 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 
 		onSharedPreferenceChanged(preferences, MAP_TYPE_PREFS_KEY);
 		
-		rasterPointsSwitch = (Button) findViewById(R.id.clickBtn);
+		/*
+		 rasterPointsSwitch = (Button) findViewById(R.id.clickBtn);
+		
 		
 		rasterPointsSwitch.getBackground().setAlpha(150);
 		
@@ -114,18 +113,21 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
                 timerTask.reset();
             }
         });
+        */
 
-
+		timerTask = new TimerTask();
+		onSharedPreferenceChanged(preferences, PERIOD_PREFS_KEY);
+		
 		getMapView().invalidate();
 	}
 
 	private Handler mHandler = new Handler();
 
-	private TimerTask timerTask = new TimerTask();
+	private TimerTask timerTask;
 
 	class TimerTask implements Runnable {
 
-		int period = 20;
+		int period = 60;
 		long nextUpdate = 0;
 		int stationPeriod = 10 * 60;
 		long nextStationUpdate = 0;
@@ -146,9 +148,6 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 			}
 
 			String statusString = String.format("%d strokes", numberOfStrokes);
-			if (numberOfStrokes != numberOfElements) {
-				statusString += String.format(", %d elements", numberOfElements);
-			}
 			statusString += String.format("/%d minutes, %d/%ds", minutes, nextUpdate - now, period);
 			statusText.setText(statusString);
 
@@ -244,7 +243,6 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 			strokesOverlay.addAndExpireStrokes(result.getStrokes(), expireTime.getTime());
 
 			numberOfStrokes = strokesOverlay.getTotalNumberOfStrokes();
-			numberOfElements = strokesOverlay.size();
 
 			strokesOverlay.refresh();
 		}
@@ -291,6 +289,10 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 			if (stationsOverlay != null) {
 				stationsOverlay.refresh();
 			}
+		} else if (key.equals(PERIOD_PREFS_KEY)) {
+			int period = Integer.parseInt(sharedPreferences.getString(PERIOD_PREFS_KEY, "20"));
+			timerTask.setPeriod(period);
+			timerTask.reset();
 		}
 	}
 

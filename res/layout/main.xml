@@ -46,13 +46,13 @@
             android:apiKey="0H7fqZDUCcfqoCLj_0_5q9_2M6bq_L0G1CxtVBQ"
             android:clickable="true" />
 
-        <Button
+        <!-- <Button
         android:id="@+id/clickBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:text="r/p" />
+        android:text="r/p" /> -->
 
     </RelativeLayout>
 
