@@ -17,6 +17,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -144,8 +145,11 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 				nextUpdate = now + period;
 			}
 
-			String statusString = String.format("%d strokes", numberOfStrokes);
-			statusString += String.format("/%d minutes, %d/%ds", minutes, nextUpdate - now, period);
+			Resources res = getResources();
+			String statusString = res.getQuantityString(R.plurals.stroke, numberOfStrokes, numberOfStrokes);
+			statusString += "/";
+			statusString += res.getQuantityString(R.plurals.minute, minutes, minutes);
+			statusString += String.format(", %d/%ds", nextUpdate - now, period);
 			statusText.setText(statusString);
 
 			// Schedule the next update in one second

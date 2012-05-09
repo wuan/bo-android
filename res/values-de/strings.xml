@@ -1,41 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
+
     <plurals name="stroke">
-        <item quantity="zero">no stroke</item>
-        <item quantity="one">1 stroke</item>
-        <item quantity="other">%d strokes</item>
+        <item quantity="zero">kein Blitz</item>
+        <item quantity="one">1 Blitz</item>
+        <item quantity="other">%d Blitze</item>
     </plurals>
     
     <plurals name="minute">
-        <item quantity="one">1 minutes</item>
-        <item quantity="other">%d minutes</item>
+        <item quantity="one">1 Minute</item>
+        <item quantity="other">%d Minuten</item>
     </plurals>
-
+    
     <string name="app_name">Blitzortung Viewer</string>
-    <string name="preferences">Preferences</string>
-    <string name="info">Information</string>
-    <string name="info_text">Project home:\n\thttps://github.com/wuan/bo-android\n\nVisualized lightning data is provided by the <b>Blitzortung.org</b> realtime lighning community project:\n\thttp://blitzortung.org/\n</string>
+    <string name="period">Abfrageperiode [s]</string>
+    <string name="preferences">Einstellungen</string>
+    <string name="info">Informationen</string>
+    <string name="info_text">Projektseite:\n\thttps://github.com/wuan/bo-android\n\nDiese Software visualisiert Blitzdaten des Community-Projekts <b>blitzortung.org</b>. Weitere Informationen darüber finden Sie unter:\n\thttp://blitzortung.org\n</string>
     <string name="copyright">© 2012, Andreas Würl\nblitzortung@tryb.de</string>
-    <string name="username">Username</string>
-    <string name="password">Password</string>
-    <string name="user_settings">User settings</string>
-    <string name="map_settings">Map settings</string>
-    <string name="strokes">strokes</string>
-    <string name="minutes">minutes</string>
-    <string name="data_settings">Data transmission</string>
-    <string name="map_mode">Map mode</string>
+    <string name="username">Benutzername</string>
+    <string name="password">Passwort</string>
+    <string name="user_settings">Benutzereinstellungen</string>
+    <string name="map_settings">Karteneinstellungen</string>
+    <string name="data_settings">Datenübertragung</string>
+    <string name="map_mode">Kartenmodus</string>
 
     <string-array name="map_modes">
-        <item>Satellite</item>
-        <item>Streetmap</item>
+        <item>Satellit</item>
+        <item>Karte</item>
     </string-array>
     <string-array name="map_mode_values">
         <item>SATELLITE</item>
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="data_source">Datasource</string>
+    <string name="data_source">Datenquelle</string>
 
     <string-array name="data_sources">
         <item>Blitzortung.org</item>
@@ -49,7 +48,7 @@
     <color name="Red">#f00</color>
     <color name="Orange">#f80</color>
 
-    <string name="query_period">Query period</string>
+    <string name="query_period">Abfrageperiode</string>
     <string-array name="query_periods">
         <item>20 s</item>
         <item>30 s</item>
@@ -68,7 +67,7 @@
         <item>600</item>
     </string-array>
     
-    <string name="raster_size">Raster size</string>
+    <string name="raster_size">Rastergröße</string>
     <string-array name="raster_sizes">
         <item>5 km</item>
         <item>10 km</item>
@@ -84,5 +83,6 @@
         <item>50000</item>
         <item>100000</item>
     </string-array>
+    
     
 </resources>
