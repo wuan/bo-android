@@ -36,9 +36,6 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 
 	private static final String TAG = "Main";
 
-	private final static String MAP_TYPE_PREFS_KEY = "map_mode";
-	private final static String PERIOD_PREFS_KEY = "period";
-
 	Location presentLocation;
 
 	TextView statusText;
@@ -98,7 +95,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	//	mapOverlays.add(stationsOverlay);
 		//mapOverlays.add(myLocationOverlay);
 
-		onSharedPreferenceChanged(preferences, MAP_TYPE_PREFS_KEY);
+		onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
 		
 		/*
 		 rasterPointsSwitch = (Button) findViewById(R.id.clickBtn);
@@ -116,7 +113,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
         */
 
 		timerTask = new TimerTask();
-		onSharedPreferenceChanged(preferences, PERIOD_PREFS_KEY);
+		onSharedPreferenceChanged(preferences, Preferences.PERIOD_KEY);
 		
 		getMapView().invalidate();
 	}
@@ -282,16 +279,18 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals(MAP_TYPE_PREFS_KEY)) {
-			String mapTypeString = sharedPreferences.getString(MAP_TYPE_PREFS_KEY, "SATELLITE");
+		if (key.equals(Preferences.MAP_TYPE_KEY)) {
+			String mapTypeString = sharedPreferences.getString(Preferences.MAP_TYPE_KEY, "SATELLITE");
 			getMapView().setSatellite(mapTypeString.equals("SATELLITE"));
 			strokesOverlay.refresh();
 			if (stationsOverlay != null) {
 				stationsOverlay.refresh();
 			}
-		} else if (key.equals(PERIOD_PREFS_KEY)) {
-			int period = Integer.parseInt(sharedPreferences.getString(PERIOD_PREFS_KEY, "20"));
+		} else if (key.equals(Preferences.PERIOD_KEY)) {
+			int period = Integer.parseInt(sharedPreferences.getString(Preferences.PERIOD_KEY, "60"));
 			timerTask.setPeriod(period);
+			timerTask.reset();
+		} else if (key.equals(Preferences.RASTER_SIZE_KEY)) {
 			timerTask.reset();
 		}
 	}

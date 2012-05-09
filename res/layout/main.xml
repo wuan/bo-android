@@ -43,9 +43,10 @@
             android:id="@+id/mapview"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:apiKey="0H7fqZDUCcfqoCLj_0_5q9_2M6bq_L0G1CxtVBQ"
+            android:apiKey="0H7fqZDUCcfrjsYMcqCYlI3mMQQ-RpgLBSmvtXw"
             android:clickable="true" />
-
+        <!--  android:apiKey="0H7fqZDUCcfqoCLj_0_5q9_2M6bq_L0G1CxtVBQ" -->
+        
         <!-- <Button
         android:id="@+id/clickBtn"
         android:layout_width="wrap_content"

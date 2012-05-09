@@ -27,6 +27,7 @@
             android:selectable="true"
             android:title="@string/map_mode" />
     </PreferenceCategory>
+    
     <PreferenceCategory android:title="@string/data_settings" >
         <ListPreference
             android:defaultValue="60"
@@ -37,6 +38,15 @@
             android:persistent="true"
             android:selectable="true"
             android:title="@string/query_period" />
+        <ListPreference
+            android:defaultValue="10000"
+            android:enabled="true"
+            android:entries="@array/raster_sizes"
+            android:entryValues="@array/raster_size_values"
+            android:key="raster_size"
+            android:persistent="true"
+            android:selectable="true"
+            android:title="@string/raster_size" />
     </PreferenceCategory>
 
 </PreferenceScreen>

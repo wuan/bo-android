@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataResult;
@@ -24,9 +25,6 @@ public class Provider implements OnSharedPreferenceChangeListener {
 
 	private final Lock lock = new ReentrantLock();
 
-	private static final String USERNAME_PREFS_KEY = "username";
-	private static final String PASSWORD_PREFS_KEY = "password";
-
 	private DataProvider dataProvider;
 
 	private String username;
@@ -45,8 +43,9 @@ public class Provider implements OnSharedPreferenceChangeListener {
 
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 		
-		onSharedPreferenceChanged(sharedPreferences, USERNAME_PREFS_KEY);
-		onSharedPreferenceChanged(sharedPreferences, PASSWORD_PREFS_KEY);
+		onSharedPreferenceChanged(sharedPreferences, Preferences.USERNAME_KEY);
+		onSharedPreferenceChanged(sharedPreferences, Preferences.PASSWORD_KEY);
+		onSharedPreferenceChanged(sharedPreferences, Preferences.RASTER_SIZE_KEY);
 
 		progress.setVisibility(View.INVISIBLE);
 		error_indicator.setVisibility(View.INVISIBLE);
@@ -82,7 +81,7 @@ public class Provider implements OnSharedPreferenceChangeListener {
 					if (params[1] == 0) {
 						strokes = dataProvider.getStrokes(params[0]);
 					} else {
-						strokes = dataProvider.getStrokesRaster(params[0]);
+						strokes = dataProvider.getStrokesRaster(params[0], params[1]);
 					}
 					result.setStrokes(strokes);
 					result.setRaster(dataProvider.getRaster());
@@ -108,17 +107,19 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		progress.setVisibility(View.VISIBLE);
 		progress.setProgress(0);
 
-		new FetchDataTask().execute(minutes, raster ? 1 : 0, updateStations);
+		new FetchDataTask().execute(minutes, rasterSize);
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals(USERNAME_PREFS_KEY)) {
-			username = sharedPreferences.getString(USERNAME_PREFS_KEY, "");
+		if (key.equals(Preferences.USERNAME_KEY)) {
+			username = sharedPreferences.getString(Preferences.USERNAME_KEY, "");
 			Log.v(TAG, String.format("update %s to %s", key, username));
-		} else if (key.equals(PASSWORD_PREFS_KEY)) {
-			password = sharedPreferences.getString(PASSWORD_PREFS_KEY, "");
+		} else if (key.equals(Preferences.PASSWORD_KEY)) {
+			password = sharedPreferences.getString(Preferences.PASSWORD_KEY, "");
 			Log.v(TAG, String.format("update %s to *****", key));
+		} else if (key.equals(Preferences.RASTER_SIZE_KEY)) {
+			rasterSize = Integer.parseInt(sharedPreferences.getString(Preferences.RASTER_SIZE_KEY, "10000"));
 		}
 
 		if (dataProvider != null) {
@@ -126,7 +127,7 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		}
 	}
 
-	boolean raster = true;
+	int rasterSize;
 	
 	/*public void toggleRaster() {
 		raster = !raster;
