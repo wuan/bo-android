@@ -69,7 +69,6 @@
     
     <string name="raster_size">Rastergröße</string>
     <string-array name="raster_sizes">
-        <item>5 km</item>
         <item>10 km</item>
         <item>25 km</item>
         <item>50 km</item>
@@ -77,7 +76,6 @@
     </string-array>
     
     <string-array name="raster_size_values">
-        <item>5000</item>
         <item>10000</item>
         <item>25000</item>
         <item>50000</item>

@@ -17,6 +17,9 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationListener;
@@ -60,12 +63,13 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.main);
+		setContentView(isDebugBuild() ? R.layout.main_debug : R.layout.main);
 
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		preferences.registerOnSharedPreferenceChangeListener(this);
 
 		setMapView((OwnMapView) findViewById(R.id.mapview));
+		
 		getMapView().setBuiltInZoomControls(true);
 		
 		//myLocationOverlay = new MyLocationOverlay(getBaseContext(), getMapView());
@@ -118,6 +122,20 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		
 		getMapView().invalidate();
 	}
+	
+    public boolean isDebugBuild() 
+    {
+        boolean dbg = false;
+        try {
+            PackageManager pm = getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(getPackageName(), 0);
+
+            dbg = ((pi.applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0);
+        } catch (Exception e) {
+        }
+        return dbg;
+    }
+
 
 	private Handler mHandler = new Handler();
 

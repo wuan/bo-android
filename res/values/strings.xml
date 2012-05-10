@@ -21,8 +21,6 @@
     <string name="password">Password</string>
     <string name="user_settings">User settings</string>
     <string name="map_settings">Map settings</string>
-    <string name="strokes">strokes</string>
-    <string name="minutes">minutes</string>
     <string name="data_settings">Data transmission</string>
     <string name="map_mode">Map mode</string>
 
