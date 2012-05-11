@@ -20,11 +20,9 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -41,15 +39,14 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 
 	private static final String TAG = "Main";
 
-	Location presentLocation;
-
-	TextView statusText;
-
-	Provider provider;
+	TextView status;
 
 	StrokesOverlay strokesOverlay;
 
 	StationsOverlay stationsOverlay;
+	
+	private TimerTask timerTask;
+
 
 	// Button rasterPointsSwitch;
 
@@ -66,24 +63,21 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 
 		setContentView(isDebugBuild() ? R.layout.main_debug : R.layout.main);
 
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-		preferences.registerOnSharedPreferenceChangeListener(this);
-
 		setMapView((OwnMapView) findViewById(R.id.mapview));
 
 		getMapView().setBuiltInZoomControls(true);
 
 		myLocationOverlay = new MyLocationOverlay(getBaseContext(), getMapView());
 
-		statusText = (TextView) findViewById(R.id.status);
+		status = (TextView) findViewById(R.id.status);
 
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		preferences.registerOnSharedPreferenceChangeListener(this);
+		
 		strokesOverlay = new StrokesOverlay(this, new StrokeColorHandler(preferences));
 
 		// stationsOverlay = new StationsOverlay(this, new
 		// StationColorHandler(preferences));
-
-		provider = new Provider(preferences, (ProgressBar) findViewById(R.id.progress), (ImageView) findViewById(R.id.error_indicator),
-				this);
 
 		getMapView().addZoomListener(new OwnMapView.ZoomListener() {
 
@@ -100,9 +94,13 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		mapOverlays.add(strokesOverlay);
 		// mapOverlays.add(stationsOverlay);
 
+		Provider provider = new Provider(preferences, (ProgressBar) findViewById(R.id.progress), (ImageView) findViewById(R.id.error_indicator),
+				this);
+
+		timerTask = new TimerTask(this, provider);
+
 		onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
 
-		timerTask = new TimerTask();
 		onSharedPreferenceChanged(preferences, Preferences.PERIOD_KEY);
 
 		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
@@ -110,6 +108,10 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		getMapView().invalidate();
 	}
 
+	public void setStatusText(String statusText) {
+		status.setText(statusText);
+	}
+	
 	public boolean isDebugBuild() {
 		boolean dbg = false;
 		try {
@@ -121,53 +123,6 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		}
 		return dbg;
 	}
-
-	private Handler mHandler = new Handler();
-
-	private TimerTask timerTask;
-
-	class TimerTask implements Runnable {
-
-		int period = 60;
-		long nextUpdate = 0;
-		int stationPeriod = 10 * 60;
-		long nextStationUpdate = 0;
-
-		@Override
-		public void run() {
-			long now = Calendar.getInstance().getTimeInMillis() / 1000;
-
-			if (now >= nextUpdate) {
-				int updateStations = 0;
-
-				if (stationsOverlay != null && now >= nextStationUpdate) {
-					updateStations = 1;
-					nextStationUpdate = now + stationPeriod;
-				}
-				provider.updateData(minutes, updateStations);
-				nextUpdate = now + period;
-			}
-
-			Resources res = getResources();
-			String statusString = res.getQuantityString(R.plurals.stroke, numberOfStrokes, numberOfStrokes);
-			statusString += "/";
-			statusString += res.getQuantityString(R.plurals.minute, minutes, minutes);
-			statusString += String.format(", %d/%ds", nextUpdate - now, period);
-			statusText.setText(statusString);
-
-			// Schedule the next update in one second
-			mHandler.postDelayed(timerTask, 1000);
-		}
-
-		public void setPeriod(int period) {
-			this.period = period;
-		}
-
-		public void reset() {
-			nextUpdate = 0;
-			nextStationUpdate = 0;
-		}
-	};
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -198,7 +153,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	public void onResume() {
 		super.onResume();
 		Log.v(TAG, "onResume()");
-		mHandler.post(timerTask);
+		timerTask.onResume();
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		if (preferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false)) {
 			myLocationOverlay.enableMyLocation();
@@ -209,7 +164,8 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	public void onPause() {
 		super.onPause();
 		Log.v(TAG, "onPause()");
-		mHandler.removeCallbacks(timerTask);
+		timerTask.onPause();
+
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		if (preferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false)) {
 			myLocationOverlay.disableMyLocation();
@@ -223,7 +179,6 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 
 	@Override
 	public void onLocationChanged(Location location) {
-		presentLocation = location;
 		Log.v(TAG, "New location received");
 	}
 
