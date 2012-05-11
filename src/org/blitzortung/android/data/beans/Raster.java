@@ -37,4 +37,12 @@ public class Raster {
 		return String.format("Raster(%.4f, %.4f; %.4f, %.4f)", lon_start, lon_delta, lat_start, lat_delta);
 	}
 
+	public int getLongitudeIndex(double longitude) {
+		return (int)((longitude - lon_start) / lon_delta + 0.5);
+	}
+	
+	public int getLatitudeIndex(double latitude) {
+		return (int)((lat_start - latitude) / lat_delta + 0.5);
+	}
+
 }

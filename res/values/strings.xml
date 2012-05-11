@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
+
+    <string name="app_name">Blitzortung Viewer</string>
+    <string name="app_version">0.2</string>
+
+    <color name="Red">#f00</color>
+    <color name="Orange">#f80</color>
+
     <plurals name="stroke">
         <item quantity="zero">no stroke</item>
         <item quantity="one">1 stroke</item>
         <item quantity="other">%d strokes</item>
     </plurals>
-    
     <plurals name="minute">
         <item quantity="one">1 minutes</item>
         <item quantity="other">%d minutes</item>
     </plurals>
 
-    <string name="app_name">Blitzortung Viewer</string>
-    <string name="preferences">Preferences</string>
     <string name="info">Information</string>
     <string name="info_text">Project home:\n\thttps://github.com/wuan/bo-android\n\nVisualized lightning data is provided by the <b>Blitzortung.org</b> realtime lighning community project:\n\thttp://blitzortung.org/\n</string>
     <string name="copyright">© 2012, Andreas Würl\nblitzortung@tryb.de</string>
+    <string name="preferences">Preferences</string>
+    <string name="user_settings">User settings</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
-    <string name="user_settings">User settings</string>
     <string name="map_settings">Map settings</string>
-    <string name="data_settings">Data transmission</string>
     <string name="map_mode">Map mode</string>
-    <string name="show_location">Show own location</string>
-    
+
     <string-array name="map_modes">
         <item>Satellite</item>
         <item>Streetmap</item>
@@ -32,6 +34,42 @@
     <string-array name="map_mode_values">
         <item>SATELLITE</item>
         <item>STREETMAP</item>
+    </string-array>
+
+    <string name="show_location">Show own location</string>
+    <string name="data_settings">Data transmission</string>
+    <string name="query_period">Query period</string>
+
+    <string-array name="query_periods">
+        <item>20 s</item>
+        <item>30 s</item>
+        <item>1 min</item>
+        <item>2 min</item>
+        <item>5 min</item>
+        <item>10 min</item>
+    </string-array>
+    <string-array name="query_period_values">
+        <item>20</item>
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+        <item>300</item>
+        <item>600</item>
+    </string-array>
+
+    <string name="raster_size">Raster size</string>
+
+    <string-array name="raster_sizes">
+        <item>10 km</item>
+        <item>25 km</item>
+        <item>50 km</item>
+        <item>100 km</item>
+    </string-array>
+    <string-array name="raster_size_values">
+        <item>10000</item>
+        <item>25000</item>
+        <item>50000</item>
+        <item>100000</item>
     </string-array>
 
     <string name="data_source">Datasource</string>
@@ -45,43 +83,25 @@
         <item>RPC</item>
     </string-array>
 
-    <color name="Red">#f00</color>
-    <color name="Orange">#f80</color>
+    <string name="alarm_settings">Alarm settings</string>
+    <string name="alarm_enabled">Alarm enabled</string>
+    <string name="background_query_period">Background query period</string>
 
-    <string name="query_period">Query period</string>
-    <string-array name="query_periods">
-        <item>20 s</item>
-        <item>30 s</item>
+    <string-array name="background_query_periods">
         <item>1 min</item>
         <item>2 min</item>
         <item>5 min</item>
         <item>10 min</item>
+        <item>15 min</item>
+        <item>15 min</item>
     </string-array>
-    
-    <string-array name="query_period_values">
-        <item>20</item>
-        <item>30</item>
+    <string-array name="background_query_period_values">
         <item>60</item>
         <item>120</item>
         <item>300</item>
         <item>600</item>
+        <item>900</item>
+        <item>1800</item>
     </string-array>
-    
-    <string name="raster_size">Raster size</string>
-    <string-array name="raster_sizes">
-        <item>5 km</item>
-        <item>10 km</item>
-        <item>25 km</item>
-        <item>50 km</item>
-        <item>100 km</item>
-    </string-array>
-    
-    <string-array name="raster_size_values">
-        <item>5000</item>
-        <item>10000</item>
-        <item>25000</item>
-        <item>50000</item>
-        <item>100000</item>
-    </string-array>
-    
+
 </resources>

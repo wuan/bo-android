@@ -40,7 +40,7 @@
             android:enabled="true"
             android:entries="@array/query_periods"
             android:entryValues="@array/query_period_values"
-            android:key="period"
+            android:key="query_period"
             android:persistent="true"
             android:selectable="true"
             android:title="@string/query_period" />
@@ -53,6 +53,24 @@
             android:persistent="true"
             android:selectable="true"
             android:title="@string/raster_size" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/alarm_settings" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:enabled="true"
+            android:key="alarm_enabled"
+            android:selectable="true"
+            android:title="@string/alarm_enabled" />
+
+        <ListPreference
+            android:defaultValue="300"
+            android:enabled="true"
+            android:entries="@array/background_query_periods"
+            android:entryValues="@array/background_query_period_values"
+            android:key="background_query_period"
+            android:persistent="true"
+            android:selectable="true"
+            android:title="@string/background_query_period" />
     </PreferenceCategory>
 
 </PreferenceScreen>

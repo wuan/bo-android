@@ -32,9 +32,45 @@ public class Provider implements OnSharedPreferenceChangeListener {
 
 	private ProgressBar progress;
 	private ImageView error_indicator;
+	
+	private int minutes = 60;
 
+	private int rasterSize;
+	
 	private DataListener listener;
 
+	public static class UpdateTargets {
+		
+		boolean updateStrokes;
+		
+		boolean updateStations;
+		
+		public UpdateTargets() {
+			updateStrokes = false;
+			updateStations = false;
+		}
+		
+		public void addStrokes() {
+			updateStrokes = true;
+		}
+		
+		public boolean updateStrokes() {
+			return updateStrokes;
+		}
+		
+		public void addStations() {
+			updateStations = true;
+		}
+		
+		public boolean updateStations() {
+			return updateStations;
+		}
+
+		public boolean anyUpdateRequested() {
+			return updateStrokes || updateStations;
+		}
+	};
+	
 	public Provider(SharedPreferences sharedPreferences, ProgressBar progress, ImageView error_indicator, DataListener listener) {
 		dataProvider = new JsonRpcProvider();
 		this.progress = progress;
@@ -103,11 +139,11 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		}
 	}
 
-	public void updateData(int minutes, int updateStations) {
+	public void updateData(UpdateTargets updateTargets) {
 		progress.setVisibility(View.VISIBLE);
 		progress.setProgress(0);
 
-		new FetchDataTask().execute(minutes, rasterSize);
+		new FetchDataTask().execute(minutes, rasterSize, updateTargets.updateStations() ? 1 : 0);
 	}
 
 	@Override
@@ -126,8 +162,10 @@ public class Provider implements OnSharedPreferenceChangeListener {
 			dataProvider.setCredentials(username, password);
 		}
 	}
-
-	int rasterSize;
+	
+	public int getMinutes() {
+		return minutes;
+	}
 	
 	/*public void toggleRaster() {
 		raster = !raster;

@@ -44,17 +44,16 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	StrokesOverlay strokesOverlay;
 
 	StationsOverlay stationsOverlay;
-	
-	private TimerTask timerTask;
 
+	private TimerTask timerTask;
+	
+	private AlarmManager alarmManager;
+
+	private Provider provider;
 
 	// Button rasterPointsSwitch;
 
 	MyLocationOverlay myLocationOverlay;
-
-	int numberOfStrokes = 0;
-
-	int minutes = 60;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -73,7 +72,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		preferences.registerOnSharedPreferenceChangeListener(this);
-		
+
 		strokesOverlay = new StrokesOverlay(this, new StrokeColorHandler(preferences));
 
 		// stationsOverlay = new StationsOverlay(this, new
@@ -94,15 +93,14 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		mapOverlays.add(strokesOverlay);
 		// mapOverlays.add(stationsOverlay);
 
-		Provider provider = new Provider(preferences, (ProgressBar) findViewById(R.id.progress), (ImageView) findViewById(R.id.error_indicator),
+		provider = new Provider(preferences, (ProgressBar) findViewById(R.id.progress), (ImageView) findViewById(R.id.error_indicator),
 				this);
 
-		timerTask = new TimerTask(this, provider);
+		timerTask = new TimerTask(this, preferences, provider);
+		
+		alarmManager = new AlarmManager(this, preferences, timerTask);
 
 		onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
-
-		onSharedPreferenceChanged(preferences, Preferences.PERIOD_KEY);
-
 		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
 
 		getMapView().invalidate();
@@ -111,7 +109,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	public void setStatusText(String statusText) {
 		status.setText(statusText);
 	}
-	
+
 	public boolean isDebugBuild() {
 		boolean dbg = false;
 		try {
@@ -154,6 +152,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		super.onResume();
 		Log.v(TAG, "onResume()");
 		timerTask.onResume();
+
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		if (preferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false)) {
 			myLocationOverlay.enableMyLocation();
@@ -204,13 +203,17 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	public void onDataUpdate(DataResult result) {
 		if (result.containsStrokes()) {
 			Calendar expireTime = new GregorianCalendar();
-			expireTime.add(Calendar.MINUTE, -minutes);
+
+			expireTime.add(Calendar.MINUTE, -provider.getMinutes());
 
 			strokesOverlay.setRaster(result.getRaster());
 			strokesOverlay.addAndExpireStrokes(result.getStrokes(), expireTime.getTime());
 
-			numberOfStrokes = strokesOverlay.getTotalNumberOfStrokes();
+			timerTask.setNumberOfStrokes(strokesOverlay.getTotalNumberOfStrokes());
 
+			if (alarmManager.isAlarmEnabled()) {
+				alarmManager.check(result);
+			}
 			strokesOverlay.refresh();
 		}
 
@@ -225,7 +228,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	@Override
 	public void onDataReset() {
 		strokesOverlay.clear();
-		timerTask.reset();
+		timerTask.restart();
 		strokesOverlay.refresh();
 		if (stationsOverlay != null) {
 			stationsOverlay.clear();
@@ -256,12 +259,8 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 			if (stationsOverlay != null) {
 				stationsOverlay.refresh();
 			}
-		} else if (key.equals(Preferences.PERIOD_KEY)) {
-			int period = Integer.parseInt(sharedPreferences.getString(Preferences.PERIOD_KEY, "60"));
-			timerTask.setPeriod(period);
-			timerTask.reset();
 		} else if (key.equals(Preferences.RASTER_SIZE_KEY)) {
-			timerTask.reset();
+			timerTask.restart();
 		} else if (key.equals(Preferences.SHOW_LOCATION_KEY)) {
 			boolean showLocation = sharedPreferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false);
 			List<Overlay> mapOverlays = getMapView().getOverlays();
