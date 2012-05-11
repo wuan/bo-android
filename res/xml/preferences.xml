@@ -15,7 +15,7 @@
             android:title="@string/password" />
     </PreferenceCategory>
     -->
-    
+
     <PreferenceCategory android:title="@string/map_settings" >
         <ListPreference
             android:defaultValue="SATELLITE"
@@ -26,8 +26,14 @@
             android:persistent="true"
             android:selectable="true"
             android:title="@string/map_mode" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:enabled="true"
+            android:key="location"
+            android:selectable="true"
+            android:title="@string/show_location" />
     </PreferenceCategory>
-    
     <PreferenceCategory android:title="@string/data_settings" >
         <ListPreference
             android:defaultValue="60"

@@ -24,6 +24,7 @@
     <string name="map_settings">Karteneinstellungen</string>
     <string name="data_settings">Datenübertragung</string>
     <string name="map_mode">Kartenmodus</string>
+    <string name="show_location">Ort anzeigen</string>
 
     <string-array name="map_modes">
         <item>Satellit</item>

@@ -19,6 +19,7 @@ import android.graphics.drawable.shapes.Shape;
 import android.text.format.DateFormat;
 
 import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapView;
 import com.google.android.maps.Projection;
 
 public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
@@ -63,21 +64,21 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 	}
 
 	public void addAndExpireStrokes(List<AbstractStroke> strokes, Date expireTime) {
-		
+
 		Collections.reverse(items);
-		
+
 		if (isRaster()) {
 			items.clear();
 		}
-		
+
 		for (AbstractStroke stroke : strokes) {
 			items.add(new StrokeOverlayItem(stroke));
 		}
-		
+
 		expireStrokes(expireTime);
-		
+
 		Collections.reverse(items);
-		
+
 		setLastFocusedIndex(-1);
 		populate();
 	}
@@ -97,7 +98,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 			items.removeAll(toRemove);
 		}
 	}
-	
+
 	public void clear() {
 		clearPopup();
 		items.clear();
@@ -139,34 +140,37 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 	private Drawable getDrawable(GeoPoint point, int section, int color) {
 
 		Shape shape = null;
-		
+
 		Projection projection = this.getActivity().getMapView().getProjection();
-		
+
 		if (isRaster()) {
-			float lon_delta = raster.getLongitudeDelta()/2.0f * 1e6f;
-			float lat_delta = raster.getLatitudeDelta()/2.0f * 1e6f;
+			float lon_delta = raster.getLongitudeDelta() / 2.0f * 1e6f;
+			float lat_delta = raster.getLatitudeDelta() / 2.0f * 1e6f;
 			Point center = projection.toPixels(point, null);
-			Point topRight = projection.toPixels(new GeoPoint((int) (point.getLatitudeE6() + lat_delta), (int) (point.getLongitudeE6() + lon_delta)), null);
-			Point bottomLeft = projection.toPixels(new GeoPoint((int) (point.getLatitudeE6() - lat_delta), (int) (point.getLongitudeE6() - lon_delta)), null);
-			//Log.v("StrokesOverlay", "" + center + " " + topRight + " " + bottomLeft + " raster: " + raster + " point: " + point);
+			Point topRight = projection.toPixels(new GeoPoint((int) (point.getLatitudeE6() + lat_delta),
+					(int) (point.getLongitudeE6() + lon_delta)), null);
+			Point bottomLeft = projection.toPixels(new GeoPoint((int) (point.getLatitudeE6() - lat_delta),
+					(int) (point.getLongitudeE6() - lon_delta)), null);
+			// Log.v("StrokesOverlay", "" + center + " " + topRight + " " +
+			// bottomLeft + " raster: " + raster + " point: " + point);
 			shape = new RasterShape(center, topRight, bottomLeft, color);
 		} else {
-			  shape = new StrokeShape(zoomLevel + 1, color);
-			
+			shape = new StrokeShape(zoomLevel + 1, color);
+
 		}
 		return new ShapeDrawable(shape);
 	}
 
 	Raster raster = null;
-	
+
 	public void setRaster(Raster raster) {
 		this.raster = raster;
 	}
-	
+
 	public boolean isRaster() {
 		return raster != null;
 	}
-	
+
 	@Override
 	protected boolean onTap(int index) {
 
@@ -174,7 +178,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 			StrokeOverlayItem item = items.get(index);
 			if (item != null && item.getPoint() != null && item.getTimestamp() != null) {
 				String result = (String) DateFormat.format("kk:mm:ss", item.getTimestamp());
-				
+
 				if (item.getMultitude() > 1) {
 					result += String.format(", #%d", item.getMultitude());
 				}
@@ -182,20 +186,31 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 				return true;
 			}
 		}
-		
+
 		clearPopup();
 
 		return false;
 	}
 
+	@Override
+	public boolean onTap(GeoPoint arg0, MapView arg1) {
+		boolean eventHandled = super.onTap(arg0, arg1);
+
+		if (!eventHandled) {
+			return clearPopup();
+		}
+		
+		return false;
+	}
+
 	public int getTotalNumberOfStrokes() {
-		
+
 		int totalNumberOfStrokes = 0;
-		
+
 		for (StrokeOverlayItem item : items) {
 			totalNumberOfStrokes += item.getMultitude();
 		}
-		
+
 		return totalNumberOfStrokes;
 	}
 }

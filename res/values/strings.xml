@@ -23,7 +23,8 @@
     <string name="map_settings">Map settings</string>
     <string name="data_settings">Data transmission</string>
     <string name="map_mode">Map mode</string>
-
+    <string name="show_location">Show own location</string>
+    
     <string-array name="map_modes">
         <item>Satellite</item>
         <item>Streetmap</item>

@@ -10,7 +10,9 @@ public class Preferences extends PreferenceActivity {
 	public static final String RASTER_SIZE_KEY = "raster_size";
 	final static String MAP_TYPE_KEY = "map_mode";
 	final static String PERIOD_KEY = "period";
+	final static String SHOW_LOCATION_KEY = "location";
 
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);

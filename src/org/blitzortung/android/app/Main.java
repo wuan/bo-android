@@ -34,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
 public class Main extends OwnMapActivity implements LocationListener, DataListener, OnSharedPreferenceChangeListener {
@@ -45,17 +46,17 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	TextView statusText;
 
 	Provider provider;
-	
-	StrokesOverlay strokesOverlay;
-	
-	StationsOverlay stationsOverlay;
-	
-	//Button rasterPointsSwitch;
 
-	//MyLocationOverlay myLocationOverlay;
-	
+	StrokesOverlay strokesOverlay;
+
+	StationsOverlay stationsOverlay;
+
+	// Button rasterPointsSwitch;
+
+	MyLocationOverlay myLocationOverlay;
+
 	int numberOfStrokes = 0;
-	
+
 	int minutes = 60;
 
 	/** Called when the activity is first created. */
@@ -69,17 +70,17 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		preferences.registerOnSharedPreferenceChangeListener(this);
 
 		setMapView((OwnMapView) findViewById(R.id.mapview));
-		
+
 		getMapView().setBuiltInZoomControls(true);
-		
-		//myLocationOverlay = new MyLocationOverlay(getBaseContext(), getMapView());
-		//Log.v(TAG, "my location enabled: " + myLocationOverlay.enableMyLocation());
+
+		myLocationOverlay = new MyLocationOverlay(getBaseContext(), getMapView());
 
 		statusText = (TextView) findViewById(R.id.status);
-		
+
 		strokesOverlay = new StrokesOverlay(this, new StrokeColorHandler(preferences));
-		
-//		stationsOverlay = new StationsOverlay(this, new StationColorHandler(preferences));
+
+		// stationsOverlay = new StationsOverlay(this, new
+		// StationColorHandler(preferences));
 
 		provider = new Provider(preferences, (ProgressBar) findViewById(R.id.progress), (ImageView) findViewById(R.id.error_indicator),
 				this);
@@ -89,53 +90,37 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 			@Override
 			public void onZoom(int zoomLevel) {
 				strokesOverlay.updateZoomLevel(zoomLevel);
-//				stationsOverlay.updateShapeSize(zoomLevel);
+				// stationsOverlay.updateShapeSize(zoomLevel);
 			}
 
 		});
 
 		List<Overlay> mapOverlays = getMapView().getOverlays();
-		
+
 		mapOverlays.add(strokesOverlay);
-	//	mapOverlays.add(stationsOverlay);
-		//mapOverlays.add(myLocationOverlay);
+		// mapOverlays.add(stationsOverlay);
 
 		onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
-		
-		/*
-		 rasterPointsSwitch = (Button) findViewById(R.id.clickBtn);
-		
-		
-		rasterPointsSwitch.getBackground().setAlpha(150);
-		
-		rasterPointsSwitch.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                provider.toggleRaster();
-                strokesOverlay.clear();
-                timerTask.reset();
-            }
-        });
-        */
 
 		timerTask = new TimerTask();
 		onSharedPreferenceChanged(preferences, Preferences.PERIOD_KEY);
-		
+
+		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
+
 		getMapView().invalidate();
 	}
-	
-    public boolean isDebugBuild() 
-    {
-        boolean dbg = false;
-        try {
-            PackageManager pm = getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(getPackageName(), 0);
 
-            dbg = ((pi.applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0);
-        } catch (Exception e) {
-        }
-        return dbg;
-    }
+	public boolean isDebugBuild() {
+		boolean dbg = false;
+		try {
+			PackageManager pm = getPackageManager();
+			PackageInfo pi = pm.getPackageInfo(getPackageName(), 0);
 
+			dbg = ((pi.applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0);
+		} catch (Exception e) {
+		}
+		return dbg;
+	}
 
 	private Handler mHandler = new Handler();
 
@@ -154,7 +139,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 
 			if (now >= nextUpdate) {
 				int updateStations = 0;
-				
+
 				if (stationsOverlay != null && now >= nextStationUpdate) {
 					updateStations = 1;
 					nextStationUpdate = now + stationPeriod;
@@ -214,6 +199,10 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		super.onResume();
 		Log.v(TAG, "onResume()");
 		mHandler.post(timerTask);
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		if (preferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false)) {
+			myLocationOverlay.enableMyLocation();
+		}
 	}
 
 	@Override
@@ -221,6 +210,10 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		super.onPause();
 		Log.v(TAG, "onPause()");
 		mHandler.removeCallbacks(timerTask);
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+		if (preferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false)) {
+			myLocationOverlay.disableMyLocation();
+		}
 	}
 
 	@Override
@@ -257,7 +250,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		if (result.containsStrokes()) {
 			Calendar expireTime = new GregorianCalendar();
 			expireTime.add(Calendar.MINUTE, -minutes);
-			
+
 			strokesOverlay.setRaster(result.getRaster());
 			strokesOverlay.addAndExpireStrokes(result.getStrokes(), expireTime.getTime());
 
@@ -270,7 +263,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 			stationsOverlay.setStations(result.getStations());
 			stationsOverlay.refresh();
 		}
-		
+
 		getMapView().invalidate();
 	}
 
@@ -314,6 +307,17 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 			timerTask.reset();
 		} else if (key.equals(Preferences.RASTER_SIZE_KEY)) {
 			timerTask.reset();
+		} else if (key.equals(Preferences.SHOW_LOCATION_KEY)) {
+			boolean showLocation = sharedPreferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false);
+			List<Overlay> mapOverlays = getMapView().getOverlays();
+
+			if (showLocation) {
+				myLocationOverlay.enableMyLocation();
+				mapOverlays.add(myLocationOverlay);
+			} else {
+				mapOverlays.remove(myLocationOverlay);
+				myLocationOverlay.disableMyLocation();
+			}
 		}
 	}
 

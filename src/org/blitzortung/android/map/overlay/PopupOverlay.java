@@ -16,9 +16,12 @@ import com.google.android.maps.OverlayItem;
 public abstract class PopupOverlay<Item extends OverlayItem> extends AbstractOverlay<Item> {
 
 	public PopupOverlay(OwnMapActivity activity, Drawable defaultMarker) {
-		super(activity, defaultMarker);
+	  super(activity, defaultMarker);
+	  popupShown = false;
 	}
 
+	boolean popupShown;
+	
 	protected void showPopup(GeoPoint location, String text) {
 
 		OwnMapView map = getActivity().getMapView();
@@ -36,12 +39,19 @@ public abstract class PopupOverlay<Item extends OverlayItem> extends AbstractOve
 				location, 0, 0, MapView.LayoutParams.BOTTOM_CENTER);
 
 		map.addView(popUp, mapParams);
+		
+		popupShown = true;
 	}
 
-	protected void clearPopup() {
+	protected boolean clearPopup() {
 		OwnMapView map = getActivity().getMapView();
 		View popUp = getActivity().getPopup();
-
+		
 		map.removeView(popUp);
+		
+		boolean popupShownStatus = popupShown;
+		popupShown = false;
+		return popupShownStatus;
 	}
+	
 }
