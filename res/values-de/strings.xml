@@ -28,15 +28,15 @@
     <string name="map_mode">Kartenmodus</string>
 
     <string-array name="map_modes">
-        <item>Satellit</item>
-        <item>Karte</item>
+        <item>Satellitenbild</item>
+        <item>Landkarte</item>
     </string-array>
     <string-array name="map_mode_values">
         <item>SATELLITE</item>
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_location">Ort anzeigen</string>
+    <string name="show_location">Standort anzeigen</string>
     <string name="data_settings">Datenübertragung</string>
     <string name="query_period">Abfrageperiode</string>
 
