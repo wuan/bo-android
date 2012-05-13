@@ -37,12 +37,13 @@ import android.widget.TextView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
-public class Main extends OwnMapActivity implements LocationListener, DataListener, OnSharedPreferenceChangeListener, AlarmManager.AlarmListener {
+public class Main extends OwnMapActivity implements LocationListener, DataListener, OnSharedPreferenceChangeListener,
+		AlarmManager.AlarmListener {
 
 	private static final String TAG = "Main";
 
 	TextView status;
-	
+
 	TextView warning;
 
 	StrokesOverlay strokesOverlay;
@@ -50,7 +51,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	StationsOverlay stationsOverlay;
 
 	private TimerTask timerTask;
-	
+
 	private AlarmManager alarmManager;
 
 	private Provider provider;
@@ -101,7 +102,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 				this);
 
 		timerTask = new TimerTask(this, preferences, provider);
-		
+
 		warning = (TextView) findViewById(R.id.warning);
 		alarmManager = new AlarmManager(this, preferences, timerTask);
 		alarmManager.setAlarmListener(this);
@@ -281,31 +282,38 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		}
 	}
 
-	static String[] directionStrings = {"S", "SW", "W", "NW", "N", "NO", "O", "SO"};
-	
+	static String[] directionStrings = { "S", "SW", "W", "NW", "N", "NO", "O", "SO" };
+
 	private String getDirectionString(double bearing) {
 		int directionCount = directionStrings.length;
 		double bearingDivider = 360 / directionCount;
-		
-		int direction = ((int)(Math.round(bearing / bearingDivider)) + directionCount/2 ) % directionCount;
+
+		int direction = ((int) (Math.round(bearing / bearingDivider)) + directionCount / 2) % directionCount;
 		return directionStrings[direction];
 	}
-	
+
 	@Override
 	public void onAlarmResult(double distance, double bearing) {
 		int textColorResource;
-		if (distance > 100.0) {
-			textColorResource = R.color.Green;
-		} else if (distance > 50.0) {
-			textColorResource = R.color.Yellow;
+		String warningText;
+		if (distance >= 0.0) {
+			if (distance > 100.0) {
+				textColorResource = R.color.Green;
+			} else if (distance > 50.0) {
+				textColorResource = R.color.Yellow;
+			} else {
+				textColorResource = R.color.Red;
+				Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+				vibrator.vibrate(40);
+			}
+			warningText = String.format("%.0fkm %s", distance / 1000, getDirectionString(bearing));
 		} else {
-			textColorResource = R.color.Red;
-			Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-			vibrator.vibrate(40);
+			textColorResource = R.color.Green;
+			warningText = "-";
 		}
 		warning.setTextColor(getResources().getColor(textColorResource));
-		
-		warning.setText(String.format("%.0fkm %s", distance/1000, getDirectionString(bearing)));
+
+		warning.setText(warningText);
 	}
 
 	@Override
