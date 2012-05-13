@@ -14,6 +14,7 @@ import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -23,6 +24,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -35,11 +37,13 @@ import android.widget.TextView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
-public class Main extends OwnMapActivity implements LocationListener, DataListener, OnSharedPreferenceChangeListener {
+public class Main extends OwnMapActivity implements LocationListener, DataListener, OnSharedPreferenceChangeListener, AlarmManager.AlarmListener {
 
 	private static final String TAG = "Main";
 
 	TextView status;
+	
+	TextView warning;
 
 	StrokesOverlay strokesOverlay;
 
@@ -98,7 +102,9 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 
 		timerTask = new TimerTask(this, preferences, provider);
 		
+		warning = (TextView) findViewById(R.id.warning);
 		alarmManager = new AlarmManager(this, preferences, timerTask);
+		alarmManager.setAlarmListener(this);
 
 		onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
 		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
@@ -273,6 +279,38 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 				myLocationOverlay.disableMyLocation();
 			}
 		}
+	}
+
+	static String[] directionStrings = {"S", "SW", "W", "NW", "N", "NO", "O", "SO"};
+	
+	private String getDirectionString(double bearing) {
+		int directionCount = directionStrings.length;
+		double bearingDivider = 360 / directionCount;
+		
+		int direction = ((int)(Math.round(bearing / bearingDivider)) + directionCount/2 ) % directionCount;
+		return directionStrings[direction];
+	}
+	
+	@Override
+	public void onAlarmResult(double distance, double bearing) {
+		int textColorResource;
+		if (distance > 100.0) {
+			textColorResource = R.color.Green;
+		} else if (distance > 50.0) {
+			textColorResource = R.color.Yellow;
+		} else {
+			textColorResource = R.color.Red;
+			Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+			vibrator.vibrate(40);
+		}
+		warning.setTextColor(getResources().getColor(textColorResource));
+		
+		warning.setText(String.format("%.0fkm %s", distance/1000, getDirectionString(bearing)));
+	}
+
+	@Override
+	public void onAlarmClear() {
+		warning.setText("");
 	}
 
 }

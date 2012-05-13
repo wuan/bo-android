@@ -14,9 +14,15 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.util.Log;
 
 public class AlarmManager implements OnSharedPreferenceChangeListener, LocationListener {
 
+	interface AlarmListener {
+		void onAlarmResult(double distance, double bearing);
+		void onAlarmClear();
+	}
+	
 	private TimerTask timerTask;
 
 	private LocationManager locationManager;
@@ -26,12 +32,14 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 	private Location location;
 	
 	boolean alarmEnabled;
+	
+	AlarmListener alarmListener;
 
 	public AlarmManager(Main main, SharedPreferences preferences, TimerTask timerTask) {
 		this.timerTask = timerTask;
+		alarmListener = null;
 
 		locationManager = (LocationManager) main.getSystemService(Context.LOCATION_SERVICE);
-		vibrator = (Vibrator) main.getSystemService(Context.VIBRATOR_SERVICE);
 
 		preferences.registerOnSharedPreferenceChangeListener(this);
 		onSharedPreferenceChanged(preferences, Preferences.ALARM_ENABLED_KEY);
@@ -46,6 +54,9 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 				locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
 			} else {
 				locationManager.removeUpdates(this);
+				if (alarmListener != null) {
+					alarmListener.onAlarmClear();
+				}
 			}
 			//Log.v("AlarmManager", "alarm enabled: " + alarmEnabled);
 			timerTask.setAlarmEnabled(alarmEnabled);
@@ -80,6 +91,10 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 		return true;
 	}
 
+	public void setAlarmListener(AlarmListener alarmListener) {
+		this.alarmListener = alarmListener;
+	}
+	
 	public void check(DataResult result) {
 		if (alarmEnabled && location != null) {
 			Raster raster = result.getRaster();
@@ -90,18 +105,29 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 			int locLat = raster.getLatitudeIndex(location.getLatitude());
 			
 			double minDistance = Double.POSITIVE_INFINITY;
+			int minDistanceIndex = 0;
+			int index = 0;
 			for (AbstractStroke stroke : strokes) {
 				int diffLon = raster.getLongitudeIndex(stroke.getLongitude()) - locLon;
 				int diffLat = locLat - raster.getLatitudeIndex(stroke.getLatitude());
 				
 				double distance = Math.sqrt(diffLon * diffLon + diffLat * diffLat);
 				minDistance = Math.min(distance, minDistance);
+				if (distance == minDistance) {
+					minDistanceIndex = index;
+				}
+				index++;
 			}
 			
-			//Log.v("AlarmManager", "minDistance = " + minDistance);
-			
-			if (minDistance < 4) {
-				vibrator.vibrate(40);
+			Location closestStrokeLocation = new Location("");
+			AbstractStroke closestStroke = strokes.get(minDistanceIndex);
+			closestStrokeLocation.setLongitude(closestStroke.getLongitude());
+			closestStrokeLocation.setLatitude(closestStroke.getLatitude());
+
+			//Log.v("AlarmManager", "minDistance = " + location.distanceTo(closestStrokeLocation) + ", bearing: " + location.bearingTo(closestStrokeLocation));
+
+			if (alarmListener != null) {
+				alarmListener.onAlarmResult(location.distanceTo(closestStrokeLocation), location.bearingTo(closestStrokeLocation));
 			}
 		}
 	}
