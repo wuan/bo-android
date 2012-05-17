@@ -17,6 +17,9 @@
     <string name="info">Informationen</string>
     <string name="info_text">Projektseite:\n\thttps://github.com/wuan/bo-android\n\nDiese Software visualisiert Blitzdaten des Community-Projekts <b>blitzortung.org</b>. Weitere Informationen darüber finden Sie unter:\n\thttp://blitzortung.org\n</string>
     <string name="copyright">© 2012, Andreas Würl\nblitzortung@tryb.de</string>
+    <string name="legend">Legende</string>
+    <string name="total_time">Gesamtzeit</string>
+    <string name="minute">Minute</string>
     <string name="preferences">Einstellungen</string>
     <string name="user_settings">Benutzereinstellungen</string>
     <string name="username">Benutzername</string>
@@ -100,4 +103,5 @@
         <item>900</item>
         <item>1800</item>
     </string-array>
+
 </resources>

@@ -9,6 +9,7 @@ import java.util.List;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Raster;
 import org.blitzortung.android.map.OwnMapActivity;
+import org.blitzortung.android.map.overlay.color.ColorHandler;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
 import android.graphics.Canvas;
@@ -114,6 +115,14 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		refresh();
 	}
 
+	public int getMinutesPerColor() {
+		return 10;
+	}
+	
+	public ColorHandler getColorHandler() {
+		return colorHandler;
+	}
+	
 	public void refresh() {
 		Date now = new GregorianCalendar().getTime();
 
@@ -124,7 +133,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		int colors[] = colorHandler.getColors();
 
 		for (StrokeOverlayItem item : items) {
-			int section = (int) (now.getTime() - item.getTimestamp().getTime()) / 1000 / 60 / 10;
+			int section = (int) (now.getTime() - item.getTimestamp().getTime()) / 1000 / 60 / getMinutesPerColor();
 
 			if (section >= colors.length)
 				section = colors.length - 1;

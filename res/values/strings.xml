@@ -23,6 +23,9 @@
     <string name="info">Information</string>
     <string name="info_text">Project home:\n\thttps://github.com/wuan/bo-android\n\nVisualized lightning data is provided by the <b>Blitzortung.org</b> realtime lighning community project:\n\thttp://blitzortung.org/\n</string>
     <string name="copyright">© 2012, Andreas Würl\nblitzortung@tryb.de</string>
+    <string name="legend">Legend</string>
+    <string name="total_time">total time</string>
+    <string name="minute">minute</string>
     <string name="preferences">Preferences</string>
     <string name="user_settings">User settings</string>
     <string name="username">Username</string>

@@ -21,4 +21,5 @@ public class StrokeColorHandler extends ColorHandler {
 	public int[] getColorsOnMap() {
 		return mapColors;
 	}
+	
 }

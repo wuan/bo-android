@@ -143,7 +143,11 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		// Handle all of the possible menu actions.
 		switch (item.getItemId()) {
 		case R.id.menu_info:
-			showDialog(DIALOG_INFO_ID);
+			showDialog(R.id.info_dialog);
+			break;
+			
+		case R.id.menu_legend:
+			showDialog(R.id.legend_dialog);
 			break;
 
 		case R.id.menu_preferences:
@@ -243,14 +247,17 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 		}
 	}
 
-	static final int DIALOG_INFO_ID = 0;
-
 	protected Dialog onCreateDialog(int id) {
 		Dialog dialog;
 		switch (id) {
-		case DIALOG_INFO_ID:
+		case R.id.info_dialog:
 			dialog = new InfoDialog(this);
 			break;
+			
+		case R.id.legend_dialog:
+			dialog = new LegendDialog(this, strokesOverlay);
+			break;
+			
 		default:
 			dialog = null;
 		}
