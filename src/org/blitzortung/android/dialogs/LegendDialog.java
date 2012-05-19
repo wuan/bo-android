@@ -1,5 +1,9 @@
-package org.blitzortung.android.app;
+package org.blitzortung.android.dialogs;
 
+import org.blitzortung.android.app.R;
+import org.blitzortung.android.app.R.layout;
+import org.blitzortung.android.app.R.plurals;
+import org.blitzortung.android.app.R.string;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 
 import android.app.AlertDialog;
@@ -27,14 +31,19 @@ public class LegendDialog extends AlertDialog {
 		label.setText(context.getString(R.string.total_time) + " "
 				+ context.getResources().getQuantityString(R.plurals.minute, totalMinutes, totalMinutes) + ":");
 		ll.addView(label);
+		
+		ll.addView(new TextView(context.getApplicationContext()));
 
-		int endMinute = totalMinutes;
+		int endMinute = minutesPerColor;
 		for (int color : colors) {
 			TextView textView = new TextView(context.getApplicationContext());
-			textView.setText(String.format("\t" + context.getString(R.string.minute) + " %d - %d", endMinute - minutesPerColor, endMinute - 1));
+			textView.setText(String.format(
+					  context.getString(R.string.activity) + " "
+					+ context.getString(R.string.during) + " "
+					+ context.getResources().getQuantityString(R.plurals.minute, endMinute, endMinute)));
 			textView.setTextColor(color);
 			ll.addView(textView);
-			endMinute -= minutesPerColor;
+			endMinute += minutesPerColor;
 		}
 
 		setView(menu);

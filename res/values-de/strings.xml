@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Blitzortung Viewer</string>
-    <string name="app_version">0.2</string>
+    <string name="app_version">0.3</string>
 
     <plurals name="stroke">
         <item quantity="zero">kein Blitz</item>
@@ -19,7 +19,10 @@
     <string name="copyright">© 2012, Andreas Würl\nblitzortung@tryb.de</string>
     <string name="legend">Legende</string>
     <string name="total_time">Gesamtzeit</string>
+    <string name="activity">Aktivität</string>
+    <string name="during">in den vergangenen</string>
     <string name="minute">Minute</string>
+    <string name="alarms">Warnungen</string>
     <string name="preferences">Einstellungen</string>
     <string name="user_settings">Benutzereinstellungen</string>
     <string name="username">Benutzername</string>

@@ -9,7 +9,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
 import android.os.Handler;
 
-class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
+public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 	private int period;
 

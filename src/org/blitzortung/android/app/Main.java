@@ -4,9 +4,14 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.blitzortung.android.alarm.AlarmManager;
+import org.blitzortung.android.alarm.AlarmStatus;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Provider;
 import org.blitzortung.android.data.provider.DataResult;
+import org.blitzortung.android.dialogs.AlarmDialog;
+import org.blitzortung.android.dialogs.InfoDialog;
+import org.blitzortung.android.dialogs.LegendDialog;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.overlay.StationsOverlay;
@@ -105,7 +110,7 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 
 		warning = (TextView) findViewById(R.id.warning);
 		alarmManager = new AlarmManager(this, preferences, timerTask);
-		alarmManager.setAlarmListener(this);
+		alarmManager.addAlarmListener(this);
 
 		onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
 		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
@@ -148,6 +153,10 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 			
 		case R.id.menu_legend:
 			showDialog(R.id.legend_dialog);
+			break;
+			
+		case R.id.menu_alarms:
+			showDialog(R.id.alarm_dialog);
 			break;
 
 		case R.id.menu_preferences:
@@ -258,6 +267,10 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 			dialog = new LegendDialog(this, strokesOverlay);
 			break;
 			
+		case R.id.alarm_dialog:
+			dialog = new AlarmDialog(this, alarmManager, strokesOverlay.getColorHandler(), strokesOverlay.getMinutesPerColor());
+			break;
+			
 		default:
 			dialog = null;
 		}
@@ -300,9 +313,14 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	}
 
 	@Override
-	public void onAlarmResult(double distance, double bearing) {
+	public void onAlarmResult(AlarmStatus alarmStatus) {
 		int textColorResource;
 		String warningText;
+		
+		int alarmSector = alarmStatus.getSectorWithClosestStroke();
+		double distance = alarmStatus.getClosestStrokeDistance(alarmSector);
+		double bearing = alarmStatus.getSectorBearing(alarmSector);
+		
 		if (distance >= 0.0) {
 			if (distance > 100.0) {
 				textColorResource = R.color.Green;

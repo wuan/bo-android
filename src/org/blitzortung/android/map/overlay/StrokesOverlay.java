@@ -124,22 +124,17 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 	}
 	
 	public void refresh() {
-		Date now = new GregorianCalendar().getTime();
+		long now = new GregorianCalendar().getTime().getTime();
 
 		int current_section = -1;
 
 		Drawable drawable = null;
 
-		int colors[] = colorHandler.getColors();
-
 		for (StrokeOverlayItem item : items) {
-			int section = (int) (now.getTime() - item.getTimestamp().getTime()) / 1000 / 60 / getMinutesPerColor();
-
-			if (section >= colors.length)
-				section = colors.length - 1;
+			int section = colorHandler.getColorSection(now, item.getTimestamp().getTime(), getMinutesPerColor());
 
 			if (isRaster() || current_section != section) {
-				drawable = getDrawable(item.getPoint(), section, colors[section]);
+				drawable = getDrawable(item.getPoint(), section, colorHandler.getColor(section));
 			}
 
 			item.setMarker(drawable);

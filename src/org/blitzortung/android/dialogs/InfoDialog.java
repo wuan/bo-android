@@ -1,4 +1,8 @@
-package org.blitzortung.android.app;
+package org.blitzortung.android.dialogs;
+
+import org.blitzortung.android.app.R;
+import org.blitzortung.android.app.R.layout;
+import org.blitzortung.android.app.R.string;
 
 import android.app.AlertDialog;
 import android.content.Context;

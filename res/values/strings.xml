@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Blitzortung Viewer</string>
-    <string name="app_version">0.2</string>
+    <string name="app_version">0.3</string>
 
     <color name="Red">#f00</color>
     <color name="Orange">#f80</color>
@@ -25,7 +25,10 @@
     <string name="copyright">© 2012, Andreas Würl\nblitzortung@tryb.de</string>
     <string name="legend">Legend</string>
     <string name="total_time">total time</string>
+    <string name="activity">activity</string>
+    <string name="during">during the past</string>
     <string name="minute">minute</string>
+    <string name="alarms">Alarms</string>
     <string name="preferences">Preferences</string>
     <string name="user_settings">User settings</string>
     <string name="username">Username</string>

@@ -1,9 +1,14 @@
-package org.blitzortung.android.app;
+package org.blitzortung.android.alarm;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.blitzortung.android.app.Main;
+import org.blitzortung.android.app.TimerTask;
+import org.blitzortung.android.app.Preferences;
+import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.Raster;
 import org.blitzortung.android.data.provider.DataResult;
 
 import android.content.Context;
@@ -17,8 +22,8 @@ import android.os.Vibrator;
 
 public class AlarmManager implements OnSharedPreferenceChangeListener, LocationListener {
 
-	interface AlarmListener {
-		void onAlarmResult(double distance, double bearing);
+	public interface AlarmListener {
+		void onAlarmResult(AlarmStatus alarmStatus);
 
 		void onAlarmClear();
 	}
@@ -33,11 +38,16 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 
 	boolean alarmEnabled;
 
-	AlarmListener alarmListener;
+	Set<AlarmListener> alarmListeners;
+
+	AlarmStatus alarmStatus;
 
 	public AlarmManager(Main main, SharedPreferences preferences, TimerTask timerTask) {
 		this.timerTask = timerTask;
-		alarmListener = null;
+
+		alarmStatus = new AlarmStatus();
+
+		alarmListeners = new HashSet<AlarmListener>();
 
 		locationManager = (LocationManager) main.getSystemService(Context.LOCATION_SERVICE);
 
@@ -54,7 +64,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 				locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
 			} else {
 				locationManager.removeUpdates(this);
-				if (alarmListener != null) {
+
+				for (AlarmListener alarmListener : alarmListeners) {
 					alarmListener.onAlarmClear();
 				}
 			}
@@ -91,51 +102,41 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 		return true;
 	}
 
-	public void setAlarmListener(AlarmListener alarmListener) {
-		this.alarmListener = alarmListener;
-	}
-
 	public void check(DataResult result) {
+
+		alarmStatus.reset();
+
 		if (alarmEnabled && location != null) {
-			Raster raster = result.getRaster();
 
 			List<AbstractStroke> strokes = result.getStrokes();
 
-			int locLon = raster.getLongitudeIndex(location.getLongitude());
-			int locLat = raster.getLatitudeIndex(location.getLatitude());
-
-			double minDistance = Double.POSITIVE_INFINITY;
-			int minDistanceIndex = -1;
-
-			int index = 0;
 			for (AbstractStroke stroke : strokes) {
-				int diffLon = raster.getLongitudeIndex(stroke.getLongitude()) - locLon;
-				int diffLat = locLat - raster.getLatitudeIndex(stroke.getLatitude());
+				int multiplicity = stroke.getCount();
 
-				double distance = Math.sqrt(diffLon * diffLon + diffLat * diffLat);
-				minDistance = Math.min(distance, minDistance);
-				if (distance == minDistance) {
-					minDistanceIndex = index;
-				}
-				index++;
+				Location strokeLocation = stroke.getLocation();
+				long time = stroke.getTime().getTime();
+
+				float distance = location.distanceTo(strokeLocation);
+				float bearing = location.bearingTo(strokeLocation);
+
+				alarmStatus.check(multiplicity, distance, bearing, time);
 			}
 
-			double distance = -1.0;
-			double bearing = 0.0;
-
-			if (minDistanceIndex >= 0) {
-				Location closestStrokeLocation = new Location("");
-				AbstractStroke closestStroke = strokes.get(minDistanceIndex);
-				closestStrokeLocation.setLongitude(closestStroke.getLongitude());
-				closestStrokeLocation.setLatitude(closestStroke.getLatitude());
-
-				distance = location.distanceTo(closestStrokeLocation);
-				bearing = location.bearingTo(closestStrokeLocation);
-			}
-
-			if (alarmListener != null) {
-				alarmListener.onAlarmResult(distance, bearing);
+			for (AlarmListener alarmListener: alarmListeners) {
+				alarmListener.onAlarmResult(alarmStatus);
 			}
 		}
+	}
+
+	public AlarmStatus getAlarmStatus() {
+		return alarmStatus;
+	}
+
+	public void addAlarmListener(AlarmListener alarmListener) {
+		alarmListeners.add(alarmListener);
+	}
+
+	public void removeAlarmListener(AlarmView alarmView) {
+		alarmListeners.remove(alarmView);
 	}
 }
