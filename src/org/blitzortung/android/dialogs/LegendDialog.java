@@ -1,9 +1,6 @@
 package org.blitzortung.android.dialogs;
 
 import org.blitzortung.android.app.R;
-import org.blitzortung.android.app.R.layout;
-import org.blitzortung.android.app.R.plurals;
-import org.blitzortung.android.app.R.string;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 
 import android.app.AlertDialog;

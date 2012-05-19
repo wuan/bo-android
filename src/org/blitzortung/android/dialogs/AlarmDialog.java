@@ -2,9 +2,6 @@ package org.blitzortung.android.dialogs;
 
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.app.R;
-import org.blitzortung.android.app.R.id;
-import org.blitzortung.android.app.R.layout;
-import org.blitzortung.android.app.R.string;
 import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 
