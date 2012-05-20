@@ -87,16 +87,17 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 		RectF area = new RectF(pad, pad, size - pad, size - pad);
 
 		Paint background = new Paint();
-		background.setColor(0xffaaaaaa);
+		background.setColor(0xffc0c0c0);
 
 		Paint lines = new Paint();
-		lines.setColor(0xff555555);
+		lines.setColor(0xff404040);
 		lines.setStyle(Style.STROKE);
 		lines.setStrokeWidth(2);
 		lines.setAntiAlias(true);
 		
 		Paint textStyle = new Paint();
-		textStyle.setColor(0xff555555);
+		textStyle.setColor(0xff404040);
+		textStyle.setTextAlign(Align.CENTER);
 
 		canvas.drawArc(area, 0, 360, true, background);
 
@@ -147,19 +148,20 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 				if (!text.equals("O")) {
 					float textRadius = (AlarmSector.getDistanceLimitCount() - 0.5f) * radiusIncrement;
 					canvas.drawText(text, center
-							+ (float) (textRadius * Math.sin(bearing / 180.0 * Math.PI) - lines.measureText(text) / 2.0f), center
-							+ (float) (textRadius * -Math.cos(bearing / 180.0 * Math.PI)) + lines.getFontMetrics(null) / 2.5f, textStyle);
+							+ (float) (textRadius * Math.sin(bearing / 180.0 * Math.PI)), center
+							+ (float) (textRadius * -Math.cos(bearing / 180.0 * Math.PI)) + textStyle.getFontMetrics(null) / 3f, textStyle);
 				}
 			}
 
+			textStyle.setTextAlign(Align.RIGHT);
 			for (int distanceIndex = 0; distanceIndex < AlarmSector.getDistanceLimitCount(); distanceIndex++) {
 				float leftTop = center - (distanceIndex + 1) * radiusIncrement;
 				float bottomRight = center + (distanceIndex + 1) * radiusIncrement;
 				canvas.drawArc(new RectF(leftTop, leftTop, bottomRight, bottomRight), 0, 360, false, lines);
 
 				String text = String.format("%.0f", AlarmSector.getDistanceLimits()[distanceIndex] / 1000);
-				canvas.drawText(text, center + (float) (distanceIndex + 0.5f) * radiusIncrement - lines.measureText(text) / 2.0f, center
-						+ lines.getFontMetrics(null) / 2.5f, textStyle);
+				canvas.drawText(text, center + (float) (distanceIndex + 0.95f) * radiusIncrement, center
+						+ textStyle.getFontMetrics(null) / 3f, textStyle);
 			}
 
 		} else {
