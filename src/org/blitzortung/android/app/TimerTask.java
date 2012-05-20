@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
 import android.os.Handler;
+import android.util.Log;
 
 public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
@@ -68,10 +69,12 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 			statusString += res.getQuantityString(R.plurals.minute, provider.getMinutes(), provider.getMinutes());
 			statusString += String.format(", %d/%ds", currentPeriod - (now - lastUpdate), currentPeriod);
 			app.setStatusText(statusString);
+		} else {
+			Log.v("TimerTask", "run() in background operation");
 		}
 
 		// Schedule the next update in one second
-		handler.postDelayed(this, 1000);
+		handler.postDelayed(this, backgroundOperation ? 60000 : 1000);
 	}
 
 	public void setPeriod(int period) {
@@ -91,7 +94,8 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 	public void onPause() {
 		backgroundOperation = true;
-		if (!alarmEnabled) {
+		if (!alarmEnabled || backgroundPeriod == 0) {
+			Log.v("TimerTask", "disable timer");
 			handler.removeCallbacks(this);
 		}
 	}
@@ -104,7 +108,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 		if (key.equals(Preferences.QUERY_PERIOD_KEY)) {
 			period = Integer.parseInt(sharedPreferences.getString(key, "60"));
 		} else if (key.equals(Preferences.BACKGROUND_QUERY_PERIOD_KEY)) {
-			backgroundPeriod = Integer.parseInt(sharedPreferences.getString(key, "300"));
+			backgroundPeriod = Integer.parseInt(sharedPreferences.getString(key, "0"));
 		}
 	}
 

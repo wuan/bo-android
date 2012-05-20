@@ -23,6 +23,7 @@
     <string name="during">in den vergangenen</string>
     <string name="minute">Minute</string>
     <string name="alarms">Warnungen</string>
+    <string name="alarms_not_available">Warnung nicht aktiv\noder\nStandortinformationen nicht vorhanden</string>
     <string name="preferences">Einstellungen</string>
     <string name="user_settings">Benutzereinstellungen</string>
     <string name="username">Benutzername</string>
@@ -91,14 +92,16 @@
     <string name="background_query_period">Hintergrund Abfrageperiode</string>
 
     <string-array name="background_query_periods">
+        <item>deaktiviert</item>
         <item>1 min</item>
         <item>2 min</item>
         <item>5 min</item>
         <item>10 min</item>
         <item>15 min</item>
-        <item>15 min</item>
+        <item>30 min</item>
     </string-array>
     <string-array name="background_query_period_values">
+        <item>0</item>
         <item>60</item>
         <item>120</item>
         <item>300</item>

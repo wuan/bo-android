@@ -29,6 +29,7 @@
     <string name="during">during the past</string>
     <string name="minute">minute</string>
     <string name="alarms">Alarms</string>
+    <string name="alarms_not_available">Alarms disabled\nor\nLocation information missing</string>
     <string name="preferences">Preferences</string>
     <string name="user_settings">User settings</string>
     <string name="username">Username</string>
@@ -97,14 +98,16 @@
     <string name="background_query_period">Background query period</string>
 
     <string-array name="background_query_periods">
+        <item>off</item>
         <item>1 min</item>
         <item>2 min</item>
         <item>5 min</item>
         <item>10 min</item>
         <item>15 min</item>
-        <item>15 min</item>
+        <item>30 min</item>
     </string-array>
     <string-array name="background_query_period_values">
+        <item>0</item>
         <item>60</item>
         <item>120</item>
         <item>300</item>

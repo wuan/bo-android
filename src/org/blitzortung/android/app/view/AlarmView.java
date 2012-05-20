@@ -5,11 +5,13 @@ import java.util.GregorianCalendar;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmSector;
 import org.blitzortung.android.alarm.AlarmStatus;
+import org.blitzortung.android.app.R;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.util.AttributeSet;
@@ -92,6 +94,9 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 		lines.setStyle(Style.STROKE);
 		lines.setStrokeWidth(2);
 		lines.setAntiAlias(true);
+		
+		Paint textStyle = new Paint();
+		textStyle.setColor(0xff555555);
 
 		canvas.drawArc(area, 0, 360, true, background);
 
@@ -143,7 +148,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 					float textRadius = (AlarmSector.getDistanceLimitCount() - 0.5f) * radiusIncrement;
 					canvas.drawText(text, center
 							+ (float) (textRadius * Math.sin(bearing / 180.0 * Math.PI) - lines.measureText(text) / 2.0f), center
-							+ (float) (textRadius * -Math.cos(bearing / 180.0 * Math.PI)) + lines.getFontMetrics(null) / 2.5f, lines);
+							+ (float) (textRadius * -Math.cos(bearing / 180.0 * Math.PI)) + lines.getFontMetrics(null) / 2.5f, textStyle);
 				}
 			}
 
@@ -154,11 +159,23 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
 				String text = String.format("%.0f", AlarmSector.getDistanceLimits()[distanceIndex] / 1000);
 				canvas.drawText(text, center + (float) (distanceIndex + 0.5f) * radiusIncrement - lines.measureText(text) / 2.0f, center
-						+ lines.getFontMetrics(null) / 2.5f, lines);
+						+ lines.getFontMetrics(null) / 2.5f, textStyle);
 			}
 
 		} else {
 			Log.v("AlarmView", "onDraw() alarmStatus is not set");
+			
+			Paint warnText = new Paint();
+			warnText.setColor(0xffa00000);
+			warnText.setTextAlign(Align.CENTER);
+			warnText.setTextSize(20);
+			warnText.setAntiAlias(true);
+			
+			String text = getContext().getString(R.string.alarms_not_available);
+			String textLines[] = text.split("\n");
+			for (int line=0; line < textLines.length; line++) {
+			  canvas.drawText(textLines[line], center, center + (line - 1) * warnText.getFontMetrics(null), warnText);
+			}
 		}
 
 	}
@@ -172,8 +189,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
 	@Override
 	public void onAlarmClear() {
-		// TODO Auto-generated method stub
-
+		alarmStatus = null;
 	}
 
 	public void setColorHandler(ColorHandler colorHandler, int minutesPerColor) {
