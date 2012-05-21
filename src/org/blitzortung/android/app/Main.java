@@ -26,8 +26,6 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
@@ -42,7 +40,7 @@ import android.widget.TextView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
-public class Main extends OwnMapActivity implements LocationListener, DataListener, OnSharedPreferenceChangeListener,
+public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener,
 		AlarmManager.AlarmListener {
 
 	private static final String TAG = "Main";
@@ -194,29 +192,6 @@ public class Main extends OwnMapActivity implements LocationListener, DataListen
 	@Override
 	protected boolean isRouteDisplayed() {
 		return false;
-	}
-
-	@Override
-	public void onLocationChanged(Location location) {
-		Log.v(TAG, "New location received");
-	}
-
-	@Override
-	public void onProviderDisabled(String arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onProviderEnabled(String arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

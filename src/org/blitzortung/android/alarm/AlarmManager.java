@@ -67,6 +67,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 					alarmListener.onAlarmClear();
 				}
 			}
+			
 			// Log.v("AlarmManager", "alarm enabled: " + alarmEnabled);
 			timerTask.setAlarmEnabled(alarmEnabled);
 		}

@@ -63,7 +63,7 @@
             android:title="@string/alarm_enabled" />
 
         <ListPreference
-            android:defaultValue="300"
+            android:defaultValue="0"
             android:enabled="true"
             android:entries="@array/background_query_periods"
             android:entryValues="@array/background_query_period_values"
