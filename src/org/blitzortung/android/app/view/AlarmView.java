@@ -42,7 +42,6 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
 	public void setAlarmManager(AlarmManager alarmManager) {
 		this.alarmManager = alarmManager;
-		this.alarmStatus = alarmManager.getAlarmStatus();
 	}
 
 	@Override
@@ -58,11 +57,13 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 	@Override
 	protected void onAttachedToWindow() {
 		alarmManager.addAlarmListener(this);
+		alarmStatus = alarmManager.getAlarmStatus();
 	}
 
 	@Override
 	protected void onDetachedFromWindow() {
 		alarmManager.removeAlarmListener(this);
+		alarmStatus = null;
 	}
 
 	@Override
