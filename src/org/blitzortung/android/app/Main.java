@@ -314,6 +314,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		warning.setTextColor(getResources().getColor(textColorResource));
 
 		warning.setText(warningText);
+		//Log.v("Main", "onAlarmResult() alarmStatus: " + alarmStatus);
 	}
 
 	@Override

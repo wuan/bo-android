@@ -124,6 +124,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 			for (AlarmListener alarmListener: alarmListeners) {
 				alarmListener.onAlarmResult(alarmStatus);
 			}
+		} else {
+			alarmStatus = null;
 		}
 	}
 

@@ -34,23 +34,5 @@ public class AlarmDialog extends AlertDialog {
 		}
 		return super.onKeyUp(keyCode, event);
 	}
-	
-//	public AlarmDialog(Context context, AlarmManager alarmManager) {
-//		super(context);
-//
-//		setTitle(context.getString(R.string.alarms));
-//
-//		View menu = getLayoutInflater().inflate(R.layout.info_dialog, null);		
-		
-		//AlarmView alarmView = (AlarmView) findViewById(R.id.alarm_diagram);
-		
-		//Log.v("AlarmDialog", "alarmView: " + alarmView);
-		//alarmView.setAlarmManager(alarmManager);
-		
-		//setView(menu);
-		
-//		this.setContentView(menu);
-//
-//	}
 
 };

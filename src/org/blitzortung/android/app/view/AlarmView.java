@@ -15,7 +15,6 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 public class AlarmView extends View implements AlarmManager.AlarmListener {
@@ -42,7 +41,6 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 	private int minutesPerColor;
 
 	public void setAlarmManager(AlarmManager alarmManager) {
-		// Log.v("AlarmView", "setAlarmManager " + alarmManager);
 		this.alarmManager = alarmManager;
 		this.alarmStatus = alarmManager.getAlarmStatus();
 	}
@@ -52,9 +50,6 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 		int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
 		int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
 
-		// Log.v("AlarmView", String.format("onMeasure() width: %d, height: %d",
-		// parentWidth, parentHeight));
-
 		int size = Math.min(parentWidth, parentHeight);
 
 		super.onMeasure(MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY));
@@ -63,13 +58,11 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 	@Override
 	protected void onAttachedToWindow() {
 		alarmManager.addAlarmListener(this);
-		// Log.v("AlarmView", "attached");
 	}
 
 	@Override
 	protected void onDetachedFromWindow() {
 		alarmManager.removeAlarmListener(this);
-		// Log.v("AlarmView", "detached");
 	}
 
 	@Override
@@ -81,8 +74,6 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
 		float center = size / 2.0f;
 		float radius = center - pad;
-
-		// Log.v("AlarmView", String.format("onDraw() size: %d", size));
 
 		RectF area = new RectF(pad, pad, size - pad, size - pad);
 
@@ -113,9 +104,6 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 				float bearing = alarmStatus.getSectorBearing(sectorIndex) + 90 + 180;
 				AlarmSector sector = alarmStatus.getSector(sectorIndex);
 
-				// Log.v("AlarmView", String.format("sector %d, bearing %.0f",
-				// sectorIndex, bearing));
-
 				int counts[] = sector.getEventCounts();
 				long latestTimes[] = sector.getLatestTimes();
 				for (int distanceIndex = AlarmSector.getDistanceLimitCount() - 1; distanceIndex >= 0; distanceIndex--) {
@@ -127,10 +115,6 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
 					if (counts[distanceIndex] > 0) {
 						sectorPaint.setColor(colorHandler.getColor(now, latestTimes[distanceIndex], minutesPerColor));
-						// Log.v("AlarmView",
-						// String.format("segment %d, count %d, alarm: %.1f, %.1f",
-						// distanceIndex, counts[distanceIndex], startAngle,
-						// leftTop, bottomRight));
 					} else {
 						sectorPaint = background;
 					}
@@ -165,7 +149,6 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 			}
 
 		} else {
-			Log.v("AlarmView", "onDraw() alarmStatus is not set");
 			
 			Paint warnText = new Paint();
 			warnText.setColor(0xffa00000);
@@ -185,7 +168,6 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 	@Override
 	public void onAlarmResult(AlarmStatus alarmStatus) {
 		this.alarmStatus = alarmStatus;
-
 		invalidate();
 	}
 
