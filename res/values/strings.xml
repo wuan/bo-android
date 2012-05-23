@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Blitzortung Viewer</string>
-    <string name="app_version">0.3</string>
+    <string name="app_version">0.4</string>
 
     <color name="Red">#f00</color>
     <color name="Orange">#f80</color>
