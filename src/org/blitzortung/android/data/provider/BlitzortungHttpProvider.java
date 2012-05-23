@@ -89,7 +89,7 @@ public class BlitzortungHttpProvider extends DataProvider {
 	}
 
 	@Override
-	public List<AbstractStroke> getStrokesRaster(int timeInterval, int rasterSize) {
+	public List<AbstractStroke> getStrokesRaster(int timeInterval, int rasterSize, int timeOffset, int region) {
 		// TODO Auto-generated method stub
 		return null;
 	}

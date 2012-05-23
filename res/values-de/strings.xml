@@ -42,6 +42,17 @@
 
     <string name="show_location">Standort anzeigen</string>
     <string name="data_settings">Datenübertragung</string>
+    <string name="region">Region</string>
+
+    <string-array name="regions">
+        <item>EU</item>
+        <item>USA</item>
+    </string-array>
+    <string-array name="regions_values">
+        <item>1</item>
+        <item>3</item>
+    </string-array>
+
     <string name="query_period">Abfrageperiode</string>
 
     <string-array name="query_periods">

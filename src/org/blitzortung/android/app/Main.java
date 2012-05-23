@@ -1,10 +1,12 @@
 package org.blitzortung.android.app;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.blitzortung.android.alarm.AlarmManager;
+import org.blitzortung.android.alarm.AlarmResult;
 import org.blitzortung.android.alarm.AlarmStatus;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Provider;
@@ -40,8 +42,7 @@ import android.widget.TextView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
-public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener,
-		AlarmManager.AlarmListener {
+public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, AlarmManager.AlarmListener {
 
 	private static final String TAG = "Main";
 
@@ -148,11 +149,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		case R.id.menu_info:
 			showDialog(R.id.info_dialog);
 			break;
-			
+
 		case R.id.menu_legend:
 			showDialog(R.id.legend_dialog);
 			break;
-			
+
 		case R.id.menu_alarms:
 			showDialog(R.id.alarm_dialog);
 			break;
@@ -237,15 +238,15 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		case R.id.info_dialog:
 			dialog = new InfoDialog(this);
 			break;
-			
+
 		case R.id.legend_dialog:
 			dialog = new LegendDialog(this, strokesOverlay);
 			break;
-			
+
 		case R.id.alarm_dialog:
 			dialog = new AlarmDialog(this, alarmManager, strokesOverlay.getColorHandler(), strokesOverlay.getMinutesPerColor());
 			break;
-			
+
 		default:
 			dialog = null;
 		}
@@ -262,6 +263,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 				stationsOverlay.refresh();
 			}
 		} else if (key.equals(Preferences.RASTER_SIZE_KEY)) {
+			timerTask.restart();
+		} else if (key.equals(Preferences.REGION_KEY)) {
 			timerTask.restart();
 		} else if (key.equals(Preferences.SHOW_LOCATION_KEY)) {
 			boolean showLocation = sharedPreferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false);
@@ -289,32 +292,34 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 	@Override
 	public void onAlarmResult(AlarmStatus alarmStatus) {
-		int textColorResource;
-		String warningText;
-		
+		int textColorResource = R.color.Green;
+		String warningText = "-";
+
 		int alarmSector = alarmStatus.getSectorWithClosestStroke();
-		double distance = alarmStatus.getClosestStrokeDistance(alarmSector);
-		double bearing = alarmStatus.getSectorBearing(alarmSector);
-		
-		if (distance >= 0.0) {
-			if (distance > 100.0) {
-				textColorResource = R.color.Green;
-			} else if (distance > 50.0) {
-				textColorResource = R.color.Yellow;
-			} else {
-				textColorResource = R.color.Red;
-				Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-				vibrator.vibrate(40);
+		if (alarmSector >= 0) {
+
+			Date now = new GregorianCalendar().getTime();
+			
+			AlarmResult result = alarmStatus.currentActivity(now.getTime() - 10*60*1000);
+			
+			if (result != null) {
+				if (result.getRange() > 3) {
+					textColorResource = R.color.Green;
+				} else if (result.getRange() > 1) {
+					textColorResource = R.color.Yellow;
+				} else {
+					textColorResource = R.color.Red;
+					Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+					vibrator.vibrate(40);
+				}
+				warningText = String.format("%.0fkm %s", result.getDistance() / 1000.0, directionStrings[result.getSector()]);
 			}
-			warningText = String.format("%.0fkm %s", distance / 1000, getDirectionString(bearing));
-		} else {
-			textColorResource = R.color.Green;
-			warningText = "-";
 		}
 		warning.setTextColor(getResources().getColor(textColorResource));
 
 		warning.setText(warningText);
-		//Log.v("Main", "onAlarmResult() alarmStatus: " + alarmStatus);
+
+		// Log.v("Main", "onAlarmResult() alarmStatus: " + alarmStatus);
 	}
 
 	@Override

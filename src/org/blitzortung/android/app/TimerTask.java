@@ -18,9 +18,9 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 	private long lastUpdate;
 
-//	private int stationPeriod;
-//
-//	private long nextStationUpdate;
+	// private int stationPeriod;
+	//
+	// private long nextStationUpdate;
 
 	private int numberOfStrokes;
 
@@ -67,7 +67,19 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 			String statusString = res.getQuantityString(R.plurals.stroke, numberOfStrokes, numberOfStrokes);
 			statusString += "/";
 			statusString += res.getQuantityString(R.plurals.minute, provider.getMinutes(), provider.getMinutes());
-			statusString += String.format(", %d/%ds", currentPeriod - (now - lastUpdate), currentPeriod);
+			statusString += String.format(" %d/%ds", currentPeriod - (now - lastUpdate), currentPeriod);
+
+			int region = provider.getRegion();
+			String regions[] = res.getStringArray(R.array.regions_values);
+			int index = 0;
+			for (String region_number : regions) {
+				if (region == Integer.parseInt(region_number)) {
+					statusString += " " + res.getStringArray(R.array.regions)[index];
+					break;
+				}
+				index++;
+			}
+
 			app.setStatusText(statusString);
 		} else {
 			Log.v("TimerTask", "run() in background operation");
@@ -83,7 +95,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 	public void restart() {
 		lastUpdate = 0;
-		//nextStationUpdate = 0;
+		// nextStationUpdate = 0;
 	}
 
 	public void onResume() {

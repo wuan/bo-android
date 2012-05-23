@@ -32,36 +32,40 @@ public class Provider implements OnSharedPreferenceChangeListener {
 
 	private ProgressBar progress;
 	private ImageView error_indicator;
-	
+
 	private int minutes = 60;
 
+	private int minuteOffset = 0;
+
+	private int region = 1;
+
 	private int rasterSize;
-	
+
 	private DataListener listener;
 
 	public static class UpdateTargets {
-		
+
 		boolean updateStrokes;
-		
+
 		boolean updateStations;
-		
+
 		public UpdateTargets() {
 			updateStrokes = false;
 			updateStations = false;
 		}
-		
+
 		public void addStrokes() {
 			updateStrokes = true;
 		}
-		
+
 		public boolean updateStrokes() {
 			return updateStrokes;
 		}
-		
+
 		public void addStations() {
 			updateStations = true;
 		}
-		
+
 		public boolean updateStations() {
 			return updateStations;
 		}
@@ -70,7 +74,7 @@ public class Provider implements OnSharedPreferenceChangeListener {
 			return updateStrokes || updateStations;
 		}
 	};
-	
+
 	public Provider(SharedPreferences sharedPreferences, ProgressBar progress, ImageView error_indicator, DataListener listener) {
 		dataProvider = new JsonRpcProvider();
 		this.progress = progress;
@@ -78,10 +82,11 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		this.listener = listener;
 
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-		
+
 		onSharedPreferenceChanged(sharedPreferences, Preferences.USERNAME_KEY);
 		onSharedPreferenceChanged(sharedPreferences, Preferences.PASSWORD_KEY);
 		onSharedPreferenceChanged(sharedPreferences, Preferences.RASTER_SIZE_KEY);
+		onSharedPreferenceChanged(sharedPreferences, Preferences.REGION_KEY);
 
 		progress.setVisibility(View.INVISIBLE);
 		error_indicator.setVisibility(View.INVISIBLE);
@@ -101,8 +106,8 @@ public class Provider implements OnSharedPreferenceChangeListener {
 			if (!result.processWasLocked()) {
 				progress.setVisibility(View.INVISIBLE);
 				progress.setProgress(progress.getMax());
-				
-				error_indicator.setVisibility(result.hasFailed() ? View.VISIBLE : View.INVISIBLE);				
+
+				error_indicator.setVisibility(result.hasFailed() ? View.VISIBLE : View.INVISIBLE);
 			}
 		}
 
@@ -117,13 +122,13 @@ public class Provider implements OnSharedPreferenceChangeListener {
 					if (params[1] == 0) {
 						strokes = dataProvider.getStrokes(params[0]);
 					} else {
-						strokes = dataProvider.getStrokesRaster(params[0], params[1]);
+						strokes = dataProvider.getStrokesRaster(params[0], params[1], params[2], params[3]);
 					}
 					result.setStrokes(strokes);
 					result.setRaster(dataProvider.getRaster());
-					
-					if (params.length > 2 && params[2] != 0)
-					  result.setStations(dataProvider.getStations());
+
+					if (params.length > 4 && params[4] != 0)
+						result.setStations(dataProvider.getStations());
 					dataProvider.shutDown();
 				} catch (RuntimeException e) {
 					e.printStackTrace();
@@ -143,7 +148,7 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		progress.setVisibility(View.VISIBLE);
 		progress.setProgress(0);
 
-		new FetchDataTask().execute(minutes, rasterSize, updateTargets.updateStations() ? 1 : 0);
+		new FetchDataTask().execute(minutes, rasterSize, minuteOffset, region, updateTargets.updateStations() ? 1 : 0);
 	}
 
 	@Override
@@ -156,18 +161,24 @@ public class Provider implements OnSharedPreferenceChangeListener {
 			Log.v(TAG, String.format("update %s to *****", key));
 		} else if (key.equals(Preferences.RASTER_SIZE_KEY)) {
 			rasterSize = Integer.parseInt(sharedPreferences.getString(Preferences.RASTER_SIZE_KEY, "10000"));
+		} else if (key.equals(Preferences.REGION_KEY)) {
+			region = Integer.parseInt(sharedPreferences.getString(Preferences.REGION_KEY, "1"));
 		}
 
 		if (dataProvider != null) {
 			dataProvider.setCredentials(username, password);
 		}
 	}
-	
+
 	public int getMinutes() {
 		return minutes;
 	}
-	
-	/*public void toggleRaster() {
-		raster = !raster;
-	}*/
+
+	public int getRegion() {
+		return region;
+	}
+
+	/*
+	 * public void toggleRaster() { raster = !raster; }
+	 */
 }

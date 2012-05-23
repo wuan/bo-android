@@ -2,10 +2,11 @@ package org.blitzortung.android.alarm;
 
 
 public class AlarmSector {
-	private final static float DISTANCE_LIMITS[] = {10000, 25000, 50000, 100000, 250000, 500000};
+	private static final float DISTANCE_LIMITS[] = {10000, 25000, 50000, 100000, 250000, 500000};
 	
 	int count[];
 	long latestTime[];
+	float distances[];
 	
 	float minDistance;
 	float bearing;
@@ -21,6 +22,11 @@ public class AlarmSector {
 		
 		count = new int[size];
 		latestTime = new long[size];
+		distances = new float[size];
+		
+		for (int i=0; i<size; i++) {
+			distances[i] = (float)Double.POSITIVE_INFINITY;
+		}
 		
 		minDistance = (float)Double.POSITIVE_INFINITY;
 	}
@@ -36,6 +42,7 @@ public class AlarmSector {
 				if (time > latestTime[index]) {
 					latestTime[index] = time;
 				}
+				distances[index] = Math.min(distance,  distances[index]);
 				//Log.v("AlarmSector", String.format("distance %.1f, limit %.0f, count %d", distance, distanceLimit, count[index]));
 				break;
 			}
@@ -49,6 +56,10 @@ public class AlarmSector {
 	
 	public long[] getLatestTimes() {
 		return latestTime;
+	}
+	
+	public float getDistance(int index) {
+		return distances[index];
 	}
 	
 	public static float[] getDistanceLimits() {

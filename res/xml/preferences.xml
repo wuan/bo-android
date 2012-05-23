@@ -36,6 +36,15 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/data_settings" >
         <ListPreference
+            android:defaultValue="1"
+            android:enabled="true"
+            android:entries="@array/regions"
+            android:entryValues="@array/regions_values"
+            android:key="region"
+            android:persistent="true"
+            android:selectable="true"
+            android:title="@string/region" />
+        <ListPreference
             android:defaultValue="60"
             android:enabled="true"
             android:entries="@array/query_periods"

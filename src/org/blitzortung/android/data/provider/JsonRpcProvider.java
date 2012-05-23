@@ -56,14 +56,14 @@ public class JsonRpcProvider extends DataProvider {
 	
 	Raster raster = null;
 	
-	public List<AbstractStroke> getStrokesRaster(int timeInterval, int rasterSize) {
+	public List<AbstractStroke> getStrokesRaster(int timeInterval, int rasterSize, int timeOffset, int region) {
 		
 		List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
 		
 		nextId = null;
 		
 		try {
-			JSONObject response = client.call("get_strokes_raster", timeInterval, rasterSize);
+			JSONObject response = client.call("get_strokes_raster", timeInterval, rasterSize, timeOffset, region);
 
 			raster = new Raster(response);
 			
