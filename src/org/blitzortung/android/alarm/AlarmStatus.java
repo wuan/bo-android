@@ -1,21 +1,20 @@
 package org.blitzortung.android.alarm;
 
-import android.util.Log;
-
 public class AlarmStatus {
 
 	private final static String[] DIRECTION_LABELS = { "S", "SW", "W", "NW", "N", "NO", "O", "SO" };
 
 	private AlarmSector sectors[];
 
-	public AlarmStatus() {
+	public AlarmStatus(long warnThresholdTime) {
+
 		int size = DIRECTION_LABELS.length;
 
 		sectors = new AlarmSector[size];
 
 		float bearing = -180;
 		for (int i = 0; i < size; i++) {
-			sectors[i] = new AlarmSector(bearing);
+			sectors[i] = new AlarmSector(bearing, warnThresholdTime);
 			bearing += getSectorSize();
 		}
 	}
@@ -56,8 +55,8 @@ public class AlarmStatus {
 
 		int index = 0;
 		for (AlarmSector sector : sectors) {
-			if (sector.getMinDistance() < minDistance) {
-				minDistance = sector.getMinDistance();
+			if (sector.getMinimumDistance() < minDistance) {
+				minDistance = sector.getMinimumDistance();
 				sectorIndex = index;
 			}
 			index++;
@@ -69,25 +68,28 @@ public class AlarmStatus {
 		return sectors[index];
 	}
 
-	public double getClosestStrokeDistance(int alarmSector) {
-		return sectors[alarmSector].getMinDistance();
+	public float getClosestStrokeDistance() {
+		int alarmSector = getSectorWithClosestStroke();
+		if (alarmSector >= 0) {
+			return sectors[alarmSector].getMinimumDistance();
+		} else {
+			return (float) Double.POSITIVE_INFINITY;
+		}
 	}
 
 	public float getSectorBearing(int alarmSector) {
 		return sectors[alarmSector].getBearing();
 	}
 
-	public AlarmResult currentActivity(long time) {
-		for (int range = 0; range < AlarmSector.getDistanceLimitCount(); range++) {
-			for (int index=0; index < sectors.length; index++) {
-				//Log.v("AlarmStatus", "currentActivity " + range + " " + sectors[index].getEventCounts()[range] + " " + sectors[index].getLatestTimes()[range]);
-				if (sectors[index].getEventCounts()[range] > 0) {
-					if (sectors[index].getLatestTimes()[range] > time) {
-						return new AlarmResult(range, index, sectors[index].getDistance(range));
-					}
-				}
-			}
+	public AlarmResult currentActivity() {
+		int closestStrokeSectorIndex = getSectorWithClosestStroke();
+
+		AlarmSector sector = sectors[closestStrokeSectorIndex];
+
+		if (closestStrokeSectorIndex >= 0) {
+			return new AlarmResult(sector.getMinimumIndex(), closestStrokeSectorIndex, sector.getMinimumDistance());
 		}
+
 		return null;
 	}
 }

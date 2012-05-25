@@ -1,12 +1,11 @@
 package org.blitzortung.android.app;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.blitzortung.android.alarm.AlarmLabel;
 import org.blitzortung.android.alarm.AlarmManager;
-import org.blitzortung.android.alarm.AlarmResult;
 import org.blitzortung.android.alarm.AlarmStatus;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Provider;
@@ -280,46 +279,16 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		}
 	}
 
-	static String[] directionStrings = { "S", "SW", "W", "NW", "N", "NO", "O", "SO" };
-
-	private String getDirectionString(double bearing) {
-		int directionCount = directionStrings.length;
-		double bearingDivider = 360 / directionCount;
-
-		int direction = ((int) (Math.round(bearing / bearingDivider)) + directionCount / 2) % directionCount;
-		return directionStrings[direction];
-	}
-
 	@Override
 	public void onAlarmResult(AlarmStatus alarmStatus) {
-		int textColorResource = R.color.Green;
-		String warningText = "-";
+		AlarmLabel alarmLabel = new AlarmLabel(warning, getResources());
 
-		int alarmSector = alarmStatus.getSectorWithClosestStroke();
-		if (alarmSector >= 0) {
+		alarmLabel.apply(alarmStatus);
 
-			Date now = new GregorianCalendar().getTime();
-			
-			AlarmResult result = alarmStatus.currentActivity(now.getTime() - 10*60*1000);
-			
-			if (result != null) {
-				if (result.getRange() > 3) {
-					textColorResource = R.color.Green;
-				} else if (result.getRange() > 1) {
-					textColorResource = R.color.Yellow;
-				} else {
-					textColorResource = R.color.Red;
-					Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-					vibrator.vibrate(40);
-				}
-				warningText = String.format("%.0fkm %s", result.getDistance() / 1000.0, directionStrings[result.getSector()]);
-			}
+		if (alarmStatus != null && alarmStatus.getClosestStrokeDistance() < 50.0) {
+			Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+			vibrator.vibrate(40);
 		}
-		warning.setTextColor(getResources().getColor(textColorResource));
-
-		warning.setText(warningText);
-
-		// Log.v("Main", "onAlarmResult() alarmStatus: " + alarmStatus);
 	}
 
 	@Override

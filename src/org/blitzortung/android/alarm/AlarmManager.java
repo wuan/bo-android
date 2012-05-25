@@ -1,5 +1,6 @@
 package org.blitzortung.android.alarm;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -105,7 +106,10 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 
 		if (alarmEnabled && location != null) {
 			
-			alarmStatus = new AlarmStatus();
+			long alarmInterval = 600000;
+			long now = new Date().getTime();
+			
+			alarmStatus = new AlarmStatus(now - alarmInterval);
 
 			List<AbstractStroke> strokes = result.getStrokes();
 
@@ -120,12 +124,12 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 
 				alarmStatus.check(multiplicity, distance, bearing, time);
 			}
-			
-			for (AlarmListener alarmListener: alarmListeners) {
-				alarmListener.onAlarmResult(alarmStatus);
-			}
 		} else {
 			alarmStatus = null;
+		}
+		
+		for (AlarmListener alarmListener: alarmListeners) {
+			alarmListener.onAlarmResult(alarmStatus);
 		}
 	}
 
