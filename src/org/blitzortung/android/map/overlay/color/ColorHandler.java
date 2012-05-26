@@ -24,8 +24,8 @@ public abstract class ColorHandler {
 	public int getColorSection(long now, long eventTime, int minutesPerColor) {
 		int section = (int) (now - eventTime) / 1000 / 60 / minutesPerColor;
 
-		if (section >= getColors().length)
-			section = getColors().length - 1;
+		section = Math.min(section, getColors().length - 1);
+		section = Math.max(section,  0);
 		
 		return section;
 	}
