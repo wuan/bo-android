@@ -27,15 +27,20 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
+import android.provider.Settings.Secure;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.maps.MyLocationOverlay;
@@ -59,8 +64,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 	private Provider provider;
 
-	// Button rasterPointsSwitch;
-
 	MyLocationOverlay myLocationOverlay;
 
 	/** Called when the activity is first created. */
@@ -73,6 +76,26 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		setMapView((OwnMapView) findViewById(R.id.mapview));
 
 		getMapView().setBuiltInZoomControls(true);
+		
+		final String androidId = Secure.getString(getBaseContext().getContentResolver(), Secure.ANDROID_ID);
+		
+		if (isDebugBuild() || androidId.equals("e73c5a22934b5915")) {
+			RelativeLayout mapcontainer = (RelativeLayout) findViewById(R.id.mapcontainer);
+
+			Button rasterToggle = new Button(getBaseContext());
+			rasterToggle.setText("r/p");
+			
+			rasterToggle.getBackground().setAlpha(150);
+
+			rasterToggle.setOnClickListener(new View.OnClickListener() {
+			            public void onClick(View v) {
+			                provider.toggleRaster();
+			                strokesOverlay.clear();
+			                timerTask.restart();
+			            }});
+			
+			mapcontainer.addView(rasterToggle);
+		}
 
 		myLocationOverlay = new MyLocationOverlay(getBaseContext(), getMapView());
 
@@ -114,6 +137,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
 
 		getMapView().invalidate();
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+	  super.onConfigurationChanged(newConfig);
 	}
 
 	public void setStatusText(String statusText) {

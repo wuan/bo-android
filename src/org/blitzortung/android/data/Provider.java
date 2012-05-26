@@ -178,7 +178,15 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		return region;
 	}
 
-	/*
-	 * public void toggleRaster() { raster = !raster; }
-	 */
+	private static int storedRasterSize;
+	
+	public void toggleRaster() {	
+		if (rasterSize > 0) {
+			storedRasterSize = rasterSize;
+			rasterSize = 0;
+		} else {
+			rasterSize = storedRasterSize;
+		}
+	}
+
 }
