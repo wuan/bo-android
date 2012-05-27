@@ -5,14 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.TimerTask;
 import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataResult;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.location.Location;
