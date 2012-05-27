@@ -30,8 +30,8 @@ public class Provider implements OnSharedPreferenceChangeListener {
 	private String username;
 	private String password;
 
-	private ProgressBar progress;
-	private ImageView error_indicator;
+	private ProgressBar progressBar;
+	private ImageView errorIndicator;
 
 	private int minutes = 60;
 
@@ -75,11 +75,8 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		}
 	};
 
-	public Provider(SharedPreferences sharedPreferences, ProgressBar progress, ImageView error_indicator, DataListener listener) {
+	public Provider(SharedPreferences sharedPreferences) {
 		dataProvider = new JsonRpcProvider();
-		this.progress = progress;
-		this.error_indicator = error_indicator;
-		this.listener = listener;
 
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
@@ -87,9 +84,6 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		onSharedPreferenceChanged(sharedPreferences, Preferences.PASSWORD_KEY);
 		onSharedPreferenceChanged(sharedPreferences, Preferences.RASTER_SIZE_KEY);
 		onSharedPreferenceChanged(sharedPreferences, Preferences.REGION_KEY);
-
-		progress.setVisibility(View.INVISIBLE);
-		error_indicator.setVisibility(View.INVISIBLE);
 	}
 
 	private class FetchDataTask extends AsyncTask<Integer, Integer, DataResult> {
@@ -104,10 +98,10 @@ public class Provider implements OnSharedPreferenceChangeListener {
 			}
 
 			if (!result.processWasLocked()) {
-				progress.setVisibility(View.INVISIBLE);
-				progress.setProgress(progress.getMax());
+				progressBar.setVisibility(View.INVISIBLE);
+				progressBar.setProgress(progressBar.getMax());
 
-				error_indicator.setVisibility(result.hasFailed() ? View.VISIBLE : View.INVISIBLE);
+				errorIndicator.setVisibility(result.hasFailed() ? View.VISIBLE : View.INVISIBLE);
 			}
 		}
 
@@ -145,8 +139,8 @@ public class Provider implements OnSharedPreferenceChangeListener {
 	}
 
 	public void updateData(UpdateTargets updateTargets) {
-		progress.setVisibility(View.VISIBLE);
-		progress.setProgress(0);
+		progressBar.setVisibility(View.VISIBLE);
+		progressBar.setProgress(0);
 
 		new FetchDataTask().execute(minutes, rasterSize, minuteOffset, region, updateTargets.updateStations() ? 1 : 0);
 	}
@@ -187,6 +181,18 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		} else {
 			rasterSize = storedRasterSize;
 		}
+	}
+
+	public void setProgressBar(ProgressBar progressBar) {
+		this.progressBar = progressBar;		
+	}
+
+	public void setErrorIndicator(ImageView errorIndicator) {
+		this.errorIndicator = errorIndicator;
+	}
+
+	public void setDataListener(DataListener listener) {
+		this.listener = listener;
 	}
 
 }

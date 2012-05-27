@@ -17,7 +17,6 @@ import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.overlay.StationsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
-import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -27,7 +26,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
@@ -46,7 +45,8 @@ import android.widget.TextView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
-public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, AlarmManager.AlarmListener {
+public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, TimerTask.StatusListener,
+		AlarmManager.AlarmListener {
 
 	private static final String TAG = "Main";
 
@@ -66,45 +66,58 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 	MyLocationOverlay myLocationOverlay;
 
+	private PersistedData persistedData;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.v("Main", "onCreate()");
 
 		setContentView(isDebugBuild() ? R.layout.main_debug : R.layout.main);
+
+		warning = (TextView) findViewById(R.id.warning);
+
+		status = (TextView) findViewById(R.id.status);
+
 
 		setMapView((OwnMapView) findViewById(R.id.mapview));
 
 		getMapView().setBuiltInZoomControls(true);
-		
+
 		final String androidId = Secure.getString(getBaseContext().getContentResolver(), Secure.ANDROID_ID);
-		
+
 		if (isDebugBuild() || androidId.equals("e73c5a22934b5915")) {
 			RelativeLayout mapcontainer = (RelativeLayout) findViewById(R.id.mapcontainer);
 
 			Button rasterToggle = new Button(getBaseContext());
 			rasterToggle.setText("r/p");
-			
+
 			rasterToggle.getBackground().setAlpha(150);
 
 			rasterToggle.setOnClickListener(new View.OnClickListener() {
-			            public void onClick(View v) {
-			                provider.toggleRaster();
-			                strokesOverlay.clear();
-			                timerTask.restart();
-			            }});
-			
+				public void onClick(View v) {
+					provider.toggleRaster();
+					strokesOverlay.clear();
+					timerTask.restart();
+				}
+			});
+
 			mapcontainer.addView(rasterToggle);
 		}
 
 		myLocationOverlay = new MyLocationOverlay(getBaseContext(), getMapView());
 
-		status = (TextView) findViewById(R.id.status);
-
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		preferences.registerOnSharedPreferenceChangeListener(this);
 
-		strokesOverlay = new StrokesOverlay(this, new StrokeColorHandler(preferences));
+		if (getLastNonConfigurationInstance() == null) {
+			persistedData = new PersistedData(this, preferences);
+		} else {
+			persistedData = (PersistedData) getLastNonConfigurationInstance();
+		}
+
+		strokesOverlay = persistedData.getStrokesOverlay();
 
 		// stationsOverlay = new StationsOverlay(this, new
 		// StationColorHandler(preferences));
@@ -124,14 +137,26 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		mapOverlays.add(strokesOverlay);
 		// mapOverlays.add(stationsOverlay);
 
-		provider = new Provider(preferences, (ProgressBar) findViewById(R.id.progress), (ImageView) findViewById(R.id.error_indicator),
-				this);
+		provider = persistedData.getProvider();
+		provider.setDataListener(this);
 
-		timerTask = new TimerTask(this, preferences, provider);
+		ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress);
+		provider.setProgressBar(progressBar);
+		progressBar.setVisibility(View.INVISIBLE);
 
-		warning = (TextView) findViewById(R.id.warning);
-		alarmManager = new AlarmManager(this, preferences, timerTask);
+		ImageView errorIndicator = (ImageView) findViewById(R.id.error_indicator);
+		errorIndicator.setVisibility(View.INVISIBLE);
+		provider.setErrorIndicator(errorIndicator);
+
+		timerTask = persistedData.getTimerTask();
+		timerTask.setListener(this);
+
+		alarmManager = persistedData.getAlarmManager();
+		alarmManager.clearAlarmListeners();
 		alarmManager.addAlarmListener(this);
+		if (alarmManager.isAlarmEnabled()) {
+			onAlarmResult(alarmManager.getAlarmStatus());
+		}
 
 		onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
 		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
@@ -140,11 +165,12 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 	}
 
 	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-	  super.onConfigurationChanged(newConfig);
+	public Object onRetainNonConfigurationInstance() {
+		Log.v("Main", "onRetainNonConfigurationInstance()");
+		return persistedData;
 	}
 
-	public void setStatusText(String statusText) {
+	public void onStatusUpdate(String statusText) {
 		status.setText(statusText);
 	}
 

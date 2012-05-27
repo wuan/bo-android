@@ -12,6 +12,10 @@ import android.util.Log;
 
 public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
+	public interface StatusListener {
+		public void onStatusUpdate(String statusString);
+	};
+	
 	private int period;
 
 	private int backgroundPeriod;
@@ -28,16 +32,20 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 	private boolean backgroundOperation;
 
-	private Main app;
-
 	private Provider provider;
 
 	private Handler handler;
+	
+	StatusListener listener;
 
-	TimerTask(Main app, SharedPreferences preferences, Provider provider) {
-		this.app = app;
+	Resources resources;
+	
+	TimerTask(Resources resources, SharedPreferences preferences, Provider provider) {
+		Log.v("TimerTask", "creating");
+		this.resources = resources;
 		this.provider = provider;
 		handler = new Handler();
+		listener = null;
 
 		preferences.registerOnSharedPreferenceChangeListener(this);
 		onSharedPreferenceChanged(preferences, Preferences.QUERY_PERIOD_KEY);
@@ -62,25 +70,24 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 			provider.updateData(updateTargets);
 		}
 
-		if (!backgroundOperation) {
-			Resources res = app.getResources();
-			String statusString = res.getQuantityString(R.plurals.stroke, numberOfStrokes, numberOfStrokes);
+		if (!backgroundOperation && listener != null) {
+			String statusString = resources.getQuantityString(R.plurals.stroke, numberOfStrokes, numberOfStrokes);
 			statusString += "/";
-			statusString += res.getQuantityString(R.plurals.minute, provider.getMinutes(), provider.getMinutes());
+			statusString += resources.getQuantityString(R.plurals.minute, provider.getMinutes(), provider.getMinutes());
 			statusString += String.format(" %d/%ds", currentPeriod - (now - lastUpdate), currentPeriod);
 
 			int region = provider.getRegion();
-			String regions[] = res.getStringArray(R.array.regions_values);
+			String regions[] = resources.getStringArray(R.array.regions_values);
 			int index = 0;
 			for (String region_number : regions) {
 				if (region == Integer.parseInt(region_number)) {
-					statusString += " " + res.getStringArray(R.array.regions)[index];
+					statusString += " " + resources.getStringArray(R.array.regions)[index];
 					break;
 				}
 				index++;
 			}
 
-			app.setStatusText(statusString);
+			listener.onStatusUpdate(statusString);
 		} else {
 			Log.v("TimerTask", "run() in background operation");
 		}
@@ -94,6 +101,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 	}
 
 	public void restart() {
+		Log.v("TimerTask", "restart");
 		lastUpdate = 0;
 		// nextStationUpdate = 0;
 	}
@@ -126,6 +134,10 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 	public void setAlarmEnabled(boolean alarmEnabled) {
 		this.alarmEnabled = alarmEnabled;
+	}
+
+	public void setListener(StatusListener listener) {
+		this.listener = listener;
 	}
 
 };

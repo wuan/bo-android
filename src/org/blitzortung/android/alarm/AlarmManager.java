@@ -43,12 +43,12 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 
 	AlarmStatus alarmStatus;
 
-	public AlarmManager(Main main, SharedPreferences preferences, TimerTask timerTask) {
+	public AlarmManager(LocationManager locationManager, SharedPreferences preferences, TimerTask timerTask) {
 		this.timerTask = timerTask;
 
 		alarmListeners = new HashSet<AlarmListener>();
 
-		locationManager = (LocationManager) main.getSystemService(Context.LOCATION_SERVICE);
+		this.locationManager = locationManager;
 
 		preferences.registerOnSharedPreferenceChangeListener(this);
 		onSharedPreferenceChanged(preferences, Preferences.ALARM_ENABLED_KEY);
@@ -137,6 +137,10 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 		return alarmStatus;
 	}
 
+	public void clearAlarmListeners() {
+		alarmListeners.clear();
+	}
+	
 	public void addAlarmListener(AlarmListener alarmListener) {
 		alarmListeners.add(alarmListener);
 	}
