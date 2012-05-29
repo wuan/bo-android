@@ -15,7 +15,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 	public interface StatusListener {
 		public void onStatusUpdate(String statusString);
 	};
-	
+
 	private int period;
 
 	private int backgroundPeriod;
@@ -35,11 +35,11 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 	private Provider provider;
 
 	private Handler handler;
-	
+
 	StatusListener listener;
 
 	Resources resources;
-	
+
 	TimerTask(Resources resources, SharedPreferences preferences, Provider provider) {
 		Log.v("TimerTask", "creating");
 		this.resources = resources;
@@ -76,15 +76,17 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 			statusString += resources.getQuantityString(R.plurals.minute, provider.getMinutes(), provider.getMinutes());
 			statusString += String.format(" %d/%ds", currentPeriod - (now - lastUpdate), currentPeriod);
 
-			int region = provider.getRegion();
-			String regions[] = resources.getStringArray(R.array.regions_values);
-			int index = 0;
-			for (String region_number : regions) {
-				if (region == Integer.parseInt(region_number)) {
-					statusString += " " + resources.getStringArray(R.array.regions)[index];
-					break;
+			if (provider.isUsingRaster()) {
+				int region = provider.getRegion();
+				String regions[] = resources.getStringArray(R.array.regions_values);
+				int index = 0;
+				for (String region_number : regions) {
+					if (region == Integer.parseInt(region_number)) {
+						statusString += " " + resources.getStringArray(R.array.regions)[index];
+						break;
+					}
+					index++;
 				}
-				index++;
 			}
 
 			listener.onStatusUpdate(statusString);
