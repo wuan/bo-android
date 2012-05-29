@@ -10,13 +10,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.android.maps.GeoPoint;
+import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
-public abstract class PopupOverlay<Item extends OverlayItem> extends AbstractOverlay<Item> {
+public abstract class PopupOverlay<Item extends OverlayItem> extends ItemizedOverlay<Item> {
 
-	public PopupOverlay(OwnMapActivity activity, Drawable defaultMarker) {
-	  super(activity, defaultMarker);
+	private OwnMapActivity activity;
+	
+	public PopupOverlay(Drawable defaultMarker) {
+	  super(defaultMarker);
 	  popupShown = false;
 	}
 
@@ -24,9 +27,9 @@ public abstract class PopupOverlay<Item extends OverlayItem> extends AbstractOve
 	
 	protected void showPopup(GeoPoint location, String text) {
 
-		OwnMapView map = getActivity().getMapView();
+		OwnMapView map = activity.getMapView();
 
-		View popUp = getActivity().getPopup();
+		View popUp = activity.getPopup();
 
 		map.removeView(popUp);
 
@@ -43,9 +46,9 @@ public abstract class PopupOverlay<Item extends OverlayItem> extends AbstractOve
 		popupShown = true;
 	}
 
-	protected boolean clearPopup() {
-		OwnMapView map = getActivity().getMapView();
-		View popUp = getActivity().getPopup();
+	public boolean clearPopup() {
+		OwnMapView map = activity.getMapView();
+		View popUp = activity.getPopup();
 		
 		map.removeView(popUp);
 		
@@ -54,4 +57,11 @@ public abstract class PopupOverlay<Item extends OverlayItem> extends AbstractOve
 		return popupShownStatus;
 	}
 	
+	public void setActivity(OwnMapActivity activity) {
+		this.activity = activity;
+	}
+	
+	public OwnMapActivity getActivity() {
+		return activity;
+	}
 }

@@ -26,6 +26,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
@@ -111,12 +112,13 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		preferences.registerOnSharedPreferenceChangeListener(this);
 
 		if (getLastNonConfigurationInstance() == null) {
-			persistedData = new PersistedData(this, preferences);
+			persistedData = new PersistedData(getResources(), (LocationManager)getSystemService(Context.LOCATION_SERVICE), preferences);
 		} else {
 			persistedData = (PersistedData) getLastNonConfigurationInstance();
 		}
 
 		strokesOverlay = persistedData.getStrokesOverlay();
+		strokesOverlay.setActivity(this);
 
 		// stationsOverlay = new StationsOverlay(this, new
 		// StationColorHandler(preferences));
@@ -166,6 +168,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 	@Override
 	public Object onRetainNonConfigurationInstance() {
 		Log.v("Main", "onRetainNonConfigurationInstance()");
+		strokesOverlay.clearPopup();
 		return persistedData;
 	}
 

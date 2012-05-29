@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Raster;
-import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
@@ -18,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.text.format.DateFormat;
+import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
@@ -37,8 +37,8 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		DefaultDrawable = new ShapeDrawable(shape);
 	}
 
-	public StrokesOverlay(OwnMapActivity activity, StrokeColorHandler colorHandler) {
-		super(activity, boundCenter(DefaultDrawable));
+	public StrokesOverlay(StrokeColorHandler colorHandler) {
+		super(boundCenter(DefaultDrawable));
 
 		this.colorHandler = colorHandler;
 
@@ -177,6 +177,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
 	@Override
 	protected boolean onTap(int index) {
+		Log.v("StrokesOveray", "onTap(" + index + ")");
 
 		if (index < items.size()) {
 			StrokeOverlayItem item = items.get(index);
@@ -198,6 +199,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
 	@Override
 	public boolean onTap(GeoPoint arg0, MapView arg1) {
+		Log.v("StrokesOveray", "onTap(" + arg0 + ", " + arg1 + ")");
 		boolean eventHandled = super.onTap(arg0, arg1);
 
 		if (!eventHandled) {

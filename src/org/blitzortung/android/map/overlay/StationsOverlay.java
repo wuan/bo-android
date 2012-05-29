@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Station.State;
-import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.overlay.color.StationColorHandler;
 
 import android.graphics.Canvas;
@@ -28,8 +27,8 @@ public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
 
 	EnumMap<State, Drawable> shapes = new EnumMap<State, Drawable>(State.class);
 
-	public StationsOverlay(OwnMapActivity activity, StationColorHandler colorHandler) {
-		super(activity, boundCenter(DefaultDrawable));
+	public StationsOverlay(StationColorHandler colorHandler) {
+		super(boundCenter(DefaultDrawable));
 
 		this.colorHandler = colorHandler;
 
