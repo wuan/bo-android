@@ -1,9 +1,14 @@
 package org.blitzortung.android.app;
 
+import org.blitzortung.android.data.provider.ProviderType;
+
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 
-public class Preferences extends PreferenceActivity {
+public class Preferences extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
 	public static final String USERNAME_KEY = "username";
 	public static final String PASSWORD_KEY = "password";
@@ -14,12 +19,46 @@ public class Preferences extends PreferenceActivity {
 	public static final String SHOW_LOCATION_KEY = "location";
 	public static final String ALARM_ENABLED_KEY = "alarm_enabled";
 	public static final String REGION_KEY = "region";
+	public static final String DATA_SOURCE_KEY = "data_source";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		addPreferencesFromResource(R.xml.preferences);
+
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		prefs.registerOnSharedPreferenceChangeListener(this);
+
+		onSharedPreferenceChanged(prefs, Preferences.DATA_SOURCE_KEY);
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		if (key.equals(Preferences.DATA_SOURCE_KEY)) {
+			String providerTypeString = sharedPreferences.getString(Preferences.DATA_SOURCE_KEY, ProviderType.HTTP.toString());
+			ProviderType providerType = ProviderType.valueOf(providerTypeString.toUpperCase());
+			switch (providerType) {
+			case HTTP:
+				setupBlitzortungHttpMode();
+				break;
+			case RPC:
+				setupAppServiceMode();
+				break;
+			}
+		}
+	}
+	
+	private void setupAppServiceMode() {
+		findPreference("raster_size").setEnabled(true);
+		findPreference("username").setEnabled(false);
+		findPreference("password").setEnabled(false);
+	}
+
+	private void setupBlitzortungHttpMode() {
+		findPreference("raster_size").setEnabled(false);
+		findPreference("username").setEnabled(true);
+		findPreference("password").setEnabled(true);
 	}
 
 }

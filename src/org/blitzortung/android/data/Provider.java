@@ -9,7 +9,7 @@ import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataResult;
-import org.blitzortung.android.data.provider.JsonRpcProvider;
+import org.blitzortung.android.data.provider.ProviderType;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -76,10 +76,9 @@ public class Provider implements OnSharedPreferenceChangeListener {
 	};
 
 	public Provider(SharedPreferences sharedPreferences) {
-		dataProvider = new JsonRpcProvider();
-
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
+		onSharedPreferenceChanged(sharedPreferences, Preferences.DATA_SOURCE_KEY);
 		onSharedPreferenceChanged(sharedPreferences, Preferences.USERNAME_KEY);
 		onSharedPreferenceChanged(sharedPreferences, Preferences.PASSWORD_KEY);
 		onSharedPreferenceChanged(sharedPreferences, Preferences.RASTER_SIZE_KEY);
@@ -112,6 +111,8 @@ public class Provider implements OnSharedPreferenceChangeListener {
 			if (lock.tryLock()) {
 				try {
 					dataProvider.setUp();
+					dataProvider.setCredentials(username, password);
+					
 					List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
 					if (params[1] == 0) {
 						strokes = dataProvider.getStrokes(params[0]);
@@ -142,12 +143,20 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		progressBar.setVisibility(View.VISIBLE);
 		progressBar.setProgress(0);
 
-		new FetchDataTask().execute(minutes, rasterSize, minuteOffset, region, updateTargets.updateStations() ? 1 : 0);
+		new FetchDataTask().execute(minutes, dataProvider.getType() == ProviderType.HTTP ? 0 : rasterSize, minuteOffset, region, updateTargets.updateStations() ? 1 : 0);
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals(Preferences.USERNAME_KEY)) {
+		if (key.equals(Preferences.DATA_SOURCE_KEY)) {
+			String providerTypeString = sharedPreferences.getString(Preferences.DATA_SOURCE_KEY, ProviderType.HTTP.toString());
+			ProviderType providerType = ProviderType.valueOf(providerTypeString.toUpperCase());
+			Log.v(TAG, String.format("update %s to %s", key, providerType.toString()));
+			dataProvider = providerType.getProvider();
+			if (listener != null) {
+				listener.onDataReset();
+			}
+		} else if (key.equals(Preferences.USERNAME_KEY)) {
 			username = sharedPreferences.getString(Preferences.USERNAME_KEY, "");
 			Log.v(TAG, String.format("update %s to %s", key, username));
 		} else if (key.equals(Preferences.PASSWORD_KEY)) {
@@ -175,10 +184,10 @@ public class Provider implements OnSharedPreferenceChangeListener {
 	public boolean isUsingRaster() {
 		return rasterSize != 0;
 	}
-	
+
 	private static int storedRasterSize;
-	
-	public void toggleRaster() {	
+
+	public void toggleRaster() {
 		if (rasterSize > 0) {
 			storedRasterSize = rasterSize;
 			rasterSize = 0;
@@ -188,7 +197,7 @@ public class Provider implements OnSharedPreferenceChangeListener {
 	}
 
 	public void setProgressBar(ProgressBar progressBar) {
-		this.progressBar = progressBar;		
+		this.progressBar = progressBar;
 	}
 
 	public void setErrorIndicator(ImageView errorIndicator) {

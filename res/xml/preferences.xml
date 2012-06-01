@@ -1,21 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <!--
-    <PreferenceCategory android:title="@string/user_settings" >
-        <EditTextPreference
-            android:defaultValue="map"
-            android:key="username"
-            android:persistent="true"
-            android:title="@string/username" />
-        <EditTextPreference
-            android:inputType="textPassword"
-            android:key="password"
-            android:persistent="true"
-            android:title="@string/password" />
-    </PreferenceCategory>
-    -->
-
     <PreferenceCategory android:title="@string/map_settings" >
         <ListPreference
             android:defaultValue="SATELLITE"
@@ -34,7 +19,9 @@
             android:selectable="true"
             android:title="@string/show_location" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/data_settings" >
+    <PreferenceCategory
+        android:key="data_settings"
+        android:title="@string/data_settings" >
         <ListPreference
             android:defaultValue="1"
             android:enabled="true"
@@ -62,6 +49,27 @@
             android:persistent="true"
             android:selectable="true"
             android:title="@string/raster_size" />
+
+        <EditTextPreference
+            android:defaultValue="map"
+            android:key="username"
+            android:persistent="true"
+            android:title="@string/username" />
+        <EditTextPreference
+            android:inputType="textPassword"
+            android:key="password"
+            android:persistent="true"
+            android:title="@string/password" />
+
+        <ListPreference
+            android:defaultValue="RPC"
+            android:enabled="true"
+            android:entries="@array/data_sources"
+            android:entryValues="@array/data_source_values"
+            android:key="data_source"
+            android:persistent="true"
+            android:selectable="true"
+            android:title="@string/data_source" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/alarm_settings" >
         <CheckBoxPreference

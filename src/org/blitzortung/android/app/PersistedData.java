@@ -20,11 +20,11 @@ public class PersistedData {
 	
 	private StrokesOverlay strokesOverlay;
 	
-	public PersistedData(Resources resources, LocationManager locationManager, SharedPreferences preferences) {
-		provider = new Provider(preferences);
-		timerTask = new TimerTask(resources, preferences, provider);
-		alarmManager = new AlarmManager(locationManager, preferences, timerTask);
-		strokesOverlay = new StrokesOverlay(new StrokeColorHandler(preferences));
+	public PersistedData(Resources resources, LocationManager locationManager, SharedPreferences sharedPreferences) {
+		provider = new Provider(sharedPreferences);
+		timerTask = new TimerTask(resources, sharedPreferences, provider);
+		alarmManager = new AlarmManager(locationManager, sharedPreferences, timerTask);
+		strokesOverlay = new StrokesOverlay(new StrokeColorHandler(sharedPreferences));
 	}
 
 	public StrokesOverlay getStrokesOverlay() {

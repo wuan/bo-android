@@ -97,7 +97,7 @@
 
     <string-array name="data_sources">
         <item>Blitzortung.org</item>
-        <item>Webservice</item>
+        <item>App-Webservice</item>
     </string-array>
     <string-array name="data_source_values">
         <item>HTTP</item>
