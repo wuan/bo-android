@@ -3,19 +3,24 @@ package org.blitzortung.android.alarm;
 public class AlarmStatus {
 
 	private final static String[] DIRECTION_LABELS = { "S", "SW", "W", "NW", "N", "NO", "O", "SO" };
+	
+	private final static int SECTOR_COUNT = DIRECTION_LABELS.length;
 
 	private AlarmSector sectors[];
 
 	public AlarmStatus(long warnThresholdTime) {
-
-		int size = DIRECTION_LABELS.length;
-
-		sectors = new AlarmSector[size];
+		sectors = new AlarmSector[SECTOR_COUNT];
 
 		float bearing = -180;
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < SECTOR_COUNT; i++) {
 			sectors[i] = new AlarmSector(bearing, warnThresholdTime);
 			bearing += getSectorSize();
+		}
+	}
+	
+	public void updateThresholdTime(long warnThresholdTime) {
+		for (int i = 0; i < SECTOR_COUNT; i++) {
+			sectors[i].updateThreshold(warnThresholdTime);
 		}
 	}
 

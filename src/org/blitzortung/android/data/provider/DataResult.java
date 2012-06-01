@@ -16,10 +16,14 @@ public class DataResult {
 	
 	boolean processWasLocked;
 	
+	boolean incremental;
+	
 	public DataResult() {
 		fail = true;
 		
 		processWasLocked = false;
+		
+		incremental = false;
 	}
 	
 	public void setStrokes(List<AbstractStroke> strokes) {
@@ -30,6 +34,7 @@ public class DataResult {
 	public boolean containsStrokes() {
 		return strokes != null;
 	}
+	
 	public List<AbstractStroke> getStrokes() {
 		return strokes;
 	}
@@ -72,5 +77,13 @@ public class DataResult {
 	
 	public void setRaster(Raster raster) {
 		this.raster = raster;
+	}
+
+	public boolean isIncremental() {
+		return incremental;
+	}
+	
+	public void setIncremental() {
+		incremental = true;
 	}
 }

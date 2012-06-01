@@ -66,7 +66,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 					alarmListener.onAlarmClear();
 				}
 			}
-			
+
 			// Log.v("AlarmManager", "alarm enabled: " + alarmEnabled);
 			timerTask.setAlarmEnabled(alarmEnabled);
 		}
@@ -103,11 +103,16 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 	public void check(DataResult result) {
 
 		if (alarmEnabled && location != null) {
-			
+
 			long alarmInterval = 600000;
 			long now = new Date().getTime();
-			
-			alarmStatus = new AlarmStatus(now - alarmInterval);
+			long thresholdTime = now - alarmInterval;
+
+			if (alarmStatus == null || !result.isIncremental()) {
+				alarmStatus = new AlarmStatus(thresholdTime);
+			} else {
+				alarmStatus.updateThresholdTime(thresholdTime);
+			}
 
 			List<AbstractStroke> strokes = result.getStrokes();
 
@@ -125,8 +130,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 		} else {
 			alarmStatus = null;
 		}
-		
-		for (AlarmListener alarmListener: alarmListeners) {
+
+		for (AlarmListener alarmListener : alarmListeners) {
 			alarmListener.onAlarmResult(alarmStatus);
 		}
 	}
@@ -138,7 +143,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 	public void clearAlarmListeners() {
 		alarmListeners.clear();
 	}
-	
+
 	public void addAlarmListener(AlarmListener alarmListener) {
 		alarmListeners.add(alarmListener);
 	}

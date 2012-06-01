@@ -87,4 +87,14 @@ public class AlarmSector {
 	public float getBearing() {
 		return sectorCenterBearing;
 	}
+
+	public void updateThreshold(long warnThresholdTime) {
+		this.warnThresholdTime = warnThresholdTime;
+		for (int index = 0; index < getSize(); index++) {
+			if (latestTime[index] < warnThresholdTime) {
+				latestTime[index] = 0;
+				count[index] = 0;
+			}
+		}
+	}
 }

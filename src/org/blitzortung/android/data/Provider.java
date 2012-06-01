@@ -115,7 +115,8 @@ public class Provider implements OnSharedPreferenceChangeListener {
 					
 					List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
 					if (params[1] == 0) {
-						strokes = dataProvider.getStrokes(params[0]);
+						result.setIncremental();
+						strokes = dataProvider.getStrokes(params[0], params[3]);
 					} else {
 						strokes = dataProvider.getStrokesRaster(params[0], params[1], params[2], params[3]);
 					}
@@ -127,7 +128,6 @@ public class Provider implements OnSharedPreferenceChangeListener {
 					dataProvider.shutDown();
 				} catch (RuntimeException e) {
 					e.printStackTrace();
-					// handle silently
 				} finally {
 					lock.unlock();
 				}
@@ -166,6 +166,10 @@ public class Provider implements OnSharedPreferenceChangeListener {
 			rasterSize = Integer.parseInt(sharedPreferences.getString(Preferences.RASTER_SIZE_KEY, "10000"));
 		} else if (key.equals(Preferences.REGION_KEY)) {
 			region = Integer.parseInt(sharedPreferences.getString(Preferences.REGION_KEY, "1"));
+			dataProvider.reset();
+			if (listener != null) {
+				listener.onDataReset();
+			}
 		}
 
 		if (dataProvider != null) {

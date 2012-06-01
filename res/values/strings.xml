@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Blitzortung Viewer</string>
-    <string name="app_version">0.4</string>
+    <string name="app_version">0.5</string>
 
     <color name="Red">#f00</color>
     <color name="Orange">#f80</color>
@@ -97,7 +97,7 @@
 
     <string-array name="data_sources">
         <item>Blitzortung.org</item>
-        <item>App-Webservice</item>
+        <item>Default</item>
     </string-array>
     <string-array name="data_source_values">
         <item>HTTP</item>

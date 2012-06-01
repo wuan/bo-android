@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Blitzortung Viewer</string>
-    <string name="app_version">0.4</string>
+    <string name="app_version">0.5</string>
 
     <plurals name="stroke">
         <item quantity="zero">kein Blitz</item>
@@ -91,7 +91,7 @@
 
     <string-array name="data_sources">
         <item>Blitzortung.org</item>
-        <item>Webservice</item>
+        <item>Standard</item>
     </string-array>
     <string-array name="data_source_values">
         <item>HTTP</item>

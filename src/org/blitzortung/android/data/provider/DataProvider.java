@@ -15,22 +15,25 @@ public abstract class DataProvider {
 	
 	protected String password;
 
-	abstract public void setUp();
+	public abstract void setUp();
 	
-	abstract public void shutDown();
+	public abstract void shutDown();
 	
-	abstract public List<AbstractStroke> getStrokes(int timeInterval);
+	public abstract List<AbstractStroke> getStrokes(int timeInterval, int region);
 	
-	abstract public List<AbstractStroke> getStrokesRaster(int timeInterval, int params, int timeOffet, int region);
+	public abstract List<AbstractStroke> getStrokesRaster(int timeInterval, int params, int timeOffet, int region);
 	
-	abstract public Raster getRaster();
+	public abstract Raster getRaster();
 	
-	abstract public List<Station> getStations();
+	public abstract List<Station> getStations();
 	
-	abstract public ProviderType getType();
+	public abstract ProviderType getType();
+	
+	public abstract void reset();
 	
 	public void setCredentials(String username, String password) {
 		this.username = username;
 		this.password = password;
 	}
+
 }

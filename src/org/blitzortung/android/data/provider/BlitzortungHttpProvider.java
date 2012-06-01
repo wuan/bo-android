@@ -16,8 +16,10 @@ import org.blitzortung.android.data.beans.Raster;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Stroke;
 
+import android.util.Log;
+
 public class BlitzortungHttpProvider extends DataProvider {
-	
+
 	class MyAuthenticator extends Authenticator {
 
 		public PasswordAuthentication getPasswordAuthentication() {
@@ -26,11 +28,9 @@ public class BlitzortungHttpProvider extends DataProvider {
 	}
 
 	private Date latestTime;
-	
-	//private int latestNanoseconds;
-	
+
 	@Override
-	public List<AbstractStroke> getStrokes(int timeInterval) {
+	public List<AbstractStroke> getStrokes(int timeInterval, int region) {
 
 		List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
 
@@ -39,23 +39,27 @@ public class BlitzortungHttpProvider extends DataProvider {
 			Authenticator.setDefault(new MyAuthenticator());
 			URL url;
 			try {
-				url = new URL("http://blitzortung.tmt.de/Data/Protected/strikes.txt");
+				url = new URL(String.format("http://blitzortung.tmt.de/Data_%d/Protected/strikes.txt", region));
 				URLConnection connection = url.openConnection();
 				connection.setConnectTimeout(10000);
 				connection.setReadTimeout(10000);
 				connection.setAllowUserInteraction(false);
 				InputStream ins = connection.getInputStream();
 				BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
-				
+
+				int size = 0;
 				String line;
 				while ((line = reader.readLine()) != null) {
+					size += line.length();
 					Stroke stroke = new Stroke(line);
 					if (latestTime == null || stroke.getTime().after(latestTime))
-					  strokes.add(new Stroke(line));
+						strokes.add(new Stroke(line));
 				}
-				
+				Log.v("BlitzortungHttpProvider",
+						String.format("read %d bytes (%d new strokes) from region %d", size, strokes.size(), region));
+
 				if (strokes.size() > 0)
-					latestTime = strokes.get(strokes.size()-1).getTime();
+					latestTime = strokes.get(strokes.size() - 1).getTime();
 
 			} catch (Exception e) {
 				throw new RuntimeException(e);
@@ -92,6 +96,11 @@ public class BlitzortungHttpProvider extends DataProvider {
 	public List<AbstractStroke> getStrokesRaster(int timeInterval, int rasterSize, int timeOffset, int region) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void reset() {
+		latestTime = null;
 	}
 
 }
