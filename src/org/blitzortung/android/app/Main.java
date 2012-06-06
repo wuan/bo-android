@@ -321,7 +321,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			timerTask.restart();
 		} else if (key.equals(Preferences.SHOW_LOCATION_KEY)) {
 			boolean showLocation = sharedPreferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false);
-			List<Overlay> mapOverlays = getMapView().getOverlays();
 
 			if (showLocation) {
 				ownLocationOverlay.enableOwnLocation();
