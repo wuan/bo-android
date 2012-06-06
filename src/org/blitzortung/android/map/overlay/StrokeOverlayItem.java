@@ -14,7 +14,7 @@ public class StrokeOverlayItem extends OverlayItem {
 	int multitude;
 	
 	public StrokeOverlayItem(AbstractStroke stroke) {
-		super(Projection.toMapCoords(stroke.getLatitude(), stroke.getLongitude()), "", "");
+		super(Projection.toMapCoords(stroke.getLongitude(), stroke.getLatitude()), "", "");
 
 		timestamp = stroke.getTime();		
 		

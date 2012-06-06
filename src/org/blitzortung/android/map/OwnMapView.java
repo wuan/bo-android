@@ -1,11 +1,11 @@
 package org.blitzortung.android.map;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import com.google.android.maps.MapView;
 
@@ -18,7 +18,7 @@ public class OwnMapView extends MapView {
 		public void onZoom(int zoomLevel);
 	};
 
-	List<ZoomListener> zoomListeners = new ArrayList<ZoomListener>();
+	Set<ZoomListener> zoomListeners = new HashSet<ZoomListener>();
 
 	public OwnMapView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -37,9 +37,9 @@ public class OwnMapView extends MapView {
 	private float oldPixelSize = -1;
 
 	@Override
-	public void computeScroll() {
-		super.computeScroll();
-		
+	public void dispatchDraw(Canvas canvas) {
+		super.dispatchDraw(canvas);
+
 		float pixelSize = getProjection().metersToEquatorPixels(1000.0f);
 
 		if (getZoomLevel() != oldZoomLevel) {
@@ -54,12 +54,10 @@ public class OwnMapView extends MapView {
 			} else {
 				oldPixelSize = pixelSize;
 			}
-
 		}
 	}
 
 	public void addZoomListener(ZoomListener zoomListener) {
-		Log.v("OwnMapView", "add zoom listener: " + zoomListener.toString());
 		zoomListeners.add(zoomListener);
 	}
 

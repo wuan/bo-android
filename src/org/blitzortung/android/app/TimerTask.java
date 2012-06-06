@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
 import android.os.Handler;
-import android.util.Log;
 
 public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
@@ -23,7 +22,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 	private long lastUpdate;
 
 	// private int stationPeriod;
-	//
+
 	// private long nextStationUpdate;
 
 	private int numberOfStrokes;
@@ -41,7 +40,6 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 	Resources resources;
 
 	TimerTask(Resources resources, SharedPreferences preferences, Provider provider) {
-		Log.v("TimerTask", "creating");
 		this.resources = resources;
 		this.provider = provider;
 		handler = new Handler();
@@ -90,8 +88,6 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 			}
 
 			listener.onStatusUpdate(statusString);
-		} else {
-			Log.v("TimerTask", "run() in background operation");
 		}
 
 		// Schedule the next update in one second
@@ -103,7 +99,6 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 	}
 
 	public void restart() {
-		Log.v("TimerTask", "restart");
 		lastUpdate = 0;
 		// nextStationUpdate = 0;
 	}
@@ -117,7 +112,6 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 	public void onPause() {
 		backgroundOperation = true;
 		if (!alarmEnabled || backgroundPeriod == 0) {
-			Log.v("TimerTask", "disable timer");
 			handler.removeCallbacks(this);
 		}
 	}

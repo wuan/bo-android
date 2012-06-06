@@ -17,7 +17,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.text.format.DateFormat;
-import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
@@ -177,8 +176,6 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
 	@Override
 	protected boolean onTap(int index) {
-		Log.v("StrokesOveray", "onTap(" + index + ")");
-
 		if (index < items.size()) {
 			StrokeOverlayItem item = items.get(index);
 			if (item != null && item.getPoint() != null && item.getTimestamp() != null) {
@@ -199,7 +196,6 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
 	@Override
 	public boolean onTap(GeoPoint arg0, MapView arg1) {
-		Log.v("StrokesOveray", "onTap(" + arg0 + ", " + arg1 + ")");
 		boolean eventHandled = super.onTap(arg0, arg1);
 
 		if (!eventHandled) {

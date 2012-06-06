@@ -15,6 +15,7 @@ import org.blitzortung.android.dialogs.InfoDialog;
 import org.blitzortung.android.dialogs.LegendDialog;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
+import org.blitzortung.android.map.overlay.OwnLocationOverlay;
 import org.blitzortung.android.map.overlay.StationsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 
@@ -42,7 +43,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
 public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, TimerTask.StatusListener,
@@ -64,11 +64,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 	private Provider provider;
 
-	MyLocationOverlay myLocationOverlay;
+	OwnLocationOverlay ownLocationOverlay;
 
 	private PersistedData persistedData;
 
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -106,7 +105,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			mapcontainer.addView(rasterToggle);
 		}
 
-		myLocationOverlay = new MyLocationOverlay(getBaseContext(), getMapView());
+		ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
 
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		preferences.registerOnSharedPreferenceChangeListener(this);
@@ -120,8 +119,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		strokesOverlay = persistedData.getStrokesOverlay();
 		strokesOverlay.setActivity(this);
 
-		// stationsOverlay = new StationsOverlay(this, new
-		// StationColorHandler(preferences));
+		// stationsOverlay = new StationsOverlay(this, new StationColorHandler(preferences));
 
 		getMapView().addZoomListener(new OwnMapView.ZoomListener() {
 
@@ -229,7 +227,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		if (preferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false)) {
-			myLocationOverlay.enableMyLocation();
+			ownLocationOverlay.enableOwnLocation();
 		}
 	}
 
@@ -241,7 +239,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		if (preferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false)) {
-			myLocationOverlay.disableMyLocation();
+			ownLocationOverlay.disableOwnLocation();
 		}
 	}
 
@@ -326,11 +324,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			List<Overlay> mapOverlays = getMapView().getOverlays();
 
 			if (showLocation) {
-				myLocationOverlay.enableMyLocation();
-				mapOverlays.add(myLocationOverlay);
+				ownLocationOverlay.enableOwnLocation();
 			} else {
-				mapOverlays.remove(myLocationOverlay);
-				myLocationOverlay.disableMyLocation();
+				ownLocationOverlay.disableOwnLocation();
 			}
 		}
 	}

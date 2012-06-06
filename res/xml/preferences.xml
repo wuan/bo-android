@@ -51,7 +51,7 @@
             android:title="@string/raster_size" />
 
         <EditTextPreference
-            android:defaultValue="map"
+            android:defaultValue=""
             android:key="username"
             android:persistent="true"
             android:title="@string/username" />

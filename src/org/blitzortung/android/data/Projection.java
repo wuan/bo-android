@@ -4,8 +4,8 @@ import com.google.android.maps.GeoPoint;
 
 public class Projection {
 
-	public static GeoPoint toMapCoords(float lon, float lat) {
-		return new GeoPoint((int) (lon * 1e6), (int) (lat * 1e6));
+	public static GeoPoint toMapCoords(float longitude, float latitude) {
+		return new GeoPoint((int) (latitude * 1e6), (int) (longitude * 1e6));
 	}
 
 }

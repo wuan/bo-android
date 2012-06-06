@@ -34,7 +34,7 @@ public class BlitzortungHttpProvider extends DataProvider {
 
 		List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
 
-		if (username != null && password != null) {
+		if (username != null && username.length() != 0 && password != null && password.length() != 0) {
 
 			Authenticator.setDefault(new MyAuthenticator());
 			URL url;
@@ -64,6 +64,8 @@ public class BlitzortungHttpProvider extends DataProvider {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
+		} else {
+			throw new RuntimeException("no credentials provided");
 		}
 
 		return strokes;
