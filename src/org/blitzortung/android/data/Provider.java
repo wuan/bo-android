@@ -149,7 +149,7 @@ public class Provider implements OnSharedPreferenceChangeListener {
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (key.equals(Preferences.DATA_SOURCE_KEY)) {
-			String providerTypeString = sharedPreferences.getString(Preferences.DATA_SOURCE_KEY, ProviderType.HTTP.toString());
+			String providerTypeString = sharedPreferences.getString(Preferences.DATA_SOURCE_KEY, ProviderType.RPC.toString());
 			ProviderType providerType = ProviderType.valueOf(providerTypeString.toUpperCase());
 			Log.v(TAG, String.format("update %s to %s", key, providerType.toString()));
 			dataProvider = providerType.getProvider();
