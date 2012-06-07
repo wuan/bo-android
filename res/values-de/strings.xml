@@ -47,10 +47,12 @@
     <string-array name="regions">
         <item>EU</item>
         <item>USA</item>
+        <item>AU/NZ</item>
     </string-array>
     <string-array name="regions_values">
         <item>1</item>
         <item>3</item>
+        <item>2</item>
     </string-array>
 
     <string name="query_period">Abfrageperiode</string>
