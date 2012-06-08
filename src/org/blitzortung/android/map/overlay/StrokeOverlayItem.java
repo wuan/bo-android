@@ -1,7 +1,5 @@
 package org.blitzortung.android.map.overlay;
 
-import java.util.Date;
-
 import org.blitzortung.android.data.Projection;
 import org.blitzortung.android.data.beans.AbstractStroke;
 
@@ -9,24 +7,24 @@ import com.google.android.maps.OverlayItem;
 
 public class StrokeOverlayItem extends OverlayItem {
 
-	Date timestamp;
+	long timestamp;
 	
-	int multitude;
+	int multiplicity;
 	
 	public StrokeOverlayItem(AbstractStroke stroke) {
 		super(Projection.toMapCoords(stroke.getLongitude(), stroke.getLatitude()), "", "");
 
-		timestamp = stroke.getTime();		
+		timestamp = stroke.getTimestamp();		
 		
-		multitude = stroke.getCount();
+		multiplicity = stroke.getMultiplicity();
 	}
 	
-	public Date getTimestamp() {
+	public long getTimestamp() {
 		return timestamp;
 	}
 	
-	public int getMultitude() {
-		return multitude;
+	public int getMultiplicity() {
+		return multiplicity;
 	}
 
 }

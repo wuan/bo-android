@@ -63,7 +63,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		}
 	}
 
-	public void addAndExpireStrokes(List<AbstractStroke> strokes, Date expireTime) {
+	public void addAndExpireStrokes(List<AbstractStroke> strokes, long expireTime) {
 
 		Collections.reverse(items);
 
@@ -83,11 +83,11 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		populate();
 	}
 
-	private void expireStrokes(Date expireTime) {
+	private void expireStrokes(long expireTime) {
 		List<StrokeOverlayItem> toRemove = new ArrayList<StrokeOverlayItem>();
 
 		for (StrokeOverlayItem item : items) {
-			if (item.getTimestamp().before(expireTime)) {
+			if (item.getTimestamp() < expireTime) {
 				toRemove.add(item);
 			} else {
 				break;
@@ -130,7 +130,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		Drawable drawable = null;
 
 		for (StrokeOverlayItem item : items) {
-			int section = colorHandler.getColorSection(now, item.getTimestamp().getTime(), getMinutesPerColor());
+			int section = colorHandler.getColorSection(now, item.getTimestamp(), getMinutesPerColor());
 
 			if (isRaster() || current_section != section) {
 				drawable = getDrawable(item.getPoint(), section, colorHandler.getColor(section));
@@ -178,11 +178,11 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 	protected boolean onTap(int index) {
 		if (index < items.size()) {
 			StrokeOverlayItem item = items.get(index);
-			if (item != null && item.getPoint() != null && item.getTimestamp() != null) {
-				String result = (String) DateFormat.format("kk:mm:ss", item.getTimestamp());
+			if (item != null && item.getPoint() != null && item.getTimestamp() != 0) {
+				String result = (String) DateFormat.format("kk:mm:ss", new Date(item.getTimestamp()));
 
-				if (item.getMultitude() > 1) {
-					result += String.format(", #%d", item.getMultitude());
+				if (item.getMultiplicity() > 1) {
+					result += String.format(", #%d", item.getMultiplicity());
 				}
 				showPopup(item.getPoint(), result);
 				return true;
@@ -210,7 +210,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		int totalNumberOfStrokes = 0;
 
 		for (StrokeOverlayItem item : items) {
-			totalNumberOfStrokes += item.getMultitude();
+			totalNumberOfStrokes += item.getMultiplicity();
 		}
 
 		return totalNumberOfStrokes;

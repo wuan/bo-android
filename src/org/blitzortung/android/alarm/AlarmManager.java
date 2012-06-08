@@ -117,10 +117,10 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 			List<AbstractStroke> strokes = result.getStrokes();
 
 			for (AbstractStroke stroke : strokes) {
-				int multiplicity = stroke.getCount();
+				int multiplicity = stroke.getMultiplicity();
 
 				Location strokeLocation = stroke.getLocation();
-				long time = stroke.getTime().getTime();
+				long time = stroke.getTimestamp();
 
 				float distance = location.distanceTo(strokeLocation);
 				float bearing = location.bearingTo(strokeLocation);

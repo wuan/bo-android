@@ -8,7 +8,7 @@ import org.blitzortung.android.alarm.AlarmLabel;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmStatus;
 import org.blitzortung.android.data.DataListener;
-import org.blitzortung.android.data.Provider;
+import org.blitzortung.android.data.DataRetriever;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.dialogs.AlarmDialog;
 import org.blitzortung.android.dialogs.InfoDialog;
@@ -62,7 +62,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 	private AlarmManager alarmManager;
 
-	private Provider provider;
+	private DataRetriever provider;
 
 	OwnLocationOverlay ownLocationOverlay;
 
@@ -256,7 +256,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			expireTime.add(Calendar.MINUTE, -provider.getMinutes());
 
 			strokesOverlay.setRaster(result.getRaster());
-			strokesOverlay.addAndExpireStrokes(result.getStrokes(), expireTime.getTime());
+			strokesOverlay.addAndExpireStrokes(result.getStrokes(), expireTime.getTime().getTime());
 
 			timerTask.setNumberOfStrokes(strokesOverlay.getTotalNumberOfStrokes());
 

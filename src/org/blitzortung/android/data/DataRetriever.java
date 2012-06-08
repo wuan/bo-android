@@ -19,9 +19,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-public class Provider implements OnSharedPreferenceChangeListener {
+public class DataRetriever implements OnSharedPreferenceChangeListener {
 
-	private static final String TAG = "Provider";
+	private static final String TAG = "DataRetriever";
 
 	private final Lock lock = new ReentrantLock();
 
@@ -75,7 +75,7 @@ public class Provider implements OnSharedPreferenceChangeListener {
 		}
 	};
 
-	public Provider(SharedPreferences sharedPreferences) {
+	public DataRetriever(SharedPreferences sharedPreferences) {
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
 		onSharedPreferenceChanged(sharedPreferences, Preferences.DATA_SOURCE_KEY);
@@ -133,7 +133,7 @@ public class Provider implements OnSharedPreferenceChangeListener {
 				}
 			} else {
 				result.setProcessWasLocked();
-				Log.v("Provider", "could not get lock on update task");
+				Log.v(TAG, "could not get lock on update task");
 			}
 			return result;
 		}

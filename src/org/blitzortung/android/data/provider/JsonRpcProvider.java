@@ -2,7 +2,6 @@ package org.blitzortung.android.data.provider;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -12,6 +11,7 @@ import org.blitzortung.android.data.beans.RasterElement;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.jsonrpc.JsonRpcClient;
+import org.blitzortung.android.util.TimeFormat;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -36,13 +36,12 @@ public class JsonRpcProvider extends DataProvider {
 		try {
 			JSONObject response = client.call("get_strokes", timeInterval, nextId);
 
-			Date timestamp = new Date();
-			timestamp = DATE_TIME_FORMATTER.parse(response.getString("t"));
+			long referenceTimestamp = TimeFormat.parseTime(response.getString("t"));
 
 			JSONArray strokes_array = (JSONArray) response.get("s");
 
 			for (int i = 0; i < strokes_array.length(); i++) {
-				strokes.add(new Stroke(timestamp, strokes_array.getJSONArray(i)));
+				strokes.add(new Stroke(referenceTimestamp, strokes_array.getJSONArray(i)));
 			}
 
 			if (response.has("next")) {
@@ -67,13 +66,12 @@ public class JsonRpcProvider extends DataProvider {
 
 			raster = new Raster(response);
 
-			Date timestamp = new Date();
-			timestamp = DATE_TIME_FORMATTER.parse(response.getString("t"));
+			long referenceTimestamp = TimeFormat.parseTime(response.getString("t"));
 
 			JSONArray strokes_array = (JSONArray) response.get("r");
 
 			for (int i = 0; i < strokes_array.length(); i++) {
-				strokes.add(new RasterElement(raster, timestamp, strokes_array.getJSONArray(i)));
+				strokes.add(new RasterElement(raster, referenceTimestamp, strokes_array.getJSONArray(i)));
 			}
 
 		} catch (Exception e) {

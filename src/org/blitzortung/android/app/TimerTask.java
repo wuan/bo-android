@@ -2,7 +2,7 @@ package org.blitzortung.android.app;
 
 import java.util.Calendar;
 
-import org.blitzortung.android.data.Provider;
+import org.blitzortung.android.data.DataRetriever;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -31,7 +31,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 	private boolean backgroundOperation;
 
-	private Provider provider;
+	private DataRetriever provider;
 
 	private Handler handler;
 
@@ -39,7 +39,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 	Resources resources;
 
-	TimerTask(Resources resources, SharedPreferences preferences, Provider provider) {
+	TimerTask(Resources resources, SharedPreferences preferences, DataRetriever provider) {
 		this.resources = resources;
 		this.provider = provider;
 		handler = new Handler();
@@ -55,7 +55,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 	public void run() {
 		long now = Calendar.getInstance().getTimeInMillis() / 1000;
 
-		Provider.UpdateTargets updateTargets = new Provider.UpdateTargets();
+		DataRetriever.UpdateTargets updateTargets = new DataRetriever.UpdateTargets();
 
 		int currentPeriod = backgroundOperation ? backgroundPeriod : period;
 

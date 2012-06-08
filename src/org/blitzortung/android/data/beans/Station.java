@@ -1,11 +1,11 @@
 package org.blitzortung.android.data.beans;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+import org.blitzortung.android.util.TimeFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -21,7 +21,7 @@ public class Station {
 
 	private float latitude;
 
-	Date offlineSince;
+	long offlineSince;
 
 	State state;
 
@@ -38,11 +38,11 @@ public class Station {
 
 				String offlineSinceString = jsonArray.getString(5);
 				if (offlineSinceString.length() > 0) {
-					offlineSince = formatter.parse(offlineSinceString);
+					offlineSince = TimeFormat.parseTimeWithMilliseconds(offlineSinceString);
 
 					Date now = new GregorianCalendar().getTime();
 
-					int minutesAgo = (int) (now.getTime() - offlineSince.getTime()) / 1000 / 60;
+					int minutesAgo = (int) (now.getTime() - offlineSince) / 1000 / 60;
 
 					if (minutesAgo > 24 * 60)
 						state = State.OFF;
@@ -56,8 +56,6 @@ public class Station {
 			} else {
 				state = State.ON;
 			}
-		} catch (ParseException e) {
-			throw new RuntimeException("error parsing station data");
 		} catch (JSONException e) {
 			throw new RuntimeException("error with JSON format while parsing station data");
 		}
@@ -75,7 +73,7 @@ public class Station {
 		return latitude;
 	}
 
-	public Date getOfflineSince() {
+	public long getOfflineSince() {
 		return offlineSince;
 	}
 

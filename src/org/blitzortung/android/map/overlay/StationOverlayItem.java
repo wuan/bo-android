@@ -1,7 +1,5 @@
 package org.blitzortung.android.map.overlay;
 
-import java.util.Date;
-
 import org.blitzortung.android.data.Projection;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Station.State;
@@ -10,7 +8,7 @@ import com.google.android.maps.OverlayItem;
 
 public class StationOverlayItem extends OverlayItem {
 
-	Date lastDataTime;
+	long lastDataTime;
 	
 	State state;
 	
@@ -21,7 +19,7 @@ public class StationOverlayItem extends OverlayItem {
 		state = station.getState();
 	}
 	
-	public Date getLastDataTime() {
+	public long getLastDataTime() {
 		return lastDataTime;
 	}
 	
