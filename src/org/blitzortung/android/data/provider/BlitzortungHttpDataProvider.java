@@ -17,7 +17,7 @@ import org.blitzortung.android.data.beans.Stroke;
 
 import android.util.Log;
 
-public class BlitzortungHttpProvider extends DataProvider {
+public class BlitzortungHttpDataProvider extends DataProvider {
 
 	class MyAuthenticator extends Authenticator {
 
@@ -77,8 +77,8 @@ public class BlitzortungHttpProvider extends DataProvider {
 	}
 
 	@Override
-	public ProviderType getType() {
-		return ProviderType.HTTP;
+	public DataProviderType getType() {
+		return DataProviderType.HTTP;
 	}
 
 	@Override

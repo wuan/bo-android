@@ -9,7 +9,7 @@ import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataResult;
-import org.blitzortung.android.data.provider.ProviderType;
+import org.blitzortung.android.data.provider.DataProviderType;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -143,14 +143,14 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 		progressBar.setVisibility(View.VISIBLE);
 		progressBar.setProgress(0);
 
-		new FetchDataTask().execute(minutes, dataProvider.getType() == ProviderType.HTTP ? 0 : rasterSize, minuteOffset, region, updateTargets.updateStations() ? 1 : 0);
+		new FetchDataTask().execute(minutes, dataProvider.getType() == DataProviderType.HTTP ? 0 : rasterSize, minuteOffset, region, updateTargets.updateStations() ? 1 : 0);
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (key.equals(Preferences.DATA_SOURCE_KEY)) {
-			String providerTypeString = sharedPreferences.getString(Preferences.DATA_SOURCE_KEY, ProviderType.RPC.toString());
-			ProviderType providerType = ProviderType.valueOf(providerTypeString.toUpperCase());
+			String providerTypeString = sharedPreferences.getString(Preferences.DATA_SOURCE_KEY, DataProviderType.RPC.toString());
+			DataProviderType providerType = DataProviderType.valueOf(providerTypeString.toUpperCase());
 			Log.v(TAG, String.format("update %s to %s", key, providerType.toString()));
 			dataProvider = providerType.getProvider();
 			if (listener != null) {

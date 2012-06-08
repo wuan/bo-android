@@ -1,6 +1,6 @@
 package org.blitzortung.android.app;
 
-import org.blitzortung.android.data.provider.ProviderType;
+import org.blitzortung.android.data.provider.DataProviderType;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -36,8 +36,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (key.equals(Preferences.DATA_SOURCE_KEY)) {
-			String providerTypeString = sharedPreferences.getString(Preferences.DATA_SOURCE_KEY, ProviderType.HTTP.toString());
-			ProviderType providerType = ProviderType.valueOf(providerTypeString.toUpperCase());
+			String providerTypeString = sharedPreferences.getString(Preferences.DATA_SOURCE_KEY, DataProviderType.HTTP.toString());
+			DataProviderType providerType = DataProviderType.valueOf(providerTypeString.toUpperCase());
 			switch (providerType) {
 			case HTTP:
 				setupBlitzortungHttpMode();

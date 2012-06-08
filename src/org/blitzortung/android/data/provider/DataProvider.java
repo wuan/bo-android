@@ -27,7 +27,7 @@ public abstract class DataProvider {
 	
 	public abstract List<Station> getStations();
 	
-	public abstract ProviderType getType();
+	public abstract DataProviderType getType();
 	
 	public abstract void reset();
 	

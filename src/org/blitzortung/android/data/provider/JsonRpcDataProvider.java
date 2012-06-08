@@ -15,7 +15,7 @@ import org.blitzortung.android.util.TimeFormat;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class JsonRpcProvider extends DataProvider {
+public class JsonRpcDataProvider extends DataProvider {
 
 	public static final SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
 	static {
@@ -103,8 +103,8 @@ public class JsonRpcProvider extends DataProvider {
 	}
 
 	@Override
-	public ProviderType getType() {
-		return ProviderType.RPC;
+	public DataProviderType getType() {
+		return DataProviderType.RPC;
 	}
 
 	@Override
