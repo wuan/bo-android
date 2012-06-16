@@ -86,7 +86,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 		final String androidId = Secure.getString(getBaseContext().getContentResolver(), Secure.ANDROID_ID);
 
-		if (isDebugBuild() || androidId.equals("e73c5a22934b5915")) {
+		if (isDebugBuild() || (androidId != null && androidId.equals("e73c5a22934b5915"))) {
 			RelativeLayout mapcontainer = (RelativeLayout) findViewById(R.id.mapcontainer);
 
 			Button rasterToggle = new Button(getBaseContext());
