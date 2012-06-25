@@ -42,7 +42,9 @@ public class OwnMapView extends MapView {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		boolean result = super.onTouchEvent(event);
+		
 		detectAndHandleZoomAction();
+		
 		return result;
 	}
 
