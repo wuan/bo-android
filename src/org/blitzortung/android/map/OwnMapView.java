@@ -6,19 +6,17 @@ import java.util.Set;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 
 import com.google.android.maps.MapView;
 
 public class OwnMapView extends MapView {
 
-	@SuppressWarnings("unused")
-	private static final String TAG = "maps.MapView";
+	Set<ZoomListener> zoomListeners = new HashSet<ZoomListener>();
 
 	public interface ZoomListener {
 		public void onZoom(int zoomLevel);
 	};
-
-	Set<ZoomListener> zoomListeners = new HashSet<ZoomListener>();
 
 	public OwnMapView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -32,28 +30,28 @@ public class OwnMapView extends MapView {
 		super(context, apiKey);
 	}
 
-	private int oldZoomLevel = -1;
-
 	private float oldPixelSize = -1;
 
 	@Override
 	public void dispatchDraw(Canvas canvas) {
 		super.dispatchDraw(canvas);
 
+		detectAndHandleZoomAction();
+	}
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		boolean result = super.onTouchEvent(event);
+		detectAndHandleZoomAction();
+		return result;
+	}
+
+	private void detectAndHandleZoomAction() {
 		float pixelSize = getProjection().metersToEquatorPixels(1000.0f);
 
-		if (getZoomLevel() != oldZoomLevel) {
-
-			for (ZoomListener zoomListener : zoomListeners) {
-				zoomListener.onZoom(getZoomLevel());
-			}
-
-			if (oldPixelSize == pixelSize) {
-				oldPixelSize = -1;
-				oldZoomLevel = getZoomLevel();
-			} else {
-				oldPixelSize = pixelSize;
-			}
+		if (pixelSize != oldPixelSize) {
+			notifyZoomListeners(getZoomLevel());
+			oldPixelSize = pixelSize;
 		}
 	}
 
@@ -61,4 +59,9 @@ public class OwnMapView extends MapView {
 		zoomListeners.add(zoomListener);
 	}
 
+	public void notifyZoomListeners(int level) {
+		for (ZoomListener zoomListener : zoomListeners) {
+			zoomListener.onZoom(getZoomLevel());
+		}
+	}
 }
