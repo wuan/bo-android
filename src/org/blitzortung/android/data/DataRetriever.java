@@ -62,11 +62,11 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 			return updateStrokes;
 		}
 
-		public void addStations() {
+		public void addParticipants() {
 			updateStations = true;
 		}
 
-		public boolean updateStations() {
+		public boolean updateParticipants() {
 			return updateStations;
 		}
 
@@ -124,7 +124,7 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 					result.setRaster(dataProvider.getRaster());
 
 					if (params.length > 4 && params[4] != 0)
-						result.setStations(dataProvider.getStations());
+						result.setStations(dataProvider.getStations(params[3]));
 					dataProvider.shutDown();
 				} catch (RuntimeException e) {
 					e.printStackTrace();
@@ -142,8 +142,15 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 	public void updateData(UpdateTargets updateTargets) {
 		progressBar.setVisibility(View.VISIBLE);
 		progressBar.setProgress(0);
-
-		new FetchDataTask().execute(minutes, dataProvider.getType() == DataProviderType.HTTP ? 0 : rasterSize, minuteOffset, region, updateTargets.updateStations() ? 1 : 0);
+		
+		boolean updateParticipants = false;
+		if (updateTargets.updateParticipants()) {
+			if (dataProvider.getType() == DataProviderType.HTTP || rasterSize == 0) {
+				updateParticipants = true;
+			}
+		}
+		
+		new FetchDataTask().execute(minutes, dataProvider.getType() == DataProviderType.HTTP ? 0 : rasterSize, minuteOffset, region, updateParticipants ? 1 : 0);
 	}
 
 	@Override
@@ -191,7 +198,7 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 
 	private static int storedRasterSize;
 
-	public void toggleRaster() {
+	public void toggleExtendedMode() {
 		if (rasterSize > 0) {
 			storedRasterSize = rasterSize;
 			rasterSize = 0;

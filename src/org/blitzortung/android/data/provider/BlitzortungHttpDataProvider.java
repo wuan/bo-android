@@ -12,12 +12,14 @@ import java.util.List;
 
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Raster;
-import org.blitzortung.android.data.beans.Station;
+import org.blitzortung.android.data.beans.Participant;
 import org.blitzortung.android.data.beans.Stroke;
 
 import android.util.Log;
 
 public class BlitzortungHttpDataProvider extends DataProvider {
+	
+	private enum Type {STROKES, PARTICIPANTS};
 
 	class MyAuthenticator extends Authenticator {
 
@@ -35,16 +37,8 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 
 		if (username != null && username.length() != 0 && password != null && password.length() != 0) {
 
-			Authenticator.setDefault(new MyAuthenticator());
-			URL url;
 			try {
-				url = new URL(String.format("http://blitzortung.tmt.de/Data_%d/Protected/strikes.txt", region));
-				URLConnection connection = url.openConnection();
-				connection.setConnectTimeout(10000);
-				connection.setReadTimeout(10000);
-				connection.setAllowUserInteraction(false);
-				InputStream ins = connection.getInputStream();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
+				BufferedReader reader = readFromUrl(Type.STROKES, region);
 
 				int size = 0;
 				String line;
@@ -61,9 +55,11 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 				if (strokes.size() > 0)
 					latestTime = strokes.get(strokes.size() - 1).getTimestamp();
 
+				reader.close();
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
+
 		} else {
 			throw new RuntimeException("no credentials provided");
 		}
@@ -71,9 +67,57 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 		return strokes;
 	}
 
+	private BufferedReader readFromUrl(Type type, int region) {
+
+		Authenticator.setDefault(new MyAuthenticator());
+
+		BufferedReader reader;
+
+		try {
+			URL url;
+			url = new URL(String.format("http://blitzortung.net/Data_%d/Protected/%s.txt", region, type.name().toLowerCase()));
+			URLConnection connection = url.openConnection();
+			connection.setConnectTimeout(60000);
+			connection.setReadTimeout(60000);
+			connection.setAllowUserInteraction(false);
+			InputStream ins = connection.getInputStream();
+			reader = new BufferedReader(new InputStreamReader(ins));
+
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return reader;
+	}
+
 	@Override
-	public List<Station> getStations() {
-		return new ArrayList<Station>();
+	public List<Participant> getStations(int region) {
+		List<Participant> stations = new ArrayList<Participant>();
+
+		if (username != null && username.length() != 0 && password != null && password.length() != 0) {
+
+			try {
+				BufferedReader reader = readFromUrl(Type.STROKES, region);
+
+				int size = 0;
+				String line;
+				while ((line = reader.readLine()) != null) {
+					size += line.length();
+					Participant station = new Participant(line);
+					stations.add(station);
+				}
+				Log.v("BlitzortungHttpProvider",
+						String.format("read %d bytes (%d stations) from region %d", size, stations.size(), region));
+
+				reader.close();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+
+		} else {
+			throw new RuntimeException("no credentials provided");
+		}
+
+		return stations;
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import org.blitzortung.android.util.TimeFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-public class Station {
+public class Participant {
 
 	public enum State {
 		ON, DELAYED, OFF
@@ -25,7 +25,7 @@ public class Station {
 
 	State state;
 
-	public Station(JSONArray jsonArray) {
+	public Participant(JSONArray jsonArray) {
 		TimeZone tz = TimeZone.getTimeZone("UTC");
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
 		formatter.setTimeZone(tz);
@@ -59,6 +59,19 @@ public class Station {
 		} catch (JSONException e) {
 			throw new RuntimeException("error with JSON format while parsing station data");
 		}
+	}
+	
+	public Participant(String line) {
+		String[] fields = line.split(" ");
+		
+		String timeString = fields[7].replace("-", "").replace("&nbsp;", "T");
+		int len = timeString.length();
+		long lastData = TimeFormat.parseTimeWithMilliseconds(timeString.substring(0, len - 6));
+
+		name = fields[1];
+		longitude = Float.valueOf(fields[6]);
+		latitude = Float.valueOf(fields[5]);
+		state = State.ON;
 	}
 
 	public String getName() {

@@ -8,7 +8,7 @@ import java.util.TimeZone;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Raster;
 import org.blitzortung.android.data.beans.RasterElement;
-import org.blitzortung.android.data.beans.Station;
+import org.blitzortung.android.data.beans.Participant;
 import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.jsonrpc.JsonRpcClient;
 import org.blitzortung.android.util.TimeFormat;
@@ -86,15 +86,15 @@ public class JsonRpcDataProvider extends DataProvider {
 	}
 
 	@Override
-	public List<Station> getStations() {
-		List<Station> stations = new ArrayList<Station>();
+	public List<Participant> getStations(int region) {
+		List<Participant> stations = new ArrayList<Participant>();
 
 		try {
 			JSONObject response = client.call("get_stations");
 			JSONArray stations_array = (JSONArray) response.get("stations");
 
 			for (int i = 0; i < stations_array.length(); i++) {
-				stations.add(new Station(stations_array.getJSONArray(i)));
+				stations.add(new Participant(stations_array.getJSONArray(i)));
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);

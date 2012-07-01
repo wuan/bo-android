@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Raster;
-import org.blitzortung.android.data.beans.Station;
+import org.blitzortung.android.data.beans.Participant;
 
 public abstract class DataProvider {
 	
@@ -25,7 +25,7 @@ public abstract class DataProvider {
 	
 	public abstract Raster getRaster();
 	
-	public abstract List<Station> getStations();
+	public abstract List<Participant> getStations(int region);
 	
 	public abstract DataProviderType getType();
 	

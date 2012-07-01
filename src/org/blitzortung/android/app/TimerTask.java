@@ -21,9 +21,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 	private long lastUpdate;
 
-	// private int stationPeriod;
-
-	// private long nextStationUpdate;
+	private long lastParticipantsUpdate;
 
 	private int numberOfStrokes;
 
@@ -63,6 +61,11 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 			updateTargets.addStrokes();
 			lastUpdate = now;
 		}
+		
+		if (now >= lastParticipantsUpdate + currentPeriod * 10 && !backgroundOperation) {
+			updateTargets.addParticipants();
+			lastParticipantsUpdate = now;
+		}
 
 		if (updateTargets.anyUpdateRequested()) {
 			provider.updateData(updateTargets);
@@ -100,7 +103,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 	public void restart() {
 		lastUpdate = 0;
-		// nextStationUpdate = 0;
+		lastParticipantsUpdate = 0;
 	}
 
 	public void onResume() {

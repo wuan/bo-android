@@ -16,7 +16,7 @@ import org.blitzortung.android.dialogs.LegendDialog;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.overlay.OwnLocationOverlay;
-import org.blitzortung.android.map.overlay.StationsOverlay;
+import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 
 import android.app.Dialog;
@@ -56,7 +56,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 	StrokesOverlay strokesOverlay;
 
-	StationsOverlay stationsOverlay;
+	ParticipantsOverlay participantsOverlay;
 
 	private TimerTask timerTask;
 
@@ -79,7 +79,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 		status = (TextView) findViewById(R.id.status);
 
-
 		setMapView((OwnMapView) findViewById(R.id.mapview));
 
 		getMapView().setBuiltInZoomControls(true);
@@ -96,7 +95,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 			rasterToggle.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
-					provider.toggleRaster();
+					provider.toggleExtendedMode();
 					strokesOverlay.clear();
 					timerTask.restart();
 				}
@@ -104,8 +103,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 			mapcontainer.addView(rasterToggle);
 		}
-
-		ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
 
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		preferences.registerOnSharedPreferenceChangeListener(this);
@@ -119,14 +116,15 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		strokesOverlay = persistedData.getStrokesOverlay();
 		strokesOverlay.setActivity(this);
 
-		// stationsOverlay = new StationsOverlay(this, new StationColorHandler(preferences));
+		participantsOverlay = persistedData.getParticipantsOverlay();
+		participantsOverlay.setActivity(this);
 
 		getMapView().addZoomListener(new OwnMapView.ZoomListener() {
 
 			@Override
 			public void onZoom(int zoomLevel) {
 				strokesOverlay.updateZoomLevel(zoomLevel);
-				// stationsOverlay.updateShapeSize(zoomLevel);
+				participantsOverlay.updateZoomLevel(zoomLevel);
 			}
 
 		});
@@ -134,7 +132,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		List<Overlay> mapOverlays = getMapView().getOverlays();
 
 		mapOverlays.add(strokesOverlay);
-		// mapOverlays.add(stationsOverlay);
+		mapOverlays.add(participantsOverlay);
 
 		provider = persistedData.getProvider();
 		provider.setDataListener(this);
@@ -157,6 +155,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			onAlarmResult(alarmManager.getAlarmStatus());
 		}
 
+		ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
+
 		onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
 		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
 
@@ -167,6 +167,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 	public Object onRetainNonConfigurationInstance() {
 		Log.v("Main", "onRetainNonConfigurationInstance()");
 		strokesOverlay.clearPopup();
+		participantsOverlay.clearPopup();
 		return persistedData;
 	}
 
@@ -266,9 +267,13 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			strokesOverlay.refresh();
 		}
 
-		if (stationsOverlay != null && result.containsStations()) {
-			stationsOverlay.setStations(result.getStations());
-			stationsOverlay.refresh();
+		if (participantsOverlay != null) {
+			if (result.containsParticipants()) {
+				participantsOverlay.setParticipants(result.getParticipants());
+			} else {
+				participantsOverlay.clear();
+			}
+			participantsOverlay.refresh();
 		}
 
 		getMapView().invalidate();
@@ -279,9 +284,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		strokesOverlay.clear();
 		timerTask.restart();
 		strokesOverlay.refresh();
-		if (stationsOverlay != null) {
-			stationsOverlay.clear();
-			stationsOverlay.refresh();
+		
+		if (participantsOverlay != null) {
+			participantsOverlay.clear();
+			participantsOverlay.refresh();
 		}
 	}
 
@@ -312,8 +318,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			String mapTypeString = sharedPreferences.getString(Preferences.MAP_TYPE_KEY, "SATELLITE");
 			getMapView().setSatellite(mapTypeString.equals("SATELLITE"));
 			strokesOverlay.refresh();
-			if (stationsOverlay != null) {
-				stationsOverlay.refresh();
+			if (participantsOverlay != null) {
+				participantsOverlay.refresh();
 			}
 		} else if (key.equals(Preferences.RASTER_SIZE_KEY)) {
 			timerTask.restart();

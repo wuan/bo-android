@@ -4,20 +4,20 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
-import org.blitzortung.android.data.beans.Station;
-import org.blitzortung.android.data.beans.Station.State;
-import org.blitzortung.android.map.overlay.color.StationColorHandler;
+import org.blitzortung.android.data.beans.Participant;
+import org.blitzortung.android.data.beans.Participant.State;
+import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
 
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 
-public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
+public class ParticipantsOverlay extends PopupOverlay<StationOverlayItem> {
 
 	ArrayList<StationOverlayItem> items;
 
-	StationColorHandler colorHandler;
+	ParticipantColorHandler colorHandler;
 
 	static private Drawable DefaultDrawable;
 	static {
@@ -27,7 +27,7 @@ public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
 
 	EnumMap<State, Drawable> shapes = new EnumMap<State, Drawable>(State.class);
 
-	public StationsOverlay(StationColorHandler colorHandler) {
+	public ParticipantsOverlay(ParticipantColorHandler colorHandler) {
 		super(boundCenter(DefaultDrawable));
 
 		this.colorHandler = colorHandler;
@@ -55,9 +55,9 @@ public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
 		}
 	}
 
-	public void setStations(List<Station> stations) {
+	public void setParticipants(List<Participant> stations) {
 		items.clear();
-		for (Station station : stations) {
+		for (Participant station : stations) {
 			items.add(new StationOverlayItem(station));
 		}
 		populate();
@@ -73,7 +73,7 @@ public class StationsOverlay extends PopupOverlay<StationOverlayItem> {
 
 	int[] colors = { 0xffff0000, 0xffff9900, 0xffffff00, 0xff88ff22, 0xff00ffff, 0xff0000ff };
 
-	public void updateShapeSize(int zoomLevel) {
+	public void updateZoomLevel(int zoomLevel) {
 		this.shapeSize = Math.max(1, zoomLevel - 3);
 
 		refresh();

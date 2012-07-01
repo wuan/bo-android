@@ -4,12 +4,12 @@ import java.util.List;
 
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Raster;
-import org.blitzortung.android.data.beans.Station;
+import org.blitzortung.android.data.beans.Participant;
 
 public class DataResult {
 
 	List<AbstractStroke> strokes;
-	List<Station> stations;
+	List<Participant> stations;
 	Raster raster = null;
 	
 	boolean fail;
@@ -39,15 +39,15 @@ public class DataResult {
 		return strokes;
 	}
 	
-	public void setStations(List<Station> stations) {
+	public void setStations(List<Participant> stations) {
 		this.stations = stations;
 	}
 	
-	public boolean containsStations() {
+	public boolean containsParticipants() {
 		return stations != null;
 	}
 	
-	public List<Station> getStations() {
+	public List<Participant> getParticipants() {
 		return stations;
 	}
 	
