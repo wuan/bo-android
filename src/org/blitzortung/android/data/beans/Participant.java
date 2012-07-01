@@ -9,6 +9,8 @@ import org.blitzortung.android.util.TimeFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import android.text.Html;
+
 public class Participant {
 
 	public enum State {
@@ -73,7 +75,7 @@ public class Participant {
 		long now = new GregorianCalendar().getTime().getTime();
 		long lastData = TimeFormat.parseTimeWithMilliseconds(timeString.substring(0, len - 6));
 
-		name = fields[1];
+		name = Html.fromHtml(fields[3]).toString();
 		longitude = Float.valueOf(fields[6]);
 		latitude = Float.valueOf(fields[5]);
 		updateState((int)(now - lastData)/1000/60);
