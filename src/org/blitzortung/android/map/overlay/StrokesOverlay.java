@@ -1,7 +1,6 @@
 package org.blitzortung.android.map.overlay;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
