@@ -93,7 +93,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 			listener.onStatusUpdate(statusString);
 		}
 
-		// Schedule the next update in one second
+		// Schedule the next update
 		handler.postDelayed(this, backgroundOperation ? 60000 : 1000);
 	}
 

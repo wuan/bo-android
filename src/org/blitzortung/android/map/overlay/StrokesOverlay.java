@@ -64,9 +64,6 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 	}
 
 	public void addAndExpireStrokes(List<AbstractStroke> strokes, long expireTime) {
-
-		Collections.reverse(items);
-
 		if (isRaster()) {
 			items.clear();
 		}
@@ -76,8 +73,6 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		}
 
 		expireStrokes(expireTime);
-
-		Collections.reverse(items);
 
 		setLastFocusedIndex(-1);
 		populate();

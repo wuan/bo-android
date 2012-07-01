@@ -9,17 +9,18 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.Raster;
 import org.blitzortung.android.data.beans.Participant;
+import org.blitzortung.android.data.beans.Raster;
 import org.blitzortung.android.data.beans.Stroke;
 
 import android.util.Log;
 
 public class BlitzortungHttpDataProvider extends DataProvider {
 	
-	private enum Type {STROKES, PARTICIPANTS};
+	private enum Type {STRIKES, STATIONS};
 
 	class MyAuthenticator extends Authenticator {
 
@@ -38,7 +39,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 		if (username != null && username.length() != 0 && password != null && password.length() != 0) {
 
 			try {
-				BufferedReader reader = readFromUrl(Type.STROKES, region);
+				BufferedReader reader = readFromUrl(Type.STRIKES, region);
 
 				int size = 0;
 				String line;
@@ -69,18 +70,23 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 
 	private BufferedReader readFromUrl(Type type, int region) {
 
+		boolean useGzipCompression = region == 1;
+		
 		Authenticator.setDefault(new MyAuthenticator());
 
 		BufferedReader reader;
 
 		try {
 			URL url;
-			url = new URL(String.format("http://blitzortung.net/Data_%d/Protected/%s.txt", region, type.name().toLowerCase()));
+			url = new URL(String.format("http://blitzortung.net/Data_%d/Protected/%s.txt%s", region, type.name().toLowerCase(), useGzipCompression ? ".gz" : ""));
 			URLConnection connection = url.openConnection();
 			connection.setConnectTimeout(60000);
 			connection.setReadTimeout(60000);
 			connection.setAllowUserInteraction(false);
 			InputStream ins = connection.getInputStream();
+			if (useGzipCompression) {
+				ins = new GZIPInputStream(ins);
+			}
 			reader = new BufferedReader(new InputStreamReader(ins));
 
 		} catch (Exception e) {
@@ -96,7 +102,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 		if (username != null && username.length() != 0 && password != null && password.length() != 0) {
 
 			try {
-				BufferedReader reader = readFromUrl(Type.STROKES, region);
+				BufferedReader reader = readFromUrl(Type.STATIONS, region);
 
 				int size = 0;
 				String line;

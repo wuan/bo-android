@@ -21,8 +21,6 @@ import android.widget.ProgressBar;
 
 public class DataRetriever implements OnSharedPreferenceChangeListener {
 
-	private static final String TAG = "DataRetriever";
-
 	private final Lock lock = new ReentrantLock();
 
 	private DataProvider dataProvider;
@@ -133,7 +131,6 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 				}
 			} else {
 				result.setProcessWasLocked();
-				Log.v(TAG, "could not get lock on update task");
 			}
 			return result;
 		}
@@ -158,17 +155,14 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 		if (key.equals(Preferences.DATA_SOURCE_KEY)) {
 			String providerTypeString = sharedPreferences.getString(Preferences.DATA_SOURCE_KEY, DataProviderType.RPC.toString());
 			DataProviderType providerType = DataProviderType.valueOf(providerTypeString.toUpperCase());
-			Log.v(TAG, String.format("update %s to %s", key, providerType.toString()));
 			dataProvider = providerType.getProvider();
 			if (listener != null) {
 				listener.onDataReset();
 			}
 		} else if (key.equals(Preferences.USERNAME_KEY)) {
 			username = sharedPreferences.getString(Preferences.USERNAME_KEY, "");
-			Log.v(TAG, String.format("update %s to %s", key, username));
 		} else if (key.equals(Preferences.PASSWORD_KEY)) {
 			password = sharedPreferences.getString(Preferences.PASSWORD_KEY, "");
-			Log.v(TAG, String.format("update %s to *****", key));
 		} else if (key.equals(Preferences.RASTER_SIZE_KEY)) {
 			rasterSize = Integer.parseInt(sharedPreferences.getString(Preferences.RASTER_SIZE_KEY, "10000"));
 		} else if (key.equals(Preferences.REGION_KEY)) {

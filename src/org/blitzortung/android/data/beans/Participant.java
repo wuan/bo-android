@@ -44,12 +44,7 @@ public class Participant {
 
 					int minutesAgo = (int) (now.getTime() - offlineSince) / 1000 / 60;
 
-					if (minutesAgo > 24 * 60)
-						state = State.OFF;
-					else if (minutesAgo > 15)
-						state = State.DELAYED;
-					else
-						state = State.ON;
+					updateState(minutesAgo);
 				} else {
 					state = State.ON;
 				}
@@ -60,18 +55,28 @@ public class Participant {
 			throw new RuntimeException("error with JSON format while parsing station data");
 		}
 	}
+
+	private void updateState(int minutesAgo) {
+		if (minutesAgo > 24 * 60)
+			state = State.OFF;
+		else if (minutesAgo > 15)
+			state = State.DELAYED;
+		else
+			state = State.ON;
+	}
 	
 	public Participant(String line) {
 		String[] fields = line.split(" ");
 		
 		String timeString = fields[7].replace("-", "").replace("&nbsp;", "T");
 		int len = timeString.length();
+		long now = new GregorianCalendar().getTime().getTime();
 		long lastData = TimeFormat.parseTimeWithMilliseconds(timeString.substring(0, len - 6));
 
 		name = fields[1];
 		longitude = Float.valueOf(fields[6]);
 		latitude = Float.valueOf(fields[5]);
-		state = State.ON;
+		updateState((int)(now - lastData)/1000/60);
 	}
 
 	public String getName() {

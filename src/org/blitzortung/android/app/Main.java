@@ -67,6 +67,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 	OwnLocationOverlay ownLocationOverlay;
 
 	private PersistedData persistedData;
+	
+	private boolean resetData;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -96,8 +98,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			rasterToggle.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
 					provider.toggleExtendedMode();
-					strokesOverlay.clear();
-					timerTask.restart();
+					onDataReset();
 				}
 			});
 
@@ -251,6 +252,15 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 	@Override
 	public void onDataUpdate(DataResult result) {
+		if (resetData) {
+			resetData = false;
+			strokesOverlay.clear();
+			
+			if (participantsOverlay != null) {
+				participantsOverlay.clear();
+			}
+		}
+		
 		if (result.containsStrokes()) {
 			Calendar expireTime = new GregorianCalendar();
 
@@ -267,12 +277,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			strokesOverlay.refresh();
 		}
 
-		if (participantsOverlay != null) {
-			if (result.containsParticipants()) {
-				participantsOverlay.setParticipants(result.getParticipants());
-			} else {
-				participantsOverlay.clear();
-			}
+		if (participantsOverlay != null && result.containsParticipants()) {
+			participantsOverlay.setParticipants(result.getParticipants());	
 			participantsOverlay.refresh();
 		}
 
@@ -281,14 +287,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 	@Override
 	public void onDataReset() {
-		strokesOverlay.clear();
 		timerTask.restart();
-		strokesOverlay.refresh();
-		
-		if (participantsOverlay != null) {
-			participantsOverlay.clear();
-			participantsOverlay.refresh();
-		}
+		resetData = true;
 	}
 
 	protected Dialog onCreateDialog(int id) {
