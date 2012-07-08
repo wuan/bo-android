@@ -35,7 +35,6 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -50,8 +49,6 @@ import com.google.android.maps.Overlay;
 
 public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, TimerTask.StatusListener,
 		AlarmManager.AlarmListener {
-
-	private static final String TAG = "Main";
 
 	private TextView status;
 
@@ -74,7 +71,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 	private PersistedData persistedData;
 
 	private boolean resetData;
-	
+
 	private float notificationDistanceLimit;
 
 	private float vibrationDistanceLimit;
@@ -82,7 +79,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.v("Main", "onCreate()");
 
 		setContentView(isDebugBuild() ? R.layout.main_debug : R.layout.main);
 
@@ -172,13 +168,12 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
 		onSharedPreferenceChanged(preferences, Preferences.NOTIFICATION_DISTANCE_LIMIT);
 		onSharedPreferenceChanged(preferences, Preferences.VIBRATION_DISTANCE_LIMIT);
-		
+
 		getMapView().invalidate();
 	}
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
-		Log.v("Main", "onRetainNonConfigurationInstance()");
 		strokesOverlay.clearPopup();
 		participantsOverlay.clearPopup();
 		return persistedData;
@@ -236,7 +231,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.v(TAG, "onResume()");
+
 		timerTask.onResume();
 
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -248,7 +243,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 	@Override
 	public void onPause() {
 		super.onPause();
-		Log.v(TAG, "onPause()");
+
 		timerTask.onPause();
 
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -372,7 +367,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			clearNotification();
 		}
 	}
-
 
 	@Override
 	public void onAlarmClear() {

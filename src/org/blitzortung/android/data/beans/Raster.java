@@ -6,7 +6,6 @@ import org.blitzortung.android.data.Coordsys;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.RectF;
 
