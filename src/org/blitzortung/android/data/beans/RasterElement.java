@@ -1,10 +1,14 @@
 package org.blitzortung.android.data.beans;
 
+import java.io.Serializable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
-public class RasterElement extends AbstractStroke {
+public class RasterElement extends AbstractStroke implements Serializable {
 
+	private static final long serialVersionUID = 6765788323616893614L;
+	
 	private int multiplicity;
 	
 	public  RasterElement(Raster raster, long referenceTimestamp, JSONArray jsonArray) {

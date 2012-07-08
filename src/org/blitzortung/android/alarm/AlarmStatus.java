@@ -1,5 +1,10 @@
 package org.blitzortung.android.alarm;
 
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import org.blitzortung.android.app.R;
+
 public class AlarmStatus {
 
 	private final static String[] DIRECTION_LABELS = { "S", "SW", "W", "NW", "N", "NO", "O", "SO" };
@@ -96,5 +101,29 @@ public class AlarmStatus {
 		}
 
 		return null;
+	}
+	
+
+	public String getTextMessage(float notificationDistanceLimit) {
+		SortedMap<Float, Integer> distanceSectors = new TreeMap<Float, Integer>();
+		
+		for (int sectorIndex = 0; sectorIndex < getSectorCount(); sectorIndex++) {
+			AlarmSector sector = getSector(sectorIndex);
+			if (sector.getMinimumDistance() <= notificationDistanceLimit) {
+				distanceSectors.put(sector.getMinimumDistance(), sectorIndex);
+			}
+		}
+		StringBuilder sb = new StringBuilder();
+		
+		for (int sectorIndex : distanceSectors.values()) {
+			AlarmSector sector = getSector(sectorIndex);
+			sb.append(getSectorLabel(sectorIndex));
+			sb.append(" ");
+			sb.append(String.format("%.0f km", sector.getMinimumDistance() / 1000.0));
+			sb.append(", ");
+		}
+		sb.setLength(sb.length()-2);
+		
+		return sb.toString();
 	}
 }

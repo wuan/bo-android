@@ -1,6 +1,6 @@
 package org.blitzortung.android.map.overlay;
 
-import org.blitzortung.android.data.Projection;
+import org.blitzortung.android.data.Coordsys;
 import org.blitzortung.android.data.beans.Participant;
 import org.blitzortung.android.data.beans.Participant.State;
 
@@ -13,7 +13,7 @@ public class StationOverlayItem extends OverlayItem {
 	State state;
 	
 	public StationOverlayItem(Participant station) {
-		super(Projection.toMapCoords(station.getLongitude(), station.getLatitude()), station.getName(), "");
+		super(Coordsys.toMapCoords(station.getLongitude(), station.getLatitude()), station.getName(), "");
 
 		lastDataTime = station.getOfflineSince();
 		state = station.getState();

@@ -20,6 +20,9 @@ import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -50,25 +53,31 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 	private static final String TAG = "Main";
 
-	TextView status;
+	private TextView status;
 
-	TextView warning;
+	private TextView warning;
 
-	StrokesOverlay strokesOverlay;
+	private StrokesOverlay strokesOverlay;
 
-	ParticipantsOverlay participantsOverlay;
+	private ParticipantsOverlay participantsOverlay;
 
 	private TimerTask timerTask;
 
 	private AlarmManager alarmManager;
 
+	private NotificationManager notificationManager;
+
 	private DataRetriever provider;
 
-	OwnLocationOverlay ownLocationOverlay;
+	private OwnLocationOverlay ownLocationOverlay;
 
 	private PersistedData persistedData;
-	
+
 	private boolean resetData;
+	
+	private float notificationDistanceLimit;
+
+	private float vibrationDistanceLimit;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -109,7 +118,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		preferences.registerOnSharedPreferenceChangeListener(this);
 
 		if (getLastNonConfigurationInstance() == null) {
-			persistedData = new PersistedData(getResources(), (LocationManager)getSystemService(Context.LOCATION_SERVICE), preferences);
+			persistedData = new PersistedData(getResources(), (LocationManager) getSystemService(Context.LOCATION_SERVICE), preferences);
 		} else {
 			persistedData = (PersistedData) getLastNonConfigurationInstance();
 		}
@@ -155,12 +164,15 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		if (alarmManager.isAlarmEnabled()) {
 			onAlarmResult(alarmManager.getAlarmStatus());
 		}
+		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
 
 		onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
 		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
-
+		onSharedPreferenceChanged(preferences, Preferences.NOTIFICATION_DISTANCE_LIMIT);
+		onSharedPreferenceChanged(preferences, Preferences.VIBRATION_DISTANCE_LIMIT);
+		
 		getMapView().invalidate();
 	}
 
@@ -255,15 +267,14 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		if (resetData) {
 			resetData = false;
 			strokesOverlay.clear();
-			
+
 			if (participantsOverlay != null) {
 				participantsOverlay.clear();
 			}
 		}
-		
+
 		if (result.containsStrokes()) {
 			Calendar expireTime = new GregorianCalendar();
-
 			expireTime.add(Calendar.MINUTE, -provider.getMinutes());
 
 			strokesOverlay.setRaster(result.getRaster());
@@ -278,7 +289,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		}
 
 		if (participantsOverlay != null && result.containsParticipants()) {
-			participantsOverlay.setParticipants(result.getParticipants());	
+			participantsOverlay.setParticipants(result.getParticipants());
 			participantsOverlay.refresh();
 		}
 
@@ -333,6 +344,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			} else {
 				ownLocationOverlay.disableOwnLocation();
 			}
+		} else if (key.equals(Preferences.NOTIFICATION_DISTANCE_LIMIT)) {
+			notificationDistanceLimit = Float.parseFloat(sharedPreferences.getString(Preferences.NOTIFICATION_DISTANCE_LIMIT, "50000"));
+		} else if (key.equals(Preferences.VIBRATION_DISTANCE_LIMIT)) {
+			vibrationDistanceLimit = Float.parseFloat(sharedPreferences.getString(Preferences.VIBRATION_DISTANCE_LIMIT, "25000"));
 		}
 	}
 
@@ -342,15 +357,41 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 		alarmLabel.apply(alarmStatus);
 
-		if (alarmStatus != null && alarmStatus.getClosestStrokeDistance() < 50.0) {
-			Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-			vibrator.vibrate(40);
+		if (alarmStatus != null) {
+			if (alarmStatus != null && alarmStatus.getClosestStrokeDistance() <= vibrationDistanceLimit) {
+				Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+				vibrator.vibrate(40);
+			}
+
+			if (alarmStatus.getClosestStrokeDistance() <= notificationDistanceLimit) {
+				sendNotification(getResources().getString(R.string.activity) + ": " + alarmStatus.getTextMessage(notificationDistanceLimit));
+			} else {
+				clearNotification();
+			}
+		} else {
+			clearNotification();
 		}
 	}
+
 
 	@Override
 	public void onAlarmClear() {
 		warning.setText("");
 	}
 
+	private void sendNotification(String notificationText) {
+		if (notificationManager != null) {
+			Notification notification = new Notification(R.drawable.icon, notificationText, System.currentTimeMillis());
+			PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, Main.class), 0);
+			notification.setLatestEventInfo(this, getResources().getText(R.string.app_name), notificationText, contentIntent);
+
+			notificationManager.notify(R.id.alarm_notification_id, notification);
+		}
+	}
+
+	private void clearNotification() {
+		if (notificationManager != null) {
+			notificationManager.cancel(R.id.alarm_notification_id);
+		}
+	}
 }

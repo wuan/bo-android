@@ -1,5 +1,6 @@
 package org.blitzortung.android.data.beans;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -11,7 +12,9 @@ import org.json.JSONException;
 
 import android.text.Html;
 
-public class Participant {
+public class Participant implements Serializable {
+
+	private static final long serialVersionUID = -6731278932726028829L;
 
 	public enum State {
 		ON, DELAYED, OFF

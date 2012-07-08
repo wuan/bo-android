@@ -1,22 +1,25 @@
 package org.blitzortung.android.data.provider;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.Raster;
 import org.blitzortung.android.data.beans.Participant;
+import org.blitzortung.android.data.beans.Raster;
 
-public class DataResult {
+public class DataResult implements Serializable {
 
-	List<AbstractStroke> strokes;
-	List<Participant> stations;
-	Raster raster = null;
+	private static final long serialVersionUID = -2104015890700948020L;
+
+	private List<AbstractStroke> strokes;
+	private List<Participant> stations;
+	private Raster raster = null;
 	
-	boolean fail;
+	private boolean fail;
 	
-	boolean processWasLocked;
+	private boolean processWasLocked;
 	
-	boolean incremental;
+	private boolean incremental;
 	
 	public DataResult() {
 		fail = true;

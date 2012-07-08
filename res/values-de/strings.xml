@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Blitzortung Viewer</string>
-    <string name="app_version">0.5</string>
+    <string name="app_version">0.6</string>
 
     <plurals name="stroke">
         <item quantity="zero">kein Blitz</item>
@@ -123,4 +123,23 @@
         <item>1800</item>
     </string-array>
 
+        <string name="notification_distance_limit">max. Entfernung Benachrichtigung</string>
+    <string name="vibration_distance_limit">max. Entfernung Vibration</string>
+
+    <string-array name="distance_limits">
+        <item>deaktiviert</item>
+        <item>25 km</item>
+        <item>50 km</item>
+        <item>100 km</item>
+        <item>150 km</item>
+        <item>200 km</item>
+    </string-array>
+        <string-array name="distance_limit_values">
+        <item>0</item>
+        <item>25000</item>
+        <item>50000</item>
+        <item>100000</item>
+        <item>150000</item>
+        <item>200000</item>
+    </string-array>
 </resources>

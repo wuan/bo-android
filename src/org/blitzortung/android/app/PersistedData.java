@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.location.LocationManager;
 
-
 public class PersistedData {
 
 	private TimerTask timerTask;

@@ -18,6 +18,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	public static final String BACKGROUND_QUERY_PERIOD_KEY = "background_query_period";
 	public static final String SHOW_LOCATION_KEY = "location";
 	public static final String ALARM_ENABLED_KEY = "alarm_enabled";
+	public static final String NOTIFICATION_DISTANCE_LIMIT = "notification_distance_limit";
+	public static final String VIBRATION_DISTANCE_LIMIT = "vibration_distance_limit";	
 	public static final String REGION_KEY = "region";
 	public static final String DATA_SOURCE_KEY = "data_source";
 

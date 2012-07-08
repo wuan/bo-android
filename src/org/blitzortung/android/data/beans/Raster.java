@@ -1,19 +1,36 @@
 package org.blitzortung.android.data.beans;
 
+import java.io.Serializable;
+
+import org.blitzortung.android.data.Coordsys;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Raster {
+import android.graphics.Path;
+import android.graphics.Point;
+import android.graphics.RectF;
+
+import com.google.android.maps.Projection;
+
+public class Raster implements Serializable {
+
+	private static final long serialVersionUID = -2751803268193381643L;
+	
 	private float lon_start;
 	private float lat_start;
 	private float lon_delta;
 	private float lat_delta;
+	private int lon_count;
+	private int lat_count;
+	
 
 	public Raster(JSONObject jsonObject) throws JSONException {
 		lon_start = (float) jsonObject.getDouble("x0");
 		lat_start = (float) jsonObject.getDouble("y1");
 		lon_delta = (float) jsonObject.getDouble("xd");
 		lat_delta = (float) jsonObject.getDouble("yd");
+		lon_count = jsonObject.getInt("xc");
+		lat_count = jsonObject.getInt("yc");
 	}
 
 	public float getCenterLongitude(int offset) {
@@ -30,6 +47,14 @@ public class Raster {
 
 	public float getLatitudeDelta() {
 		return lat_delta;
+	}
+	
+	public RectF getRect(Projection projection) {
+		Point leftTop = new Point();
+		projection.toPixels(Coordsys.toMapCoords(lon_start, lat_start), leftTop);
+		Point bottomRight = new Point();
+		projection.toPixels(Coordsys.toMapCoords(lon_start + lon_count * lon_delta, lat_start - lat_count * lat_delta), bottomRight);
+		return new RectF(leftTop.x, leftTop.y, bottomRight.x, bottomRight.y);
 	}
 	
 	@Override

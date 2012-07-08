@@ -5,19 +5,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.Preferences;
+import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.TimerTask;
 import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataResult;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Vibrator;
 
 public class AlarmManager implements OnSharedPreferenceChangeListener, LocationListener {
 
@@ -31,15 +36,13 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 
 	private LocationManager locationManager;
 
-	Vibrator vibrator;
-
 	private Location location;
 
-	boolean alarmEnabled;
+	private boolean alarmEnabled;
 
-	Set<AlarmListener> alarmListeners;
+	private Set<AlarmListener> alarmListeners;
 
-	AlarmStatus alarmStatus;
+	private AlarmStatus alarmStatus;
 
 	public AlarmManager(LocationManager locationManager, SharedPreferences preferences, TimerTask timerTask) {
 		this.timerTask = timerTask;
@@ -81,19 +84,16 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 	@Override
 	public void onProviderDisabled(String provider) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onProviderEnabled(String provider) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		// TODO Auto-generated method stub
-
 	}
 
 	public boolean isAlarmEnabled() {

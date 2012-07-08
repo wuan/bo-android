@@ -1,11 +1,15 @@
 package org.blitzortung.android.data.beans;
 
+import java.io.Serializable;
+
 import org.blitzortung.android.util.TimeFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-public class Stroke extends AbstractStroke {
+public class Stroke extends AbstractStroke implements Serializable {
 	
+	private static final long serialVersionUID = 4201042078597105622L;
+
 	private int nanoseconds;
 	
 	private float amplitude;

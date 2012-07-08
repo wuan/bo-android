@@ -11,6 +11,9 @@ import org.blitzortung.android.map.overlay.color.ColorHandler;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
@@ -26,8 +29,13 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 	@SuppressWarnings("unused")
 	private static final String TAG = "overlay.StrokesOverlay";
 
-	ArrayList<StrokeOverlayItem> items;
-	StrokeColorHandler colorHandler;
+	private ArrayList<StrokeOverlayItem> items;
+	
+	private StrokeColorHandler colorHandler;
+	
+	private int zoomLevel;
+	
+	Raster raster = null;
 
 	static private Drawable DefaultDrawable;
 	static {
@@ -59,6 +67,14 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 	public void draw(Canvas canvas, com.google.android.maps.MapView mapView, boolean shadow) {
 		if (!shadow) {
 			super.draw(canvas, mapView, false);
+			
+			if (isRaster()) {
+				Paint paint = new Paint();
+				paint.setColor(0xffffffff);
+				paint.setStyle(Style.STROKE);
+				Projection projection = mapView.getProjection();
+				canvas.drawRect(raster.getRect(projection), paint);
+			}
 		}
 	}
 
@@ -100,8 +116,6 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		populate();
 	}
 
-	int zoomLevel;
-
 	public void updateZoomLevel(int zoomLevel) {
 		this.zoomLevel = zoomLevel;
 
@@ -127,14 +141,14 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 			int section = colorHandler.getColorSection(now, item.getTimestamp(), getMinutesPerColor());
 
 			if (isRaster() || current_section != section) {
-				drawable = getDrawable(item.getPoint(), section, colorHandler.getColor(section));
+				drawable = getDrawable(item.getPoint(), section, colorHandler.getColor(section), zoomLevel > 7 ? item.getMultiplicity() : 0);
 			}
 
 			item.setMarker(drawable);
 		}
 	}
 
-	private Drawable getDrawable(GeoPoint point, int section, int color) {
+	private Drawable getDrawable(GeoPoint point, int section, int color, int multiplicity) {
 
 		Shape shape = null;
 
@@ -150,15 +164,13 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 					(int) (point.getLongitudeE6() - lon_delta)), null);
 			// Log.v("StrokesOverlay", "" + center + " " + topRight + " " +
 			// bottomLeft + " raster: " + raster + " point: " + point);
-			shape = new RasterShape(center, topRight, bottomLeft, color);
+			shape = new RasterShape(center, topRight, bottomLeft, color, multiplicity);
 		} else {
 			shape = new StrokeShape(zoomLevel + 1, color);
 
 		}
 		return new ShapeDrawable(shape);
 	}
-
-	Raster raster = null;
 
 	public void setRaster(Raster raster) {
 		this.raster = raster;

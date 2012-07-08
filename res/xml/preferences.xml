@@ -88,6 +88,24 @@
             android:persistent="true"
             android:selectable="true"
             android:title="@string/background_query_period" />
+        <ListPreference
+            android:defaultValue="50000"
+            android:enabled="true"
+            android:entries="@array/distance_limits"
+            android:entryValues="@array/distance_limit_values"
+            android:key="notification_distance_limit"
+            android:persistent="true"
+            android:selectable="true"
+            android:title="@string/notification_distance_limit" />
+        <ListPreference
+            android:defaultValue="25000"
+            android:enabled="true"
+            android:entries="@array/distance_limits"
+            android:entryValues="@array/distance_limit_values"
+            android:key="vibration_distance_limit"
+            android:persistent="true"
+            android:selectable="true"
+            android:title="@string/vibration_distance_limit" />
     </PreferenceCategory>
 
 </PreferenceScreen>
