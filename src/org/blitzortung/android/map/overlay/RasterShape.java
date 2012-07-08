@@ -25,9 +25,6 @@ public class RasterShape extends Shape {
 		this.multiplicity = multiplicity;
 		this.color = color;
 		setAlphaValue();
-		// Log.v("RasterShape",
-		// String.format("x1: %.1f, x2: %.1f, y1: %.2f, y2: %.2f, alpha: %d",
-		// x1, x2, y1, y2, alpha));
 	}
 
 	@Override

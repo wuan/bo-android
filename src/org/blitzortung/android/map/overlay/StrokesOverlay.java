@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.text.format.DateFormat;
+import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
@@ -140,14 +141,14 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 			int section = colorHandler.getColorSection(now, item.getTimestamp(), getMinutesPerColor());
 
 			if (isRaster() || current_section != section) {
-				drawable = getDrawable(item.getPoint(), section, colorHandler.getColor(section), zoomLevel > 7 ? item.getMultiplicity() : 0);
+				drawable = getDrawable(item, section, colorHandler.getColor(section));
 			}
 
 			item.setMarker(drawable);
 		}
 	}
 
-	private Drawable getDrawable(GeoPoint point, int section, int color, int multiplicity) {
+	private Drawable getDrawable(StrokeOverlayItem item, int section, int color) {
 
 		Shape shape = null;
 
@@ -156,14 +157,13 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		if (isRaster()) {
 			float lon_delta = raster.getLongitudeDelta() / 2.0f * 1e6f;
 			float lat_delta = raster.getLatitudeDelta() / 2.0f * 1e6f;
-			Point center = projection.toPixels(point, null);
-			Point topRight = projection.toPixels(new GeoPoint((int) (point.getLatitudeE6() + lat_delta),
-					(int) (point.getLongitudeE6() + lon_delta)), null);
-			Point bottomLeft = projection.toPixels(new GeoPoint((int) (point.getLatitudeE6() - lat_delta),
-					(int) (point.getLongitudeE6() - lon_delta)), null);
-			// Log.v("StrokesOverlay", "" + center + " " + topRight + " " +
-			// bottomLeft + " raster: " + raster + " point: " + point);
-			shape = new RasterShape(center, topRight, bottomLeft, color, multiplicity);
+			GeoPoint geoPoint = item.getPoint();
+			Point center = projection.toPixels(geoPoint, null);
+			Point topRight = projection.toPixels(new GeoPoint((int) (geoPoint.getLatitudeE6() + lat_delta),
+					(int) (geoPoint.getLongitudeE6() + lon_delta)), null);
+			Point bottomLeft = projection.toPixels(new GeoPoint((int) (geoPoint.getLatitudeE6() - lat_delta),
+					(int) (geoPoint.getLongitudeE6() - lon_delta)), null);
+			shape = new RasterShape(center, topRight, bottomLeft, color, item.getMultiplicity());
 		} else {
 			shape = new StrokeShape(zoomLevel + 1, color);
 
