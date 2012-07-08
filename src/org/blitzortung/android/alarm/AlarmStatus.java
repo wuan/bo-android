@@ -3,8 +3,6 @@ package org.blitzortung.android.alarm;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.blitzortung.android.app.R;
-
 public class AlarmStatus {
 
 	private final static String[] DIRECTION_LABELS = { "S", "SW", "W", "NW", "N", "NO", "O", "SO" };
