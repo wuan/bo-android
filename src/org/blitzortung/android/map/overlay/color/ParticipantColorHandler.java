@@ -4,7 +4,7 @@ import android.content.SharedPreferences;
 
 public class ParticipantColorHandler extends ColorHandler {
 	
-	private int[] colorsOnSatelliteView = {0xff88ff22, 0xffff9900, 0xffff0000};
+	private int[] satelliteViewColors = {0xff88ff22, 0xffff9900, 0xffff0000};
 	
 	private int[] mapColors = {0xff448811, 0xff884400, 0xff880000};
 
@@ -13,12 +13,14 @@ public class ParticipantColorHandler extends ColorHandler {
 	}
 	
 	@Override
-	public int[] getColorsOnSatelliteView() {
-		return colorsOnSatelliteView;
-	}
+	public int[] getColors(ColorTarget target) {
+		switch(target) {
+		case SATELLITE:
+			return satelliteViewColors;
 
-	@Override
-	public int[] getColorsOnMap() {
-		return mapColors;
+		case STREETMAP:
+			return mapColors;			
+		}
+		throw new IllegalStateException("Unhandled color target " + target);
 	}
 }

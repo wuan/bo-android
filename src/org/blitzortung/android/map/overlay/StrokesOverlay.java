@@ -133,6 +133,8 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		long now = new GregorianCalendar().getTime().getTime();
 
 		int current_section = -1;
+		
+		colorHandler.updateTarget();
 
 		Drawable drawable = null;
 
@@ -140,18 +142,20 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 			int section = colorHandler.getColorSection(now, item.getTimestamp(), getMinutesPerColor());
 
 			if (isRaster() || current_section != section) {
-				drawable = getDrawable(item, section, colorHandler.getColor(section));
+				drawable = getDrawable(item, section, colorHandler);
 			}
 
 			item.setMarker(drawable);
 		}
 	}
 
-	private Drawable getDrawable(StrokeOverlayItem item, int section, int color) {
+	private Drawable getDrawable(StrokeOverlayItem item, int section, ColorHandler colorHandler) {
 
 		Shape shape = null;
 
 		Projection projection = this.getActivity().getMapView().getProjection();
+		
+		int color = colorHandler.getColor(section);
 
 		if (isRaster()) {
 			float lon_delta = raster.getLongitudeDelta() / 2.0f * 1e6f;
@@ -162,7 +166,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 					(int) (geoPoint.getLongitudeE6() + lon_delta)), null);
 			Point bottomLeft = projection.toPixels(new GeoPoint((int) (geoPoint.getLatitudeE6() - lat_delta),
 					(int) (geoPoint.getLongitudeE6() - lon_delta)), null);
-			shape = new RasterShape(center, topRight, bottomLeft, color, item.getMultiplicity());
+			shape = new RasterShape(center, topRight, bottomLeft, color, item.getMultiplicity(), colorHandler.getTextColor());
 		} else {
 			shape = new StrokeShape(zoomLevel + 1, color);
 
