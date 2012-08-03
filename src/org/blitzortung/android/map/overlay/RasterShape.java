@@ -9,14 +9,14 @@ import android.graphics.drawable.shapes.Shape;
 
 public class RasterShape extends Shape {
 
-	private float x1;
-	private float x2;
-	private float y1;
-	private float y2;
-	private int color;
+	private final float x1;
+	private final float x2;
+	private final float y1;
+	private final float y2;
+	private final int color;
 	private int alpha;
-	private int multiplicity;
-	private int textColor;
+	private final int multiplicity;
+	private final int textColor;
 
 	public RasterShape(Point center, Point topRight, Point bottomLeft, int color, int multiplicity, int textColor) {
 		x1 = Math.max(Math.abs(center.x - bottomLeft.x), 1.5f);

@@ -54,7 +54,7 @@ public class JsonRpcClient extends HttpServiceClient {
 				JSONObject responseObject = new JSONObject(response);
 
 				if (responseObject.has("fault")) {
-					throw new JsonRpcException(String.format("remote Exception '%s' #%d ", responseObject.get("faultString"),
+					throw new JsonRpcException(String.format("remote Exception '%s' #%s ", responseObject.get("faultString"),
 							responseObject.get("faultCode")));
 				}
 				return responseObject;

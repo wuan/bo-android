@@ -8,9 +8,9 @@ import com.google.android.maps.OverlayItem;
 
 public class StationOverlayItem extends OverlayItem {
 
-	long lastDataTime;
+	final long lastDataTime;
 	
-	State state;
+	final State state;
 	
 	public StationOverlayItem(Participant station) {
 		super(Coordsys.toMapCoords(station.getLongitude(), station.getLatitude()), station.getName(), "");

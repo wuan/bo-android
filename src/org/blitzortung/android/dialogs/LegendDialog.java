@@ -54,4 +54,4 @@ public class LegendDialog extends AlertDialog {
 		}
 		return super.onKeyUp(keyCode, event);
 	}
-};
+}

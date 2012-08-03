@@ -28,15 +28,15 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 	@SuppressWarnings("unused")
 	private static final String TAG = "overlay.StrokesOverlay";
 
-	private ArrayList<StrokeOverlayItem> items;
+	private final ArrayList<StrokeOverlayItem> items;
 	
-	private StrokeColorHandler colorHandler;
+	private final StrokeColorHandler colorHandler;
 	
 	private int zoomLevel;
 	
 	Raster raster = null;
 
-	static private Drawable DefaultDrawable;
+	static private final Drawable DefaultDrawable;
 	static {
 		Shape shape = new StrokeShape(1, 0);
 		DefaultDrawable = new ShapeDrawable(shape);
@@ -151,7 +151,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
 	private Drawable getDrawable(StrokeOverlayItem item, int section, ColorHandler colorHandler) {
 
-		Shape shape = null;
+		Shape shape;
 
 		Projection projection = this.getActivity().getMapView().getProjection();
 		
@@ -206,12 +206,8 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 	public boolean onTap(GeoPoint arg0, MapView arg1) {
 		boolean eventHandled = super.onTap(arg0, arg1);
 
-		if (!eventHandled) {
-			return clearPopup();
-		}
-		
-		return false;
-	}
+        return !eventHandled && clearPopup();
+    }
 
 	public int getTotalNumberOfStrokes() {
 

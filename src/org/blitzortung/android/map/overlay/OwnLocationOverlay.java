@@ -19,7 +19,7 @@ import com.google.android.maps.ItemizedOverlay;
 
 public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> implements LocationListener {
 
-	static private Drawable DEFAULT_DRAWABLE;
+	static private final Drawable DEFAULT_DRAWABLE;
 	static {
 		Shape shape = new OwnLocationShape(1);
 		DEFAULT_DRAWABLE = new ShapeDrawable(shape);
@@ -27,7 +27,7 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
 	
 	private OwnLocationOverlayItem item;
 	
-	private LocationManager locationManager;
+	private final LocationManager locationManager;
 	
 	private int zoomLevel;
 	

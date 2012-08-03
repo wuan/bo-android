@@ -20,7 +20,7 @@ import android.util.Log;
 
 public class BlitzortungHttpDataProvider extends DataProvider {
 	
-	private enum Type {STRIKES, STATIONS};
+	private enum Type {STRIKES, STATIONS}
 
 	class MyAuthenticator extends Authenticator {
 

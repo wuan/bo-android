@@ -15,17 +15,17 @@ import android.graphics.drawable.shapes.Shape;
 
 public class ParticipantsOverlay extends PopupOverlay<StationOverlayItem> {
 
-	ArrayList<StationOverlayItem> items;
+	final ArrayList<StationOverlayItem> items;
 
-	ParticipantColorHandler colorHandler;
+	final ParticipantColorHandler colorHandler;
 
-	static private Drawable DefaultDrawable;
+	static private final Drawable DefaultDrawable;
 	static {
 		Shape shape = new StationShape(1, 0);
 		DefaultDrawable = new ShapeDrawable(shape);
 	}
 
-	EnumMap<State, Drawable> shapes = new EnumMap<State, Drawable>(State.class);
+	final EnumMap<State, Drawable> shapes = new EnumMap<State, Drawable>(State.class);
 
 	public ParticipantsOverlay(ParticipantColorHandler colorHandler) {
 		super(boundCenter(DefaultDrawable));

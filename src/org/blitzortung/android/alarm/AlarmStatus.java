@@ -9,7 +9,7 @@ public class AlarmStatus {
 	
 	private final static int SECTOR_COUNT = DIRECTION_LABELS.length;
 
-	private AlarmSector sectors[];
+	private final AlarmSector[] sectors;
 
 	public AlarmStatus(long warnThresholdTime) {
 		sectors = new AlarmSector[SECTOR_COUNT];
@@ -28,7 +28,7 @@ public class AlarmStatus {
 	}
 
 	public void check(int multiplicity, float distance, float bearing, long time) {
-		// Log.v("AlarmStatus", String.format("check() #%d, %.1f %.1f¡",
+		// Log.v("AlarmStatus", String.format("check() #%d, %.1f %.1f",
 		// multiplicity, distance, bearing));
 		int sector = getSectorNumber(bearing);
 

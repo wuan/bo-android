@@ -4,7 +4,7 @@ import android.content.SharedPreferences;
 
 public abstract class ColorHandler {
 
-	private SharedPreferences preferences;
+	private final SharedPreferences preferences;
 	
 	private ColorTarget target;
 

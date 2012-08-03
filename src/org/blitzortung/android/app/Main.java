@@ -190,7 +190,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			PackageInfo pi = pm.getPackageInfo(getPackageName(), 0);
 
 			dbg = ((pi.applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0);
-		} catch (Exception e) {
+		} catch (Exception ignored) {
 		}
 		return dbg;
 	}
@@ -353,7 +353,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		alarmLabel.apply(alarmStatus);
 
 		if (alarmStatus != null) {
-			if (alarmStatus != null && alarmStatus.getClosestStrokeDistance() <= vibrationDistanceLimit) {
+			if (alarmStatus.getClosestStrokeDistance() <= vibrationDistanceLimit) {
 				Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 				vibrator.vibrate(40);
 			}

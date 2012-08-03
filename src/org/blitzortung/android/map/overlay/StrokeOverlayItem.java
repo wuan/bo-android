@@ -7,9 +7,9 @@ import com.google.android.maps.OverlayItem;
 
 public class StrokeOverlayItem extends OverlayItem {
 
-	private long timestamp;
+	private final long timestamp;
 	
-	private int multiplicity;
+	private final int multiplicity;
 	
 	public StrokeOverlayItem(AbstractStroke stroke) {
 		super(Coordsys.toMapCoords(stroke.getLongitude(), stroke.getLatitude()), "", "");

@@ -13,7 +13,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 	public interface StatusListener {
 		public void onStatusUpdate(String statusString);
-	};
+	}
 
 	private int period;
 
@@ -29,13 +29,13 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 	private boolean backgroundOperation;
 
-	private DataRetriever provider;
+	private final DataRetriever provider;
 
-	private Handler handler;
+	private final Handler handler;
 
 	StatusListener listener;
 
-	Resources resources;
+	final Resources resources;
 
 	TimerTask(Resources resources, SharedPreferences preferences, DataRetriever provider) {
 		this.resources = resources;
@@ -139,4 +139,4 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 		this.listener = listener;
 	}
 
-};
+}

@@ -2,11 +2,11 @@ package org.blitzortung.android.alarm;
 
 public class AlarmResult {
 
-	private int range;
+	private final int range;
 	
-	private int sector;
+	private final int sector;
 	
-	private float distance;
+	private final float distance;
 	
 	public AlarmResult(int range, int sector, float distance) {
 		this.range = range;

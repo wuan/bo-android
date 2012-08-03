@@ -1,16 +1,5 @@
 package org.blitzortung.android.data;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import org.blitzortung.android.app.Preferences;
-import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.provider.DataProvider;
-import org.blitzortung.android.data.provider.DataResult;
-import org.blitzortung.android.data.provider.DataProviderType;
-
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
@@ -18,6 +7,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import org.blitzortung.android.app.Preferences;
+import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.provider.DataProvider;
+import org.blitzortung.android.data.provider.DataProviderType;
+import org.blitzortung.android.data.provider.DataResult;
+
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class DataRetriever implements OnSharedPreferenceChangeListener {
 
@@ -31,11 +29,9 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 	private ProgressBar progressBar;
 	private ImageView errorIndicator;
 
-	private int minutes = 60;
+	private final int minutes = 60;
 
-	private int minuteOffset = 0;
-
-	private int region = 1;
+    private int region = 1;
 
 	private int rasterSize;
 
@@ -71,7 +67,7 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 		public boolean anyUpdateRequested() {
 			return updateStrokes || updateStations;
 		}
-	};
+	}
 
 	public DataRetriever(SharedPreferences sharedPreferences) {
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
@@ -111,7 +107,7 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 					dataProvider.setUp();
 					dataProvider.setCredentials(username, password);
 					
-					List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
+					List<AbstractStroke> strokes;
 					if (params[1] == 0) {
 						result.setIncremental();
 						strokes = dataProvider.getStrokes(params[0], params[3]);
@@ -146,8 +142,9 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 				updateParticipants = true;
 			}
 		}
-		
-		new FetchDataTask().execute(minutes, dataProvider.getType() == DataProviderType.HTTP ? 0 : rasterSize, minuteOffset, region, updateParticipants ? 1 : 0);
+
+        int minuteOffset = 0;
+        new FetchDataTask().execute(minutes, dataProvider.getType() == DataProviderType.HTTP ? 0 : rasterSize, minuteOffset, region, updateParticipants ? 1 : 0);
 	}
 
 	@Override

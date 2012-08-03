@@ -26,15 +26,15 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 		void onAlarmClear();
 	}
 
-	private TimerTask timerTask;
+	private final TimerTask timerTask;
 
-	private LocationManager locationManager;
+	private final LocationManager locationManager;
 
 	private Location location;
 
 	private boolean alarmEnabled;
 
-	private Set<AlarmListener> alarmListeners;
+	private final Set<AlarmListener> alarmListeners;
 
 	private AlarmStatus alarmStatus;
 

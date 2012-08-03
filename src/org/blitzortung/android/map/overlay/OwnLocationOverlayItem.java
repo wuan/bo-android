@@ -8,7 +8,7 @@ import com.google.android.maps.OverlayItem;
 
 public class OwnLocationOverlayItem extends OverlayItem {
 
-	private float radius;
+	private final float radius;
 	
 	public OwnLocationOverlayItem(Location location, float radius) {
 		super(Coordsys.toMapCoords((float)location.getLongitude(), (float)location.getLatitude()), "", "");

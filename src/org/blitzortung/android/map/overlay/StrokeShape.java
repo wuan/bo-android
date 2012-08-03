@@ -6,8 +6,8 @@ import android.graphics.drawable.shapes.Shape;
 
 public class StrokeShape extends Shape {
 
-	private float size;
-	private int color;
+	private final float size;
+	private final int color;
 	
 	public StrokeShape(float size, int color) {
 		this.size = size;

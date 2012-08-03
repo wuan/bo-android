@@ -7,7 +7,7 @@ public class AlarmSector {
 	long latestTime[];
 	float minimumDistance;
 
-	float sectorCenterBearing;
+	final float sectorCenterBearing;
 	long warnThresholdTime;
 
 	public AlarmSector(float sectorCenterBearing, long warnThresholdTime) {

@@ -7,9 +7,9 @@ import android.widget.TextView;
 
 public class AlarmLabel {
 
-	private TextView textView;
+	private final TextView textView;
 	
-	private Resources resources;
+	private final Resources resources;
 	
 	public AlarmLabel(TextView textView, Resources resources) {
 		this.textView = textView;

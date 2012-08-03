@@ -25,9 +25,9 @@ public class HttpServiceClient {
 	
 	private final static ProtocolVersion PROTOCOL_VERSION = new ProtocolVersion("HTTP", 1, 1);
 
-	private String serviceUri;
+	private final String serviceUri;
 	
-	private HttpClient httpClient;
+	private final HttpClient httpClient;
 	
 	HttpServiceClient(String uri) {
         httpClient = new DefaultHttpClient();

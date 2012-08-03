@@ -12,11 +12,11 @@ import com.google.android.maps.MapView;
 
 public class OwnMapView extends MapView {
 
-	Set<ZoomListener> zoomListeners = new HashSet<ZoomListener>();
+	final Set<ZoomListener> zoomListeners = new HashSet<ZoomListener>();
 
 	public interface ZoomListener {
 		public void onZoom(int zoomLevel);
-	};
+	}
 
 	public OwnMapView(Context context, AttributeSet attrs) {
 		super(context, attrs);

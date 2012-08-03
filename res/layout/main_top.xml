@@ -28,7 +28,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:src="@android:drawable/stat_notify_error" />
+            android:src="@android:drawable/stat_notify_error"
+            android:contentDescription="status info"/>
 
         <ProgressBar
             android:id="@+id/progress"

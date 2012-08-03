@@ -6,9 +6,9 @@ import android.graphics.drawable.shapes.Shape;
 
 public class StationShape extends Shape {
 
-	private float width;
-	private float height;
-	private int color;
+	private final float width;
+	private final float height;
+	private final int color;
 	
 	public StationShape(float size, int color) {
 		width = size;

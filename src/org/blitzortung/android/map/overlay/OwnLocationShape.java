@@ -6,7 +6,7 @@ import android.graphics.drawable.shapes.Shape;
 
 public class OwnLocationShape extends Shape {
 
-	private float size;
+	private final float size;
 	
 	public OwnLocationShape(float size) {
 		this.size = size;

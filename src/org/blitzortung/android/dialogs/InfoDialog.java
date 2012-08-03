@@ -33,4 +33,4 @@ public class InfoDialog extends AlertDialog {
 		}
 		return super.onKeyUp(keyCode, event);
 	}
-};
+}

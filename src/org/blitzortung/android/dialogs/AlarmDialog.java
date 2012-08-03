@@ -35,4 +35,4 @@ public class AlarmDialog extends AlertDialog {
 		return super.onKeyUp(keyCode, event);
 	}
 
-};
+}

@@ -13,15 +13,15 @@ import android.location.LocationManager;
 
 public class PersistedData {
 
-	private TimerTask timerTask;
+	private final TimerTask timerTask;
 	
-	private DataRetriever provider;
+	private final DataRetriever provider;
 	
-	private AlarmManager alarmManager;
+	private final AlarmManager alarmManager;
 	
-	private StrokesOverlay strokesOverlay;
+	private final StrokesOverlay strokesOverlay;
 	
-	private ParticipantsOverlay participantsOverlay;
+	private final ParticipantsOverlay participantsOverlay;
 	
 	public PersistedData(Resources resources, LocationManager locationManager, SharedPreferences sharedPreferences) {
 		provider = new DataRetriever(sharedPreferences);
