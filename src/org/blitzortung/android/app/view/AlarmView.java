@@ -102,7 +102,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
             float sectorSize = alarmStatus.getSectorSize();
 
-            float radiusIncrement = radius / AlarmSector.getDistanceLimitCount();
+            float radiusIncrement = radius / AlarmSector.getDistanceStepCount();
 
             for (int sectorIndex = 0; sectorIndex < alarmStatus.getSectorCount(); sectorIndex++) {
                 float bearing = alarmStatus.getSectorBearing(sectorIndex) + 90 + 180;
@@ -110,7 +110,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
                 int counts[] = sector.getEventCounts();
                 long latestTimes[] = sector.getLatestTimes();
-                for (int distanceIndex = AlarmSector.getDistanceLimitCount() - 1; distanceIndex >= 0; distanceIndex--) {
+                for (int distanceIndex = AlarmSector.getDistanceStepCount() - 1; distanceIndex >= 0; distanceIndex--) {
 
                     float sectorRadius = (distanceIndex + 1) * radiusIncrement;
                     float leftTop = center - sectorRadius;
@@ -134,7 +134,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
                 String text = alarmStatus.getSectorLabel(sectorIndex);
                 if (!text.equals("O")) {
-                    float textRadius = (AlarmSector.getDistanceLimitCount() - 0.5f) * radiusIncrement;
+                    float textRadius = (AlarmSector.getDistanceStepCount() - 0.5f) * radiusIncrement;
                     canvas.drawText(text, center
                             + (float) (textRadius * Math.sin(bearing / 180.0 * Math.PI)), center
                             + (float) (textRadius * -Math.cos(bearing / 180.0 * Math.PI)) + textStyle.getFontMetrics(null) / 3f, textStyle);
@@ -142,13 +142,13 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
             }
 
             textStyle.setTextAlign(Align.RIGHT);
-            for (int distanceIndex = 0; distanceIndex < AlarmSector.getDistanceLimitCount(); distanceIndex++) {
+            for (int distanceIndex = 0; distanceIndex < AlarmSector.getDistanceStepCount(); distanceIndex++) {
                 float leftTop = center - (distanceIndex + 1) * radiusIncrement;
                 float bottomRight = center + (distanceIndex + 1) * radiusIncrement;
                 arcArea.set(leftTop, leftTop, bottomRight, bottomRight);
                 canvas.drawArc(arcArea, 0, 360, false, lines);
 
-                String text = String.format("%.0f", AlarmSector.getDistanceLimits()[distanceIndex] / 1000);
+                String text = String.format("%.0f", AlarmSector.getDistanceSteps()[distanceIndex] / 1000);
                 canvas.drawText(text, center + distanceIndex + 0.95f * radiusIncrement, center
                         + textStyle.getFontMetrics(null) / 3f, textStyle);
             }

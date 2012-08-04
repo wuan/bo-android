@@ -108,18 +108,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 				alarmStatus.updateThresholdTime(thresholdTime);
 			}
 
-			List<AbstractStroke> strokes = result.getStrokes();
-
-			for (AbstractStroke stroke : strokes) {
-				int multiplicity = stroke.getMultiplicity();
-
-				Location strokeLocation = stroke.getLocation();
-				long time = stroke.getTimestamp();
-
-				float distance = location.distanceTo(strokeLocation);
-				float bearing = location.bearingTo(strokeLocation);
-
-				alarmStatus.check(multiplicity, distance, bearing, time);
+			for (AbstractStroke stroke : result.getStrokes()) {
+				alarmStatus.check(location, stroke);
 			}
 		} else {
 			alarmStatus = null;

@@ -1,14 +1,17 @@
 package org.blitzortung.android.alarm;
 
+import android.location.Location;
+import org.blitzortung.android.data.beans.AbstractStroke;
+
 public class AlarmSector {
-	private static final float DISTANCE_LIMITS[] = { 10000, 25000, 50000, 100000, 250000, 500000 };
+	private static final float DISTANCE_STEPS[] = { 10000, 25000, 50000, 100000, 250000, 500000 };
 
-	int count[];
-	long latestTime[];
-	float minimumDistance;
+	private int strokeCount[];
+	private long latestStrokeTimestamp[];
+	private float warnMinimumDistance;
 
-	final float sectorCenterBearing;
-	long warnThresholdTime;
+	private final float sectorCenterBearing;
+	private long warnThresholdTime;
 
 	public AlarmSector(float sectorCenterBearing, long warnThresholdTime) {
 		this.warnThresholdTime = warnThresholdTime;
@@ -18,42 +21,47 @@ public class AlarmSector {
 	}
 
 	public void reset() {
-		int size = getSize();
+		int size = getDistanceStepCount();
 
-		count = new int[size];
-		latestTime = new long[size];
-		minimumDistance = (float) Double.POSITIVE_INFINITY;
+		strokeCount = new int[size];
+		latestStrokeTimestamp = new long[size];
+		warnMinimumDistance = (float) Double.POSITIVE_INFINITY;
 	}
 
-	public void check(int multiplicity, float distance, long time) {
+	public void check(Location location, AbstractStroke stroke) {
+        check(location.distanceTo(stroke.getLocation()), stroke.getTimestamp(), stroke.getMultiplicity());
+    }
 
-		int index = 0;
-		for (double distanceLimit : DISTANCE_LIMITS) {
-			if (distance <= distanceLimit) {
-				count[index] += multiplicity;
-				if (time > latestTime[index]) {
-					latestTime[index] = time;
+    public void check(float distance, long timeStamp, int multiplicity)
+    {
+		int stepIndex = 0;
+		for (double stepDistance : DISTANCE_STEPS) {
+			if (distance <= stepDistance) {
+				strokeCount[stepIndex] += multiplicity;
+
+				if (timeStamp > latestStrokeTimestamp[stepIndex]) {
+					latestStrokeTimestamp[stepIndex] = timeStamp;
 				}
-				if (time > warnThresholdTime) {
-					minimumDistance = Math.min(distance, minimumDistance);
+				if (timeStamp > warnThresholdTime) {
+					warnMinimumDistance = Math.min(distance, warnMinimumDistance);
 				}
 				break;
 			}
-			index++;
+			stepIndex++;
 		}
 	}
 
 	public int[] getEventCounts() {
-		return count;
+		return strokeCount;
 	}
 
 	public long[] getLatestTimes() {
-		return latestTime;
+		return latestStrokeTimestamp;
 	}
 
 	public int getMinimumIndex() {
-		for (int index = 0; index < getSize(); index++) {
-			if (count[index] > 0) {
+		for (int index = 0; index < getDistanceStepCount(); index++) {
+			if (strokeCount[index] > 0) {
 				return index;
 			}
 		}
@@ -61,27 +69,23 @@ public class AlarmSector {
 	}
 
 	public int getCount(int index) {
-		return count[index];
+		return strokeCount[index];
 	}
 
 	public long getLatestTime(int index) {
-		return latestTime[index];
+		return latestStrokeTimestamp[index];
 	}
 
-	public float getMinimumDistance() {
-		return minimumDistance;
+	public float getWarnMinimumDistance() {
+		return warnMinimumDistance;
 	}
 
-	private int getSize() {
-		return DISTANCE_LIMITS.length;
+	public static float[] getDistanceSteps() {
+		return DISTANCE_STEPS;
 	}
 
-	public static float[] getDistanceLimits() {
-		return DISTANCE_LIMITS;
-	}
-
-	public static int getDistanceLimitCount() {
-		return DISTANCE_LIMITS.length;
+	public static int getDistanceStepCount() {
+		return DISTANCE_STEPS.length;
 	}
 
 	public float getBearing() {
@@ -90,10 +94,11 @@ public class AlarmSector {
 
 	public void updateThreshold(long warnThresholdTime) {
 		this.warnThresholdTime = warnThresholdTime;
-		for (int index = 0; index < getSize(); index++) {
-			if (latestTime[index] < warnThresholdTime) {
-				latestTime[index] = 0;
-				count[index] = 0;
+
+		for (int index = 0; index < getDistanceStepCount(); index++) {
+			if (latestStrokeTimestamp[index] < warnThresholdTime) {
+				latestStrokeTimestamp[index] = 0;
+				strokeCount[index] = 0;
 			}
 		}
 	}

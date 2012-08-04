@@ -1,5 +1,8 @@
 package org.blitzortung.android.alarm;
 
+import android.location.Location;
+import org.blitzortung.android.data.beans.AbstractStroke;
+
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -27,12 +30,10 @@ public class AlarmStatus {
 		}
 	}
 
-	public void check(int multiplicity, float distance, float bearing, long time) {
-		// Log.v("AlarmStatus", String.format("check() #%d, %.1f %.1f",
-		// multiplicity, distance, bearing));
-		int sector = getSectorNumber(bearing);
+	public void check(Location location, AbstractStroke stroke) {
+		int sector = getSectorNumber(location.bearingTo(stroke.getLocation()));
 
-		sectors[sector].check(multiplicity, distance, time);
+		sectors[sector].check(location, stroke);
 	}
 
 	private int getSectorNumber(double bearing) {
@@ -63,8 +64,8 @@ public class AlarmStatus {
 
 		int index = 0;
 		for (AlarmSector sector : sectors) {
-			if (sector.getMinimumDistance() < minDistance) {
-				minDistance = sector.getMinimumDistance();
+			if (sector.getWarnMinimumDistance() < minDistance) {
+				minDistance = sector.getWarnMinimumDistance();
 				sectorIndex = index;
 			}
 			index++;
@@ -79,7 +80,7 @@ public class AlarmStatus {
 	public float getClosestStrokeDistance() {
 		int alarmSector = getSectorWithClosestStroke();
 		if (alarmSector >= 0) {
-			return sectors[alarmSector].getMinimumDistance();
+			return sectors[alarmSector].getWarnMinimumDistance();
 		} else {
 			return (float) Double.POSITIVE_INFINITY;
 		}
@@ -95,7 +96,7 @@ public class AlarmStatus {
 		AlarmSector sector = sectors[closestStrokeSectorIndex];
 
 		if (closestStrokeSectorIndex >= 0) {
-			return new AlarmResult(sector.getMinimumIndex(), closestStrokeSectorIndex, sector.getMinimumDistance());
+			return new AlarmResult(sector.getMinimumIndex(), closestStrokeSectorIndex, sector.getWarnMinimumDistance());
 		}
 
 		return null;
@@ -107,8 +108,8 @@ public class AlarmStatus {
 		
 		for (int sectorIndex = 0; sectorIndex < getSectorCount(); sectorIndex++) {
 			AlarmSector sector = getSector(sectorIndex);
-			if (sector.getMinimumDistance() <= notificationDistanceLimit) {
-				distanceSectors.put(sector.getMinimumDistance(), sectorIndex);
+			if (sector.getWarnMinimumDistance() <= notificationDistanceLimit) {
+				distanceSectors.put(sector.getWarnMinimumDistance(), sectorIndex);
 			}
 		}
 		StringBuilder sb = new StringBuilder();
@@ -117,7 +118,7 @@ public class AlarmStatus {
 			AlarmSector sector = getSector(sectorIndex);
 			sb.append(getSectorLabel(sectorIndex));
 			sb.append(" ");
-			sb.append(String.format("%.0f km", sector.getMinimumDistance() / 1000.0));
+			sb.append(String.format("%.0f km", sector.getWarnMinimumDistance() / 1000.0));
 			sb.append(", ");
 		}
 		sb.setLength(sb.length()-2);
