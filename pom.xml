@@ -11,12 +11,17 @@
 
     <dependencies>
         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>android</groupId>
             <artifactId>android</artifactId>
             <version>2.2_r3</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>com.google.android.maps</groupId>
             <artifactId>maps</artifactId>
@@ -31,12 +36,6 @@
             <version>1.1</version>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.2</version>
-        </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
@@ -47,13 +46,27 @@
 
     <build>
         <finalName>${project.artifactId}</finalName>
-
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
             <plugin>
                 <!-- See http://code.google.com/p/maven-android-plugin/ -->
                 <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                 <artifactId>android-maven-plugin</artifactId>
                 <version>3.3.0</version>
+                <configuration>
+                    <sdk>
+                        <platform>8</platform>
+                    </sdk>
+                </configuration>
+                <extensions>true</extensions>
             </plugin>
         </plugins>
     </build>
