@@ -59,7 +59,7 @@ public class RasterElementTest {
     @Test
     public void testRuntimeExceptionWhenJSONExceptionIsCatched() throws JSONException {
         inputArray = mock(JSONArray.class);
-        when(inputArray.getInt(0)).thenThrow(new JSONException("foo"));
+        when(inputArray.getInt(0)).thenThrow(mock(JSONException.class));
 
         expectedException.expect(RuntimeException.class);
         rasterElement = new RasterElement(raster, referenceTimestamp, inputArray);

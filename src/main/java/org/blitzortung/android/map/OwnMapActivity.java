@@ -1,10 +1,8 @@
 package org.blitzortung.android.map;
 
-import org.blitzortung.android.app.R;
-
 import android.view.View;
-
 import com.google.android.maps.MapActivity;
+import org.blitzortung.android.app.R;
 
 public abstract class OwnMapActivity extends MapActivity {
 
