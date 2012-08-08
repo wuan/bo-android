@@ -14,7 +14,7 @@ public abstract class AbstractStroke {
 		return longitude;
 	}
 	
-	void setLongitude(float longitude) {
+	protected void setLongitude(float longitude) {
 		this.longitude = longitude;
 	}
 
