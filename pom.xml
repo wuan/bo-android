@@ -60,6 +60,12 @@
                     <source>1.6</source>
                     <target>1.6</target>
                     <encoding>utf-8</encoding>
+                    <compilerArguments>
+                        <Xmaxerrs>1000</Xmaxerrs>
+                        <Xlint/>
+                        <Xlint:-path/>
+                        <Averbose>true</Averbose>
+                    </compilerArguments>
                 </configuration>
             </plugin>
             <plugin>
