@@ -331,14 +331,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			timerTask.restart();
 		} else if (key.equals(Preferences.REGION_KEY)) {
 			timerTask.restart();
-		} else if (key.equals(Preferences.SHOW_LOCATION_KEY)) {
-			boolean showLocation = sharedPreferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false);
-
-			if (showLocation) {
-				ownLocationOverlay.enableOwnLocation();
-			} else {
-				ownLocationOverlay.disableOwnLocation();
-			}
 		} else if (key.equals(Preferences.NOTIFICATION_DISTANCE_LIMIT)) {
 			notificationDistanceLimit = Float.parseFloat(sharedPreferences.getString(Preferences.NOTIFICATION_DISTANCE_LIMIT, "50000"));
 		} else if (key.equals(Preferences.VIBRATION_DISTANCE_LIMIT)) {

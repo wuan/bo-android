@@ -17,103 +17,115 @@ import android.preference.PreferenceManager;
 
 import com.google.android.maps.ItemizedOverlay;
 
-public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> implements LocationListener {
+public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> implements LocationListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
-	static private final Drawable DEFAULT_DRAWABLE;
-	static {
-		Shape shape = new OwnLocationShape(1);
-		DEFAULT_DRAWABLE = new ShapeDrawable(shape);
-	}
-	
-	private OwnLocationOverlayItem item;
-	
-	private final LocationManager locationManager;
-	
-	private int zoomLevel;
-	
-	public OwnLocationOverlay(Context context, OwnMapView mapView) {
-		super(DEFAULT_DRAWABLE);
-		
-		item = null;
-		
-		populate();
-		
-		locationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-		
-		mapView.addZoomListener(new OwnMapView.ZoomListener() {
+    static private final Drawable DEFAULT_DRAWABLE;
 
-			@Override
-			public void onZoom(int newZoomLevel) {
-				zoomLevel = newZoomLevel;
-				refresh();
-			}
+    static {
+        Shape shape = new OwnLocationShape(1);
+        DEFAULT_DRAWABLE = new ShapeDrawable(shape);
+    }
 
-		});
-		
-		zoomLevel = mapView.getZoomLevel();
-		
-		mapView.getOverlays().add(this);
-		
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-		if (preferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false)) {
-			enableOwnLocation();
-		}
-		
-		refresh();
-	}
-	
-	@Override
-	public void draw(Canvas canvas, com.google.android.maps.MapView mapView, boolean shadow) {
-		if (!shadow) {
-			super.draw(canvas, mapView, false);
-		}
-	}
+    private OwnLocationOverlayItem item;
 
-	private void refresh() {
-		if (item != null) {
-			item.setMarker(new ShapeDrawable(new OwnLocationShape(zoomLevel + 1)));
-		}
-	}
-	
-	@Override
-	protected OwnLocationOverlayItem createItem(int i) {
-		return item;
-	}
+    private final LocationManager locationManager;
 
-	@Override
-	public int size() {
-		return item == null ? 0 : 1;
-	}
+    private int zoomLevel;
 
-	@Override
-	public void onLocationChanged(Location location) {
-		item = new OwnLocationOverlayItem(location, 25000);
-		
-		populate();
-		refresh();
-	}
+    public OwnLocationOverlay(Context context, OwnMapView mapView) {
+        super(DEFAULT_DRAWABLE);
 
-	@Override
-	public void onProviderDisabled(String arg0) {
-		item = null;
-		
-		populate();
-	}
+        item = null;
 
-	@Override
-	public void onProviderEnabled(String arg0) {	
-	}
+        populate();
 
-	@Override
-	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-	}
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
-	public void enableOwnLocation() {	
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
-	}
+        mapView.addZoomListener(new OwnMapView.ZoomListener() {
 
-	public void disableOwnLocation() {
-		locationManager.removeUpdates(this);
-	}
+            @Override
+            public void onZoom(int newZoomLevel) {
+                zoomLevel = newZoomLevel;
+                refresh();
+            }
 
+        });
+
+        zoomLevel = mapView.getZoomLevel();
+
+        mapView.getOverlays().add(this);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        preferences.registerOnSharedPreferenceChangeListener(this);
+        onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
+
+        refresh();
+    }
+
+    @Override
+    public void draw(Canvas canvas, com.google.android.maps.MapView mapView, boolean shadow) {
+        if (!shadow) {
+            super.draw(canvas, mapView, false);
+        }
+    }
+
+    private void refresh() {
+        if (item != null) {
+            item.setMarker(new ShapeDrawable(new OwnLocationShape(zoomLevel + 1)));
+        }
+    }
+
+    @Override
+    protected OwnLocationOverlayItem createItem(int i) {
+        return item;
+    }
+
+    @Override
+    public int size() {
+        return item == null ? 0 : 1;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        item = new OwnLocationOverlayItem(location, 25000);
+
+        populate();
+        refresh();
+    }
+
+    @Override
+    public void onProviderDisabled(String arg0) {
+        item = null;
+
+        populate();
+    }
+
+    @Override
+    public void onProviderEnabled(String arg0) {
+    }
+
+    @Override
+    public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+    }
+
+    public void enableOwnLocation() {
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+    }
+
+    public void disableOwnLocation() {
+        locationManager.removeUpdates(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(Preferences.SHOW_LOCATION_KEY)) {
+            boolean showLocation = sharedPreferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false);
+
+            if (showLocation) {
+                enableOwnLocation();
+            } else {
+                disableOwnLocation();
+            }
+        }
+    }
 }
