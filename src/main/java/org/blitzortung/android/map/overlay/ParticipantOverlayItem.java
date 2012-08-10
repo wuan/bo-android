@@ -6,13 +6,13 @@ import org.blitzortung.android.data.beans.Participant.State;
 
 import com.google.android.maps.OverlayItem;
 
-public class StationOverlayItem extends OverlayItem {
+public class ParticipantOverlayItem extends OverlayItem {
 
 	final long lastDataTime;
 	
 	final State state;
 	
-	public StationOverlayItem(Participant station) {
+	public ParticipantOverlayItem(Participant station) {
 		super(Coordsys.toMapCoords(station.getLongitude(), station.getLatitude()), station.getName(), "");
 
 		lastDataTime = station.getOfflineSince();

@@ -30,7 +30,6 @@ public class JsonRequestEntityTest {
         MockitoAnnotations.initMocks(this);
 
         when(jsonObject.toString()).thenReturn("{}");
-        //jsonObject = new JSONObject("{}");
 
         jsonRequestEntity = new JsonRequestEntity(jsonObject);
     }

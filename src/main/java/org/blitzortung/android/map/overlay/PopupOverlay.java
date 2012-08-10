@@ -24,8 +24,8 @@ public abstract class PopupOverlay<Item extends OverlayItem> extends ItemizedOve
 	}
 
 	boolean popupShown;
-	
-	protected void showPopup(GeoPoint location, String text) {
+
+    protected void showPopup(GeoPoint location, String text) {
 
 		OwnMapView map = activity.getMapView();
 

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapView;
+import com.google.common.annotations.VisibleForTesting;
 import org.blitzortung.android.data.beans.Participant;
 import org.blitzortung.android.data.beans.Participant.State;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
@@ -13,11 +16,12 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 
-public class ParticipantsOverlay extends PopupOverlay<StationOverlayItem> {
+public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> {
 
-	final ArrayList<StationOverlayItem> items;
+    @VisibleForTesting
+	protected final ArrayList<ParticipantOverlayItem> items;
 
-	final ParticipantColorHandler colorHandler;
+	private final ParticipantColorHandler colorHandler;
 
 	static private final Drawable DefaultDrawable;
 	static {
@@ -25,21 +29,24 @@ public class ParticipantsOverlay extends PopupOverlay<StationOverlayItem> {
 		DefaultDrawable = new ShapeDrawable(shape);
 	}
 
-	final EnumMap<State, Drawable> shapes = new EnumMap<State, Drawable>(State.class);
+	private final EnumMap<State, Drawable> shapes = new EnumMap<State, Drawable>(State.class);
 
-	public ParticipantsOverlay(ParticipantColorHandler colorHandler) {
+    @VisibleForTesting
+    protected int shapeSize;
+
+    public ParticipantsOverlay(ParticipantColorHandler colorHandler) {
 		super(boundCenter(DefaultDrawable));
 
 		this.colorHandler = colorHandler;
 
-		items = new ArrayList<StationOverlayItem>();
+		items = new ArrayList<ParticipantOverlayItem>();
 
 		setLastFocusedIndex(-1);
 		populate();
 	}
 
 	@Override
-	protected StationOverlayItem createItem(int index) {
+	protected ParticipantOverlayItem createItem(int index) {
 		return items.get(index);
 	}
 
@@ -58,7 +65,7 @@ public class ParticipantsOverlay extends PopupOverlay<StationOverlayItem> {
 	public void setParticipants(List<Participant> stations) {
 		items.clear();
 		for (Participant station : stations) {
-			items.add(new StationOverlayItem(station));
+			items.add(new ParticipantOverlayItem(station));
 		}
 		populate();
 	}
@@ -69,12 +76,8 @@ public class ParticipantsOverlay extends PopupOverlay<StationOverlayItem> {
 		populate();
 	}
 
-	int shapeSize;
-
-	int[] colors = { 0xffff0000, 0xffff9900, 0xffffff00, 0xff88ff22, 0xff00ffff, 0xff0000ff };
-
 	public void updateZoomLevel(int zoomLevel) {
-		this.shapeSize = Math.max(1, zoomLevel - 3);
+		shapeSize = Math.max(1, zoomLevel - 3);
 
 		refresh();
 	}
@@ -88,12 +91,13 @@ public class ParticipantsOverlay extends PopupOverlay<StationOverlayItem> {
 		shapes.put(State.DELAYED, getDrawable(colors[1]));
 		shapes.put(State.OFF, getDrawable(colors[2]));
 
-		for (StationOverlayItem item : items) {
+		for (ParticipantOverlayItem item : items) {
 			item.setMarker(shapes.get(item.getState()));
 		}
 	}
 
-	private Drawable getDrawable(int color) {
+    @VisibleForTesting
+	protected Drawable getDrawable(int color) {
 		Shape shape = new StationShape(shapeSize, color);
 		return new ShapeDrawable(shape);
 	}
@@ -102,7 +106,7 @@ public class ParticipantsOverlay extends PopupOverlay<StationOverlayItem> {
 	protected boolean onTap(int index) {
 
 		if (index < items.size()) {
-			StationOverlayItem item = items.get(index);
+			ParticipantOverlayItem item = items.get(index);
 
 			if (item != null && item.getTitle() != null) {
 				showPopup(item.getPoint(), item.getTitle());
@@ -113,5 +117,12 @@ public class ParticipantsOverlay extends PopupOverlay<StationOverlayItem> {
 		clearPopup();
 		return false;
 	}
+
+    @Override
+    public boolean onTap(GeoPoint location, MapView mapView) {
+        boolean eventHandled = super.onTap(location, mapView);
+
+        return !eventHandled && clearPopup();
+    }
 
 }
