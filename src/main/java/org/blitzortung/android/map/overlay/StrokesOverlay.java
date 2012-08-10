@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Raster;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
@@ -28,7 +29,8 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 	@SuppressWarnings("unused")
 	private static final String TAG = "overlay.StrokesOverlay";
 
-	private final ArrayList<StrokeOverlayItem> items;
+    @VisibleForTesting
+	protected final ArrayList<StrokeOverlayItem> items;
 	
 	private final StrokeColorHandler colorHandler;
 	
@@ -92,7 +94,8 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		populate();
 	}
 
-	private void expireStrokes(long expireTime) {
+    @VisibleForTesting
+	protected void expireStrokes(long expireTime) {
 		List<StrokeOverlayItem> toRemove = new ArrayList<StrokeOverlayItem>();
 
 		for (StrokeOverlayItem item : items) {
@@ -130,7 +133,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 	}
 	
 	public void refresh() {
-		long now = new GregorianCalendar().getTime().getTime();
+		long now = System.currentTimeMillis();
 
 		int current_section = -1;
 		
@@ -149,11 +152,12 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		}
 	}
 
-	private Drawable getDrawable(StrokeOverlayItem item, int section, ColorHandler colorHandler) {
+    @VisibleForTesting
+	protected Drawable getDrawable(StrokeOverlayItem item, int section, ColorHandler colorHandler) {
 
 		Shape shape;
 
-		Projection projection = this.getActivity().getMapView().getProjection();
+		Projection projection = getActivity().getMapView().getProjection();
 		
 		int color = colorHandler.getColor(section);
 
