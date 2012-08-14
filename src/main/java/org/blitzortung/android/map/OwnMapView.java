@@ -14,8 +14,16 @@ public class OwnMapView extends MapView {
 	final Set<ZoomListener> zoomListeners = new HashSet<ZoomListener>();
 
 	public interface ZoomListener {
-		public void onZoom(int zoomLevel);
+		void onZoom(int zoomLevel);
 	}
+
+    public OwnMapView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public OwnMapView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
 
 	public OwnMapView(Context context, String apiKey) {
 		super(context, apiKey);
