@@ -191,7 +191,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		if (index < items.size()) {
 			StrokeOverlayItem item = items.get(index);
 			if (item != null && item.getPoint() != null && item.getTimestamp() != 0) {
-				String result = (String) DateFormat.format("kk:mm:ss", new Date(item.getTimestamp()));
+				String result = (String) DateFormat.format("kk:mm:ss", item.getTimestamp());
 
 				if (item.getMultiplicity() > 1) {
 					result += String.format(", #%d", item.getMultiplicity());
