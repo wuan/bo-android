@@ -3,13 +3,16 @@ package org.blitzortung.android.alarm;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
+import com.google.common.collect.Lists;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.TimerTask;
+import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -124,11 +127,26 @@ public class AlarmManagerTest {
         enableAlarm();
         alarmManager.onLocationChanged(location);
 
+        AbstractStroke stroke = mock(AbstractStroke.class);
+        when(stroke.getTimestamp()).thenReturn(System.currentTimeMillis());
+        when(stroke.getMultiplicity()).thenReturn(1);
+
+        Location strokeLocation = mock(Location.class);
+        when(stroke.getLocation()).thenReturn(strokeLocation);
+        when(location.bearingTo(strokeLocation)).thenReturn(0f);
+        when(location.distanceTo(strokeLocation)).thenReturn(500f);
+
         DataResult result = mock(DataResult.class);
+        when(result.getStrokes()).thenReturn(Lists.newArrayList(stroke));
 
         alarmManager.check(result);
 
-        verify(alarmListener, times(1)).onAlarmResult(any(AlarmStatus.class));
+        ArgumentCaptor<AlarmStatus> alarmStatusCaptor = ArgumentCaptor.forClass(AlarmStatus.class);
+
+        verify(alarmListener, times(1)).onAlarmResult(alarmStatusCaptor.capture());
+
+        assertThat(alarmStatusCaptor.getValue().currentActivity().getDistance(), is(500f));
+        assertThat(alarmStatusCaptor.getValue().currentActivity().getSector(), is(4));
     }
 
     @Test
