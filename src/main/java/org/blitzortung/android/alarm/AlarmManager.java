@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.TimerTask;
 import org.blitzortung.android.app.view.AlarmView;
@@ -34,7 +35,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 
 	private boolean alarmEnabled;
 
-	private final Set<AlarmListener> alarmListeners;
+    @VisibleForTesting
+	protected final Set<AlarmListener> alarmListeners;
 
 	private AlarmStatus alarmStatus;
 
@@ -64,14 +66,12 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 				}
 			}
 
-			// Log.v("AlarmManager", "alarm enabled: " + alarmEnabled);
 			timerTask.setAlarmEnabled(alarmEnabled);
 		}
 	}
 
 	@Override
 	public void onLocationChanged(Location location) {
-		// Log.v("AlarmManager", "location changed: " + location);
 		this.location = location;
 	}
 
@@ -91,7 +91,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 	}
 
 	public boolean isAlarmEnabled() {
-		return true;
+		return alarmEnabled;
 	}
 
 	public void check(DataResult result) {
@@ -132,7 +132,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 		alarmListeners.add(alarmListener);
 	}
 
-	public void removeAlarmListener(AlarmView alarmView) {
+	public void removeAlarmListener(AlarmListener alarmView) {
 		alarmListeners.remove(alarmView);
 	}
 }

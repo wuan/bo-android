@@ -1,0 +1,151 @@
+package org.blitzortung.android.alarm;
+
+import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationManager;
+import com.xtremelabs.robolectric.RobolectricTestRunner;
+import org.blitzortung.android.app.Preferences;
+import org.blitzortung.android.app.TimerTask;
+import org.blitzortung.android.data.provider.DataResult;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+
+@RunWith(RobolectricTestRunner.class)
+public class AlarmManagerTest {
+
+    private AlarmManager alarmManager;
+
+    @Mock
+    private LocationManager locationManager;
+
+    @Mock
+    private SharedPreferences sharedPreferences;
+
+    @Mock
+    private TimerTask timerTask;
+
+    @Mock
+    private AlarmManager.AlarmListener alarmListener;
+
+    @Before
+    public void setUp()
+    {
+        MockitoAnnotations.initMocks(this);
+
+        alarmManager = spy(new AlarmManager(locationManager, sharedPreferences, timerTask));
+        alarmManager.addAlarmListener(alarmListener);
+    }
+
+    @Test
+    public void testConstruct()
+    {
+        assertFalse(alarmManager.isAlarmEnabled());
+        assertThat(alarmManager.alarmListeners.size(), is(1));
+        assertThat(alarmManager.getAlarmStatus(), is(nullValue()));
+
+        verify(sharedPreferences, times(1)).registerOnSharedPreferenceChangeListener(any(AlarmManager.class));
+        verify(sharedPreferences, times(1)).getBoolean(Preferences.ALARM_ENABLED_KEY, false);
+        verify(locationManager, times(1)).removeUpdates(any(AlarmManager.class));
+        verify(timerTask, times(1)).setAlarmEnabled(false);
+
+        //verify(alarmManager, times(1)).onSharedPreferenceChanged(any(SharedPreferences.class), eq(Preferences.ALARM_ENABLED_KEY));
+    }
+
+    @Test
+    public void testOnSharedPreferecesChangeWithAlarmDisabled()
+    {
+        when(sharedPreferences.getBoolean(Preferences.ALARM_ENABLED_KEY, false)).thenReturn(false);
+
+        alarmManager.onSharedPreferenceChanged(sharedPreferences, Preferences.ALARM_ENABLED_KEY);
+
+        assertFalse(alarmManager.isAlarmEnabled());
+
+        verify(locationManager, times(1)).removeUpdates(alarmManager);
+        verify(alarmListener, times(1)).onAlarmClear();
+        verify(timerTask, times(2)).setAlarmEnabled(false);
+    }
+
+    @Test
+    public void testOnSharedPreferecesChangeWithAlarmEnabled()
+    {
+        enableAlarm();
+
+        assertTrue(alarmManager.isAlarmEnabled());
+
+        verify(locationManager, times(1)).requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, alarmManager);
+        verify(timerTask, times(1)).setAlarmEnabled(true);
+    }
+
+    private void enableAlarm() {
+        when(sharedPreferences.getBoolean(Preferences.ALARM_ENABLED_KEY, false)).thenReturn(true);
+
+        alarmManager.onSharedPreferenceChanged(sharedPreferences, Preferences.ALARM_ENABLED_KEY);
+    }
+
+    @Test
+    public void testCheckWithDisabledAlarm()
+    {
+        DataResult result = mock(DataResult.class);
+
+        alarmManager.check(result);
+
+        verify(alarmListener, times(1)).onAlarmResult(null);
+
+    }
+
+    @Test
+    public void testCheckWithEnabledAlarm()
+    {
+        enableAlarm();
+
+        DataResult result = mock(DataResult.class);
+
+        alarmManager.check(result);
+
+        verify(alarmListener, times(1)).onAlarmResult(null);
+    }
+
+    @Test
+    public void testCheckWithEnabledAlarmAndLocationSet()
+    {
+        Location location = mock(Location.class);
+        enableAlarm();
+        alarmManager.onLocationChanged(location);
+
+        DataResult result = mock(DataResult.class);
+
+        alarmManager.check(result);
+
+        verify(alarmListener, times(1)).onAlarmResult(any(AlarmStatus.class));
+    }
+
+    @Test
+    public void testClearAlarmListeners()
+    {
+        alarmManager.clearAlarmListeners();
+
+        assertThat(alarmManager.alarmListeners.size(), is(0));
+    }
+
+    @Test
+    public void testRemoveAlarmListener()
+    {
+        alarmManager.removeAlarmListener(alarmListener);
+
+        assertThat(alarmManager.alarmListeners.size(), is(0));
+    }
+
+
+}
