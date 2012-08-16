@@ -34,7 +34,7 @@ public class AlarmSectorTest {
 	}
 
     @Test
-	public void testAlarmSectorWithOneStroke() {
+	public void testCheckWithOneStroke() {
 		
 		int strokeMultiplicity = 2;
 		float strokeDistance = 150000f;
@@ -53,7 +53,7 @@ public class AlarmSectorTest {
 	}
 
     @Test
-	public void testAlarmSectorWithMultipleStrokes() {
+	public void testCheckWithMultipleStrokes() {
 		
 		alarmSector.check(200000f, 1000010, 1);
 

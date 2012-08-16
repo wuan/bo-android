@@ -1,16 +1,5 @@
 package org.blitzortung.android.map.overlay;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-
-import com.google.common.annotations.VisibleForTesting;
-import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.Raster;
-import org.blitzortung.android.map.overlay.color.ColorHandler;
-import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
-
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
@@ -19,17 +8,23 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.text.format.DateFormat;
-
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Projection;
+import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.Raster;
+import org.blitzortung.android.map.overlay.color.ColorHandler;
+import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
 	@SuppressWarnings("unused")
 	private static final String TAG = "overlay.StrokesOverlay";
 
-    @VisibleForTesting
+    // VisibleForTesting
 	protected final ArrayList<StrokeOverlayItem> items;
 	
 	private final StrokeColorHandler colorHandler;
@@ -94,7 +89,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		populate();
 	}
 
-    @VisibleForTesting
+    // VisibleForTesting
 	protected void expireStrokes(long expireTime) {
 		List<StrokeOverlayItem> toRemove = new ArrayList<StrokeOverlayItem>();
 
@@ -152,7 +147,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 		}
 	}
 
-    @VisibleForTesting
+    // VisibleForTesting
 	protected Drawable getDrawable(StrokeOverlayItem item, int section, ColorHandler colorHandler) {
 
 		Shape shape;

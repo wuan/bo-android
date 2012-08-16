@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.TimerTask;
 import org.blitzortung.android.data.beans.AbstractStroke;
@@ -33,7 +32,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 
 	private boolean alarmEnabled;
 
-    @VisibleForTesting
+    // VisibleForTesting
 	protected final Set<AlarmListener> alarmListeners;
 
 	private AlarmStatus alarmStatus;

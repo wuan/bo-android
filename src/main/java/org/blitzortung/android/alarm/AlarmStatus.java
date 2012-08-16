@@ -1,7 +1,6 @@
 package org.blitzortung.android.alarm;
 
 import android.location.Location;
-import com.google.common.annotations.VisibleForTesting;
 import org.blitzortung.android.data.beans.AbstractStroke;
 
 import java.util.SortedMap;
@@ -13,7 +12,7 @@ public class AlarmStatus {
 
     private final static int SECTOR_COUNT = DIRECTION_LABELS.length;
 
-    @VisibleForTesting
+    // VisibleForTesting
     protected final AlarmSector[] sectors;
 
     public AlarmStatus(long warnThresholdTime) {

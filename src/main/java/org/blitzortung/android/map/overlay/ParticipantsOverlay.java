@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
-import com.google.common.annotations.VisibleForTesting;
 import org.blitzortung.android.data.beans.Participant;
 import org.blitzortung.android.data.beans.Participant.State;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
@@ -18,7 +17,7 @@ import android.graphics.drawable.shapes.Shape;
 
 public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> {
 
-    @VisibleForTesting
+    // VisibleForTesting
 	protected final ArrayList<ParticipantOverlayItem> items;
 
 	private final ParticipantColorHandler colorHandler;
@@ -31,7 +30,7 @@ public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> {
 
 	private final EnumMap<State, Drawable> shapes = new EnumMap<State, Drawable>(State.class);
 
-    @VisibleForTesting
+    // VisibleForTesting
     protected int shapeSize;
 
     public ParticipantsOverlay(ParticipantColorHandler colorHandler) {
@@ -96,7 +95,7 @@ public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> {
 		}
 	}
 
-    @VisibleForTesting
+    // VisibleForTesting
 	protected Drawable getDrawable(int color) {
 		Shape shape = new StationShape(shapeSize, color);
 		return new ShapeDrawable(shape);
