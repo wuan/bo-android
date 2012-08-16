@@ -2,13 +2,11 @@ package org.blitzortung.android.alarm;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.TimerTask;
-import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataResult;
 
@@ -102,7 +100,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 			if (alarmStatus == null || !result.isIncremental()) {
 				alarmStatus = new AlarmStatus(thresholdTime);
 			} else {
-				alarmStatus.updateThresholdTime(thresholdTime);
+				alarmStatus.updateWarnThresholdTime(thresholdTime);
 			}
 
 			for (AbstractStroke stroke : result.getStrokes()) {

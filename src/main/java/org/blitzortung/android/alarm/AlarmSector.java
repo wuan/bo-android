@@ -92,7 +92,7 @@ public class AlarmSector {
 		return sectorCenterBearing;
 	}
 
-	public void updateThreshold(long warnThresholdTime) {
+	public void updateWarnThresholdTime(long warnThresholdTime) {
 		this.warnThresholdTime = warnThresholdTime;
 
 		for (int index = 0; index < getDistanceStepCount(); index++) {
@@ -102,4 +102,8 @@ public class AlarmSector {
 			}
 		}
 	}
+
+    public long getWarnThresholdTime() {
+        return warnThresholdTime;
+    }
 }

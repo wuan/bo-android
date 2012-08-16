@@ -1,6 +1,7 @@
 package org.blitzortung.android.alarm;
 
 import android.location.Location;
+import com.google.common.annotations.VisibleForTesting;
 import org.blitzortung.android.data.beans.AbstractStroke;
 
 import java.util.SortedMap;
@@ -8,121 +9,122 @@ import java.util.TreeMap;
 
 public class AlarmStatus {
 
-	private final static String[] DIRECTION_LABELS = { "S", "SW", "W", "NW", "N", "NO", "O", "SO" };
-	
-	private final static int SECTOR_COUNT = DIRECTION_LABELS.length;
+    private final static String[] DIRECTION_LABELS = {"S", "SW", "W", "NW", "N", "NO", "O", "SO"};
 
-	private final AlarmSector[] sectors;
+    private final static int SECTOR_COUNT = DIRECTION_LABELS.length;
 
-	public AlarmStatus(long warnThresholdTime) {
-		sectors = new AlarmSector[SECTOR_COUNT];
+    @VisibleForTesting
+    protected final AlarmSector[] sectors;
 
-		float bearing = -180;
-		for (int i = 0; i < SECTOR_COUNT; i++) {
-			sectors[i] = new AlarmSector(bearing, warnThresholdTime);
-			bearing += getSectorSize();
-		}
-	}
-	
-	public void updateThresholdTime(long warnThresholdTime) {
-		for (int i = 0; i < SECTOR_COUNT; i++) {
-			sectors[i].updateThreshold(warnThresholdTime);
-		}
-	}
+    public AlarmStatus(long warnThresholdTime) {
+        sectors = new AlarmSector[SECTOR_COUNT];
 
-	public void check(Location location, AbstractStroke stroke) {
-		int sector = getSectorNumber(location.bearingTo(stroke.getLocation()));
+        float bearing = -180;
+        for (int i = 0; i < SECTOR_COUNT; i++) {
+            sectors[i] = new AlarmSector(bearing, warnThresholdTime);
+            bearing += getSectorSize();
+        }
+    }
 
-		sectors[sector].check(location, stroke);
-	}
+    public void updateWarnThresholdTime(long warnThresholdTime) {
+        for (int i = 0; i < SECTOR_COUNT; i++) {
+            sectors[i].updateWarnThresholdTime(warnThresholdTime);
+        }
+    }
 
-	private int getSectorNumber(double bearing) {
-		return ((int) (Math.round(bearing / getSectorSize())) + getSectorCount() / 2) % getSectorCount();
-	}
+    public void check(Location location, AbstractStroke stroke) {
+        int sector = getSectorNumber(location.bearingTo(stroke.getLocation()));
 
-	public float getSectorSize() {
-		return 360.0f / getSectorCount();
-	}
+        sectors[sector].check(location, stroke);
+    }
 
-	public int getSectorCount() {
-		return DIRECTION_LABELS.length;
-	}
+    private int getSectorNumber(double bearing) {
+        return ((int) (Math.round(bearing / getSectorSize())) + getSectorCount() / 2) % getSectorCount();
+    }
 
-	public String getSectorLabel(int sectorNumber) {
-		return DIRECTION_LABELS[sectorNumber];
-	}
+    public float getSectorSize() {
+        return 360.0f / getSectorCount();
+    }
 
-	public void reset() {
-		for (AlarmSector sector : sectors) {
-			sector.reset();
-		}
-	}
+    public int getSectorCount() {
+        return DIRECTION_LABELS.length;
+    }
 
-	public int getSectorWithClosestStroke() {
-		double minDistance = Double.POSITIVE_INFINITY;
-		int sectorIndex = -1;
+    public String getSectorLabel(int sectorNumber) {
+        return DIRECTION_LABELS[sectorNumber];
+    }
 
-		int index = 0;
-		for (AlarmSector sector : sectors) {
-			if (sector.getWarnMinimumDistance() < minDistance) {
-				minDistance = sector.getWarnMinimumDistance();
-				sectorIndex = index;
-			}
-			index++;
-		}
-		return sectorIndex;
-	}
+    public void reset() {
+        for (AlarmSector sector : sectors) {
+            sector.reset();
+        }
+    }
 
-	public AlarmSector getSector(int index) {
-		return sectors[index];
-	}
+    public int getSectorWithClosestStroke() {
+        double minDistance = Double.POSITIVE_INFINITY;
+        int sectorIndex = -1;
 
-	public float getClosestStrokeDistance() {
-		int alarmSector = getSectorWithClosestStroke();
-		if (alarmSector >= 0) {
-			return sectors[alarmSector].getWarnMinimumDistance();
-		} else {
-			return (float) Double.POSITIVE_INFINITY;
-		}
-	}
+        int index = 0;
+        for (AlarmSector sector : sectors) {
+            if (sector.getWarnMinimumDistance() < minDistance) {
+                minDistance = sector.getWarnMinimumDistance();
+                sectorIndex = index;
+            }
+            index++;
+        }
+        return sectorIndex;
+    }
 
-	public float getSectorBearing(int alarmSector) {
-		return sectors[alarmSector].getBearing();
-	}
+    public AlarmSector getSector(int index) {
+        return sectors[index];
+    }
 
-	public AlarmResult currentActivity() {
-		int closestStrokeSectorIndex = getSectorWithClosestStroke();
+    public float getClosestStrokeDistance() {
+        int alarmSector = getSectorWithClosestStroke();
+        if (alarmSector >= 0) {
+            return sectors[alarmSector].getWarnMinimumDistance();
+        } else {
+            return Float.POSITIVE_INFINITY;
+        }
+    }
 
-		AlarmSector sector = sectors[closestStrokeSectorIndex];
+    public float getSectorBearing(int alarmSector) {
+        return sectors[alarmSector].getBearing();
+    }
 
-		if (closestStrokeSectorIndex >= 0) {
-			return new AlarmResult(sector.getMinimumIndex(), closestStrokeSectorIndex, sector.getWarnMinimumDistance());
-		}
+    public AlarmResult currentActivity() {
+        int closestStrokeSectorIndex = getSectorWithClosestStroke();
 
-		return null;
-	}
-	
+        if (closestStrokeSectorIndex >= 0) {
+            AlarmSector sector = sectors[closestStrokeSectorIndex];
+            return new AlarmResult(sector.getMinimumIndex(), closestStrokeSectorIndex, sector.getWarnMinimumDistance());
+        }
 
-	public String getTextMessage(float notificationDistanceLimit) {
-		SortedMap<Float, Integer> distanceSectors = new TreeMap<Float, Integer>();
-		
-		for (int sectorIndex = 0; sectorIndex < getSectorCount(); sectorIndex++) {
-			AlarmSector sector = getSector(sectorIndex);
-			if (sector.getWarnMinimumDistance() <= notificationDistanceLimit) {
-				distanceSectors.put(sector.getWarnMinimumDistance(), sectorIndex);
-			}
-		}
-		StringBuilder sb = new StringBuilder();
-		
-		for (int sectorIndex : distanceSectors.values()) {
-			AlarmSector sector = getSector(sectorIndex);
-			sb.append(getSectorLabel(sectorIndex));
-			sb.append(" ");
-			sb.append(String.format("%.0f km", sector.getWarnMinimumDistance() / 1000.0));
-			sb.append(", ");
-		}
-		sb.setLength(sb.length()-2);
-		
-		return sb.toString();
-	}
+        return null;
+    }
+
+    public String getTextMessage(float notificationDistanceLimit) {
+        SortedMap<Float, Integer> distanceSectors = new TreeMap<Float, Integer>();
+
+        for (int sectorIndex = 0; sectorIndex < getSectorCount(); sectorIndex++) {
+            AlarmSector sector = getSector(sectorIndex);
+            if (sector.getWarnMinimumDistance() <= notificationDistanceLimit) {
+                distanceSectors.put(sector.getWarnMinimumDistance(), sectorIndex);
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+
+        if (distanceSectors.size() > 0) {
+            for (int sectorIndex : distanceSectors.values()) {
+                AlarmSector sector = getSector(sectorIndex);
+                sb.append(getSectorLabel(sectorIndex));
+                sb.append(" ");
+                sb.append(String.format("%.0fkm", sector.getWarnMinimumDistance() / 1000.0));
+                sb.append(", ");
+            }
+            sb.setLength(sb.length() - 2);
+        }
+
+        return sb.toString();
+    }
 }
