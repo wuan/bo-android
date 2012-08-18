@@ -23,14 +23,14 @@ public class Stroke extends AbstractStroke implements Serializable {
 	public Stroke(long referenceTimestamp, JSONArray jsonArray) {
 		
 		try {
-			setTimestamp(referenceTimestamp + 1000 * jsonArray.getInt(0));
-			nanoseconds = jsonArray.getInt(1);
+			setTimestamp(referenceTimestamp + 1000 * jsonArray.getInt(0) + jsonArray.getInt(1) / 1000000);
+			nanoseconds = jsonArray.getInt(1) % 1000000;
 			setLongitude((float)jsonArray.getDouble(2));
 			setLatitude((float)jsonArray.getDouble(3));
 			lateralError = (float)jsonArray.getDouble(4);
-			amplitude = (float)jsonArray.getDouble(4);
-			stationCount = (short)jsonArray.getInt(5);
-			type = (short)jsonArray.getInt(6);
+			amplitude = (float)jsonArray.getDouble(5);
+			stationCount = (short)jsonArray.getInt(6);
+			type = (short)jsonArray.getInt(7);
 		} catch (JSONException e) {
 			throw new RuntimeException("error with json format while parsing stroke data", e);
 		}
