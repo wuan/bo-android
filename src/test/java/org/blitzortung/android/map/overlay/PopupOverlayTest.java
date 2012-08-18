@@ -40,12 +40,12 @@ public class PopupOverlayTest {
 
         @Override
         protected PopupOverlayItemForTest createItem(int i) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null;
         }
 
         @Override
         public int size() {
-            return 0;  //To change body of implemented methods use File | Settings | File Templates.
+            return 0;
         }
     }
 

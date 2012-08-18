@@ -63,11 +63,11 @@ public class DataResult implements Serializable {
 	}
 	
 	public void setProcessWasLocked() {
-		this.processWasLocked = true;
+		processWasLocked = true;
 	}
 	
 	public boolean processWasLocked() {
-		return this.processWasLocked;
+		return processWasLocked;
 	}
 	
 	public boolean hasRaster() {
