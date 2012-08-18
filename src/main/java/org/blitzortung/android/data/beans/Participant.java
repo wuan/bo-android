@@ -45,9 +45,9 @@ public class Participant implements Serializable {
 				if (offlineSinceString.length() > 0) {
 					offlineSince = TimeFormat.parseTimeWithMilliseconds(offlineSinceString);
 
-					Date now = new GregorianCalendar().getTime();
+					long now = System.currentTimeMillis();
 
-					int minutesAgo = (int) (now.getTime() - offlineSince) / 1000 / 60;
+					long minutesAgo = (now - offlineSince) / 1000 / 60;
 
 					updateState(minutesAgo);
 				} else {
@@ -61,13 +61,14 @@ public class Participant implements Serializable {
 		}
 	}
 
-	private void updateState(int minutesAgo) {
-		if (minutesAgo > 24 * 60)
+	private void updateState(long minutesAgo) {
+		if (minutesAgo > 24 * 60) {
 			state = State.OFF;
-		else if (minutesAgo > 15)
+        } else if (minutesAgo > 15) {
 			state = State.DELAYED;
-		else
+        } else {
 			state = State.ON;
+        }
 	}
 	
 	public Participant(String line) {
@@ -81,7 +82,12 @@ public class Participant implements Serializable {
 		name = Html.fromHtml(fields[3]).toString();
 		longitude = Float.valueOf(fields[6]);
 		latitude = Float.valueOf(fields[5]);
-		updateState((int)(now - lastData)/1000/60);
+
+		updateState((now - lastData)/1000/60);
+
+        if (state == State.OFF) {
+            offlineSince = lastData;
+        }
 	}
 
 	public String getName() {
