@@ -49,9 +49,9 @@ public class Raster implements Serializable {
 	
 	public RectF getRect(Projection projection) {
 		Point leftTop = new Point();
-		projection.toPixels(Coordsys.toMapCoords(lon_start, lat_start), leftTop);
+		leftTop = projection.toPixels(Coordsys.toMapCoords(lon_start, lat_start), leftTop);
 		Point bottomRight = new Point();
-		projection.toPixels(Coordsys.toMapCoords(lon_start + lon_count * lon_delta, lat_start - lat_count * lat_delta), bottomRight);
+		bottomRight = projection.toPixels(Coordsys.toMapCoords(lon_start + lon_count * lon_delta, lat_start - lat_count * lat_delta), bottomRight);
 		return new RectF(leftTop.x, leftTop.y, bottomRight.x, bottomRight.y);
 	}
 	

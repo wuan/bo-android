@@ -5,6 +5,7 @@ import android.graphics.RectF;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.Projection;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
+import org.blitzortung.android.data.Coordsys;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -15,9 +16,7 @@ import org.mockito.MockitoAnnotations;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.ignoreStubs;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
 public class RasterTest {
@@ -76,17 +75,23 @@ public class RasterTest {
         assertThat(raster.getLatitudeDelta(), is(lat_delta));
     }
 
-//    @Test
-//    public void testGetRect()
-//    {
-//        Projection projection = mock(Projection.class);
-//
-//        when(projection.toPixels(new GeoPoint((int)lon_start * 10000000, (int)lat_start * 1000000)))
-//        RectF rect = raster.getRect(projection);
-//
-//        assertThat(rect.height(), is(20f));
-//        assertThat(rect.width(), is(30f));
-//    }
+    @Test
+    public void testGetRect()
+    {
+        Projection projection = mock(Projection.class);
+
+        when(projection.toPixels(eq(Coordsys.toMapCoords(lon_start, lat_start)), any(Point.class))).thenReturn(new Point(-5, 5));
+        when(projection.toPixels(eq(Coordsys.toMapCoords(lon_start + lon_count * lon_delta, lat_start - lat_count * lat_delta)), any(Point.class))).thenReturn(new Point(5, -5));
+
+        RectF rect = raster.getRect(projection);
+
+        verify(projection, times(1)).toPixels(eq(Coordsys.toMapCoords(lon_start, lat_start)), any(Point.class));
+        verify(projection, times(1)).toPixels(eq(Coordsys.toMapCoords(lon_start + lon_count * lon_delta, lat_start - lat_count * lat_delta)), any(Point.class));
+
+        // TODO RectF is not created correctly through Robolectric
+        assertThat(rect.height(), is(0f));
+        assertThat(rect.width(), is(0f));
+    }
 
     @Test
     public void testToString()
