@@ -118,7 +118,7 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 					result.setRaster(dataProvider.getRaster());
 
 					if (params.length > 4 && params[4] != 0)
-						result.setStations(dataProvider.getStations(params[3]));
+						result.setParticipants(dataProvider.getStations(params[3]));
 					dataProvider.shutDown();
 				} catch (RuntimeException e) {
 					e.printStackTrace();

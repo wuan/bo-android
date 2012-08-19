@@ -12,7 +12,7 @@ public class DataResult implements Serializable {
 	private static final long serialVersionUID = -2104015890700948020L;
 
 	private List<AbstractStroke> strokes;
-	private List<Participant> stations;
+	private List<Participant> participants;
 	private Raster raster = null;
 	
 	private boolean fail;
@@ -42,16 +42,16 @@ public class DataResult implements Serializable {
 		return strokes;
 	}
 	
-	public void setStations(List<Participant> stations) {
-		this.stations = stations;
+	public void setParticipants(List<Participant> participants) {
+		this.participants = participants;
 	}
 	
 	public boolean containsParticipants() {
-		return stations != null;
+		return participants != null;
 	}
 	
 	public List<Participant> getParticipants() {
-		return stations;
+		return participants;
 	}
 	
 	public boolean retrievalWasSuccessful() {
