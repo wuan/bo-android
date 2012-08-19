@@ -1,5 +1,6 @@
 package org.blitzortung.android.map.overlay;
 
+import android.util.Log;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
@@ -64,4 +65,16 @@ public abstract class PopupOverlay<Item extends OverlayItem> extends ItemizedOve
 	public OwnMapActivity getActivity() {
 		return activity;
 	}
+
+    @Override
+    public boolean onTap(GeoPoint arg0, MapView arg1) {
+        boolean eventHandled = super.onTap(arg0, arg1);
+
+        if (!eventHandled) {
+            clearPopup();
+        }
+
+        return eventHandled;
+    }
+
 }
