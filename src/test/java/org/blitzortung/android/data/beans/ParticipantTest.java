@@ -4,7 +4,9 @@ import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -16,6 +18,9 @@ import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class ParticipantTest {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     private Participant participant;
 
@@ -40,6 +45,15 @@ public class ParticipantTest {
         assertThat(participant.getLongitude(), is(11.0f));
         assertThat(participant.getLatitude(), is(49.0f));
         assertThat(participant.getState(), is(Participant.State.ON));
+    }
+
+    @Test
+    public void testExceptionHandlingDuringConstruction() throws JSONException {
+        when(jsonArray.getString(1)).thenThrow(JSONException.class);
+
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("error with JSON format while parsing participants data");
+        participant = new Participant(jsonArray);
     }
 
     @Test

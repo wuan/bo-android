@@ -21,7 +21,6 @@ public class Raster implements Serializable {
 	private float lat_delta;
 	private int lon_count;
 	private int lat_count;
-	
 
 	public Raster(JSONObject jsonObject) throws JSONException {
 		lon_start = (float) jsonObject.getDouble("x0");

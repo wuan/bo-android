@@ -48,9 +48,10 @@ public class RasterElementTest {
     }
 
     @Test
-    public void testAbstractStrokeConstruction() throws JSONException {
+    public void testConstruction() throws JSONException {
         assertThat(rasterElement.getLongitude(), is(11.000f));
         assertThat(rasterElement.getLatitude(), is(49.000f));
+        assertThat(rasterElement.getMultiplicity(), is(3));
         assertThat(rasterElement.getTimestamp(), is(referenceTimestamp + 5000 * 1000));
 
         verify(inputArray, times(4)).getInt(anyInt());

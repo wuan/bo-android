@@ -4,7 +4,9 @@ import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -15,6 +17,9 @@ import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class StrokeTest {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     private Stroke stroke;
 
@@ -50,6 +55,15 @@ public class StrokeTest {
         assertThat(stroke.getAmplitude(), is(54.3f));
         assertThat(stroke.getStationCount(), is((short)6));
         assertThat(stroke.getType(), is((short)1));
+    }
+
+    @Test
+    public void testExceptionHandlingDuringConstruction() throws JSONException {
+        when(jsonArray.getInt(0)).thenThrow(JSONException.class);
+
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("error with JSON format while parsing stroke data");
+        stroke = new Stroke(referenceTimestamp, jsonArray);
     }
 
     @Test

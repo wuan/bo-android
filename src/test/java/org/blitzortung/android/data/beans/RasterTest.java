@@ -88,4 +88,23 @@ public class RasterTest {
 //        assertThat(rect.width(), is(30f));
 //    }
 
+    @Test
+    public void testToString()
+    {
+        assertThat(raster.toString(), is("Raster(-10,0000, 1,0000; 60,0000, 1,5000)"));
+    }
+
+    @Test
+    public void testGetLongitudeIndex()
+    {
+        assertThat(raster.getLongitudeIndex(lon_start), is(0));
+        assertThat(raster.getLongitudeIndex(lon_start + lon_delta * lon_count), is(lon_count));
+    }
+
+    @Test
+    public void testGetLatitudeIndex()
+    {
+        assertThat(raster.getLatitudeIndex(lat_start), is(0));
+        assertThat(raster.getLatitudeIndex(lat_start - lat_delta * lat_count), is(lat_count));
+    }
 }

@@ -32,7 +32,7 @@ public class Stroke extends AbstractStroke implements Serializable {
 			stationCount = (short)jsonArray.getInt(6);
 			type = (short)jsonArray.getInt(7);
 		} catch (JSONException e) {
-			throw new RuntimeException("error with json format while parsing stroke data", e);
+			throw new IllegalStateException("error with JSON format while parsing stroke data", e);
 		}
 	}
 	

@@ -57,7 +57,7 @@ public class Participant implements Serializable {
 				state = State.ON;
 			}
 		} catch (JSONException e) {
-			throw new RuntimeException("error with JSON format while parsing station data");
+			throw new IllegalStateException("error with JSON format while parsing participants data");
 		}
 	}
 
