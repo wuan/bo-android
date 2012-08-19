@@ -149,7 +149,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
                 canvas.drawArc(arcArea, 0, 360, false, lines);
 
                 String text = String.format("%.0f", AlarmSector.getDistanceSteps()[distanceIndex] / 1000);
-                canvas.drawText(text, center + distanceIndex + 0.95f * radiusIncrement, center
+                canvas.drawText(text, center + (distanceIndex + 0.95f) * radiusIncrement, center
                         + textStyle.getFontMetrics(null) / 3f, textStyle);
             }
 
