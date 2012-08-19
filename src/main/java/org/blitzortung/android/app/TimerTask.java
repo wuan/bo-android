@@ -29,56 +29,55 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 	private boolean backgroundOperation;
 
-	private final DataRetriever provider;
+	private final DataRetriever dataRetriever;
 
 	private final Handler handler;
 
-	StatusListener listener;
+	private StatusListener listener;
 
-	final Resources resources;
+	private final Resources resources;
 
-	TimerTask(Resources resources, SharedPreferences preferences, DataRetriever provider) {
+	TimerTask(Resources resources, SharedPreferences preferences, DataRetriever dataRetriever) {
 		this.resources = resources;
-		this.provider = provider;
+		this.dataRetriever = dataRetriever;
 		handler = new Handler();
 		listener = null;
 
 		preferences.registerOnSharedPreferenceChangeListener(this);
 		onSharedPreferenceChanged(preferences, Preferences.QUERY_PERIOD_KEY);
 		onSharedPreferenceChanged(preferences, Preferences.BACKGROUND_QUERY_PERIOD_KEY);
-		onSharedPreferenceChanged(preferences, Preferences.ALARM_ENABLED_KEY);
 	}
 
 	@Override
 	public void run() {
-		long now = Calendar.getInstance().getTimeInMillis() / 1000;
+		long actualSecond = System.currentTimeMillis() / 1000;
 
 		DataRetriever.UpdateTargets updateTargets = new DataRetriever.UpdateTargets();
 
 		int currentPeriod = backgroundOperation ? backgroundPeriod : period;
 
-		if (now >= lastUpdate + currentPeriod) {
+		if (actualSecond >= lastUpdate + currentPeriod) {
 			updateTargets.addStrokes();
-			lastUpdate = now;
+			lastUpdate = actualSecond;
 		}
 		
-		if (now >= lastParticipantsUpdate + currentPeriod * 10 && !backgroundOperation) {
+		if (actualSecond >= lastParticipantsUpdate + currentPeriod * 10 && !backgroundOperation) {
 			updateTargets.addParticipants();
-			lastParticipantsUpdate = now;
+			lastParticipantsUpdate = actualSecond;
 		}
 
 		if (updateTargets.anyUpdateRequested()) {
-			provider.updateData(updateTargets);
+			dataRetriever.updateData(updateTargets);
 		}
 
 		if (!backgroundOperation && listener != null) {
 			String statusString = resources.getQuantityString(R.plurals.stroke, numberOfStrokes, numberOfStrokes);
 			statusString += "/";
-			statusString += resources.getQuantityString(R.plurals.minute, provider.getMinutes(), provider.getMinutes());
-			statusString += String.format(" %d/%ds", currentPeriod - (now - lastUpdate), currentPeriod);
+			statusString += resources.getQuantityString(R.plurals.minute, dataRetriever.getMinutes(), dataRetriever.getMinutes());
+			statusString += String.format(" %d/%ds", currentPeriod - (actualSecond - lastUpdate), currentPeriod);
 
-			if (provider.isUsingRaster()) {
-				int region = provider.getRegion();
+			if (dataRetriever.isUsingRaster()) {
+				int region = dataRetriever.getRegion();
 				String regions[] = resources.getStringArray(R.array.regions_values);
 				int index = 0;
 				for (String region_number : regions) {
@@ -95,10 +94,6 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 		// Schedule the next update
 		handler.postDelayed(this, backgroundOperation ? 60000 : 1000);
-	}
-
-	public void setPeriod(int period) {
-		this.period = period;
 	}
 
 	public void restart() {
@@ -139,4 +134,31 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 		this.listener = listener;
 	}
 
+    protected void disable() {
+        handler.removeCallbacks(this);
+    }
+
+    protected int getPeriod() {
+        return period;
+    }
+
+    protected int getBackgroundPeriod() {
+        return backgroundPeriod;
+    }
+
+    protected long getLastUpdate() {
+        return lastUpdate;
+    }
+
+    protected long getLastParticipantsUpdate() {
+        return lastParticipantsUpdate;
+    }
+
+    protected boolean isInBackgroundOperation() {
+        return backgroundOperation;
+    }
+
+    protected boolean getAlarmEnabled() {
+        return alarmEnabled;
+    }
 }

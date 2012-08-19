@@ -40,24 +40,25 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		if (key.equals(Preferences.DATA_SOURCE_KEY)) {
 			String providerTypeString = sharedPreferences.getString(Preferences.DATA_SOURCE_KEY, DataProviderType.HTTP.toString());
 			DataProviderType providerType = DataProviderType.valueOf(providerTypeString.toUpperCase());
-			switch (providerType) {
+
+            switch (providerType) {
 			case HTTP:
-				setupBlitzortungHttpMode();
+				enableBlitzortungHttpMode();
 				break;
 			case RPC:
-				setupAppServiceMode();
+				enableAppServiceMode();
 				break;
 			}
 		}
 	}
 	
-	private void setupAppServiceMode() {
+	private void enableAppServiceMode() {
 		findPreference("raster_size").setEnabled(true);
 		findPreference("username").setEnabled(false);
 		findPreference("password").setEnabled(false);
 	}
 
-	private void setupBlitzortungHttpMode() {
+	private void enableBlitzortungHttpMode() {
 		findPreference("raster_size").setEnabled(false);
 		findPreference("username").setEnabled(true);
 		findPreference("password").setEnabled(true);
