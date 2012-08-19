@@ -81,7 +81,7 @@ public class RasterTest {
 //    {
 //        Projection projection = mock(Projection.class);
 //
-//        when(projection.toPixels(new GeoPoint((int)lon_start * 1e6, (int)lat_start * 1000000)))
+//        when(projection.toPixels(new GeoPoint((int)lon_start * 10000000, (int)lat_start * 1000000)))
 //        RectF rect = raster.getRect(projection);
 //
 //        assertThat(rect.height(), is(20f));

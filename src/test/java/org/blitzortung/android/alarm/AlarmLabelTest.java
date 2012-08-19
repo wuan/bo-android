@@ -2,6 +2,7 @@ package org.blitzortung.android.alarm;
 
 import android.content.res.Resources;
 import android.widget.TextView;
+import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.app.R;
 import org.junit.Before;
@@ -32,7 +33,6 @@ public class AlarmLabelTest {
     @Mock
     private TextView textView;
 
-    @Mock
     private Resources resources;
 
     private ArgumentCaptor<CharSequence> textCaptor;
@@ -43,6 +43,8 @@ public class AlarmLabelTest {
     public void setUp()
     {
         MockitoAnnotations.initMocks(this);
+
+        resources = Robolectric.application.getResources();
 
         alarmLabel = new AlarmLabel(textView, resources);
 
@@ -64,61 +66,60 @@ public class AlarmLabelTest {
     public void testApplyWithNoAlarm()
     {
         when(alarmStatus.getSectorWithClosestStroke()).thenReturn(-1);
-        when(resources.getColor(R.color.Green)).thenReturn(1234);
 
         alarmLabel.apply(alarmStatus);
 
         verify(textView, times(1)).setTextColor(colorCaptor.capture());
         verify(textView, times(1)).setText(textCaptor.capture());
 
-        assertThat(colorCaptor.getValue(), is(1234));
+        assertThat(colorCaptor.getValue(), is(0x0f0));
         assertThat(textCaptor.getValue().toString(), is("*"));
     }
 
     @Test
     public void testApplyWithAlarmInRangeHigherThanThree()
     {
-        mockAlarmInRange(4, 260000f, "SO", R.color.Green, 2345);
+        mockAlarmInRange(4, 260000f, "SO");
 
         alarmLabel.apply(alarmStatus);
 
         verify(textView, times(1)).setTextColor(colorCaptor.capture());
         verify(textView, times(1)).setText(textCaptor.capture());
 
-        assertThat(colorCaptor.getValue(), is(2345));
+        assertThat(colorCaptor.getValue(), is(0x0f0));
         assertThat(textCaptor.getValue().toString(), is("260km SO"));
     }
 
     @Test
     public void testApplyWithAlarmInRangeHigherThanOne()
     {
-        mockAlarmInRange(2, 100000f, "NW", R.color.Yellow, 3456);
+        mockAlarmInRange(2, 100000f, "NW");
 
         alarmLabel.apply(alarmStatus);
 
         verify(textView, times(1)).setTextColor(colorCaptor.capture());
         verify(textView, times(1)).setText(textCaptor.capture());
 
-        assertThat(colorCaptor.getValue(), is(3456));
+        assertThat(colorCaptor.getValue(), is(0xff0));
         assertThat(textCaptor.getValue().toString(), is("100km NW"));
     }
 
     @Test
     public void testApplyWithAlarmInMinimumRange()
     {
-        mockAlarmInRange(0, 15000f, "S", R.color.Red, 4567);
+        mockAlarmInRange(0, 15000f, "S");
 
         alarmLabel.apply(alarmStatus);
 
         verify(textView, times(1)).setTextColor(colorCaptor.capture());
         verify(textView, times(1)).setText(textCaptor.capture());
 
-        assertThat(colorCaptor.getValue(), is(4567));
+        assertThat(colorCaptor.getValue(), is(0xf00));
         assertThat(textCaptor.getValue().toString(), is("15km S"));
     }
 
 
-    private void mockAlarmInRange(int range, float distance, String sectorLabel, int colorId, int colorCode)
+    private void mockAlarmInRange(int range, float distance, String sectorLabel)
     {
         when(alarmStatus.getSectorWithClosestStroke()).thenReturn(0);
         when(alarmStatus.currentActivity()).thenReturn(alarmResult);
@@ -126,7 +127,6 @@ public class AlarmLabelTest {
         when(alarmResult.getRange()).thenReturn(range);
         when(alarmResult.getDistance()).thenReturn(distance);
         when(alarmResult.getSector()).thenReturn(2);
-        when(resources.getColor(colorId)).thenReturn(colorCode);
     }
 
 }

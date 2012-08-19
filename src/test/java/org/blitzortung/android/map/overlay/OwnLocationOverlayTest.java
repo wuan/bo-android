@@ -1,21 +1,16 @@
 package org.blitzortung.android.map.overlay;
 
 
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
-import android.test.mock.MockContext;
 import com.google.android.maps.Overlay;
 import com.google.common.collect.Lists;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import com.xtremelabs.robolectric.internal.Implementation;
 import com.xtremelabs.robolectric.internal.Implements;
-import com.xtremelabs.robolectric.shadows.ShadowContext;
-import com.xtremelabs.robolectric.tester.android.content.TestSharedPreferences;
 import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.map.OwnMapView;
 import org.junit.Before;
@@ -24,9 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.xtremelabs.robolectric.Robolectric.bindShadowClass;
 import static org.hamcrest.core.Is.is;
