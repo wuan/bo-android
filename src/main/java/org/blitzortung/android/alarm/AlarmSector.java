@@ -51,7 +51,7 @@ public class AlarmSector {
 		}
 	}
 
-	public int[] getEventCounts() {
+	public int[] getEventCount() {
 		return strokeCount;
 	}
 

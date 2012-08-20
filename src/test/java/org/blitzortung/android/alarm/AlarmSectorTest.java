@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.spy;
 
 @RunWith(RobolectricTestRunner.class)
 public class AlarmSectorTest {
@@ -15,7 +16,7 @@ public class AlarmSectorTest {
 
     @Before
 	public void setUp() {
-		alarmSector = new AlarmSector(90.0f, 10000);
+		alarmSector = spy(new AlarmSector(90.0f, 10000));
 	}
 
     @Test
@@ -32,6 +33,12 @@ public class AlarmSectorTest {
 		
 		assertThat(alarmSector.getMinimumIndex(), is(-1));
 	}
+
+    @Test
+    public void testGetBearing()
+    {
+        assertThat(alarmSector.getBearing(), is(90f));
+    }
 
     @Test
 	public void testCheckWithOneStroke() {
@@ -69,5 +76,73 @@ public class AlarmSectorTest {
 		assertThat(alarmSector.getLatestTime(minimumIndex), is(1000010l));
 		assertThat(alarmSector.getWarnMinimumDistance(), is(150000f));
 	}
+
+    @Test
+    public void testGetEventCount()
+    {
+        int eventCount[] = new int[AlarmSector.getDistanceStepCount()];
+
+        assertThat(alarmSector.getEventCount(), is(eventCount));
+
+        alarmSector.check(10000f, 15000, 1);
+
+        eventCount[0] = 1;
+
+        assertThat(alarmSector.getEventCount(), is(eventCount));
+    }
+
+    @Test
+    public void testGetLatestTimes()
+    {
+        long latestTimes[] = new long[AlarmSector.getDistanceStepCount()];
+
+        assertThat(alarmSector.getLatestTimes(), is(latestTimes));
+
+        alarmSector.check(10000f, 15000, 1);
+
+        latestTimes[0] = 15000;
+
+        assertThat(alarmSector.getLatestTimes(), is(latestTimes));
+    }
+
+    @Test
+    public void testGetWarnMinimumDistance()
+    {
+        assertThat(alarmSector.getWarnMinimumDistance(), is(Float.POSITIVE_INFINITY));
+
+        alarmSector.check(10000f, 15000, 1);
+
+        assertThat(alarmSector.getWarnMinimumDistance(), is(10000f));
+    }
+
+    @Test
+    public void testGetWarnThresholdTime()
+    {
+        assertThat(alarmSector.getWarnThresholdTime(), is(10000l));
+    }
+
+    @Test
+    public void testUpdateWarnThresholdTimeRemovesOlderValues()
+    {
+        alarmSector.check(10000f, 15000, 1);
+        assertThat(alarmSector.getCount(0), is(1));
+
+        alarmSector.updateWarnThresholdTime(20000l);
+
+        assertThat(alarmSector.getWarnThresholdTime(), is(20000l));
+        assertThat(alarmSector.getCount(0), is(0));
+    }
+
+    @Test
+    public void testUpdateWarnThresholdTimeKeepsNewerValues()
+    {
+        alarmSector.check(10000f, 25000, 1);
+        assertThat(alarmSector.getCount(0), is(1));
+
+        alarmSector.updateWarnThresholdTime(20000l);
+
+        assertThat(alarmSector.getWarnThresholdTime(), is(20000l));
+        assertThat(alarmSector.getCount(0), is(1));
+    }
 
 }

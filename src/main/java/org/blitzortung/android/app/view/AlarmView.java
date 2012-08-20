@@ -108,7 +108,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
                 float bearing = alarmStatus.getSectorBearing(sectorIndex) + 90 + 180;
                 AlarmSector sector = alarmStatus.getSector(sectorIndex);
 
-                int counts[] = sector.getEventCounts();
+                int counts[] = sector.getEventCount();
                 long latestTimes[] = sector.getLatestTimes();
                 for (int distanceIndex = AlarmSector.getDistanceStepCount() - 1; distanceIndex >= 0; distanceIndex--) {
 
