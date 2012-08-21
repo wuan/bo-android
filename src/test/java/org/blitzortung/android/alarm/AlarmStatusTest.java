@@ -50,10 +50,10 @@ public class AlarmStatusTest {
 
         long updatedWarnThresholdTime = warnThresholdTime + 10000;
 
-        alarmStatus.updateWarnThresholdTime(updatedWarnThresholdTime);
+        alarmStatus.updateWarnThresholdTime(updatedWarnThresholdTime, 0l);
 
         for (AlarmSector sector : alarmStatus.sectors) {
-            verify(sector, times(1)).updateWarnThresholdTime(updatedWarnThresholdTime);
+            verify(sector, times(1)).updateWarnThresholdTime(updatedWarnThresholdTime, 0l);
         }
     }
 

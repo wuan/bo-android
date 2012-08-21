@@ -25,9 +25,9 @@ public class AlarmStatus {
         }
     }
 
-    public void updateWarnThresholdTime(long warnThresholdTime) {
+    public void updateWarnThresholdTime(long warnThresholdTime, long oldestStrokeTime) {
         for (int i = 0; i < SECTOR_COUNT; i++) {
-            sectors[i].updateWarnThresholdTime(warnThresholdTime);
+            sectors[i].updateWarnThresholdTime(warnThresholdTime, oldestStrokeTime);
         }
     }
 

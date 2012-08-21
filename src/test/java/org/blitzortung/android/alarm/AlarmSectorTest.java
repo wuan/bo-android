@@ -122,15 +122,46 @@ public class AlarmSectorTest {
     }
 
     @Test
+    public void testUpdateWarnThresholdTimeRemovesOlderWarning()
+    {
+        alarmSector.check(10000f, 15000, 1);
+        assertThat(alarmSector.getCount(0), is(1));
+        assertThat(alarmSector.getWarnMinimumDistance(), is(10000f));
+
+        alarmSector.updateWarnThresholdTime(20000l, 0l);
+
+        assertThat(alarmSector.getWarnThresholdTime(), is(20000l));
+        assertThat(alarmSector.getCount(0), is(1));
+        assertThat(alarmSector.getWarnMinimumDistance(), is(Float.POSITIVE_INFINITY));
+    }
+
+    @Test
+    public void testUpdateWarnThresholdTimeRemovesOlderWarningButKeepsNext()
+    {
+        alarmSector.check(10000f, 15000, 1);
+        alarmSector.check(50000f, 25000, 1);
+        assertThat(alarmSector.getCount(0), is(1));
+        assertThat(alarmSector.getWarnMinimumDistance(), is(10000f));
+
+        alarmSector.updateWarnThresholdTime(20000l, 0l);
+
+        assertThat(alarmSector.getWarnThresholdTime(), is(20000l));
+        assertThat(alarmSector.getCount(0), is(1));
+        assertThat(alarmSector.getWarnMinimumDistance(), is(25000f));
+    }
+
+    @Test
     public void testUpdateWarnThresholdTimeRemovesOlderValues()
     {
         alarmSector.check(10000f, 15000, 1);
         assertThat(alarmSector.getCount(0), is(1));
+        assertThat(alarmSector.getWarnMinimumDistance(), is(10000f));
 
-        alarmSector.updateWarnThresholdTime(20000l);
+        alarmSector.updateWarnThresholdTime(20000l, 19000l);
 
         assertThat(alarmSector.getWarnThresholdTime(), is(20000l));
         assertThat(alarmSector.getCount(0), is(0));
+        assertThat(alarmSector.getWarnMinimumDistance(), is(Float.POSITIVE_INFINITY));
     }
 
     @Test
@@ -139,7 +170,7 @@ public class AlarmSectorTest {
         alarmSector.check(10000f, 25000, 1);
         assertThat(alarmSector.getCount(0), is(1));
 
-        alarmSector.updateWarnThresholdTime(20000l);
+        alarmSector.updateWarnThresholdTime(20000l, 0l);
 
         assertThat(alarmSector.getWarnThresholdTime(), is(20000l));
         assertThat(alarmSector.getCount(0), is(1));

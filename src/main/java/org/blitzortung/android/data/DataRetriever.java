@@ -114,6 +114,7 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 					} else {
 						strokes = dataProvider.getStrokesRaster(params[0], params[1], params[2], params[3]);
 					}
+                    result.setStrokesTimeInterval(minutes * 60 * 1000);
 					result.setStrokes(strokes);
 					result.setRaster(dataProvider.getRaster());
 

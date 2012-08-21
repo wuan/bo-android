@@ -20,8 +20,9 @@ public class DataResult implements Serializable {
 	private boolean processWasLocked;
 	
 	private boolean incremental;
-	
-	public DataResult() {
+    private long strokesTimeInterval;
+
+    public DataResult() {
 		fail = true;
 		
 		processWasLocked = false;
@@ -89,4 +90,12 @@ public class DataResult implements Serializable {
 	public void setIncremental() {
 		incremental = true;
 	}
+
+    public void setStrokesTimeInterval(long strokesTimeInterval) {
+        this.strokesTimeInterval = strokesTimeInterval;
+    }
+
+    public long getStrokesTimeInterval() {
+        return strokesTimeInterval;
+    }
 }

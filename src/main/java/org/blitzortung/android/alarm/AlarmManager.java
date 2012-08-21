@@ -1,6 +1,5 @@
 package org.blitzortung.android.alarm;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -93,13 +92,14 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 		if (alarmEnabled && location != null) {
 
 			long alarmInterval = 600000;
-			long now = new Date().getTime();
+			long now = System.currentTimeMillis();
 			long thresholdTime = now - alarmInterval;
+            long oldestTime = now - result.getStrokesTimeInterval();
 
 			if (alarmStatus == null || !result.isIncremental()) {
 				alarmStatus = new AlarmStatus(thresholdTime);
 			} else {
-				alarmStatus.updateWarnThresholdTime(thresholdTime);
+				alarmStatus.updateWarnThresholdTime(thresholdTime, oldestTime);
 			}
 
 			for (AbstractStroke stroke : result.getStrokes()) {
