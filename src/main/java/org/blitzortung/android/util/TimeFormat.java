@@ -2,26 +2,22 @@ package org.blitzortung.android.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.TimeZone;
 
 public class TimeFormat {
 	private static final SimpleDateFormat DATE_TIME_MILLISECONDS_FORMATTER = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss.SSS");
 	static {
-		TimeZone tz = TimeZone.getTimeZone("UTC");
-		DATE_TIME_MILLISECONDS_FORMATTER.setTimeZone(tz);
+		DATE_TIME_MILLISECONDS_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 	
 	private static final SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
 	static {
-		TimeZone tz = TimeZone.getTimeZone("UTC");
-		DATE_TIME_FORMATTER.setTimeZone(tz);
+		DATE_TIME_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 	
 	public static long parseTimeWithMilliseconds(String timestampString) {
 		try {
-			Date timestamp  = DATE_TIME_MILLISECONDS_FORMATTER.parse(timestampString);
-			return timestamp.getTime();
+			return DATE_TIME_MILLISECONDS_FORMATTER.parse(timestampString).getTime();
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -30,8 +26,7 @@ public class TimeFormat {
 	
 	public static long parseTime(String timestampString) {
 		try {
-			Date timestamp  = DATE_TIME_FORMATTER.parse(timestampString);
-			return timestamp.getTime();
+			return DATE_TIME_FORMATTER.parse(timestampString).getTime();
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

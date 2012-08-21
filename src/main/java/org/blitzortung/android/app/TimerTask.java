@@ -1,13 +1,10 @@
 package org.blitzortung.android.app;
 
-import java.util.Calendar;
-
-import org.blitzortung.android.data.DataRetriever;
-
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
 import android.os.Handler;
+import org.blitzortung.android.data.DataRetriever;
 
 public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 

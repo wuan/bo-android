@@ -269,11 +269,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		}
 
 		if (result.containsStrokes()) {
-			Calendar expireTime = new GregorianCalendar();
-			expireTime.add(Calendar.MINUTE, -provider.getMinutes());
+			long expireTime = System.currentTimeMillis() - provider.getMinutes() * 60 * 1000;
 
 			strokesOverlay.setRaster(result.getRaster());
-			strokesOverlay.addAndExpireStrokes(result.getStrokes(), expireTime.getTime().getTime());
+			strokesOverlay.addAndExpireStrokes(result.getStrokes(), expireTime);
 
 			timerTask.setNumberOfStrokes(strokesOverlay.getTotalNumberOfStrokes());
 

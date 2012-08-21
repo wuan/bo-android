@@ -1,16 +1,13 @@
 package org.blitzortung.android.data.beans;
 
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-
+import android.text.Html;
 import org.blitzortung.android.util.TimeFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import android.text.Html;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 public class Participant implements Serializable {
 
@@ -31,10 +28,6 @@ public class Participant implements Serializable {
 	State state;
 
 	public Participant(JSONArray jsonArray) {
-		TimeZone tz = TimeZone.getTimeZone("UTC");
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
-		formatter.setTimeZone(tz);
-
 		try {
 			name = jsonArray.getString(1);
 			longitude = (float) jsonArray.getDouble(3);
@@ -76,7 +69,7 @@ public class Participant implements Serializable {
 		
 		String timeString = fields[7].replace("-", "").replace("&nbsp;", "T");
 		int len = timeString.length();
-		long now = new GregorianCalendar().getTime().getTime();
+		long now = System.currentTimeMillis();
 		long lastData = TimeFormat.parseTimeWithMilliseconds(timeString.substring(0, len - 6));
 
 		name = Html.fromHtml(fields[3]).toString();
