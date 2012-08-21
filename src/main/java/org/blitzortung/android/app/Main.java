@@ -1,8 +1,6 @@
 package org.blitzortung.android.app;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 
 import org.blitzortung.android.alarm.AlarmLabel;
 import org.blitzortung.android.alarm.AlarmManager;
@@ -76,6 +74,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 	private float vibrationDistanceLimit;
 
+    final Set<String> androidIdsForExtendedFunctionality = new HashSet<String>(Arrays.asList("e73c5a22934b5915"));
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -92,7 +92,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 		final String androidId = Secure.getString(getBaseContext().getContentResolver(), Secure.ANDROID_ID);
 
-		if (isDebugBuild() || (androidId != null && androidId.equals("e73c5a22934b5915"))) {
+		if (isDebugBuild() || (androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
 			RelativeLayout mapcontainer = (RelativeLayout) findViewById(R.id.mapcontainer);
 
 			Button rasterToggle = new Button(getBaseContext());
