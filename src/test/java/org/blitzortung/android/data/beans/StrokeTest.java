@@ -32,14 +32,13 @@ public class StrokeTest {
     public void setUp() throws JSONException {
         MockitoAnnotations.initMocks(this);
 
-        when(jsonArray.getInt(0)).thenReturn(-10);
-        when(jsonArray.getInt(1)).thenReturn(123456789);
-        when(jsonArray.getDouble(2)).thenReturn(11.0);
-        when(jsonArray.getDouble(3)).thenReturn(49.0);
-        when(jsonArray.getDouble(4)).thenReturn(12.3);
-        when(jsonArray.getDouble(5)).thenReturn(54.3);
-        when(jsonArray.getInt(6)).thenReturn(6);
-        when(jsonArray.getInt(7)).thenReturn(1);
+        when(jsonArray.getInt(0)).thenReturn(10);
+        when(jsonArray.getDouble(1)).thenReturn(11.0);
+        when(jsonArray.getDouble(2)).thenReturn(49.0);
+        when(jsonArray.getDouble(3)).thenReturn(12.3);
+        when(jsonArray.getDouble(4)).thenReturn(54.3);
+        when(jsonArray.getInt(5)).thenReturn(6);
+        when(jsonArray.getInt(6)).thenReturn(1);
 
         stroke = new Stroke(referenceTimestamp, jsonArray);
     }
@@ -47,8 +46,7 @@ public class StrokeTest {
     @Test
     public void testConstruct()
     {
-        assertThat(stroke.getTimestamp(), is(referenceTimestamp - 10 * 1000 + 123));
-        assertThat(stroke.getNanoseconds(), is(456789));
+        assertThat(stroke.getTimestamp(), is(referenceTimestamp - 10 * 1000));
         assertThat(stroke.getLongitude(), is(11.0f));
         assertThat(stroke.getLatitude(), is(49.0f));
         assertThat(stroke.getLateralError(), is(12.3f));
@@ -72,7 +70,6 @@ public class StrokeTest {
         stroke = new Stroke("2012-05-12 12:45:23.123456789 49.0 11.0 54.3kA 1 12.3m 6");
 
         assertThat(stroke.getTimestamp(), is(1336826723123L));
-        assertThat(stroke.getNanoseconds(), is(456789));
         assertThat(stroke.getLongitude(), is(11.0f));
         assertThat(stroke.getLatitude(), is(49.0f));
         assertThat(stroke.getLateralError(), is(12.3f));
