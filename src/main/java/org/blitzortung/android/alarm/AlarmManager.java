@@ -17,7 +17,7 @@ import android.os.Bundle;
 
 public class AlarmManager implements OnSharedPreferenceChangeListener, LocationListener {
 
-	public interface AlarmListener {
+    public interface AlarmListener {
 		void onAlarmResult(AlarmStatus alarmStatus);
 
 		void onAlarmClear();
@@ -27,7 +27,9 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 
 	private final LocationManager locationManager;
 
-	private Location location;
+    private final String locationProvider = LocationManager.NETWORK_PROVIDER;;
+
+    private Location location;
 
 	private boolean alarmEnabled;
 
@@ -52,8 +54,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 		if (key.equals(Preferences.ALARM_ENABLED_KEY)) {
 			alarmEnabled = sharedPreferences.getBoolean(key, false);
 
-			if (alarmEnabled) {
-				locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+			if (alarmEnabled && locationManager.isProviderEnabled(locationProvider)) {
+                locationManager.requestLocationUpdates(locationProvider, 0, 0, this);
 			} else {
 				locationManager.removeUpdates(this);
 
