@@ -83,12 +83,29 @@ public class AlarmManagerTest {
     @Test
     public void testOnSharedPreferecesChangeWithAlarmEnabled()
     {
+        when(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(true);
+
         enableAlarm();
 
         assertTrue(alarmManager.isAlarmEnabled());
 
         verify(locationManager, times(1)).requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, alarmManager);
         verify(timerTask, times(1)).setAlarmEnabled(true);
+        verify(timerTask, times(1)).setAlarmEnabled(false);
+    }
+
+    @Test
+    public void testOnSharedPreferecesChangeWithAlarmEnabledAndProviderDisabled()
+    {
+        when(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(false);
+
+        enableAlarm();
+
+        assertFalse(alarmManager.isAlarmEnabled());
+
+        verify(locationManager, times(0)).requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, alarmManager);
+        verify(timerTask, times(0)).setAlarmEnabled(true);
+        verify(timerTask, times(2)).setAlarmEnabled(false);
     }
 
     private void enableAlarm() {
@@ -123,6 +140,8 @@ public class AlarmManagerTest {
     @Test
     public void testCheckWithEnabledAlarmAndLocationSet()
     {
+        when(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(true);
+
         Location location = mock(Location.class);
         enableAlarm();
         alarmManager.onLocationChanged(location);
