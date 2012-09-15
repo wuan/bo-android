@@ -5,6 +5,7 @@ import java.util.*;
 import org.blitzortung.android.alarm.AlarmLabel;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmStatus;
+import org.blitzortung.android.app.view.LegendView;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.DataRetriever;
 import org.blitzortung.android.data.provider.DataResult;
@@ -163,6 +164,12 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
+
+        RelativeLayout mapcontainer = (RelativeLayout) findViewById(R.id.mapcontainer);
+        LegendView legendView = new LegendView(getBaseContext());
+        legendView.setColorHandler(strokesOverlay.getColorHandler());
+        legendView.setAlpha(150);
+        mapcontainer.addView(legendView);
 
 		onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
 		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
