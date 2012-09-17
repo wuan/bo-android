@@ -2,6 +2,8 @@ package org.blitzortung.android.app;
 
 import java.util.*;
 
+import android.view.*;
+import com.google.android.maps.MapView;
 import org.blitzortung.android.alarm.AlarmLabel;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmStatus;
@@ -34,10 +36,6 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -94,7 +92,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		final String androidId = Secure.getString(getBaseContext().getContentResolver(), Secure.ANDROID_ID);
 
 		if (isDebugBuild() || (androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
-			RelativeLayout mapcontainer = (RelativeLayout) findViewById(R.id.mapcontainer);
+			RelativeLayout mapcontainer = (RelativeLayout) findViewById(R.id.map_overlay);
 
 			Button rasterToggle = new Button(getBaseContext());
 			rasterToggle.setText("r/p");
@@ -165,7 +163,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 		ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
 
-        RelativeLayout mapcontainer = (RelativeLayout) findViewById(R.id.mapcontainer);
+        RelativeLayout mapcontainer = (RelativeLayout) findViewById(R.id.map_overlay);
         LegendView legendView = new LegendView(getBaseContext());
         legendView.setColorHandler(strokesOverlay.getColorHandler());
         legendView.setAlpha(150);

@@ -4,7 +4,8 @@
     <TableRow
         android:id="@+id/upperRow"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:background="@color/translucent_background">
 
         <TextView
             android:id="@+id/status"
@@ -12,7 +13,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:text="" >
+            android:text=""
+            android:textColor="@color/text_foreground" >
         </TextView>
 
         <TextView
@@ -20,7 +22,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="" >
+            android:text=""
+            android:textColor="@color/text_foreground" >
         </TextView>
 
         <ImageView
