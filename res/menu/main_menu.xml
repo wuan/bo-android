@@ -10,10 +10,6 @@
         android:icon="@drawable/ic_menu_info_details"
         android:title="@string/info"/>
     <item
-        android:id="@+id/menu_legend"
-        android:icon="@drawable/ic_menu_view"
-        android:title="@string/legend"/>
-    <item
         android:id="@+id/menu_alarms"
         android:icon="@drawable/ic_menu_view"
         android:title="@string/alarms"/>

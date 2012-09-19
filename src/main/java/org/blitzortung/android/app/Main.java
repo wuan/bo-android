@@ -3,7 +3,6 @@ package org.blitzortung.android.app;
 import java.util.*;
 
 import android.view.*;
-import com.google.android.maps.MapView;
 import org.blitzortung.android.alarm.AlarmLabel;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmStatus;
@@ -13,7 +12,6 @@ import org.blitzortung.android.data.DataRetriever;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.dialogs.AlarmDialog;
 import org.blitzortung.android.dialogs.InfoDialog;
-import org.blitzortung.android.dialogs.LegendDialog;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.overlay.OwnLocationOverlay;
@@ -165,7 +163,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         RelativeLayout mapcontainer = (RelativeLayout) findViewById(R.id.map_overlay);
         LegendView legendView = new LegendView(getBaseContext());
-        legendView.setColorHandler(strokesOverlay.getColorHandler());
+        legendView.setStrokesOverlay(strokesOverlay);
         legendView.setAlpha(150);
         mapcontainer.addView(legendView);
 
@@ -215,10 +213,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		switch (item.getItemId()) {
 		case R.id.menu_info:
 			showDialog(R.id.info_dialog);
-			break;
-
-		case R.id.menu_legend:
-			showDialog(R.id.legend_dialog);
 			break;
 
 		case R.id.menu_alarms:
@@ -306,10 +300,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		switch (id) {
 		case R.id.info_dialog:
 			dialog = new InfoDialog(this);
-			break;
-
-		case R.id.legend_dialog:
-			dialog = new LegendDialog(this, strokesOverlay);
 			break;
 
 		case R.id.alarm_dialog:
