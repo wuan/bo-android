@@ -21,7 +21,16 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
+
+        <Button
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/clickBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:text="r/p"/>
 
         <org.blitzortung.android.app.view.AlarmView
                 xmlns:android="http://schemas.android.com/apk/res/android"
@@ -29,7 +38,7 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentBottom="true" />
+                android:layout_alignParentBottom="true"/>
 
     </RelativeLayout>
 

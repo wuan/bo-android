@@ -2,6 +2,7 @@ package org.blitzortung.android.app;
 
 import java.util.*;
 
+import android.graphics.Color;
 import android.view.*;
 import org.blitzortung.android.alarm.AlarmLabel;
 import org.blitzortung.android.alarm.AlarmManager;
@@ -90,10 +91,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 		final String androidId = Secure.getString(getBaseContext().getContentResolver(), Secure.ANDROID_ID);
 
-		if (isDebugBuild() || (androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
-			RelativeLayout mapcontainer = (RelativeLayout) findViewById(R.id.map_overlay);
+        Button rasterToggle = (Button) findViewById(R.id.clickBtn);
+        if (isDebugBuild() || (androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
+			//RelativeLayout mapcontainer = (RelativeLayout) findViewById(R.id);
 
-			Button rasterToggle = new Button(getBaseContext());
 			rasterToggle.setText("r/p");
 
 			rasterToggle.getBackground().setAlpha(150);
@@ -104,9 +105,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 					onDataReset();
 				}
 			});
-
-			mapcontainer.addView(rasterToggle);
-		}
+		} else {
+            //rasterToggle.;
+        }
 
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		preferences.registerOnSharedPreferenceChangeListener(this);
@@ -169,7 +170,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         AlarmView alarmView = (AlarmView) findViewById(R.id.alarm_view);
         alarmView.setAlarmManager(alarmManager);
         alarmView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getMinutesPerColor());
-        alarmView.setBackground(getResources().getColor(R.color.translucent_background));
+        alarmView.setBackgroundColor(Color.TRANSPARENT);
+        alarmView.setAlpha(180);
 
 		onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
 		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);

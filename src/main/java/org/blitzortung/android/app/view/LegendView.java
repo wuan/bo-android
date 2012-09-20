@@ -1,9 +1,7 @@
 package org.blitzortung.android.app.view;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.RectF;
+import android.graphics.*;
 import android.util.AttributeSet;
 import android.view.View;
 import org.blitzortung.android.app.R;
@@ -38,16 +36,18 @@ public class LegendView extends View {
     public LegendView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        foregroundPaint = new Paint();
+        foregroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-        backgroundPaint = new Paint();
+        backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         backgroundPaint.setColor(context.getResources().getColor(R.color.translucent_background));
 
-        textPaint = new Paint();
+        textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setColor(0xffffffff);
         textPaint.setTextSize(colorFieldSize);
 
-        textWidth = (int)Math.ceil(textPaint.measureText("< 10min"));
+        textWidth = (int) Math.ceil(textPaint.measureText("< 10min"));
+
+        setBackgroundColor(Color.TRANSPARENT);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class LegendView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+        //super.onDraw(canvas);
 
         if (strokesOverlay != null) {
             ColorHandler colorHandler = strokesOverlay.getColorHandler();
@@ -91,6 +91,7 @@ public class LegendView extends View {
 
                 canvas.drawText(text, padding + colorFieldSize + colorFieldSeparator, topCoordinate + colorFieldSize / 1.1f, textPaint);
             }
+
         }
     }
 
