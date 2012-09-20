@@ -90,14 +90,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		getMapView().setBuiltInZoomControls(true);
 
 		final String androidId = Secure.getString(getBaseContext().getContentResolver(), Secure.ANDROID_ID);
-
-        Button rasterToggle = (Button) findViewById(R.id.clickBtn);
         if (isDebugBuild() || (androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
-			//RelativeLayout mapcontainer = (RelativeLayout) findViewById(R.id);
-
+            Button rasterToggle = (Button) findViewById(R.id.clickBtn);
+            rasterToggle.setEnabled(true);
 			rasterToggle.setText("r/p");
-
-			rasterToggle.getBackground().setAlpha(150);
+    		rasterToggle.getBackground().setAlpha(20);
 
 			rasterToggle.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
@@ -105,9 +102,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 					onDataReset();
 				}
 			});
-		} else {
-            //rasterToggle.;
-        }
+		}
 
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		preferences.registerOnSharedPreferenceChangeListener(this);
@@ -171,7 +166,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         alarmView.setAlarmManager(alarmManager);
         alarmView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getMinutesPerColor());
         alarmView.setBackgroundColor(Color.TRANSPARENT);
-        alarmView.setAlpha(180);
+        alarmView.setAlpha(200);
 
 		onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
 		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);

@@ -101,6 +101,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
             background.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
         }
 
+        lines.setColor(colorHandler.getLineColor());
         lines.setStrokeWidth(size / 150);
 
         textStyle.setTextAlign(Align.CENTER);

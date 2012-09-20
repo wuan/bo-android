@@ -73,7 +73,7 @@ public class AlarmLabelTest {
         verify(textView, times(1)).setText(textCaptor.capture());
 
         assertThat(colorCaptor.getValue(), is(0x0f0));
-        assertThat(textCaptor.getValue().toString(), is("*"));
+        assertThat(textCaptor.getValue().toString(), is(""));
     }
 
     @Test

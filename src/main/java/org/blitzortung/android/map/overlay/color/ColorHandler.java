@@ -48,6 +48,16 @@ public abstract class ColorHandler {
 		return 0xffffffff;
 	}
 
+    public int getLineColor() {
+        switch (target) {
+            case SATELLITE:
+                return 0xffffffff;
+            case STREETMAP:
+                return 0xff000000;
+        }
+        return 0;
+    }
+
     public int getNumberOfColors() {
         return getColors().length;
     }
