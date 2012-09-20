@@ -16,22 +16,7 @@ import org.blitzortung.android.map.overlay.color.ColorHandler;
 
 public class AlarmView extends View implements AlarmManager.AlarmListener {
 
-    private final String[] alarmNotAvailableTextLines;
-
-    public AlarmView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
-
-    public AlarmView(Context context) {
-        this(context, null, 0);
-    }
-
-    public AlarmView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-
-        alarmNotAvailableTextLines = context.getString(R.string.alarms_not_available).split("\n");
-    }
-
+    public static final int TEXT_REQUIRED_SIZE = 300;
     private AlarmManager alarmManager;
 
     private AlarmStatus alarmStatus;
@@ -46,6 +31,25 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
     private final Paint lines = new Paint();
     private final Paint textStyle = new Paint();
     private final Paint warnText = new Paint();
+
+    private final String[] alarmNotAvailableTextLines;
+
+    public AlarmView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public AlarmView(Context context) {
+        this(context, null, 0);
+    }
+
+    public AlarmView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+
+        alarmNotAvailableTextLines = context.getString(R.string.alarms_not_available).split("\n");
+
+        background.setColor(0xffc0c0c0);
+    }
+
 
     public void setAlarmManager(AlarmManager alarmManager) {
         this.alarmManager = alarmManager;
@@ -85,11 +89,9 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
         arcArea.set(pad, pad, size - pad, size - pad);
 
-        background.setColor(0xffc0c0c0);
-
         lines.setColor(0xff404040);
         lines.setStyle(Style.STROKE);
-        lines.setStrokeWidth(2);
+        lines.setStrokeWidth(size / 150);
         lines.setAntiAlias(true);
 
         textStyle.setColor(0xff404040);
@@ -127,33 +129,35 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
                 }
             }
 
-            for (int sectorIndex = 0; sectorIndex < alarmStatus.getSectorCount(); sectorIndex++) {
-                double bearing = alarmStatus.getSectorBearing(sectorIndex);
-                canvas.drawLine(center, center, center + (float) (radius * Math.sin((bearing + sectorSize / 2.0f) / 180.0f * Math.PI)), center
-                        + (float) (radius * -Math.cos((bearing + sectorSize / 2.0f) / 180.0f * Math.PI)), lines);
+            if (size > TEXT_REQUIRED_SIZE) {
+                for (int sectorIndex = 0; sectorIndex < alarmStatus.getSectorCount(); sectorIndex++) {
+                    double bearing = alarmStatus.getSectorBearing(sectorIndex);
+                    canvas.drawLine(center, center, center + (float) (radius * Math.sin((bearing + sectorSize / 2.0f) / 180.0f * Math.PI)), center
+                            + (float) (radius * -Math.cos((bearing + sectorSize / 2.0f) / 180.0f * Math.PI)), lines);
 
-                String text = alarmStatus.getSectorLabel(sectorIndex);
-                if (!text.equals("O")) {
-                    float textRadius = (AlarmSector.getDistanceStepCount() - 0.5f) * radiusIncrement;
-                    canvas.drawText(text, center
-                            + (float) (textRadius * Math.sin(bearing / 180.0 * Math.PI)), center
-                            + (float) (textRadius * -Math.cos(bearing / 180.0 * Math.PI)) + textStyle.getFontMetrics(null) / 3f, textStyle);
+                    String text = alarmStatus.getSectorLabel(sectorIndex);
+                    if (!text.equals("O")) {
+                        float textRadius = (AlarmSector.getDistanceStepCount() - 0.5f) * radiusIncrement;
+                        canvas.drawText(text, center
+                                + (float) (textRadius * Math.sin(bearing / 180.0 * Math.PI)), center
+                                + (float) (textRadius * -Math.cos(bearing / 180.0 * Math.PI)) + textStyle.getFontMetrics(null) / 3f, textStyle);
+                    }
+                }
+
+                textStyle.setTextAlign(Align.RIGHT);
+                for (int distanceIndex = 0; distanceIndex < AlarmSector.getDistanceStepCount(); distanceIndex++) {
+                    float leftTop = center - (distanceIndex + 1) * radiusIncrement;
+                    float bottomRight = center + (distanceIndex + 1) * radiusIncrement;
+                    arcArea.set(leftTop, leftTop, bottomRight, bottomRight);
+                    canvas.drawArc(arcArea, 0, 360, false, lines);
+
+                    String text = String.format("%.0f", AlarmSector.getDistanceSteps()[distanceIndex] / 1000);
+                    canvas.drawText(text, center + (distanceIndex + 0.95f) * radiusIncrement, center
+                            + textStyle.getFontMetrics(null) / 3f, textStyle);
                 }
             }
 
-            textStyle.setTextAlign(Align.RIGHT);
-            for (int distanceIndex = 0; distanceIndex < AlarmSector.getDistanceStepCount(); distanceIndex++) {
-                float leftTop = center - (distanceIndex + 1) * radiusIncrement;
-                float bottomRight = center + (distanceIndex + 1) * radiusIncrement;
-                arcArea.set(leftTop, leftTop, bottomRight, bottomRight);
-                canvas.drawArc(arcArea, 0, 360, false, lines);
-
-                String text = String.format("%.0f", AlarmSector.getDistanceSteps()[distanceIndex] / 1000);
-                canvas.drawText(text, center + (distanceIndex + 0.95f) * radiusIncrement, center
-                        + textStyle.getFontMetrics(null) / 3f, textStyle);
-            }
-
-        } else {
+        } else if (size > TEXT_REQUIRED_SIZE) {
 
             warnText.setColor(0xffa00000);
             warnText.setTextAlign(Align.CENTER);
@@ -183,4 +187,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
         this.minutesPerColor = minutesPerColor;
     }
 
+    public void setBackground(int backgroundColor) {
+        background.setColor(backgroundColor);
+    }
 }

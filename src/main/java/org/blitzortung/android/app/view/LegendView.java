@@ -17,7 +17,7 @@ public class LegendView extends View {
     private int height;
 
     final private int padding = 5;
-    final private int colorFieldSize = 12;
+    final private int colorFieldSize = 10;
     final private int colorFieldSeparator = 5;
     final private int textWidth;
 
