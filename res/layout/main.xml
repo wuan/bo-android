@@ -15,4 +15,5 @@
     <include
             android:id="@+id/cell2"
             layout="@layout/map_overlay"/>
+
 </RelativeLayout>

@@ -54,7 +54,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
         textStyle.setColor(0xff404040);
 
-        background.setColor(0xffc0c0c0);
+        background.setColor(0xffb0b0b0);
     }
 
 
@@ -105,6 +105,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
         lines.setStrokeWidth(size / 150);
 
         textStyle.setTextAlign(Align.CENTER);
+        textStyle.setColor(colorHandler.getLineColor());
 
         if (alarmStatus != null) {
             long actualTime = System.currentTimeMillis();

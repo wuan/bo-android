@@ -3,6 +3,7 @@ package org.blitzortung.android.app.view;
 import android.content.Context;
 import android.graphics.*;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
@@ -11,13 +12,12 @@ import org.blitzortung.android.map.overlay.color.ColorHandler;
 public class LegendView extends View {
 
 
-    private int width;
-    private int height;
+    private float width;
+    private float height;
 
-    final private int padding = 5;
-    final private int colorFieldSize = 10;
-    final private int colorFieldSeparator = 5;
-    final private int textWidth;
+    final private float padding;
+    final private float colorFieldSize;
+    final private float textWidth;
 
     final private Paint textPaint;
     final private Paint backgroundPaint;
@@ -36,6 +36,9 @@ public class LegendView extends View {
     public LegendView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
+        padding = pxFromDp(4);
+        colorFieldSize = pxFromDp(8);
+
         foregroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -45,9 +48,14 @@ public class LegendView extends View {
         textPaint.setColor(0xffffffff);
         textPaint.setTextSize(colorFieldSize);
 
-        textWidth = (int) Math.ceil(textPaint.measureText("< 10min"));
+        textWidth = (float)Math.ceil(textPaint.measureText("< 10min"));
 
         setBackgroundColor(Color.TRANSPARENT);
+    }
+
+    private float pxFromDp(float dp)
+    {
+        return dp * getContext().getResources().getDisplayMetrics().density;
     }
 
     @Override
@@ -55,17 +63,17 @@ public class LegendView extends View {
         int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
         int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
 
-        width = Math.min(2 * padding + colorFieldSize + textWidth + colorFieldSeparator, parentWidth);
+        width = Math.min(3 * padding + colorFieldSize + textWidth, parentWidth);
 
         if (strokesOverlay != null) {
             ColorHandler colorHandler = strokesOverlay.getColorHandler();
 
-            height = Math.min((colorFieldSize + colorFieldSeparator) * colorHandler.getColors().length + padding, parentHeight);
+            height = Math.min((colorFieldSize + padding) * colorHandler.getColors().length + padding, parentHeight);
         } else {
             height = Math.min(10, parentHeight);
         }
 
-        super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+        super.onMeasure(MeasureSpec.makeMeasureSpec((int)width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec((int)height, MeasureSpec.EXACTLY));
     }
 
     @Override
@@ -82,14 +90,14 @@ public class LegendView extends View {
             int numberOfColors = colorHandler.getNumberOfColors();
             for (int index = 0; index < numberOfColors; index++) {
                 foregroundPaint.setColor(colorHandler.getColor(index));
-                int topCoordinate = padding + (colorFieldSize + colorFieldSeparator) * index;
+                float topCoordinate = padding + (colorFieldSize + padding) * index;
                 RectF rect = new RectF(padding, topCoordinate, padding + colorFieldSize, topCoordinate + colorFieldSize);
                 canvas.drawRect(rect, foregroundPaint);
 
                 boolean isLastValue = index == numberOfColors - 1;
                 String text = String.format("%c %dmin", isLastValue ? '>' : '<', (index + (isLastValue ? 0 : 1)) * minutesPerColor);
 
-                canvas.drawText(text, padding + colorFieldSize + colorFieldSeparator, topCoordinate + colorFieldSize / 1.1f, textPaint);
+                canvas.drawText(text, 2 * padding + colorFieldSize, topCoordinate + colorFieldSize / 1.1f, textPaint);
             }
 
         }
