@@ -24,20 +24,27 @@
                 android:text=""
                 android:textColor="@color/text_foreground"/>
 
-        <ImageView
-                android:id="@+id/error_indicator"
+        <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:src="@android:drawable/stat_notify_error"
-                android:contentDescription="status info"/>
+                android:layout_gravity="fill_horizontal|fill_vertical">
 
-        <ProgressBar
-                android:id="@+id/progress"
-                style="?android:attr/progressBarStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"/>
+            <ImageView
+                    android:id="@+id/error_indicator"
+                    android:src="@android:drawable/stat_notify_error"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:contentDescription="status info"/>
+
+            <ProgressBar
+                    android:id="@+id/progress"
+                    style="?android:attr/progressBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"/>
+
+        </RelativeLayout>
 
     </TableRow>
 

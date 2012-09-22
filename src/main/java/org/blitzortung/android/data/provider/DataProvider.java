@@ -24,6 +24,8 @@ public abstract class DataProvider {
 	public abstract List<AbstractStroke> getStrokesRaster(int timeInterval, int params, int timeOffet, int region);
 	
 	public abstract Raster getRaster();
+
+    public abstract int[] getHistogram();
 	
 	public abstract List<Participant> getStations(int region);
 	

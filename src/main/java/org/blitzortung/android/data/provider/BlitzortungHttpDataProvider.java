@@ -139,6 +139,11 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 	public void shutDown() {
 	}
 
+    @Override
+    public int[] getHistogram() {
+        return null;
+    }
+
 	@Override
 	public Raster getRaster() {
 		return null;

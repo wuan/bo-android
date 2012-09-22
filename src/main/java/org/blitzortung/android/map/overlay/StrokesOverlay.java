@@ -68,7 +68,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
 
             if (isRaster()) {
                 Paint paint = new Paint();
-                paint.setColor(0xffffffff);
+                paint.setColor(colorHandler.getLineColor());
                 paint.setStyle(Style.STROKE);
                 Projection projection = mapView.getProjection();
                 canvas.drawRect(raster.getRect(projection), paint);

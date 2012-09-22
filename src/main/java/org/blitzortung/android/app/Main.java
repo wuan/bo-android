@@ -3,12 +3,12 @@ package org.blitzortung.android.app;
 import java.util.*;
 
 import android.graphics.Color;
-import android.opengl.Visibility;
 import android.view.*;
 import org.blitzortung.android.alarm.AlarmLabel;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmStatus;
 import org.blitzortung.android.app.view.AlarmView;
+import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.DataRetriever;
@@ -40,7 +40,6 @@ import android.provider.Settings.Secure;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.maps.Overlay;
@@ -73,6 +72,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 	private float notificationDistanceLimit;
 
 	private float vibrationDistanceLimit;
+
+    private Set<DataListener> dataListeners = new HashSet<DataListener>();
 
     final Set<String> androidIdsForExtendedFunctionality = new HashSet<String>(Arrays.asList("e73c5a22934b5915"));
 
@@ -170,6 +171,13 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         alarmView.setBackgroundColor(Color.TRANSPARENT);
         alarmView.setAlpha(200);
 
+        HistogramView histogramView = (HistogramView) findViewById(R.id.histogram_view);
+        histogramView.setStrokesOverlay(strokesOverlay);
+        if (persistedData.getCurrentResult() != null) {
+            histogramView.onDataUpdate(persistedData.getCurrentResult());
+        }
+        addDataListener(histogramView);
+
 		onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
 		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
 		onSharedPreferenceChanged(preferences, Preferences.NOTIFICATION_DISTANCE_LIMIT);
@@ -178,7 +186,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		getMapView().invalidate();
 	}
 
-	@Override
+    private void addDataListener(DataListener listener) {
+        dataListeners.add(listener);
+    }
+
+    @Override
 	public Object onRetainNonConfigurationInstance() {
 		strokesOverlay.clearPopup();
 		participantsOverlay.clearPopup();
@@ -261,6 +273,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 	@Override
 	public void onDataUpdate(DataResult result) {
+        persistedData.setCurrentResult(result);
+
 		if (resetData) {
 			resetData = false;
 			strokesOverlay.clear();
@@ -289,6 +303,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			participantsOverlay.refresh();
 		}
 
+        for (DataListener listener : dataListeners) {
+            listener.onDataUpdate(result);
+        }
 		getMapView().invalidate();
 	}
 
@@ -296,6 +313,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 	public void onDataReset() {
 		timerTask.restart();
 		resetData = true;
+
+        for (DataListener listener : dataListeners) {
+            listener.onDataReset();
+        }
 	}
 
 	protected Dialog onCreateDialog(int id) {

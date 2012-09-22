@@ -13,7 +13,9 @@ import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataProviderType;
 import org.blitzortung.android.data.provider.DataResult;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -86,7 +88,7 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 		}
 
 		protected void onPostExecute(DataResult result) {
-			if (!result.hasFailed()) {
+			if (!result.hasFailed() && listener != null) {
 				listener.onDataUpdate(result);
 			}
 
@@ -117,6 +119,7 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
                     result.setStrokesTimeInterval(minutes * 60 * 1000);
 					result.setStrokes(strokes);
 					result.setRaster(dataProvider.getRaster());
+                    result.setHistogram(dataProvider.getHistogram());
 
 					if (params.length > 4 && params[4] != 0)
 						result.setParticipants(dataProvider.getStations(params[3]));
@@ -154,10 +157,8 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 			String providerTypeString = sharedPreferences.getString(Preferences.DATA_SOURCE_KEY, DataProviderType.RPC.toString());
 			DataProviderType providerType = DataProviderType.valueOf(providerTypeString.toUpperCase());
 			dataProvider = providerType.getProvider();
-			if (listener != null) {
-				listener.onDataReset();
-			}
-		} else if (key.equals(Preferences.USERNAME_KEY)) {
+            notifyDataReset();
+        } else if (key.equals(Preferences.USERNAME_KEY)) {
 			username = sharedPreferences.getString(Preferences.USERNAME_KEY, "");
 		} else if (key.equals(Preferences.PASSWORD_KEY)) {
 			password = sharedPreferences.getString(Preferences.PASSWORD_KEY, "");
@@ -166,9 +167,7 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 		} else if (key.equals(Preferences.REGION_KEY)) {
 			region = Integer.parseInt(sharedPreferences.getString(Preferences.REGION_KEY, "1"));
 			dataProvider.reset();
-			if (listener != null) {
-				listener.onDataReset();
-			}
+            notifyDataReset();
 		}
 
 		if (dataProvider != null) {
@@ -176,7 +175,13 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 		}
 	}
 
-	public int getMinutes() {
+    private void notifyDataReset() {
+        if (listener != null) {
+            listener.onDataReset();
+        }
+    }
+
+    public int getMinutes() {
 		return minutes;
 	}
 
