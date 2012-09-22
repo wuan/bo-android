@@ -9,10 +9,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.params.*;
 import org.apache.http.util.EntityUtils;
 
 import android.util.Log;
@@ -31,6 +28,8 @@ public class HttpServiceClient {
 	
 	HttpServiceClient(String uri) {
         httpClient = new DefaultHttpClient();
+        httpClient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "bo-android");
+
         serviceUri = uri;
 	}
 	
