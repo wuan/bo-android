@@ -3,6 +3,7 @@ package org.blitzortung.android.app;
 import java.util.*;
 
 import android.graphics.Color;
+import android.opengl.Visibility;
 import android.view.*;
 import org.blitzortung.android.alarm.AlarmLabel;
 import org.blitzortung.android.alarm.AlarmManager;
@@ -93,6 +94,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         if (isDebugBuild() || (androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
             Button rasterToggle = (Button) findViewById(R.id.clickBtn);
             rasterToggle.setEnabled(true);
+            rasterToggle.setVisibility(View.VISIBLE);
 			rasterToggle.setText("r/p");
     		rasterToggle.getBackground().setAlpha(20);
 
