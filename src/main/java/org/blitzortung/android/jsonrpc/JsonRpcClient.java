@@ -10,7 +10,8 @@ public class JsonRpcClient extends HttpServiceClient {
 
 	private int id;
 
-	private JSONArray buildParameters(Object[] parameters) {
+    // VisibleForTesting
+	protected JSONArray buildParameters(Object[] parameters) {
 		JSONArray parameterArray = new JSONArray();
 		for (Object parameter : parameters) {
 			parameterArray.put(parameter);
@@ -18,7 +19,8 @@ public class JsonRpcClient extends HttpServiceClient {
 		return parameterArray;
 	}
 
-	private JsonRequestEntity buildRequest(String methodName, Object[] parameters) {
+    // VisibleForTesting
+	protected JsonRequestEntity buildRequest(String methodName, Object[] parameters) {
 		JSONObject requestObject = new JSONObject();
 		try {
 			requestObject.put("id", id);

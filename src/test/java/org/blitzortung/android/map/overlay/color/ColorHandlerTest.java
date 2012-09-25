@@ -24,7 +24,7 @@ public class ColorHandlerTest {
         }
 
         @Override
-        int[] getColors(ColorTarget target) {
+        protected int[] getColors(ColorTarget target) {
             return new int[0];
         }
     }

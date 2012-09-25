@@ -17,110 +17,131 @@ import org.json.JSONObject;
 
 public class JsonRpcDataProvider extends DataProvider {
 
-	public static final SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
-	static {
-		TimeZone tz = TimeZone.getTimeZone("UTC");
-		DATE_TIME_FORMATTER.setTimeZone(tz);
-	}
+    public static final SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
 
-	private JsonRpcClient client;
+    static {
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        DATE_TIME_FORMATTER.setTimeZone(tz);
+    }
 
-	private Integer nextId = null;
+    private JsonRpcClient client;
 
-	public List<AbstractStroke> getStrokes(int timeInterval, int region) {
+    private Integer nextId = null;
 
-		List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
+    private int[] histogram;
 
-		raster = null;
+    Raster raster = null;
 
-		try {
-			JSONObject response = client.call("get_strokes", timeInterval, nextId);
+    public List<AbstractStroke> getStrokes(int timeInterval, int region) {
 
-			long referenceTimestamp = TimeFormat.parseTime(response.getString("t"));
+        List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
 
-			JSONArray strokes_array = (JSONArray) response.get("s");
+        raster = null;
 
-			for (int i = 0; i < strokes_array.length(); i++) {
-				strokes.add(new Stroke(referenceTimestamp, strokes_array.getJSONArray(i)));
-			}
+        try {
+            JSONObject response = client.call("get_strokes", timeInterval, nextId);
 
-			if (response.has("next")) {
-				nextId = (Integer) response.get("next");
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return strokes;
-	}
+            long referenceTimestamp = TimeFormat.parseTime(response.getString("t"));
 
-	Raster raster = null;
+            JSONArray strokes_array = (JSONArray) response.get("s");
 
-	public List<AbstractStroke> getStrokesRaster(int timeInterval, int rasterSize, int timeOffset, int region) {
+            for (int i = 0; i < strokes_array.length(); i++) {
+                strokes.add(new Stroke(referenceTimestamp, strokes_array.getJSONArray(i)));
+            }
 
-		List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
+            if (response.has("next")) {
+                nextId = (Integer) response.get("next");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return strokes;
+    }
 
-		nextId = null;
+    public int[] getHistogram() {
+        return histogram;
+    }
 
-		try {
-			JSONObject response = client.call("get_strokes_raster", timeInterval, rasterSize, timeOffset, region);
+    public List<AbstractStroke> getStrokesRaster(int timeInterval, int rasterSize, int timeOffset, int region) {
 
-			raster = new Raster(response);
+        List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
 
-			long referenceTimestamp = TimeFormat.parseTime(response.getString("t"));
+        nextId = null;
 
-			JSONArray strokes_array = (JSONArray) response.get("r");
+        try {
+            JSONObject response = client.call("get_strokes_raster", timeInterval, rasterSize, timeOffset, region);
 
-			for (int i = 0; i < strokes_array.length(); i++) {
-				strokes.add(new RasterElement(raster, referenceTimestamp, strokes_array.getJSONArray(i)));
-			}
+            raster = new Raster(response);
 
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+            long referenceTimestamp = TimeFormat.parseTime(response.getString("t"));
 
-		return strokes;
-	}
+            {
+                JSONArray strokes_array = (JSONArray) response.get("r");
 
-	public Raster getRaster() {
-		return raster;
-	}
+                for (int i = 0; i < strokes_array.length(); i++) {
+                    strokes.add(new RasterElement(raster, referenceTimestamp, strokes_array.getJSONArray(i)));
+                }
+            }
 
-	@Override
-	public List<Participant> getStations(int region) {
-		List<Participant> stations = new ArrayList<Participant>();
+            if (response.has("h")) {
+                JSONArray histogram_array = (JSONArray) response.get("h");
 
-		try {
-			JSONObject response = client.call("get_stations");
-			JSONArray stations_array = (JSONArray) response.get("stations");
+                if (histogram == null || histogram.length != histogram_array.length()) {
+                    histogram = new int[histogram_array.length()];
+                }
 
-			for (int i = 0; i < stations_array.length(); i++) {
-				stations.add(new Participant(stations_array.getJSONArray(i)));
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return stations;
-	}
+                for (int i = 0; i < histogram_array.length(); i++) {
+                    histogram[i] = histogram_array.getInt(i);
+                }
+            }
 
-	@Override
-	public DataProviderType getType() {
-		return DataProviderType.RPC;
-	}
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-	@Override
-	public void setUp() {
-		client = new JsonRpcClient("http://tryb.de:7080/");
+        return strokes;
+    }
 
-		client.setConnectionTimeout(40000);
-		client.setSocketTimeout(40000);
-	}
+    public Raster getRaster() {
+        return raster;
+    }
 
-	@Override
-	public void shutDown() {
-	}
+    @Override
+    public List<Participant> getStations(int region) {
+        List<Participant> stations = new ArrayList<Participant>();
 
-	@Override
-	public void reset() {
-		nextId = null;
-	}
+        try {
+            JSONObject response = client.call("get_stations");
+            JSONArray stations_array = (JSONArray) response.get("stations");
+
+            for (int i = 0; i < stations_array.length(); i++) {
+                stations.add(new Participant(stations_array.getJSONArray(i)));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return stations;
+    }
+
+    @Override
+    public DataProviderType getType() {
+        return DataProviderType.RPC;
+    }
+
+    @Override
+    public void setUp() {
+        client = new JsonRpcClient("http://tryb.de:7080/");
+
+        client.setConnectionTimeout(40000);
+        client.setSocketTimeout(40000);
+    }
+
+    @Override
+    public void shutDown() {
+    }
+
+    @Override
+    public void reset() {
+        nextId = null;
+    }
 }

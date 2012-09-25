@@ -3,12 +3,6 @@
 
     <string name="app_name">Blitzortung Viewer</string>
 
-    <color name="Red">#f00</color>
-    <color name="Orange">#f80</color>
-    <color name="Yellow">#ff0</color>
-    <color name="Green">#0f0</color>
-    <color name="White">#fff</color>
-
     <plurals name="stroke">
         <item quantity="zero">no stroke</item>
         <item quantity="one">1 stroke</item>
@@ -20,7 +14,7 @@
     </plurals>
 
     <string name="info">Information</string>
-    <string name="info_text">Project home:\n\thttps://github.com/wuan/bo-android\n\nVisualized lightning data is provided by the <b>Blitzortung.org</b> realtime lighning community project:\n\thttp://blitzortung.org/\n</string>
+    <string name="info_text">Project home:\n\thttps://github.com/wuan/bo-android\n\nVisualized lightning data is provided by the <b>Blitzortung.org</b> realtime lighning community project. Please refer to\n\thttp://blitzortung.org/\nfor further information or how to participate.\n</string>
     <string name="copyright">© 2012, Andreas Würl\nblitzortung@tryb.de</string>
     <string name="legend">Legend</string>
     <string name="total_time">total time</string>

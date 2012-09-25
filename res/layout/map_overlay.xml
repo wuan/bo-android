@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <include
+            android:id="@+id/cell1"
+            layout="@layout/overlay_top"/>
+
+    <RelativeLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/map_overlay"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/upperRow">
+
+        <org.blitzortung.android.app.view.LegendView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/legend_view"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <Button
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/clickBtn"
+                android:enabled="false"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:text="r/p"/>
+
+        <org.blitzortung.android.app.view.AlarmView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/alarm_view"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentBottom="true"/>
+
+        <org.blitzortung.android.app.view.HistogramView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/histogram_view"
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+
+</merge>

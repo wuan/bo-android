@@ -14,8 +14,9 @@ public class DataResult implements Serializable {
 	private List<AbstractStroke> strokes;
 	private List<Participant> participants;
 	private Raster raster = null;
-	
-	private boolean fail;
+    private int[] histogram;
+
+    private boolean fail;
 	
 	private boolean processWasLocked;
 	
@@ -97,5 +98,13 @@ public class DataResult implements Serializable {
 
     public long getStrokesTimeInterval() {
         return strokesTimeInterval;
+    }
+
+    public void setHistogram(int[] histogram) {
+        this.histogram = histogram;
+    }
+
+    public int[] getHistogram() {
+        return histogram;
     }
 }

@@ -2,6 +2,7 @@ package org.blitzortung.android.app;
 
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.data.DataRetriever;
+import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
@@ -22,8 +23,11 @@ public class PersistedData {
 	private final StrokesOverlay strokesOverlay;
 	
 	private final ParticipantsOverlay participantsOverlay;
-	
-	public PersistedData(Resources resources, LocationManager locationManager, SharedPreferences sharedPreferences) {
+
+    private DataResult currentResult;
+
+
+    public PersistedData(Resources resources, LocationManager locationManager, SharedPreferences sharedPreferences) {
 		provider = new DataRetriever(sharedPreferences);
 		timerTask = new TimerTask(resources, sharedPreferences, provider);
 		alarmManager = new AlarmManager(locationManager, sharedPreferences, timerTask);
@@ -50,5 +54,12 @@ public class PersistedData {
 	public AlarmManager getAlarmManager() {
 		return alarmManager;
 	}
-	
+
+    public void setCurrentResult(DataResult result) {
+        currentResult = result;
+    }
+
+    public DataResult getCurrentResult() {
+        return currentResult;
+    }
 }

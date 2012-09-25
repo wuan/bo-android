@@ -20,7 +20,6 @@ public class AlarmLabel {
 		String warningText = "";
 		
 		if (alarmStatus != null) {
-			warningText = "*";
 			int textColorResource = R.color.Green;
 
 			int alarmSector = alarmStatus.getSectorWithClosestStroke();

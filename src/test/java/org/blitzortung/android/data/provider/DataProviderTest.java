@@ -41,6 +41,11 @@ public class DataProviderTest {
         }
 
         @Override
+        public int[] getHistogram() {
+            return new int[0];  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
         public List<Participant> getStations(int region) {
             return null;
         }

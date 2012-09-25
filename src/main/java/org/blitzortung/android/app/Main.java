@@ -2,16 +2,19 @@ package org.blitzortung.android.app;
 
 import java.util.*;
 
+import android.graphics.Color;
+import android.view.*;
 import org.blitzortung.android.alarm.AlarmLabel;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmStatus;
+import org.blitzortung.android.app.view.AlarmView;
+import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.DataRetriever;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.dialogs.AlarmDialog;
 import org.blitzortung.android.dialogs.InfoDialog;
-import org.blitzortung.android.dialogs.LegendDialog;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.overlay.OwnLocationOverlay;
@@ -34,14 +37,9 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.maps.Overlay;
@@ -75,6 +73,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 	private float vibrationDistanceLimit;
 
+    private Set<DataListener> dataListeners = new HashSet<DataListener>();
+
     final Set<String> androidIdsForExtendedFunctionality = new HashSet<String>(Arrays.asList("e73c5a22934b5915"));
 
 	@Override
@@ -92,14 +92,12 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		getMapView().setBuiltInZoomControls(true);
 
 		final String androidId = Secure.getString(getBaseContext().getContentResolver(), Secure.ANDROID_ID);
-
-		if (isDebugBuild() || (androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
-			RelativeLayout mapcontainer = (RelativeLayout) findViewById(R.id.mapcontainer);
-
-			Button rasterToggle = new Button(getBaseContext());
+        if (isDebugBuild() || (androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
+            Button rasterToggle = (Button) findViewById(R.id.clickBtn);
+            rasterToggle.setEnabled(true);
+            rasterToggle.setVisibility(View.VISIBLE);
 			rasterToggle.setText("r/p");
-
-			rasterToggle.getBackground().setAlpha(150);
+    		rasterToggle.getBackground().setAlpha(20);
 
 			rasterToggle.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
@@ -107,8 +105,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 					onDataReset();
 				}
 			});
-
-			mapcontainer.addView(rasterToggle);
 		}
 
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -165,11 +161,22 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 		ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
 
-        RelativeLayout mapcontainer = (RelativeLayout) findViewById(R.id.mapcontainer);
-        LegendView legendView = new LegendView(getBaseContext());
-        legendView.setColorHandler(strokesOverlay.getColorHandler());
+        LegendView legendView = (LegendView) findViewById(R.id.legend_view);
+        legendView.setStrokesOverlay(strokesOverlay);
         legendView.setAlpha(150);
-        mapcontainer.addView(legendView);
+
+        AlarmView alarmView = (AlarmView) findViewById(R.id.alarm_view);
+        alarmView.setAlarmManager(alarmManager);
+        alarmView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getMinutesPerColor());
+        alarmView.setBackgroundColor(Color.TRANSPARENT);
+        alarmView.setAlpha(200);
+
+        HistogramView histogramView = (HistogramView) findViewById(R.id.histogram_view);
+        histogramView.setStrokesOverlay(strokesOverlay);
+        if (persistedData.getCurrentResult() != null) {
+            histogramView.onDataUpdate(persistedData.getCurrentResult());
+        }
+        addDataListener(histogramView);
 
 		onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
 		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
@@ -179,7 +186,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		getMapView().invalidate();
 	}
 
-	@Override
+    private void addDataListener(DataListener listener) {
+        dataListeners.add(listener);
+    }
+
+    @Override
 	public Object onRetainNonConfigurationInstance() {
 		strokesOverlay.clearPopup();
 		participantsOverlay.clearPopup();
@@ -217,10 +228,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		switch (item.getItemId()) {
 		case R.id.menu_info:
 			showDialog(R.id.info_dialog);
-			break;
-
-		case R.id.menu_legend:
-			showDialog(R.id.legend_dialog);
 			break;
 
 		case R.id.menu_alarms:
@@ -266,6 +273,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 	@Override
 	public void onDataUpdate(DataResult result) {
+        persistedData.setCurrentResult(result);
+
 		if (resetData) {
 			resetData = false;
 			strokesOverlay.clear();
@@ -294,6 +303,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			participantsOverlay.refresh();
 		}
 
+        for (DataListener listener : dataListeners) {
+            listener.onDataUpdate(result);
+        }
 		getMapView().invalidate();
 	}
 
@@ -301,6 +313,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 	public void onDataReset() {
 		timerTask.restart();
 		resetData = true;
+
+        for (DataListener listener : dataListeners) {
+            listener.onDataReset();
+        }
 	}
 
 	protected Dialog onCreateDialog(int id) {
@@ -308,10 +324,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		switch (id) {
 		case R.id.info_dialog:
 			dialog = new InfoDialog(this);
-			break;
-
-		case R.id.legend_dialog:
-			dialog = new LegendDialog(this, strokesOverlay);
 			break;
 
 		case R.id.alarm_dialog:

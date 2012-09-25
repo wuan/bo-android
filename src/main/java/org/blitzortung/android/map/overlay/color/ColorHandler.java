@@ -21,7 +21,7 @@ public abstract class ColorHandler {
 		return getColors(target);
 	}
 
-	abstract int[] getColors(ColorTarget target);
+	abstract protected int[] getColors(ColorTarget target);
 
 	public int getColorSection(long now, long eventTime, int minutesPerColor) {
 		int section = (int) (now - eventTime) / 1000 / 60 / minutesPerColor;
@@ -47,4 +47,18 @@ public abstract class ColorHandler {
 	public int getTextColor(ColorTarget target) {
 		return 0xffffffff;
 	}
+
+    public int getLineColor() {
+        switch (target) {
+            case SATELLITE:
+                return 0xffffffff;
+            case STREETMAP:
+                return 0xff000000;
+        }
+        return 0;
+    }
+
+    public int getNumberOfColors() {
+        return getColors().length;
+    }
 }
