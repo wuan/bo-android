@@ -5,6 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 public class TimeFormat {
+
+    private TimeFormat(){}
+
 	private static final SimpleDateFormat DATE_TIME_MILLISECONDS_FORMATTER = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss.SSS");
 	static {
 		DATE_TIME_MILLISECONDS_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
