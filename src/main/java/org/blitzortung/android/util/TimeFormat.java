@@ -19,17 +19,15 @@ public class TimeFormat {
 		try {
 			return DATE_TIME_MILLISECONDS_FORMATTER.parse(timestampString).getTime();
 		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return 0;
+            throw new IllegalArgumentException(String.format("Unable to parse millisecond time string '%s'", timestampString), e);
+        }
 	}
 	
 	public static long parseTime(String timestampString) {
 		try {
 			return DATE_TIME_FORMATTER.parse(timestampString).getTime();
 		} catch (ParseException e) {
-			e.printStackTrace();
+            throw new IllegalArgumentException(String.format("Unable to parse time string '%s'", timestampString), e);
 		}
-		return 0;
 	}
 }
