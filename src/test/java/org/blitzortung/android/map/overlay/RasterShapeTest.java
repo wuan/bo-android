@@ -6,6 +6,7 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -15,6 +16,7 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class RasterShapeTest {
@@ -25,14 +27,9 @@ public class RasterShapeTest {
     @Mock
     private Paint paint;
 
-    @Mock
-    private Point center;
+    private Point topLeft = new Point(-3, -3);
 
-    @Mock
-    private Point topRight;
-
-    @Mock
-    private Point bottomLeft;
+    private Point bottomRight = new Point(3, 3);
 
     private RasterShape rasterShape;
 
@@ -46,12 +43,32 @@ public class RasterShapeTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        rasterShape = new RasterShape(center, topRight, bottomLeft, color, multiplicity, textColor);
+        rasterShape = new RasterShape(topLeft, bottomRight, color, multiplicity, textColor);
     }
 
     @Test
     public void testDraw()
     {
+        rasterShape.draw(canvas, paint);
+
+        verify(paint, times(1)).setColor(color);
+        verify(paint, times(1)).setAlpha(anyInt());
+        verify(canvas, times(1)).drawRect(any(RectF.class), eq(paint));
+
+        verify(paint, times(0)).setColor(textColor);
+        verify(paint, times(0)).setTextAlign(Paint.Align.CENTER);
+        verify(paint, times(0)).setTextSize(anyFloat());
+        verify(canvas, times(0)).drawText(eq(String.valueOf(multiplicity)), anyFloat(), anyFloat(), eq(paint));
+    }
+
+    @Ignore
+    public void testDrawWithMultiplicityText()
+    {
+        topLeft = new Point(-4,-4);
+        bottomRight = new Point(4,4);
+
+        rasterShape = new RasterShape(topLeft, bottomRight, color, multiplicity, textColor);
+
         rasterShape.draw(canvas, paint);
 
         verify(paint, times(1)).setColor(color);

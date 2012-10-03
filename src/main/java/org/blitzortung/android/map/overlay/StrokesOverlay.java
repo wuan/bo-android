@@ -163,11 +163,15 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
             float lat_delta = raster.getLatitudeDelta() / 2.0f * 1e6f;
             GeoPoint geoPoint = item.getPoint();
             Point center = projection.toPixels(geoPoint, null);
-            Point topRight = projection.toPixels(new GeoPoint((int) (geoPoint.getLatitudeE6() + lat_delta),
-                    (int) (geoPoint.getLongitudeE6() + lon_delta)), null);
-            Point bottomLeft = projection.toPixels(new GeoPoint((int) (geoPoint.getLatitudeE6() - lat_delta),
+            Point topLeft = projection.toPixels(new GeoPoint(
+                    (int) (geoPoint.getLatitudeE6() + lat_delta),
                     (int) (geoPoint.getLongitudeE6() - lon_delta)), null);
-            shape = new RasterShape(center, topRight, bottomLeft, color, item.getMultiplicity(), colorHandler.getTextColor());
+            Point bottomRight = projection.toPixels(new GeoPoint(
+                    (int) (geoPoint.getLatitudeE6() - lat_delta),
+                    (int) (geoPoint.getLongitudeE6() + lon_delta)), null);
+            topLeft.offset(-center.x, -center.y);
+            bottomRight.offset(-center.x, -center.y);
+            shape = new RasterShape(topLeft, bottomRight, color, item.getMultiplicity(), colorHandler.getTextColor());
         } else {
             shape = new StrokeShape(zoomLevel + 1, color);
 

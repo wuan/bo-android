@@ -6,6 +6,7 @@ import android.graphics.Paint.Align;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.drawable.shapes.Shape;
+import android.util.Log;
 
 public class RasterShape extends Shape {
 
@@ -15,15 +16,16 @@ public class RasterShape extends Shape {
     private final int multiplicity;
     private final int textColor;
 
-    public RasterShape(Point center, Point topRight, Point bottomLeft, int color, int multiplicity, int textColor) {
+    public RasterShape(Point topLeft, Point bottomRight, int color, int multiplicity, int textColor) {
 
-        float x1 = Math.max(Math.abs(center.x - bottomLeft.x), 1.5f);
-        float x2 = Math.max(Math.abs(center.x - topRight.x), 1.5f);
-        float y1 = Math.max(Math.abs(center.y - bottomLeft.y), 1.5f);
-        float y2 = Math.max(Math.abs(center.y - topRight.y), 1.5f);
-        resize(Math.max(x1, x2) * 2, Math.max(y1, y2) * 2);
+        float x1 = Math.min(topLeft.x, -1.5f);
+        float y1 = Math.min(topLeft.y, -1.5f);
+        float x2 = Math.max(bottomRight.x, 1.5f);
+        float y2 = Math.max(bottomRight.y, 1.5f);
 
-        rect = new RectF(-x1, y2, x2, -y1);
+        rect = new RectF(x1, y1, x2, y2);
+        resize(rect.width(), rect.height());
+
         this.multiplicity = multiplicity;
         this.color = color;
         this.textColor = textColor;
@@ -37,12 +39,14 @@ public class RasterShape extends Shape {
         paint.setAlpha(alpha);
         canvas.drawRect(rect, paint);
 
-        paint.setColor(textColor);
-        paint.setAlpha(alpha + 50);
-        paint.setTextAlign(Align.CENTER);
         float textSize = rect.height() / 2.5f;
-        paint.setTextSize(textSize);
-        canvas.drawText(String.valueOf(multiplicity), 0.0f, 0.4f * textSize, paint);
+        if (textSize >= 8f) {
+            paint.setColor(textColor);
+            paint.setAlpha(0xff);
+            paint.setTextAlign(Align.CENTER);
+            paint.setTextSize(textSize);
+            canvas.drawText(String.valueOf(multiplicity), 0.0f, 0.4f * textSize, paint);
+        }
     }
 
     private void setAlphaValue() {
