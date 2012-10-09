@@ -75,13 +75,17 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
     @Override
     protected void onAttachedToWindow() {
-        alarmManager.addAlarmListener(this);
-        alarmStatus = alarmManager.getAlarmStatus();
+        if (alarmManager != null) {
+            alarmManager.addAlarmListener(this);
+            alarmStatus = alarmManager.getAlarmStatus();
+        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        alarmManager.removeAlarmListener(this);
+        if (alarmManager != null) {
+            alarmManager.removeAlarmListener(this);
+        }
         alarmStatus = null;
     }
 
@@ -102,13 +106,13 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
         }
         background.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
 
-        lines.setColor(colorHandler.getLineColor());
-        lines.setStrokeWidth(size / 150);
-
-        textStyle.setTextAlign(Align.CENTER);
-        textStyle.setColor(colorHandler.getLineColor());
-
         if (alarmStatus != null) {
+            lines.setColor(colorHandler.getLineColor());
+            lines.setStrokeWidth(size / 150);
+
+            textStyle.setTextAlign(Align.CENTER);
+            textStyle.setColor(colorHandler.getLineColor());
+
             long actualTime = System.currentTimeMillis();
 
             float sectorSize = alarmStatus.getSectorSize();

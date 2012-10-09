@@ -48,12 +48,14 @@ public class OwnMapView extends MapView {
 	}
 
 	protected void detectAndHandleZoomAction() {
-		float pixelSize = getProjection().metersToEquatorPixels(1000.0f);
+        if (getProjection() != null) {
+            float pixelSize = getProjection().metersToEquatorPixels(1000.0f);
 
-		if (pixelSize != oldPixelSize) {
-			notifyZoomListeners(getZoomLevel());
-			oldPixelSize = pixelSize;
-		}
+            if (pixelSize != oldPixelSize) {
+                notifyZoomListeners(getZoomLevel());
+                oldPixelSize = pixelSize;
+            }
+        }
 	}
 
 	public void addZoomListener(ZoomListener zoomListener) {
