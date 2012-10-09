@@ -4,13 +4,13 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.shapes.Shape;
 
-public class StationShape extends Shape {
+public class ParticipantShape extends Shape {
 
 	private final float width;
 	private final float height;
 	private final int color;
 	
-	public StationShape(float size, int color) {
+	public ParticipantShape(float size, int color) {
 		width = size;
 		height = size;
 		this.color = color;

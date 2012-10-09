@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
-import android.util.Log;
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapView;
 import org.blitzortung.android.data.beans.Participant;
 import org.blitzortung.android.data.beans.Participant.State;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
@@ -26,7 +23,7 @@ public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> {
     static private final Drawable DefaultDrawable;
 
     static {
-        Shape shape = new StationShape(1, 0);
+        Shape shape = new ParticipantShape(1, 0);
         DefaultDrawable = new ShapeDrawable(shape);
     }
 
@@ -99,7 +96,7 @@ public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> {
 
     // VisibleForTesting
     protected Drawable getDrawable(int color) {
-        Shape shape = new StationShape(shapeSize, color);
+        Shape shape = new ParticipantShape(shapeSize, color);
         return new ShapeDrawable(shape);
     }
 
