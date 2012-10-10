@@ -39,7 +39,10 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 
 	private DataListener listener;
 
-	public static class UpdateTargets {
+    public void toggleAnimation() {
+    }
+
+    public static class UpdateTargets {
 
 		boolean updateStrokes;
 
@@ -121,8 +124,10 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 					result.setRaster(dataProvider.getRaster());
                     result.setHistogram(dataProvider.getHistogram());
 
-					if (params.length > 4 && params[4] != 0)
+					if (params.length > 4 && params[4] != 0) {
 						result.setParticipants(dataProvider.getStations(params[3]));
+                    }
+
 					dataProvider.shutDown();
 				} catch (RuntimeException e) {
 					e.printStackTrace();

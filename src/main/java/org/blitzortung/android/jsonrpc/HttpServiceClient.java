@@ -32,6 +32,10 @@ public class HttpServiceClient {
 
         serviceUri = uri;
 	}
+
+    public void shutdown() {
+        httpClient.getConnectionManager().shutdown();
+    }
 	
 	public int getSocketTimeout() {
 		return socketTimeout;
@@ -67,10 +71,8 @@ public class HttpServiceClient {
 	        responseString = EntityUtils.toString(response.getEntity());
 	        Log.d("jsonrpc", String.format("request time %d ms (%d bytes received)", System.currentTimeMillis() - startTime, responseString.length()));
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

@@ -4,6 +4,7 @@ import java.util.*;
 
 import android.graphics.Color;
 import android.view.*;
+import android.widget.*;
 import org.blitzortung.android.alarm.AlarmLabel;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmStatus;
@@ -37,10 +38,6 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.google.android.maps.Overlay;
 
@@ -93,11 +90,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 		final String androidId = Secure.getString(getBaseContext().getContentResolver(), Secure.ANDROID_ID);
         if (isDebugBuild() || (androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
-            Button rasterToggle = (Button) findViewById(R.id.clickBtn);
+            ImageButton rasterToggle = (ImageButton) findViewById(R.id.toggleExtendedMode);
             rasterToggle.setEnabled(true);
             rasterToggle.setVisibility(View.VISIBLE);
-			rasterToggle.setText("r/p");
-    		rasterToggle.getBackground().setAlpha(20);
+            rasterToggle.getDrawable().setAlpha(40);
+    		rasterToggle.getBackground().setAlpha(40);
 
 			rasterToggle.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
@@ -160,6 +157,18 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
+
+        /*ImageButton toggleAnimation = (ImageButton) findViewById(R.id.toggleAnimation);
+        toggleAnimation.setEnabled(true);
+        toggleAnimation.setVisibility(View.VISIBLE);
+        toggleAnimation.getDrawable().setAlpha(200);
+
+        toggleAnimation.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                provider.toggleAnimation();
+                onDataReset();
+            }
+        });*/
 
         LegendView legendView = (LegendView) findViewById(R.id.legend_view);
         legendView.setStrokesOverlay(strokesOverlay);

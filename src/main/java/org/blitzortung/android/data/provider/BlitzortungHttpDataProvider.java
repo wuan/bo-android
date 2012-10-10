@@ -88,7 +88,6 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 				ins = new GZIPInputStream(ins);
 			}
 			reader = new BufferedReader(new InputStreamReader(ins));
-
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

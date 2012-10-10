@@ -15,29 +15,31 @@
         <org.blitzortung.android.app.view.LegendView
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/legend_view"
-                android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
+        <!--<ImageButton
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/toggleAnimation"
+                android:src="@android:drawable/ic_media_play"
+                android:background="@color/translucent_background"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"/>-->
+
         <ImageButton
                 xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/toggleAnim"
-                android:background="@android:drawable/ic_media_play"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"/>
-
-        <Button
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/clickBtn"
+                android:id="@+id/toggleExtendedMode"
                 android:src="@android:drawable/ic_menu_view"
+                android:background="@color/translucent_background"
                 android:enabled="false"
                 android:visibility="gone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@id/toggleAnim"/>
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"/>
 
         <org.blitzortung.android.app.view.AlarmView
                 xmlns:android="http://schemas.android.com/apk/res/android"
