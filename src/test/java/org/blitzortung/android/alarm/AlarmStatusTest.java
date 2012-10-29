@@ -3,9 +3,12 @@ package org.blitzortung.android.alarm;
 import android.location.Location;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -17,17 +20,20 @@ public class AlarmStatusTest {
 
     private AlarmStatus alarmStatus;
 
+    private MeasurementSystem measurementSystem;
+
     long warnThresholdTime;
 
     long now;
 
     @Before
     public void setUp() {
+        measurementSystem = MeasurementSystem.METRIC;
 
         now = System.currentTimeMillis();
         warnThresholdTime = now - 60000;
 
-        alarmStatus = new AlarmStatus(warnThresholdTime);
+        alarmStatus = new AlarmStatus(warnThresholdTime, measurementSystem);
     }
 
     @Test
@@ -50,10 +56,10 @@ public class AlarmStatusTest {
 
         long updatedWarnThresholdTime = warnThresholdTime + 10000;
 
-        alarmStatus.updateWarnThresholdTime(updatedWarnThresholdTime, 0l);
+        alarmStatus.update(updatedWarnThresholdTime, 0l, measurementSystem);
 
         for (AlarmSector sector : alarmStatus.sectors) {
-            verify(sector, times(1)).updateWarnThresholdTime(updatedWarnThresholdTime, 0l);
+            verify(sector, times(1)).update(updatedWarnThresholdTime, 0l, measurementSystem);
         }
     }
 
@@ -148,39 +154,43 @@ public class AlarmStatusTest {
         replaceSectorsWithMocks();
 
         for (AlarmSector sector : alarmStatus.sectors) {
-            when(sector.getWarnMinimumDistance()).thenReturn(50000f);
+            when(sector.getWarnMinimumDistance()).thenReturn(50f);
+            when(sector.getDistanceUnitName()).thenReturn("km");
         }
-        when(alarmStatus.sectors[2].getWarnMinimumDistance()).thenReturn(9000f);
-        when(alarmStatus.sectors[2].getMinimumIndex()).thenReturn(12);
+        when(alarmStatus.sectors[1].getWarnMinimumDistance()).thenReturn(9f);
+        when(alarmStatus.sectors[1].getMinimumIndex()).thenReturn(12);
 
         AlarmResult alarmResult = alarmStatus.currentActivity();
 
-        assertThat(alarmResult.getDistance(), is(9000f));
-        assertThat(alarmResult.getSector(), is(2));
+        assertThat(alarmResult.getDistance(), is(9f));
+        assertThat(alarmResult.getBearingName(), is("SW"));
         assertThat(alarmResult.getRange(), is(12));
     }
 
     @Test
     public void testGetTextMessage()
     {
-        assertThat(alarmStatus.getTextMessage(15000f), is(""));
+        assertThat(alarmStatus.getTextMessage(15f), is(""));
 
         replaceSectorsWithMocks();
         for (AlarmSector sector : alarmStatus.sectors) {
-            when(sector.getWarnMinimumDistance()).thenReturn(50000f);
+            when(sector.getWarnMinimumDistance()).thenReturn(50f);
         }
-        when(alarmStatus.sectors[2].getWarnMinimumDistance()).thenReturn(9000f);
+        when(alarmStatus.sectors[2].getWarnMinimumDistance()).thenReturn(9f);
 
-        assertThat(alarmStatus.getTextMessage(15000f), is("W 9km"));
+        assertThat(alarmStatus.getTextMessage(15f), is("W 9km"));
 
-        when(alarmStatus.sectors[5].getWarnMinimumDistance()).thenReturn(3000f);
+        when(alarmStatus.sectors[5].getWarnMinimumDistance()).thenReturn(3f);
 
-        assertThat(alarmStatus.getTextMessage(15000f), is("NO 3km, W 9km"));
+        assertThat(alarmStatus.getTextMessage(15f), is("NO 3km, W 9km"));
     }
 
     private void replaceSectorsWithMocks() {
         for (int i = 0; i < alarmStatus.getSectorCount(); i++) {
-            alarmStatus.sectors[i] = mock(AlarmSector.class);
+            AlarmSector sector = mock(AlarmSector.class);
+            when(sector.getDistanceUnitName()).thenReturn("km");
+            alarmStatus.sectors[i] = sector;
+
         }
     }
 }

@@ -79,7 +79,7 @@ public class AlarmLabelTest {
     @Test
     public void testApplyWithAlarmInRangeHigherThanThree()
     {
-        mockAlarmInRange(4, 260000f, "SO");
+        mockAlarmInRange(4, 260f, "SO");
 
         alarmLabel.apply(alarmStatus);
 
@@ -93,7 +93,7 @@ public class AlarmLabelTest {
     @Test
     public void testApplyWithAlarmInRangeHigherThanOne()
     {
-        mockAlarmInRange(2, 100000f, "NW");
+        mockAlarmInRange(2, 100f, "NW");
 
         alarmLabel.apply(alarmStatus);
 
@@ -107,7 +107,7 @@ public class AlarmLabelTest {
     @Test
     public void testApplyWithAlarmInMinimumRange()
     {
-        mockAlarmInRange(0, 15000f, "S");
+        mockAlarmInRange(0, 15f, "S");
 
         alarmLabel.apply(alarmStatus);
 
@@ -123,10 +123,10 @@ public class AlarmLabelTest {
     {
         when(alarmStatus.getSectorWithClosestStroke()).thenReturn(0);
         when(alarmStatus.currentActivity()).thenReturn(alarmResult);
-        when(alarmStatus.getSectorLabel(2)).thenReturn(sectorLabel);
         when(alarmResult.getRange()).thenReturn(range);
         when(alarmResult.getDistance()).thenReturn(distance);
-        when(alarmResult.getSector()).thenReturn(2);
+        when(alarmResult.getDistanceUnitName()).thenReturn("km");
+        when(alarmResult.getBearingName()).thenReturn(sectorLabel);
     }
 
 }

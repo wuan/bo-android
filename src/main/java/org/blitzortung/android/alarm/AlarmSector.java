@@ -1,10 +1,12 @@
 package org.blitzortung.android.alarm;
 
 import android.location.Location;
+import android.util.Log;
 import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.util.MeasurementSystem;
 
 public class AlarmSector {
-    private static final float DISTANCE_STEPS[] = {10000, 25000, 50000, 100000, 250000, 500000};
+    private static final float DISTANCE_STEPS[] = {10, 25, 50, 100, 250, 500};
 
     private int strokeCount[];
     private long latestStrokeTimestamp[];
@@ -12,10 +14,12 @@ public class AlarmSector {
 
     private final float sectorCenterBearing;
     private long warnThresholdTime;
+    private MeasurementSystem measurementSystem;
 
-    public AlarmSector(float sectorCenterBearing, long warnThresholdTime) {
+    public AlarmSector(float sectorCenterBearing, long warnThresholdTime, MeasurementSystem measurementSystem) {
         this.warnThresholdTime = warnThresholdTime;
         this.sectorCenterBearing = sectorCenterBearing;
+        this.measurementSystem = measurementSystem;
 
         reset();
     }
@@ -29,7 +33,9 @@ public class AlarmSector {
     }
 
     public void check(Location location, AbstractStroke stroke) {
-        check(location.distanceTo(stroke.getLocation()), stroke.getTimestamp(), stroke.getMultiplicity());
+        float distanceInMeters = location.distanceTo(stroke.getLocation());
+        float distance = measurementSystem.calculateDistance(distanceInMeters);
+        check(distance, stroke.getTimestamp(), stroke.getMultiplicity());
     }
 
     public void check(float distance, long timeStamp, int multiplicity) {
@@ -108,7 +114,7 @@ public class AlarmSector {
         return sectorCenterBearing;
     }
 
-    public void updateWarnThresholdTime(long warnThresholdTime, long oldestStrokeTime) {
+    public void update(long warnThresholdTime, long oldestStrokeTime, MeasurementSystem measurementSystem) {
         this.warnThresholdTime = warnThresholdTime;
 
         for (int index = 0; index < getDistanceStepCount(); index++) {
@@ -128,5 +134,9 @@ public class AlarmSector {
 
     public long getWarnThresholdTime() {
         return warnThresholdTime;
+    }
+
+    public String getDistanceUnitName() {
+        return measurementSystem.getUnitName();
     }
 }

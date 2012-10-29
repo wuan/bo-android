@@ -9,6 +9,7 @@ import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.TimerTask;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataResult;
+import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,8 +48,12 @@ public class AlarmManagerTest {
     {
         MockitoAnnotations.initMocks(this);
 
+        when(sharedPreferences.getString(Preferences.MEASUREMENT_UNIT_KEY, MeasurementSystem.METRIC.toString())).thenReturn(MeasurementSystem.METRIC.toString());
+
         alarmManager = spy(new AlarmManager(locationManager, sharedPreferences, timerTask));
         alarmManager.addAlarmListener(alarmListener);
+
+        verify(sharedPreferences, times(1)).getString(Preferences.MEASUREMENT_UNIT_KEY, MeasurementSystem.METRIC.toString());
     }
 
     @Test
@@ -153,7 +158,7 @@ public class AlarmManagerTest {
         Location strokeLocation = mock(Location.class);
         when(stroke.getLocation()).thenReturn(strokeLocation);
         when(location.bearingTo(strokeLocation)).thenReturn(0f);
-        when(location.distanceTo(strokeLocation)).thenReturn(500f);
+        when(location.distanceTo(strokeLocation)).thenReturn(500000f);
 
         DataResult result = mock(DataResult.class);
         when(result.getStrokes()).thenReturn(Lists.newArrayList(stroke));
@@ -165,7 +170,7 @@ public class AlarmManagerTest {
         verify(alarmListener, times(1)).onAlarmResult(alarmStatusCaptor.capture());
 
         assertThat(alarmStatusCaptor.getValue().currentActivity().getDistance(), is(500f));
-        assertThat(alarmStatusCaptor.getValue().currentActivity().getSector(), is(4));
+        assertThat(alarmStatusCaptor.getValue().currentActivity().getBearingName(), is("N"));
     }
 
     @Test

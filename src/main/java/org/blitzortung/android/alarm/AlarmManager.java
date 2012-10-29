@@ -14,6 +14,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import org.blitzortung.android.util.MeasurementSystem;
 
 public class AlarmManager implements OnSharedPreferenceChangeListener, LocationListener {
 
@@ -33,6 +34,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 
 	private boolean alarmEnabled;
 
+    private MeasurementSystem measurementSystem;
+
     // VisibleForTesting
 	protected final Set<AlarmListener> alarmListeners;
 
@@ -47,6 +50,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 
 		preferences.registerOnSharedPreferenceChangeListener(this);
 		onSharedPreferenceChanged(preferences, Preferences.ALARM_ENABLED_KEY);
+        onSharedPreferenceChanged(preferences, Preferences.MEASUREMENT_UNIT_KEY);
 	}
 
 	@Override
@@ -65,7 +69,11 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 			}
 
 			timerTask.setAlarmEnabled(alarmEnabled);
-		}
+		} else if (key.equals(Preferences.MEASUREMENT_UNIT_KEY)) {
+            String measurementSystemName = sharedPreferences.getString(key, MeasurementSystem.METRIC.toString());
+
+            measurementSystem = MeasurementSystem.valueOf(measurementSystemName);
+        }
 	}
 
 	@Override
@@ -99,9 +107,9 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
             long oldestTime = now - result.getStrokesTimeInterval();
 
 			if (alarmStatus == null || !result.isIncremental()) {
-				alarmStatus = new AlarmStatus(thresholdTime);
+				alarmStatus = new AlarmStatus(thresholdTime, measurementSystem);
 			} else {
-				alarmStatus.updateWarnThresholdTime(thresholdTime, oldestTime);
+				alarmStatus.update(thresholdTime, oldestTime, measurementSystem);
 			}
 
 			for (AbstractStroke stroke : result.getStrokes()) {

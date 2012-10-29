@@ -122,23 +122,36 @@
         <item>1800</item>
     </string-array>
 
-        <string name="notification_distance_limit">max. Entfernung Benachrichtigung</string>
+    <string name="notification_distance_limit">max. Entfernung Benachrichtigung</string>
     <string name="vibration_distance_limit">max. Entfernung Vibration</string>
 
     <string-array name="distance_limits">
         <item>deaktiviert</item>
-        <item>25 km</item>
-        <item>50 km</item>
-        <item>100 km</item>
-        <item>150 km</item>
-        <item>200 km</item>
+        <item>10 km/mi.</item>
+        <item>25 km/mi.</item>
+        <item>50 km/mi.</item>
+        <item>100 km/mi.</item>
+        <item>150 km/mi.</item>
+        <item>200 km/mi.</item>
     </string-array>
         <string-array name="distance_limit_values">
         <item>0</item>
-        <item>25000</item>
-        <item>50000</item>
-        <item>100000</item>
-        <item>150000</item>
-        <item>200000</item>
+        <item>10</item>
+        <item>25</item>
+        <item>50</item>
+        <item>100</item>
+        <item>150</item>
+        <item>200</item>
+    </string-array>
+
+    <string name="generic_settings">Allgemeines</string>
+    <string name="measurement_unit">Einheitensystem</string>
+    <string-array name="measurement_units">
+        <item>metrisch</item>
+        <item>imperial</item>
+    </string-array>
+    <string-array name="measurement_unit_values">
+        <item>METRIC</item>
+        <item>IMPERIAL</item>
     </string-array>
 </resources>

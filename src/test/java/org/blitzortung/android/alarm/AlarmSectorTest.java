@@ -1,6 +1,7 @@
 package org.blitzortung.android.alarm;
 
 import com.xtremelabs.robolectric.RobolectricTestRunner;
+import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +17,7 @@ public class AlarmSectorTest {
 
     @Before
 	public void setUp() {
-		alarmSector = spy(new AlarmSector(90.0f, 10000));
+		alarmSector = spy(new AlarmSector(90.0f, 10000, MeasurementSystem.METRIC));
 	}
 
     @Test
@@ -44,7 +45,7 @@ public class AlarmSectorTest {
 	public void testCheckWithOneStroke() {
 		
 		int strokeMultiplicity = 2;
-		float strokeDistance = 150000f;
+		float strokeDistance = 150f;
 		long strokeTime = 10001;
 		
 		alarmSector.check(strokeDistance, strokeTime, strokeMultiplicity);
@@ -62,11 +63,11 @@ public class AlarmSectorTest {
     @Test
 	public void testCheckWithMultipleStrokes() {
 		
-		alarmSector.check(200000f, 1000010, 1);
+		alarmSector.check(200f, 1000010, 1);
 
-		alarmSector.check(150000f, 1000000, 2);
+		alarmSector.check(150f, 1000000, 2);
 		
-		alarmSector.check(450000.0f, 9999999, 4);
+		alarmSector.check(450.0f, 9999999, 4);
 		
 		int minimumIndex = alarmSector.getMinimumIndex();
 		
@@ -74,7 +75,7 @@ public class AlarmSectorTest {
 		
 		assertThat(alarmSector.getCount(minimumIndex), is(3));
 		assertThat(alarmSector.getLatestTime(minimumIndex), is(1000010l));
-		assertThat(alarmSector.getWarnMinimumDistance(), is(150000f));
+		assertThat(alarmSector.getWarnMinimumDistance(), is(150f));
 	}
 
     @Test
@@ -84,7 +85,7 @@ public class AlarmSectorTest {
 
         assertThat(alarmSector.getEventCount(), is(eventCount));
 
-        alarmSector.check(10000f, 15000, 1);
+        alarmSector.check(10f, 15000, 1);
 
         eventCount[0] = 1;
 
@@ -98,7 +99,7 @@ public class AlarmSectorTest {
 
         assertThat(alarmSector.getLatestTimes(), is(latestTimes));
 
-        alarmSector.check(10000f, 15000, 1);
+        alarmSector.check(10f, 15000, 1);
 
         latestTimes[0] = 15000;
 
@@ -110,9 +111,9 @@ public class AlarmSectorTest {
     {
         assertThat(alarmSector.getWarnMinimumDistance(), is(Float.POSITIVE_INFINITY));
 
-        alarmSector.check(10000f, 15000, 1);
+        alarmSector.check(10f, 15000, 1);
 
-        assertThat(alarmSector.getWarnMinimumDistance(), is(10000f));
+        assertThat(alarmSector.getWarnMinimumDistance(), is(10f));
     }
 
     @Test
@@ -124,11 +125,11 @@ public class AlarmSectorTest {
     @Test
     public void testUpdateWarnThresholdTimeRemovesOlderWarning()
     {
-        alarmSector.check(10000f, 15000, 1);
+        alarmSector.check(10f, 15000, 1);
         assertThat(alarmSector.getCount(0), is(1));
-        assertThat(alarmSector.getWarnMinimumDistance(), is(10000f));
+        assertThat(alarmSector.getWarnMinimumDistance(), is(10f));
 
-        alarmSector.updateWarnThresholdTime(20000l, 0l);
+        alarmSector.update(20000l, 0l, MeasurementSystem.METRIC);
 
         assertThat(alarmSector.getWarnThresholdTime(), is(20000l));
         assertThat(alarmSector.getCount(0), is(1));
@@ -138,26 +139,26 @@ public class AlarmSectorTest {
     @Test
     public void testUpdateWarnThresholdTimeRemovesOlderWarningButKeepsNext()
     {
-        alarmSector.check(10000f, 15000, 1);
-        alarmSector.check(50000f, 25000, 1);
+        alarmSector.check(10f, 15000, 1);
+        alarmSector.check(50f, 25000, 1);
         assertThat(alarmSector.getCount(0), is(1));
-        assertThat(alarmSector.getWarnMinimumDistance(), is(10000f));
+        assertThat(alarmSector.getWarnMinimumDistance(), is(10f));
 
-        alarmSector.updateWarnThresholdTime(20000l, 0l);
+        alarmSector.update(20000l, 0l, MeasurementSystem.METRIC);
 
         assertThat(alarmSector.getWarnThresholdTime(), is(20000l));
         assertThat(alarmSector.getCount(0), is(1));
-        assertThat(alarmSector.getWarnMinimumDistance(), is(25000f));
+        assertThat(alarmSector.getWarnMinimumDistance(), is(25f));
     }
 
     @Test
     public void testUpdateWarnThresholdTimeRemovesOlderValues()
     {
-        alarmSector.check(10000f, 15000, 1);
+        alarmSector.check(10f, 15000, 1);
         assertThat(alarmSector.getCount(0), is(1));
-        assertThat(alarmSector.getWarnMinimumDistance(), is(10000f));
+        assertThat(alarmSector.getWarnMinimumDistance(), is(10f));
 
-        alarmSector.updateWarnThresholdTime(20000l, 19000l);
+        alarmSector.update(20000l, 19000l, MeasurementSystem.METRIC);
 
         assertThat(alarmSector.getWarnThresholdTime(), is(20000l));
         assertThat(alarmSector.getCount(0), is(0));
@@ -167,10 +168,10 @@ public class AlarmSectorTest {
     @Test
     public void testUpdateWarnThresholdTimeKeepsNewerValues()
     {
-        alarmSector.check(10000f, 25000, 1);
+        alarmSector.check(10f, 25000, 1);
         assertThat(alarmSector.getCount(0), is(1));
 
-        alarmSector.updateWarnThresholdTime(20000l, 0l);
+        alarmSector.update(20000l, 0l, MeasurementSystem.METRIC);
 
         assertThat(alarmSector.getWarnThresholdTime(), is(20000l));
         assertThat(alarmSector.getCount(0), is(1));

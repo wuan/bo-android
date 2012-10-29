@@ -2,6 +2,7 @@ package org.blitzortung.android.alarm;
 
 import android.location.Location;
 import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.util.MeasurementSystem;
 
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -15,19 +16,19 @@ public class AlarmStatus {
     // VisibleForTesting
     protected final AlarmSector[] sectors;
 
-    public AlarmStatus(long warnThresholdTime) {
+    public AlarmStatus(long warnThresholdTime, MeasurementSystem measurementSystem) {
         sectors = new AlarmSector[SECTOR_COUNT];
 
         float bearing = -180;
         for (int i = 0; i < SECTOR_COUNT; i++) {
-            sectors[i] = new AlarmSector(bearing, warnThresholdTime);
+            sectors[i] = new AlarmSector(bearing, warnThresholdTime, measurementSystem);
             bearing += getSectorSize();
         }
     }
 
-    public void updateWarnThresholdTime(long warnThresholdTime, long oldestStrokeTime) {
+    public void update(long warnThresholdTime, long oldestStrokeTime, MeasurementSystem measurementSystem) {
         for (int i = 0; i < SECTOR_COUNT; i++) {
-            sectors[i].updateWarnThresholdTime(warnThresholdTime, oldestStrokeTime);
+            sectors[i].update(warnThresholdTime, oldestStrokeTime, measurementSystem);
         }
     }
 
@@ -96,7 +97,8 @@ public class AlarmStatus {
 
         if (closestStrokeSectorIndex >= 0) {
             AlarmSector sector = sectors[closestStrokeSectorIndex];
-            return new AlarmResult(sector.getMinimumIndex(), closestStrokeSectorIndex, sector.getWarnMinimumDistance());
+            String bearingName = getSectorLabel(closestStrokeSectorIndex);
+            return new AlarmResult(sector, bearingName);
         }
 
         return null;
@@ -111,6 +113,7 @@ public class AlarmStatus {
                 distanceSectors.put(sector.getWarnMinimumDistance(), sectorIndex);
             }
         }
+
         StringBuilder sb = new StringBuilder();
 
         if (distanceSectors.size() > 0) {
@@ -118,7 +121,7 @@ public class AlarmStatus {
                 AlarmSector sector = getSector(sectorIndex);
                 sb.append(getSectorLabel(sectorIndex));
                 sb.append(" ");
-                sb.append(String.format("%.0fkm", sector.getWarnMinimumDistance() / 1000.0));
+                sb.append(String.format("%.0f%s", sector.getWarnMinimumDistance(), sector.getDistanceUnitName()));
                 sb.append(", ");
             }
             sb.setLength(sb.length() - 2);

@@ -160,6 +160,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
 
             textStyle.setTextAlign(Align.RIGHT);
+            float textHeight = textStyle.getFontMetrics(null);
             for (int distanceIndex = 0; distanceIndex < AlarmSector.getDistanceStepCount(); distanceIndex++) {
                 float leftTop = center - (distanceIndex + 1) * radiusIncrement;
                 float bottomRight = center + (distanceIndex + 1) * radiusIncrement;
@@ -167,9 +168,13 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
                 temporaryCanvas.drawArc(arcArea, 0, 360, false, lines);
 
                 if (size > TEXT_REQUIRED_SIZE) {
-                    String text = String.format("%.0f", AlarmSector.getDistanceSteps()[distanceIndex] / 1000);
+                    String text = String.format("%.0f", AlarmSector.getDistanceSteps()[distanceIndex]);
                     temporaryCanvas.drawText(text, center + (distanceIndex + 0.95f) * radiusIncrement, center
-                            + textStyle.getFontMetrics(null) / 3f, textStyle);
+                            + textHeight / 3f, textStyle);
+                    if (distanceIndex == AlarmSector.getDistanceStepCount() - 1) {
+                        temporaryCanvas.drawText(alarmStatus.getSector(0).getDistanceUnitName(), center + (distanceIndex + 0.95f) * radiusIncrement, center
+                                + textHeight * 1.33f, textStyle);
+                    }
                 }
             }
 

@@ -22,6 +22,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	public static final String VIBRATION_DISTANCE_LIMIT = "vibration_distance_limit";	
 	public static final String REGION_KEY = "region";
 	public static final String DATA_SOURCE_KEY = "data_source";
+    public static final String MEASUREMENT_UNIT_KEY = "measurement_unit";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

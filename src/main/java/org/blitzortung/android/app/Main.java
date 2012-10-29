@@ -359,9 +359,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		} else if (key.equals(Preferences.REGION_KEY)) {
 			timerTask.restart();
 		} else if (key.equals(Preferences.NOTIFICATION_DISTANCE_LIMIT)) {
-			notificationDistanceLimit = Float.parseFloat(sharedPreferences.getString(Preferences.NOTIFICATION_DISTANCE_LIMIT, "50000"));
+			notificationDistanceLimit = Float.parseFloat(sharedPreferences.getString(Preferences.NOTIFICATION_DISTANCE_LIMIT, "50"));
 		} else if (key.equals(Preferences.VIBRATION_DISTANCE_LIMIT)) {
-			vibrationDistanceLimit = Float.parseFloat(sharedPreferences.getString(Preferences.VIBRATION_DISTANCE_LIMIT, "25000"));
+			vibrationDistanceLimit = Float.parseFloat(sharedPreferences.getString(Preferences.VIBRATION_DISTANCE_LIMIT, "25"));
 		}
 	}
 

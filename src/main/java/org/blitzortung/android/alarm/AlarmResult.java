@@ -1,28 +1,29 @@
 package org.blitzortung.android.alarm;
 
 public class AlarmResult {
+	
+	private final AlarmSector sector;
 
-	private final int range;
+    private final String bearingName;
 	
-	private final int sector;
-	
-	private final float distance;
-	
-	public AlarmResult(int range, int sector, float distance) {
-		this.range = range;
+	public AlarmResult(AlarmSector sector, String bearingName) {
 		this.sector = sector;
-		this.distance = distance;
+		this.bearingName = bearingName;
 	}
 
 	public int getRange() {
-		return range;
-	}
-
-	public int getSector() {
-		return sector;
+		return sector.getMinimumIndex();
 	}
 
 	public float getDistance() {
-		return distance;
+		return sector.getWarnMinimumDistance();
 	}
+
+    public String getDistanceUnitName() {
+        return sector.getDistanceUnitName();
+    }
+
+    public String getBearingName() {
+        return bearingName;
+    }
 }

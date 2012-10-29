@@ -34,7 +34,7 @@ public class AlarmLabel {
 					} else {
 						textColorResource = R.color.Red;
 					}
-					warningText = String.format("%.0fkm %s", result.getDistance() / 1000.0, alarmStatus.getSectorLabel(result.getSector()));
+					warningText = String.format("%.0f%s %s", result.getDistance(), result.getDistanceUnitName(), result.getBearingName());
 				}
 			}
 			textView.setTextColor(resources.getColor(textColorResource));
