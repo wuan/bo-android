@@ -96,7 +96,7 @@ public class RasterTest {
     @Test
     public void testToString()
     {
-        assertThat(raster.toString(), is("Raster(-10,0000, 1,0000; 60,0000, 1,5000)"));
+        assertThat(raster.toString(), is("Raster(-10.0000, 1.0000; 60.0000, 1.5000)"));
     }
 
     @Test

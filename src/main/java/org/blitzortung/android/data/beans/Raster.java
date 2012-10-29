@@ -1,6 +1,7 @@
 package org.blitzortung.android.data.beans;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 import org.blitzortung.android.data.Coordsys;
 import org.json.JSONException;
@@ -57,7 +58,7 @@ public class Raster implements Serializable {
 	
 	@Override
 	public String toString() {
-		return String.format("Raster(%.4f, %.4f; %.4f, %.4f)", lon_start, lon_delta, lat_start, lat_delta);
+		return String.format(Locale.US, "Raster(%.4f, %.4f; %.4f, %.4f)", lon_start, lon_delta, lat_start, lat_delta);
 	}
 
 	public int getLongitudeIndex(double longitude) {
