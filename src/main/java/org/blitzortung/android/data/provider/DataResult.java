@@ -1,6 +1,7 @@
 package org.blitzortung.android.data.provider;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.blitzortung.android.data.beans.AbstractStroke;
@@ -11,7 +12,7 @@ public class DataResult implements Serializable {
 
 	private static final long serialVersionUID = -2104015890700948020L;
 
-	private List<AbstractStroke> strokes;
+	private final List<List<AbstractStroke>> strokes;
 	private List<Participant> participants;
 	private Raster raster = null;
     private int[] histogram;
@@ -24,6 +25,7 @@ public class DataResult implements Serializable {
     private long strokesTimeInterval;
 
     public DataResult() {
+        strokes = new ArrayList<List<AbstractStroke>>();
 		fail = true;
 		
 		processWasLocked = false;
@@ -32,16 +34,17 @@ public class DataResult implements Serializable {
 	}
 	
 	public void setStrokes(List<AbstractStroke> strokes) {
-		this.strokes = strokes;
+        this.strokes.clear();
+		this.strokes.add(strokes);
 		fail = false;
 	}
 	
 	public boolean containsStrokes() {
-		return strokes != null;
+		return ! strokes.isEmpty();
 	}
 	
 	public List<AbstractStroke> getStrokes() {
-		return strokes;
+		return strokes.get(0);
 	}
 	
 	public void setParticipants(List<Participant> participants) {
