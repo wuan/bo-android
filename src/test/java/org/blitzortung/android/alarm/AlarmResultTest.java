@@ -23,15 +23,9 @@ public class AlarmResultTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        when(alarmSector.getMinimumIndex()).thenReturn(1234);
-        when(alarmSector.getWarnMinimumDistance()).thenReturn(4567f);
+        when(alarmSector.getClosestStrokeDistance()).thenReturn(4567f);
 
         alarmResult = new AlarmResult(alarmSector, "FOO");
-    }
-
-    @Test
-    public void testGetRange() throws Exception {
-        assertThat(alarmResult.getRange(), is(1234));
     }
 
     @Test
@@ -41,6 +35,6 @@ public class AlarmResultTest {
 
     @Test
     public void testGetDistance() throws Exception {
-        assertThat(alarmResult.getDistance(), is(4567f));
+        assertThat(alarmResult.getClosestStrokeDistance(), is(4567f));
     }
 }

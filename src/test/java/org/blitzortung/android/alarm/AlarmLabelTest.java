@@ -4,7 +4,6 @@ import android.content.res.Resources;
 import android.widget.TextView;
 import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
-import org.blitzortung.android.app.R;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,9 +76,9 @@ public class AlarmLabelTest {
     }
 
     @Test
-    public void testApplyWithAlarmInRangeHigherThanThree()
+    public void testApplyWithAlarmInHighDistance()
     {
-        mockAlarmInRange(4, 260f, "SO");
+        mockAlarmInRange(50.1f, "SO");
 
         alarmLabel.apply(alarmStatus);
 
@@ -87,13 +86,13 @@ public class AlarmLabelTest {
         verify(textView, times(1)).setText(textCaptor.capture());
 
         assertThat(colorCaptor.getValue(), is(0x0f0));
-        assertThat(textCaptor.getValue().toString(), is("260km SO"));
+        assertThat(textCaptor.getValue().toString(), is("50km SO"));
     }
 
     @Test
-    public void testApplyWithAlarmInRangeHigherThanOne()
+    public void testApplyWithAlarmInIntermediateDistance()
     {
-        mockAlarmInRange(2, 100f, "NW");
+        mockAlarmInRange(20.1f, "NW");
 
         alarmLabel.apply(alarmStatus);
 
@@ -101,13 +100,13 @@ public class AlarmLabelTest {
         verify(textView, times(1)).setText(textCaptor.capture());
 
         assertThat(colorCaptor.getValue(), is(0xff0));
-        assertThat(textCaptor.getValue().toString(), is("100km NW"));
+        assertThat(textCaptor.getValue().toString(), is("20km NW"));
     }
 
     @Test
     public void testApplyWithAlarmInMinimumRange()
     {
-        mockAlarmInRange(0, 15f, "S");
+        mockAlarmInRange( 20f, "S");
 
         alarmLabel.apply(alarmStatus);
 
@@ -115,16 +114,15 @@ public class AlarmLabelTest {
         verify(textView, times(1)).setText(textCaptor.capture());
 
         assertThat(colorCaptor.getValue(), is(0xf00));
-        assertThat(textCaptor.getValue().toString(), is("15km S"));
+        assertThat(textCaptor.getValue().toString(), is("20km S"));
     }
 
 
-    private void mockAlarmInRange(int range, float distance, String sectorLabel)
+    private void mockAlarmInRange(float distance, String sectorLabel)
     {
         when(alarmStatus.getSectorWithClosestStroke()).thenReturn(0);
-        when(alarmStatus.currentActivity()).thenReturn(alarmResult);
-        when(alarmResult.getRange()).thenReturn(range);
-        when(alarmResult.getDistance()).thenReturn(distance);
+        when(alarmStatus.getCurrentActivity()).thenReturn(alarmResult);
+        when(alarmResult.getClosestStrokeDistance()).thenReturn(distance);
         when(alarmResult.getDistanceUnitName()).thenReturn("km");
         when(alarmResult.getBearingName()).thenReturn(sectorLabel);
     }

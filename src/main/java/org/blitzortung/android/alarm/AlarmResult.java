@@ -11,12 +11,8 @@ public class AlarmResult {
 		this.bearingName = bearingName;
 	}
 
-	public int getRange() {
-		return sector.getMinimumIndex();
-	}
-
-	public float getDistance() {
-		return sector.getWarnMinimumDistance();
+	public float getClosestStrokeDistance() {
+		return sector.getClosestStrokeDistance();
 	}
 
     public String getDistanceUnitName() {

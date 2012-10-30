@@ -114,7 +114,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
             long actualTime = System.currentTimeMillis();
 
-            float sectorSize = alarmStatus.getSectorWidth();
+            float sectorWidth = alarmStatus.getSectorWidth();
 
             float radiusIncrement = radius / AlarmSector.getDistanceStepCount();
 
@@ -122,29 +122,27 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
                 float bearing = alarmStatus.getSectorBearing(sectorIndex) + 90 + 180;
                 AlarmSector sector = alarmStatus.getSector(sectorIndex);
 
-                int counts[] = sector.getEventCount();
-                long latestTimes[] = sector.getLatestTimes();
                 for (int distanceIndex = AlarmSector.getDistanceStepCount() - 1; distanceIndex >= 0; distanceIndex--) {
 
                     float sectorRadius = (distanceIndex + 1) * radiusIncrement;
                     float leftTop = center - sectorRadius;
                     float bottomRight = center + sectorRadius;
-                    float startAngle = bearing - sectorSize / 2.0f;
+                    float startAngle = bearing - sectorWidth / 2.0f;
 
-                    boolean drawColor = counts[distanceIndex] > 0;
+                    boolean drawColor = sector.getStrokeCount(distanceIndex) > 0;
                     if (drawColor) {
-                        sectorPaint.setColor(colorHandler.getColor(actualTime, latestTimes[distanceIndex], minutesPerColor));
+                        sectorPaint.setColor(colorHandler.getColor(actualTime, sector.getLatestTime(distanceIndex), minutesPerColor));
                     }
                     arcArea.set(leftTop, leftTop, bottomRight, bottomRight);
-                    temporaryCanvas.drawArc(arcArea, startAngle, sectorSize, true, drawColor ? sectorPaint : background);
+                    temporaryCanvas.drawArc(arcArea, startAngle, sectorWidth, true, drawColor ? sectorPaint : background);
                 }
             }
 
 
             for (int sectorIndex = 0; sectorIndex < alarmStatus.getSectorCount(); sectorIndex++) {
                 double bearing = alarmStatus.getSectorBearing(sectorIndex);
-                temporaryCanvas.drawLine(center, center, center + (float) (radius * Math.sin((bearing + sectorSize / 2.0f) / 180.0f * Math.PI)), center
-                        + (float) (radius * -Math.cos((bearing + sectorSize / 2.0f) / 180.0f * Math.PI)), lines);
+                temporaryCanvas.drawLine(center, center, center + (float) (radius * Math.sin((bearing + sectorWidth / 2.0f) / 180.0f * Math.PI)), center
+                        + (float) (radius * -Math.cos((bearing + sectorWidth / 2.0f) / 180.0f * Math.PI)), lines);
 
                 if (size > TEXT_REQUIRED_SIZE) {
                     String text = alarmStatus.getSectorLabel(sectorIndex);

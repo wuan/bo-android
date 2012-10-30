@@ -169,8 +169,8 @@ public class AlarmManagerTest {
 
         verify(alarmListener, times(1)).onAlarmResult(alarmStatusCaptor.capture());
 
-        assertThat(alarmStatusCaptor.getValue().currentActivity().getDistance(), is(500f));
-        assertThat(alarmStatusCaptor.getValue().currentActivity().getBearingName(), is("N"));
+        assertThat(alarmStatusCaptor.getValue().getCurrentActivity().getClosestStrokeDistance(), is(500f));
+        assertThat(alarmStatusCaptor.getValue().getCurrentActivity().getBearingName(), is("N"));
     }
 
     @Test

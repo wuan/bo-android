@@ -1,7 +1,6 @@
 package org.blitzortung.android.alarm;
 
 import android.location.Location;
-import android.util.Log;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.util.MeasurementSystem;
 
@@ -10,15 +9,15 @@ public class AlarmSector {
 
     private int strokeCount[];
     private long latestStrokeTimestamp[];
-    private float warnMinimumDistance;
+    private float closestStrokeDistance;
 
-    private final float sectorCenterBearing;
-    private long warnThresholdTime;
+    private final float sectorBearing;
+    private long thresholdTime;
     private MeasurementSystem measurementSystem;
 
-    public AlarmSector(float sectorCenterBearing, long warnThresholdTime, MeasurementSystem measurementSystem) {
-        this.warnThresholdTime = warnThresholdTime;
-        this.sectorCenterBearing = sectorCenterBearing;
+    public AlarmSector(float sectorBearing, long thresholdTime, MeasurementSystem measurementSystem) {
+        this.thresholdTime = thresholdTime;
+        this.sectorBearing = sectorBearing;
         this.measurementSystem = measurementSystem;
 
         reset();
@@ -29,16 +28,17 @@ public class AlarmSector {
 
         strokeCount = new int[size];
         latestStrokeTimestamp = new long[size];
-        warnMinimumDistance = Float.POSITIVE_INFINITY;
+        closestStrokeDistance = Float.POSITIVE_INFINITY;
     }
 
-    public void check(Location location, AbstractStroke stroke) {
+    public void check(AbstractStroke stroke, Location location) {
         float distanceInMeters = location.distanceTo(stroke.getLocation());
         float distance = measurementSystem.calculateDistance(distanceInMeters);
         check(distance, stroke.getTimestamp(), stroke.getMultiplicity());
     }
 
-    public void check(float distance, long timeStamp, int multiplicity) {
+    // VisibleForTesting
+    protected void check(float distance, long timeStamp, int multiplicity) {
         int stepIndex = 0;
         for (double stepDistance : DISTANCE_STEPS) {
             if (distance <= stepDistance) {
@@ -47,8 +47,8 @@ public class AlarmSector {
                 if (timeStamp > latestStrokeTimestamp[stepIndex]) {
                     latestStrokeTimestamp[stepIndex] = timeStamp;
                 }
-                if (timeStamp > warnThresholdTime) {
-                    warnMinimumDistance = Math.min(distance, warnMinimumDistance);
+                if (timeStamp > thresholdTime) {
+                    closestStrokeDistance = Math.min(distance, closestStrokeDistance);
                 }
                 break;
             }
@@ -56,24 +56,17 @@ public class AlarmSector {
         }
     }
 
-    public int[] getEventCount() {
+    // VisibleForTesting
+    protected int[] getStrokeCounts() {
         return strokeCount;
     }
 
-    public long[] getLatestTimes() {
+    // VisibleForTesting
+    protected long[] getTimesOfLatestStroke() {
         return latestStrokeTimestamp;
     }
 
-    public int getMinimumIndex() {
-        for (int index = 0; index < getDistanceStepCount(); index++) {
-            if (strokeCount[index] > 0) {
-                return index;
-            }
-        }
-        return -1;
-    }
-
-    public int getCount(int index) {
+    public int getStrokeCount(int index) {
         return strokeCount[index];
     }
 
@@ -81,13 +74,13 @@ public class AlarmSector {
         return latestStrokeTimestamp[index];
     }
 
-    public float getWarnMinimumDistance() {
-        if (warnMinimumDistance < Float.POSITIVE_INFINITY) {
-            return warnMinimumDistance;
+    public float getClosestStrokeDistance() {
+        if (closestStrokeDistance < Float.POSITIVE_INFINITY) {
+            return closestStrokeDistance;
         }
 
         for (int index = 0; index < getDistanceStepCount(); index++) {
-            if (latestStrokeTimestamp[index] >= warnThresholdTime) {
+            if (latestStrokeTimestamp[index] >= thresholdTime) {
                 return getDistanceStep(index - 1);
             }
         }
@@ -111,29 +104,29 @@ public class AlarmSector {
     }
 
     public float getBearing() {
-        return sectorCenterBearing;
+        return sectorBearing;
     }
 
-    public void update(long warnThresholdTime, long oldestStrokeTime, MeasurementSystem measurementSystem) {
-        this.warnThresholdTime = warnThresholdTime;
+    public void update(long thresholdTime, long oldestStrokeTime, MeasurementSystem measurementSystem) {
+        this.thresholdTime = thresholdTime;
 
         for (int index = 0; index < getDistanceStepCount(); index++) {
-            if (latestStrokeTimestamp[index] < warnThresholdTime) {
+            if (latestStrokeTimestamp[index] < thresholdTime) {
                 if (latestStrokeTimestamp[index] < oldestStrokeTime) {
                     latestStrokeTimestamp[index] = 0;
                     strokeCount[index] = 0;
                 }
 
-                if (warnMinimumDistance >= getDistanceStep(index - 1) &&
-                        warnMinimumDistance < getDistanceStep(index)) {
-                    warnMinimumDistance = Float.POSITIVE_INFINITY;
+                if (closestStrokeDistance >= getDistanceStep(index - 1) &&
+                        closestStrokeDistance < getDistanceStep(index)) {
+                    closestStrokeDistance = Float.POSITIVE_INFINITY;
                 }
             }
         }
     }
 
-    public long getWarnThresholdTime() {
-        return warnThresholdTime;
+    public long getThresholdTime() {
+        return thresholdTime;
     }
 
     public String getDistanceUnitName() {
