@@ -5,7 +5,6 @@ import android.graphics.*;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmSector;
@@ -115,7 +114,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
             long actualTime = System.currentTimeMillis();
 
-            float sectorSize = alarmStatus.getSectorSize();
+            float sectorSize = alarmStatus.getSectorWidth();
 
             float radiusIncrement = radius / AlarmSector.getDistanceStepCount();
 

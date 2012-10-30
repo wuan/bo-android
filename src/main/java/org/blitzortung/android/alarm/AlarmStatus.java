@@ -2,6 +2,7 @@ package org.blitzortung.android.alarm;
 
 import android.location.Location;
 import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.util.MeasurementSystem;
 
 import java.util.SortedMap;
@@ -22,7 +23,7 @@ public class AlarmStatus {
         float bearing = -180;
         for (int i = 0; i < SECTOR_COUNT; i++) {
             sectors[i] = new AlarmSector(bearing, warnThresholdTime, measurementSystem);
-            bearing += getSectorSize();
+            bearing += getSectorWidth();
         }
     }
 
@@ -32,17 +33,20 @@ public class AlarmStatus {
         }
     }
 
-    public void check(Location location, AbstractStroke stroke) {
-        int sector = getSectorNumber(location.bearingTo(stroke.getLocation()));
+    public void check(DataResult result, Location location) {
 
-        sectors[sector].check(location, stroke);
+        for (AbstractStroke stroke : result.getStrokes()) {
+            float bearingToStroke = location.bearingTo(stroke.getLocation());
+            int sectorIndex = getSectorIndexForBearing(bearingToStroke);
+            sectors[sectorIndex].check(location, stroke);
+        }
     }
 
-    private int getSectorNumber(double bearing) {
-        return ((int) (Math.round(bearing / getSectorSize())) + getSectorCount() / 2) % getSectorCount();
+    private int getSectorIndexForBearing(double bearing) {
+        return ((int) (Math.round(bearing / getSectorWidth())) + getSectorCount() / 2) % getSectorCount();
     }
 
-    public float getSectorSize() {
+    public float getSectorWidth() {
         return 360.0f / getSectorCount();
     }
 

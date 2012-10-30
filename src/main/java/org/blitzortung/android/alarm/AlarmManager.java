@@ -24,7 +24,9 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 		void onAlarmClear();
 	}
 
-	private final TimerTask timerTask;
+    private final long alarmInterval;
+
+    private final TimerTask timerTask;
 
 	private final LocationManager locationManager;
 
@@ -51,7 +53,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 		preferences.registerOnSharedPreferenceChangeListener(this);
 		onSharedPreferenceChanged(preferences, Preferences.ALARM_ENABLED_KEY);
         onSharedPreferenceChanged(preferences, Preferences.MEASUREMENT_UNIT_KEY);
-	}
+        alarmInterval = 600000;
+    }
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -100,9 +103,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 	public void check(DataResult result) {
 
 		if (alarmEnabled && location != null) {
-
-			long alarmInterval = 600000;
-			long now = System.currentTimeMillis();
+            long now = System.currentTimeMillis();
 			long thresholdTime = now - alarmInterval;
             long oldestTime = now - result.getStrokesTimeInterval();
 
@@ -112,9 +113,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 				alarmStatus.update(thresholdTime, oldestTime, measurementSystem);
 			}
 
-			for (AbstractStroke stroke : result.getStrokes()) {
-				alarmStatus.check(location, stroke);
-			}
+            alarmStatus.check(result, location);
+
 		} else {
 			alarmStatus = null;
 		}

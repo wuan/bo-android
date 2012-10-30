@@ -1,8 +1,10 @@
 package org.blitzortung.android.alarm;
 
 import android.location.Location;
+import com.google.common.collect.Lists;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,13 +70,18 @@ public class AlarmStatusTest {
         replaceSectorsWithMocks();
 
         Location location = mock(Location.class);
+
+        DataResult result = mock(DataResult.class);
+
         Location strokeLocation = mock(Location.class);
         AbstractStroke stroke = mock(AbstractStroke.class);
         when(stroke.getLocation()).thenReturn(strokeLocation);
 
+        when(result.getStrokes()).thenReturn(Lists.newArrayList(stroke));
+
         when(location.bearingTo(strokeLocation)).thenReturn(-180f);
 
-        alarmStatus.check(location, stroke);
+        alarmStatus.check(result, location);
 
         verify(location, times(1)).bearingTo(strokeLocation);
 
