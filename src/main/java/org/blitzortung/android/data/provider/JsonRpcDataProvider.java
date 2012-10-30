@@ -25,6 +25,9 @@ public class JsonRpcDataProvider extends DataProvider {
         DATE_TIME_FORMATTER.setTimeZone(tz);
     }
 
+    static private final String[] SERVERS = new String[]{"http://bo1.tryb.de:7080/", "http://bo2.tryb.de/"};
+    static private int CURRENT_SERVER = 0;
+
     private JsonRpcClient client;
 
     private Integer nextId = null;
@@ -42,6 +45,7 @@ public class JsonRpcDataProvider extends DataProvider {
 
             readStrokes(response, strokes);
         } catch (Exception e) {
+            skipServer();
             throw new RuntimeException(e);
         }
         return strokes;
@@ -58,6 +62,7 @@ public class JsonRpcDataProvider extends DataProvider {
             readRasterData(response, strokes);
             readHistogramData(response);
         } catch (Exception e) {
+            skipServer();
             throw new RuntimeException(e);
         }
 
@@ -84,6 +89,7 @@ public class JsonRpcDataProvider extends DataProvider {
                 stations.add(new Participant(stations_array.getJSONArray(i)));
             }
         } catch (Exception e) {
+            skipServer();
             throw new RuntimeException(e);
         }
         return stations;
@@ -96,7 +102,7 @@ public class JsonRpcDataProvider extends DataProvider {
 
     @Override
     public void setUp() {
-        client = new JsonRpcClient("http://tryb.de:7080/");
+        client = new JsonRpcClient(getServer());
         client.setConnectionTimeout(40000);
         client.setSocketTimeout(40000);
     }
@@ -148,5 +154,15 @@ public class JsonRpcDataProvider extends DataProvider {
                 histogram[i] = histogram_array.getInt(i);
             }
         }
+    }
+
+    private static String getServer()
+    {
+        return SERVERS[CURRENT_SERVER];
+    }
+
+    private void skipServer()
+    {
+        CURRENT_SERVER = (CURRENT_SERVER + 1) % SERVERS.length;
     }
 }
