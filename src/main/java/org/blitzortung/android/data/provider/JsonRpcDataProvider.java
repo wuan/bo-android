@@ -102,7 +102,8 @@ public class JsonRpcDataProvider extends DataProvider {
 
     @Override
     public void setUp() {
-        client = new JsonRpcClient(getServer());
+        String agentSuffix = pInfo != null ? "-" + Integer.toString(pInfo.versionCode) : "";
+        client = new JsonRpcClient(getServer(), agentSuffix);
         client.setConnectionTimeout(40000);
         client.setSocketTimeout(40000);
     }

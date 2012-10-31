@@ -2,6 +2,7 @@ package org.blitzortung.android.jsonrpc;
 
 import java.io.IOException;
 
+import android.content.pm.PackageInfo;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.ClientProtocolException;
@@ -26,9 +27,9 @@ public class HttpServiceClient {
 	
 	private final HttpClient httpClient;
 	
-	HttpServiceClient(String uri) {
+	HttpServiceClient(String uri, String agentSuffix) {
         httpClient = new DefaultHttpClient();
-        httpClient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "bo-android");
+        httpClient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "bo-android" + agentSuffix);
 
         serviceUri = uri;
 	}

@@ -2,6 +2,7 @@ package org.blitzortung.android.jsonrpc;
 
 import java.io.UnsupportedEncodingException;
 
+import android.content.pm.PackageInfo;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,8 +40,8 @@ public class JsonRpcClient extends HttpServiceClient {
 		return jsonRequestEntity;
 	}
 
-	public JsonRpcClient(String uri) {
-		super(uri);
+	public JsonRpcClient(String uri, String agentSuffix) {
+		super(uri, agentSuffix);
 	}
 
 	public JSONObject call(String methodName, Object... parameters) {

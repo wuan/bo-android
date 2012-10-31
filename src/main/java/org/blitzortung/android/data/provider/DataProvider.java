@@ -2,6 +2,7 @@ package org.blitzortung.android.data.provider;
 
 import java.util.List;
 
+import android.content.pm.PackageInfo;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Raster;
 import org.blitzortung.android.data.beans.Participant;
@@ -14,6 +15,8 @@ public abstract class DataProvider {
 	protected String username;
 	
 	protected String password;
+
+    protected PackageInfo pInfo;
 
 	public abstract void setUp();
 	
@@ -38,4 +41,7 @@ public abstract class DataProvider {
 		this.password = password;
 	}
 
+    public void setPackageInfo(PackageInfo pInfo) {
+        this.pInfo = pInfo;
+    }
 }

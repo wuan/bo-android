@@ -11,15 +11,9 @@ import android.view.View;
 
 public class InfoDialog extends AlertDialog {
 
-	public InfoDialog(Context context) {
+	public InfoDialog(Context context, PackageInfo pinfo) {
 		super(context);
 		
-		PackageInfo pinfo;
-		try {
-			pinfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-		} catch (NameNotFoundException e) {
-			throw new IllegalStateException(e);
-		}
 		setTitle(context.getResources().getText(R.string.app_name) + " V" + pinfo.versionName + " (" + pinfo.versionCode + ")");
 		View menu = getLayoutInflater().inflate(R.layout.info_dialog, null);
 		setView(menu);

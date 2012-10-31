@@ -1,5 +1,6 @@
 package org.blitzortung.android.app;
 
+import android.content.pm.PackageInfo;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.data.DataRetriever;
 import org.blitzortung.android.data.provider.DataResult;
@@ -27,8 +28,8 @@ public class PersistedData {
     private DataResult currentResult;
 
 
-    public PersistedData(Resources resources, LocationManager locationManager, SharedPreferences sharedPreferences) {
-		provider = new DataRetriever(sharedPreferences);
+    public PersistedData(Resources resources, LocationManager locationManager, SharedPreferences sharedPreferences, PackageInfo pInfo) {
+		provider = new DataRetriever(sharedPreferences, pInfo);
 		timerTask = new TimerTask(resources, sharedPreferences, provider);
 		alarmManager = new AlarmManager(locationManager, sharedPreferences, timerTask);
 		strokesOverlay = new StrokesOverlay(new StrokeColorHandler(sharedPreferences));

@@ -74,9 +74,13 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     final Set<String> androidIdsForExtendedFunctionality = new HashSet<String>(Arrays.asList("e73c5a22934b5915"));
 
+    private PackageInfo pInfo;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+        updatePackageInfo();
 
 		setContentView(isDebugBuild() ? R.layout.main_debug : R.layout.main);
 
@@ -108,7 +112,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		preferences.registerOnSharedPreferenceChangeListener(this);
 
 		if (getLastNonConfigurationInstance() == null) {
-			persistedData = new PersistedData(getResources(), (LocationManager) getSystemService(Context.LOCATION_SERVICE), preferences);
+			persistedData = new PersistedData(getResources(), (LocationManager) getSystemService(Context.LOCATION_SERVICE), preferences, pInfo);
 		} else {
 			persistedData = (PersistedData) getLastNonConfigurationInstance();
 		}
@@ -332,7 +336,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		Dialog dialog;
 		switch (id) {
 		case R.id.info_dialog:
-			dialog = new InfoDialog(this);
+			dialog = new InfoDialog(this, pInfo);
 			break;
 
 		case R.id.alarm_dialog:
@@ -407,4 +411,12 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			notificationManager.cancel(R.id.alarm_notification_id);
 		}
 	}
+
+    private void updatePackageInfo() {
+        try {
+            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }

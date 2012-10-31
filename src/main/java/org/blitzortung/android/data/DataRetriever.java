@@ -2,6 +2,7 @@ package org.blitzortung.android.data;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +24,7 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 
 	private final Lock lock = new ReentrantLock();
 
+    private PackageInfo pInfo;
 	private DataProvider dataProvider;
 
 	private String username;
@@ -38,9 +40,6 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 	private int rasterSize;
 
 	private DataListener listener;
-
-    public void toggleAnimation() {
-    }
 
     public static class UpdateTargets {
 
@@ -74,8 +73,10 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 		}
 	}
 
-	public DataRetriever(SharedPreferences sharedPreferences) {
+	public DataRetriever(SharedPreferences sharedPreferences, PackageInfo pInfo) {
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
+        this.pInfo = pInfo;
 
 		onSharedPreferenceChanged(sharedPreferences, Preferences.DATA_SOURCE_KEY);
 		onSharedPreferenceChanged(sharedPreferences, Preferences.USERNAME_KEY);
@@ -162,6 +163,7 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 			String providerTypeString = sharedPreferences.getString(Preferences.DATA_SOURCE_KEY, DataProviderType.RPC.toString());
 			DataProviderType providerType = DataProviderType.valueOf(providerTypeString.toUpperCase());
 			dataProvider = providerType.getProvider();
+            dataProvider.setPackageInfo(pInfo);
             notifyDataReset();
         } else if (key.equals(Preferences.USERNAME_KEY)) {
 			username = sharedPreferences.getString(Preferences.USERNAME_KEY, "");

@@ -24,9 +24,11 @@ public class JsonRpcClientTest {
 
     private String uriString;
 
+    private String agentSuffix = "_VERSION";
+
     @Before
     public void setUp() {
-        jsonRpcClient = new JsonRpcClient(uriString);
+        jsonRpcClient = new JsonRpcClient(uriString, agentSuffix);
     }
 
     @Test
