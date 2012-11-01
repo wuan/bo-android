@@ -195,6 +195,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
 		onSharedPreferenceChanged(preferences, Preferences.NOTIFICATION_DISTANCE_LIMIT);
 		onSharedPreferenceChanged(preferences, Preferences.VIBRATION_DISTANCE_LIMIT);
+        onSharedPreferenceChanged(preferences, Preferences.DO_NOT_SLEEP);
 
 		getMapView().invalidate();
 	}
@@ -366,7 +367,17 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			notificationDistanceLimit = Float.parseFloat(sharedPreferences.getString(Preferences.NOTIFICATION_DISTANCE_LIMIT, "50"));
 		} else if (key.equals(Preferences.VIBRATION_DISTANCE_LIMIT)) {
 			vibrationDistanceLimit = Float.parseFloat(sharedPreferences.getString(Preferences.VIBRATION_DISTANCE_LIMIT, "25"));
-		}
+		} else if (key.equals(Preferences.DO_NOT_SLEEP)) {
+            boolean doNotSleep = sharedPreferences.getBoolean(key, false);
+            int flag = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+
+            if (doNotSleep) {
+                getWindow().addFlags(flag);
+            } else {
+                getWindow().clearFlags(flag);
+            }
+
+        }
 	}
 
 	@Override

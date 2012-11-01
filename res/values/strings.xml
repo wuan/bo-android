@@ -26,9 +26,12 @@
     <string name="preferences">Preferences</string>
     <string name="user_settings">User settings</string>
     <string name="username">Username</string>
+    <string name="username_summary">blitzortung.org participant user name</string>
     <string name="password">Password</string>
+    <string name="password_summary">blitzortung.org participant password</string>
     <string name="map_settings">Map settings</string>
     <string name="map_mode">Map mode</string>
+    <string name="map_mode_summary">select satellite view or streetmap</string>
 
     <string-array name="map_modes">
         <item>Satellite</item>
@@ -40,8 +43,10 @@
     </string-array>
 
     <string name="show_location">Show own location</string>
+    <string name="show_location_summary">include symbol for own location in map</string>
     <string name="data_settings">Data transmission</string>
     <string name="region">Region</string>
+    <string name="region_summary">select Europe, North America or Oceania</string>
 
     <string-array name="regions">
         <item>EU</item>
@@ -55,6 +60,7 @@
     </string-array>
 
     <string name="query_period">Query period</string>
+    <string name="query_period_summary">frequency of data refresh</string>
 
     <string-array name="query_periods">
         <item>20 s</item>
@@ -74,6 +80,7 @@
     </string-array>
 
     <string name="raster_size">Raster size</string>
+    <string name="raster_size_summary">size of data raster squares</string>
 
     <string-array name="raster_sizes">
         <item>10 km</item>
@@ -88,7 +95,8 @@
         <item>100000</item>
     </string-array>
 
-    <string name="data_source">Datasource</string>
+    <string name="data_source">Data source</string>
+    <string name="data_source_summary">integrated data source or access to blitzortung.org (only for participants)</string>
 
     <string-array name="data_sources">
         <item>Blitzortung.org</item>
@@ -101,7 +109,9 @@
 
     <string name="alarm_settings">Alarm settings</string>
     <string name="alarm_enabled">Alarm enabled</string>
+    <string name="alarm_enabled_summary">check lightning activity around the current location</string>
     <string name="background_query_period">Background query period</string>
+    <string name="background_query_period_summary">if selected: background query frequency to check for alarms if app is not active</string>
 
     <string-array name="background_query_periods">
         <item>off</item>
@@ -125,7 +135,9 @@
     <item name="alarm_notification_id" type="id"/>
 
     <string name="notification_distance_limit">notification distance limit</string>
+    <string name="notification_distance_limit_summary">if selected: show notification when lightning activity is detected within the selected range</string>
     <string name="vibration_distance_limit">vibration distance limit</string>
+    <string name="vibration_distance_limit_summary">if selected: vibrate when lightning activity is detected within the selected range</string>
 
     <string-array name="distance_limits">
         <item>off</item>
@@ -135,6 +147,8 @@
         <item>100 km/mi.</item>
         <item>150 km/mi.</item>
         <item>200 km/mi.</item>
+        <item>250 km/mi.</item>
+        <item>500 km/mi.</item>
     </string-array>
     <string-array name="distance_limit_values">
         <item>0</item>
@@ -144,10 +158,13 @@
         <item>100</item>
         <item>150</item>
         <item>200</item>
+        <item>250</item>
+        <item>500</item>
     </string-array>
 
     <string name="generic_settings">Generic settings</string>
     <string name="measurement_unit">Systems of measurement</string>
+    <string name="measurement_unit_summary">choose between km and mi. for distances</string>
     <string-array name="measurement_units">
         <item>metric</item>
         <item>imperial</item>
@@ -156,4 +173,6 @@
         <item>METRIC</item>
         <item>IMPERIAL</item>
     </string-array>
+    <string name="do_not_sleep">Do not sleep</string>
+    <string name="do_not_sleep_summary">do not go to sleep while application is open</string>
 </resources>

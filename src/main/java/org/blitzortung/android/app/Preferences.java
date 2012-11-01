@@ -23,6 +23,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	public static final String REGION_KEY = "region";
 	public static final String DATA_SOURCE_KEY = "data_source";
     public static final String MEASUREMENT_UNIT_KEY = "measurement_unit";
+    public static final String DO_NOT_SLEEP = "do_not_sleep";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
