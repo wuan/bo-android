@@ -146,6 +146,8 @@
         <item>100 km/mi.</item>
         <item>150 km/mi.</item>
         <item>200 km/mi.</item>
+        <item>250 km/mi.</item>
+        <item>500 km/mi.</item>
     </string-array>
         <string-array name="distance_limit_values">
         <item>0</item>
@@ -155,6 +157,8 @@
         <item>100</item>
         <item>150</item>
         <item>200</item>
+        <item>250</item>
+        <item>500</item>
     </string-array>
 
     <string name="generic_settings">Allgemeines</string>
