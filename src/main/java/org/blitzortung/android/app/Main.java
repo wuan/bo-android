@@ -18,6 +18,7 @@ import org.blitzortung.android.dialogs.AlarmDialog;
 import org.blitzortung.android.dialogs.InfoDialog;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
+import org.blitzortung.android.map.overlay.DimOverlay;
 import org.blitzortung.android.map.overlay.OwnLocationOverlay;
 import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
@@ -135,6 +136,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 		List<Overlay> mapOverlays = getMapView().getOverlays();
 
+        mapOverlays.add(new DimOverlay(strokesOverlay.getColorHandler()));
 		mapOverlays.add(strokesOverlay);
 		mapOverlays.add(participantsOverlay);
 

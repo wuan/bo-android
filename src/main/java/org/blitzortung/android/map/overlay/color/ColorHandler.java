@@ -58,6 +58,16 @@ public abstract class ColorHandler {
         return 0;
     }
 
+    public int getBackgroundColor() {
+        switch (target) {
+            case SATELLITE:
+                return 0xff000000;
+            case STREETMAP:
+                return 0xffffffff;
+        }
+        return 0;
+    }
+
     public int getNumberOfColors() {
         return getColors().length;
     }
