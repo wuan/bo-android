@@ -14,6 +14,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	public static final String PASSWORD_KEY = "password";
 	public static final String RASTER_SIZE_KEY = "raster_size";
 	public static final String MAP_TYPE_KEY = "map_mode";
+    public static final String MAP_FADE_KEY = "map_fade";
+    public static final String COLOR_SCHEME_KEY = "color_scheme";
 	public static final String QUERY_PERIOD_KEY = "query_period";
 	public static final String BACKGROUND_QUERY_PERIOD_KEY = "background_query_period";
 	public static final String SHOW_LOCATION_KEY = "location";

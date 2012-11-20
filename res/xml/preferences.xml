@@ -12,7 +12,25 @@
                 android:selectable="true"
                 android:title="@string/map_mode"
                 android:summary="@string/map_mode_summary"/>
-
+        <org.blitzortung.android.preferences.SlidePreferences
+                android:text="%"
+                android:defaultValue="30"
+                android:max="60"
+                android:key="map_fade"
+                android:persistent="true"
+                android:selectable="true"
+                android:title="@string/map_fade"
+                android:summary="@string/map_fade_summary"/>
+        <ListPreference
+                android:defaultValue="BLITZORTUNG"
+                android:enabled="true"
+                android:entries="@array/color_schemes"
+                android:entryValues="@array/color_scheme_values"
+                android:key="color_scheme"
+                android:persistent="true"
+                android:selectable="true"
+                android:title="@string/color_scheme"
+                android:summary="@string/color_scheme_summary"/>
         <CheckBoxPreference
                 android:defaultValue="true"
                 android:enabled="true"

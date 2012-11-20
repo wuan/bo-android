@@ -32,6 +32,20 @@
     <string name="map_settings">Map settings</string>
     <string name="map_mode">Map mode</string>
     <string name="map_mode_summary">select satellite view or streetmap</string>
+    <string name="map_fade">Fade out map</string>
+    <string name="map_fade_summary">Fade map background to enhance visibility of data</string>
+
+    <string-array name="color_schemes">
+        <item>Blitzortung.org</item>
+        <item>Rainbow</item>
+    </string-array>
+    <string-array name="color_scheme_values">
+        <item>BLITZORTUNG</item>
+        <item>RAINBOW</item>
+    </string-array>
+
+    <string name="color_scheme">Color scheme</string>
+    <string name="color_scheme_summary">Color scheme of data display</string>
 
     <string-array name="map_modes">
         <item>Satellite</item>

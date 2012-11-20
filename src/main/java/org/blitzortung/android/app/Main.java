@@ -18,7 +18,7 @@ import org.blitzortung.android.dialogs.AlarmDialog;
 import org.blitzortung.android.dialogs.InfoDialog;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
-import org.blitzortung.android.map.overlay.DimOverlay;
+import org.blitzortung.android.map.overlay.FadeOverlay;
 import org.blitzortung.android.map.overlay.OwnLocationOverlay;
 import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
@@ -48,6 +48,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 	private TextView status;
 
 	private TextView warning;
+
+    private FadeOverlay fadeOverlay;
 
 	private StrokesOverlay strokesOverlay;
 
@@ -136,7 +138,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
 		List<Overlay> mapOverlays = getMapView().getOverlays();
 
-        mapOverlays.add(new DimOverlay(strokesOverlay.getColorHandler()));
+        fadeOverlay = new FadeOverlay(strokesOverlay.getColorHandler());
+        mapOverlays.add(fadeOverlay);
 		mapOverlays.add(strokesOverlay);
 		mapOverlays.add(participantsOverlay);
 
@@ -194,6 +197,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         addDataListener(histogramView);
 
 		onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
+        onSharedPreferenceChanged(preferences, Preferences.MAP_FADE_KEY);
 		onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
 		onSharedPreferenceChanged(preferences, Preferences.NOTIFICATION_DISTANCE_LIMIT);
 		onSharedPreferenceChanged(preferences, Preferences.VIBRATION_DISTANCE_LIMIT);
@@ -361,8 +365,16 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 			if (participantsOverlay != null) {
 				participantsOverlay.refresh();
 			}
-		} else if (key.equals(Preferences.RASTER_SIZE_KEY)) {
-			timerTask.restart();
+		}  else if (key.equals(Preferences.COLOR_SCHEME_KEY)) {
+            strokesOverlay.refresh();
+            if (participantsOverlay != null) {
+                participantsOverlay.refresh();
+            }
+        } else if (key.equals(Preferences.MAP_FADE_KEY)) {
+            int alphaValue = Math.round(255.0f/100.0f * sharedPreferences.getInt(Preferences.MAP_FADE_KEY, 40));
+            fadeOverlay.setAlpha(alphaValue);
+        } else if (key.equals(Preferences.RASTER_SIZE_KEY)) {
+            timerTask.restart();
 		} else if (key.equals(Preferences.REGION_KEY)) {
 			timerTask.restart();
 		} else if (key.equals(Preferences.NOTIFICATION_DISTANCE_LIMIT)) {

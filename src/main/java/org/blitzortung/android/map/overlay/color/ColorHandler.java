@@ -1,11 +1,15 @@
 package org.blitzortung.android.map.overlay.color;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import org.blitzortung.android.app.Preferences;
 
 public abstract class ColorHandler {
 
 	private final SharedPreferences preferences;
-	
+
+    private ColorScheme colorScheme;
+
 	private ColorTarget target;
 
 	public ColorHandler(SharedPreferences preferences) {
@@ -14,7 +18,8 @@ public abstract class ColorHandler {
 	}
 
 	public void updateTarget() {
-		target = ColorTarget.valueOf(preferences.getString("map_mode", "SATELLITE"));
+		target = ColorTarget.valueOf(preferences.getString(Preferences.MAP_TYPE_KEY, "SATELLITE"));
+        colorScheme = ColorScheme.valueOf(preferences.getString(Preferences.COLOR_SCHEME_KEY, ColorScheme.BLITZORTUNG.toString()));
 	}
 	
 	public final int[] getColors() {
@@ -31,6 +36,11 @@ public abstract class ColorHandler {
 
 		return section;
 	}
+
+    public ColorScheme getColorScheme()
+    {
+        return colorScheme;
+    }
 
 	public int getColor(long now, long eventTime, int minutesPerColor) {
 		return getColor(getColorSection(now, eventTime, minutesPerColor));
@@ -70,5 +80,20 @@ public abstract class ColorHandler {
 
     public int getNumberOfColors() {
         return getColors().length;
+    }
+
+    public int[] modifyBrightness(int[] colors, float factor)
+    {
+        int [] result = new int[colors.length];
+
+        float[] HSVValues = new float[3];
+
+        for (int index=0; index<colors.length; index++) {
+            Color.colorToHSV(colors[index], HSVValues);
+            HSVValues[2] *= factor;
+            result[index] = Color.HSVToColor(HSVValues);
+        }
+
+        return result;
     }
 }
