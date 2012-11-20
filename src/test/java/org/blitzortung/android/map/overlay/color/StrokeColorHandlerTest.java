@@ -1,6 +1,7 @@
 package org.blitzortung.android.map.overlay.color;
 
 import android.content.SharedPreferences;
+import org.blitzortung.android.app.Preferences;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -21,7 +22,8 @@ public class StrokeColorHandlerTest {
     {
         MockitoAnnotations.initMocks(this);
 
-        when(sharedPreferences.getString("map_mode", "SATELLITE")).thenReturn("SATELLITE");
+        when(sharedPreferences.getString(Preferences.MAP_TYPE_KEY, ColorTarget.SATELLITE.toString())).thenReturn(ColorTarget.SATELLITE.toString());
+        when(sharedPreferences.getString(Preferences.COLOR_SCHEME_KEY, ColorScheme.BLITZORTUNG.toString())).thenReturn(ColorScheme.BLITZORTUNG.toString());
 
         strokeColorHandler = new StrokeColorHandler(sharedPreferences);
     }
