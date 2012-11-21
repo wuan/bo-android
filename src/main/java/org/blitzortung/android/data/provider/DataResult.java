@@ -22,7 +22,14 @@ public class DataResult implements Serializable {
 	private boolean processWasLocked;
 	
 	private boolean incremental;
-    private long strokesTimeInterval;
+
+    private int intervalDuration;
+
+    private long referenceTime;
+
+    private int intervalOffset;
+
+    private int region;
 
     public DataResult() {
         strokes = new ArrayList<List<AbstractStroke>>();
@@ -95,12 +102,12 @@ public class DataResult implements Serializable {
 		incremental = true;
 	}
 
-    public void setStrokesTimeInterval(long strokesTimeInterval) {
-        this.strokesTimeInterval = strokesTimeInterval;
+    public void setIntervalDuration(int intervalDuration) {
+        this.intervalDuration = intervalDuration;
     }
 
-    public long getStrokesTimeInterval() {
-        return strokesTimeInterval;
+    public int getIntervalDuration() {
+        return intervalDuration;
     }
 
     public void setHistogram(int[] histogram) {
@@ -109,5 +116,33 @@ public class DataResult implements Serializable {
 
     public int[] getHistogram() {
         return histogram;
+    }
+
+    public void setReferenceTime(long referenceTime) {
+        this.referenceTime = referenceTime;
+    }
+
+    public long getReferenceTime() {
+        return referenceTime;
+    }
+
+    public boolean containsRealtimeData() {
+        return intervalOffset == 0;
+    }
+
+    public void setIntervalOffset(int intervalOffset) {
+        this.intervalOffset = intervalOffset;
+    }
+
+    public int getIntervalOffset() {
+        return intervalOffset;
+    }
+
+    public void setRegion(int region) {
+        this.region = region;
+    }
+
+    public int getRegion() {
+        return region;
     }
 }

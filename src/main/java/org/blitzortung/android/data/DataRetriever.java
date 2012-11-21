@@ -13,10 +13,9 @@ import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataProviderType;
 import org.blitzortung.android.data.provider.DataResult;
+import org.blitzortung.android.time.RangeHandler;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -33,13 +32,15 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 	private ProgressBar progressBar;
 	private ImageView errorIndicator;
 
-	private final int minutes = 60;
+    private final RangeHandler rangeHandler;
 
     private int region = 1;
 
 	private int rasterSize;
 
 	private DataListener listener;
+
+
 
     public static class UpdateTargets {
 
@@ -74,6 +75,7 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 	}
 
 	public DataRetriever(SharedPreferences sharedPreferences, PackageInfo pInfo) {
+        rangeHandler = new RangeHandler();
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         this.pInfo = pInfo;
@@ -83,6 +85,8 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 		onSharedPreferenceChanged(sharedPreferences, Preferences.PASSWORD_KEY);
 		onSharedPreferenceChanged(sharedPreferences, Preferences.RASTER_SIZE_KEY);
 		onSharedPreferenceChanged(sharedPreferences, Preferences.REGION_KEY);
+        onSharedPreferenceChanged(sharedPreferences, Preferences.INTERVAL_DURATION_KEY);
+        onSharedPreferenceChanged(sharedPreferences, Preferences.HISTORIC_TIMESTEP_KEY);
 	}
 
 	private class FetchDataTask extends AsyncTask<Integer, Integer, DataResult> {
@@ -106,27 +110,38 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 
 		@Override
 		protected DataResult doInBackground(Integer... params) {
-			DataResult result = new DataResult();
+            int intervalDuration = params[0];
+            int intervalOffset = params[1];
+            int rasterSize = params[2];
+            int region = params[3];
 
-			if (lock.tryLock()) {
+            DataResult result = new DataResult();
+
+            if (lock.tryLock()) {
 				try {
 					dataProvider.setUp();
 					dataProvider.setCredentials(username, password);
 					
 					List<AbstractStroke> strokes;
-					if (params[1] == 0) {
+					if (rasterSize == 0) {
 						result.setIncremental();
-						strokes = dataProvider.getStrokes(params[0], params[3]);
+						strokes = dataProvider.getStrokes(intervalDuration, intervalOffset);
 					} else {
-						strokes = dataProvider.getStrokesRaster(params[0], params[1], params[2], params[3]);
+						strokes = dataProvider.getStrokesRaster(intervalDuration, rasterSize, intervalOffset, region);
 					}
-                    result.setStrokesTimeInterval(minutes * 60 * 1000);
+                    result.setReferenceTime(System.currentTimeMillis());
+                    result.setIntervalDuration(intervalDuration);
+                    result.setIntervalOffset(intervalOffset);
+                    result.setRegion(region);
 					result.setStrokes(strokes);
 					result.setRaster(dataProvider.getRaster());
                     result.setHistogram(dataProvider.getHistogram());
 
-					if (params.length > 4 && params[4] != 0) {
-						result.setParticipants(dataProvider.getStations(params[3]));
+					if (params.length > 4) {
+                        boolean updateParticipants = (params[4] == 1);
+                        if (updateParticipants) {
+						result.setParticipants(dataProvider.getStations(region));
+                        }
                     }
 
 					dataProvider.shutDown();
@@ -153,8 +168,7 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 			}
 		}
 
-        int minuteOffset = 0;
-        new FetchDataTask().execute(minutes, dataProvider.getType() == DataProviderType.HTTP ? 0 : rasterSize, minuteOffset, region, updateParticipants ? 1 : 0);
+        new FetchDataTask().execute(rangeHandler.getIntervalDuration(), rangeHandler.getIntervalOffset(), dataProvider.getType() == DataProviderType.HTTP ? 0 : rasterSize, region, updateParticipants ? 1 : 0);
 	}
 
 	@Override
@@ -171,7 +185,13 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 			password = sharedPreferences.getString(Preferences.PASSWORD_KEY, "");
 		} else if (key.equals(Preferences.RASTER_SIZE_KEY)) {
 			rasterSize = Integer.parseInt(sharedPreferences.getString(Preferences.RASTER_SIZE_KEY, "10000"));
-		} else if (key.equals(Preferences.REGION_KEY)) {
+		} else if (key.equals(Preferences.INTERVAL_DURATION_KEY)) {
+            rangeHandler.setIntervalDuration(Integer.parseInt(sharedPreferences.getString(Preferences.INTERVAL_DURATION_KEY, "120")));
+            dataProvider.reset();
+            notifyDataReset();
+        } else if (key.equals(Preferences.HISTORIC_TIMESTEP_KEY)) {
+            rangeHandler.setOffsetIncrement(Integer.parseInt(sharedPreferences.getString(Preferences.HISTORIC_TIMESTEP_KEY, "30")));
+        } else if (key.equals(Preferences.REGION_KEY)) {
 			region = Integer.parseInt(sharedPreferences.getString(Preferences.REGION_KEY, "1"));
 			dataProvider.reset();
             notifyDataReset();
@@ -188,11 +208,7 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
         }
     }
 
-    public int getMinutes() {
-		return minutes;
-	}
-
-	public int getRegion() {
+    public int getRegion() {
 		return region;
 	}
 
@@ -222,5 +238,29 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 	public void setDataListener(DataListener listener) {
 		this.listener = listener;
 	}
+
+    public int getIntervalDuration() {
+        return rangeHandler.getIntervalDuration();
+    }
+
+    public int getIntervalOffset() {
+        return rangeHandler.getIntervalOffset();
+    }
+
+    public boolean ffwdInterval() {
+        return rangeHandler.ffwdInterval();
+    }
+
+    public boolean rewInterval() {
+        return rangeHandler.revInterval();
+    }
+
+    public boolean goRealtime() {
+        return rangeHandler.goRealtime();
+    }
+
+    public boolean isRealtime() {
+        return rangeHandler.isRealtime();
+    }
 
 }

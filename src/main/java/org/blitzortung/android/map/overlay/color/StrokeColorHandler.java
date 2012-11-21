@@ -31,5 +31,4 @@ public class StrokeColorHandler extends ColorHandler {
 		}
 		throw new IllegalStateException("Unhandled color target " + target);
 	}
-	
 }

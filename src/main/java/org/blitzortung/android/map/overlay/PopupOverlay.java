@@ -76,5 +76,4 @@ public abstract class PopupOverlay<Item extends OverlayItem> extends ItemizedOve
 
         return eventHandled;
     }
-
 }

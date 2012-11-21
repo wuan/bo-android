@@ -5,17 +5,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
-import android.text.format.DateFormat;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.common.collect.Lists;
-import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import com.xtremelabs.robolectric.internal.Implementation;
 import com.xtremelabs.robolectric.internal.Implements;
-import com.xtremelabs.robolectric.shadows.ShadowDateFormat;
 import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.Participant;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 import org.junit.Before;
@@ -76,20 +72,19 @@ public class StrokesOverlayTest {
 
         List<AbstractStroke> strokes = Lists.newArrayList();
 
-        long expireTime = 1000000;
-
-        strokesOverlay.addAndExpireStrokes(strokes, expireTime);
+        strokesOverlay.setIntervalDuration(1);
+        strokesOverlay.addStrokes(strokes);
 
         assertThat(strokesOverlay.size(), is(0));
 
         strokes.add(mock(AbstractStroke.class));
         strokes.add(mock(AbstractStroke.class));
 
-        strokesOverlay.addAndExpireStrokes(strokes, expireTime);
+        strokesOverlay.addStrokes(strokes);
 
         assertThat(strokesOverlay.size(), is(2));
 
-        strokesOverlay.addAndExpireStrokes(strokes, expireTime);
+        strokesOverlay.addStrokes(strokes);
 
         assertThat(strokesOverlay.size(), is(4));
     }
@@ -99,7 +94,7 @@ public class StrokesOverlayTest {
     {
         doReturn(true).when(strokesOverlay).clearPopup();
 
-        strokesOverlay.addAndExpireStrokes(Lists.newArrayList(mock(AbstractStroke.class)), 0);
+        strokesOverlay.addStrokes(Lists.newArrayList(mock(AbstractStroke.class)));
 
         strokesOverlay.clear();
 
@@ -127,7 +122,7 @@ public class StrokesOverlayTest {
         strokesOverlay.refresh();
 
         verify(colorHandler, times(1)).updateTarget();
-        verify(colorHandler, times(1)).getColorSection(anyLong(), anyLong(), anyInt());
+        verify(colorHandler, times(1)).getColorSection(anyLong(), anyLong(), null);
 
         verify(strokesOverlay, times(1)).getDrawable(eq(strokeOverlayItem), anyInt(), eq(colorHandler));
         verify(strokeOverlayItem, times(1)).setMarker(any(Drawable.class));
@@ -137,7 +132,8 @@ public class StrokesOverlayTest {
     public void testCreateItem()
     {
         doNothing().when(strokesOverlay).expireStrokes(anyLong());
-        strokesOverlay.addAndExpireStrokes(Lists.newArrayList(mock(AbstractStroke.class)), 100000);
+        strokesOverlay.setIntervalDuration(100);
+        strokesOverlay.addStrokes(Lists.newArrayList(mock(AbstractStroke.class)));
 
         assertThat(strokesOverlay.size(), is(1));
         assertThat(strokesOverlay.createItem(0), is(notNullValue()));

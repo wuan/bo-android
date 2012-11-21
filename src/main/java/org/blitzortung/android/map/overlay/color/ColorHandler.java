@@ -3,6 +3,7 @@ package org.blitzortung.android.map.overlay.color;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import org.blitzortung.android.app.Preferences;
+import org.blitzortung.android.data.TimeIntervalWithOffset;
 
 public abstract class ColorHandler {
 
@@ -12,7 +13,7 @@ public abstract class ColorHandler {
 
 	private ColorTarget target;
 
-	public ColorHandler(SharedPreferences preferences) {
+    public ColorHandler(SharedPreferences preferences) {
 		this.preferences = preferences;
 		updateTarget(); 
 	}
@@ -28,8 +29,9 @@ public abstract class ColorHandler {
 
 	abstract protected int[] getColors(ColorTarget target);
 
-	public int getColorSection(long now, long eventTime, int minutesPerColor) {
-		int section = (int) (now - eventTime) / 1000 / 60 / minutesPerColor;
+	public int getColorSection(long now, long eventTime, TimeIntervalWithOffset timeIntervalWithOffset) {
+        int minutesPerColor = timeIntervalWithOffset.getIntervalDuration() / getColors().length;
+		int section = (int) (now + timeIntervalWithOffset.getIntervalOffset() * 60 * 1000 - eventTime) / 1000 / 60 / minutesPerColor;
 
 		section = Math.min(section, getColors().length - 1);
 		section = Math.max(section, 0);
@@ -42,8 +44,8 @@ public abstract class ColorHandler {
         return colorScheme;
     }
 
-	public int getColor(long now, long eventTime, int minutesPerColor) {
-		return getColor(getColorSection(now, eventTime, minutesPerColor));
+	public int getColor(long now, long eventTime, int intervalDuration) {
+		return getColor(getColorSection(now, eventTime, null));
 	}
 
 	public int getColor(int section) {
@@ -96,4 +98,5 @@ public abstract class ColorHandler {
 
         return result;
     }
+
 }

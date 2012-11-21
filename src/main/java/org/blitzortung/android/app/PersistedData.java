@@ -12,11 +12,12 @@ import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.location.LocationManager;
+import org.blitzortung.android.time.RangeHandler;
 
 public class PersistedData {
 
 	private final TimerTask timerTask;
-	
+
 	private final DataRetriever provider;
 	
 	private final AlarmManager alarmManager;
@@ -27,9 +28,8 @@ public class PersistedData {
 
     private DataResult currentResult;
 
-
     public PersistedData(Resources resources, LocationManager locationManager, SharedPreferences sharedPreferences, PackageInfo pInfo) {
-		provider = new DataRetriever(sharedPreferences, pInfo);
+        provider = new DataRetriever(sharedPreferences, pInfo);
 		timerTask = new TimerTask(resources, sharedPreferences, provider);
 		alarmManager = new AlarmManager(locationManager, sharedPreferences, timerTask);
 		strokesOverlay = new StrokesOverlay(new StrokeColorHandler(sharedPreferences));

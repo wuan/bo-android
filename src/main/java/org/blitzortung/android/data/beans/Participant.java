@@ -5,11 +5,7 @@ import org.blitzortung.android.util.TimeFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
-
-public class Participant implements Serializable {
+public class Participant {
 
 	private static final long serialVersionUID = -6731278932726028829L;
 

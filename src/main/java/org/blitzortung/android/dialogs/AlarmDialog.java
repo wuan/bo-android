@@ -12,7 +12,7 @@ import android.view.View;
 
 public class AlarmDialog extends AlertDialog {
 
-	public AlarmDialog(Context context, AlarmManager alarmManager, ColorHandler colorHandler, int minutesPerColor) {
+	public AlarmDialog(Context context, AlarmManager alarmManager, ColorHandler colorHandler, int intervalDuration) {
 		super(context);
 		
 		setTitle(context.getString(R.string.alarms));
@@ -21,7 +21,7 @@ public class AlarmDialog extends AlertDialog {
 
 		AlarmView alarmView = (AlarmView) menu.findViewById(R.id.alarm_diagram);
 		alarmView.setAlarmManager(alarmManager);
-		alarmView.setColorHandler(colorHandler, minutesPerColor);
+		alarmView.setColorHandler(colorHandler, intervalDuration);
 		
 		setView(menu);
 	}

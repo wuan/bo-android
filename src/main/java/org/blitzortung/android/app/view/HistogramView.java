@@ -79,7 +79,7 @@ public class HistogramView extends View implements DataListener {
 
         if (strokesOverlay != null && histogram != null && histogram.length > 0) {
             ColorHandler colorHandler = strokesOverlay.getColorHandler();
-            int minutesPerColor = strokesOverlay.getMinutesPerColor();
+            int minutesPerColor = strokesOverlay.getIntervalDuration() / colorHandler.getNumberOfColors();
             int minutesPerBin = 5;
             int ratio = minutesPerColor / minutesPerBin;
 

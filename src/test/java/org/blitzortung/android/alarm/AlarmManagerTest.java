@@ -162,6 +162,7 @@ public class AlarmManagerTest {
 
         DataResult result = mock(DataResult.class);
         when(result.getStrokes()).thenReturn(Lists.newArrayList(stroke));
+        when(result.containsRealtimeData()).thenReturn(true);
 
         alarmManager.check(result);
 

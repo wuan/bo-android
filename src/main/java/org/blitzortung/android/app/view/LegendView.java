@@ -17,7 +17,7 @@ public class LegendView extends View {
 
     final private float padding;
     final private float colorFieldSize;
-    final private float textWidth;
+    private float textWidth;
 
     final private Paint textPaint;
     final private Paint backgroundPaint;
@@ -48,13 +48,16 @@ public class LegendView extends View {
         textPaint.setColor(0xffffffff);
         textPaint.setTextSize(colorFieldSize);
 
-        textWidth = (float)Math.ceil(textPaint.measureText("< 10min"));
+        updateTextWidth(0);
 
         setBackgroundColor(Color.TRANSPARENT);
     }
 
-    private float pxFromDp(float dp)
-    {
+    private void updateTextWidth(int intervalDuration) {
+        textWidth = (float)Math.ceil(textPaint.measureText(intervalDuration > 100 ? "< 100min" : "< 10min"));
+    }
+
+    private float pxFromDp(float dp) {
         return dp * getContext().getResources().getDisplayMetrics().density;
     }
 
@@ -63,6 +66,7 @@ public class LegendView extends View {
         int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
         int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
 
+        updateTextWidth(strokesOverlay.getIntervalDuration());
         width = Math.min(3 * padding + colorFieldSize + textWidth, parentWidth);
 
         if (strokesOverlay != null) {
@@ -82,7 +86,7 @@ public class LegendView extends View {
 
         if (strokesOverlay != null) {
             ColorHandler colorHandler = strokesOverlay.getColorHandler();
-            int minutesPerColor = strokesOverlay.getMinutesPerColor();
+            int minutesPerColor = strokesOverlay.getIntervalDuration() / colorHandler.getNumberOfColors();
 
             RectF backgroundRect = new RectF(0, 0, width, height);
             canvas.drawRect(backgroundRect, backgroundPaint);

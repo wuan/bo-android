@@ -73,6 +73,36 @@
         <item>2</item>
     </string-array>
 
+    <string name="interval_duration">Daten-Zeitintervall</string>
+    <string name="interval_duration_summary">Zeitintervall für welches Daten angezeigt werden</string>
+
+    <string-array name="interval_durations">
+        <item>60 min</item>
+        <item>90 min</item>
+        <item>120 min</item>
+        <item>240 min</item>
+    </string-array>
+    <string-array name="interval_duration_values">
+        <item>60</item>
+        <item>90</item>
+        <item>120</item>
+        <item>240</item>
+    </string-array>
+
+    <string name="historic_timestep">Zeitschritt für Historie</string>
+    <string name="historic_timestep_summary">Zeitschritt für den Abruf historischer Daten</string>
+
+    <string-array name="historic_timesteps">
+        <item>15 min</item>
+        <item>30 min</item>
+        <item>60 min</item>
+    </string-array>
+    <string-array name="historic_timestep_values">
+        <item>60</item>
+        <item>90</item>
+        <item>120</item>
+    </string-array>
+
     <string name="query_period">Abfrageperiode</string>
     <string name="query_period_summary">Frequenz des Datenabrufs</string>
 

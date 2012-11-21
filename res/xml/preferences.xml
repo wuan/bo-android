@@ -55,6 +55,26 @@
         <ListPreference
                 android:defaultValue="60"
                 android:enabled="true"
+                android:entries="@array/interval_durations"
+                android:entryValues="@array/interval_duration_values"
+                android:key="interval_duration"
+                android:persistent="true"
+                android:selectable="true"
+                android:title="@string/interval_duration"
+                android:summary="@string/interval_duration_summary"/>
+        <ListPreference
+                android:defaultValue="30"
+                android:enabled="true"
+                android:entries="@array/historic_timesteps"
+                android:entryValues="@array/historic_timestep_values"
+                android:key="historic_timestep"
+                android:persistent="true"
+                android:selectable="true"
+                android:title="@string/historic_timestep"
+                android:summary="@string/historic_timestep_summary"/>
+        <ListPreference
+                android:defaultValue="60"
+                android:enabled="true"
                 android:entries="@array/query_periods"
                 android:entryValues="@array/query_period_values"
                 android:key="query_period"

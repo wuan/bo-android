@@ -42,7 +42,7 @@ public class TimerTaskTest {
         when(sharedPreferences.getString(Preferences.QUERY_PERIOD_KEY, "60")).thenReturn("60");
         when(sharedPreferences.getString(Preferences.BACKGROUND_QUERY_PERIOD_KEY, "0")).thenReturn("0");
 
-        when(dataRetriever.getMinutes()).thenReturn(60);
+        when(dataRetriever.getIntervalDuration()).thenReturn(60);
 
         timerTask = spy(new TimerTask(resources, sharedPreferences, dataRetriever));
     }
@@ -82,17 +82,17 @@ public class TimerTaskTest {
         assertThat(timerTask.getLastParticipantsUpdate(), is(actualSecond));
     }
 
-    class TimerListener implements TimerTask.StatusListener
+    class TimerListener implements TimerTask.TimerUpdateListener
     {
-        private String statusString;
+        private String timerString;
 
         @Override
-        public void onStatusUpdate(String statusString) {
-            this.statusString = statusString;
+        public void onTimerUpdate(String timerString) {
+            this.timerString = timerString;
         }
 
-        public String getStatusString() {
-            return statusString;
+        public String getTimerString() {
+            return timerString;
         }
     }
 
@@ -104,7 +104,7 @@ public class TimerTaskTest {
         timerTask.setListener(listener);
         timerTask.run();
 
-        assertThat(listener.getStatusString(), is("no stroke/60 minutes 60/60s"));
+        assertThat(listener.getTimerString(), is("no stroke/60 minutes 60/60s"));
     }
 
     @Test
@@ -113,10 +113,9 @@ public class TimerTaskTest {
         TimerListener listener = new TimerListener();
 
         timerTask.setListener(listener);
-        timerTask.setNumberOfStrokes(1234);
         timerTask.run();
 
-        assertThat(listener.getStatusString(), is("1234 strokes/60 minutes 60/60s"));
+        assertThat(listener.getTimerString(), is("1234 strokes/60 minutes 60/60s"));
     }
 
     @Test
@@ -129,7 +128,7 @@ public class TimerTaskTest {
         timerTask.setListener(listener);
         timerTask.run();
 
-        assertThat(listener.getStatusString(), is("no stroke/60 minutes 60/60s USA"));
+        assertThat(listener.getTimerString(), is("no stroke/60 minutes 60/60s USA"));
     }
 
     @Test
@@ -143,10 +142,10 @@ public class TimerTaskTest {
     }
 
     @Test
-         public void testOnResume() {
+        public void testOnResume() {
         long actualSecond = System.currentTimeMillis() / 1000;
 
-        timerTask.onResume();
+        timerTask.onResume(true);
 
         assertThat(timerTask.getLastUpdate(), is(actualSecond));
         assertThat(timerTask.getLastParticipantsUpdate(), is(actualSecond));
@@ -157,7 +156,7 @@ public class TimerTaskTest {
     public void testOnPause() {
         long actualSecond = System.currentTimeMillis() / 1000;
 
-        timerTask.onResume();
+        timerTask.onResume(true);
 
         timerTask.onPause();
 

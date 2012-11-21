@@ -102,10 +102,10 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 
 	public void check(DataResult result) {
 
-		if (alarmEnabled && location != null) {
+		if (alarmEnabled && result.containsRealtimeData() && location != null) {
             long now = System.currentTimeMillis();
 			long thresholdTime = now - alarmInterval;
-            long oldestTime = now - result.getStrokesTimeInterval();
+            long oldestTime = now - result.getIntervalDuration() * 1000 * 60;
 
 			if (alarmStatus == null || !result.isIncremental()) {
 				alarmStatus = new AlarmStatus(thresholdTime, measurementSystem);

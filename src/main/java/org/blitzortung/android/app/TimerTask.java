@@ -8,8 +8,8 @@ import org.blitzortung.android.data.DataRetriever;
 
 public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
-	public interface StatusListener {
-		public void onStatusUpdate(String statusString);
+    public interface TimerUpdateListener {
+		public void onTimerUpdate(String timerStatus);
 	}
 
 	private int period;
@@ -20,8 +20,6 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 	private long lastParticipantsUpdate;
 
-	private int numberOfStrokes;
-
 	private boolean alarmEnabled;
 
 	private boolean backgroundOperation;
@@ -30,7 +28,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 	private final Handler handler;
 
-	private StatusListener listener;
+	private TimerUpdateListener listener;
 
 	private final Resources resources;
 
@@ -68,25 +66,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 		}
 
 		if (!backgroundOperation && listener != null) {
-			String statusString = resources.getQuantityString(R.plurals.stroke, numberOfStrokes, numberOfStrokes);
-			statusString += "/";
-			statusString += resources.getQuantityString(R.plurals.minute, dataRetriever.getMinutes(), dataRetriever.getMinutes());
-			statusString += String.format(" %d/%ds", currentPeriod - (actualSecond - lastUpdate), currentPeriod);
-
-			if (dataRetriever.isUsingRaster()) {
-				int region = dataRetriever.getRegion();
-				String regions[] = resources.getStringArray(R.array.regions_values);
-				int index = 0;
-				for (String region_number : regions) {
-					if (region == Integer.parseInt(region_number)) {
-						statusString += " " + resources.getStringArray(R.array.regions)[index];
-						break;
-					}
-					index++;
-				}
-			}
-
-			listener.onStatusUpdate(statusString);
+            listener.onTimerUpdate(String.format("%d/%ds", currentPeriod - (actualSecond - lastUpdate), currentPeriod));
 		}
 
 		// Schedule the next update
@@ -98,10 +78,12 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 		lastParticipantsUpdate = 0;
 	}
 
-	public void onResume() {
+	public void onResume(boolean isRealtime) {
 		backgroundOperation = false;
-		handler.removeCallbacks(this);
-		handler.post(this);
+        if (isRealtime) {
+		    handler.removeCallbacks(this);
+		    handler.post(this);
+        }
 	}
 
 	public void onPause() {
@@ -109,10 +91,6 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 		if (!alarmEnabled || backgroundPeriod == 0) {
 			handler.removeCallbacks(this);
 		}
-	}
-
-	public void setNumberOfStrokes(int numberOfStrokes) {
-		this.numberOfStrokes = numberOfStrokes;
 	}
 
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
@@ -127,9 +105,13 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 		this.alarmEnabled = alarmEnabled;
 	}
 
-	public void setListener(StatusListener listener) {
+	public void setListener(TimerUpdateListener listener) {
 		this.listener = listener;
 	}
+
+    protected void enable() {
+        handler.post(this);
+    }
 
     protected void disable() {
         handler.removeCallbacks(this);

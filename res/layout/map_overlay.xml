@@ -19,15 +19,35 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
-        <!--<ImageButton
+        <ImageButton
                 xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/toggleAnimation"
-                android:src="@android:drawable/ic_media_play"
+                android:id="@+id/historyRew"
+                android:src="@android:drawable/ic_media_rew"
                 android:background="@color/translucent_background"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"/>-->
+                android:layout_alignParentRight="true"/>
+
+        <ImageButton
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/historyFfwd"
+                android:src="@android:drawable/ic_media_ff"
+                android:background="@color/translucent_background"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_below="@+id/historyRew"
+                android:layout_alignParentRight="true"/>
+
+        <ImageButton
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/goRealtime"
+                android:src="@android:drawable/ic_media_next"
+                android:background="@color/translucent_background"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_below="@+id/historyFfwd"
+                android:layout_alignParentRight="true"/>
 
         <ImageButton
                 xmlns:android="http://schemas.android.com/apk/res/android"
@@ -36,9 +56,9 @@
                 android:background="@color/translucent_background"
                 android:enabled="false"
                 android:visibility="gone"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_alignParentTop="true"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_below="@+id/goRealtime"
                 android:layout_alignParentRight="true"/>
 
         <org.blitzortung.android.app.view.AlarmView

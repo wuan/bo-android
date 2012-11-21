@@ -31,6 +31,5 @@ public class FadeOverlay extends Overlay {
 
     public void setAlpha(int alphaValue) {
         this.alphaValue = alphaValue;
-        Log.v("FadeOverlay", String.format("%d", alphaValue));
     }
 }

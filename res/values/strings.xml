@@ -73,6 +73,36 @@
         <item>2</item>
     </string-array>
 
+    <string name="interval_duration">Time interval</string>
+    <string name="interval_duration_summary">Time interval in which lightning activity is shown</string>
+
+    <string-array name="interval_durations">
+        <item>60 min</item>
+        <item>90 min</item>
+        <item>120 min</item>
+        <item>240 min</item>
+    </string-array>
+    <string-array name="interval_duration_values">
+        <item>60</item>
+        <item>90</item>
+        <item>120</item>
+        <item>240</item>
+    </string-array>
+
+    <string name="historic_timestep">Historic timestep</string>
+    <string name="historic_timestep_summary">Time step size when exploring historical data</string>
+
+    <string-array name="historic_timesteps">
+        <item>15 min</item>
+        <item>30 min</item>
+        <item>60 min</item>
+    </string-array>
+    <string-array name="historic_timestep_values">
+        <item>60</item>
+        <item>90</item>
+        <item>120</item>
+    </string-array>
+
     <string name="query_period">Query period</string>
     <string name="query_period_summary">frequency of data refresh</string>
 
@@ -148,9 +178,9 @@
 
     <item name="alarm_notification_id" type="id"/>
 
-    <string name="notification_distance_limit">notification distance limit</string>
+    <string name="notification_distance_limit">Notification distance limit</string>
     <string name="notification_distance_limit_summary">if selected: show notification when lightning activity is detected within the selected range</string>
-    <string name="vibration_distance_limit">vibration distance limit</string>
+    <string name="vibration_distance_limit">Vibration distance limit</string>
     <string name="vibration_distance_limit_summary">if selected: vibrate when lightning activity is detected within the selected range</string>
 
     <string-array name="distance_limits">

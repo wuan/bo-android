@@ -26,8 +26,10 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	public static final String DATA_SOURCE_KEY = "data_source";
     public static final String MEASUREMENT_UNIT_KEY = "measurement_unit";
     public static final String DO_NOT_SLEEP = "do_not_sleep";
+    public static final String INTERVAL_DURATION_KEY = "interval_duration";
+    public static final String HISTORIC_TIMESTEP_KEY = "historic_timestep";
 
-	@Override
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 

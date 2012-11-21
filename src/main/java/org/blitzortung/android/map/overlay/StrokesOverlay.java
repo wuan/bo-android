@@ -8,10 +8,9 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.text.format.DateFormat;
-import android.util.Log;
 import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapView;
 import com.google.android.maps.Projection;
+import org.blitzortung.android.data.TimeIntervalWithOffset;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Raster;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
@@ -20,7 +19,7 @@ import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
+public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements TimeIntervalWithOffset{
 
     @SuppressWarnings("unused")
     private static final String TAG = "overlay.StrokesOverlay";
@@ -35,6 +34,14 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
     Raster raster = null;
 
     static private final Drawable DefaultDrawable;
+
+    private int intervalDuration;
+
+    private int intervalOffset;
+
+    private int region;
+
+    private long referenceTime;
 
     static {
         Shape shape = new StrokeShape(1, 0);
@@ -76,7 +83,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
         }
     }
 
-    public void addAndExpireStrokes(List<AbstractStroke> strokes, long expireTime) {
+    public void addStrokes(List<AbstractStroke> strokes) {
         if (isRaster()) {
             items.clear();
         }
@@ -85,7 +92,10 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
             items.add(new StrokeOverlayItem(stroke));
         }
 
-        expireStrokes(expireTime);
+        if (!isRaster()) {
+            long expireTime = System.currentTimeMillis() - intervalDuration * 60 * 1000;
+            expireStrokes(expireTime);
+        }
 
         setLastFocusedIndex(-1);
         populate();
@@ -121,10 +131,6 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
         refresh();
     }
 
-    public int getMinutesPerColor() {
-        return 10;
-    }
-
     public ColorHandler getColorHandler() {
         return colorHandler;
     }
@@ -139,7 +145,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
         Drawable drawable = null;
 
         for (StrokeOverlayItem item : items) {
-            int section = colorHandler.getColorSection(now, item.getTimestamp(), getMinutesPerColor());
+            int section = colorHandler.getColorSection(now, item.getTimestamp(), this);
 
             if (isRaster() || current_section != section) {
                 drawable = getDrawable(item, section, colorHandler);
@@ -187,6 +193,10 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
         return raster != null;
     }
 
+    public boolean hasRealtimeData() {
+         return intervalOffset == 0;
+    }
+
     @Override
     protected boolean onTap(int index) {
         StrokeOverlayItem item = items.get(index);
@@ -211,5 +221,37 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> {
         }
 
         return totalNumberOfStrokes;
+    }
+
+    public int getIntervalDuration() {
+        return intervalDuration;
+    }
+
+    public void setIntervalDuration(int intervalDuration) {
+        this.intervalDuration = intervalDuration;
+    }
+
+    public int getIntervalOffset() {
+        return intervalOffset;
+    }
+
+    public void setIntervalOffset(int intervalOffset) {
+        this.intervalOffset = intervalOffset;
+    }
+
+    public int getRegion() {
+        return region;
+    }
+
+    public void setRegion(int region) {
+        this.region = region;
+    }
+
+    public void setReferenceTime(long referenceTime) {
+        this.referenceTime = referenceTime;
+    }
+
+    public long getReferenceTime() {
+        return referenceTime;
     }
 }

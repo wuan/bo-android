@@ -21,7 +21,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
     private ColorHandler colorHandler;
 
-    private int minutesPerColor;
+    private int intervalDuration;
 
     private final RectF arcArea = new RectF();
     private final Paint background = new Paint();
@@ -131,7 +131,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
                     boolean drawColor = sector.getStrokeCount(distanceIndex) > 0;
                     if (drawColor) {
-                        sectorPaint.setColor(colorHandler.getColor(actualTime, sector.getLatestTime(distanceIndex), minutesPerColor));
+                        sectorPaint.setColor(colorHandler.getColor(actualTime, sector.getLatestTime(distanceIndex), intervalDuration));
                     }
                     arcArea.set(leftTop, leftTop, bottomRight, bottomRight);
                     temporaryCanvas.drawArc(arcArea, startAngle, sectorWidth, true, drawColor ? sectorPaint : background);
@@ -200,9 +200,9 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
         alarmStatus = null;
     }
 
-    public void setColorHandler(ColorHandler colorHandler, int minutesPerColor) {
+    public void setColorHandler(ColorHandler colorHandler, int intervalDuration) {
         this.colorHandler = colorHandler;
-        this.minutesPerColor = minutesPerColor;
+        this.intervalDuration = intervalDuration;
     }
 
     @Override
