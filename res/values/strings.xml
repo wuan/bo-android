@@ -89,6 +89,7 @@
         <item>240</item>
     </string-array>
 
+    <string name="historic_timestep_limit_reached">24 hours limit reached</string>
     <string name="historic_timestep">Historic timestep</string>
     <string name="historic_timestep_summary">Time step size when exploring historical data</string>
 
@@ -98,9 +99,9 @@
         <item>60 min</item>
     </string-array>
     <string-array name="historic_timestep_values">
+        <item>15</item>
+        <item>30</item>
         <item>60</item>
-        <item>90</item>
-        <item>120</item>
     </string-array>
 
     <string name="query_period">Query period</string>

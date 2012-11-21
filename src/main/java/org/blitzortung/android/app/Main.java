@@ -18,10 +18,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.format.DateFormat;
 import android.view.*;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.*;
 import com.google.android.maps.Overlay;
 import org.blitzortung.android.alarm.AlarmLabel;
 import org.blitzortung.android.alarm.AlarmManager;
@@ -136,6 +133,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                     DataRetriever.UpdateTargets updateTargets = new DataRetriever.UpdateTargets();
                     updateTargets.updateStrokes();
                     provider.updateData(updateTargets);
+                } else {
+                    Toast toast = Toast.makeText(getBaseContext(), getResources().getText(R.string.historic_timestep_limit_reached), 1000);
+                    toast.show();
                 }
             }
         });

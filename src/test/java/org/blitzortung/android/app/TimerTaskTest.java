@@ -97,41 +97,6 @@ public class TimerTaskTest {
     }
 
     @Test
-    public void testRunWithListenerSet()
-    {
-        TimerListener listener = new TimerListener();
-
-        timerTask.setListener(listener);
-        timerTask.run();
-
-        assertThat(listener.getTimerString(), is("no stroke/60 minutes 60/60s"));
-    }
-
-    @Test
-    public void testRunWithListenerAndStrokeNumberSet()
-    {
-        TimerListener listener = new TimerListener();
-
-        timerTask.setListener(listener);
-        timerTask.run();
-
-        assertThat(listener.getTimerString(), is("1234 strokes/60 minutes 60/60s"));
-    }
-
-    @Test
-    public void testRunWithRasterAndListenerSet()
-    {
-        when(dataRetriever.isUsingRaster()).thenReturn(true);
-        when(dataRetriever.getRegion()).thenReturn(3);
-        TimerListener listener = new TimerListener();
-
-        timerTask.setListener(listener);
-        timerTask.run();
-
-        assertThat(listener.getTimerString(), is("no stroke/60 minutes 60/60s USA"));
-    }
-
-    @Test
     public void testRestart() {
         timerTask.run();
 
