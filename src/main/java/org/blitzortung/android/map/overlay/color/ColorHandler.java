@@ -29,9 +29,13 @@ public abstract class ColorHandler {
 
 	abstract protected int[] getColors(ColorTarget target);
 
-	public int getColorSection(long now, long eventTime, TimeIntervalWithOffset timeIntervalWithOffset) {
-        int minutesPerColor = timeIntervalWithOffset.getIntervalDuration() / getColors().length;
-		int section = (int) (now + timeIntervalWithOffset.getIntervalOffset() * 60 * 1000 - eventTime) / 1000 / 60 / minutesPerColor;
+    public int getColorSection(long now, long eventTime, TimeIntervalWithOffset timeIntervalWithOffset) {
+        return getColorSection(now, eventTime, timeIntervalWithOffset.getIntervalDuration(), timeIntervalWithOffset.getIntervalOffset());
+    }
+
+    private int getColorSection(long now, long eventTime, int intervalDuration, int intervalOffset) {
+        int minutesPerColor = intervalDuration / getColors().length;
+		int section = (int) (now + intervalOffset * 60 * 1000 - eventTime) / 1000 / 60 / minutesPerColor;
 
 		section = Math.min(section, getColors().length - 1);
 		section = Math.max(section, 0);
@@ -44,8 +48,9 @@ public abstract class ColorHandler {
         return colorScheme;
     }
 
-	public int getColor(long now, long eventTime, int intervalDuration) {
-		return getColor(getColorSection(now, eventTime, null));
+	public int getColor(long now, long eventTime, int minutesPerColor) {
+        int intervalDuration = minutesPerColor * getColors().length;
+		return getColor(getColorSection(now, eventTime, intervalDuration, 0));
 	}
 
 	public int getColor(int section) {

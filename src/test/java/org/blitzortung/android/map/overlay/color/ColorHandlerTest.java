@@ -3,6 +3,7 @@ package org.blitzortung.android.map.overlay.color;
 import android.content.SharedPreferences;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.app.Preferences;
+import org.blitzortung.android.data.TimeIntervalWithOffset;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +35,9 @@ public class ColorHandlerTest {
 
     @Mock
     SharedPreferences sharedPreferences;
+
+    @Mock
+    TimeIntervalWithOffset timeIntervalWithOffset;
 
     @Before
     public void setUp() {

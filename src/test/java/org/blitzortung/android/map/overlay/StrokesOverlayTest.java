@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import com.xtremelabs.robolectric.internal.Implementation;
 import com.xtremelabs.robolectric.internal.Implements;
+import org.blitzortung.android.data.TimeIntervalWithOffset;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
@@ -122,7 +123,7 @@ public class StrokesOverlayTest {
         strokesOverlay.refresh();
 
         verify(colorHandler, times(1)).updateTarget();
-        verify(colorHandler, times(1)).getColorSection(anyLong(), anyLong(), null);
+        verify(colorHandler, times(1)).getColorSection(anyLong(), anyLong(), any(TimeIntervalWithOffset.class));
 
         verify(strokesOverlay, times(1)).getDrawable(eq(strokeOverlayItem), anyInt(), eq(colorHandler));
         verify(strokeOverlayItem, times(1)).setMarker(any(Drawable.class));

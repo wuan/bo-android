@@ -10,6 +10,7 @@ import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmSector;
 import org.blitzortung.android.alarm.AlarmStatus;
 import org.blitzortung.android.app.R;
+import org.blitzortung.android.data.TimeIntervalWithOffset;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 
 public class AlarmView extends View implements AlarmManager.AlarmListener {
@@ -213,4 +214,5 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
     public void setAlpha(int alpha) {
         transfer.setAlpha(alpha);
     }
+
 }
