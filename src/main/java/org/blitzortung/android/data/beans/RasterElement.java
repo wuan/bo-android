@@ -11,10 +11,10 @@ public class RasterElement extends AbstractStroke implements Serializable {
 	
 	private int multiplicity;
 	
-	public  RasterElement(Raster raster, long referenceTimestamp, JSONArray jsonArray) {
+	public  RasterElement(RasterParameters rasterParameters, long referenceTimestamp, JSONArray jsonArray) {
 		try {
-			setLongitude(raster.getCenterLongitude(jsonArray.getInt(0)));
-			setLatitude(raster.getCenterLatitude(jsonArray.getInt(1)));
+			setLongitude(rasterParameters.getCenterLongitude(jsonArray.getInt(0)));
+			setLatitude(rasterParameters.getCenterLatitude(jsonArray.getInt(1)));
 			multiplicity = jsonArray.getInt(2);
 			
 			setTimestamp(referenceTimestamp + 1000 * jsonArray.getInt(3));

@@ -13,7 +13,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Participant;
-import org.blitzortung.android.data.beans.Raster;
+import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.beans.Stroke;
 
 import android.util.Log;
@@ -144,7 +144,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
     }
 
 	@Override
-	public Raster getRaster() {
+	public RasterParameters getRasterParameters() {
 		return null;
 	}
 

@@ -1,6 +1,5 @@
 package org.blitzortung.android.data.beans;
 
-import java.io.Serializable;
 import java.util.Locale;
 
 import org.blitzortung.android.data.Coordsys;
@@ -12,10 +11,8 @@ import android.graphics.RectF;
 
 import com.google.android.maps.Projection;
 
-public class Raster implements Serializable {
+public class RasterParameters {
 
-	private static final long serialVersionUID = -2751803268193381643L;
-	
 	private float lon_start;
 	private float lat_start;
 	private float lon_delta;
@@ -23,7 +20,7 @@ public class Raster implements Serializable {
 	private int lon_count;
 	private int lat_count;
 
-	public Raster(JSONObject jsonObject) throws JSONException {
+	public RasterParameters(JSONObject jsonObject) throws JSONException {
 		lon_start = (float) jsonObject.getDouble("x0");
 		lat_start = (float) jsonObject.getDouble("y1");
 		lon_delta = (float) jsonObject.getDouble("xd");
@@ -58,7 +55,7 @@ public class Raster implements Serializable {
 	
 	@Override
 	public String toString() {
-		return String.format(Locale.US, "Raster(%.4f, %.4f; %.4f, %.4f)", lon_start, lon_delta, lat_start, lat_delta);
+		return String.format(Locale.US, "RasterParameters(%.4f, %.4f; %.4f, %.4f)", lon_start, lon_delta, lat_start, lat_delta);
 	}
 
 	public int getLongitudeIndex(double longitude) {

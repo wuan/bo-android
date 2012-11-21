@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.TimerTask;
-import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataResult;
 
 import android.content.SharedPreferences;
@@ -30,7 +29,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 
 	private final LocationManager locationManager;
 
-    private final String locationProvider = LocationManager.NETWORK_PROVIDER;;
+    private final String locationProvider = LocationManager.NETWORK_PROVIDER;
 
     private Location location;
 
@@ -105,7 +104,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 		if (alarmEnabled && result.containsRealtimeData() && location != null) {
             long now = System.currentTimeMillis();
 			long thresholdTime = now - alarmInterval;
-            long oldestTime = now - result.getIntervalDuration() * 1000 * 60;
+            long oldestTime = now - result.getParameters().getIntervalDuration() * 1000 * 60;
 
 			if (alarmStatus == null || !result.isIncremental()) {
 				alarmStatus = new AlarmStatus(thresholdTime, measurementSystem);

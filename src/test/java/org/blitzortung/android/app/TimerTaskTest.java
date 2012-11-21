@@ -4,7 +4,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
-import org.blitzortung.android.data.DataRetriever;
+import org.blitzortung.android.data.DataHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class TimerTaskTest {
     private SharedPreferences sharedPreferences;
 
     @Mock
-    private DataRetriever dataRetriever;
+    private DataHandler dataHandler;
 
     @Before
     public void setUp()
@@ -42,9 +42,9 @@ public class TimerTaskTest {
         when(sharedPreferences.getString(Preferences.QUERY_PERIOD_KEY, "60")).thenReturn("60");
         when(sharedPreferences.getString(Preferences.BACKGROUND_QUERY_PERIOD_KEY, "0")).thenReturn("0");
 
-        when(dataRetriever.getIntervalDuration()).thenReturn(60);
+        when(dataHandler.getIntervalDuration()).thenReturn(60);
 
-        timerTask = spy(new TimerTask(resources, sharedPreferences, dataRetriever));
+        timerTask = spy(new TimerTask(sharedPreferences, dataHandler));
     }
 
     @After
@@ -71,8 +71,8 @@ public class TimerTaskTest {
 
         timerTask.run();
 
-        ArgumentCaptor<DataRetriever.UpdateTargets> targetsArgumentCaptor = ArgumentCaptor.forClass(DataRetriever.UpdateTargets.class);
-        verify(dataRetriever, times(1)).updateData(targetsArgumentCaptor.capture());
+        ArgumentCaptor<DataHandler.UpdateTargets> targetsArgumentCaptor = ArgumentCaptor.forClass(DataHandler.UpdateTargets.class);
+        verify(dataHandler, times(1)).updateData(targetsArgumentCaptor.capture());
 
         assertTrue(targetsArgumentCaptor.getValue().anyUpdateRequested());
         assertTrue(targetsArgumentCaptor.getValue().updateStrokes());
@@ -119,8 +119,6 @@ public class TimerTaskTest {
 
     @Test
     public void testOnPause() {
-        long actualSecond = System.currentTimeMillis() / 1000;
-
         timerTask.onResume(true);
 
         timerTask.onPause();

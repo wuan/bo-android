@@ -125,7 +125,7 @@
     </string-array>
 
     <string name="raster_size">Raster size</string>
-    <string name="raster_size_summary">size of data raster squares</string>
+    <string name="raster_size_summary">size of data rasterParameters squares</string>
 
     <string-array name="raster_sizes">
         <item>10 km</item>

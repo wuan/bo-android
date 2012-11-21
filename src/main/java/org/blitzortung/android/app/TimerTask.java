@@ -4,7 +4,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
 import android.os.Handler;
-import org.blitzortung.android.data.DataRetriever;
+import org.blitzortung.android.data.DataHandler;
 
 public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
@@ -24,17 +24,14 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
 	private boolean backgroundOperation;
 
-	private final DataRetriever dataRetriever;
+	private final DataHandler dataHandler;
 
 	private final Handler handler;
 
 	private TimerUpdateListener listener;
 
-	private final Resources resources;
-
-	TimerTask(Resources resources, SharedPreferences preferences, DataRetriever dataRetriever) {
-		this.resources = resources;
-		this.dataRetriever = dataRetriever;
+	TimerTask(SharedPreferences preferences, DataHandler dataHandler) {
+		this.dataHandler = dataHandler;
 		handler = new Handler();
 		listener = null;
 
@@ -47,7 +44,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 	public void run() {
 		long actualSecond = System.currentTimeMillis() / 1000;
 
-		DataRetriever.UpdateTargets updateTargets = new DataRetriever.UpdateTargets();
+		DataHandler.UpdateTargets updateTargets = new DataHandler.UpdateTargets();
 
 		int currentPeriod = backgroundOperation ? backgroundPeriod : period;
 
@@ -62,7 +59,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 		}
 
 		if (updateTargets.anyUpdateRequested()) {
-			dataRetriever.updateData(updateTargets);
+			dataHandler.updateData(updateTargets);
 		}
 
 		if (!backgroundOperation && listener != null) {

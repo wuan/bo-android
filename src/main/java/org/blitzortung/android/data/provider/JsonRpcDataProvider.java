@@ -5,11 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.Raster;
-import org.blitzortung.android.data.beans.RasterElement;
-import org.blitzortung.android.data.beans.Participant;
-import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.beans.*;
+import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.jsonrpc.JsonRpcClient;
 import org.blitzortung.android.util.TimeFormat;
 import org.json.JSONArray;
@@ -34,11 +31,11 @@ public class JsonRpcDataProvider extends DataProvider {
 
     private int[] histogram;
 
-    Raster raster = null;
+    RasterParameters rasterParameters = null;
 
     public List<AbstractStroke> getStrokes(int timeInterval, int region) {
         List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
-        raster = null;
+        rasterParameters = null;
 
         try {
             JSONObject response = client.call("get_strokes", timeInterval, nextId);
@@ -73,8 +70,8 @@ public class JsonRpcDataProvider extends DataProvider {
         return histogram;
     }
 
-    public Raster getRaster() {
-        return raster;
+    public RasterParameters getRasterParameters() {
+        return rasterParameters;
     }
 
     @Override
@@ -131,11 +128,11 @@ public class JsonRpcDataProvider extends DataProvider {
     }
 
     private void readRasterData(JSONObject response, List<AbstractStroke> strokes) throws JSONException {
-        raster = new Raster(response);
+        rasterParameters = new RasterParameters(response);
         long referenceTimestamp = getReferenceTimestamp(response);
         JSONArray strokes_array = (JSONArray) response.get("r");
         for (int i = 0; i < strokes_array.length(); i++) {
-            strokes.add(new RasterElement(raster, referenceTimestamp, strokes_array.getJSONArray(i)));
+            strokes.add(new RasterElement(rasterParameters, referenceTimestamp, strokes_array.getJSONArray(i)));
         }
     }
 

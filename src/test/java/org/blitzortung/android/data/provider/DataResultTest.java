@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Participant;
-import org.blitzortung.android.data.beans.Raster;
+import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.beans.Stroke;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +17,6 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.isNotNull;
 import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricTestRunner.class)
@@ -82,13 +81,13 @@ public class DataResultTest {
 
     @Test
     public void testSetGetHasRaster() {
-        assertFalse(dataResult.hasRaster());
-        assertThat(dataResult.getRaster(), is(nullValue()));
+        assertFalse(dataResult.hasRasterParameters());
+        assertThat(dataResult.getRasterParameters(), is(nullValue()));
 
-        Raster raster = mock(Raster.class);
-        dataResult.setRaster(raster);
+        RasterParameters rasterParameters = mock(RasterParameters.class);
+        dataResult.setRasterParameters(rasterParameters);
 
-        assertTrue(dataResult.hasRaster());
-        assertThat(dataResult.getRaster(), is(raster));
+        assertTrue(dataResult.hasRasterParameters());
+        assertThat(dataResult.getRasterParameters(), is(rasterParameters));
     }
 }

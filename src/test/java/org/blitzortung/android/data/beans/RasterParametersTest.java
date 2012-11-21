@@ -2,7 +2,6 @@ package org.blitzortung.android.data.beans;
 
 import android.graphics.Point;
 import android.graphics.RectF;
-import com.google.android.maps.GeoPoint;
 import com.google.android.maps.Projection;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.data.Coordsys;
@@ -19,9 +18,9 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
-public class RasterTest {
+public class RasterParametersTest {
 
-    private Raster raster;
+    private RasterParameters rasterParameters;
 
     @Mock
     private JSONObject jsonObject;
@@ -44,35 +43,35 @@ public class RasterTest {
         when(jsonObject.getInt("xc")).thenReturn(lon_count);
         when(jsonObject.getInt("yc")).thenReturn(lat_count);
 
-        raster = new Raster(jsonObject);
+        rasterParameters = new RasterParameters(jsonObject);
     }
 
     @Test
     public void testGetCenterLongitude()
     {
-        assertThat(raster.getCenterLongitude(0), is(lon_start + 0.5f * lon_delta));
+        assertThat(rasterParameters.getCenterLongitude(0), is(lon_start + 0.5f * lon_delta));
 
-        assertThat(raster.getCenterLongitude(lon_count - 1), is(lon_start + (0.5f + lon_count - 1) * lon_delta));
+        assertThat(rasterParameters.getCenterLongitude(lon_count - 1), is(lon_start + (0.5f + lon_count - 1) * lon_delta));
     }
 
     @Test
     public void testGetCenterLatitude()
     {
-        assertThat(raster.getCenterLatitude(0), is(lat_start - 0.5f * lat_delta));
+        assertThat(rasterParameters.getCenterLatitude(0), is(lat_start - 0.5f * lat_delta));
 
-        assertThat(raster.getCenterLatitude(lat_count - 1), is(lat_start - (0.5f + lat_count - 1) * lat_delta));
+        assertThat(rasterParameters.getCenterLatitude(lat_count - 1), is(lat_start - (0.5f + lat_count - 1) * lat_delta));
     }
 
     @Test
     public void testGetLongitudeDelta()
     {
-        assertThat(raster.getLongitudeDelta(), is(lon_delta));
+        assertThat(rasterParameters.getLongitudeDelta(), is(lon_delta));
     }
 
     @Test
     public void testGetLatitudeDelta()
     {
-        assertThat(raster.getLatitudeDelta(), is(lat_delta));
+        assertThat(rasterParameters.getLatitudeDelta(), is(lat_delta));
     }
 
     @Test
@@ -83,7 +82,7 @@ public class RasterTest {
         when(projection.toPixels(eq(Coordsys.toMapCoords(lon_start, lat_start)), any(Point.class))).thenReturn(new Point(-5, 5));
         when(projection.toPixels(eq(Coordsys.toMapCoords(lon_start + lon_count * lon_delta, lat_start - lat_count * lat_delta)), any(Point.class))).thenReturn(new Point(5, -5));
 
-        RectF rect = raster.getRect(projection);
+        RectF rect = rasterParameters.getRect(projection);
 
         verify(projection, times(1)).toPixels(eq(Coordsys.toMapCoords(lon_start, lat_start)), any(Point.class));
         verify(projection, times(1)).toPixels(eq(Coordsys.toMapCoords(lon_start + lon_count * lon_delta, lat_start - lat_count * lat_delta)), any(Point.class));
@@ -96,20 +95,20 @@ public class RasterTest {
     @Test
     public void testToString()
     {
-        assertThat(raster.toString(), is("Raster(-10.0000, 1.0000; 60.0000, 1.5000)"));
+        assertThat(rasterParameters.toString(), is("RasterParameters(-10.0000, 1.0000; 60.0000, 1.5000)"));
     }
 
     @Test
     public void testGetLongitudeIndex()
     {
-        assertThat(raster.getLongitudeIndex(lon_start), is(0));
-        assertThat(raster.getLongitudeIndex(lon_start + lon_delta * lon_count), is(lon_count));
+        assertThat(rasterParameters.getLongitudeIndex(lon_start), is(0));
+        assertThat(rasterParameters.getLongitudeIndex(lon_start + lon_delta * lon_count), is(lon_count));
     }
 
     @Test
     public void testGetLatitudeIndex()
     {
-        assertThat(raster.getLatitudeIndex(lat_start), is(0));
-        assertThat(raster.getLatitudeIndex(lat_start - lat_delta * lat_count), is(lat_count));
+        assertThat(rasterParameters.getLatitudeIndex(lat_start), is(0));
+        assertThat(rasterParameters.getLatitudeIndex(lat_start - lat_delta * lat_count), is(lat_count));
     }
 }

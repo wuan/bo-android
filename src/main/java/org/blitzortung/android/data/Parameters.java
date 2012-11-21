@@ -1,6 +1,10 @@
-package org.blitzortung.android.time;
+package org.blitzortung.android.data;
 
-public class RangeHandler {
+public class Parameters {
+
+    private int region;
+
+    private int rasterBaselength;
 
     private int intervalDuration;
 
@@ -10,11 +14,8 @@ public class RangeHandler {
 
     private final int maxRange;
 
-    public RangeHandler() {
+    public Parameters() {
         maxRange = 24 * 60;
-        intervalDuration = 60;
-        intervalOffset = 0;
-        offsetIncrement = 15;
     }
 
     public int getIntervalDuration() {
@@ -29,6 +30,10 @@ public class RangeHandler {
 
     public void setOffsetIncrement(int offsetIncrement) {
         this.offsetIncrement = offsetIncrement;
+    }
+
+    public void setIntervalOffset(int intervalOffset) {
+        this.intervalOffset = intervalOffset;
     }
 
     public int getIntervalOffset() {
@@ -77,4 +82,34 @@ public class RangeHandler {
     private void alignIntervalOffsetWithIncrement() {
         intervalOffset = (intervalOffset / offsetIncrement ) * offsetIncrement;
     }
+
+    public int getRegion() {
+        return region;
+    }
+
+    public void setRegion(int region) {
+        this.region = region;
+    }
+
+    public int getRasterBaselength() {
+        return rasterBaselength;
+    }
+
+    public void setRasterBaselength(int rasterBaselength) {
+        this.rasterBaselength = rasterBaselength;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other != null && other instanceof Parameters) {
+            Parameters otherParameters = (Parameters) other;
+
+            return intervalDuration == otherParameters.intervalDuration &&
+                    intervalOffset == otherParameters.intervalOffset &&
+                    region == otherParameters.region &&
+                    rasterBaselength == otherParameters.rasterBaselength;
+        }
+        return false;
+    }
+
 }

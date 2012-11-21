@@ -26,7 +26,7 @@ public class RasterElementTest {
     private JSONArray inputArray;
 
     @Mock
-    private Raster raster;
+    private RasterParameters rasterParameters;
 
     long referenceTimestamp;
 
@@ -34,8 +34,8 @@ public class RasterElementTest {
     public void setUp() throws JSONException {
         MockitoAnnotations.initMocks(this);
 
-        when(raster.getCenterLongitude(11000)).thenReturn(11.000f);
-        when(raster.getCenterLatitude(49000)).thenReturn(49.000f);
+        when(rasterParameters.getCenterLongitude(11000)).thenReturn(11.000f);
+        when(rasterParameters.getCenterLatitude(49000)).thenReturn(49.000f);
 
         when(inputArray.getInt(0)).thenReturn(11000);
         when(inputArray.getInt(1)).thenReturn(49000);
@@ -44,7 +44,7 @@ public class RasterElementTest {
 
         referenceTimestamp = System.currentTimeMillis();
 
-        rasterElement = new RasterElement(raster, referenceTimestamp, inputArray);
+        rasterElement = new RasterElement(rasterParameters, referenceTimestamp, inputArray);
     }
 
     @Test
@@ -63,6 +63,6 @@ public class RasterElementTest {
         when(inputArray.getInt(0)).thenThrow(mock(JSONException.class));
 
         expectedException.expect(RuntimeException.class);
-        rasterElement = new RasterElement(raster, referenceTimestamp, inputArray);
+        rasterElement = new RasterElement(rasterParameters, referenceTimestamp, inputArray);
     }
 }

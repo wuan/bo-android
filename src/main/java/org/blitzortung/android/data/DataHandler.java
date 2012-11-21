@@ -13,13 +13,12 @@ import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataProviderType;
 import org.blitzortung.android.data.provider.DataResult;
-import org.blitzortung.android.time.RangeHandler;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class DataRetriever implements OnSharedPreferenceChangeListener {
+public class DataHandler implements OnSharedPreferenceChangeListener {
 
 	private final Lock lock = new ReentrantLock();
 
@@ -32,15 +31,9 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 	private ProgressBar progressBar;
 	private ImageView errorIndicator;
 
-    private final RangeHandler rangeHandler;
-
-    private int region = 1;
-
-	private int rasterSize;
+    private final Parameters parameters;
 
 	private DataListener listener;
-
-
 
     public static class UpdateTargets {
 
@@ -74,8 +67,8 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 		}
 	}
 
-	public DataRetriever(SharedPreferences sharedPreferences, PackageInfo pInfo) {
-        rangeHandler = new RangeHandler();
+	public DataHandler(SharedPreferences sharedPreferences, PackageInfo pInfo) {
+        parameters = new Parameters();
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         this.pInfo = pInfo;
@@ -112,7 +105,7 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 		protected DataResult doInBackground(Integer... params) {
             int intervalDuration = params[0];
             int intervalOffset = params[1];
-            int rasterSize = params[2];
+            int rasterBaselength = params[2];
             int region = params[3];
 
             DataResult result = new DataResult();
@@ -123,18 +116,22 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 					dataProvider.setCredentials(username, password);
 					
 					List<AbstractStroke> strokes;
-					if (rasterSize == 0) {
+					if (rasterBaselength == 0) {
 						result.setIncremental();
 						strokes = dataProvider.getStrokes(intervalDuration, intervalOffset);
 					} else {
-						strokes = dataProvider.getStrokesRaster(intervalDuration, rasterSize, intervalOffset, region);
+						strokes = dataProvider.getStrokesRaster(intervalDuration, rasterBaselength, intervalOffset, region);
 					}
+                    Parameters parameters = new Parameters();
+                    parameters.setIntervalDuration(intervalDuration);
+                    parameters.setIntervalOffset(intervalOffset);
+                    parameters.setRegion(region);
+                    parameters.setRasterBaselength(rasterBaselength);
+
+                    result.setParameters(parameters);
                     result.setReferenceTime(System.currentTimeMillis());
-                    result.setIntervalDuration(intervalDuration);
-                    result.setIntervalOffset(intervalOffset);
-                    result.setRegion(region);
-					result.setStrokes(strokes);
-					result.setRaster(dataProvider.getRaster());
+                    result.setStrokes(strokes);
+					result.setRasterParameters(dataProvider.getRasterParameters());
                     result.setHistogram(dataProvider.getHistogram());
 
 					if (params.length > 4) {
@@ -163,12 +160,12 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 		
 		boolean updateParticipants = false;
 		if (updateTargets.updateParticipants()) {
-			if (dataProvider.getType() == DataProviderType.HTTP || rasterSize == 0) {
+			if (dataProvider.getType() == DataProviderType.HTTP || parameters.getRasterBaselength() == 0) {
 				updateParticipants = true;
 			}
 		}
 
-        new FetchDataTask().execute(rangeHandler.getIntervalDuration(), rangeHandler.getIntervalOffset(), dataProvider.getType() == DataProviderType.HTTP ? 0 : rasterSize, region, updateParticipants ? 1 : 0);
+        new FetchDataTask().execute(parameters.getIntervalDuration(), parameters.getIntervalOffset(), dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), updateParticipants ? 1 : 0);
 	}
 
 	@Override
@@ -184,15 +181,15 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 		} else if (key.equals(Preferences.PASSWORD_KEY)) {
 			password = sharedPreferences.getString(Preferences.PASSWORD_KEY, "");
 		} else if (key.equals(Preferences.RASTER_SIZE_KEY)) {
-			rasterSize = Integer.parseInt(sharedPreferences.getString(Preferences.RASTER_SIZE_KEY, "10000"));
+			parameters.setRasterBaselength(Integer.parseInt(sharedPreferences.getString(Preferences.RASTER_SIZE_KEY, "10000")));
 		} else if (key.equals(Preferences.INTERVAL_DURATION_KEY)) {
-            rangeHandler.setIntervalDuration(Integer.parseInt(sharedPreferences.getString(Preferences.INTERVAL_DURATION_KEY, "120")));
+            parameters.setIntervalDuration(Integer.parseInt(sharedPreferences.getString(Preferences.INTERVAL_DURATION_KEY, "120")));
             dataProvider.reset();
             notifyDataReset();
         } else if (key.equals(Preferences.HISTORIC_TIMESTEP_KEY)) {
-            rangeHandler.setOffsetIncrement(Integer.parseInt(sharedPreferences.getString(Preferences.HISTORIC_TIMESTEP_KEY, "30")));
+            parameters.setOffsetIncrement(Integer.parseInt(sharedPreferences.getString(Preferences.HISTORIC_TIMESTEP_KEY, "30")));
         } else if (key.equals(Preferences.REGION_KEY)) {
-			region = Integer.parseInt(sharedPreferences.getString(Preferences.REGION_KEY, "1"));
+			parameters.setRegion(Integer.parseInt(sharedPreferences.getString(Preferences.REGION_KEY, "1")));
 			dataProvider.reset();
             notifyDataReset();
 		}
@@ -208,22 +205,14 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
         }
     }
 
-    public int getRegion() {
-		return region;
-	}
-
-	public boolean isUsingRaster() {
-		return rasterSize != 0;
-	}
-
 	private static int storedRasterSize;
 
 	public void toggleExtendedMode() {
-		if (rasterSize > 0) {
-			storedRasterSize = rasterSize;
-			rasterSize = 0;
+		if (parameters.getRasterBaselength() > 0) {
+			storedRasterSize = parameters.getRasterBaselength();
+			parameters.setRasterBaselength(0);
 		} else {
-			rasterSize = storedRasterSize;
+            parameters.setRasterBaselength(storedRasterSize);
 		}
 	}
 
@@ -240,27 +229,27 @@ public class DataRetriever implements OnSharedPreferenceChangeListener {
 	}
 
     public int getIntervalDuration() {
-        return rangeHandler.getIntervalDuration();
-    }
-
-    public int getIntervalOffset() {
-        return rangeHandler.getIntervalOffset();
+        return parameters.getIntervalDuration();
     }
 
     public boolean ffwdInterval() {
-        return rangeHandler.ffwdInterval();
+        return parameters.ffwdInterval();
     }
 
     public boolean rewInterval() {
-        return rangeHandler.revInterval();
+        return parameters.revInterval();
     }
 
     public boolean goRealtime() {
-        return rangeHandler.goRealtime();
+        return parameters.goRealtime();
     }
 
     public boolean isRealtime() {
-        return rangeHandler.isRealtime();
+        return parameters.isRealtime();
+    }
+
+    public boolean matches(Parameters resultParameters) {
+        return parameters.equals(resultParameters);
     }
 
 }

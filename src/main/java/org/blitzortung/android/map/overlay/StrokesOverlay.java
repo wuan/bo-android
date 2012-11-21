@@ -12,7 +12,7 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.Projection;
 import org.blitzortung.android.data.TimeIntervalWithOffset;
 import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.Raster;
+import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
@@ -31,7 +31,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
 
     private int zoomLevel;
 
-    Raster raster = null;
+    RasterParameters rasterParameters = null;
 
     static private final Drawable DefaultDrawable;
 
@@ -73,18 +73,18 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         if (!shadow) {
             super.draw(canvas, mapView, false);
 
-            if (isRaster()) {
+            if (getRasterParameters()) {
                 Paint paint = new Paint();
                 paint.setColor(colorHandler.getLineColor());
                 paint.setStyle(Style.STROKE);
                 Projection projection = mapView.getProjection();
-                canvas.drawRect(raster.getRect(projection), paint);
+                canvas.drawRect(rasterParameters.getRect(projection), paint);
             }
         }
     }
 
     public void addStrokes(List<AbstractStroke> strokes) {
-        if (isRaster()) {
+        if (getRasterParameters()) {
             items.clear();
         }
 
@@ -92,7 +92,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
             items.add(new StrokeOverlayItem(stroke));
         }
 
-        if (!isRaster()) {
+        if (!getRasterParameters()) {
             long expireTime = System.currentTimeMillis() - intervalDuration * 60 * 1000;
             expireStrokes(expireTime);
         }
@@ -147,7 +147,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         for (StrokeOverlayItem item : items) {
             int section = colorHandler.getColorSection(now, item.getTimestamp(), this);
 
-            if (isRaster() || current_section != section) {
+            if (getRasterParameters() || current_section != section) {
                 drawable = getDrawable(item, section, colorHandler);
             }
 
@@ -164,9 +164,9 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
 
         int color = colorHandler.getColor(section);
 
-        if (isRaster()) {
-            float lon_delta = raster.getLongitudeDelta() / 2.0f * 1e6f;
-            float lat_delta = raster.getLatitudeDelta() / 2.0f * 1e6f;
+        if (getRasterParameters()) {
+            float lon_delta = rasterParameters.getLongitudeDelta() / 2.0f * 1e6f;
+            float lat_delta = rasterParameters.getLatitudeDelta() / 2.0f * 1e6f;
             GeoPoint geoPoint = item.getPoint();
             Point center = projection.toPixels(geoPoint, null);
             Point topLeft = projection.toPixels(new GeoPoint(
@@ -185,12 +185,12 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         return new ShapeDrawable(shape);
     }
 
-    public void setRaster(Raster raster) {
-        this.raster = raster;
+    public void setRasterParameters(RasterParameters rasterParameters) {
+        this.rasterParameters = rasterParameters;
     }
 
-    public boolean isRaster() {
-        return raster != null;
+    public boolean getRasterParameters() {
+        return rasterParameters != null;
     }
 
     public boolean hasRealtimeData() {

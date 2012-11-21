@@ -27,7 +27,8 @@ import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
 import org.blitzortung.android.data.DataListener;
-import org.blitzortung.android.data.DataRetriever;
+import org.blitzortung.android.data.DataHandler;
+import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.dialogs.AlarmDialog;
 import org.blitzortung.android.dialogs.InfoDialog;
@@ -39,7 +40,6 @@ import org.blitzortung.android.map.overlay.FadeOverlay;
 import org.blitzortung.android.map.overlay.OwnLocationOverlay;
 import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
-import org.blitzortung.android.time.RangeHandler;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -52,8 +52,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     protected TextView status;
 
     private TextView warning;
-
-    private RangeHandler rangeHandler;
 
     private ImageButton historyRewind;
 
@@ -73,7 +71,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private NotificationManager notificationManager;
 
-    private DataRetriever provider;
+    private DataHandler dataHandler;
 
     private OwnLocationOverlay ownLocationOverlay;
 
@@ -117,7 +115,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
             rasterToggle.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    provider.toggleExtendedMode();
+                    dataHandler.toggleExtendedMode();
                     onDataReset();
                 }
             });
@@ -126,13 +124,13 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         historyRewind = (ImageButton) findViewById(R.id.historyRew);
         historyRewind.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (provider.rewInterval()) {
+                if (dataHandler.rewInterval()) {
                     onDataReset();
                     historyForward.setVisibility(View.VISIBLE);
                     goRealtime.setVisibility(View.VISIBLE);
-                    DataRetriever.UpdateTargets updateTargets = new DataRetriever.UpdateTargets();
+                    DataHandler.UpdateTargets updateTargets = new DataHandler.UpdateTargets();
                     updateTargets.updateStrokes();
-                    provider.updateData(updateTargets);
+                    dataHandler.updateData(updateTargets);
                 } else {
                     Toast toast = Toast.makeText(getBaseContext(), getResources().getText(R.string.historic_timestep_limit_reached), 1000);
                     toast.show();
@@ -144,15 +142,15 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         historyForward.setVisibility(View.INVISIBLE);
         historyForward.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (provider.ffwdInterval()) {
+                if (dataHandler.ffwdInterval()) {
                     onDataReset();
-                    if (provider.isRealtime()) {
+                    if (dataHandler.isRealtime()) {
                         historyForward.setVisibility(View.INVISIBLE);
                         goRealtime.setVisibility(View.INVISIBLE);
                     }
-                    DataRetriever.UpdateTargets updateTargets = new DataRetriever.UpdateTargets();
+                    DataHandler.UpdateTargets updateTargets = new DataHandler.UpdateTargets();
                     updateTargets.updateStrokes();
-                    provider.updateData(updateTargets);
+                    dataHandler.updateData(updateTargets);
                 }
             }
         });
@@ -161,7 +159,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         goRealtime.setVisibility(View.INVISIBLE);
         goRealtime.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (provider.goRealtime()) {
+                if (dataHandler.goRealtime()) {
                     onDataReset();
                     historyForward.setVisibility(View.INVISIBLE);
                     goRealtime.setVisibility(View.INVISIBLE);
@@ -202,8 +200,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         mapOverlays.add(strokesOverlay);
         mapOverlays.add(participantsOverlay);
 
-        provider = persistedData.getProvider();
-        provider.setDataListener(this);
+        dataHandler = persistedData.getProvider();
+        dataHandler.setDataListener(this);
 
         int historyButtonsVisibility = strokesOverlay.hasRealtimeData() ? View.INVISIBLE : View.VISIBLE;
         historyForward.setVisibility(historyButtonsVisibility);
@@ -211,12 +209,12 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         setHistoricStatusString();
 
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress);
-        provider.setProgressBar(progressBar);
+        dataHandler.setProgressBar(progressBar);
         progressBar.setVisibility(View.INVISIBLE);
 
         ImageView errorIndicator = (ImageView) findViewById(R.id.error_indicator);
         errorIndicator.setVisibility(View.INVISIBLE);
-        provider.setErrorIndicator(errorIndicator);
+        dataHandler.setErrorIndicator(errorIndicator);
 
         timerTask = persistedData.getTimerTask();
         timerTask.setListener(this);
@@ -238,7 +236,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         toggleAnimation.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                provider.toggleAnimation();
+                dataHandler.toggleAnimation();
                 onDataReset();
             }
         });*/
@@ -326,7 +324,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public void onResume() {
         super.onResume();
 
-        timerTask.onResume(provider.isRealtime());
+        timerTask.onResume(dataHandler.isRealtime());
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (preferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false)) {
@@ -353,16 +351,19 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public void onDataUpdate(DataResult result) {
+        Parameters resultParameters = result.getParameters();
+
+        if (dataHandler.matches(resultParameters)) {
         persistedData.setCurrentResult(result);
 
         clearDataIfRequested();
 
         if (result.containsStrokes()) {
-            strokesOverlay.setRaster(result.getRaster());
-            strokesOverlay.setRegion(result.getRegion());
+            strokesOverlay.setRasterParameters(result.getRasterParameters());
+            strokesOverlay.setRegion(resultParameters.getRegion());
             strokesOverlay.setReferenceTime(result.getReferenceTime());
-            strokesOverlay.setIntervalDuration(result.getIntervalDuration());
-            strokesOverlay.setIntervalOffset(result.getIntervalOffset());
+            strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
+            strokesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
             strokesOverlay.addStrokes(result.getStrokes());
 
             if (alarmManager.isAlarmEnabled()) {
@@ -387,6 +388,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             listener.onDataUpdate(result);
         }
         getMapView().invalidate();
+        }
     }
 
     private void clearDataIfRequested() {
@@ -486,7 +488,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         statusString += getResources().getQuantityString(R.plurals.minute, intervalDuration, intervalDuration);
         statusString += " " + runStatus;
 
-        if (strokesOverlay.isRaster()) {
+        if (strokesOverlay.getRasterParameters()) {
             int region = strokesOverlay.getRegion();
             String regions[] = getResources().getStringArray(R.array.regions_values);
             int index = 0;

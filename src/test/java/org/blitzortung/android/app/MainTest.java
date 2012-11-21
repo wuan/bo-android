@@ -65,7 +65,7 @@ public class MainTest {
     @Test
     public void testRunWithRasterAndListenerSet()
     {
-        when(strokesOverlay.isRaster()).thenReturn(true);
+        when(strokesOverlay.getRasterParameters()).thenReturn(true);
         when(strokesOverlay.getRegion()).thenReturn(3);
 
         main.setStatusString("foo");

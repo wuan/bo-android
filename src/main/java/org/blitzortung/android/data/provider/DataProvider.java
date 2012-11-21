@@ -4,7 +4,7 @@ import java.util.List;
 
 import android.content.pm.PackageInfo;
 import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.Raster;
+import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.beans.Participant;
 
 public abstract class DataProvider {
@@ -26,7 +26,7 @@ public abstract class DataProvider {
 	
 	public abstract List<AbstractStroke> getStrokesRaster(int timeInterval, int params, int timeOffet, int region);
 	
-	public abstract Raster getRaster();
+	public abstract RasterParameters getRasterParameters();
 
     public abstract int[] getHistogram();
 	

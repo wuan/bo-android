@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Participant;
-import org.blitzortung.android.data.beans.Raster;
+import org.blitzortung.android.data.beans.RasterParameters;
 
 public class DataResult implements Serializable {
 
@@ -14,7 +15,7 @@ public class DataResult implements Serializable {
 
 	private final List<List<AbstractStroke>> strokes;
 	private List<Participant> participants;
-	private Raster raster = null;
+	private RasterParameters rasterParameters = null;
     private int[] histogram;
 
     private boolean fail;
@@ -23,16 +24,13 @@ public class DataResult implements Serializable {
 	
 	private boolean incremental;
 
-    private int intervalDuration;
-
     private long referenceTime;
 
-    private int intervalOffset;
-
-    private int region;
+    private Parameters parameters;
 
     public DataResult() {
         strokes = new ArrayList<List<AbstractStroke>>();
+
 		fail = true;
 		
 		processWasLocked = false;
@@ -82,16 +80,16 @@ public class DataResult implements Serializable {
 		return processWasLocked;
 	}
 	
-	public boolean hasRaster() {
-		return raster != null;
+	public boolean hasRasterParameters() {
+		return rasterParameters != null;
 	}
 	
-	public Raster getRaster() {
-		return raster;
+	public RasterParameters getRasterParameters() {
+		return rasterParameters;
 	}
 	
-	public void setRaster(Raster raster) {
-		this.raster = raster;
+	public void setRasterParameters(RasterParameters rasterParameters) {
+		this.rasterParameters = rasterParameters;
 	}
 
 	public boolean isIncremental() {
@@ -101,14 +99,6 @@ public class DataResult implements Serializable {
 	public void setIncremental() {
 		incremental = true;
 	}
-
-    public void setIntervalDuration(int intervalDuration) {
-        this.intervalDuration = intervalDuration;
-    }
-
-    public int getIntervalDuration() {
-        return intervalDuration;
-    }
 
     public void setHistogram(int[] histogram) {
         this.histogram = histogram;
@@ -127,22 +117,14 @@ public class DataResult implements Serializable {
     }
 
     public boolean containsRealtimeData() {
-        return intervalOffset == 0;
+        return parameters.getIntervalOffset() == 0;
     }
 
-    public void setIntervalOffset(int intervalOffset) {
-        this.intervalOffset = intervalOffset;
+    public void setParameters(Parameters parameters) {
+        this.parameters = parameters;
     }
 
-    public int getIntervalOffset() {
-        return intervalOffset;
-    }
-
-    public void setRegion(int region) {
-        this.region = region;
-    }
-
-    public int getRegion() {
-        return region;
+    public Parameters getParameters() {
+        return parameters;
     }
 }
