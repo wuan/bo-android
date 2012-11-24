@@ -47,7 +47,7 @@ public class PersistedData {
 		return timerTask;
 	}
 
-	public DataHandler getProvider() {
+	public DataHandler getDataHandler() {
 		return provider;
 	}
 

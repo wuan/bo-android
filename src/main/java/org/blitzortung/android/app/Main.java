@@ -17,7 +17,6 @@ import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.google.android.maps.Overlay;
@@ -195,7 +194,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         mapOverlays.add(strokesOverlay);
         mapOverlays.add(participantsOverlay);
 
-        dataHandler = persistedData.getProvider();
+        dataHandler = persistedData.getDataHandler();
         dataHandler.setDataListener(this);
 
         int historyButtonsVisibility = strokesOverlay.hasRealtimeData() ? View.INVISIBLE : View.VISIBLE;
@@ -224,19 +223,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
 
-        /*ImageButton toggleAnimation = (ImageButton) findViewById(R.id.toggleAnimation);
-        toggleAnimation.setEnabled(true);
-        toggleAnimation.setVisibility(View.VISIBLE);
-        toggleAnimation.getDrawable().setAlpha(200);
-
-        toggleAnimation.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                dataHandler.toggleAnimation();
-                onDataReset();
-            }
-        });*/
-
         LegendView legendView = (LegendView) findViewById(R.id.legend_view);
+        strokesOverlay.setIntervalDuration(dataHandler.getIntervalDuration());
         legendView.setStrokesOverlay(strokesOverlay);
         legendView.setAlpha(150);
 
@@ -352,38 +340,38 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         Parameters resultParameters = result.getParameters();
 
         if (dataHandler.matches(resultParameters)) {
-        persistedData.setCurrentResult(result);
+            persistedData.setCurrentResult(result);
 
-        clearDataIfRequested();
+            clearDataIfRequested();
 
-        if (result.containsStrokes()) {
-            strokesOverlay.setRasterParameters(result.getRasterParameters());
-            strokesOverlay.setRegion(resultParameters.getRegion());
-            strokesOverlay.setReferenceTime(result.getReferenceTime());
-            strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
-            strokesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
-            strokesOverlay.addStrokes(result.getStrokes());
+            if (result.containsStrokes()) {
+                strokesOverlay.setRasterParameters(result.getRasterParameters());
+                strokesOverlay.setRegion(resultParameters.getRegion());
+                strokesOverlay.setReferenceTime(result.getReferenceTime());
+                strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
+                strokesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
+                strokesOverlay.addStrokes(result.getStrokes());
 
-            if (alarmManager.isAlarmEnabled()) {
-                alarmManager.check(result);
+                if (alarmManager.isAlarmEnabled()) {
+                    alarmManager.check(result);
+                }
+                strokesOverlay.refresh();
             }
-            strokesOverlay.refresh();
-        }
 
-        if (!result.containsRealtimeData()) {
-            timerTask.disable();
-            setHistoricStatusString();
-        }
+            if (!result.containsRealtimeData()) {
+                timerTask.disable();
+                setHistoricStatusString();
+            }
 
-        if (participantsOverlay != null && result.containsParticipants()) {
-            participantsOverlay.setParticipants(result.getParticipants());
-            participantsOverlay.refresh();
-        }
+            if (participantsOverlay != null && result.containsParticipants()) {
+                participantsOverlay.setParticipants(result.getParticipants());
+                participantsOverlay.refresh();
+            }
 
-        for (DataListener listener : dataListeners) {
-            listener.onDataUpdate(result);
-        }
-        getMapView().invalidate();
+            for (DataListener listener : dataListeners) {
+                listener.onDataUpdate(result);
+            }
+            getMapView().invalidate();
         }
     }
 
@@ -465,7 +453,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     }
 
     public void onTimerUpdate(String timerStatus) {
-          setStatusString(timerStatus);
+        setStatusString(timerStatus);
     }
 
     protected void setHistoricStatusString() {

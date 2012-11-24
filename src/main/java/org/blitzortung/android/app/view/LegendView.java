@@ -3,6 +3,7 @@ package org.blitzortung.android.app.view;
 import android.content.Context;
 import android.graphics.*;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import org.blitzortung.android.app.R;
@@ -67,6 +68,7 @@ public class LegendView extends View {
         int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
 
         updateTextWidth(strokesOverlay.getIntervalDuration());
+        Log.w("LegendVier", String.format("interval %d", strokesOverlay.getIntervalDuration()));
         width = Math.min(3 * padding + colorFieldSize + textWidth, parentWidth);
 
         if (strokesOverlay != null) {
