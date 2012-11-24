@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.data.DataListener;
@@ -93,17 +94,15 @@ public class HistogramView extends View implements DataListener {
                 }
             }
 
-            if (maximumCount == 0) {
-                return;
-            }
-
             canvas.drawText(String.format("max %.1f/min", (float)maximumCount/ minutesPerBin), width - 2*padding, padding + textSize/1.2f, textPaint);
+
+            int ymax = maximumCount == 0 ? 1 : maximumCount;
 
             float x0 = padding;
             float xd = (width - 2 * padding) / (histogram.length - 1);
 
             float y0 = height - padding;
-            float yd = (height - 2 * padding - textSize) / maximumCount;
+            float yd = (height - 2 * padding - textSize) / ymax;
 
             foregroundPaint.setStrokeWidth(2);
             for (int i = 0; i < histogram.length - 1; i++) {
