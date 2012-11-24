@@ -157,6 +157,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 if (dataHandler.goRealtime()) {
                     historyForward.setVisibility(View.INVISIBLE);
                     goRealtime.setVisibility(View.INVISIBLE);
+                    timerTask.restart();
                     timerTask.enable();
                 }
             }
@@ -293,7 +294,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate menu from XML resource
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
 
@@ -302,7 +302,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle all of the possible menu actions.
         switch (item.getItemId()) {
             case R.id.menu_info:
                 showDialog(R.id.info_dialog);
@@ -323,7 +322,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     @Override
     public void onResume() {
         super.onResume();
-        Log.w("Main", "onResume");
         timerTask.onResume(dataHandler.isRealtime());
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
