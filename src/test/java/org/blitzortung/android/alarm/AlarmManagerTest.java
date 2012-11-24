@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.TimerTask;
+import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.util.MeasurementSystem;
@@ -163,6 +164,10 @@ public class AlarmManagerTest {
         DataResult result = mock(DataResult.class);
         when(result.getStrokes()).thenReturn(Lists.newArrayList(stroke));
         when(result.containsRealtimeData()).thenReturn(true);
+
+        Parameters parameters = mock(Parameters.class);
+        when(parameters.getIntervalDuration()).thenReturn(60);
+        when(result.getParameters()).thenReturn(parameters);
 
         alarmManager.check(result);
 

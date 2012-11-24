@@ -17,7 +17,9 @@ public class ParametersTest {
 
     @Before
     public void setUp() {
-       parameters = new Parameters();
+        parameters = new Parameters();
+        parameters.setOffsetIncrement(15);
+        parameters.setIntervalDuration(60);
     }
 
     @Test
@@ -32,15 +34,13 @@ public class ParametersTest {
 
     @Test
     public void testRewindInterval() {
-        parameters.setOffsetIncrement(15);
-
         assertTrue(parameters.revInterval());
         assertThat(parameters.getIntervalOffset(), is(-15));
 
         assertTrue(parameters.revInterval());
         assertThat(parameters.getIntervalOffset(), is(-30));
 
-        for (int i=0; i < 23 * 4 - 2 - 1; i++) {
+        for (int i = 0; i < 23 * 4 - 2 - 1; i++) {
             assertTrue(parameters.revInterval());
         }
         assertThat(parameters.getIntervalOffset(), is(-23 * 60 + 15));
@@ -62,7 +62,7 @@ public class ParametersTest {
         assertTrue(parameters.revInterval());
         assertThat(parameters.getIntervalOffset(), is(-90));
 
-        for (int i=0; i < 23 / 3 * 4; i++) {
+        for (int i = 0; i < 23 / 3 * 4; i++) {
             assertTrue(parameters.revInterval());
         }
         assertThat(parameters.getIntervalOffset(), is(-23 * 60 + 30));
@@ -85,6 +85,8 @@ public class ParametersTest {
 
     @Test
     public void testGoRealtime() {
+        parameters.setOffsetIncrement(15);
+
         assertFalse(parameters.goRealtime());
 
         parameters.revInterval();
@@ -94,8 +96,7 @@ public class ParametersTest {
     }
 
     @Test
-    public void testGetIntervalDuration()
-    {
+    public void testGetIntervalDuration() {
         assertThat(parameters.getIntervalDuration(), is(60));
 
         assertTrue(parameters.setIntervalDuration(120));
