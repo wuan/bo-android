@@ -53,7 +53,7 @@
                 android:title="@string/region"
                 android:summary="@string/region_summary"/>
         <ListPreference
-                android:defaultValue="60"
+                android:defaultValue="120"
                 android:enabled="true"
                 android:entries="@array/interval_durations"
                 android:entryValues="@array/interval_duration_values"
