@@ -17,6 +17,7 @@ import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.google.android.maps.Overlay;
@@ -125,12 +126,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         historyRewind.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (dataHandler.rewInterval()) {
-                    onDataReset();
                     historyForward.setVisibility(View.VISIBLE);
                     goRealtime.setVisibility(View.VISIBLE);
-                    DataHandler.UpdateTargets updateTargets = new DataHandler.UpdateTargets();
-                    updateTargets.updateStrokes();
-                    dataHandler.updateData(updateTargets);
+                    updateData();
                 } else {
                     Toast toast = Toast.makeText(getBaseContext(), getResources().getText(R.string.historic_timestep_limit_reached), 1000);
                     toast.show();
@@ -143,14 +141,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         historyForward.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (dataHandler.ffwdInterval()) {
-                    onDataReset();
                     if (dataHandler.isRealtime()) {
                         historyForward.setVisibility(View.INVISIBLE);
                         goRealtime.setVisibility(View.INVISIBLE);
                     }
-                    DataHandler.UpdateTargets updateTargets = new DataHandler.UpdateTargets();
-                    updateTargets.updateStrokes();
-                    dataHandler.updateData(updateTargets);
+                    updateData();
                 }
             }
         });
@@ -160,10 +155,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         goRealtime.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (dataHandler.goRealtime()) {
-                    onDataReset();
                     historyForward.setVisibility(View.INVISIBLE);
                     goRealtime.setVisibility(View.INVISIBLE);
-                    onResume();
+                    timerTask.enable();
                 }
             }
         });
@@ -268,6 +262,12 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         getMapView().invalidate();
     }
 
+    private void updateData() {
+        DataHandler.UpdateTargets updateTargets = new DataHandler.UpdateTargets();
+        updateTargets.updateStrokes();
+        dataHandler.updateData(updateTargets);
+    }
+
     private void addDataListener(DataListener listener) {
         dataListeners.add(listener);
     }
@@ -323,7 +323,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     @Override
     public void onResume() {
         super.onResume();
-
+        Log.w("Main", "onResume");
         timerTask.onResume(dataHandler.isRealtime());
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -372,9 +372,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             strokesOverlay.refresh();
         }
 
-        if (result.containsRealtimeData()) {
-            timerTask.enable();
-        } else {
+        if (!result.containsRealtimeData()) {
             timerTask.disable();
             setHistoricStatusString();
         }

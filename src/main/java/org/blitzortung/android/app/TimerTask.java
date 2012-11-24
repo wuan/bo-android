@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
 import android.os.Handler;
+import android.util.Log;
 import org.blitzortung.android.data.DataHandler;
 
 public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
@@ -52,7 +53,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 			updateTargets.addStrokes();
 			lastUpdate = actualSecond;
 		}
-		
+
 		if (actualSecond >= lastParticipantsUpdate + currentPeriod * 10 && !backgroundOperation) {
 			updateTargets.addParticipants();
 			lastParticipantsUpdate = actualSecond;
@@ -78,8 +79,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 	public void onResume(boolean isRealtime) {
 		backgroundOperation = false;
         if (isRealtime) {
-		    handler.removeCallbacks(this);
-		    handler.post(this);
+            enable();
         }
 	}
 
@@ -107,6 +107,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 	}
 
     protected void enable() {
+        handler.removeCallbacks(this);
         handler.post(this);
     }
 
