@@ -26,12 +26,12 @@ public class DataProviderTest {
         }
 
         @Override
-        public List<AbstractStroke> getStrokes(int timeInterval, int region) {
+        public List<AbstractStroke> getStrokes(int intervalDuration, int intervalOffset, int region) {
             return null;
         }
 
         @Override
-        public List<AbstractStroke> getStrokesRaster(int timeInterval, int params, int timeOffet, int region) {
+        public List<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int params, int region) {
             return null;
         }
 
@@ -57,6 +57,11 @@ public class DataProviderTest {
 
         @Override
         public void reset() {
+        }
+
+        @Override
+        public boolean isCapableOfHistoricalData() {
+            return false;
         }
     }
 

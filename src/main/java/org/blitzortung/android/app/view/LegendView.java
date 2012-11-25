@@ -68,7 +68,6 @@ public class LegendView extends View {
         int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
 
         updateTextWidth(strokesOverlay.getIntervalDuration());
-        Log.w("LegendVier", String.format("interval %d", strokesOverlay.getIntervalDuration()));
         width = Math.min(3 * padding + colorFieldSize + textWidth, parentWidth);
 
         if (strokesOverlay != null) {

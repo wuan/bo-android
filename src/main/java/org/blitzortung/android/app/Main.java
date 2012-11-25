@@ -337,6 +337,15 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public void onDataUpdate(DataResult result) {
+
+        if (dataHandler.isCapableOfHistoricalData()) {
+            historyRewind.setVisibility(View.VISIBLE);
+        } else {
+            historyRewind.setVisibility(View.INVISIBLE);
+            historyForward.setVisibility(View.INVISIBLE);
+            goRealtime.setVisibility(View.INVISIBLE);
+        }
+
         Parameters resultParameters = result.getParameters();
 
         if (dataHandler.matches(resultParameters)) {

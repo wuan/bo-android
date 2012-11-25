@@ -22,9 +22,9 @@ public abstract class DataProvider {
 	
 	public abstract void shutDown();
 	
-	public abstract List<AbstractStroke> getStrokes(int timeInterval, int region);
+	public abstract List<AbstractStroke> getStrokes(int intervalDuration, int intervalOffset, int region);
 	
-	public abstract List<AbstractStroke> getStrokesRaster(int timeInterval, int params, int timeOffet, int region);
+	public abstract List<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int params, int region);
 	
 	public abstract RasterParameters getRasterParameters();
 
@@ -44,4 +44,6 @@ public abstract class DataProvider {
     public void setPackageInfo(PackageInfo pInfo) {
         this.pInfo = pInfo;
     }
+
+    public abstract boolean isCapableOfHistoricalData();
 }

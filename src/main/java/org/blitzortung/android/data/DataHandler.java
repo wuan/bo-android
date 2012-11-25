@@ -35,6 +35,8 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
 	private DataListener listener;
 
+    private int preferencesRasterBaselength;
+
     public static class UpdateTargets {
 
 		boolean updateStrokes;
@@ -80,6 +82,8 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 		onSharedPreferenceChanged(sharedPreferences, Preferences.REGION_KEY);
         onSharedPreferenceChanged(sharedPreferences, Preferences.INTERVAL_DURATION_KEY);
         onSharedPreferenceChanged(sharedPreferences, Preferences.HISTORIC_TIMESTEP_KEY);
+
+        updateProviderSpecifics();
 	}
 
 	private class FetchDataTask extends AsyncTask<Integer, Integer, DataResult> {
@@ -118,9 +122,9 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 					List<AbstractStroke> strokes;
 					if (rasterBaselength == 0) {
 						result.setIncremental();
-						strokes = dataProvider.getStrokes(intervalDuration, intervalOffset);
+						strokes = dataProvider.getStrokes(intervalDuration, intervalOffset, region);
 					} else {
-						strokes = dataProvider.getStrokesRaster(intervalDuration, rasterBaselength, intervalOffset, region);
+						strokes = dataProvider.getStrokesRaster(intervalDuration, intervalOffset, rasterBaselength, region);
 					}
                     Parameters parameters = new Parameters();
                     parameters.setIntervalDuration(intervalDuration);
@@ -175,13 +179,17 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 			DataProviderType providerType = DataProviderType.valueOf(providerTypeString.toUpperCase());
 			dataProvider = providerType.getProvider();
             dataProvider.setPackageInfo(pInfo);
+
+            updateProviderSpecifics();
+
             notifyDataReset();
         } else if (key.equals(Preferences.USERNAME_KEY)) {
 			username = sharedPreferences.getString(Preferences.USERNAME_KEY, "");
 		} else if (key.equals(Preferences.PASSWORD_KEY)) {
 			password = sharedPreferences.getString(Preferences.PASSWORD_KEY, "");
 		} else if (key.equals(Preferences.RASTER_SIZE_KEY)) {
-			parameters.setRasterBaselength(Integer.parseInt(sharedPreferences.getString(Preferences.RASTER_SIZE_KEY, "10000")));
+            preferencesRasterBaselength = Integer.parseInt(sharedPreferences.getString(Preferences.RASTER_SIZE_KEY, "10000"));
+			parameters.setRasterBaselength(preferencesRasterBaselength);
 		} else if (key.equals(Preferences.INTERVAL_DURATION_KEY)) {
             parameters.setIntervalDuration(Integer.parseInt(sharedPreferences.getString(Preferences.INTERVAL_DURATION_KEY, "120")));
             dataProvider.reset();
@@ -199,22 +207,42 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 		}
 	}
 
+    private void updateProviderSpecifics() {
+
+        DataProviderType providerType = dataProvider.getType();
+
+        switch (providerType) {
+            case RPC:
+                enableRasterMode();
+                break;
+
+            case HTTP:
+                disableRasterMode();
+                break;
+        }
+    }
+
     private void notifyDataReset() {
         if (listener != null) {
             listener.onDataReset();
         }
     }
 
-	private static int storedRasterSize;
-
 	public void toggleExtendedMode() {
 		if (parameters.getRasterBaselength() > 0) {
-			storedRasterSize = parameters.getRasterBaselength();
-			parameters.setRasterBaselength(0);
+			disableRasterMode();
 		} else {
-            parameters.setRasterBaselength(storedRasterSize);
+            enableRasterMode();
 		}
 	}
+
+    public void disableRasterMode() {
+        parameters.setRasterBaselength(0);
+    }
+
+    public void enableRasterMode() {
+        parameters.setRasterBaselength(preferencesRasterBaselength);
+    }
 
 	public void setProgressBar(ProgressBar progressBar) {
 		this.progressBar = progressBar;
@@ -250,6 +278,10 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     public boolean matches(Parameters resultParameters) {
         return parameters.equals(resultParameters);
+    }
+
+    public boolean isCapableOfHistoricalData() {
+        return dataProvider.isCapableOfHistoricalData();
     }
 
 }

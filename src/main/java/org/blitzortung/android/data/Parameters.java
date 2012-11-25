@@ -1,5 +1,7 @@
 package org.blitzortung.android.data;
 
+import android.util.Log;
+
 public class Parameters {
 
     private int region;

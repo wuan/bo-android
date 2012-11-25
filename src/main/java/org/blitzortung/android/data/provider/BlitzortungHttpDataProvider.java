@@ -32,7 +32,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 	private long latestTime;
 
 	@Override
-	public List<AbstractStroke> getStrokes(int timeInterval, int region) {
+	public List<AbstractStroke> getStrokes(int timeInterval, int intervalOffset, int region) {
 
 		List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
 
@@ -149,7 +149,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 	}
 
 	@Override
-	public List<AbstractStroke> getStrokesRaster(int timeInterval, int rasterSize, int timeOffset, int region) {
+	public List<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int rasterSize, int region) {
 		return null;
 	}
 
@@ -157,5 +157,10 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 	public void reset() {
 		latestTime = 0;
 	}
+
+    @Override
+    public boolean isCapableOfHistoricalData() {
+        return false;
+    }
 
 }

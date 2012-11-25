@@ -33,7 +33,7 @@ public class JsonRpcDataProvider extends DataProvider {
 
     RasterParameters rasterParameters = null;
 
-    public List<AbstractStroke> getStrokes(int timeInterval, int region) {
+    public List<AbstractStroke> getStrokes(int timeInterval, int intervalOffset, int region) {
         List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
         rasterParameters = null;
 
@@ -48,13 +48,13 @@ public class JsonRpcDataProvider extends DataProvider {
         return strokes;
     }
 
-    public List<AbstractStroke> getStrokesRaster(int timeInterval, int rasterSize, int timeOffset, int region) {
+    public List<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int rasterSize, int region) {
         List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
 
         nextId = null;
 
         try {
-            JSONObject response = client.call("get_strokes_raster", timeInterval, rasterSize, timeOffset, region);
+            JSONObject response = client.call("get_strokes_raster", intervalDuration, rasterSize, intervalOffset, region);
 
             readRasterData(response, strokes);
             readHistogramData(response);
@@ -114,6 +114,11 @@ public class JsonRpcDataProvider extends DataProvider {
     @Override
     public void reset() {
         nextId = null;
+    }
+
+    @Override
+    public boolean isCapableOfHistoricalData() {
+        return true;
     }
 
     private void readStrokes(JSONObject response, List<AbstractStroke> strokes) throws JSONException {
