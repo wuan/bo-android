@@ -36,6 +36,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 	private DataListener listener;
 
     private int preferencesRasterBaselength;
+    private int preferencesRegion;
 
     public static class UpdateTargets {
 
@@ -197,7 +198,8 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         } else if (key.equals(Preferences.HISTORIC_TIMESTEP_KEY)) {
             parameters.setOffsetIncrement(Integer.parseInt(sharedPreferences.getString(Preferences.HISTORIC_TIMESTEP_KEY, "30")));
         } else if (key.equals(Preferences.REGION_KEY)) {
-			parameters.setRegion(Integer.parseInt(sharedPreferences.getString(Preferences.REGION_KEY, "1")));
+            preferencesRegion = Integer.parseInt(sharedPreferences.getString(Preferences.REGION_KEY, "1"));
+			parameters.setRegion(preferencesRegion);
 			dataProvider.reset();
             notifyDataReset();
 		}
@@ -231,8 +233,10 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 	public void toggleExtendedMode() {
 		if (parameters.getRasterBaselength() > 0) {
 			disableRasterMode();
+            parameters.setRegion(0);
 		} else {
             enableRasterMode();
+            parameters.setRegion(preferencesRegion);
 		}
 	}
 

@@ -481,8 +481,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         statusString += getResources().getQuantityString(R.plurals.minute, intervalDuration, intervalDuration);
         statusString += " " + runStatus;
 
-        if (strokesOverlay.getRasterParameters()) {
-            int region = strokesOverlay.getRegion();
+        int region = strokesOverlay.getRegion();
+        if (region != 0) {
             String regions[] = getResources().getStringArray(R.array.regions_values);
             int index = 0;
             for (String region_number : regions) {
