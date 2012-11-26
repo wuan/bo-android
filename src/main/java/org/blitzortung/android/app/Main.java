@@ -40,10 +40,7 @@ import org.blitzortung.android.map.overlay.OwnLocationOverlay;
 import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, TimerTask.TimerUpdateListener,
         AlarmManager.AlarmListener {
@@ -88,6 +85,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private PackageInfo pInfo;
 
+    private final List<ImageButton> buttonColumn = new ArrayList<ImageButton>();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +103,56 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         getMapView().setBuiltInZoomControls(true);
 
+        historyRewind = (ImageButton) findViewById(R.id.historyRew);
+        historyRewind.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (dataHandler.rewInterval()) {
+                    disableButtonColumn();
+                    historyForward.setVisibility(View.VISIBLE);
+                    goRealtime.setVisibility(View.VISIBLE);
+                    updateButtonColumn();
+                    updateData();
+                } else {
+                    Toast toast = Toast.makeText(getBaseContext(), getResources().getText(R.string.historic_timestep_limit_reached), 1000);
+                    toast.show();
+                }
+            }
+        });
+        buttonColumn.add(historyRewind);
+
+        historyForward = (ImageButton) findViewById(R.id.historyFfwd);
+        historyForward.setVisibility(View.INVISIBLE);
+        historyForward.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (dataHandler.ffwdInterval()) {
+                    if (dataHandler.isRealtime()) {
+                        disableButtonColumn();
+                        historyForward.setVisibility(View.INVISIBLE);
+                        goRealtime.setVisibility(View.INVISIBLE);
+                        updateButtonColumn();
+                    }
+                    updateData();
+                }
+            }
+        });
+        buttonColumn.add(historyForward);
+
+        goRealtime = (ImageButton) findViewById(R.id.goRealtime);
+        goRealtime.setVisibility(View.INVISIBLE);
+        goRealtime.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (dataHandler.goRealtime()) {
+                    disableButtonColumn();
+                    historyForward.setVisibility(View.INVISIBLE);
+                    goRealtime.setVisibility(View.INVISIBLE);
+                    updateButtonColumn();
+                    timerTask.restart();
+                    timerTask.enable();
+                }
+            }
+        });
+        buttonColumn.add(goRealtime);
+
         final String androidId = Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         if (isDebugBuild() || (androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
             ImageButton rasterToggle = (ImageButton) findViewById(R.id.toggleExtendedMode);
@@ -114,52 +163,15 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
             rasterToggle.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
+                    disableButtonColumn();
                     dataHandler.toggleExtendedMode();
                     onDataReset();
                 }
             });
+            buttonColumn.add(rasterToggle);
         }
 
-        historyRewind = (ImageButton) findViewById(R.id.historyRew);
-        historyRewind.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (dataHandler.rewInterval()) {
-                    historyForward.setVisibility(View.VISIBLE);
-                    goRealtime.setVisibility(View.VISIBLE);
-                    updateData();
-                } else {
-                    Toast toast = Toast.makeText(getBaseContext(), getResources().getText(R.string.historic_timestep_limit_reached), 1000);
-                    toast.show();
-                }
-            }
-        });
-
-        historyForward = (ImageButton) findViewById(R.id.historyFfwd);
-        historyForward.setVisibility(View.INVISIBLE);
-        historyForward.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (dataHandler.ffwdInterval()) {
-                    if (dataHandler.isRealtime()) {
-                        historyForward.setVisibility(View.INVISIBLE);
-                        goRealtime.setVisibility(View.INVISIBLE);
-                    }
-                    updateData();
-                }
-            }
-        });
-
-        goRealtime = (ImageButton) findViewById(R.id.goRealtime);
-        goRealtime.setVisibility(View.INVISIBLE);
-        goRealtime.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (dataHandler.goRealtime()) {
-                    historyForward.setVisibility(View.INVISIBLE);
-                    goRealtime.setVisibility(View.INVISIBLE);
-                    timerTask.restart();
-                    timerTask.enable();
-                }
-            }
-        });
+        updateButtonColumn();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
@@ -379,6 +391,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             for (DataListener listener : dataListeners) {
                 listener.onDataUpdate(result);
             }
+
+            enableButtonColumn();
             getMapView().invalidate();
         }
     }
@@ -544,6 +558,41 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
             throw new IllegalStateException(e);
+        }
+    }
+
+    private void updateButtonColumn() {
+        RelativeLayout parent = (RelativeLayout)findViewById(R.layout.map_overlay);
+        int previousIndex = -1;
+        for (int currentIndex=0; currentIndex<buttonColumn.size(); currentIndex++) {
+            ImageButton button = buttonColumn.get(currentIndex);
+            if (button.getVisibility() == View.VISIBLE) {
+                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) button.getLayoutParams();
+                        //RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
+                        //RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.FILL_PARENT);
+                if (previousIndex < 0) {
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 1);
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 1);
+                } else {
+                    lp.addRule(RelativeLayout.BELOW, buttonColumn.get(previousIndex).getId());
+                }
+                button.setLayoutParams(lp);
+                previousIndex = currentIndex;
+            }
+        }
+    }
+
+    private void disableButtonColumn() {
+       setEnableForButtonColumn(false);
+    }
+
+    private void enableButtonColumn() {
+        setEnableForButtonColumn(true);
+    }
+
+    private void setEnableForButtonColumn(boolean enabled) {
+        for (ImageButton button : buttonColumn) {
+            button.setEnabled(enabled);
         }
     }
 }
