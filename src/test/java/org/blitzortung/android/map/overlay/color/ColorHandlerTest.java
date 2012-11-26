@@ -80,25 +80,27 @@ public class ColorHandlerTest {
         when(colorHandler.getColors()).thenReturn(new int[]{1, 2, 3, 4, 5});
 
         long now = System.currentTimeMillis();
-        int minutesPerColor = 10;
+        int intervalDuration = 60;
+        int minutesPerColor = intervalDuration / colorHandler.getColors().length;
+
         long timePerColor = minutesPerColor * 60 * 1000;
 
-        assertThat(colorHandler.getColor(now, now, minutesPerColor), is(1));
-        assertThat(colorHandler.getColor(now, now - timePerColor + 1, minutesPerColor), is(1));
+        assertThat(colorHandler.getColor(now, now, intervalDuration), is(1));
+        assertThat(colorHandler.getColor(now, now - timePerColor + 1, intervalDuration), is(1));
 
-        assertThat(colorHandler.getColor(now, now - timePerColor, minutesPerColor), is(2));
-        assertThat(colorHandler.getColor(now, now - 2 * timePerColor + 1, minutesPerColor), is(2));
+        assertThat(colorHandler.getColor(now, now - timePerColor, intervalDuration), is(2));
+        assertThat(colorHandler.getColor(now, now - 2 * timePerColor + 1, intervalDuration), is(2));
 
-        assertThat(colorHandler.getColor(now, now - 2 * timePerColor, minutesPerColor), is(3));
-        assertThat(colorHandler.getColor(now, now - 3 * timePerColor + 1, minutesPerColor), is(3));
+        assertThat(colorHandler.getColor(now, now - 2 * timePerColor, intervalDuration), is(3));
+        assertThat(colorHandler.getColor(now, now - 3 * timePerColor + 1, intervalDuration), is(3));
 
-        assertThat(colorHandler.getColor(now, now - 3 * timePerColor, minutesPerColor), is(4));
-        assertThat(colorHandler.getColor(now, now - 4 * timePerColor + 1, minutesPerColor), is(4));
+        assertThat(colorHandler.getColor(now, now - 3 * timePerColor, intervalDuration), is(4));
+        assertThat(colorHandler.getColor(now, now - 4 * timePerColor + 1, intervalDuration), is(4));
 
-        assertThat(colorHandler.getColor(now, now - 4 * timePerColor, minutesPerColor), is(5));
-        assertThat(colorHandler.getColor(now, now - 5 * timePerColor + 1, minutesPerColor), is(5));
+        assertThat(colorHandler.getColor(now, now - 4 * timePerColor, intervalDuration), is(5));
+        assertThat(colorHandler.getColor(now, now - 5 * timePerColor + 1, intervalDuration), is(5));
 
-        assertThat(colorHandler.getColor(now, now - 5 * timePerColor, minutesPerColor), is(5));
+        assertThat(colorHandler.getColor(now, now - 5 * timePerColor, intervalDuration), is(5));
     }
 
     @Test

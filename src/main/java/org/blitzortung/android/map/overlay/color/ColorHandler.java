@@ -2,6 +2,7 @@ package org.blitzortung.android.map.overlay.color;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.util.Log;
 import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.data.TimeIntervalWithOffset;
 
@@ -36,7 +37,6 @@ public abstract class ColorHandler {
     private int getColorSection(long now, long eventTime, int intervalDuration, int intervalOffset) {
         int minutesPerColor = intervalDuration / getColors().length;
 		int section = (int) (now + intervalOffset * 60 * 1000 - eventTime) / 1000 / 60 / minutesPerColor;
-
 		section = Math.min(section, getColors().length - 1);
 		section = Math.max(section, 0);
 
@@ -48,8 +48,7 @@ public abstract class ColorHandler {
         return colorScheme;
     }
 
-	public int getColor(long now, long eventTime, int minutesPerColor) {
-        int intervalDuration = minutesPerColor * getColors().length;
+	public int getColor(long now, long eventTime, int intervalDuration) {
 		return getColor(getColorSection(now, eventTime, intervalDuration, 0));
 	}
 
