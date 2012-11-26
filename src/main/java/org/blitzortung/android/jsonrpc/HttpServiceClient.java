@@ -1,8 +1,6 @@
 package org.blitzortung.android.jsonrpc;
 
-import java.io.IOException;
-
-import android.content.pm.PackageInfo;
+import android.util.Log;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.ClientProtocolException;
@@ -13,7 +11,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.*;
 import org.apache.http.util.EntityUtils;
 
-import android.util.Log;
+import java.io.IOException;
 
 public class HttpServiceClient {
 

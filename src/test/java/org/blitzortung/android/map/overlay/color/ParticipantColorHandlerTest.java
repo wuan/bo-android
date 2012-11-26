@@ -9,9 +9,6 @@ import org.mockito.MockitoAnnotations;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.hasItems;
-import static org.mockito.Matchers.intThat;
-import static org.mockito.Matchers.isNotNull;
 import static org.mockito.Mockito.when;
 
 public class ParticipantColorHandlerTest {

@@ -1,21 +1,20 @@
 package org.blitzortung.android.data.provider;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
-
 import org.blitzortung.android.data.beans.*;
-import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.jsonrpc.JsonRpcClient;
 import org.blitzortung.android.util.TimeFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TimeZone;
+
 public class JsonRpcDataProvider extends DataProvider {
 
-    public static final SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
+    private static final SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
 
     static {
         TimeZone tz = TimeZone.getTimeZone("UTC");
@@ -31,7 +30,7 @@ public class JsonRpcDataProvider extends DataProvider {
 
     private int[] histogram;
 
-    RasterParameters rasterParameters = null;
+    private RasterParameters rasterParameters = null;
 
     public List<AbstractStroke> getStrokes(int timeInterval, int intervalOffset, int region) {
         List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();

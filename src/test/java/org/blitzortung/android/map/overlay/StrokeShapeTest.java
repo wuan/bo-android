@@ -9,7 +9,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.anyFloat;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -24,9 +25,9 @@ public class StrokeShapeTest {
 
     private StrokeShape strokeShape;
 
-    private int color = 0x102030;
+    private final int color = 0x102030;
 
-    private int width = 12;
+    private final int width = 12;
 
     @Before
     public void setUp() {

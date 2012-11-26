@@ -1,6 +1,5 @@
 package org.blitzortung.android.map.overlay;
 
-import android.location.Location;
 import com.google.android.maps.GeoPoint;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.data.beans.AbstractStroke;

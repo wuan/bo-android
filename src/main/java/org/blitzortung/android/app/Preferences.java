@@ -1,12 +1,11 @@
 package org.blitzortung.android.app;
 
-import org.blitzortung.android.data.provider.DataProviderType;
-
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import org.blitzortung.android.data.provider.DataProviderType;
 
 public class Preferences extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 

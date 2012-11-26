@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -26,15 +27,13 @@ import org.blitzortung.android.alarm.AlarmStatus;
 import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
-import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.DataHandler;
+import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.dialogs.AlarmDialog;
 import org.blitzortung.android.dialogs.InfoDialog;
 import org.blitzortung.android.map.OwnMapActivity;
-
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.overlay.FadeOverlay;
 import org.blitzortung.android.map.overlay.OwnLocationOverlay;
@@ -83,9 +82,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private float vibrationDistanceLimit;
 
-    private Set<DataListener> dataListeners = new HashSet<DataListener>();
+    private final Set<DataListener> dataListeners = new HashSet<DataListener>();
 
-    final Set<String> androidIdsForExtendedFunctionality = new HashSet<String>(Arrays.asList("e73c5a22934b5915"));
+    private final Set<String> androidIdsForExtendedFunctionality = new HashSet<String>(Arrays.asList("e73c5a22934b5915"));
 
     private PackageInfo pInfo;
 
@@ -166,7 +165,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         preferences.registerOnSharedPreferenceChangeListener(this);
 
         if (getLastNonConfigurationInstance() == null) {
-            persistedData = new PersistedData(getResources(), (LocationManager) getSystemService(Context.LOCATION_SERVICE), preferences, pInfo);
+            persistedData = new PersistedData((LocationManager) getSystemService(Context.LOCATION_SERVICE), preferences, pInfo);
         } else {
             persistedData = (PersistedData) getLastNonConfigurationInstance();
         }

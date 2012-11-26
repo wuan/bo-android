@@ -1,10 +1,10 @@
 package org.blitzortung.android.data.beans;
 
-import java.io.Serializable;
-
 import org.blitzortung.android.util.TimeFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import java.io.Serializable;
 
 public class Stroke extends AbstractStroke implements Serializable {
 	

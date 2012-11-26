@@ -1,27 +1,27 @@
 package org.blitzortung.android.preferences;
 
 import android.content.Context;
+import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
-import android.preference.DialogPreference;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.LinearLayout;
 
 
 public class SlidePreferences extends DialogPreference implements SeekBar.OnSeekBarChangeListener
 {
     private static final String ATTRIBUTE_NAMESPACE = "http://schemas.android.com/apk/res/android";
 
-    private Context context;
+    private final Context context;
     private TextView valueText;
     private SeekBar slider;
 
-    private String unitSuffix;
+    private final String unitSuffix;
 
-    private int defaultValue;
-    private int maximumValue;
+    private final int defaultValue;
+    private final int maximumValue;
     private int currentValue;
 
     public SlidePreferences(Context context, AttributeSet attrs) {
@@ -93,7 +93,7 @@ public class SlidePreferences extends DialogPreference implements SeekBar.OnSeek
             persistInt(currentValue);
         }
 
-        callChangeListener(new Integer(currentValue));
+        callChangeListener(currentValue);
     }
 
     @Override

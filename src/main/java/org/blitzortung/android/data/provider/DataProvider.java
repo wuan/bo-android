@@ -1,16 +1,13 @@
 package org.blitzortung.android.data.provider;
 
-import java.util.List;
-
 import android.content.pm.PackageInfo;
 import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.beans.Participant;
+import org.blitzortung.android.data.beans.RasterParameters;
+
+import java.util.List;
 
 public abstract class DataProvider {
-	
-	@SuppressWarnings("unused")
-	private static final String TAG = "DataProvider";
 	
 	protected String username;
 	

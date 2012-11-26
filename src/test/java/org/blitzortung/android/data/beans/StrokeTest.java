@@ -26,7 +26,7 @@ public class StrokeTest {
     @Mock
     private JSONArray jsonArray;
 
-    long referenceTimestamp = System.currentTimeMillis();
+    private final long referenceTimestamp = System.currentTimeMillis();
 
     @Before
     public void setUp() throws JSONException {

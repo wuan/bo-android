@@ -1,9 +1,8 @@
 package org.blitzortung.android.map.overlay;
 
+import com.google.android.maps.OverlayItem;
 import org.blitzortung.android.data.Coordsys;
 import org.blitzortung.android.data.beans.AbstractStroke;
-
-import com.google.android.maps.OverlayItem;
 
 public class StrokeOverlayItem extends OverlayItem {
 

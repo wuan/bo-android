@@ -16,7 +16,6 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class RasterShapeTest {
@@ -33,11 +32,11 @@ public class RasterShapeTest {
 
     private RasterShape rasterShape;
 
-    private int color = 0x102030;
+    private final int color = 0x102030;
 
-    private int multiplicity = 5;
+    private final int multiplicity = 5;
 
-    private int textColor = 0xa0b0c0;
+    private final int textColor = 0xa0b0c0;
 
     @Before
     public void setUp() {

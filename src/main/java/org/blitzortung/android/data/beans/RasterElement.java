@@ -1,9 +1,9 @@
 package org.blitzortung.android.data.beans;
 
-import java.io.Serializable;
-
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import java.io.Serializable;
 
 public class RasterElement extends AbstractStroke implements Serializable {
 

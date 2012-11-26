@@ -1,5 +1,11 @@
 package org.blitzortung.android.data.provider;
 
+import android.util.Log;
+import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.Participant;
+import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.data.beans.Stroke;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -11,18 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.Participant;
-import org.blitzortung.android.data.beans.RasterParameters;
-import org.blitzortung.android.data.beans.Stroke;
-
-import android.util.Log;
-
 public class BlitzortungHttpDataProvider extends DataProvider {
 	
 	private enum Type {STRIKES, STATIONS}
 
-	class MyAuthenticator extends Authenticator {
+	private class MyAuthenticator extends Authenticator {
 
 		public PasswordAuthentication getPasswordAuthentication() {
 			return new PasswordAuthentication(username, password.toCharArray());

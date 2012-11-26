@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 public class ParticipantsOverlayTest {
 
     @Implements(PreferenceManager.class)
-    static class ShadowPreferenceManager {
+    private static class ShadowPreferenceManager {
 
         @Implementation
         public static SharedPreferences getDefaultSharedPreferences(Context context) {
@@ -44,7 +44,7 @@ public class ParticipantsOverlayTest {
     @Mock
     private ParticipantColorHandler colorHandler;
 
-    private int colors[] = new int[]{1,2,3};
+    private final int[] colors = new int[]{1,2,3};
 
     @Before
     public void setUp()

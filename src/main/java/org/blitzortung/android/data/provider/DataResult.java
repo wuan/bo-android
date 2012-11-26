@@ -1,13 +1,13 @@
 package org.blitzortung.android.data.provider;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Participant;
 import org.blitzortung.android.data.beans.RasterParameters;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataResult implements Serializable {
 

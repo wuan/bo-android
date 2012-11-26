@@ -1,15 +1,14 @@
 package org.blitzortung.android.jsonrpc;
 
-import java.io.UnsupportedEncodingException;
-
-import android.content.pm.PackageInfo;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+
 public class JsonRpcClient extends HttpServiceClient {
 
-	private int id;
+	private final int id=0;
 
     // VisibleForTesting
 	protected JSONArray buildParameters(Object[] parameters) {

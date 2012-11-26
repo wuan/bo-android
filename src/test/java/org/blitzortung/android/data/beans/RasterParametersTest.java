@@ -25,12 +25,12 @@ public class RasterParametersTest {
     @Mock
     private JSONObject jsonObject;
 
-    float lon_start = -10;
-    float lon_delta = 1;
-    int lon_count = 40;
-    float lat_start = 60;
-    float lat_delta = 1.5f;
-    int lat_count = 30;
+    private final float lon_start = -10;
+    private final float lon_delta = 1;
+    private final int lon_count = 40;
+    private final float lat_start = 60;
+    private final float lat_delta = 1.5f;
+    private final int lat_count = 30;
 
     @Before
     public void setUp() throws JSONException {

@@ -25,9 +25,9 @@ public class ParticipantShapeTest {
 
     private ParticipantShape participantShape;
 
-    private int color = 0x102030;
+    private final int color = 0x102030;
 
-    private int size = 12;
+    private final int size = 12;
 
     @Before
     public void setUp() {

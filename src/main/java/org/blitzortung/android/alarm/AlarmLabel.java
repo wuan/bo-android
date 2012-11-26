@@ -1,9 +1,8 @@
 package org.blitzortung.android.alarm;
 
-import org.blitzortung.android.app.R;
-
 import android.content.res.Resources;
 import android.widget.TextView;
+import org.blitzortung.android.app.R;
 
 public class AlarmLabel {
 

@@ -2,11 +2,9 @@ package org.blitzortung.android.app.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.data.DataListener;
@@ -30,12 +28,15 @@ public class HistogramView extends View implements DataListener {
 
     private int[] histogram;
 
-    private int defaultForegroundColor;
+    private final int defaultForegroundColor;
+    private final RectF backgroundRect;
 
+    @SuppressWarnings("unused")
     public HistogramView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
+    @SuppressWarnings("unused")
     public HistogramView(Context context) {
         this(context, null, 0);
     }
@@ -56,6 +57,8 @@ public class HistogramView extends View implements DataListener {
         textPaint.setColor(defaultForegroundColor);
         textPaint.setTextSize(textSize);
         textPaint.setTextAlign(Paint.Align.RIGHT);
+
+        backgroundRect = new RectF();
     }
 
     private float pxFromDp(float dp)
@@ -76,7 +79,6 @@ public class HistogramView extends View implements DataListener {
 
     @Override
     public void onDraw(Canvas canvas) {
-        //super.onDraw(canvas);
 
         if (strokesOverlay != null && histogram != null && histogram.length > 0) {
             ColorHandler colorHandler = strokesOverlay.getColorHandler();
@@ -84,13 +86,13 @@ public class HistogramView extends View implements DataListener {
             int minutesPerBin = 5;
             int ratio = minutesPerColor / minutesPerBin;
 
-            RectF backgroundRect = new RectF(0, 0, width, height);
+            backgroundRect.set(0, 0, width, height);
             canvas.drawRect(backgroundRect, backgroundPaint);
 
             int maximumCount = 0;
-            for (int i = 0; i < histogram.length; i++) {
-                if (histogram[i] > maximumCount) {
-                    maximumCount = histogram[i];
+            for (int count : histogram) {
+                if (count > maximumCount) {
+                    maximumCount = count;
                 }
             }
 

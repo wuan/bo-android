@@ -34,7 +34,7 @@ public class OwnLocationOverlayTest {
 
 
     @Implements(PreferenceManager.class)
-    static class ShadowPreferenceManager {
+    private static class ShadowPreferenceManager {
 
         @Implementation
         public static SharedPreferences getDefaultSharedPreferences(Context context) {
@@ -56,7 +56,7 @@ public class OwnLocationOverlayTest {
     @Mock
     SharedPreferences sharedPreferences;
 
-    List<Overlay> overlays = Lists.newArrayList();
+    private final List<Overlay> overlays = Lists.newArrayList();
 
     @Before
     public void setUp()

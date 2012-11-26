@@ -1,16 +1,15 @@
 package org.blitzortung.android.map.overlay;
 
+import com.google.android.maps.OverlayItem;
 import org.blitzortung.android.data.Coordsys;
 import org.blitzortung.android.data.beans.Participant;
 import org.blitzortung.android.data.beans.Participant.State;
 
-import com.google.android.maps.OverlayItem;
-
 public class ParticipantOverlayItem extends OverlayItem {
 
-	final long lastDataTime;
+	private final long lastDataTime;
 	
-	final State state;
+	private final State state;
 	
 	public ParticipantOverlayItem(Participant station) {
 		super(Coordsys.toMapCoords(station.getLongitude(), station.getLatitude()), station.getName(), "");

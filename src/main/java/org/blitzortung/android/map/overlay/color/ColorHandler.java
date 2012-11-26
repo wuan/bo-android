@@ -2,7 +2,6 @@ package org.blitzortung.android.map.overlay.color;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.util.Log;
 import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.data.TimeIntervalWithOffset;
 

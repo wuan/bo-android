@@ -1,15 +1,13 @@
 package org.blitzortung.android.data.beans;
 
-import java.util.Locale;
-
+import android.graphics.Point;
+import android.graphics.RectF;
+import com.google.android.maps.Projection;
 import org.blitzortung.android.data.Coordsys;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.graphics.Point;
-import android.graphics.RectF;
-
-import com.google.android.maps.Projection;
+import java.util.Locale;
 
 public class RasterParameters {
 

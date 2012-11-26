@@ -1,10 +1,11 @@
 package org.blitzortung.android.app.view;
 
 import android.content.Context;
-import android.graphics.*;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
@@ -26,10 +27,15 @@ public class LegendView extends View {
 
     private StrokesOverlay strokesOverlay;
 
+    private final RectF backgroundRect;
+    private final RectF legendColorRect;
+
+    @SuppressWarnings("unused")
     public LegendView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
+    @SuppressWarnings("unused")
     public LegendView(Context context) {
         this(context, null, 0);
     }
@@ -44,6 +50,9 @@ public class LegendView extends View {
 
         backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         backgroundPaint.setColor(context.getResources().getColor(R.color.translucent_background));
+
+        backgroundRect = new RectF();
+        legendColorRect = new RectF();
 
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setColor(0xffffffff);
@@ -70,13 +79,9 @@ public class LegendView extends View {
         updateTextWidth(strokesOverlay.getIntervalDuration());
         width = Math.min(3 * padding + colorFieldSize + textWidth, parentWidth);
 
-        if (strokesOverlay != null) {
-            ColorHandler colorHandler = strokesOverlay.getColorHandler();
+        ColorHandler colorHandler = strokesOverlay.getColorHandler();
 
-            height = Math.min((colorFieldSize + padding) * colorHandler.getColors().length + padding, parentHeight);
-        } else {
-            height = Math.min(10, parentHeight);
-        }
+        height = Math.min((colorFieldSize + padding) * colorHandler.getColors().length + padding, parentHeight);
 
         super.onMeasure(MeasureSpec.makeMeasureSpec((int)width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec((int)height, MeasureSpec.EXACTLY));
     }
@@ -89,15 +94,15 @@ public class LegendView extends View {
             ColorHandler colorHandler = strokesOverlay.getColorHandler();
             int minutesPerColor = strokesOverlay.getIntervalDuration() / colorHandler.getNumberOfColors();
 
-            RectF backgroundRect = new RectF(0, 0, width, height);
+            backgroundRect.set(0, 0, width, height);
             canvas.drawRect(backgroundRect, backgroundPaint);
 
             int numberOfColors = colorHandler.getNumberOfColors();
             for (int index = 0; index < numberOfColors; index++) {
                 foregroundPaint.setColor(colorHandler.getColor(index));
                 float topCoordinate = padding + (colorFieldSize + padding) * index;
-                RectF rect = new RectF(padding, topCoordinate, padding + colorFieldSize, topCoordinate + colorFieldSize);
-                canvas.drawRect(rect, foregroundPaint);
+                legendColorRect.set(padding, topCoordinate, padding + colorFieldSize, topCoordinate + colorFieldSize);
+                canvas.drawRect(legendColorRect, foregroundPaint);
 
                 boolean isLastValue = index == numberOfColors - 1;
                 String text = String.format("%c %dmin", isLastValue ? '>' : '<', (index + (isLastValue ? 0 : 1)) * minutesPerColor);

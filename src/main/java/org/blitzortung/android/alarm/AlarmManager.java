@@ -1,19 +1,18 @@
 package org.blitzortung.android.alarm;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.blitzortung.android.app.Preferences;
-import org.blitzortung.android.app.TimerTask;
-import org.blitzortung.android.data.provider.DataResult;
-
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import org.blitzortung.android.app.Preferences;
+import org.blitzortung.android.app.TimerTask;
+import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.util.MeasurementSystem;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class AlarmManager implements OnSharedPreferenceChangeListener, LocationListener {
 

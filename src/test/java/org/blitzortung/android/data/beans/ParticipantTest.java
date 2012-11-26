@@ -13,7 +13,6 @@ import org.mockito.MockitoAnnotations;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.ignoreStubs;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)

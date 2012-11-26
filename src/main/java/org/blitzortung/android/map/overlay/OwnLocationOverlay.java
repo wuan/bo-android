@@ -1,8 +1,5 @@
 package org.blitzortung.android.map.overlay;
 
-import org.blitzortung.android.app.Preferences;
-import org.blitzortung.android.map.OwnMapView;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
@@ -14,8 +11,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-
 import com.google.android.maps.ItemizedOverlay;
+import org.blitzortung.android.app.Preferences;
+import org.blitzortung.android.map.OwnMapView;
 
 public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> implements LocationListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -32,7 +30,7 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
 
     private int zoomLevel;
 
-    private String locationProvider;
+    private final String locationProvider;
 
     public OwnLocationOverlay(Context context, OwnMapView mapView) {
         super(DEFAULT_DRAWABLE);

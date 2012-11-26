@@ -109,6 +109,7 @@ public class AlarmSector {
 
     public void update(long thresholdTime, long oldestStrokeTime, MeasurementSystem measurementSystem) {
         this.thresholdTime = thresholdTime;
+        this.measurementSystem = measurementSystem;
 
         for (int index = 0; index < getDistanceStepCount(); index++) {
             if (latestStrokeTimestamp[index] < thresholdTime) {

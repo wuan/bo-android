@@ -2,9 +2,6 @@ package org.blitzortung.android.map;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import com.google.android.maps.MapView;
@@ -14,7 +11,7 @@ import java.util.Set;
 
 public class OwnMapView extends MapView {
 
-	final Set<ZoomListener> zoomListeners = new HashSet<ZoomListener>();
+	private final Set<ZoomListener> zoomListeners = new HashSet<ZoomListener>();
 
 	public interface ZoomListener {
 		void onZoom(int zoomLevel);
@@ -55,7 +52,7 @@ public class OwnMapView extends MapView {
             float pixelSize = getProjection().metersToEquatorPixels(1000.0f);
 
             if (pixelSize != oldPixelSize) {
-                notifyZoomListeners(getZoomLevel());
+                notifyZoomListeners();
                 oldPixelSize = pixelSize;
             }
         }
@@ -65,7 +62,7 @@ public class OwnMapView extends MapView {
 		zoomListeners.add(zoomListener);
 	}
 
-	public void notifyZoomListeners(int level) {
+	public void notifyZoomListeners() {
 		for (ZoomListener zoomListener : zoomListeners) {
 			zoomListener.onZoom(getZoomLevel());
 		}

@@ -7,8 +7,6 @@ import org.json.JSONException;
 
 public class Participant {
 
-	private static final long serialVersionUID = -6731278932726028829L;
-
 	public enum State {
 		ON, DELAYED, OFF
 	}
@@ -19,9 +17,9 @@ public class Participant {
 
 	private float latitude;
 
-	long offlineSince;
+	private long offlineSince;
 
-	State state;
+	private State state;
 
 	public Participant(JSONArray jsonArray) {
 		try {

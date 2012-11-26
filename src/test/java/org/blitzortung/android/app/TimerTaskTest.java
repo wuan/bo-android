@@ -14,17 +14,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
 public class TimerTaskTest {
 
     private TimerTask timerTask;
-
-    private Resources resources;
 
     @Mock
     private SharedPreferences sharedPreferences;
@@ -36,8 +32,6 @@ public class TimerTaskTest {
     public void setUp()
     {
         MockitoAnnotations.initMocks(this);
-
-        resources = Robolectric.application.getResources();
 
         when(sharedPreferences.getString(Preferences.QUERY_PERIOD_KEY, "60")).thenReturn("60");
         when(sharedPreferences.getString(Preferences.BACKGROUND_QUERY_PERIOD_KEY, "0")).thenReturn("0");
@@ -134,6 +128,17 @@ public class TimerTaskTest {
         timerTask.setAlarmEnabled(false);
         assertFalse(timerTask.getAlarmEnabled());
 
+    }
+
+    @Test
+    public void testSetListener() {
+        TimerListener timerListener = new TimerListener();
+
+        timerTask.setListener(timerListener);
+
+        timerTask.enable();
+
+        assertThat(timerListener.getTimerString(), is("60/60s"));
     }
 }
 

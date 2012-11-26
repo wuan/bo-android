@@ -1,10 +1,8 @@
 package org.blitzortung.android.map.overlay;
 
-import org.blitzortung.android.data.Coordsys;
-
 import android.location.Location;
-
 import com.google.android.maps.OverlayItem;
+import org.blitzortung.android.data.Coordsys;
 
 public class OwnLocationOverlayItem extends OverlayItem {
 

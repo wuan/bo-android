@@ -2,9 +2,7 @@ package org.blitzortung.android.app;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.content.res.Resources;
 import android.os.Handler;
-import android.util.Log;
 import org.blitzortung.android.data.DataHandler;
 
 public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {

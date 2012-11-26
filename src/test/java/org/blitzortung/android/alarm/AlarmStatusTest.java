@@ -22,9 +22,9 @@ public class AlarmStatusTest {
 
     private MeasurementSystem measurementSystem;
 
-    long warnThresholdTime;
+    private long warnThresholdTime;
 
-    long now;
+    private long now;
 
     @Before
     public void setUp() {

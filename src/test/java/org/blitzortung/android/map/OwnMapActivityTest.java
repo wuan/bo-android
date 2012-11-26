@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 @RunWith(RobolectricTestRunner.class)
 public class OwnMapActivityTest {
 
-    static class OwnMapActivityForTest extends OwnMapActivity
+    private static class OwnMapActivityForTest extends OwnMapActivity
     {
         @Override
         protected boolean isRouteDisplayed() {

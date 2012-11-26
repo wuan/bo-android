@@ -21,9 +21,6 @@ import java.util.List;
 
 public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements TimeIntervalWithOffset{
 
-    @SuppressWarnings("unused")
-    private static final String TAG = "overlay.StrokesOverlay";
-
     // VisibleForTesting
     protected final ArrayList<StrokeOverlayItem> items;
 
@@ -31,7 +28,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
 
     private int zoomLevel;
 
-    RasterParameters rasterParameters = null;
+    private RasterParameters rasterParameters = null;
 
     static private final Drawable DefaultDrawable;
 

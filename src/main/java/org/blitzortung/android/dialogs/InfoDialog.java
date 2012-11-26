@@ -1,13 +1,11 @@
 package org.blitzortung.android.dialogs;
 
-import org.blitzortung.android.app.R;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.view.KeyEvent;
 import android.view.View;
+import org.blitzortung.android.app.R;
 
 public class InfoDialog extends AlertDialog {
 

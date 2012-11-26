@@ -1,12 +1,12 @@
 package org.blitzortung.android.jsonrpc;
 
-import java.io.UnsupportedEncodingException;
-
 import org.apache.http.Header;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 
 public class JsonRequestEntity extends StringEntity {
 

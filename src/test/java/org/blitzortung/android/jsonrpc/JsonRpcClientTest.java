@@ -22,9 +22,9 @@ public class JsonRpcClientTest {
 
     private JsonRpcClient jsonRpcClient;
 
-    private String uriString;
+    private final String uriString = "foo";
 
-    private String agentSuffix = "_VERSION";
+    private final String agentSuffix = "_VERSION";
 
     @Before
     public void setUp() {
@@ -50,8 +50,8 @@ public class JsonRpcClientTest {
 
     @Test
     public void testBuildRequest() throws IOException {
-        Object obj1 = new String("foo");
-        Object obj2 = new String("bar");
+        Object obj1 = "foo";
+        Object obj2 = "bar";
         Object[] parameters = new Object[]{obj1, obj2};
 
         String methodName = "<methodName>";

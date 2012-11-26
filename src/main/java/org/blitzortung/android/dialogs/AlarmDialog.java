@@ -1,14 +1,13 @@
 package org.blitzortung.android.dialogs;
 
-import org.blitzortung.android.alarm.AlarmManager;
-import org.blitzortung.android.app.R;
-import org.blitzortung.android.app.view.AlarmView;
-import org.blitzortung.android.map.overlay.color.ColorHandler;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.View;
+import org.blitzortung.android.alarm.AlarmManager;
+import org.blitzortung.android.app.R;
+import org.blitzortung.android.app.view.AlarmView;
+import org.blitzortung.android.map.overlay.color.ColorHandler;
 
 public class AlarmDialog extends AlertDialog {
 

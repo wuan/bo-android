@@ -37,8 +37,7 @@
                     android:src="@android:drawable/stat_notify_error"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:contentDescription="status info"/>
+                    android:layout_centerInParent="true"/>
 
             <ProgressBar
                     android:id="@+id/progress"

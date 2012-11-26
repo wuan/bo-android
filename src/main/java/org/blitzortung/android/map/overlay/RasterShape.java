@@ -6,7 +6,6 @@ import android.graphics.Paint.Align;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.drawable.shapes.Shape;
-import android.util.Log;
 
 public class RasterShape extends Shape {
 

@@ -22,7 +22,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
 	private final Lock lock = new ReentrantLock();
 
-    private PackageInfo pInfo;
+    private final PackageInfo pInfo;
 	private DataProvider dataProvider;
 
 	private String username;

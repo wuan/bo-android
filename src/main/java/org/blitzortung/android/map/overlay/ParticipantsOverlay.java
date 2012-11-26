@@ -1,17 +1,16 @@
 package org.blitzortung.android.map.overlay;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-
-import org.blitzortung.android.data.beans.Participant;
-import org.blitzortung.android.data.beans.Participant.State;
-import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
-
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
+import org.blitzortung.android.data.beans.Participant;
+import org.blitzortung.android.data.beans.Participant.State;
+import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
+
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
 
 public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> {
 
@@ -105,11 +104,35 @@ public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> {
         ParticipantOverlayItem item = items.get(index);
 
         if (item.getTitle() != null) {
-            showPopup(item.getPoint(), item.getTitle());
+            String label = item.getTitle();
+            long lastDataTime = item.getLastDataTime();
+            if (lastDataTime != 0) {
+                label += "\n" + buildTimeString(lastDataTime);
+            }
+            showPopup(item.getPoint(), label);
             return true;
         }
 
         return false;
+    }
+
+    private String buildTimeString(long lastDataTime) {
+        long now = System.currentTimeMillis();
+        float time = (now - lastDataTime) / 1000.0f / 60.0f;
+
+        if (time < 120) {
+            return String.format("%.0f min", time);
+        }
+
+        time /= 60.0f;
+
+        if (time < 48) {
+            return String.format("%.1f h", time);
+        }
+
+        time /= 24.0f;
+
+        return String.format("%.1f d", time);
     }
 
 }

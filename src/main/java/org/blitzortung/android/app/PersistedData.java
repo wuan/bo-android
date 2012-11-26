@@ -1,6 +1,8 @@
 package org.blitzortung.android.app;
 
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.location.LocationManager;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.provider.DataResult;
@@ -8,10 +10,6 @@ import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
-
-import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.location.LocationManager;
 
 public class PersistedData {
 
@@ -27,7 +25,7 @@ public class PersistedData {
 
     private DataResult currentResult;
 
-    public PersistedData(Resources resources, LocationManager locationManager, SharedPreferences sharedPreferences, PackageInfo pInfo) {
+    public PersistedData(LocationManager locationManager, SharedPreferences sharedPreferences, PackageInfo pInfo) {
         provider = new DataHandler(sharedPreferences, pInfo);
 		timerTask = new TimerTask(sharedPreferences, provider);
 		alarmManager = new AlarmManager(locationManager, sharedPreferences, timerTask);

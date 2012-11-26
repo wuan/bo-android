@@ -28,7 +28,7 @@ public class RasterElementTest {
     @Mock
     private RasterParameters rasterParameters;
 
-    long referenceTimestamp;
+    private long referenceTimestamp;
 
     @Before
     public void setUp() throws JSONException {
