@@ -106,8 +106,12 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 				String line;
 				while ((line = reader.readLine()) != null) {
 					size += line.length();
+                    try {
 					Participant station = new Participant(line);
 					stations.add(station);
+                    } catch (NumberFormatException e) {
+                        Log.w("BlitzortungHttpProvider", String.format("error parsing '%s'", line));
+                    }
 				}
 				Log.v("BlitzortungHttpProvider",
 						String.format("read %d bytes (%d stations) from region %d", size, stations.size(), region));
