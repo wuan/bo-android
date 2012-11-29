@@ -55,6 +55,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private ImageButton goRealtime;
 
+    private ProgressBar progressBar;
+
+    private ImageView errorIndicator;
+
     private FadeOverlay fadeOverlay;
 
     protected StrokesOverlay strokesOverlay;
@@ -213,13 +217,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         goRealtime.setVisibility(historyButtonsVisibility);
         setHistoricStatusString();
 
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress);
-        dataHandler.setProgressBar(progressBar);
+        progressBar = (ProgressBar) findViewById(R.id.progress);
         progressBar.setVisibility(View.INVISIBLE);
 
-        ImageView errorIndicator = (ImageView) findViewById(R.id.error_indicator);
+        errorIndicator = (ImageView) findViewById(R.id.error_indicator);
         errorIndicator.setVisibility(View.INVISIBLE);
-        dataHandler.setErrorIndicator(errorIndicator);
 
         timerTask = persistedData.getTimerTask();
         timerTask.setListener(this);
@@ -347,6 +349,14 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     }
 
     @Override
+    public void onBeforeDataUpdate() {
+        disableButtonColumn();
+
+        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setProgress(0);
+    }
+
+    @Override
     public void onDataUpdate(DataResult result) {
 
         if (dataHandler.isCapableOfHistoricalData()) {
@@ -359,42 +369,44 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         Parameters resultParameters = result.getParameters();
 
-        if (dataHandler.matches(resultParameters)) {
-            persistedData.setCurrentResult(result);
+        persistedData.setCurrentResult(result);
 
-            clearDataIfRequested();
+        clearDataIfRequested();
 
-            if (result.containsStrokes()) {
-                strokesOverlay.setRasterParameters(result.getRasterParameters());
-                strokesOverlay.setRegion(resultParameters.getRegion());
-                strokesOverlay.setReferenceTime(result.getReferenceTime());
-                strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
-                strokesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
-                strokesOverlay.addStrokes(result.getStrokes());
+        if (result.containsStrokes()) {
+            strokesOverlay.setRasterParameters(result.getRasterParameters());
+            strokesOverlay.setRegion(resultParameters.getRegion());
+            strokesOverlay.setReferenceTime(result.getReferenceTime());
+            strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
+            strokesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
+            strokesOverlay.addStrokes(result.getStrokes());
 
-                if (alarmManager.isAlarmEnabled()) {
-                    alarmManager.check(result);
-                }
-                strokesOverlay.refresh();
+            if (alarmManager.isAlarmEnabled()) {
+                alarmManager.check(result);
             }
-
-            if (!result.containsRealtimeData()) {
-                timerTask.disable();
-                setHistoricStatusString();
-            }
-
-            if (participantsOverlay != null && result.containsParticipants()) {
-                participantsOverlay.setParticipants(result.getParticipants());
-                participantsOverlay.refresh();
-            }
-
-            for (DataListener listener : dataListeners) {
-                listener.onDataUpdate(result);
-            }
-
-            enableButtonColumn();
-            getMapView().invalidate();
+            strokesOverlay.refresh();
         }
+
+        if (!result.containsRealtimeData()) {
+            timerTask.disable();
+            setHistoricStatusString();
+        }
+
+        if (participantsOverlay != null && result.containsParticipants()) {
+            participantsOverlay.setParticipants(result.getParticipants());
+            participantsOverlay.refresh();
+        }
+
+        for (DataListener listener : dataListeners) {
+            listener.onDataUpdate(result);
+        }
+
+        progressBar.setVisibility(View.INVISIBLE);
+        progressBar.setProgress(progressBar.getMax());
+
+        enableButtonColumn();
+        getMapView().invalidate();
+
     }
 
     private void clearDataIfRequested() {
@@ -418,6 +430,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             listener.onDataReset();
         }
     }
+
+    @Override
+    public void setErrorIndicator(boolean displayError) {
+        errorIndicator.setVisibility(displayError ? View.VISIBLE : View.INVISIBLE);    }
+
 
     protected Dialog onCreateDialog(int id) {
         Dialog dialog;

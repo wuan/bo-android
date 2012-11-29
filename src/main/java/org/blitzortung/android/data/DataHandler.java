@@ -28,9 +28,6 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 	private String username;
 	private String password;
 
-	private ProgressBar progressBar;
-	private ImageView errorIndicator;
-
     private final Parameters parameters;
 
 	private DataListener listener;
@@ -99,10 +96,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 			}
 
 			if (!result.processWasLocked()) {
-				progressBar.setVisibility(View.INVISIBLE);
-				progressBar.setProgress(progressBar.getMax());
-
-				errorIndicator.setVisibility(result.hasFailed() ? View.VISIBLE : View.INVISIBLE);
+                listener.setErrorIndicator(result.hasFailed());
 			}
 		}
 
@@ -160,8 +154,8 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 	}
 
 	public void updateData(UpdateTargets updateTargets) {
-		progressBar.setVisibility(View.VISIBLE);
-		progressBar.setProgress(0);
+
+        listener.onBeforeDataUpdate();
 		
 		boolean updateParticipants = false;
 		if (updateTargets.updateParticipants()) {
@@ -247,14 +241,6 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     public void enableRasterMode() {
         parameters.setRasterBaselength(preferencesRasterBaselength);
     }
-
-	public void setProgressBar(ProgressBar progressBar) {
-		this.progressBar = progressBar;
-	}
-
-	public void setErrorIndicator(ImageView errorIndicator) {
-		this.errorIndicator = errorIndicator;
-	}
 
 	public void setDataListener(DataListener listener) {
 		this.listener = listener;

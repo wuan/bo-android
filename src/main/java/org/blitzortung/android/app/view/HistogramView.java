@@ -125,6 +125,10 @@ public class HistogramView extends View implements DataListener {
     }
 
     @Override
+    public void onBeforeDataUpdate() {
+    }
+
+    @Override
     public void onDataUpdate(DataResult result) {
         histogram = result.getHistogram();
 
@@ -136,5 +140,10 @@ public class HistogramView extends View implements DataListener {
         histogram = new int[0];
 
         setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void setErrorIndicator(boolean displayError) {
+        onDataReset();
     }
 }
