@@ -104,7 +104,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 		this.listener = listener;
 	}
 
-    protected void enable() {
+    public void enable() {
         handler.removeCallbacks(this);
         handler.post(this);
     }

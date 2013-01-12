@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="@string/map_settings">
+    <PreferenceScreen android:title="@string/map_settings">
         <ListPreference
                 android:defaultValue="SATELLITE"
                 android:enabled="true"
@@ -38,8 +38,8 @@
                 android:selectable="true"
                 android:title="@string/show_location"
                 android:summary="@string/show_location_summary"/>
-    </PreferenceCategory>
-    <PreferenceCategory
+    </PreferenceScreen>
+    <PreferenceScreen
             android:key="data_settings"
             android:title="@string/data_settings">
         <ListPreference
@@ -116,8 +116,35 @@
                 android:selectable="true"
                 android:title="@string/data_source"
                 android:summary="@string/data_source_summary"/>
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/alarm_settings">
+    </PreferenceScreen>
+    <PreferenceScreen android:title="@string/location_settings">
+        <ListPreference
+                android:defaultValue="Network"
+                android:enabled="true"
+                android:entries="@array/location_modes"
+                android:entryValues="@array/location_mode_values"
+                android:key="location_mode"
+                android:persistent="true"
+                android:selectable="true"
+                android:title="@string/location_mode"
+                android:summary="@string/location_mode_summary"/>
+
+        <EditTextPreference
+                android:defaultValue=""
+                android:key="location_longitude"
+                android:persistent="true"
+                android:title="@string/longitude"
+                android:summary="@string/location_longitude_summary"/>
+        <EditTextPreference
+                android:inputType="textPassword"
+                android:key="location_latitude"
+                android:persistent="true"
+                android:title="@string/latitude"
+                android:summary="@string/location_longitude_summary"/>
+
+
+    </PreferenceScreen>
+    <PreferenceScreen android:title="@string/alarm_settings">
         <CheckBoxPreference
                 android:defaultValue="false"
                 android:enabled="true"
@@ -158,8 +185,8 @@
                 android:title="@string/vibration_distance_limit"
                 android:summary="@string/vibration_distance_limit_summary"/>
 
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/generic_settings">
+    </PreferenceScreen>
+    <PreferenceScreen android:title="@string/generic_settings">
         <ListPreference
                 android:defaultValue="METRIC"
                 android:enabled="true"
@@ -177,6 +204,6 @@
                 android:selectable="true"
                 android:title="@string/do_not_sleep"
                 android:summary="@string/do_not_sleep_summary"/>
-    </PreferenceCategory>
+    </PreferenceScreen>
 
 </PreferenceScreen>

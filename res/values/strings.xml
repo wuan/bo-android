@@ -14,7 +14,12 @@
     </plurals>
 
     <string name="info">Information</string>
-    <string name="info_text">Project home:\n\thttps://github.com/wuan/bo-android\n\nVisualized lightning data is provided by the <b>Blitzortung.org</b> realtime lighning community project. Please refer to\n\thttp://blitzortung.org/\nfor further information or how to participate.\n</string>
+    <string name="info_text">Project home:\n\thttps://github.com/wuan/bo-android\n\nVisualized lightning data is
+        provided by the
+        <b>Blitzortung.org</b>
+        realtime lighning community project. Please refer to\n\thttp://blitzortung.org/\nfor further information or how
+        to participate.\n
+    </string>
     <string name="copyright">© 2012, Andreas Würl\nblitzortung@tryb.de</string>
     <string name="legend">Legend</string>
     <string name="total_time">total time</string>
@@ -141,7 +146,8 @@
     </string-array>
 
     <string name="data_source">Data source</string>
-    <string name="data_source_summary">integrated data source or access to blitzortung.org (only for participants)</string>
+    <string name="data_source_summary">integrated data source or access to blitzortung.org (only for participants)
+    </string>
 
     <string-array name="data_sources">
         <item>Blitzortung.org</item>
@@ -152,11 +158,30 @@
         <item>RPC</item>
     </string-array>
 
+    <string name="location_settings">Location settings</string>
+    <string-array name="location_modes">
+        <item>Network based</item>
+        <item>GPS based</item>
+        <item>manual entry</item>
+    </string-array>
+    <string-array name="location_mode_values">
+        <item>NETWORK</item>
+        <item>GPS</item>
+        <item>MANUAL</item>
+    </string-array>
+    <string name="location_mode">location mode</string>
+    <string name="location_mode_summary">Select method which is used to determine the current location</string>
+    <string name="longitude">longitude</string>
+    <string name="location_longitude_summary">manual entry of longitude</string>
+    <string name="latitude">latitude</string>
+    <string name="location_latitude_summary">manual entry of latitude</string>
     <string name="alarm_settings">Alarm settings</string>
     <string name="alarm_enabled">Alarm enabled</string>
     <string name="alarm_enabled_summary">check lightning activity around the current location</string>
     <string name="background_query_period">Background query period</string>
-    <string name="background_query_period_summary">if selected: background query frequency to check for alarms if app is not active</string>
+    <string name="background_query_period_summary">if selected: background query frequency to check for alarms if app is
+        not active
+    </string>
 
     <string-array name="background_query_periods">
         <item>off</item>
@@ -180,9 +205,13 @@
     <item name="alarm_notification_id" type="id"/>
 
     <string name="notification_distance_limit">Notification distance limit</string>
-    <string name="notification_distance_limit_summary">if selected: show notification when lightning activity is detected within the selected range</string>
+    <string name="notification_distance_limit_summary">if selected: show notification when lightning activity is
+        detected within the selected range
+    </string>
     <string name="vibration_distance_limit">Vibration distance limit</string>
-    <string name="vibration_distance_limit_summary">if selected: vibrate when lightning activity is detected within the selected range</string>
+    <string name="vibration_distance_limit_summary">if selected: vibrate when lightning activity is detected within the
+        selected range
+    </string>
 
     <string-array name="distance_limits">
         <item>off</item>

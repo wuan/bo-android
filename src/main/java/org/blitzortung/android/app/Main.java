@@ -24,6 +24,8 @@ import com.google.android.maps.Overlay;
 import org.blitzortung.android.alarm.AlarmLabel;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmStatus;
+import org.blitzortung.android.app.model.ButtonColumnHandler;
+import org.blitzortung.android.app.model.HistoryController;
 import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
@@ -49,12 +51,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private TextView warning;
 
-    private ImageButton historyRewind;
-
-    private ImageButton historyForward;
-
-    private ImageButton goRealtime;
-
     private ProgressBar progressBar;
 
     private ImageView errorIndicator;
@@ -75,7 +71,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private OwnLocationOverlay ownLocationOverlay;
 
-    private PersistedData persistedData;
+    private Persistor persistor;
 
     private boolean clearData;
 
@@ -89,7 +85,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private PackageInfo pInfo;
 
-    private final List<ImageButton> buttonColumn = new ArrayList<ImageButton>();
+    private ButtonColumnHandler buttonColumnHandler;
+
+    private HistoryController historyController;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,89 +105,19 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         getMapView().setBuiltInZoomControls(true);
 
-        historyRewind = (ImageButton) findViewById(R.id.historyRew);
-        historyRewind.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (dataHandler.rewInterval()) {
-                    disableButtonColumn();
-                    historyForward.setVisibility(View.VISIBLE);
-                    goRealtime.setVisibility(View.VISIBLE);
-                    updateButtonColumn();
-                    updateData();
-                } else {
-                    Toast toast = Toast.makeText(getBaseContext(), getResources().getText(R.string.historic_timestep_limit_reached), 1000);
-                    toast.show();
-                }
-            }
-        });
-        buttonColumn.add(historyRewind);
-
-        historyForward = (ImageButton) findViewById(R.id.historyFfwd);
-        historyForward.setVisibility(View.INVISIBLE);
-        historyForward.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (dataHandler.ffwdInterval()) {
-                    if (dataHandler.isRealtime()) {
-                        disableButtonColumn();
-                        historyForward.setVisibility(View.INVISIBLE);
-                        goRealtime.setVisibility(View.INVISIBLE);
-                        updateButtonColumn();
-                    }
-                    updateData();
-                }
-            }
-        });
-        buttonColumn.add(historyForward);
-
-        goRealtime = (ImageButton) findViewById(R.id.goRealtime);
-        goRealtime.setVisibility(View.INVISIBLE);
-        goRealtime.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (dataHandler.goRealtime()) {
-                    disableButtonColumn();
-                    historyForward.setVisibility(View.INVISIBLE);
-                    goRealtime.setVisibility(View.INVISIBLE);
-                    updateButtonColumn();
-                    timerTask.restart();
-                    timerTask.enable();
-                }
-            }
-        });
-        buttonColumn.add(goRealtime);
-
-        final String androidId = Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        if (isDebugBuild() || (androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
-            ImageButton rasterToggle = (ImageButton) findViewById(R.id.toggleExtendedMode);
-            rasterToggle.setEnabled(true);
-            rasterToggle.setVisibility(View.VISIBLE);
-            rasterToggle.getDrawable().setAlpha(40);
-            rasterToggle.getBackground().setAlpha(40);
-
-            rasterToggle.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    disableButtonColumn();
-                    dataHandler.toggleExtendedMode();
-                    onDataReset();
-                }
-            });
-            buttonColumn.add(rasterToggle);
-        }
-
-        updateButtonColumn();
-
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
 
         if (getLastNonConfigurationInstance() == null) {
-            persistedData = new PersistedData((LocationManager) getSystemService(Context.LOCATION_SERVICE), preferences, pInfo);
+            persistor = new Persistor((LocationManager) getSystemService(Context.LOCATION_SERVICE), preferences, pInfo);
         } else {
-            persistedData = (PersistedData) getLastNonConfigurationInstance();
+            persistor = (Persistor) getLastNonConfigurationInstance();
         }
 
-        strokesOverlay = persistedData.getStrokesOverlay();
+        strokesOverlay = persistor.getStrokesOverlay();
         strokesOverlay.setActivity(this);
 
-        participantsOverlay = persistedData.getParticipantsOverlay();
+        participantsOverlay = persistor.getParticipantsOverlay();
         participantsOverlay.setActivity(this);
 
         getMapView().addZoomListener(new OwnMapView.ZoomListener() {
@@ -209,12 +137,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         mapOverlays.add(strokesOverlay);
         mapOverlays.add(participantsOverlay);
 
-        dataHandler = persistedData.getDataHandler();
+        dataHandler = persistor.getDataHandler();
         dataHandler.setDataListener(this);
 
-        int historyButtonsVisibility = strokesOverlay.hasRealtimeData() ? View.INVISIBLE : View.VISIBLE;
-        historyForward.setVisibility(historyButtonsVisibility);
-        goRealtime.setVisibility(historyButtonsVisibility);
         setHistoricStatusString();
 
         progressBar = (ProgressBar) findViewById(R.id.progress);
@@ -223,10 +148,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         errorIndicator = (ImageView) findViewById(R.id.error_indicator);
         errorIndicator.setVisibility(View.INVISIBLE);
 
-        timerTask = persistedData.getTimerTask();
+        timerTask = persistor.getTimerTask();
         timerTask.setListener(this);
 
-        alarmManager = persistedData.getAlarmManager();
+        alarmManager = persistor.getAlarmManager();
         alarmManager.clearAlarmListeners();
         alarmManager.addAlarmListener(this);
         if (alarmManager.isAlarmEnabled()) {
@@ -236,6 +161,48 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
 
+        buttonColumnHandler = new ButtonColumnHandler((RelativeLayout) findViewById(R.layout.map_overlay));
+        historyController = new HistoryController(this, dataHandler, timerTask);
+        historyController.setButtonHandler(buttonColumnHandler);
+        buttonColumnHandler.addAllElements(historyController.getButtons());
+
+        setupDebugModeButton();
+
+        buttonColumnHandler.updateButtonColumn();
+
+        setupCustomViews();
+
+        onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
+        onSharedPreferenceChanged(preferences, Preferences.MAP_FADE_KEY);
+        onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
+        onSharedPreferenceChanged(preferences, Preferences.NOTIFICATION_DISTANCE_LIMIT);
+        onSharedPreferenceChanged(preferences, Preferences.VIBRATION_DISTANCE_LIMIT);
+        onSharedPreferenceChanged(preferences, Preferences.DO_NOT_SLEEP);
+
+        getMapView().invalidate();
+    }
+
+    private void setupDebugModeButton() {
+        final String androidId = Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        if (isDebugBuild() || (androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
+            ImageButton rasterToggle = (ImageButton) findViewById(R.id.toggleExtendedMode);
+            rasterToggle.setEnabled(true);
+            rasterToggle.setVisibility(View.VISIBLE);
+            rasterToggle.getDrawable().setAlpha(40);
+            rasterToggle.getBackground().setAlpha(40);
+
+            rasterToggle.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    buttonColumnHandler.disableButtonColumn();
+                    dataHandler.toggleExtendedMode();
+                    onDataReset();
+                }
+            });
+            buttonColumnHandler.addElement(rasterToggle);
+        }
+    }
+
+    private void setupCustomViews() {
         LegendView legendView = (LegendView) findViewById(R.id.legend_view);
         strokesOverlay.setIntervalDuration(dataHandler.getIntervalDuration());
         legendView.setStrokesOverlay(strokesOverlay);
@@ -249,26 +216,12 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         HistogramView histogramView = (HistogramView) findViewById(R.id.histogram_view);
         histogramView.setStrokesOverlay(strokesOverlay);
-        if (persistedData.getCurrentResult() != null) {
-            histogramView.onDataUpdate(persistedData.getCurrentResult());
+        if (persistor.hasCurrentResult()) {
+            histogramView.onDataUpdate(persistor.getCurrentResult());
         }
         addDataListener(histogramView);
-
-        onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
-        onSharedPreferenceChanged(preferences, Preferences.MAP_FADE_KEY);
-        onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
-        onSharedPreferenceChanged(preferences, Preferences.NOTIFICATION_DISTANCE_LIMIT);
-        onSharedPreferenceChanged(preferences, Preferences.VIBRATION_DISTANCE_LIMIT);
-        onSharedPreferenceChanged(preferences, Preferences.DO_NOT_SLEEP);
-
-        getMapView().invalidate();
     }
 
-    private void updateData() {
-        DataHandler.UpdateTargets updateTargets = new DataHandler.UpdateTargets();
-        updateTargets.updateStrokes();
-        dataHandler.updateData(updateTargets);
-    }
 
     private void addDataListener(DataListener listener) {
         dataListeners.add(listener);
@@ -278,7 +231,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public Object onRetainNonConfigurationInstance() {
         strokesOverlay.clearPopup();
         participantsOverlay.clearPopup();
-        return persistedData;
+        return persistor;
     }
 
     public boolean isDebugBuild() {
@@ -350,8 +303,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public void onBeforeDataUpdate() {
-        disableButtonColumn();
-
+        buttonColumnHandler.disableButtonColumn();
         progressBar.setVisibility(View.VISIBLE);
         progressBar.setProgress(0);
     }
@@ -359,17 +311,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     @Override
     public void onDataUpdate(DataResult result) {
 
-        if (dataHandler.isCapableOfHistoricalData()) {
-            historyRewind.setVisibility(View.VISIBLE);
-        } else {
-            historyRewind.setVisibility(View.INVISIBLE);
-            historyForward.setVisibility(View.INVISIBLE);
-            goRealtime.setVisibility(View.INVISIBLE);
-        }
+        historyController.setRealtimeData(result.containsRealtimeData());
 
         Parameters resultParameters = result.getParameters();
 
-        persistedData.setCurrentResult(result);
+        persistor.setCurrentResult(result);
 
         clearDataIfRequested();
 
@@ -404,9 +350,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         progressBar.setVisibility(View.INVISIBLE);
         progressBar.setProgress(progressBar.getMax());
 
-        enableButtonColumn();
+        buttonColumnHandler.enableButtonColumn();
         getMapView().invalidate();
-
     }
 
     private void clearDataIfRequested() {
@@ -433,7 +378,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public void setErrorIndicator(boolean displayError) {
-        errorIndicator.setVisibility(displayError ? View.VISIBLE : View.INVISIBLE);    }
+        errorIndicator.setVisibility(displayError ? View.VISIBLE : View.INVISIBLE);
+    }
 
 
     protected Dialog onCreateDialog(int id) {
@@ -578,38 +524,4 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         }
     }
 
-    private void updateButtonColumn() {
-        RelativeLayout parent = (RelativeLayout)findViewById(R.layout.map_overlay);
-        int previousIndex = -1;
-        for (int currentIndex=0; currentIndex<buttonColumn.size(); currentIndex++) {
-            ImageButton button = buttonColumn.get(currentIndex);
-            if (button.getVisibility() == View.VISIBLE) {
-                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) button.getLayoutParams();
-                        //RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
-                        //RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.FILL_PARENT);
-                if (previousIndex < 0) {
-                    lp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 1);
-                    lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 1);
-                } else {
-                    lp.addRule(RelativeLayout.BELOW, buttonColumn.get(previousIndex).getId());
-                }
-                button.setLayoutParams(lp);
-                previousIndex = currentIndex;
-            }
-        }
-    }
-
-    private void disableButtonColumn() {
-       setEnableForButtonColumn(false);
-    }
-
-    private void enableButtonColumn() {
-        setEnableForButtonColumn(true);
-    }
-
-    private void setEnableForButtonColumn(boolean enabled) {
-        for (ImageButton button : buttonColumn) {
-            button.setEnabled(enabled);
-        }
-    }
 }
