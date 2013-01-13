@@ -24,8 +24,9 @@ import com.google.android.maps.Overlay;
 import org.blitzortung.android.alarm.AlarmLabel;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmStatus;
-import org.blitzortung.android.app.model.ButtonColumnHandler;
-import org.blitzortung.android.app.model.HistoryController;
+import org.blitzortung.android.app.controller.ButtonColumnHandler;
+import org.blitzortung.android.app.controller.HistoryController;
+import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
@@ -65,7 +66,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private AlarmManager alarmManager;
 
-    private NotificationManager notificationManager;
+    private NotificationHandler notificationHandler;
 
     private DataHandler dataHandler;
 
@@ -151,13 +152,14 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         timerTask = persistor.getTimerTask();
         timerTask.setListener(this);
 
+        notificationHandler = new NotificationHandler(this);
+
         alarmManager = persistor.getAlarmManager();
         alarmManager.clearAlarmListeners();
         alarmManager.addAlarmListener(this);
         if (alarmManager.isAlarmEnabled()) {
             onAlarmResult(alarmManager.getAlarmStatus());
         }
-        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
 
@@ -486,34 +488,18 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             }
 
             if (alarmStatus.getClosestStrokeDistance() <= notificationDistanceLimit) {
-                sendNotification(getResources().getString(R.string.activity) + ": " + alarmStatus.getTextMessage(notificationDistanceLimit));
+                notificationHandler.sendNotification(getResources().getString(R.string.activity) + ": " + alarmStatus.getTextMessage(notificationDistanceLimit));
             } else {
-                clearNotification();
+                notificationHandler.clearNotification();
             }
         } else {
-            clearNotification();
+            notificationHandler.clearNotification();
         }
     }
 
     @Override
     public void onAlarmClear() {
         warning.setText("");
-    }
-
-    private void sendNotification(String notificationText) {
-        if (notificationManager != null) {
-            Notification notification = new Notification(R.drawable.icon, notificationText, System.currentTimeMillis());
-            PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, Main.class), 0);
-            notification.setLatestEventInfo(this, getResources().getText(R.string.app_name), notificationText, contentIntent);
-
-            notificationManager.notify(R.id.alarm_notification_id, notification);
-        }
-    }
-
-    private void clearNotification() {
-        if (notificationManager != null) {
-            notificationManager.cancel(R.id.alarm_notification_id);
-        }
     }
 
     private void updatePackageInfo() {

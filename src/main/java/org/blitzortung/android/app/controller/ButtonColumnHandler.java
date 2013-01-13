@@ -1,4 +1,4 @@
-package org.blitzortung.android.app.model;
+package org.blitzortung.android.app.controller;
 
 import android.view.View;
 import android.widget.RelativeLayout;
