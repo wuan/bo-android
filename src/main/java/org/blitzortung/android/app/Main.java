@@ -82,7 +82,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private final Set<DataListener> dataListeners = new HashSet<DataListener>();
 
-    private final Set<String> androidIdsForExtendedFunctionality = new HashSet<String>(Arrays.asList("e73c5a22934b5915"));
+    private final Set<String> androidIdsForExtendedFunctionality = new HashSet<String>(Arrays.asList("e73c5a22934b5915", "e72d101ce1bcdee3"));
 
     private PackageInfo pInfo;
 

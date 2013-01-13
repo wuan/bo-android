@@ -1,4 +1,5 @@
 TODO:
+ * configurable location sources (network, gps and manual)
  * sound alarm
  * layer configuration
  * custom layers
