@@ -131,12 +131,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         });
 
-        List<Overlay> mapOverlays = getMapView().getOverlays();
-
         fadeOverlay = new FadeOverlay(strokesOverlay.getColorHandler());
-        mapOverlays.add(fadeOverlay);
-        mapOverlays.add(strokesOverlay);
-        mapOverlays.add(participantsOverlay);
+        addOverlays(fadeOverlay, strokesOverlay, participantsOverlay);
 
         dataHandler = persistor.getDataHandler();
         dataHandler.setDataListener(this);

@@ -2,6 +2,7 @@ package org.blitzortung.android.map;
 
 import android.view.View;
 import com.google.android.maps.MapActivity;
+import com.google.android.maps.Overlay;
 import org.blitzortung.android.app.R;
 
 public abstract class OwnMapActivity extends MapActivity {
@@ -23,5 +24,11 @@ public abstract class OwnMapActivity extends MapActivity {
     
     public OwnMapView getMapView() {
     	return mapView;
+    }
+
+    public void addOverlays(Overlay... overlays) {
+        for (Overlay overlay : overlays) {
+            mapView.getOverlays().add(overlay);
+        }
     }
 }
