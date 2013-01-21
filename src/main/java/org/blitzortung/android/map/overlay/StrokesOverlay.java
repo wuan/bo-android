@@ -40,6 +40,12 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
 
     private long referenceTime;
 
+    private final Point drawCenter;
+
+    private final Point drawTopLeft;
+
+    private final Point drawBottomRight;
+
     static {
         Shape shape = new StrokeShape(1, 0);
         DefaultDrawable = new ShapeDrawable(shape);
@@ -51,6 +57,10 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         this.colorHandler = colorHandler;
 
         items = new ArrayList<StrokeOverlayItem>();
+
+        drawCenter = new Point();
+        drawTopLeft = new Point();
+        drawBottomRight = new Point();
 
         populate();
     }
@@ -70,7 +80,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         if (!shadow) {
             super.draw(canvas, mapView, false);
 
-            if (getRasterParameters()) {
+            if (hasRasterParameters()) {
                 Paint paint = new Paint();
                 paint.setColor(colorHandler.getLineColor());
                 paint.setStyle(Style.STROKE);
@@ -81,7 +91,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
     }
 
     public void addStrokes(List<AbstractStroke> strokes) {
-        if (getRasterParameters()) {
+        if (hasRasterParameters()) {
             items.clear();
         }
 
@@ -89,7 +99,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
             items.add(new StrokeOverlayItem(stroke));
         }
 
-        if (!getRasterParameters()) {
+        if (!hasRasterParameters()) {
             long expireTime = System.currentTimeMillis() - intervalDuration * 60 * 1000;
             expireStrokes(expireTime);
         }
@@ -144,7 +154,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         for (StrokeOverlayItem item : items) {
             int section = colorHandler.getColorSection(now, item.getTimestamp(), this);
 
-            if (getRasterParameters() || current_section != section) {
+            if (hasRasterParameters() || current_section != section) {
                 drawable = getDrawable(item, section, colorHandler);
             }
 
@@ -161,17 +171,17 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
 
         int color = colorHandler.getColor(section);
 
-        if (getRasterParameters()) {
-            float lon_delta = rasterParameters.getLongitudeDelta() / 2.0f * 1e6f;
-            float lat_delta = rasterParameters.getLatitudeDelta() / 2.0f * 1e6f;
+        if (hasRasterParameters()) {
+            float lon_delta = getRasterParameters().getLongitudeDelta() / 2.0f * 1e6f;
+            float lat_delta = getRasterParameters().getLatitudeDelta() / 2.0f * 1e6f;
             GeoPoint geoPoint = item.getPoint();
-            Point center = projection.toPixels(geoPoint, null);
+            Point center = projection.toPixels(geoPoint, drawCenter);
             Point topLeft = projection.toPixels(new GeoPoint(
                     (int) (geoPoint.getLatitudeE6() + lat_delta),
-                    (int) (geoPoint.getLongitudeE6() - lon_delta)), null);
+                    (int) (geoPoint.getLongitudeE6() - lon_delta)), drawTopLeft);
             Point bottomRight = projection.toPixels(new GeoPoint(
                     (int) (geoPoint.getLatitudeE6() - lat_delta),
-                    (int) (geoPoint.getLongitudeE6() + lon_delta)), null);
+                    (int) (geoPoint.getLongitudeE6() + lon_delta)), drawBottomRight);
             topLeft.offset(-center.x, -center.y);
             bottomRight.offset(-center.x, -center.y);
             shape = new RasterShape(topLeft, bottomRight, color, item.getMultiplicity(), colorHandler.getTextColor());
@@ -186,8 +196,12 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         this.rasterParameters = rasterParameters;
     }
 
-    public boolean getRasterParameters() {
+    public boolean hasRasterParameters() {
         return rasterParameters != null;
+    }
+
+    public RasterParameters getRasterParameters() {
+        return rasterParameters;
     }
 
     public boolean hasRealtimeData() {

@@ -3,16 +3,23 @@ package org.blitzortung.android.map.overlay;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.preference.PreferenceManager;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
+import com.google.android.maps.Projection;
 import com.google.common.collect.Lists;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import com.xtremelabs.robolectric.internal.Implementation;
 import com.xtremelabs.robolectric.internal.Implements;
+import com.xtremelabs.robolectric.shadows.ShadowPath;
 import org.blitzortung.android.data.TimeIntervalWithOffset;
 import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.map.OwnMapActivity;
+import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 import org.junit.Before;
@@ -41,32 +48,39 @@ public class StrokesOverlayTest {
         }
 
     }
+
     private StrokesOverlay strokesOverlay;
 
     @Mock
     private StrokeColorHandler colorHandler;
 
-    private final int[] colors = new int[]{1,2,3};
+    @Mock
+    private OwnMapActivity ownMapActivity;
+
+    @Mock
+    private OwnMapView ownMapView;
+
+    private final int[] colors = new int[]{1, 2, 3};
 
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         when(colorHandler.getColors()).thenReturn(colors);
 
         strokesOverlay = spy(new StrokesOverlay(colorHandler));
+
+        strokesOverlay.setActivity(ownMapActivity);
+        when(ownMapActivity.getMapView()).thenReturn(ownMapView);
     }
 
     @Test
-    public void testConstruct()
-    {
+    public void testConstruct() {
         assertThat(strokesOverlay.size(), is(0));
     }
 
     @Test
-    public void testAddAndExpireStrokes()
-    {
+    public void testAddAndExpireStrokes() {
         doNothing().when(strokesOverlay).expireStrokes(anyLong());
 
         List<AbstractStroke> strokes = Lists.newArrayList();
@@ -89,8 +103,7 @@ public class StrokesOverlayTest {
     }
 
     @Test
-    public void testClear()
-    {
+    public void testClear() {
         doReturn(true).when(strokesOverlay).clearPopup();
 
         strokesOverlay.addStrokes(Lists.newArrayList(mock(AbstractStroke.class)));
@@ -101,15 +114,13 @@ public class StrokesOverlayTest {
     }
 
     @Test
-    public void testUpdateZoomLevel()
-    {
+    public void testUpdateZoomLevel() {
         strokesOverlay.updateZoomLevel(5);
         verify(strokesOverlay, times(1)).refresh();
     }
 
     @Test
-    public void testRefresh()
-    {
+    public void testRefresh() {
         doReturn(mock(Drawable.class)).when(strokesOverlay).getDrawable(any(StrokeOverlayItem.class), anyInt(), any(ColorHandler.class));
 
         StrokeOverlayItem strokeOverlayItem = mock(StrokeOverlayItem.class);
@@ -128,8 +139,64 @@ public class StrokesOverlayTest {
     }
 
     @Test
-    public void testCreateItem()
-    {
+    public void testGetDrawable() {
+        StrokeOverlayItem strokeOverlayItem = mock(StrokeOverlayItem.class);
+
+        int section = 2;
+        int color = 1234;
+
+        when(colorHandler.getColor(section)).thenReturn(color);
+
+        Drawable drawable = strokesOverlay.getDrawable(strokeOverlayItem, section, colorHandler);
+
+        assertThat(drawable, is(ShapeDrawable.class));
+
+        ShapeDrawable shapeDrawable = (ShapeDrawable) drawable;
+    }
+
+    @Test
+    public void testGetDrawableForRaster() {
+        Projection projection = mock(Projection.class);
+        when(ownMapView.getProjection()).thenReturn(projection);
+
+        RasterParameters rasterParameters = mock(RasterParameters.class);
+
+        StrokeOverlayItem strokeOverlayItem = mock(StrokeOverlayItem.class);
+
+        GeoPoint center = mock(GeoPoint.class);
+        when(center.getLatitudeE6()).thenReturn(49000000);
+        when(center.getLongitudeE6()).thenReturn(11000000);
+
+        Point centerPoint = mock(Point.class);
+        Point topLeftPoint = mock(Point.class);
+        Point bottomRightPoint = mock(Point.class);
+        when(projection.toPixels(any(GeoPoint.class), any(Point.class)))
+                .thenReturn(centerPoint)
+                .thenReturn(topLeftPoint)
+                .thenReturn(bottomRightPoint);
+
+        when(strokeOverlayItem.getPoint()).thenReturn(center);
+        when(strokesOverlay.hasRasterParameters()).thenReturn(true);
+        when(strokesOverlay.getRasterParameters()).thenReturn(rasterParameters);
+
+        int section = 2;
+        int color = 1234;
+
+        when(colorHandler.getColor(section)).thenReturn(color);
+
+        Drawable drawable = strokesOverlay.getDrawable(strokeOverlayItem, section, colorHandler);
+
+        verify(projection, times(1)).toPixels(eq(center), any(Point.class));
+        verify(projection, times(3)).toPixels(any(GeoPoint.class), any(Point.class));
+
+        assertThat(drawable, is(ShapeDrawable.class));
+
+        ShapeDrawable shapeDrawable = (ShapeDrawable) drawable;
+    }
+
+
+    @Test
+    public void testCreateItem() {
         doNothing().when(strokesOverlay).expireStrokes(anyLong());
         strokesOverlay.setIntervalDuration(100);
         strokesOverlay.addStrokes(Lists.newArrayList(mock(AbstractStroke.class)));
@@ -139,11 +206,10 @@ public class StrokesOverlayTest {
     }
 
     @Test
-    public void testOnTapItem()
-    {
+    public void testOnTapItem() {
         long currentTime = System.currentTimeMillis();
         StrokeOverlayItem strokeOverlayItem = mock(StrokeOverlayItem.class);
-        GeoPoint point = new GeoPoint(11000000,49000000);
+        GeoPoint point = new GeoPoint(11000000, 49000000);
         when(strokeOverlayItem.getPoint()).thenReturn(point);
         when(strokeOverlayItem.getTimestamp()).thenReturn(currentTime);
         when(strokeOverlayItem.getMultiplicity()).thenReturn(1);
@@ -161,8 +227,7 @@ public class StrokesOverlayTest {
     }
 
     @Test
-    public void testOnTapMap()
-    {
+    public void testOnTapMap() {
         doReturn(false).when(strokesOverlay).clearPopup();
 
         strokesOverlay.onTap(mock(GeoPoint.class), mock(MapView.class));
