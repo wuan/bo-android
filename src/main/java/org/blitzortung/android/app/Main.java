@@ -1,9 +1,6 @@
 package org.blitzortung.android.app;
 
 import android.app.Dialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,8 +17,7 @@ import android.provider.Settings;
 import android.text.format.DateFormat;
 import android.view.*;
 import android.widget.*;
-import com.google.android.maps.Overlay;
-import org.blitzortung.android.alarm.AlarmLabel;
+import org.blitzortung.android.alarm.AlarmLabelHandler;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmStatus;
 import org.blitzortung.android.app.controller.ButtonColumnHandler;
@@ -30,12 +26,14 @@ import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
+import org.blitzortung.android.app.view.components.StatusComponent;
 import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.dialogs.AlarmDialog;
 import org.blitzortung.android.dialogs.InfoDialog;
+import org.blitzortung.android.dialogs.LayerDialog;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.overlay.FadeOverlay;
@@ -48,13 +46,7 @@ import java.util.*;
 public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, TimerTask.TimerUpdateListener,
         AlarmManager.AlarmListener {
 
-    protected TextView status;
-
-    private TextView warning;
-
-    private ProgressBar progressBar;
-
-    private ImageView errorIndicator;
+    protected StatusComponent statusComponent;
 
     private FadeOverlay fadeOverlay;
 
@@ -98,10 +90,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         setContentView(isDebugBuild() ? R.layout.main_debug : R.layout.main);
 
-        warning = (TextView) findViewById(R.id.warning);
-
-        status = (TextView) findViewById(R.id.status);
-
         setMapView((OwnMapView) findViewById(R.id.mapview));
 
         getMapView().setBuiltInZoomControls(true);
@@ -110,16 +98,14 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         preferences.registerOnSharedPreferenceChangeListener(this);
 
         if (getLastNonConfigurationInstance() == null) {
-            persistor = new Persistor((LocationManager) getSystemService(Context.LOCATION_SERVICE), preferences, pInfo);
+            persistor = new Persistor(this, (LocationManager) getSystemService(Context.LOCATION_SERVICE), preferences, pInfo);
         } else {
             persistor = (Persistor) getLastNonConfigurationInstance();
         }
+        persistor.updateContext(this);
 
         strokesOverlay = persistor.getStrokesOverlay();
-        strokesOverlay.setActivity(this);
-
         participantsOverlay = persistor.getParticipantsOverlay();
-        participantsOverlay.setActivity(this);
 
         getMapView().addZoomListener(new OwnMapView.ZoomListener() {
 
@@ -135,30 +121,20 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         addOverlays(fadeOverlay, strokesOverlay, participantsOverlay);
 
         dataHandler = persistor.getDataHandler();
-        dataHandler.setDataListener(this);
-
         setHistoricStatusString();
-
-        progressBar = (ProgressBar) findViewById(R.id.progress);
-        progressBar.setVisibility(View.INVISIBLE);
-
-        errorIndicator = (ImageView) findViewById(R.id.error_indicator);
-        errorIndicator.setVisibility(View.INVISIBLE);
-
         timerTask = persistor.getTimerTask();
-        timerTask.setListener(this);
 
         notificationHandler = new NotificationHandler(this);
 
         alarmManager = persistor.getAlarmManager();
-        alarmManager.clearAlarmListeners();
-        alarmManager.addAlarmListener(this);
+
         if (alarmManager.isAlarmEnabled()) {
             onAlarmResult(alarmManager.getAlarmStatus());
         }
 
         ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
 
+        statusComponent = new StatusComponent(this);
         buttonColumnHandler = new ButtonColumnHandler((RelativeLayout) findViewById(R.layout.map_overlay));
         historyController = new HistoryController(this, dataHandler, timerTask);
         historyController.setButtonHandler(buttonColumnHandler);
@@ -263,6 +239,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 showDialog(R.id.alarm_dialog);
                 break;
 
+            case R.id.menu_layers:
+                showDialog(R.id.layer_dialog);
+                break;
+
             case R.id.menu_preferences:
                 startActivity(new Intent(this, Preferences.class));
                 break;
@@ -302,8 +282,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     @Override
     public void onBeforeDataUpdate() {
         buttonColumnHandler.disableButtonColumn();
-        progressBar.setVisibility(View.VISIBLE);
-        progressBar.setProgress(0);
+        statusComponent.startProgress();
     }
 
     @Override
@@ -345,8 +324,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             listener.onDataUpdate(result);
         }
 
-        progressBar.setVisibility(View.INVISIBLE);
-        progressBar.setProgress(progressBar.getMax());
+        statusComponent.stopProgress();
 
         buttonColumnHandler.enableButtonColumn();
         getMapView().invalidate();
@@ -375,8 +353,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     }
 
     @Override
-    public void setErrorIndicator(boolean displayError) {
-        errorIndicator.setVisibility(displayError ? View.VISIBLE : View.INVISIBLE);
+    public void setErrorIndicator(boolean indicateError) {
+        statusComponent.indicateError(indicateError);
     }
 
 
@@ -389,6 +367,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
             case R.id.alarm_dialog:
                 dialog = new AlarmDialog(this, alarmManager, strokesOverlay.getColorHandler(), strokesOverlay.getIntervalDuration());
+                break;
+
+            case R.id.layer_dialog:
+                dialog = new LayerDialog(this, getMapView());
                 break;
 
             default:
@@ -449,11 +431,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     protected void setStatusString(String runStatus) {
         int numberOfStrokes = strokesOverlay.getTotalNumberOfStrokes();
-        String statusString = getResources().getQuantityString(R.plurals.stroke, numberOfStrokes, numberOfStrokes);
-        statusString += "/";
+        String statusText = getResources().getQuantityString(R.plurals.stroke, numberOfStrokes, numberOfStrokes);
+        statusText += "/";
         int intervalDuration = strokesOverlay.getIntervalDuration();
-        statusString += getResources().getQuantityString(R.plurals.minute, intervalDuration, intervalDuration);
-        statusString += " " + runStatus;
+        statusText += getResources().getQuantityString(R.plurals.minute, intervalDuration, intervalDuration);
+        statusText += " " + runStatus;
 
         int region = strokesOverlay.getRegion();
         if (region != 0) {
@@ -461,21 +443,22 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             int index = 0;
             for (String region_number : regions) {
                 if (region == Integer.parseInt(region_number)) {
-                    statusString += " " + getResources().getStringArray(R.array.regions)[index];
+                    statusText += " " + getResources().getStringArray(R.array.regions)[index];
                     break;
                 }
                 index++;
             }
         }
 
-        status.setText(statusString);
+        statusComponent.setText(statusText);
+
     }
 
     @Override
     public void onAlarmResult(AlarmStatus alarmStatus) {
-        AlarmLabel alarmLabel = new AlarmLabel(warning, getResources());
+        AlarmLabelHandler alarmLabelHandler = new AlarmLabelHandler(statusComponent, getResources());
 
-        alarmLabel.apply(alarmStatus);
+        alarmLabelHandler.apply(alarmStatus);
 
         if (alarmStatus != null) {
             if (alarmStatus.getClosestStrokeDistance() <= vibrationDistanceLimit) {
@@ -495,7 +478,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public void onAlarmClear() {
-        warning.setText("");
+        statusComponent.setAlarmText("");
     }
 
     private void updatePackageInfo() {

@@ -218,4 +218,7 @@
     </string-array>
     <string name="do_not_sleep">kein Ruhezustand</string>
     <string name="do_not_sleep_summary">nicht in den Ruhezustand gehen, solange die App aktiv ist</string>
+    <string name="participants_layer">Participants location</string>
+    <string name="own_location_layer">Own location</string>
+    <string name="visible">visible</string>
 </resources>

@@ -16,13 +16,13 @@ public class AlarmDialog extends AlertDialog {
 		
 		setTitle(context.getString(R.string.alarms));
 
-		View menu = getLayoutInflater().inflate(R.layout.alarm_dialog, null);
+		View dialog = getLayoutInflater().inflate(R.layout.alarm_dialog, null);
 
-		AlarmView alarmView = (AlarmView) menu.findViewById(R.id.alarm_diagram);
+		AlarmView alarmView = (AlarmView) dialog.findViewById(R.id.alarm_diagram);
 		alarmView.setAlarmManager(alarmManager);
 		alarmView.setColorHandler(colorHandler, intervalDuration);
 		
-		setView(menu);
+		setView(dialog);
 	}
 
 	@Override

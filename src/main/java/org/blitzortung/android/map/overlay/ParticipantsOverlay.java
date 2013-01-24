@@ -1,18 +1,21 @@
 package org.blitzortung.android.map.overlay;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
+import org.blitzortung.android.app.R;
 import org.blitzortung.android.data.beans.Participant;
 import org.blitzortung.android.data.beans.Participant.State;
+import org.blitzortung.android.map.components.LayerOverlayComponent;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
-public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> {
+public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> implements LayerOverlay {
 
     // VisibleForTesting
     protected final ArrayList<ParticipantOverlayItem> items;
@@ -27,12 +30,15 @@ public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> {
     }
 
     private final EnumMap<State, Drawable> shapes = new EnumMap<State, Drawable>(State.class);
+    private final LayerOverlayComponent layerOverlayComponent;
 
     // VisibleForTesting
     protected int shapeSize;
 
-    public ParticipantsOverlay(ParticipantColorHandler colorHandler) {
+    public ParticipantsOverlay(Context context, ParticipantColorHandler colorHandler) {
         super(boundCenter(DefaultDrawable));
+
+        layerOverlayComponent = new LayerOverlayComponent(context.getResources().getString(R.string.participants_layer));
 
         this.colorHandler = colorHandler;
 
@@ -135,4 +141,28 @@ public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> {
         return String.format("%.1f d", time);
     }
 
+    @Override
+    public String getName() {
+        return layerOverlayComponent.getName();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return layerOverlayComponent.isEnabled();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        layerOverlayComponent.setEnabled(enabled);
+    }
+
+    @Override
+    public boolean isVisible() {
+        return layerOverlayComponent.isVisible();
+    }
+
+    @Override
+    public void setVisibility(boolean visible) {
+        layerOverlayComponent.setVisibility(visible);
+    }
 }

@@ -42,6 +42,9 @@ public class ParticipantsOverlayTest {
     private ParticipantsOverlay participantsOverlay;
 
     @Mock
+    private Context context;
+
+    @Mock
     private ParticipantColorHandler colorHandler;
 
     private final int[] colors = new int[]{1,2,3};
@@ -53,7 +56,7 @@ public class ParticipantsOverlayTest {
 
         when(colorHandler.getColors()).thenReturn(colors);
 
-        participantsOverlay = spy(new ParticipantsOverlay(colorHandler));
+        participantsOverlay = spy(new ParticipantsOverlay(context, colorHandler));
     }
 
     @Test

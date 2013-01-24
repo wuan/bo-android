@@ -13,9 +13,11 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import com.google.android.maps.ItemizedOverlay;
 import org.blitzortung.android.app.Preferences;
+import org.blitzortung.android.app.R;
 import org.blitzortung.android.map.OwnMapView;
+import org.blitzortung.android.map.components.LayerOverlayComponent;
 
-public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> implements LocationListener, SharedPreferences.OnSharedPreferenceChangeListener {
+public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> implements LocationListener, SharedPreferences.OnSharedPreferenceChangeListener, LayerOverlay {
 
     static private final Drawable DEFAULT_DRAWABLE;
 
@@ -23,6 +25,8 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
         Shape shape = new OwnLocationShape(1);
         DEFAULT_DRAWABLE = new ShapeDrawable(shape);
     }
+
+    private final LayerOverlayComponent layerOverlayComponent;
 
     private OwnLocationOverlayItem item;
 
@@ -34,6 +38,8 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
 
     public OwnLocationOverlay(Context context, OwnMapView mapView) {
         super(DEFAULT_DRAWABLE);
+
+        layerOverlayComponent = new LayerOverlayComponent(context.getResources().getString(R.string.own_location_layer));
 
         item = null;
 
@@ -131,5 +137,30 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
                 disableOwnLocation();
             }
         }
+    }
+
+    @Override
+    public String getName() {
+        return layerOverlayComponent.getName();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return layerOverlayComponent.isEnabled();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        layerOverlayComponent.setEnabled(enabled);
+    }
+
+    @Override
+    public boolean isVisible() {
+        return layerOverlayComponent.isVisible();
+    }
+
+    @Override
+    public void setVisibility(boolean visible) {
+        layerOverlayComponent.setVisibility(visible);
     }
 }

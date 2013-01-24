@@ -1,5 +1,6 @@
 package org.blitzortung.android.app;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.location.LocationManager;
@@ -25,13 +26,24 @@ public class Persistor {
 
     private DataResult currentResult;
 
-    public Persistor(LocationManager locationManager, SharedPreferences sharedPreferences, PackageInfo pInfo) {
+    public Persistor(Context context, LocationManager locationManager, SharedPreferences sharedPreferences, PackageInfo pInfo) {
         provider = new DataHandler(sharedPreferences, pInfo);
 		timerTask = new TimerTask(sharedPreferences, provider);
 		alarmManager = new AlarmManager(locationManager, sharedPreferences, timerTask);
 		strokesOverlay = new StrokesOverlay(new StrokeColorHandler(sharedPreferences));
-		participantsOverlay = new ParticipantsOverlay(new ParticipantColorHandler(sharedPreferences));
+		participantsOverlay = new ParticipantsOverlay(context, new ParticipantColorHandler(sharedPreferences));
 	}
+
+    public void updateContext(Main context)
+    {
+        strokesOverlay.setActivity(context);
+        participantsOverlay.setActivity(context);
+        provider.setDataListener(context);
+        timerTask.setListener(context);
+
+        alarmManager.clearAlarmListeners();
+        alarmManager.addAlarmListener(context);
+    }
 
 	public StrokesOverlay getStrokesOverlay() {
 		return strokesOverlay;

@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_preferences"
-        android:icon="@android:drawable/ic_menu_preferences"
-        android:title="@string/preferences"/>
+            android:id="@+id/menu_preferences"
+            android:icon="@android:drawable/ic_menu_preferences"
+            android:title="@string/preferences"/>
 
     <item
-        android:id="@+id/menu_info"
-        android:icon="@android:drawable/ic_menu_info_details"
-        android:title="@string/info"/>
+            android:id="@+id/menu_info"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:title="@string/info"/>
 
     <item
-        android:id="@+id/menu_alarms"
-        android:icon="@android:drawable/ic_menu_view"
-        android:title="@string/alarms"/>
+            android:id="@+id/menu_alarms"
+            android:icon="@android:drawable/ic_menu_view"
+            android:title="@string/alarms"/>
+
+    <item
+            android:id="@+id/menu_layers"
+            android:icon="@android:drawable/ic_menu_mapmode"
+            android:title="@string/layers"/>
 
 </menu>

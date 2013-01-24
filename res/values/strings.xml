@@ -28,6 +28,7 @@
     <string name="minute">minute</string>
     <string name="alarms">Alarms</string>
     <string name="alarms_not_available">Alarms disabled\nor\nLocation information missing</string>
+    <string name="layers">Layers</string>
     <string name="preferences">Preferences</string>
     <string name="user_settings">User settings</string>
     <string name="username">Username</string>
@@ -249,4 +250,8 @@
     </string-array>
     <string name="do_not_sleep">Do not sleep</string>
     <string name="do_not_sleep_summary">do not go to sleep while application is open</string>
+    <string name="participants_layer">Participants location</string>
+    <string name="own_location_layer">Own location</string>
+    <string name="layer_name">Layer name</string>
+    <string name="visible">visible</string>
 </resources>
