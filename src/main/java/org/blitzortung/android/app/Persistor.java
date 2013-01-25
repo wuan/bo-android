@@ -30,7 +30,7 @@ public class Persistor {
         provider = new DataHandler(sharedPreferences, pInfo);
 		timerTask = new TimerTask(sharedPreferences, provider);
 		alarmManager = new AlarmManager(locationManager, sharedPreferences, timerTask);
-		strokesOverlay = new StrokesOverlay(new StrokeColorHandler(sharedPreferences));
+		strokesOverlay = new StrokesOverlay(context, new StrokeColorHandler(sharedPreferences));
 		participantsOverlay = new ParticipantsOverlay(context, new ParticipantColorHandler(sharedPreferences));
 	}
 

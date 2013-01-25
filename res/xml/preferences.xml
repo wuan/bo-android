@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceScreen android:title="@string/map_settings">
+    <PreferenceScreen android:title="@string/map_settings"
+            android:summary="@string/map_settings_summary">
         <ListPreference
                 android:defaultValue="SATELLITE"
                 android:enabled="true"
@@ -41,7 +42,8 @@
     </PreferenceScreen>
     <PreferenceScreen
             android:key="data_settings"
-            android:title="@string/data_settings">
+            android:title="@string/data_settings"
+            android:summary="@string/data_settings_summary">
         <ListPreference
                 android:defaultValue="1"
                 android:enabled="true"
@@ -117,7 +119,9 @@
                 android:title="@string/data_source"
                 android:summary="@string/data_source_summary"/>
     </PreferenceScreen>
-    <PreferenceScreen android:title="@string/location_settings">
+    <PreferenceScreen
+            android:title="@string/location_settings"
+            android:summary="@string/location_settings_summary">
         <ListPreference
                 android:defaultValue="Network"
                 android:enabled="true"
@@ -144,7 +148,9 @@
 
 
     </PreferenceScreen>
-    <PreferenceScreen android:title="@string/alarm_settings">
+    <PreferenceScreen
+            android:title="@string/alarm_settings"
+            android:summary="@string/alarm_settings_summary">
         <CheckBoxPreference
                 android:defaultValue="false"
                 android:enabled="true"

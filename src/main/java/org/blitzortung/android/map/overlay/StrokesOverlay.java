@@ -1,5 +1,6 @@
 package org.blitzortung.android.map.overlay;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
@@ -10,21 +11,24 @@ import android.graphics.drawable.shapes.Shape;
 import android.text.format.DateFormat;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.Projection;
+import org.blitzortung.android.app.R;
 import org.blitzortung.android.data.TimeIntervalWithOffset;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.map.components.LayerOverlayComponent;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements TimeIntervalWithOffset{
+public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements TimeIntervalWithOffset, LayerOverlay  {
 
     // VisibleForTesting
     protected final ArrayList<StrokeOverlayItem> items;
 
     private final StrokeColorHandler colorHandler;
+    private final LayerOverlayComponent layerOverlayComponent;
 
     private int zoomLevel;
 
@@ -51,9 +55,10 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         DefaultDrawable = new ShapeDrawable(shape);
     }
 
-    public StrokesOverlay(StrokeColorHandler colorHandler) {
+    public StrokesOverlay(Context context, StrokeColorHandler colorHandler) {
         super(boundCenter(DefaultDrawable));
 
+        layerOverlayComponent = new LayerOverlayComponent(context.getResources().getString(R.string.strokes_layer));
         this.colorHandler = colorHandler;
 
         items = new ArrayList<StrokeOverlayItem>();
@@ -264,5 +269,30 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
 
     public long getReferenceTime() {
         return referenceTime;
+    }
+
+    @Override
+    public String getName() {
+        return layerOverlayComponent.getName();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return layerOverlayComponent.isEnabled();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        layerOverlayComponent.setEnabled(enabled);
+    }
+
+    @Override
+    public boolean isVisible() {
+        return layerOverlayComponent.isVisible();
+    }
+
+    @Override
+    public void setVisibility(boolean visible) {
+        layerOverlayComponent.setVisibility(visible);
     }
 }

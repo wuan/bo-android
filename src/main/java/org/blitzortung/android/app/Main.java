@@ -90,9 +90,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         setContentView(isDebugBuild() ? R.layout.main_debug : R.layout.main);
 
-        setMapView((OwnMapView) findViewById(R.id.mapview));
+        OwnMapView mapView = (OwnMapView) findViewById(R.id.mapview);
+        setMapView(mapView);
 
-        getMapView().setBuiltInZoomControls(true);
+        mapView.setBuiltInZoomControls(true);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
@@ -107,7 +108,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         strokesOverlay = persistor.getStrokesOverlay();
         participantsOverlay = persistor.getParticipantsOverlay();
 
-        getMapView().addZoomListener(new OwnMapView.ZoomListener() {
+        mapView.addZoomListener(new OwnMapView.ZoomListener() {
 
             @Override
             public void onZoom(int zoomLevel) {
@@ -118,6 +119,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         });
 
         fadeOverlay = new FadeOverlay(strokesOverlay.getColorHandler());
+
         addOverlays(fadeOverlay, strokesOverlay, participantsOverlay);
 
         dataHandler = persistor.getDataHandler();
@@ -128,13 +130,14 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         alarmManager = persistor.getAlarmManager();
 
+        statusComponent = new StatusComponent(this);
+
         if (alarmManager.isAlarmEnabled()) {
             onAlarmResult(alarmManager.getAlarmStatus());
         }
 
         ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
 
-        statusComponent = new StatusComponent(this);
         buttonColumnHandler = new ButtonColumnHandler((RelativeLayout) findViewById(R.layout.map_overlay));
         historyController = new HistoryController(this, dataHandler, timerTask);
         historyController.setButtonHandler(buttonColumnHandler);

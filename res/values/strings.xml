@@ -14,12 +14,7 @@
     </plurals>
 
     <string name="info">Information</string>
-    <string name="info_text">Project home:\n\thttps://github.com/wuan/bo-android\n\nVisualized lightning data is
-        provided by the
-        <b>Blitzortung.org</b>
-        realtime lighning community project. Please refer to\n\thttp://blitzortung.org/\nfor further information or how
-        to participate.\n
-    </string>
+    <string name="info_text">Project home:\n\thttps://github.com/wuan/bo-android\n\nVisualized lightning data is\nprovided by the\n<b>Blitzortung.org</b>\nrealtime lighning community project. Please refer to\n\thttp://blitzortung.org/\nfor further information or how\nto participate.</string>
     <string name="copyright">© 2012, Andreas Würl\nblitzortung@tryb.de</string>
     <string name="legend">Legend</string>
     <string name="total_time">total time</string>
@@ -254,4 +249,9 @@
     <string name="own_location_layer">Own location</string>
     <string name="layer_name">Layer name</string>
     <string name="visible">visible</string>
+    <string name="strokes_layer">Strokes</string>
+    <string name="data_settings_summary">detailed settings to control data transmission and source</string>
+    <string name="map_settings_summary">Map mode and appearance related settings</string>
+    <string name="location_settings_summary">Location determination mode</string>
+    <string name="alarm_settings_summary">Alarm activation, background service and radiuses</string>
 </resources>

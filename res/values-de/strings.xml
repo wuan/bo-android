@@ -152,6 +152,24 @@
         <item>RPC</item>
     </string-array>
 
+    <string name="location_settings">Ortsbestimmung</string>
+    <string-array name="location_modes">
+        <item>Netzwerkbasiert</item>
+        <item>über GPS</item>
+        <item>manuelle Eingabe</item>
+    </string-array>
+    <string-array name="location_mode_values">
+        <item>NETWORK</item>
+        <item>GPS</item>
+        <item>MANUAL</item>
+    </string-array>
+    <string name="location_mode">Ortsbestimmungsmodus</string>
+    <string name="location_mode_summary">Auswahl der Methode zur Bestimmung des Aufenthaltsorts.</string>
+    <string name="longitude">geogr. Länge</string>
+    <string name="location_longitude_summary">manuelle Eingabe der geogr. Länge</string>
+    <string name="latitude">geogr. Breite</string>
+    <string name="location_latitude_summary">manuelle Eingabe der geogr. Breite</string>
+
     <string name="alarm_settings">Warneinstellungen</string>
     <string name="alarm_enabled">Warnung aktiv</string>
     <string name="alarm_enabled_summary">Überwachung der Gewitteraktivität um den aktuellen Standort</string>
@@ -218,7 +236,12 @@
     </string-array>
     <string name="do_not_sleep">kein Ruhezustand</string>
     <string name="do_not_sleep_summary">nicht in den Ruhezustand gehen, solange die App aktiv ist</string>
-    <string name="participants_layer">Participants location</string>
-    <string name="own_location_layer">Own location</string>
-    <string name="visible">visible</string>
+    <string name="participants_layer">Teilnehmende Stationen</string>
+    <string name="own_location_layer">Eigener Ort</string>
+    <string name="visible">sichtbar</string>
+    <string name="strokes_layer">Blitze</string>
+    <string name="data_settings_summary">detailed settings to control data transmission and source</string>
+    <string name="map_settings_summary">Map mode and appearance related settings</string>
+    <string name="location_settings_summary">Location determination mode</string>
+    <string name="alarm_settings_summary">Alarm activation, background service and radiuses</string>
 </resources>

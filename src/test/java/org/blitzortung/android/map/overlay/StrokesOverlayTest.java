@@ -3,6 +3,7 @@ package org.blitzortung.android.map.overlay;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
@@ -55,6 +56,12 @@ public class StrokesOverlayTest {
     private StrokeColorHandler colorHandler;
 
     @Mock
+    private Context context;
+
+    @Mock
+    private Resources resources;
+
+    @Mock
     private OwnMapActivity ownMapActivity;
 
     @Mock
@@ -66,9 +73,11 @@ public class StrokesOverlayTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        when(context.getResources()).thenReturn(resources);
+
         when(colorHandler.getColors()).thenReturn(colors);
 
-        strokesOverlay = spy(new StrokesOverlay(colorHandler));
+        strokesOverlay = spy(new StrokesOverlay(context, colorHandler));
 
         strokesOverlay.setActivity(ownMapActivity);
         when(ownMapActivity.getMapView()).thenReturn(ownMapView);

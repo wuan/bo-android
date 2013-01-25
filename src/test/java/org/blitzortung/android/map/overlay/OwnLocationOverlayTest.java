@@ -3,6 +3,7 @@ package org.blitzortung.android.map.overlay;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
@@ -48,6 +49,9 @@ public class OwnLocationOverlayTest {
     Context context;
 
     @Mock
+    Resources resources;
+
+    @Mock
     OwnMapView mapView;
 
     @Mock
@@ -67,6 +71,7 @@ public class OwnLocationOverlayTest {
 
         when(context.getSystemService(Context.LOCATION_SERVICE)).thenReturn(locationManager);
         when(context.getSharedPreferences(anyString(), anyInt())).thenReturn(sharedPreferences);
+        when(context.getResources()).thenReturn(resources);
         when(mapView.getOverlays()).thenReturn(overlays);
 
         ownLocationOverlay = new OwnLocationOverlay(context, mapView);
