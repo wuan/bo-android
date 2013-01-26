@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
+import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.DataHandler;
 import org.junit.After;
 import org.junit.Before;
@@ -33,8 +34,8 @@ public class TimerTaskTest {
     {
         MockitoAnnotations.initMocks(this);
 
-        when(sharedPreferences.getString(Preferences.QUERY_PERIOD_KEY, "60")).thenReturn("60");
-        when(sharedPreferences.getString(Preferences.BACKGROUND_QUERY_PERIOD_KEY, "0")).thenReturn("0");
+        when(sharedPreferences.getString(PreferenceKey.QUERY_PERIOD.toString(), "60")).thenReturn("60");
+        when(sharedPreferences.getString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), "0")).thenReturn("0");
 
         when(dataHandler.getIntervalDuration()).thenReturn(60);
 
@@ -51,8 +52,8 @@ public class TimerTaskTest {
     public void testConstruct()
     {
         verify(sharedPreferences, times(1)).registerOnSharedPreferenceChangeListener(any(TimerTask.class));
-        verify(sharedPreferences, times(1)).getString(Preferences.QUERY_PERIOD_KEY, "60");
-        verify(sharedPreferences, times(1)).getString(Preferences.BACKGROUND_QUERY_PERIOD_KEY, "0");
+        verify(sharedPreferences, times(1)).getString(PreferenceKey.QUERY_PERIOD.toString(), "60");
+        verify(sharedPreferences, times(1)).getString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), "0");
 
         assertThat(timerTask.getPeriod(), is(60));
         assertThat(timerTask.getBackgroundPeriod(), is(0));

@@ -3,6 +3,7 @@ package org.blitzortung.android.map.overlay.color;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import org.blitzortung.android.app.Preferences;
+import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.TimeIntervalWithOffset;
 
 public abstract class ColorHandler {
@@ -19,8 +20,8 @@ public abstract class ColorHandler {
 	}
 
 	public void updateTarget() {
-		target = ColorTarget.valueOf(preferences.getString(Preferences.MAP_TYPE_KEY, "SATELLITE"));
-        colorScheme = ColorScheme.valueOf(preferences.getString(Preferences.COLOR_SCHEME_KEY, ColorScheme.BLITZORTUNG.toString()));
+		target = ColorTarget.valueOf(preferences.getString(PreferenceKey.MAP_TYPE.toString(), "SATELLITE"));
+        colorScheme = ColorScheme.valueOf(preferences.getString(PreferenceKey.COLOR_SCHEME.toString(), ColorScheme.BLITZORTUNG.toString()));
 	}
 	
 	public final int[] getColors() {

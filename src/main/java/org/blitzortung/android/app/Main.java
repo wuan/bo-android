@@ -26,6 +26,7 @@ import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
+import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.app.view.components.StatusComponent;
 import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.DataListener;
@@ -78,7 +79,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private PackageInfo pInfo;
 
-    private ButtonColumnHandler buttonColumnHandler;
+    private ButtonColumnHandler<ImageButton> buttonColumnHandler;
 
     private HistoryController historyController;
 
@@ -138,7 +139,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
 
-        buttonColumnHandler = new ButtonColumnHandler((RelativeLayout) findViewById(R.layout.map_overlay));
+        buttonColumnHandler = new ButtonColumnHandler<ImageButton>((RelativeLayout) findViewById(R.layout.map_overlay));
         historyController = new HistoryController(this, dataHandler, timerTask);
         historyController.setButtonHandler(buttonColumnHandler);
         buttonColumnHandler.addAllElements(historyController.getButtons());
@@ -149,12 +150,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         setupCustomViews();
 
-        onSharedPreferenceChanged(preferences, Preferences.MAP_TYPE_KEY);
-        onSharedPreferenceChanged(preferences, Preferences.MAP_FADE_KEY);
-        onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
-        onSharedPreferenceChanged(preferences, Preferences.NOTIFICATION_DISTANCE_LIMIT);
-        onSharedPreferenceChanged(preferences, Preferences.VIBRATION_DISTANCE_LIMIT);
-        onSharedPreferenceChanged(preferences, Preferences.DO_NOT_SLEEP);
+        onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
+                PreferenceKey.NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.VIBRATION_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP);
 
         getMapView().invalidate();
     }
@@ -260,7 +257,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         timerTask.onResume(dataHandler.isRealtime());
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (preferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false)) {
+        if (preferences.getBoolean(PreferenceKey.SHOW_LOCATION.toString(), false)) {
             ownLocationOverlay.enableOwnLocation();
         }
     }
@@ -272,7 +269,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         timerTask.onPause();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (preferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false)) {
+        if (preferences.getBoolean(PreferenceKey.SHOW_LOCATION.toString(), false)) {
             ownLocationOverlay.disableOwnLocation();
         }
     }
@@ -383,39 +380,62 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(Preferences.MAP_TYPE_KEY)) {
-            String mapTypeString = sharedPreferences.getString(Preferences.MAP_TYPE_KEY, "SATELLITE");
-            getMapView().setSatellite(mapTypeString.equals("SATELLITE"));
-            strokesOverlay.refresh();
-            if (participantsOverlay != null) {
-                participantsOverlay.refresh();
-            }
-        } else if (key.equals(Preferences.COLOR_SCHEME_KEY)) {
-            strokesOverlay.refresh();
-            if (participantsOverlay != null) {
-                participantsOverlay.refresh();
-            }
-        } else if (key.equals(Preferences.MAP_FADE_KEY)) {
-            int alphaValue = Math.round(255.0f / 100.0f * sharedPreferences.getInt(Preferences.MAP_FADE_KEY, 40));
-            fadeOverlay.setAlpha(alphaValue);
-        } else if (key.equals(Preferences.RASTER_SIZE_KEY)) {
-            timerTask.restart();
-        } else if (key.equals(Preferences.REGION_KEY)) {
-            timerTask.restart();
-        } else if (key.equals(Preferences.NOTIFICATION_DISTANCE_LIMIT)) {
-            notificationDistanceLimit = Float.parseFloat(sharedPreferences.getString(Preferences.NOTIFICATION_DISTANCE_LIMIT, "50"));
-        } else if (key.equals(Preferences.VIBRATION_DISTANCE_LIMIT)) {
-            vibrationDistanceLimit = Float.parseFloat(sharedPreferences.getString(Preferences.VIBRATION_DISTANCE_LIMIT, "25"));
-        } else if (key.equals(Preferences.DO_NOT_SLEEP)) {
-            boolean doNotSleep = sharedPreferences.getBoolean(key, false);
-            int flag = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String keyString) {
+        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString));
+    }
 
-            if (doNotSleep) {
-                getWindow().addFlags(flag);
-            } else {
-                getWindow().clearFlags(flag);
-            }
+    private void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey... keys) {
+        for (PreferenceKey key : keys) {
+            onSharedPreferenceChanged(sharedPreferences, key);
+        }
+    }
+
+    private void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey key) {
+        switch (key) {
+            case MAP_TYPE:
+                String mapTypeString = sharedPreferences.getString(key.toString(), "SATELLITE");
+                getMapView().setSatellite(mapTypeString.equals("SATELLITE"));
+                strokesOverlay.refresh();
+                if (participantsOverlay != null) {
+                    participantsOverlay.refresh();
+                }
+                break;
+
+            case COLOR_SCHEME:
+                strokesOverlay.refresh();
+                if (participantsOverlay != null) {
+                    participantsOverlay.refresh();
+                }
+                break;
+
+            case MAP_FADE:
+                int alphaValue = Math.round(255.0f / 100.0f * sharedPreferences.getInt(key.toString(), 40));
+                fadeOverlay.setAlpha(alphaValue);
+                break;
+
+            case RASTER_SIZE:
+            case REGION:
+                timerTask.restart();
+                break;
+
+            case NOTIFICATION_DISTANCE_LIMIT:
+                notificationDistanceLimit = Float.parseFloat(sharedPreferences.getString(key.toString(), "50"));
+                break;
+
+            case VIBRATION_DISTANCE_LIMIT:
+                vibrationDistanceLimit = Float.parseFloat(sharedPreferences.getString(key.toString(), "25"));
+                break;
+
+            case DO_NOT_SLEEP:
+                boolean doNotSleep = sharedPreferences.getBoolean(key.toString(), false);
+                int flag = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+
+                if (doNotSleep) {
+                    getWindow().addFlags(flag);
+                } else {
+                    getWindow().clearFlags(flag);
+                }
+                break;
 
         }
     }

@@ -2,6 +2,7 @@ package org.blitzortung.android.map.overlay.color;
 
 import android.content.SharedPreferences;
 import org.blitzortung.android.app.Preferences;
+import org.blitzortung.android.app.view.PreferenceKey;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -22,8 +23,8 @@ public class ParticipantColorHandlerTest {
     {
         MockitoAnnotations.initMocks(this);
 
-        when(sharedPreferences.getString(Preferences.MAP_TYPE_KEY, ColorTarget.SATELLITE.toString())).thenReturn(ColorTarget.SATELLITE.toString());
-        when(sharedPreferences.getString(Preferences.COLOR_SCHEME_KEY, ColorScheme.BLITZORTUNG.toString())).thenReturn(ColorScheme.BLITZORTUNG.toString());
+        when(sharedPreferences.getString(PreferenceKey.MAP_TYPE.toString(), ColorTarget.SATELLITE.toString())).thenReturn(ColorTarget.SATELLITE.toString());
+        when(sharedPreferences.getString(PreferenceKey.COLOR_SCHEME.toString(), ColorScheme.BLITZORTUNG.toString())).thenReturn(ColorScheme.BLITZORTUNG.toString());
 
         participantColorHandler = new ParticipantColorHandler(sharedPreferences);
     }

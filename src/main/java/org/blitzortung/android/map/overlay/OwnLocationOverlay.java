@@ -14,6 +14,7 @@ import android.preference.PreferenceManager;
 import com.google.android.maps.ItemizedOverlay;
 import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.R;
+import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.components.LayerOverlayComponent;
 
@@ -65,7 +66,7 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         preferences.registerOnSharedPreferenceChangeListener(this);
-        onSharedPreferenceChanged(preferences, Preferences.SHOW_LOCATION_KEY);
+        onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_LOCATION.toString());
 
         refresh();
     }
@@ -127,9 +128,13 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(Preferences.SHOW_LOCATION_KEY)) {
-            boolean showLocation = sharedPreferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false);
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String keyString) {
+        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString));
+    }
+
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey key) {
+        if (key == PreferenceKey.SHOW_LOCATION) {
+            boolean showLocation = sharedPreferences.getBoolean(key.toString(), false);
 
             if (showLocation) {
                 enableOwnLocation();

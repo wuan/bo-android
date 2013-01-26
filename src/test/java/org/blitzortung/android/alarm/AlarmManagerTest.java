@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.TimerTask;
+import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataResult;
@@ -46,12 +47,12 @@ public class AlarmManagerTest {
     {
         MockitoAnnotations.initMocks(this);
 
-        when(sharedPreferences.getString(Preferences.MEASUREMENT_UNIT_KEY, MeasurementSystem.METRIC.toString())).thenReturn(MeasurementSystem.METRIC.toString());
+        when(sharedPreferences.getString(PreferenceKey.MEASUREMENT_UNIT.toString(), MeasurementSystem.METRIC.toString())).thenReturn(MeasurementSystem.METRIC.toString());
 
         alarmManager = spy(new AlarmManager(locationManager, sharedPreferences, timerTask));
         alarmManager.addAlarmListener(alarmListener);
 
-        verify(sharedPreferences, times(1)).getString(Preferences.MEASUREMENT_UNIT_KEY, MeasurementSystem.METRIC.toString());
+        verify(sharedPreferences, times(1)).getString(PreferenceKey.MEASUREMENT_UNIT.toString(), MeasurementSystem.METRIC.toString());
     }
 
     @Test
@@ -62,7 +63,7 @@ public class AlarmManagerTest {
         assertThat(alarmManager.getAlarmStatus(), is(nullValue()));
 
         verify(sharedPreferences, times(1)).registerOnSharedPreferenceChangeListener(any(AlarmManager.class));
-        verify(sharedPreferences, times(1)).getBoolean(Preferences.ALARM_ENABLED_KEY, false);
+        verify(sharedPreferences, times(1)).getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false);
         verify(locationManager, times(1)).removeUpdates(any(AlarmManager.class));
         verify(timerTask, times(1)).setAlarmEnabled(false);
 
@@ -72,9 +73,9 @@ public class AlarmManagerTest {
     @Test
     public void testOnSharedPreferecesChangeWithAlarmDisabled()
     {
-        when(sharedPreferences.getBoolean(Preferences.ALARM_ENABLED_KEY, false)).thenReturn(false);
+        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(false);
 
-        alarmManager.onSharedPreferenceChanged(sharedPreferences, Preferences.ALARM_ENABLED_KEY);
+        alarmManager.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.ALARM_ENABLED.toString());
 
         assertFalse(alarmManager.isAlarmEnabled());
 
@@ -112,9 +113,9 @@ public class AlarmManagerTest {
     }
 
     private void enableAlarm() {
-        when(sharedPreferences.getBoolean(Preferences.ALARM_ENABLED_KEY, false)).thenReturn(true);
+        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(true);
 
-        alarmManager.onSharedPreferenceChanged(sharedPreferences, Preferences.ALARM_ENABLED_KEY);
+        alarmManager.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.ALARM_ENABLED.toString());
     }
 
     @Test

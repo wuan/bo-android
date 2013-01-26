@@ -6,8 +6,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.TimerTask;
+import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.util.MeasurementSystem;
 
@@ -17,124 +17,131 @@ import java.util.Set;
 public class AlarmManager implements OnSharedPreferenceChangeListener, LocationListener {
 
     public interface AlarmListener {
-		void onAlarmResult(AlarmStatus alarmStatus);
+        void onAlarmResult(AlarmStatus alarmStatus);
 
-		void onAlarmClear();
-	}
+        void onAlarmClear();
+    }
 
     private final long alarmInterval;
 
     private final TimerTask timerTask;
 
-	private final LocationManager locationManager;
-
-    private final String locationProvider = LocationManager.NETWORK_PROVIDER;
+    private final LocationManager locationManager;
 
     private Location location;
 
-	private boolean alarmEnabled;
+    private boolean alarmEnabled;
 
     private MeasurementSystem measurementSystem;
 
     // VisibleForTesting
-	protected final Set<AlarmListener> alarmListeners;
+    protected final Set<AlarmListener> alarmListeners;
 
-	private AlarmStatus alarmStatus;
+    private AlarmStatus alarmStatus;
 
-	public AlarmManager(LocationManager locationManager, SharedPreferences preferences, TimerTask timerTask) {
-		this.timerTask = timerTask;
+    public AlarmManager(LocationManager locationManager, SharedPreferences preferences, TimerTask timerTask) {
+        this.timerTask = timerTask;
 
-		alarmListeners = new HashSet<AlarmListener>();
+        alarmListeners = new HashSet<AlarmListener>();
 
-		this.locationManager = locationManager;
+        this.locationManager = locationManager;
 
-		preferences.registerOnSharedPreferenceChangeListener(this);
-		onSharedPreferenceChanged(preferences, Preferences.ALARM_ENABLED_KEY);
-        onSharedPreferenceChanged(preferences, Preferences.MEASUREMENT_UNIT_KEY);
+        preferences.registerOnSharedPreferenceChangeListener(this);
+        onSharedPreferenceChanged(preferences, PreferenceKey.ALARM_ENABLED);
+        onSharedPreferenceChanged(preferences, PreferenceKey.MEASUREMENT_UNIT);
         alarmInterval = 600000;
     }
 
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals(Preferences.ALARM_ENABLED_KEY)) {
-			alarmEnabled = sharedPreferences.getBoolean(key, false) && locationManager.isProviderEnabled(locationProvider);
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String keyString) {
+        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString));
+    }
 
-			if (alarmEnabled) {
-                locationManager.requestLocationUpdates(locationProvider, 0, 0, this);
-			} else {
-				locationManager.removeUpdates(this);
+    private void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey key) {
+        switch (key) {
+            case ALARM_ENABLED:
+                String locationProvider = LocationManager.NETWORK_PROVIDER;
+                alarmEnabled = sharedPreferences.getBoolean(key.toString(), false) && locationManager.isProviderEnabled(locationProvider);
 
-				for (AlarmListener alarmListener : alarmListeners) {
-					alarmListener.onAlarmClear();
-				}
-			}
+                if (alarmEnabled) {
+                    locationManager.requestLocationUpdates(locationProvider, 0, 0, this);
+                } else {
+                    locationManager.removeUpdates(this);
 
-			timerTask.setAlarmEnabled(alarmEnabled);
-		} else if (key.equals(Preferences.MEASUREMENT_UNIT_KEY)) {
-            String measurementSystemName = sharedPreferences.getString(key, MeasurementSystem.METRIC.toString());
+                    for (AlarmListener alarmListener : alarmListeners) {
+                        alarmListener.onAlarmClear();
+                    }
+                }
 
-            measurementSystem = MeasurementSystem.valueOf(measurementSystemName);
+                timerTask.setAlarmEnabled(alarmEnabled);
+                break;
+
+            case MEASUREMENT_UNIT:
+                String measurementSystemName = sharedPreferences.getString(key.toString(), MeasurementSystem.METRIC.toString());
+
+                measurementSystem = MeasurementSystem.valueOf(measurementSystemName);
+                break;
         }
-	}
+    }
 
-	@Override
-	public void onLocationChanged(Location location) {
-		this.location = location;
-	}
+    @Override
+    public void onLocationChanged(Location location) {
+        this.location = location;
+    }
 
-	@Override
-	public void onProviderDisabled(String provider) {
-	}
+    @Override
+    public void onProviderDisabled(String provider) {
+    }
 
-	@Override
-	public void onProviderEnabled(String provider) {
-	}
+    @Override
+    public void onProviderEnabled(String provider) {
+    }
 
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-	}
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
 
-	public boolean isAlarmEnabled() {
-		return alarmEnabled;
-	}
+    public boolean isAlarmEnabled() {
+        return alarmEnabled;
+    }
 
-	public void check(DataResult result) {
+    public void check(DataResult result) {
 
-		if (alarmEnabled && result.containsRealtimeData() && location != null) {
+        if (alarmEnabled && result.containsRealtimeData() && location != null) {
             long now = System.currentTimeMillis();
-			long thresholdTime = now - alarmInterval;
+            long thresholdTime = now - alarmInterval;
             long oldestTime = now - result.getParameters().getIntervalDuration() * 1000 * 60;
 
-			if (alarmStatus == null || !result.isIncremental()) {
-				alarmStatus = new AlarmStatus(thresholdTime, measurementSystem);
-			} else {
-				alarmStatus.update(thresholdTime, oldestTime, measurementSystem);
-			}
+            if (alarmStatus == null || !result.isIncremental()) {
+                alarmStatus = new AlarmStatus(thresholdTime, measurementSystem);
+            } else {
+                alarmStatus.update(thresholdTime, oldestTime, measurementSystem);
+            }
 
             alarmStatus.check(result, location);
 
-		} else {
-			alarmStatus = null;
-		}
+        } else {
+            alarmStatus = null;
+        }
 
-		for (AlarmListener alarmListener : alarmListeners) {
-			alarmListener.onAlarmResult(alarmStatus);
-		}
-	}
+        for (AlarmListener alarmListener : alarmListeners) {
+            alarmListener.onAlarmResult(alarmStatus);
+        }
+    }
 
-	public AlarmStatus getAlarmStatus() {
-		return alarmStatus;
-	}
+    public AlarmStatus getAlarmStatus() {
+        return alarmStatus;
+    }
 
-	public void clearAlarmListeners() {
-		alarmListeners.clear();
-	}
+    public void clearAlarmListeners() {
+        alarmListeners.clear();
+    }
 
-	public void addAlarmListener(AlarmListener alarmListener) {
-		alarmListeners.add(alarmListener);
-	}
+    public void addAlarmListener(AlarmListener alarmListener) {
+        alarmListeners.add(alarmListener);
+    }
 
-	public void removeAlarmListener(AlarmListener alarmView) {
-		alarmListeners.remove(alarmView);
-	}
+    public void removeAlarmListener(AlarmListener alarmView) {
+        alarmListeners.remove(alarmView);
+    }
 }

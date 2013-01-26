@@ -13,6 +13,7 @@ import com.xtremelabs.robolectric.RobolectricTestRunner;
 import com.xtremelabs.robolectric.internal.Implementation;
 import com.xtremelabs.robolectric.internal.Implements;
 import org.blitzortung.android.app.Preferences;
+import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.map.OwnMapView;
 import org.junit.Before;
 import org.junit.Test;
@@ -116,8 +117,8 @@ public class OwnLocationOverlayTest {
     }
 
     private void enableOwnLocation() {
-        when(sharedPreferences.getBoolean(Preferences.SHOW_LOCATION_KEY, false)).thenReturn(true);
-        ownLocationOverlay.onSharedPreferenceChanged(sharedPreferences, Preferences.SHOW_LOCATION_KEY);
+        when(sharedPreferences.getBoolean(PreferenceKey.SHOW_LOCATION.toString(), false)).thenReturn(true);
+        ownLocationOverlay.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.SHOW_LOCATION.toString());
     }
 
     private void updateLocation()
