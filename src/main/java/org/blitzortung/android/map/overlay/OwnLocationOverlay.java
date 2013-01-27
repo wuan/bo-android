@@ -14,11 +14,12 @@ import android.preference.PreferenceManager;
 import com.google.android.maps.ItemizedOverlay;
 import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.R;
+import org.blitzortung.android.app.controller.LocationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.components.LayerOverlayComponent;
 
-public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> implements LocationListener, SharedPreferences.OnSharedPreferenceChangeListener, LayerOverlay {
+public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> implements LocationHandler.Listener, SharedPreferences.OnSharedPreferenceChangeListener, LayerOverlay {
 
     static private final Drawable DEFAULT_DRAWABLE;
 
@@ -31,13 +32,11 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
 
     private OwnLocationOverlayItem item;
 
-    private final LocationManager locationManager;
+    private final LocationHandler locationManager;
 
     private int zoomLevel;
 
-    private final String locationProvider;
-
-    public OwnLocationOverlay(Context context, OwnMapView mapView) {
+    public OwnLocationOverlay(Context context, LocationHandler locationHandler, OwnMapView mapView) {
         super(DEFAULT_DRAWABLE);
 
         layerOverlayComponent = new LayerOverlayComponent(context.getResources().getString(R.string.own_location_layer));
@@ -46,9 +45,8 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
 
         populate();
 
-        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-
-        locationProvider = LocationManager.NETWORK_PROVIDER;
+        this.locationManager = locationHandler;
+        locationHandler.requestUpdates(this);
 
         mapView.addZoomListener(new OwnMapView.ZoomListener() {
 
@@ -102,25 +100,8 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
         refresh();
     }
 
-    @Override
-    public void onProviderDisabled(String arg0) {
-        item = null;
-
-        populate();
-    }
-
-    @Override
-    public void onProviderEnabled(String arg0) {
-    }
-
-    @Override
-    public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-    }
-
     public void enableOwnLocation() {
-        if (locationManager.isProviderEnabled(locationProvider)) {
-            locationManager.requestLocationUpdates(locationProvider, 0, 0, this);
-        }
+        locationManager.requestUpdates(this);
     }
 
     public void disableOwnLocation() {
@@ -132,7 +113,7 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString));
     }
 
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey key) {
+    private void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey key) {
         if (key == PreferenceKey.SHOW_LOCATION) {
             boolean showLocation = sharedPreferences.getBoolean(key.toString(), false);
 

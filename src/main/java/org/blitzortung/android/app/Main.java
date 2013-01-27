@@ -137,7 +137,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             onAlarmResult(alarmManager.getAlarmStatus());
         }
 
-        ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
+        ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), persistor.getLocationHandler(), getMapView());
 
         buttonColumnHandler = new ButtonColumnHandler<ImageButton>((RelativeLayout) findViewById(R.layout.map_overlay));
         historyController = new HistoryController(this, dataHandler, timerTask);

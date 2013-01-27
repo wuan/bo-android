@@ -154,14 +154,16 @@
 
     <string name="location_settings">Ortsbestimmung</string>
     <string-array name="location_modes">
+        <item>passiv</item>
         <item>Netzwerkbasiert</item>
         <item>über GPS</item>
         <item>manuelle Eingabe</item>
     </string-array>
     <string-array name="location_mode_values">
-        <item>NETWORK</item>
-        <item>GPS</item>
-        <item>MANUAL</item>
+        <item>passive</item>
+        <item>network</item>
+        <item>gps</item>
+        <item>manual</item>
     </string-array>
     <string name="location_mode">Ortsbestimmungsmodus</string>
     <string name="location_mode_summary">Auswahl der Methode zur Bestimmung des Aufenthaltsorts.</string>

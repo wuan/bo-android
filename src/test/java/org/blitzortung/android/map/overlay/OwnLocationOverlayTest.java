@@ -5,14 +5,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.location.Location;
-import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import com.google.android.maps.Overlay;
 import com.google.common.collect.Lists;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import com.xtremelabs.robolectric.internal.Implementation;
 import com.xtremelabs.robolectric.internal.Implements;
-import org.blitzortung.android.app.Preferences;
+import org.blitzortung.android.app.controller.LocationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.map.OwnMapView;
 import org.junit.Before;
@@ -56,7 +55,7 @@ public class OwnLocationOverlayTest {
     OwnMapView mapView;
 
     @Mock
-    LocationManager locationManager;
+    LocationHandler locationHandler;
 
     @Mock
     SharedPreferences sharedPreferences;
@@ -70,12 +69,12 @@ public class OwnLocationOverlayTest {
 
         bindShadowClass(ShadowPreferenceManager.class);
 
-        when(context.getSystemService(Context.LOCATION_SERVICE)).thenReturn(locationManager);
+        when(context.getSystemService(Context.LOCATION_SERVICE)).thenReturn(locationHandler);
         when(context.getSharedPreferences(anyString(), anyInt())).thenReturn(sharedPreferences);
         when(context.getResources()).thenReturn(resources);
         when(mapView.getOverlays()).thenReturn(overlays);
 
-        ownLocationOverlay = new OwnLocationOverlay(context, mapView);
+        ownLocationOverlay = new OwnLocationOverlay(context, locationHandler, mapView);
     }
 
     @Test

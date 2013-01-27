@@ -27,10 +27,16 @@ public class Persistor {
 
     private DataResult currentResult;
 
+    public LocationHandler getLocationHandler() {
+        return locationHandler;
+    }
+
+    private final LocationHandler locationHandler;
+
     public Persistor(Context context, SharedPreferences sharedPreferences, PackageInfo pInfo) {
         provider = new DataHandler(sharedPreferences, pInfo);
 		timerTask = new TimerTask(sharedPreferences, provider);
-        LocationHandler locationHandler = new LocationHandler(context);
+        locationHandler = new LocationHandler(context);
 		alarmManager = new AlarmManager(locationHandler, sharedPreferences, timerTask);
 		strokesOverlay = new StrokesOverlay(context, new StrokeColorHandler(sharedPreferences));
 		participantsOverlay = new ParticipantsOverlay(context, new ParticipantColorHandler(sharedPreferences));

@@ -156,14 +156,16 @@
 
     <string name="location_settings">Location settings</string>
     <string-array name="location_modes">
+        <item>Passive</item>
         <item>Network based</item>
         <item>GPS based</item>
-        <item>manual entry</item>
+        <item>Manual entry</item>
     </string-array>
     <string-array name="location_mode_values">
-        <item>NETWORK</item>
-        <item>GPS</item>
-        <item>MANUAL</item>
+        <item>passive</item>
+        <item>network</item>
+        <item>gps</item>
+        <item>manual</item>
     </string-array>
     <string name="location_mode">location mode</string>
     <string name="location_mode_summary">Select method which is used to determine the current location</string>

@@ -123,7 +123,7 @@
             android:title="@string/location_settings"
             android:summary="@string/location_settings_summary">
         <ListPreference
-                android:defaultValue="Network"
+                android:defaultValue="network"
                 android:enabled="true"
                 android:entries="@array/location_modes"
                 android:entryValues="@array/location_mode_values"
@@ -134,13 +134,15 @@
                 android:summary="@string/location_mode_summary"/>
 
         <EditTextPreference
-                android:defaultValue=""
+                android:defaultValue="11.0"
+                android:inputType="numberDecimal"
                 android:key="location_longitude"
                 android:persistent="true"
                 android:title="@string/longitude"
                 android:summary="@string/location_longitude_summary"/>
         <EditTextPreference
-                android:inputType="textPassword"
+                android:defaultValue="49.0"
+                android:inputType="numberDecimal"
                 android:key="location_latitude"
                 android:persistent="true"
                 android:title="@string/latitude"

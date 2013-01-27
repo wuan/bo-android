@@ -6,8 +6,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import com.google.android.maps.GeoPoint;
-import org.blitzortung.android.alarm.AlarmManager;
+import android.preference.PreferenceManager;
 import org.blitzortung.android.app.view.PreferenceKey;
 
 import java.util.HashMap;
@@ -40,7 +39,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
         private static Map<String, Provider> stringToValueMap = new HashMap<String, Provider>();
         static {
             for (Provider key : Provider.values()) {
-                String keyString = key.toString();
+                String keyString = key.getType();
                 if (stringToValueMap.containsKey(keyString)) {
                     throw new IllegalStateException(String.format("key value '%s' already defined", keyString));
                 }
@@ -57,10 +56,6 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
 
     private Provider provider;
 
-    private Integer longitude;
-
-    private Integer latitude;
-
     private final Location location;
 
     private Set<Listener> listeners = new HashSet<Listener>();
@@ -69,13 +64,18 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     {
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         location = new Location("");
+        location.setLongitude(Double.NaN);
+        location.setLatitude(Double.NaN);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.LOCATION_MODE, PreferenceKey.LOCATION_LONGITUDE, PreferenceKey.LOCATION_LATITUDE);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onLocationChanged(android.location.Location location) {
-        longitude = Float.valueOf(1e6f * Double.valueOf(location.getLongitude()).floatValue()).intValue();
-        longitude = Float.valueOf(1e6f * Double.valueOf(location.getLatitude()).floatValue()).intValue();
-        updateManualLocation();
+        this.location.set(location);
+        updateLocation();
     }
 
     @Override
@@ -113,13 +113,21 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
                 break;
 
             case LOCATION_LONGITUDE:
-                longitude = Float.valueOf(1e6f * Float.valueOf(sharedPreferences.getString(key.toString(), "11.0"))).intValue() ;
-                updateManualLocation();
+                try {
+                    location.setLongitude(Double.valueOf(sharedPreferences.getString(key.toString(), "11.0")));
+                    updateLocation();
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
                 break;
 
             case LOCATION_LATITUDE:
-                latitude = Float.valueOf(1e6f * Float.valueOf(sharedPreferences.getString(key.toString(), "49.0"))).intValue();
-                updateManualLocation();
+                try {
+                    location.setLatitude(Double.valueOf(sharedPreferences.getString(key.toString(), "49.0")));
+                    updateLocation();
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
                 break;
 
         }
@@ -128,23 +136,22 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     private void updateProvider(Provider newProvider) {
         locationManager.removeUpdates(this);
 
-
-        if (provider == Provider.MANUAL) {
-            updateManualLocation();
+        if (newProvider == Provider.MANUAL) {
+            updateLocation();
             provider = newProvider;
+            location.setProvider(provider.getType());
         } else {
             if (locationManager.isProviderEnabled(newProvider.getType())) {
-                locationManager.requestLocationUpdates(provider.getType(), 0, 0, this);
+                locationManager.requestLocationUpdates(newProvider.getType(), 0, 0, this);
                 provider = newProvider;
             }
         }
+        location.setLongitude(Double.NaN);
+        location.setLatitude(Double.NaN);
     }
 
-    private void updateManualLocation() {
-        if (longitude != null && latitude != null) {
-            location.setLongitude(longitude);
-            location.setLatitude(latitude);
-            location.setProvider(provider.getType());
+    private void updateLocation() {
+        if (locationIsValid()) {
             sendUpdate(location);
         }
     }
@@ -157,6 +164,13 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
 
     public void requestUpdates(LocationHandler.Listener target) {
         listeners.add(target);
+        if (locationIsValid()) {
+            target.onLocationChanged(location);
+        }
+    }
+
+    private boolean locationIsValid() {
+        return !Double.isNaN(location.getLongitude()) && !Double.isNaN(location.getLatitude());
     }
 
     public void removeUpdates(LocationHandler.Listener target) {
