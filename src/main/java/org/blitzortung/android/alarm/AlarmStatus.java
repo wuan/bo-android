@@ -1,6 +1,7 @@
 package org.blitzortung.android.alarm;
 
 import android.location.Location;
+import org.blitzortung.android.app.controller.LocationHandler;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.util.MeasurementSystem;

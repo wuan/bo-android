@@ -100,7 +100,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         preferences.registerOnSharedPreferenceChangeListener(this);
 
         if (getLastNonConfigurationInstance() == null) {
-            persistor = new Persistor(this, (LocationManager) getSystemService(Context.LOCATION_SERVICE), preferences, pInfo);
+            persistor = new Persistor(this, preferences, pInfo);
         } else {
             persistor = (Persistor) getLastNonConfigurationInstance();
         }

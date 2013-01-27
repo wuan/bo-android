@@ -21,7 +21,10 @@ public enum PreferenceKey {
     MEASUREMENT_UNIT("measurement_unit"),
     DO_NOT_SLEEP("do_not_sleep"),
     INTERVAL_DURATION("interval_duration"),
-    HISTORIC_TIMESTEP("historic_timestep");
+    HISTORIC_TIMESTEP("historic_timestep"),
+    LOCATION_MODE("location_mode"),
+    LOCATION_LONGITUDE("location_longitude"),
+    LOCATION_LATITUDE("location_latitude");
     
     private final String key;
     
@@ -38,7 +41,11 @@ public enum PreferenceKey {
     private static Map<String, PreferenceKey> stringToValueMap = new HashMap<String, PreferenceKey>();
     static {
         for (PreferenceKey key : PreferenceKey.values()) {
-            stringToValueMap.put(key.toString(), key);
+            String keyString = key.toString();
+            if (stringToValueMap.containsKey(keyString)) {
+                throw new IllegalStateException(String.format("key value '%s' already defined", keyString));
+            }
+            stringToValueMap.put(keyString, key);
         }
     }
 

@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.TimerTask;
+import org.blitzortung.android.app.controller.LocationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.AbstractStroke;
@@ -31,7 +32,7 @@ public class AlarmManagerTest {
     private AlarmManager alarmManager;
 
     @Mock
-    private LocationManager locationManager;
+    private LocationHandler locationManager;
 
     @Mock
     private SharedPreferences sharedPreferences;
@@ -87,13 +88,13 @@ public class AlarmManagerTest {
     @Test
     public void testOnSharedPreferecesChangeWithAlarmEnabled()
     {
-        when(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(true);
+        when(locationManager.isProviderEnabled()).thenReturn(true);
 
         enableAlarm();
 
         assertTrue(alarmManager.isAlarmEnabled());
 
-        verify(locationManager, times(1)).requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, alarmManager);
+        verify(locationManager, times(1)).requestUpdates(alarmManager);
         verify(timerTask, times(1)).setAlarmEnabled(true);
         verify(timerTask, times(1)).setAlarmEnabled(false);
     }
@@ -101,13 +102,13 @@ public class AlarmManagerTest {
     @Test
     public void testOnSharedPreferecesChangeWithAlarmEnabledAndProviderDisabled()
     {
-        when(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(false);
+        when(locationManager.isProviderEnabled()).thenReturn(false);
 
         enableAlarm();
 
         assertFalse(alarmManager.isAlarmEnabled());
 
-        verify(locationManager, times(0)).requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, alarmManager);
+        verify(locationManager, times(0)).requestUpdates(alarmManager);
         verify(timerTask, times(0)).setAlarmEnabled(true);
         verify(timerTask, times(2)).setAlarmEnabled(false);
     }
@@ -144,7 +145,7 @@ public class AlarmManagerTest {
     @Test
     public void testCheckWithEnabledAlarmAndLocationSet()
     {
-        when(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(true);
+        when(locationManager.isProviderEnabled()).thenReturn(true);
 
         Location location = mock(Location.class);
         enableAlarm();

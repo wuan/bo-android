@@ -3,10 +3,8 @@ package org.blitzortung.android.alarm;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
 import org.blitzortung.android.app.TimerTask;
+import org.blitzortung.android.app.controller.LocationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.util.MeasurementSystem;
@@ -14,7 +12,7 @@ import org.blitzortung.android.util.MeasurementSystem;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AlarmManager implements OnSharedPreferenceChangeListener, LocationListener {
+public class AlarmManager implements OnSharedPreferenceChangeListener, LocationHandler.Listener {
 
     public interface AlarmListener {
         void onAlarmResult(AlarmStatus alarmStatus);
@@ -26,7 +24,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 
     private final TimerTask timerTask;
 
-    private final LocationManager locationManager;
+    private final LocationHandler locationHandler;
 
     private Location location;
 
@@ -39,12 +37,12 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
 
     private AlarmStatus alarmStatus;
 
-    public AlarmManager(LocationManager locationManager, SharedPreferences preferences, TimerTask timerTask) {
+    public AlarmManager(LocationHandler locationHandler, SharedPreferences preferences, TimerTask timerTask) {
         this.timerTask = timerTask;
 
         alarmListeners = new HashSet<AlarmListener>();
 
-        this.locationManager = locationManager;
+        this.locationHandler = locationHandler;
 
         preferences.registerOnSharedPreferenceChangeListener(this);
         onSharedPreferenceChanged(preferences, PreferenceKey.ALARM_ENABLED);
@@ -60,13 +58,12 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
     private void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey key) {
         switch (key) {
             case ALARM_ENABLED:
-                String locationProvider = LocationManager.NETWORK_PROVIDER;
-                alarmEnabled = sharedPreferences.getBoolean(key.toString(), false) && locationManager.isProviderEnabled(locationProvider);
+                alarmEnabled = sharedPreferences.getBoolean(key.toString(), false) && locationHandler.isProviderEnabled();
 
                 if (alarmEnabled) {
-                    locationManager.requestLocationUpdates(locationProvider, 0, 0, this);
+                    locationHandler.requestUpdates(this);
                 } else {
-                    locationManager.removeUpdates(this);
+                    locationHandler.removeUpdates(this);
 
                     for (AlarmListener alarmListener : alarmListeners) {
                         alarmListener.onAlarmClear();
@@ -87,18 +84,6 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationL
     @Override
     public void onLocationChanged(Location location) {
         this.location = location;
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
     }
 
     public boolean isAlarmEnabled() {

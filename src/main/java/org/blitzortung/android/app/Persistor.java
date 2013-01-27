@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.location.LocationManager;
 import org.blitzortung.android.alarm.AlarmManager;
+import org.blitzortung.android.app.controller.LocationHandler;
 import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.map.overlay.ParticipantsOverlay;
@@ -26,10 +27,11 @@ public class Persistor {
 
     private DataResult currentResult;
 
-    public Persistor(Context context, LocationManager locationManager, SharedPreferences sharedPreferences, PackageInfo pInfo) {
+    public Persistor(Context context, SharedPreferences sharedPreferences, PackageInfo pInfo) {
         provider = new DataHandler(sharedPreferences, pInfo);
 		timerTask = new TimerTask(sharedPreferences, provider);
-		alarmManager = new AlarmManager(locationManager, sharedPreferences, timerTask);
+        LocationHandler locationHandler = new LocationHandler(context);
+		alarmManager = new AlarmManager(locationHandler, sharedPreferences, timerTask);
 		strokesOverlay = new StrokesOverlay(context, new StrokeColorHandler(sharedPreferences));
 		participantsOverlay = new ParticipantsOverlay(context, new ParticipantColorHandler(sharedPreferences));
 	}
