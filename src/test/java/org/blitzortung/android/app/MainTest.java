@@ -2,6 +2,7 @@ package org.blitzortung.android.app;
 
 import android.widget.TextView;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
+import org.blitzortung.android.app.view.components.StatusComponent;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +21,7 @@ public class MainTest {
     private Main main;
 
     @Mock
-    private TextView status;
+    private StatusComponent statusComponent;
 
     @Mock
     private StrokesOverlay strokesOverlay;
@@ -30,7 +31,7 @@ public class MainTest {
         MockitoAnnotations.initMocks(this);
 
         main = new Main();
-        main.status = status;
+        main.statusComponent = statusComponent;
         main.strokesOverlay = strokesOverlay;
     }
 
@@ -41,7 +42,7 @@ public class MainTest {
         main.setStatusString("foo");
 
         ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
-        verify(status, times(1)).setText(argument.capture());
+        verify(statusComponent, times(1)).setText(argument.capture());
 
         assertThat(argument.getValue(), is("no stroke/0 minutes foo"));
     }
@@ -55,7 +56,7 @@ public class MainTest {
         main.setStatusString("foo");
 
         ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
-        verify(status, times(1)).setText(argument.capture());
+        verify(statusComponent, times(1)).setText(argument.capture());
 
         assertThat(argument.getValue(), is("1234 strokes/0 minutes foo"));
     }
@@ -63,13 +64,13 @@ public class MainTest {
     @Test
     public void testRunWithRasterAndListenerSet()
     {
-        when(strokesOverlay.getRasterParameters()).thenReturn(true);
+        when(strokesOverlay.hasRasterParameters()).thenReturn(true);
         when(strokesOverlay.getRegion()).thenReturn(3);
 
         main.setStatusString("foo");
 
         ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
-        verify(status, times(1)).setText(argument.capture());
+        verify(statusComponent, times(1)).setText(argument.capture());
 
         assertThat(argument.getValue(), is("no stroke/0 minutes foo USA"));
     }

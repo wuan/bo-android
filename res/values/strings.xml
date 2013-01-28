@@ -14,12 +14,7 @@
     </plurals>
 
     <string name="info">Information</string>
-    <string name="info_text">Project home:\n\thttps://github.com/wuan/bo-android\n\nVisualized lightning data is
-        provided by the
-        <b>Blitzortung.org</b>
-        realtime lighning community project. Please refer to\n\thttp://blitzortung.org/\nfor further information or how
-        to participate.\n
-    </string>
+    <string name="info_text">Project home:\n\thttps://github.com/wuan/bo-android\n\nVisualized lightning data is\nprovided by the\n<b>Blitzortung.org</b>\nrealtime lighning community project. Please refer to\n\thttp://blitzortung.org/\nfor further information or how\nto participate.</string>
     <string name="copyright">© 2012, Andreas Würl\nblitzortung@tryb.de</string>
     <string name="legend">Legend</string>
     <string name="total_time">total time</string>
@@ -28,6 +23,7 @@
     <string name="minute">minute</string>
     <string name="alarms">Alarms</string>
     <string name="alarms_not_available">Alarms disabled\nor\nLocation information missing</string>
+    <string name="layers">Layers</string>
     <string name="preferences">Preferences</string>
     <string name="user_settings">User settings</string>
     <string name="username">Username</string>
@@ -160,14 +156,16 @@
 
     <string name="location_settings">Location settings</string>
     <string-array name="location_modes">
+        <item>Passive</item>
         <item>Network based</item>
         <item>GPS based</item>
-        <item>manual entry</item>
+        <item>Manual entry</item>
     </string-array>
     <string-array name="location_mode_values">
-        <item>NETWORK</item>
-        <item>GPS</item>
-        <item>MANUAL</item>
+        <item>passive</item>
+        <item>network</item>
+        <item>gps</item>
+        <item>manual</item>
     </string-array>
     <string name="location_mode">location mode</string>
     <string name="location_mode_summary">Select method which is used to determine the current location</string>
@@ -249,4 +247,13 @@
     </string-array>
     <string name="do_not_sleep">Do not sleep</string>
     <string name="do_not_sleep_summary">do not go to sleep while application is open</string>
+    <string name="participants_layer">Participants location</string>
+    <string name="own_location_layer">Own location</string>
+    <string name="layer_name">Layer name</string>
+    <string name="visible">visible</string>
+    <string name="strokes_layer">Strokes</string>
+    <string name="data_settings_summary">detailed settings to control data transmission and source</string>
+    <string name="map_settings_summary">Map mode and appearance related settings</string>
+    <string name="location_settings_summary">Location determination mode</string>
+    <string name="alarm_settings_summary">Alarm activation, background service and radiuses</string>
 </resources>

@@ -4,6 +4,7 @@ import android.view.View;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.Overlay;
 import org.blitzortung.android.app.R;
+import org.blitzortung.android.map.overlay.LayerOverlay;
 
 public abstract class OwnMapActivity extends MapActivity {
 

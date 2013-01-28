@@ -5,68 +5,75 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import org.blitzortung.android.app.controller.LocationHandler;
+import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.provider.DataProviderType;
 
 public class Preferences extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
-	public static final String USERNAME_KEY = "username";
-	public static final String PASSWORD_KEY = "password";
-	public static final String RASTER_SIZE_KEY = "raster_size";
-	public static final String MAP_TYPE_KEY = "map_mode";
-    public static final String MAP_FADE_KEY = "map_fade";
-    public static final String COLOR_SCHEME_KEY = "color_scheme";
-	public static final String QUERY_PERIOD_KEY = "query_period";
-	public static final String BACKGROUND_QUERY_PERIOD_KEY = "background_query_period";
-	public static final String SHOW_LOCATION_KEY = "location";
-	public static final String ALARM_ENABLED_KEY = "alarm_enabled";
-	public static final String NOTIFICATION_DISTANCE_LIMIT = "notification_distance_limit";
-	public static final String VIBRATION_DISTANCE_LIMIT = "vibration_distance_limit";	
-	public static final String REGION_KEY = "region";
-	public static final String DATA_SOURCE_KEY = "data_source";
-    public static final String MEASUREMENT_UNIT_KEY = "measurement_unit";
-    public static final String DO_NOT_SLEEP = "do_not_sleep";
-    public static final String INTERVAL_DURATION_KEY = "interval_duration";
-    public static final String HISTORIC_TIMESTEP_KEY = "historic_timestep";
 
     @Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		addPreferencesFromResource(R.xml.preferences);
+        addPreferencesFromResource(R.xml.preferences);
 
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		prefs.registerOnSharedPreferenceChangeListener(this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.registerOnSharedPreferenceChangeListener(this);
 
-		onSharedPreferenceChanged(prefs, Preferences.DATA_SOURCE_KEY);
-	}
+        onSharedPreferenceChanged(prefs, PreferenceKey.DATA_SOURCE, PreferenceKey.LOCATION_MODE);
+    }
 
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (key.equals(Preferences.DATA_SOURCE_KEY)) {
-			String providerTypeString = sharedPreferences.getString(Preferences.DATA_SOURCE_KEY, DataProviderType.HTTP.toString());
-			DataProviderType providerType = DataProviderType.valueOf(providerTypeString.toUpperCase());
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String keyString) {
+        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString));
+    }
 
-            switch (providerType) {
-			case HTTP:
-				enableBlitzortungHttpMode();
-				break;
-			case RPC:
-				enableAppServiceMode();
-				break;
-			}
-		}
-	}
-	
-	private void enableAppServiceMode() {
-		findPreference("raster_size").setEnabled(true);
-		findPreference("username").setEnabled(false);
-		findPreference("password").setEnabled(false);
-	}
+    private void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey... keys) {
+        for (PreferenceKey key : keys) {
+            onSharedPreferenceChanged(sharedPreferences, key);
+        }
+    }
 
-	private void enableBlitzortungHttpMode() {
-		findPreference("raster_size").setEnabled(false);
-		findPreference("username").setEnabled(true);
-		findPreference("password").setEnabled(true);
-	}
+    private void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey key) {
+        switch (key) {
+            case DATA_SOURCE:
+                String providerTypeString = sharedPreferences.getString(PreferenceKey.DATA_SOURCE.toString(), DataProviderType.HTTP.toString());
+                DataProviderType providerType = DataProviderType.valueOf(providerTypeString.toUpperCase());
+
+                switch (providerType) {
+                    case HTTP:
+                        enableBlitzortungHttpMode();
+                        break;
+                    case RPC:
+                        enableAppServiceMode();
+                        break;
+                }
+                break;
+
+            case LOCATION_MODE:
+                LocationHandler.Provider locationProvider = LocationHandler.Provider.fromString(sharedPreferences.getString(key.toString(), "NETWORK"));
+                enableManualLocationMode(locationProvider == LocationHandler.Provider.MANUAL);
+                break;
+
+        }
+    }
+
+    private void enableAppServiceMode() {
+        findPreference("raster_size").setEnabled(true);
+        findPreference("username").setEnabled(false);
+        findPreference("password").setEnabled(false);
+    }
+
+    private void enableBlitzortungHttpMode() {
+        findPreference("raster_size").setEnabled(false);
+        findPreference("username").setEnabled(true);
+        findPreference("password").setEnabled(true);
+    }
+
+    private void enableManualLocationMode(boolean enabled) {
+        findPreference("location_longitude").setEnabled(enabled);
+        findPreference("location_latitude").setEnabled(enabled);
+    }
 
 }

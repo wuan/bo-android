@@ -3,6 +3,7 @@ package org.blitzortung.android.map.overlay;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import com.google.android.maps.GeoPoint;
@@ -42,6 +43,12 @@ public class ParticipantsOverlayTest {
     private ParticipantsOverlay participantsOverlay;
 
     @Mock
+    private Context context;
+
+    @Mock
+    private Resources resources;
+
+    @Mock
     private ParticipantColorHandler colorHandler;
 
     private final int[] colors = new int[]{1,2,3};
@@ -52,8 +59,9 @@ public class ParticipantsOverlayTest {
         MockitoAnnotations.initMocks(this);
 
         when(colorHandler.getColors()).thenReturn(colors);
+        when(context.getResources()).thenReturn(resources);
 
-        participantsOverlay = spy(new ParticipantsOverlay(colorHandler));
+        participantsOverlay = spy(new ParticipantsOverlay(context, colorHandler));
     }
 
     @Test

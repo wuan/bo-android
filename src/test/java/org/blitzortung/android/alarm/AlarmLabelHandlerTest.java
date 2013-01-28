@@ -1,7 +1,6 @@
 package org.blitzortung.android.alarm;
 
 import android.content.res.Resources;
-import android.widget.TextView;
 import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.junit.Before;
@@ -16,9 +15,9 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
-public class AlarmLabelTest {
+public class AlarmLabelHandlerTest {
 
-    private AlarmLabel alarmLabel;
+    private AlarmLabelHandler alarmLabelHandler;
 
     @Mock
     private AlarmStatus alarmStatus;
@@ -27,11 +26,11 @@ public class AlarmLabelTest {
     private AlarmResult alarmResult;
 
     @Mock
-    private TextView textView;
+    private AlarmLabel alarmLabel;
 
     private Resources resources;
 
-    private ArgumentCaptor<CharSequence> textCaptor;
+    private ArgumentCaptor<String> textCaptor;
 
     private ArgumentCaptor<Integer> colorCaptor;
 
@@ -42,18 +41,18 @@ public class AlarmLabelTest {
 
         resources = Robolectric.application.getResources();
 
-        alarmLabel = new AlarmLabel(textView, resources);
+        alarmLabelHandler = new AlarmLabelHandler(alarmLabel, resources);
 
-        textCaptor = ArgumentCaptor.forClass(CharSequence.class);
+        textCaptor = ArgumentCaptor.forClass(String.class);
         colorCaptor = ArgumentCaptor.forClass(Integer.class);
     }
 
     @Test
     public void testApplyWithNullValueAsAlarmStatus()
     {
-        alarmLabel.apply(null);
+        alarmLabelHandler.apply(null);
 
-        verify(textView, times(1)).setText(textCaptor.capture());
+        verify(alarmLabel, times(1)).setAlarmText(textCaptor.capture());
 
         assertThat(textCaptor.getValue().toString(), is(""));
     }
@@ -63,10 +62,10 @@ public class AlarmLabelTest {
     {
         when(alarmStatus.getSectorWithClosestStroke()).thenReturn(-1);
 
-        alarmLabel.apply(alarmStatus);
+        alarmLabelHandler.apply(alarmStatus);
 
-        verify(textView, times(1)).setTextColor(colorCaptor.capture());
-        verify(textView, times(1)).setText(textCaptor.capture());
+        verify(alarmLabel, times(1)).setAlarmTextColor(colorCaptor.capture());
+        verify(alarmLabel, times(1)).setAlarmText(textCaptor.capture());
 
         assertThat(colorCaptor.getValue(), is(0x0f0));
         assertThat(textCaptor.getValue().toString(), is(""));
@@ -77,10 +76,10 @@ public class AlarmLabelTest {
     {
         mockAlarmInRange(50.1f, "SO");
 
-        alarmLabel.apply(alarmStatus);
+        alarmLabelHandler.apply(alarmStatus);
 
-        verify(textView, times(1)).setTextColor(colorCaptor.capture());
-        verify(textView, times(1)).setText(textCaptor.capture());
+        verify(alarmLabel, times(1)).setAlarmTextColor(colorCaptor.capture());
+        verify(alarmLabel, times(1)).setAlarmText(textCaptor.capture());
 
         assertThat(colorCaptor.getValue(), is(0x0f0));
         assertThat(textCaptor.getValue().toString(), is("50km SO"));
@@ -91,10 +90,10 @@ public class AlarmLabelTest {
     {
         mockAlarmInRange(20.1f, "NW");
 
-        alarmLabel.apply(alarmStatus);
+        alarmLabelHandler.apply(alarmStatus);
 
-        verify(textView, times(1)).setTextColor(colorCaptor.capture());
-        verify(textView, times(1)).setText(textCaptor.capture());
+        verify(alarmLabel, times(1)).setAlarmTextColor(colorCaptor.capture());
+        verify(alarmLabel, times(1)).setAlarmText(textCaptor.capture());
 
         assertThat(colorCaptor.getValue(), is(0xff0));
         assertThat(textCaptor.getValue().toString(), is("20km NW"));
@@ -105,10 +104,10 @@ public class AlarmLabelTest {
     {
         mockAlarmInRange( 20f, "S");
 
-        alarmLabel.apply(alarmStatus);
+        alarmLabelHandler.apply(alarmStatus);
 
-        verify(textView, times(1)).setTextColor(colorCaptor.capture());
-        verify(textView, times(1)).setText(textCaptor.capture());
+        verify(alarmLabel, times(1)).setAlarmTextColor(colorCaptor.capture());
+        verify(alarmLabel, times(1)).setAlarmText(textCaptor.capture());
 
         assertThat(colorCaptor.getValue(), is(0xf00));
         assertThat(textCaptor.getValue().toString(), is("20km S"));

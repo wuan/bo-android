@@ -7,6 +7,8 @@ import com.google.common.collect.Lists;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.TimerTask;
+import org.blitzortung.android.app.controller.LocationHandler;
+import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataResult;
@@ -30,7 +32,7 @@ public class AlarmManagerTest {
     private AlarmManager alarmManager;
 
     @Mock
-    private LocationManager locationManager;
+    private LocationHandler locationManager;
 
     @Mock
     private SharedPreferences sharedPreferences;
@@ -46,12 +48,12 @@ public class AlarmManagerTest {
     {
         MockitoAnnotations.initMocks(this);
 
-        when(sharedPreferences.getString(Preferences.MEASUREMENT_UNIT_KEY, MeasurementSystem.METRIC.toString())).thenReturn(MeasurementSystem.METRIC.toString());
+        when(sharedPreferences.getString(PreferenceKey.MEASUREMENT_UNIT.toString(), MeasurementSystem.METRIC.toString())).thenReturn(MeasurementSystem.METRIC.toString());
 
         alarmManager = spy(new AlarmManager(locationManager, sharedPreferences, timerTask));
         alarmManager.addAlarmListener(alarmListener);
 
-        verify(sharedPreferences, times(1)).getString(Preferences.MEASUREMENT_UNIT_KEY, MeasurementSystem.METRIC.toString());
+        verify(sharedPreferences, times(1)).getString(PreferenceKey.MEASUREMENT_UNIT.toString(), MeasurementSystem.METRIC.toString());
     }
 
     @Test
@@ -62,7 +64,7 @@ public class AlarmManagerTest {
         assertThat(alarmManager.getAlarmStatus(), is(nullValue()));
 
         verify(sharedPreferences, times(1)).registerOnSharedPreferenceChangeListener(any(AlarmManager.class));
-        verify(sharedPreferences, times(1)).getBoolean(Preferences.ALARM_ENABLED_KEY, false);
+        verify(sharedPreferences, times(1)).getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false);
         verify(locationManager, times(1)).removeUpdates(any(AlarmManager.class));
         verify(timerTask, times(1)).setAlarmEnabled(false);
 
@@ -72,9 +74,9 @@ public class AlarmManagerTest {
     @Test
     public void testOnSharedPreferecesChangeWithAlarmDisabled()
     {
-        when(sharedPreferences.getBoolean(Preferences.ALARM_ENABLED_KEY, false)).thenReturn(false);
+        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(false);
 
-        alarmManager.onSharedPreferenceChanged(sharedPreferences, Preferences.ALARM_ENABLED_KEY);
+        alarmManager.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.ALARM_ENABLED.toString());
 
         assertFalse(alarmManager.isAlarmEnabled());
 
@@ -86,13 +88,13 @@ public class AlarmManagerTest {
     @Test
     public void testOnSharedPreferecesChangeWithAlarmEnabled()
     {
-        when(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(true);
+        when(locationManager.isProviderEnabled()).thenReturn(true);
 
         enableAlarm();
 
         assertTrue(alarmManager.isAlarmEnabled());
 
-        verify(locationManager, times(1)).requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, alarmManager);
+        verify(locationManager, times(1)).requestUpdates(alarmManager);
         verify(timerTask, times(1)).setAlarmEnabled(true);
         verify(timerTask, times(1)).setAlarmEnabled(false);
     }
@@ -100,21 +102,21 @@ public class AlarmManagerTest {
     @Test
     public void testOnSharedPreferecesChangeWithAlarmEnabledAndProviderDisabled()
     {
-        when(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(false);
+        when(locationManager.isProviderEnabled()).thenReturn(false);
 
         enableAlarm();
 
         assertFalse(alarmManager.isAlarmEnabled());
 
-        verify(locationManager, times(0)).requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, alarmManager);
+        verify(locationManager, times(0)).requestUpdates(alarmManager);
         verify(timerTask, times(0)).setAlarmEnabled(true);
         verify(timerTask, times(2)).setAlarmEnabled(false);
     }
 
     private void enableAlarm() {
-        when(sharedPreferences.getBoolean(Preferences.ALARM_ENABLED_KEY, false)).thenReturn(true);
+        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(true);
 
-        alarmManager.onSharedPreferenceChanged(sharedPreferences, Preferences.ALARM_ENABLED_KEY);
+        alarmManager.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.ALARM_ENABLED.toString());
     }
 
     @Test
@@ -143,7 +145,7 @@ public class AlarmManagerTest {
     @Test
     public void testCheckWithEnabledAlarmAndLocationSet()
     {
-        when(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(true);
+        when(locationManager.isProviderEnabled()).thenReturn(true);
 
         Location location = mock(Location.class);
         enableAlarm();
