@@ -1,5 +1,6 @@
 package org.blitzortung.android.data.beans;
 
+import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.RectF;
 import com.google.android.maps.Projection;
@@ -48,7 +49,7 @@ public class RasterParameters {
 		leftTop = projection.toPixels(Coordsys.toMapCoords(lon_start, lat_start), leftTop);
 		Point bottomRight = new Point();
 		bottomRight = projection.toPixels(Coordsys.toMapCoords(lon_start + lon_count * lon_delta, lat_start - lat_count * lat_delta), bottomRight);
-		return new RectF(leftTop.x, leftTop.y, bottomRight.x, bottomRight.y);
+        return new RectF(leftTop.x, leftTop.y, bottomRight.x, bottomRight.y);
 	}
 	
 	@Override

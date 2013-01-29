@@ -1,15 +1,15 @@
 package org.blitzortung.android.map.overlay;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Paint;
+import android.graphics.*;
 import android.graphics.Paint.Style;
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.text.format.DateFormat;
+import android.util.Log;
 import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapView;
 import com.google.android.maps.Projection;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.data.TimeIntervalWithOffset;
@@ -86,12 +86,30 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
             super.draw(canvas, mapView, false);
 
             if (hasRasterParameters()) {
-                Paint paint = new Paint();
-                paint.setColor(colorHandler.getLineColor());
-                paint.setStyle(Style.STROKE);
-                Projection projection = mapView.getProjection();
-                canvas.drawRect(rasterParameters.getRect(projection), paint);
+                drawDataAreaRect(canvas, mapView);
             }
+        }
+    }
+
+    private void drawDataAreaRect(Canvas canvas, MapView mapView) {
+        Paint paint = new Paint();
+        paint.setColor(colorHandler.getLineColor());
+        paint.setStyle(Style.STROKE);
+
+        Rect clipBounds = canvas.getClipBounds();
+        RectF rect = rasterParameters.getRect(mapView.getProjection());
+
+        if (rect.left >= clipBounds.left && rect.left <= clipBounds.right) {
+            canvas.drawLine(rect.left, Math.max(rect.top, clipBounds.top), rect.left, Math.min(rect.bottom, clipBounds.bottom), paint);
+        }
+        if (rect.right >= clipBounds.left && rect.right <= clipBounds.right) {
+            canvas.drawLine(rect.right, Math.max(rect.top, clipBounds.top), rect.right, Math.min(rect.bottom, clipBounds.bottom), paint);
+        }
+        if (rect.bottom <= clipBounds.bottom && rect.bottom >= clipBounds.top) {
+            canvas.drawLine(Math.max(rect.left, clipBounds.left), rect.bottom, Math.min(rect.right, clipBounds.right), rect.bottom, paint);
+        }
+        if (rect.top <= clipBounds.bottom && rect.top >= clipBounds.top) {
+            canvas.drawLine(Math.max(rect.left, clipBounds.left), rect.top, Math.min(rect.right, clipBounds.right), rect.top, paint);
         }
     }
 
