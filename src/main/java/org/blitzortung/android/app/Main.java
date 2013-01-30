@@ -22,6 +22,7 @@ import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmStatus;
 import org.blitzortung.android.app.controller.ButtonColumnHandler;
 import org.blitzortung.android.app.controller.HistoryController;
+import org.blitzortung.android.app.controller.LocationHandler;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.app.view.HistogramView;
@@ -60,6 +61,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     private AlarmManager alarmManager;
 
     private NotificationHandler notificationHandler;
+
+    private LocationHandler locationHandler;
 
     private DataHandler dataHandler;
 
@@ -106,6 +109,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         }
         persistor.updateContext(this);
 
+        locationHandler = persistor.getLocationHandler();
         strokesOverlay = persistor.getStrokesOverlay();
         participantsOverlay = persistor.getParticipantsOverlay();
 
@@ -254,7 +258,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     @Override
     public void onResume() {
         super.onResume();
+
         timerTask.onResume(dataHandler.isRealtime());
+        locationHandler.onResume();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (preferences.getBoolean(PreferenceKey.SHOW_LOCATION.toString(), false)) {
@@ -266,7 +272,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public void onPause() {
         super.onPause();
 
-        timerTask.onPause();
+        if (timerTask.onPause()) {
+            locationHandler.onPause();
+        }
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (preferences.getBoolean(PreferenceKey.SHOW_LOCATION.toString(), false)) {

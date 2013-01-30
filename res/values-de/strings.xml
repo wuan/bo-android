@@ -23,6 +23,7 @@
     <string name="minute">Minute</string>
     <string name="alarms">Warnungen</string>
     <string name="alarms_not_available">Warnung nicht aktiv\noder\nStandortinformationen nicht vorhanden</string>
+    <string name="layers">Ebenen</string>
     <string name="preferences">Einstellungen</string>
     <string name="user_settings">Benutzereinstellungen</string>
     <string name="username">Benutzername</string>
@@ -128,12 +129,14 @@
     <string name="raster_size_summary">Größe der Quadrate des Datenrasters</string>
 
     <string-array name="raster_sizes">
+        <item>5 km</item>
         <item>10 km</item>
         <item>25 km</item>
         <item>50 km</item>
         <item>100 km</item>
     </string-array>
     <string-array name="raster_size_values">
+        <item>5000</item>
         <item>10000</item>
         <item>25000</item>
         <item>50000</item>
@@ -242,8 +245,8 @@
     <string name="own_location_layer">Eigener Ort</string>
     <string name="visible">sichtbar</string>
     <string name="strokes_layer">Blitze</string>
-    <string name="data_settings_summary">detailed settings to control data transmission and source</string>
-    <string name="map_settings_summary">Map mode and appearance related settings</string>
-    <string name="location_settings_summary">Location determination mode</string>
-    <string name="alarm_settings_summary">Alarm activation, background service and radiuses</string>
+    <string name="data_settings_summary">Einstellung Zeitparameter und Datenquelle</string>
+    <string name="map_settings_summary">Kartenmodus und -aussehen</string>
+    <string name="location_settings_summary">Wahl der Art der Ortsbestimmung</string>
+    <string name="alarm_settings_summary">Warnung, Hintergrunddienst und Warnradien</string>
 </resources>

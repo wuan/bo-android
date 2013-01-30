@@ -82,11 +82,13 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
         }
     }
 
-    public void onPause() {
+    public boolean onPause() {
         backgroundOperation = true;
         if (!alarmEnabled || backgroundPeriod == 0) {
             handler.removeCallbacks(this);
+            return true;
         }
+        return false;
     }
 
     @Override
