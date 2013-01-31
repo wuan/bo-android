@@ -43,15 +43,17 @@ public class ButtonColumnHandler<V extends View> {
 
     public void updateButtonColumn() {
         int previousIndex = -1;
-        for (int currentIndex=0; currentIndex < elements.size(); currentIndex++) {
+        for (int currentIndex = 0; currentIndex < elements.size(); currentIndex++) {
             V element = elements.get(currentIndex);
             if (element.getVisibility() == View.VISIBLE) {
-                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) element.getLayoutParams();
-                //RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
-                //RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.FILL_PARENT);
+                //RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) element.getLayoutParams();
+                RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                lp.width = 70;
+                lp.height = 70;
+                lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 1);
                 if (previousIndex < 0) {
                     lp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 1);
-                    lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 1);
                 } else {
                     lp.addRule(RelativeLayout.BELOW, elements.get(previousIndex).getId());
                 }

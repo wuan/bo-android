@@ -14,11 +14,12 @@
     <item
             android:id="@+id/menu_alarms"
             android:icon="@android:drawable/ic_menu_view"
-            android:title="@string/alarms"/>
+            android:title="@string/alarms"
+            />
 
-    <item
+<!--    <item
             android:id="@+id/menu_layers"
             android:icon="@android:drawable/ic_menu_mapmode"
-            android:title="@string/layers"/>
+            android:title="@string/layers"/>-->
 
 </menu>
