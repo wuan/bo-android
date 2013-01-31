@@ -1,8 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+            android:defaultValue="1"
+            android:enabled="true"
+            android:entries="@array/regions"
+            android:entryValues="@array/regions_values"
+            android:key="region"
+            android:persistent="true"
+            android:selectable="true"
+            android:title="@string/region"
+            android:summary="@string/region_summary"/>
+    <ListPreference
+            android:defaultValue="10000"
+            android:enabled="true"
+            android:entries="@array/raster_sizes"
+            android:entryValues="@array/raster_size_values"
+            android:key="raster_size"
+            android:persistent="true"
+            android:selectable="true"
+            android:title="@string/raster_size"
+            android:summary="@string/raster_size_summary"/>
+    <ListPreference
+            android:defaultValue="120"
+            android:enabled="true"
+            android:entries="@array/interval_durations"
+            android:entryValues="@array/interval_duration_values"
+            android:key="interval_duration"
+            android:persistent="true"
+            android:selectable="true"
+            android:title="@string/interval_duration"
+            android:summary="@string/interval_duration_summary"/>
 
     <PreferenceScreen android:title="@string/map_settings"
-            android:summary="@string/map_settings_summary">
+                      android:summary="@string/map_settings_summary">
         <ListPreference
                 android:defaultValue="SATELLITE"
                 android:enabled="true"
@@ -45,26 +75,6 @@
             android:title="@string/data_settings"
             android:summary="@string/data_settings_summary">
         <ListPreference
-                android:defaultValue="1"
-                android:enabled="true"
-                android:entries="@array/regions"
-                android:entryValues="@array/regions_values"
-                android:key="region"
-                android:persistent="true"
-                android:selectable="true"
-                android:title="@string/region"
-                android:summary="@string/region_summary"/>
-        <ListPreference
-                android:defaultValue="120"
-                android:enabled="true"
-                android:entries="@array/interval_durations"
-                android:entryValues="@array/interval_duration_values"
-                android:key="interval_duration"
-                android:persistent="true"
-                android:selectable="true"
-                android:title="@string/interval_duration"
-                android:summary="@string/interval_duration_summary"/>
-        <ListPreference
                 android:defaultValue="30"
                 android:enabled="true"
                 android:entries="@array/historic_timesteps"
@@ -84,17 +94,6 @@
                 android:selectable="true"
                 android:title="@string/query_period"
                 android:summary="@string/query_period_summary"/>
-        <ListPreference
-                android:defaultValue="10000"
-                android:enabled="true"
-                android:entries="@array/raster_sizes"
-                android:entryValues="@array/raster_size_values"
-                android:key="raster_size"
-                android:persistent="true"
-                android:selectable="true"
-                android:title="@string/raster_size"
-                android:summary="@string/raster_size_summary"/>
-
         <EditTextPreference
                 android:defaultValue=""
                 android:key="username"
@@ -107,7 +106,6 @@
                 android:persistent="true"
                 android:title="@string/password"
                 android:summary="@string/password_summary"/>
-
         <ListPreference
                 android:defaultValue="RPC"
                 android:enabled="true"
@@ -132,7 +130,6 @@
                 android:selectable="true"
                 android:title="@string/location_mode"
                 android:summary="@string/location_mode_summary"/>
-
         <EditTextPreference
                 android:defaultValue="11.0"
                 android:inputType="numberDecimal"
@@ -146,8 +143,7 @@
                 android:key="location_latitude"
                 android:persistent="true"
                 android:title="@string/latitude"
-                android:summary="@string/location_longitude_summary"/>
-
+                android:summary="@string/location_latitude_summary"/>
 
     </PreferenceScreen>
     <PreferenceScreen

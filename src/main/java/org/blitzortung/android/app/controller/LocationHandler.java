@@ -7,6 +7,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import org.blitzortung.android.app.view.PreferenceKey;
 
 import java.util.HashMap;
@@ -37,6 +38,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
         }
 
         private static Map<String, Provider> stringToValueMap = new HashMap<String, Provider>();
+
         static {
             for (Provider key : Provider.values()) {
                 String keyString = key.getType();
@@ -52,6 +54,16 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
         }
     }
 
+    public void onPause() {
+        locationManager.removeUpdates(this);
+    }
+
+    public void onResume() {
+        if (provider != null) {
+            enableProvider(provider);
+        }
+    }
+
     private final LocationManager locationManager;
 
     private Provider provider;
@@ -60,22 +72,21 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
 
     private Set<Listener> listeners = new HashSet<Listener>();
 
-    public LocationHandler(Context context)
-    {
+    public LocationHandler(Context context) {
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         location = new Location("");
         location.setLongitude(Double.NaN);
         location.setLatitude(Double.NaN);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.LOCATION_MODE, PreferenceKey.LOCATION_LONGITUDE, PreferenceKey.LOCATION_LATITUDE);
+        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.LOCATION_MODE);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onLocationChanged(android.location.Location location) {
         this.location.set(location);
-        updateLocation();
+        sendLocationUpdate();
     }
 
     @Override
@@ -103,54 +114,67 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
             onSharedPreferenceChanged(sharedPreferences, key);
         }
     }
+
     private void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey key) {
         switch (key) {
             case LOCATION_MODE:
                 Provider newProvider = Provider.fromString(sharedPreferences.getString(key.toString(), Provider.NETWORK.toString()));
                 if (newProvider != provider) {
-                    updateProvider(newProvider);
+                    updateProvider(newProvider, sharedPreferences);
                 }
                 break;
 
             case LOCATION_LONGITUDE:
-                try {
-                    location.setLongitude(Double.valueOf(sharedPreferences.getString(key.toString(), "11.0")));
-                    updateLocation();
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
+                updateManualLongitude(sharedPreferences);
                 break;
 
             case LOCATION_LATITUDE:
-                try {
-                    location.setLatitude(Double.valueOf(sharedPreferences.getString(key.toString(), "49.0")));
-                    updateLocation();
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
+                updateManualLatitude(sharedPreferences);
                 break;
 
         }
     }
 
-    private void updateProvider(Provider newProvider) {
-        locationManager.removeUpdates(this);
-
-        if (newProvider == Provider.MANUAL) {
-            updateLocation();
-            provider = newProvider;
-            location.setProvider(provider.getType());
-        } else {
-            if (locationManager.isProviderEnabled(newProvider.getType())) {
-                locationManager.requestLocationUpdates(newProvider.getType(), 0, 0, this);
-                provider = newProvider;
-            }
+    private void updateManualLatitude(SharedPreferences sharedPreferences) {
+        try {
+            location.setLatitude(Double.valueOf(sharedPreferences.getString(PreferenceKey.LOCATION_LATITUDE.toString(), "49.0")));
+            sendLocationUpdate();
+        } catch (NumberFormatException e) {
+            Log.v("LocationHandler", "bad number format for manual latitude setting");
         }
-        location.setLongitude(Double.NaN);
-        location.setLatitude(Double.NaN);
     }
 
-    private void updateLocation() {
+    private void updateManualLongitude(SharedPreferences sharedPreferences) {
+        try {
+            location.setLongitude(Double.valueOf(sharedPreferences.getString(PreferenceKey.LOCATION_LONGITUDE.toString(), "11.0")));
+            sendLocationUpdate();
+        } catch (NumberFormatException e) {
+            Log.v("LocationHandler", "bad number format for manual longitude setting");
+        }
+    }
+
+    private void updateProvider(Provider newProvider, SharedPreferences sharedPreferences) {
+        if (newProvider == Provider.MANUAL) {
+            locationManager.removeUpdates(this);
+            updateManualLongitude(sharedPreferences);
+            updateManualLatitude(sharedPreferences);
+            location.setProvider(newProvider.getType());
+        } else {
+            enableProvider(newProvider);
+            location.setLongitude(Double.NaN);
+            location.setLatitude(Double.NaN);
+        }
+        provider = newProvider;
+    }
+
+    private void enableProvider(Provider newProvider) {
+        if (locationManager.isProviderEnabled(newProvider.getType())) {
+            locationManager.removeUpdates(this);
+            locationManager.requestLocationUpdates(newProvider.getType(), 0, 0, this);
+        }
+    }
+
+    private void sendLocationUpdate() {
         if (locationIsValid()) {
             sendUpdate(location);
         }
@@ -179,7 +203,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
 
     public boolean isProviderEnabled() {
         if (provider != Provider.MANUAL) {
-          return locationManager.isProviderEnabled(provider.getType());
+            return provider == null ? false : locationManager.isProviderEnabled(provider.getType());
         }
         return true;
     }
