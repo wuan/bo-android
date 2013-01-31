@@ -132,14 +132,13 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         addOverlays(fadeOverlay, strokesOverlay, participantsOverlay);
 
         dataHandler = persistor.getDataHandler();
+        statusComponent = new StatusComponent(this);
         setHistoricStatusString();
         timerTask = persistor.getTimerTask();
 
         notificationHandler = new NotificationHandler(this);
 
         alarmManager = persistor.getAlarmManager();
-
-        statusComponent = new StatusComponent(this);
 
         if (alarmManager.isAlarmEnabled()) {
             onAlarmResult(alarmManager.getAlarmStatus());
@@ -185,6 +184,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         historyController = new HistoryController(this, dataHandler, timerTask);
         historyController.setButtonHandler(buttonColumnHandler);
+        if (persistor.hasCurrentResult()) {
+            historyController.setRealtimeData(persistor.getCurrentResult().containsRealtimeData());
+        }
         buttonColumnHandler.addAllElements(historyController.getButtons());
 
         setupDebugModeButton();

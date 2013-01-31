@@ -6,6 +6,11 @@ TODO:
 
 Changelog:
 
+Version 0.9:
+added GPS based and manual location
+added support for devices without menu button
+reorganized menu
+
 Version 0.8:
 access to historical lightning data
 configurable time-length of data display
