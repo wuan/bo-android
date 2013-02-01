@@ -160,26 +160,17 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             buttonColumnHandler.addElement(menuButton);
             try {
                 Method getActionBar = this.getClass().getMethod("getActionBar");
+
                 Object actionBar;
                 actionBar = getActionBar.invoke(this);
 
-                Method setDisplayShowHomeEnabled = actionBar.getClass().getMethod("hide");
-
-                setDisplayShowHomeEnabled.invoke(actionBar);
-
-                Method setDisplayShowTitleEnabled = actionBar.getClass().getMethod("setDisplayShowTitleEnabled");
-
-                setDisplayShowTitleEnabled.invoke(actionBar, false);
+                Method hide = actionBar.getClass().getMethod("hide");
+                hide.invoke(actionBar);
 
             } catch (NoSuchMethodException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             } catch (InvocationTargetException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             } catch (IllegalAccessException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
-
-
         }
 
         historyController = new HistoryController(this, dataHandler, timerTask);
