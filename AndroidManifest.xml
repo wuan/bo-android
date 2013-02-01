@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.blitzortung.android.app"
-    android:versionCode="55"
+    android:versionCode="56"
     android:versionName="0.9" >
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -11,7 +11,7 @@
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="10" />
+        android:targetSdkVersion="14" />
 
     <application
         android:icon="@drawable/icon"
@@ -32,13 +32,13 @@
             android:name=".Preferences"
             android:label="@string/preferences" >
         </activity>
-        <receiver android:name=".WidgetProvider">
+        <!--<receiver android:name=".WidgetProvider">
             <meta-data android:name="android.appwidget.provider"
                        android:resource="@xml/widget_provider" />
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
     </application>
 
 </manifest>

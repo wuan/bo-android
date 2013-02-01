@@ -1,5 +1,6 @@
 package org.blitzortung.android.app;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
@@ -43,6 +45,8 @@ import org.blitzortung.android.map.overlay.OwnLocationOverlay;
 import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, TimerTask.TimerUpdateListener,
@@ -128,14 +132,13 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         addOverlays(fadeOverlay, strokesOverlay, participantsOverlay);
 
         dataHandler = persistor.getDataHandler();
+        statusComponent = new StatusComponent(this);
         setHistoricStatusString();
         timerTask = persistor.getTimerTask();
 
         notificationHandler = new NotificationHandler(this);
 
         alarmManager = persistor.getAlarmManager();
-
-        statusComponent = new StatusComponent(this);
 
         if (alarmManager.isAlarmEnabled()) {
             onAlarmResult(alarmManager.getAlarmStatus());
@@ -144,8 +147,37 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), persistor.getLocationHandler(), getMapView());
 
         buttonColumnHandler = new ButtonColumnHandler<ImageButton>((RelativeLayout) findViewById(R.layout.map_overlay));
+
+        if (Build.VERSION.SDK_INT >= 11) {
+
+            ImageButton menuButton = (ImageButton) findViewById(R.id.menu);
+            menuButton.setVisibility(View.VISIBLE);
+            menuButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    openOptionsMenu();
+                }
+            });
+            buttonColumnHandler.addElement(menuButton);
+            try {
+                Method getActionBar = this.getClass().getMethod("getActionBar");
+
+                Object actionBar;
+                actionBar = getActionBar.invoke(this);
+
+                Method hide = actionBar.getClass().getMethod("hide");
+                hide.invoke(actionBar);
+
+            } catch (NoSuchMethodException e) {
+            } catch (InvocationTargetException e) {
+            } catch (IllegalAccessException e) {
+            }
+        }
+
         historyController = new HistoryController(this, dataHandler, timerTask);
         historyController.setButtonHandler(buttonColumnHandler);
+        if (persistor.hasCurrentResult()) {
+            historyController.setRealtimeData(persistor.getCurrentResult().containsRealtimeData());
+        }
         buttonColumnHandler.addAllElements(historyController.getButtons());
 
         setupDebugModeButton();
@@ -159,6 +191,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         getMapView().invalidate();
     }
+
 
     private void setupDebugModeButton() {
         final String androidId = Settings.Secure.getString(getBaseContext().getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -243,9 +276,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 showDialog(R.id.alarm_dialog);
                 break;
 
+/*
             case R.id.menu_layers:
                 showDialog(R.id.layer_dialog);
                 break;
+*/
 
             case R.id.menu_preferences:
                 startActivity(new Intent(this, Preferences.class));

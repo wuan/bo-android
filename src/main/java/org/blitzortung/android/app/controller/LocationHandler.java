@@ -91,17 +91,18 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
 
     @Override
     public void onStatusChanged(String s, int i, Bundle bundle) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        Log.v("LocationHandler", "onStatusChanged: " + s);
     }
 
     @Override
     public void onProviderEnabled(String s) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        Log.v("LocationHandler", "onProviederEnabled: " + s);
     }
 
     @Override
     public void onProviderDisabled(String s) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        location.setLongitude(Double.NaN);
+        location.setLatitude(Double.NaN);
     }
 
     @Override
@@ -160,9 +161,9 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
             updateManualLatitude(sharedPreferences);
             location.setProvider(newProvider.getType());
         } else {
-            enableProvider(newProvider);
             location.setLongitude(Double.NaN);
             location.setLatitude(Double.NaN);
+            enableProvider(newProvider);
         }
         provider = newProvider;
     }

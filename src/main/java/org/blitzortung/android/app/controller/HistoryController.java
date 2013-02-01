@@ -32,7 +32,7 @@ public class HistoryController {
         setupHistoryForwardButton(activity);
         setupGoRealtimeButton(activity);
 
-        setRealtimeData(true)   ;
+        setRealtimeData(true);
     }
 
     public void setButtonHandler(ButtonColumnHandler buttonColumnHandler) {
