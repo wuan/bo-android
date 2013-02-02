@@ -7,19 +7,19 @@
             android:title="@string/preferences"/>
 
     <item
-            android:id="@+id/menu_info"
-            android:icon="@android:drawable/ic_menu_info_details"
-            android:title="@string/info"/>
-
-    <item
             android:id="@+id/menu_alarms"
             android:icon="@android:drawable/ic_menu_view"
             android:title="@string/alarms"
             />
 
-<!--    <item
-            android:id="@+id/menu_layers"
-            android:icon="@android:drawable/ic_menu_mapmode"
-            android:title="@string/layers"/>-->
+    <item
+            android:id="@+id/menu_info"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:title="@string/info"/>
+
+    <!--    <item
+                android:id="@+id/menu_layers"
+                android:icon="@android:drawable/ic_menu_mapmode"
+                android:title="@string/layers"/>-->
 
 </menu>
