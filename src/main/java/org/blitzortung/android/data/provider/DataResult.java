@@ -25,7 +25,7 @@ public class DataResult implements Serializable {
 	
 	private boolean processWasLocked;
 	
-	private boolean incremental;
+	private boolean incrementalData;
 
     private long referenceTime;
 
@@ -38,7 +38,7 @@ public class DataResult implements Serializable {
 		
 		processWasLocked = false;
 		
-		incremental = false;
+		incrementalData = false;
 	}
 	
 	public void setStrokes(List<AbstractStroke> strokes) {
@@ -95,12 +95,12 @@ public class DataResult implements Serializable {
 		this.rasterParameters = rasterParameters;
 	}
 
-	public boolean isIncremental() {
-		return incremental;
+	public boolean containsIncrementalData() {
+		return incrementalData;
 	}
 	
-	public void setIncremental() {
-		incremental = true;
+	public void setContainsIncrementalData() {
+		incrementalData = true;
 	}
 
     public void setHistogram(int[] histogram) {

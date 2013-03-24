@@ -4,7 +4,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageInfo;
 import android.os.AsyncTask;
-import android.util.Log;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataProvider;
@@ -84,7 +83,6 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     private class FetchDataTask extends AsyncTask<Integer, Integer, DataResult> {
 
         protected void onProgressUpdate(Integer... progress) {
-            Log.v("RetrieveStrokesTask", String.format("update progress %d", progress[0]));
         }
 
         protected void onPostExecute(DataResult result) {
@@ -113,9 +111,6 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
                     List<AbstractStroke> strokes;
                     if (rasterBaselength == 0) {
-                        if (intervalOffset > 0) {
-                            result.setIncremental();
-                        }
                         strokes = dataProvider.getStrokes(intervalDuration, intervalOffset, region);
                     } else {
                         strokes = dataProvider.getStrokesRaster(intervalDuration, intervalOffset, rasterBaselength, region);
@@ -126,6 +121,9 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                     parameters.setRegion(region);
                     parameters.setRasterBaselength(rasterBaselength);
 
+                    if (dataProvider.returnsIncrementalData()) {
+                        result.setContainsIncrementalData();
+                    }
                     result.setParameters(parameters);
                     result.setReferenceTime(System.currentTimeMillis());
                     result.setStrokes(strokes);

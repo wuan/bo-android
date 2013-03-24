@@ -21,7 +21,7 @@ public class JsonRpcDataProvider extends DataProvider {
         DATE_TIME_FORMATTER.setTimeZone(tz);
     }
 
-    static private final String[] SERVERS = new String[]{"http://bo1.tryb.de/"};
+    static private final String[] SERVERS = new String[]{"http://bo1.tryb.de:7080/"};
     static private int CURRENT_SERVER = 0;
 
     private JsonRpcClient client;
@@ -31,10 +31,16 @@ public class JsonRpcDataProvider extends DataProvider {
     private int[] histogram;
 
     private RasterParameters rasterParameters = null;
+    private boolean incrementalResult;
 
     public List<AbstractStroke> getStrokes(int timeInterval, int intervalOffset, int region) {
         List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
         rasterParameters = null;
+
+        if (intervalOffset < 0) {
+            nextId = 0;
+        }
+        incrementalResult = nextId != 0;
 
         try {
             JSONObject response = client.call("get_strokes", timeInterval, intervalOffset < 0 ? intervalOffset : nextId);
@@ -46,11 +52,17 @@ public class JsonRpcDataProvider extends DataProvider {
         }
         return strokes;
     }
+    
+    public boolean returnsIncrementalData()
+    {
+        return incrementalResult;
+    }
 
     public List<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int rasterSize, int region) {
         List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
 
         nextId = 0;
+        incrementalResult = false;
 
         try {
             JSONObject response = client.call("get_strokes_raster", intervalDuration, rasterSize, intervalOffset, region);

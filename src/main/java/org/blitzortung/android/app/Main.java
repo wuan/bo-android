@@ -15,11 +15,7 @@ import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.format.DateFormat;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.WindowManager;
+import android.view.*;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import org.blitzortung.android.alarm.AlarmLabelHandler;
@@ -163,7 +159,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 }
             });
             buttonColumnHandler.addElement(menuButton);
-          
+
             //noinspection EmptyCatchBlock
             try {
                 Method getActionBar = this.getClass().getMethod("getActionBar");
@@ -352,10 +348,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             strokesOverlay.setReferenceTime(result.getReferenceTime());
             strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
             strokesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
-            if (!result.isIncremental()) {
-                strokesOverlay.clear();
-            } else {
+            
+            if (result.containsIncrementalData()) {
                 strokesOverlay.expireStrokes();
+            } else {
+                strokesOverlay.clear();
             }
             strokesOverlay.addStrokes(result.getStrokes());
 

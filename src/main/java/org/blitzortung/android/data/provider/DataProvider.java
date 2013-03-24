@@ -20,6 +20,8 @@ public abstract class DataProvider {
 	public abstract void shutDown();
 	
 	public abstract List<AbstractStroke> getStrokes(int intervalDuration, int intervalOffset, int region);
+    
+    public abstract boolean returnsIncrementalData();
 	
 	public abstract List<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int params, int region);
 	

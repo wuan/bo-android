@@ -28,7 +28,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 		}
 	}
 
-	private long latestTime;
+	private long latestTime = 0;
 
 	@Override
 	public List<AbstractStroke> getStrokes(int timeInterval, int intervalOffset, int region) {
@@ -49,7 +49,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 						strokes.add(new Stroke(line));
 					}
 				}
-				Log.v("BlitzortungHttpProvider",
+				Log.v(getClass().getSimpleName(),
 						String.format("read %d bytes (%d new strokes) from region %d", size, strokes.size(), region));
 
 				if (strokes.size() > 0)
@@ -66,6 +66,11 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 
 		return strokes;
 	}
+    
+    public boolean returnsIncrementalData()
+    {
+        return latestTime != 0;
+    }
 
 	private BufferedReader readFromUrl(Type type, int region) {
 

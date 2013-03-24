@@ -34,7 +34,7 @@ public class DataResultTest {
         assertFalse(dataResult.containsStrokes());
         assertFalse(dataResult.containsParticipants());
         assertFalse(dataResult.processWasLocked());
-        assertFalse(dataResult.isIncremental());
+        assertFalse(dataResult.containsIncrementalData());
     }
 
     @Test
@@ -50,7 +50,7 @@ public class DataResultTest {
         assertTrue(dataResult.containsStrokes());
         assertFalse(dataResult.containsParticipants());
         assertFalse(dataResult.processWasLocked());
-        assertFalse(dataResult.isIncremental());
+        assertFalse(dataResult.containsIncrementalData());
     }
 
     @Test
@@ -66,7 +66,7 @@ public class DataResultTest {
         assertFalse(dataResult.containsStrokes());
         assertTrue(dataResult.containsParticipants());
         assertFalse(dataResult.processWasLocked());
-        assertFalse(dataResult.isIncremental());
+        assertFalse(dataResult.containsIncrementalData());
     }
 
     @Test

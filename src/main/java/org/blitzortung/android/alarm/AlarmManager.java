@@ -97,7 +97,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
             long thresholdTime = now - alarmInterval;
             long oldestTime = now - result.getParameters().getIntervalDuration() * 1000 * 60;
 
-            if (alarmStatus == null || !result.isIncremental()) {
+            if (alarmStatus == null || !result.containsIncrementalData()) {
                 alarmStatus = new AlarmStatus(thresholdTime, measurementSystem);
             } else {
                 alarmStatus.update(thresholdTime, oldestTime, measurementSystem);

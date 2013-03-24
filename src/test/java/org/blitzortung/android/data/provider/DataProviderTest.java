@@ -31,6 +31,11 @@ public class DataProviderTest {
         }
 
         @Override
+        public boolean returnsIncrementalData() {
+            return false;
+        }
+
+        @Override
         public List<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int params, int region) {
             return null;
         }
