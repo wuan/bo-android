@@ -1,13 +1,16 @@
 package org.blitzortung.android.map.overlay;
 
 import android.content.Context;
-import android.graphics.*;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.text.format.DateFormat;
-import android.util.Log;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Projection;
@@ -114,25 +117,16 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
     }
 
     public void addStrokes(List<AbstractStroke> strokes) {
-        if (hasRasterParameters()) {
-            items.clear();
-        }
-
         for (AbstractStroke stroke : strokes) {
             items.add(new StrokeOverlayItem(stroke));
-        }
-
-        if (!hasRasterParameters()) {
-            long expireTime = System.currentTimeMillis() - intervalDuration * 60 * 1000;
-            expireStrokes(expireTime);
         }
 
         setLastFocusedIndex(-1);
         populate();
     }
 
-    // VisibleForTesting
-    protected void expireStrokes(long expireTime) {
+    public void expireStrokes() {
+        long expireTime = referenceTime - (intervalDuration - intervalOffset) * 60 * 1000;
         List<StrokeOverlayItem> toRemove = new ArrayList<StrokeOverlayItem>();
 
         for (StrokeOverlayItem item : items) {

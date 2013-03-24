@@ -51,7 +51,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>13.0.1</version>
+            <version>14.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -79,7 +79,7 @@
                 <!-- See http://code.google.com/p/maven-android-plugin/ -->
                 <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                 <artifactId>android-maven-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.5.1</version>
                 <configuration>
                     <sdk>
                         <platform>8</platform>
@@ -90,7 +90,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.6.0.201210061924</version>
+                <version>0.6.2.201302030002</version>
                 <executions>
                     <execution>
                         <goals>

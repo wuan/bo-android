@@ -15,7 +15,6 @@ import com.google.common.collect.Lists;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import com.xtremelabs.robolectric.internal.Implementation;
 import com.xtremelabs.robolectric.internal.Implements;
-import com.xtremelabs.robolectric.shadows.ShadowPath;
 import org.blitzortung.android.data.TimeIntervalWithOffset;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.RasterParameters;
@@ -35,7 +34,16 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class StrokesOverlayTest {
@@ -90,8 +98,6 @@ public class StrokesOverlayTest {
 
     @Test
     public void testAddAndExpireStrokes() {
-        doNothing().when(strokesOverlay).expireStrokes(anyLong());
-
         List<AbstractStroke> strokes = Lists.newArrayList();
 
         strokesOverlay.setIntervalDuration(1);
@@ -206,7 +212,6 @@ public class StrokesOverlayTest {
 
     @Test
     public void testCreateItem() {
-        doNothing().when(strokesOverlay).expireStrokes(anyLong());
         strokesOverlay.setIntervalDuration(100);
         strokesOverlay.addStrokes(Lists.newArrayList(mock(AbstractStroke.class)));
 

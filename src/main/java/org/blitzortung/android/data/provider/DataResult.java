@@ -14,8 +14,11 @@ public class DataResult implements Serializable {
 	private static final long serialVersionUID = -2104015890700948020L;
 
 	private final List<List<AbstractStroke>> strokes;
+  
 	private List<Participant> participants;
+  
 	private RasterParameters rasterParameters = null;
+  
     private int[] histogram;
 
     private boolean fail;

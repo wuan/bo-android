@@ -5,10 +5,6 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageInfo;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.provider.DataProvider;
@@ -117,7 +113,9 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
                     List<AbstractStroke> strokes;
                     if (rasterBaselength == 0) {
-                        result.setIncremental();
+                        if (intervalOffset > 0) {
+                            result.setIncremental();
+                        }
                         strokes = dataProvider.getStrokes(intervalDuration, intervalOffset, region);
                     } else {
                         strokes = dataProvider.getStrokesRaster(intervalDuration, intervalOffset, rasterBaselength, region);

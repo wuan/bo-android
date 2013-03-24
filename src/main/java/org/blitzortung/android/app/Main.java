@@ -1,6 +1,5 @@
 package org.blitzortung.android.app;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -10,15 +9,19 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.format.DateFormat;
-import android.view.*;
-import android.widget.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import org.blitzortung.android.alarm.AlarmLabelHandler;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmStatus;
@@ -47,7 +50,9 @@ import org.blitzortung.android.map.overlay.StrokesOverlay;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, TimerTask.TimerUpdateListener,
         AlarmManager.AlarmListener {
@@ -158,6 +163,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 }
             });
             buttonColumnHandler.addElement(menuButton);
+          
+            //noinspection EmptyCatchBlock
             try {
                 Method getActionBar = this.getClass().getMethod("getActionBar");
 
@@ -345,6 +352,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             strokesOverlay.setReferenceTime(result.getReferenceTime());
             strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
             strokesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
+            if (!result.isIncremental()) {
+                strokesOverlay.clear();
+            } else {
+                strokesOverlay.expireStrokes();
+            }
             strokesOverlay.addStrokes(result.getStrokes());
 
             if (alarmManager.isAlarmEnabled()) {
