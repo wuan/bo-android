@@ -57,6 +57,8 @@
         <item>STREETMAP</item>
     </string-array>
 
+    <string name="show_participants">Teilnehmer anzeigen</string>
+    <string name="show_participants_summary">Orte aller Teilnehmer au der Karte anzeigen (nur bei Blitzortung.org Datenquelle)</string>
     <string name="show_location">Standort anzeigen</string>
     <string name="show_location_summary">eigenen Standort als Symbol in der Karte anzeigen</string>
     <string name="data_settings">Datenübertragung</string>

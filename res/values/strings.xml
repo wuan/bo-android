@@ -57,6 +57,8 @@
         <item>STREETMAP</item>
     </string-array>
 
+    <string name="show_participants">Show participant locations</string>
+    <string name="show_participants_summary">show location of all participants in map (only with Blitzortung.org data source)</string>
     <string name="show_location">Show own location</string>
     <string name="show_location_summary">include symbol for own location in map</string>
     <string name="data_settings">Data transmission</string>

@@ -247,6 +247,11 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             enableRasterMode();
             parameters.setRegion(preferencesRegion);
         }
+        if (!isRealtime()) {
+            DataHandler.UpdateTargets updateTargets = new DataHandler.UpdateTargets();
+            updateTargets.updateStrokes();
+            updateData(updateTargets);
+        }
     }
 
     public void disableRasterMode() {

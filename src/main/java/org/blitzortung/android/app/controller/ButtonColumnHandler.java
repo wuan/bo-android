@@ -28,14 +28,14 @@ public class ButtonColumnHandler<V extends View> {
     }
 
     public void disableButtonColumn() {
-        setEnableForButtonColumn(false);
+        enableButtonElements(false);
     }
 
     public void enableButtonColumn() {
-        setEnableForButtonColumn(true);
+        enableButtonElements(true);
     }
 
-    private void setEnableForButtonColumn(boolean enabled) {
+    private void enableButtonElements(boolean enabled) {
         for (V element : elements) {
             element.setEnabled(enabled);
         }

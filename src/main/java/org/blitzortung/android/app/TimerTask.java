@@ -8,6 +8,8 @@ import org.blitzortung.android.data.DataHandler;
 
 public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
+    private boolean updateParticipants;
+
     public interface TimerUpdateListener {
         public void onTimerUpdate(String timerStatus);
     }
@@ -38,6 +40,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
         preferences.registerOnSharedPreferenceChangeListener(this);
         onSharedPreferenceChanged(preferences, PreferenceKey.QUERY_PERIOD);
         onSharedPreferenceChanged(preferences, PreferenceKey.BACKGROUND_QUERY_PERIOD);
+        onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_PARTICIPANTS);
     }
 
     @Override
@@ -53,7 +56,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
             lastUpdate = actualSecond;
         }
 
-        if (actualSecond >= lastParticipantsUpdate + currentPeriod * 10 && !backgroundOperation) {
+        if (updateParticipants && actualSecond >= lastParticipantsUpdate + currentPeriod * 10 && !backgroundOperation) {
             updateTargets.addParticipants();
             lastParticipantsUpdate = actualSecond;
         }
@@ -104,6 +107,10 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
             case BACKGROUND_QUERY_PERIOD:
                 backgroundPeriod = Integer.parseInt(sharedPreferences.getString(key.toString(), "0"));
+                break;
+
+            case SHOW_PARTICIPANTS:
+                updateParticipants = sharedPreferences.getBoolean(key.toString(), true);
                 break;
         }
     }

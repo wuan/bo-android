@@ -1,5 +1,6 @@
 package org.blitzortung.android.data.provider;
 
+import android.util.Log;
 import org.blitzortung.android.data.beans.*;
 import org.blitzortung.android.jsonrpc.JsonRpcClient;
 import org.blitzortung.android.util.TimeFormat;
@@ -50,6 +51,9 @@ public class JsonRpcDataProvider extends DataProvider {
             skipServer();
             throw new RuntimeException(e);
         }
+
+        Log.v(getClass().getSimpleName(),
+                String.format("read %d bytes (%d new strokes)", client.getLastNumberOfTransferredBytes(), strokes.size(), region));
         return strokes;
     }
     
@@ -73,6 +77,9 @@ public class JsonRpcDataProvider extends DataProvider {
             skipServer();
             throw new RuntimeException(e);
         }
+
+        Log.v(getClass().getSimpleName(),
+                String.format("read %d bytes (%d raster positions)", client.getLastNumberOfTransferredBytes(), strokes.size(), region));
 
         return strokes;
     }

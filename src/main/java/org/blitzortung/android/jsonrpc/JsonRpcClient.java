@@ -9,6 +9,8 @@ import java.io.UnsupportedEncodingException;
 public class JsonRpcClient extends HttpServiceClient {
 
 	private final int id=0;
+    
+    private int lastNumberOfTransferredBytes;
 
     // VisibleForTesting
 	protected JSONArray buildParameters(Object[] parameters) {
@@ -46,6 +48,8 @@ public class JsonRpcClient extends HttpServiceClient {
 	public JSONObject call(String methodName, Object... parameters) {
 		String response = doRequest(buildRequest(methodName, parameters));
 
+        lastNumberOfTransferredBytes = response.length();
+        
 		try {
 			if (response.startsWith("[")) {
 
@@ -66,4 +70,7 @@ public class JsonRpcClient extends HttpServiceClient {
 		}
 	}
 
+    public int getLastNumberOfTransferredBytes() {
+        return lastNumberOfTransferredBytes;
+    }
 }

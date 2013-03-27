@@ -65,6 +65,13 @@
         <CheckBoxPreference
                 android:defaultValue="true"
                 android:enabled="true"
+                android:key="show_participants"
+                android:selectable="true"
+                android:title="@string/show_participants"
+                android:summary="@string/show_participants_summary"/>
+        <CheckBoxPreference
+                android:defaultValue="true"
+                android:enabled="true"
                 android:key="location"
                 android:selectable="true"
                 android:title="@string/show_location"

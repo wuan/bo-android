@@ -102,6 +102,9 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
 
     public void disableOwnLocation() {
         locationManager.removeUpdates(this);
+        
+        item = null;
+        populate();
     }
 
     @Override

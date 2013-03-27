@@ -30,6 +30,7 @@ public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> im
     }
 
     private final EnumMap<State, Drawable> shapes = new EnumMap<State, Drawable>(State.class);
+
     private final LayerOverlayComponent layerOverlayComponent;
 
     // VisibleForTesting

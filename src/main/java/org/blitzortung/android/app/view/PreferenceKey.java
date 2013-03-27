@@ -12,6 +12,7 @@ public enum PreferenceKey {
     COLOR_SCHEME("color_scheme"),
     QUERY_PERIOD("query_period"),
     BACKGROUND_QUERY_PERIOD("background_query_period"),
+    SHOW_PARTICIPANTS("show_participants"),
     SHOW_LOCATION("location"),
     ALARM_ENABLED("alarm_enabled"),
     NOTIFICATION_DISTANCE_LIMIT("notification_distance_limit"),

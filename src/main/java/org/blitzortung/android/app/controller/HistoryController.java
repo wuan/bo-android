@@ -50,6 +50,7 @@ public class HistoryController {
             historyForward.setVisibility(View.INVISIBLE);
             goRealtime.setVisibility(View.INVISIBLE);
         }
+        updateButtonColumn();
     }
 
     private void setupHistoryRewindButton(final Activity activity) {
@@ -109,7 +110,9 @@ public class HistoryController {
     }
 
     private void updateButtonColumn() {
-        buttonHandler.updateButtonColumn();
+        if (buttonHandler != null) {
+            buttonHandler.updateButtonColumn();
+        }
     }
 
     public Collection<ImageButton> getButtons() {

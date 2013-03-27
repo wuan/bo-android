@@ -83,7 +83,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private final Set<DataListener> dataListeners = new HashSet<DataListener>();
 
-    private final Set<String> androidIdsForExtendedFunctionality = new HashSet<String>(Arrays.asList("e73c5a22934b5915", "e72d101ce1bcdee3"));
+    private final Set<String> androidIdsForExtendedFunctionality = new HashSet<String>(Arrays.asList("5cba4df10ad9e75", "e72d101ce1bcdee3"));
 
     private PackageInfo pInfo;
 
@@ -130,7 +130,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         fadeOverlay = new FadeOverlay(strokesOverlay.getColorHandler());
 
-        addOverlays(fadeOverlay, strokesOverlay, participantsOverlay);
+        ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), persistor.getLocationHandler(), getMapView());
+
+        addOverlays(fadeOverlay, strokesOverlay, participantsOverlay, ownLocationOverlay);
 
         dataHandler = persistor.getDataHandler();
         statusComponent = new StatusComponent(this);
@@ -144,8 +146,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         if (alarmManager.isAlarmEnabled()) {
             onAlarmResult(alarmManager.getAlarmStatus());
         }
-
-        ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), persistor.getLocationHandler(), getMapView());
 
         buttonColumnHandler = new ButtonColumnHandler<ImageButton>((RelativeLayout) findViewById(R.layout.map_overlay));
 
@@ -190,7 +190,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         setupCustomViews();
 
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
-                PreferenceKey.NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.VIBRATION_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP);
+                PreferenceKey.NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.VIBRATION_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS);
 
         getMapView().invalidate();
     }
@@ -279,11 +279,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 showDialog(R.id.alarm_dialog);
                 break;
 
-/*
-            case R.id.menu_layers:
+            /*case R.id.menu_layers:
                 showDialog(R.id.layer_dialog);
-                break;
-*/
+                break;*/
 
             case R.id.menu_preferences:
                 startActivity(new Intent(this, Preferences.class));
@@ -453,6 +451,12 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 }
                 break;
 
+            case SHOW_PARTICIPANTS:
+                boolean showParticipants = sharedPreferences.getBoolean(key.toString(), true);
+                participantsOverlay.setEnabled(showParticipants);
+                updateOverlays();
+                break;
+                
             case COLOR_SCHEME:
                 strokesOverlay.refresh();
                 if (participantsOverlay != null) {
