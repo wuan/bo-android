@@ -47,6 +47,7 @@ public class JsonRpcDataProvider extends DataProvider {
             JSONObject response = client.call("get_strokes", timeInterval, intervalOffset < 0 ? intervalOffset : nextId);
 
             readStrokes(response, strokes);
+            readHistogramData(response);
         } catch (Exception e) {
             skipServer();
             throw new RuntimeException(e);
