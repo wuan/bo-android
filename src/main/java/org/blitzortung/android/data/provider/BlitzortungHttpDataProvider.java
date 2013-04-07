@@ -38,6 +38,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 		if (username != null && username.length() != 0 && password != null && password.length() != 0) {
 
 			try {
+                long startTime = System.currentTimeMillis() - timeInterval * 60 * 1000;
 				BufferedReader reader = readFromUrl(Type.STRIKES, region);
 
 				int size = 0;
@@ -45,7 +46,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 				while ((line = reader.readLine()) != null) {
 					size += line.length();
 					Stroke stroke = new Stroke(line);
-					if (stroke.getTimestamp() > latestTime) {
+					if (stroke.getTimestamp() > latestTime && stroke.getTimestamp() >= startTime) {
 						strokes.add(new Stroke(line));
 					}
 				}
