@@ -2,7 +2,7 @@ package org.blitzortung.android.data.beans;
 
 import android.location.Location;
 
-public abstract class AbstractStroke {
+public abstract class AbstractStroke implements Stroke {
 
 	private long timestamp;
 
@@ -38,11 +38,14 @@ public abstract class AbstractStroke {
 		return 1;
 	}
 
+    public Location getLocation(Location location) {
+        location.setLongitude(getLongitude());
+        location.setLatitude(getLatitude());
+        return location;
+    }
+    
 	public Location getLocation() {
-		Location location =  new Location("");
-		location.setLongitude(getLongitude());
-		location.setLatitude(getLatitude());
-		return location;
+		return getLocation(new Location(""));
 	}
 	
 }

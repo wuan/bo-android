@@ -2,16 +2,13 @@ package org.blitzortung.android.alarm;
 
 import android.content.SharedPreferences;
 import android.location.Location;
-import android.location.LocationManager;
 import com.google.common.collect.Lists;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
-import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.TimerTask;
 import org.blitzortung.android.app.controller.LocationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
-import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.provider.DataResult;
+import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +16,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Collection;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -122,9 +121,9 @@ public class AlarmManagerTest {
     @Test
     public void testCheckWithDisabledAlarm()
     {
-        DataResult result = mock(DataResult.class);
+        Collection<Stroke> strokes = mock(Collection.class);
 
-        alarmManager.check(result);
+        alarmManager.check(strokes, false);
 
         verify(alarmListener, times(1)).onAlarmResult(null);
 
@@ -135,9 +134,9 @@ public class AlarmManagerTest {
     {
         enableAlarm();
 
-        DataResult result = mock(DataResult.class);
+        Collection<Stroke> strokes = mock(Collection.class);
 
-        alarmManager.check(result);
+        alarmManager.check(strokes, false);
 
         verify(alarmListener, times(1)).onAlarmResult(null);
     }
@@ -160,15 +159,7 @@ public class AlarmManagerTest {
         when(location.bearingTo(strokeLocation)).thenReturn(0f);
         when(location.distanceTo(strokeLocation)).thenReturn(500000f);
 
-        DataResult result = mock(DataResult.class);
-        when(result.getStrokes()).thenReturn(Lists.newArrayList(stroke));
-        when(result.containsRealtimeData()).thenReturn(true);
-
-        Parameters parameters = mock(Parameters.class);
-        when(parameters.getIntervalDuration()).thenReturn(60);
-        when(result.getParameters()).thenReturn(parameters);
-
-        alarmManager.check(result);
+        alarmManager.check(Lists.newArrayList(stroke), true);
 
         ArgumentCaptor<AlarmStatus> alarmStatusCaptor = ArgumentCaptor.forClass(AlarmStatus.class);
 

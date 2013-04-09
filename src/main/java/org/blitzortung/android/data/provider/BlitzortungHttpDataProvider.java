@@ -1,10 +1,7 @@
 package org.blitzortung.android.data.provider;
 
 import android.util.Log;
-import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.Participant;
-import org.blitzortung.android.data.beans.RasterParameters;
-import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.beans.*;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -45,9 +42,9 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 				String line;
 				while ((line = reader.readLine()) != null) {
 					size += line.length();
-					Stroke stroke = new Stroke(line);
+					Stroke stroke = new DefaultStroke(line);
 					if (stroke.getTimestamp() > latestTime && stroke.getTimestamp() >= startTime) {
-						strokes.add(new Stroke(line));
+						strokes.add(new DefaultStroke(line));
 					}
 				}
 				Log.v(getClass().getSimpleName(),

@@ -4,7 +4,6 @@ import android.location.Location;
 import com.google.common.collect.Lists;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,10 +55,10 @@ public class AlarmStatusTest {
 
         long updatedWarnThresholdTime = warnThresholdTime + 10000;
 
-        alarmStatus.update(updatedWarnThresholdTime, 0l, measurementSystem);
+        alarmStatus.update(updatedWarnThresholdTime, measurementSystem);
 
         for (AlarmSector sector : alarmStatus.sectors) {
-            verify(sector, times(1)).update(updatedWarnThresholdTime, 0l, measurementSystem);
+            verify(sector, times(1)).update(updatedWarnThresholdTime, measurementSystem);
         }
     }
 
@@ -69,17 +68,13 @@ public class AlarmStatusTest {
 
         Location location = mock(Location.class);
 
-        DataResult result = mock(DataResult.class);
-
         Location strokeLocation = mock(Location.class);
         AbstractStroke stroke = mock(AbstractStroke.class);
         when(stroke.getLocation()).thenReturn(strokeLocation);
 
-        when(result.getStrokes()).thenReturn(Lists.newArrayList(stroke));
-
         when(location.bearingTo(strokeLocation)).thenReturn(-180f);
 
-        alarmStatus.check(result, location);
+        alarmStatus.check(Lists.newArrayList(stroke), location);
 
         verify(location, times(1)).bearingTo(strokeLocation);
 
@@ -91,25 +86,14 @@ public class AlarmStatusTest {
     }
 
     @Test
-    public void testReset() {
-        replaceSectorsWithMocks();
-
-        alarmStatus.reset();
-
-        for (AlarmSector sector : alarmStatus.sectors) {
-            verify(sector, times(1)).reset();
-        }
-    }
-
-    @Test
     public void testGetSectorWithClosestStroke()
     {
         replaceSectorsWithMocks();
 
         for (AlarmSector sector : alarmStatus.sectors) {
-            when(sector.getClosestStrokeDistance()).thenReturn(50000f);
+            when(sector.getMinimumAlarmRelevantStrokeDistance()).thenReturn(50000f);
         }
-        when(alarmStatus.sectors[3].getClosestStrokeDistance()).thenReturn(25000f);
+        when(alarmStatus.sectors[3].getMinimumAlarmRelevantStrokeDistance()).thenReturn(25000f);
 
         assertThat(alarmStatus.getSectorWithClosestStroke(), is(3));
     }
@@ -130,9 +114,9 @@ public class AlarmStatusTest {
 
         replaceSectorsWithMocks();
         for (AlarmSector sector : alarmStatus.sectors) {
-            when(sector.getClosestStrokeDistance()).thenReturn(50000f);
+            when(sector.getMinimumAlarmRelevantStrokeDistance()).thenReturn(50000f);
         }
-        when(alarmStatus.sectors[2].getClosestStrokeDistance()).thenReturn(11000f);
+        when(alarmStatus.sectors[2].getMinimumAlarmRelevantStrokeDistance()).thenReturn(11000f);
 
         assertThat(alarmStatus.getClosestStrokeDistance(), is((11000f)));
     }
@@ -159,10 +143,10 @@ public class AlarmStatusTest {
         replaceSectorsWithMocks();
 
         for (AlarmSector sector : alarmStatus.sectors) {
-            when(sector.getClosestStrokeDistance()).thenReturn(50f);
+            when(sector.getMinimumAlarmRelevantStrokeDistance()).thenReturn(50f);
             when(sector.getDistanceUnitName()).thenReturn("km");
         }
-        when(alarmStatus.sectors[1].getClosestStrokeDistance()).thenReturn(9f);
+        when(alarmStatus.sectors[1].getMinimumAlarmRelevantStrokeDistance()).thenReturn(9f);
 
         AlarmResult alarmResult = alarmStatus.getCurrentActivity();
 
@@ -177,13 +161,13 @@ public class AlarmStatusTest {
 
         replaceSectorsWithMocks();
         for (AlarmSector sector : alarmStatus.sectors) {
-            when(sector.getClosestStrokeDistance()).thenReturn(50f);
+            when(sector.getMinimumAlarmRelevantStrokeDistance()).thenReturn(50f);
         }
-        when(alarmStatus.sectors[2].getClosestStrokeDistance()).thenReturn(9f);
+        when(alarmStatus.sectors[2].getMinimumAlarmRelevantStrokeDistance()).thenReturn(9f);
 
         assertThat(alarmStatus.getTextMessage(15f), is("W 9km"));
 
-        when(alarmStatus.sectors[5].getClosestStrokeDistance()).thenReturn(3f);
+        when(alarmStatus.sectors[5].getMinimumAlarmRelevantStrokeDistance()).thenReturn(3f);
 
         assertThat(alarmStatus.getTextMessage(15f), is("NO 3km, W 9km"));
     }

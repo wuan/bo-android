@@ -12,7 +12,7 @@ public class AlarmResult {
 	}
 
 	public float getClosestStrokeDistance() {
-		return sector.getClosestStrokeDistance();
+		return sector.getMinimumAlarmRelevantStrokeDistance();
 	}
 
     public String getDistanceUnitName() {

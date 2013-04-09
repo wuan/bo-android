@@ -1,15 +1,15 @@
 package org.blitzortung.android.alarm;
 
 import android.location.Location;
-import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.util.MeasurementSystem;
 
 public class AlarmSector {
     private static final float DISTANCE_STEPS[] = {10, 25, 50, 100, 250, 500};
 
-    private int strokeCount[];
+    private final int strokeCount[];
     private long latestStrokeTimestamp[];
-    private float closestStrokeDistance;
+    private float minimumAlarmRelevantStrokeDistance;
 
     private final float sectorBearing;
     private long thresholdTime;
@@ -20,18 +20,23 @@ public class AlarmSector {
         this.sectorBearing = sectorBearing;
         this.measurementSystem = measurementSystem;
 
+        int size = getDistanceStepCount();
+        strokeCount = new int[size];
+        latestStrokeTimestamp = new long[size];
+        
         reset();
     }
 
-    public void reset() {
-        int size = getDistanceStepCount();
+    private void reset() {
+        for (int i=0; i < getDistanceStepCount(); i++) {
+            strokeCount[i] = 0;
+            latestStrokeTimestamp[i] = 0;
+        }
 
-        strokeCount = new int[size];
-        latestStrokeTimestamp = new long[size];
-        closestStrokeDistance = Float.POSITIVE_INFINITY;
+        minimumAlarmRelevantStrokeDistance = Float.POSITIVE_INFINITY;
     }
 
-    public void check(AbstractStroke stroke, Location location) {
+    public void check(Stroke stroke, Location location) {
         float distanceInMeters = location.distanceTo(stroke.getLocation());
         float distance = measurementSystem.calculateDistance(distanceInMeters);
         check(distance, stroke.getTimestamp(), stroke.getMultiplicity());
@@ -48,7 +53,7 @@ public class AlarmSector {
                     latestStrokeTimestamp[stepIndex] = timeStamp;
                 }
                 if (timeStamp > thresholdTime) {
-                    closestStrokeDistance = Math.min(distance, closestStrokeDistance);
+                    minimumAlarmRelevantStrokeDistance = Math.min(distance, minimumAlarmRelevantStrokeDistance);
                 }
                 break;
             }
@@ -74,9 +79,9 @@ public class AlarmSector {
         return latestStrokeTimestamp[index];
     }
 
-    public float getClosestStrokeDistance() {
-        if (closestStrokeDistance < Float.POSITIVE_INFINITY) {
-            return closestStrokeDistance;
+    public float getMinimumAlarmRelevantStrokeDistance() {
+        if (minimumAlarmRelevantStrokeDistance < Float.POSITIVE_INFINITY) {
+            return minimumAlarmRelevantStrokeDistance;
         }
 
         for (int index = 0; index < getDistanceStepCount(); index++) {
@@ -107,23 +112,11 @@ public class AlarmSector {
         return sectorBearing;
     }
 
-    public void update(long thresholdTime, long oldestStrokeTime, MeasurementSystem measurementSystem) {
+    public void update(long thresholdTime, MeasurementSystem measurementSystem) {
+        reset();
+
         this.thresholdTime = thresholdTime;
         this.measurementSystem = measurementSystem;
-
-        for (int index = 0; index < getDistanceStepCount(); index++) {
-            if (latestStrokeTimestamp[index] < thresholdTime) {
-                if (latestStrokeTimestamp[index] < oldestStrokeTime) {
-                    latestStrokeTimestamp[index] = 0;
-                    strokeCount[index] = 0;
-                }
-
-                if (closestStrokeDistance >= getDistanceStep(index - 1) &&
-                        closestStrokeDistance < getDistanceStep(index)) {
-                    closestStrokeDistance = Float.POSITIVE_INFINITY;
-                }
-            }
-        }
     }
 
     public long getThresholdTime() {

@@ -1,8 +1,6 @@
 package org.blitzortung.android.app;
 
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.DataHandler;
@@ -71,10 +69,9 @@ public class TimerTaskTest {
 
         assertTrue(targetsArgumentCaptor.getValue().anyUpdateRequested());
         assertTrue(targetsArgumentCaptor.getValue().updateStrokes());
-        assertTrue(targetsArgumentCaptor.getValue().updateParticipants());
+        assertFalse(targetsArgumentCaptor.getValue().updateParticipants());
 
         assertThat(timerTask.getLastUpdate(), is(actualSecond));
-        assertThat(timerTask.getLastParticipantsUpdate(), is(actualSecond));
     }
 
     class TimerListener implements TimerTask.TimerUpdateListener
@@ -108,7 +105,6 @@ public class TimerTaskTest {
         timerTask.onResume(true);
 
         assertThat(timerTask.getLastUpdate(), is(actualSecond));
-        assertThat(timerTask.getLastParticipantsUpdate(), is(actualSecond));
         assertFalse(timerTask.isInBackgroundOperation());
     }
 

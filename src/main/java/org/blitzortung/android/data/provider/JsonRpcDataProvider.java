@@ -80,7 +80,7 @@ public class JsonRpcDataProvider extends DataProvider {
         }
 
         Log.v(getClass().getSimpleName(),
-                String.format("read %d bytes (%d raster positions)", client.getLastNumberOfTransferredBytes(), strokes.size(), region));
+                String.format("read %d bytes (%d raster positions)", client.getLastNumberOfTransferredBytes(), strokes.size()));
 
         return strokes;
     }
@@ -144,7 +144,7 @@ public class JsonRpcDataProvider extends DataProvider {
         long referenceTimestamp = getReferenceTimestamp(response);
         JSONArray strokes_array = (JSONArray) response.get("s");
         for (int i = 0; i < strokes_array.length(); i++) {
-            strokes.add(new Stroke(referenceTimestamp, strokes_array.getJSONArray(i)));
+            strokes.add(new DefaultStroke(referenceTimestamp, strokes_array.getJSONArray(i)));
         }
         if (response.has("next")) {
             nextId = (Integer) response.get("next");

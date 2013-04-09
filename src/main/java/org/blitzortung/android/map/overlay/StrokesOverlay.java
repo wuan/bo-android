@@ -1,12 +1,8 @@
 package org.blitzortung.android.map.overlay;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Paint;
+import android.graphics.*;
 import android.graphics.Paint.Style;
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
@@ -18,11 +14,13 @@ import org.blitzortung.android.app.R;
 import org.blitzortung.android.data.TimeIntervalWithOffset;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.map.components.LayerOverlayComponent;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements TimeIntervalWithOffset, LayerOverlay  {
@@ -31,6 +29,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
     protected final ArrayList<StrokeOverlayItem> items;
 
     private final StrokeColorHandler colorHandler;
+    
     private final LayerOverlayComponent layerOverlayComponent;
 
     private int zoomLevel;
@@ -251,6 +250,10 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         return totalNumberOfStrokes;
     }
 
+    public Collection<? extends Stroke> getStrokes() {
+        return items;
+    }
+    
     public int getIntervalDuration() {
         return intervalDuration;
     }

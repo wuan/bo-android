@@ -16,12 +16,12 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-public class StrokeTest {
+public class DefaultStrokeTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-    private Stroke stroke;
+    private DefaultStroke defaultStroke;
 
     @Mock
     private JSONArray jsonArray;
@@ -40,19 +40,19 @@ public class StrokeTest {
         when(jsonArray.getInt(5)).thenReturn(6);
         when(jsonArray.getInt(6)).thenReturn(1);
 
-        stroke = new Stroke(referenceTimestamp, jsonArray);
+        defaultStroke = new DefaultStroke(referenceTimestamp, jsonArray);
     }
 
     @Test
     public void testConstruct()
     {
-        assertThat(stroke.getTimestamp(), is(referenceTimestamp - 10 * 1000));
-        assertThat(stroke.getLongitude(), is(11.0f));
-        assertThat(stroke.getLatitude(), is(49.0f));
-        assertThat(stroke.getLateralError(), is(12.3f));
-        assertThat(stroke.getAmplitude(), is(54.3f));
-        assertThat(stroke.getStationCount(), is((short)6));
-        assertThat(stroke.getType(), is((short)1));
+        assertThat(defaultStroke.getTimestamp(), is(referenceTimestamp - 10 * 1000));
+        assertThat(defaultStroke.getLongitude(), is(11.0f));
+        assertThat(defaultStroke.getLatitude(), is(49.0f));
+        assertThat(defaultStroke.getLateralError(), is(12.3f));
+        assertThat(defaultStroke.getAmplitude(), is(54.3f));
+        assertThat(defaultStroke.getStationCount(), is((short)6));
+        assertThat(defaultStroke.getType(), is((short)1));
     }
 
     @Test
@@ -61,20 +61,20 @@ public class StrokeTest {
 
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("error with JSON format while parsing stroke data");
-        stroke = new Stroke(referenceTimestamp, jsonArray);
+        defaultStroke = new DefaultStroke(referenceTimestamp, jsonArray);
     }
 
     @Test
     public void testConstructFromString()
     {
-        stroke = new Stroke("2012-05-12 12:45:23.123456789 49.0 11.0 54.3kA 1 12.3m 6");
+        defaultStroke = new DefaultStroke("2012-05-12 12:45:23.123456789 49.0 11.0 54.3kA 1 12.3m 6");
 
-        assertThat(stroke.getTimestamp(), is(1336826723123L));
-        assertThat(stroke.getLongitude(), is(11.0f));
-        assertThat(stroke.getLatitude(), is(49.0f));
-        assertThat(stroke.getLateralError(), is(12.3f));
-        assertThat(stroke.getAmplitude(), is(54.3f));
-        assertThat(stroke.getStationCount(), is((short)6));
-        assertThat(stroke.getType(), is((short)1));
+        assertThat(defaultStroke.getTimestamp(), is(1336826723123L));
+        assertThat(defaultStroke.getLongitude(), is(11.0f));
+        assertThat(defaultStroke.getLatitude(), is(49.0f));
+        assertThat(defaultStroke.getLateralError(), is(12.3f));
+        assertThat(defaultStroke.getAmplitude(), is(54.3f));
+        assertThat(defaultStroke.getStationCount(), is((short)6));
+        assertThat(defaultStroke.getType(), is((short)1));
     }
 }

@@ -31,7 +31,7 @@ public class AlarmSectorTest {
 			assertThat(alarmSector.getLatestTime(index), is(0l));
 		}
 
-        assertThat(alarmSector.getClosestStrokeDistance(), is((float) Double.POSITIVE_INFINITY));
+        assertThat(alarmSector.getMinimumAlarmRelevantStrokeDistance(), is((float) Double.POSITIVE_INFINITY));
 	}
 
     @Test
@@ -52,7 +52,7 @@ public class AlarmSectorTest {
 		int minimumIndex = 4;
 		assertThat(alarmSector.getStrokeCount(minimumIndex), is(strokeMultiplicity));
 		assertThat(alarmSector.getLatestTime(minimumIndex), is(strokeTime));
-		assertThat(alarmSector.getClosestStrokeDistance(), is(strokeDistance));
+		assertThat(alarmSector.getMinimumAlarmRelevantStrokeDistance(), is(strokeDistance));
 		
 	}
 
@@ -68,7 +68,7 @@ public class AlarmSectorTest {
 		int minimumIndex = 4;
 		assertThat(alarmSector.getStrokeCount(minimumIndex), is(3));
 		assertThat(alarmSector.getLatestTime(minimumIndex), is(1000010l));
-		assertThat(alarmSector.getClosestStrokeDistance(), is(150f));
+		assertThat(alarmSector.getMinimumAlarmRelevantStrokeDistance(), is(150f));
 	}
 
     @Test
@@ -102,11 +102,11 @@ public class AlarmSectorTest {
     @Test
     public void testGetWarnMinimumDistance()
     {
-        assertThat(alarmSector.getClosestStrokeDistance(), is(Float.POSITIVE_INFINITY));
+        assertThat(alarmSector.getMinimumAlarmRelevantStrokeDistance(), is(Float.POSITIVE_INFINITY));
 
         alarmSector.check(10f, 15000, 1);
 
-        assertThat(alarmSector.getClosestStrokeDistance(), is(10f));
+        assertThat(alarmSector.getMinimumAlarmRelevantStrokeDistance(), is(10f));
     }
 
     @Test
@@ -118,30 +118,15 @@ public class AlarmSectorTest {
     @Test
     public void testUpdateWarnThresholdTimeRemovesOlderWarning()
     {
-        alarmSector.check(10f, 15000, 1);
+        alarmSector.check(10f, 25000, 1);
         assertThat(alarmSector.getStrokeCount(0), is(1));
-        assertThat(alarmSector.getClosestStrokeDistance(), is(10f));
+        assertThat(alarmSector.getMinimumAlarmRelevantStrokeDistance(), is(10f));
 
-        alarmSector.update(20000l, 0l, MeasurementSystem.METRIC);
+        alarmSector.update(20000l, MeasurementSystem.METRIC);
 
         assertThat(alarmSector.getThresholdTime(), is(20000l));
-        assertThat(alarmSector.getStrokeCount(0), is(1));
-        assertThat(alarmSector.getClosestStrokeDistance(), is(Float.POSITIVE_INFINITY));
-    }
-
-    @Test
-    public void testUpdateWarnThresholdTimeRemovesOlderWarningButKeepsNext()
-    {
-        alarmSector.check(10f, 15000, 1);
-        alarmSector.check(50f, 25000, 1);
-        assertThat(alarmSector.getStrokeCount(0), is(1));
-        assertThat(alarmSector.getClosestStrokeDistance(), is(10f));
-
-        alarmSector.update(20000l, 0l, MeasurementSystem.METRIC);
-
-        assertThat(alarmSector.getThresholdTime(), is(20000l));
-        assertThat(alarmSector.getStrokeCount(0), is(1));
-        assertThat(alarmSector.getClosestStrokeDistance(), is(25f));
+        assertThat(alarmSector.getStrokeCount(0), is(0));
+        assertThat(alarmSector.getMinimumAlarmRelevantStrokeDistance(), is(Float.POSITIVE_INFINITY));
     }
 
     @Test
@@ -149,25 +134,13 @@ public class AlarmSectorTest {
     {
         alarmSector.check(10f, 15000, 1);
         assertThat(alarmSector.getStrokeCount(0), is(1));
-        assertThat(alarmSector.getClosestStrokeDistance(), is(10f));
+        assertThat(alarmSector.getMinimumAlarmRelevantStrokeDistance(), is(10f));
 
-        alarmSector.update(20000l, 19000l, MeasurementSystem.METRIC);
+        alarmSector.update(20000l, MeasurementSystem.METRIC);
 
         assertThat(alarmSector.getThresholdTime(), is(20000l));
         assertThat(alarmSector.getStrokeCount(0), is(0));
-        assertThat(alarmSector.getClosestStrokeDistance(), is(Float.POSITIVE_INFINITY));
-    }
-
-    @Test
-    public void testUpdateWarnThresholdTimeKeepsNewerValues()
-    {
-        alarmSector.check(10f, 25000, 1);
-        assertThat(alarmSector.getStrokeCount(0), is(1));
-
-        alarmSector.update(20000l, 0l, MeasurementSystem.METRIC);
-
-        assertThat(alarmSector.getThresholdTime(), is(20000l));
-        assertThat(alarmSector.getStrokeCount(0), is(1));
+        assertThat(alarmSector.getMinimumAlarmRelevantStrokeDistance(), is(Float.POSITIVE_INFINITY));
     }
 
 }

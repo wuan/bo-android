@@ -5,7 +5,7 @@ import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Participant;
 import org.blitzortung.android.data.beans.RasterParameters;
-import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.beans.DefaultStroke;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +40,7 @@ public class DataResultTest {
     @Test
     public void testSetStrokes() {
         List<AbstractStroke> strokes = Lists.newArrayList();
-        strokes.add(mock(Stroke.class));
+        strokes.add(mock(DefaultStroke.class));
 
         dataResult.setStrokes(strokes);
 

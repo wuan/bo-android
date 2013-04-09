@@ -23,7 +23,7 @@ public class AlarmResultTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        when(alarmSector.getClosestStrokeDistance()).thenReturn(4567f);
+        when(alarmSector.getMinimumAlarmRelevantStrokeDistance()).thenReturn(4567f);
 
         alarmResult = new AlarmResult(alarmSector, "FOO");
     }

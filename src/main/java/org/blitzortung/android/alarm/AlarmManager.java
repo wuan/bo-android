@@ -6,9 +6,10 @@ import android.location.Location;
 import org.blitzortung.android.app.TimerTask;
 import org.blitzortung.android.app.controller.LocationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
-import org.blitzortung.android.data.provider.DataResult;
+import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.util.MeasurementSystem;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -90,20 +91,19 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
         return alarmEnabled;
     }
 
-    public void check(DataResult result) {
+    public void check(Collection<? extends Stroke> strokes, boolean alarmActive) {
 
-        if (alarmEnabled && result.containsRealtimeData() && location != null) {
+        if (alarmEnabled && alarmActive && location != null) {
             long now = System.currentTimeMillis();
             long thresholdTime = now - alarmInterval;
-            long oldestTime = now - result.getParameters().getIntervalDuration() * 1000 * 60;
 
-            if (alarmStatus == null || !result.containsIncrementalData()) {
+            if (alarmStatus == null) {
                 alarmStatus = new AlarmStatus(thresholdTime, measurementSystem);
             } else {
-                alarmStatus.update(thresholdTime, oldestTime, measurementSystem);
+                alarmStatus.update(thresholdTime, measurementSystem);
             }
 
-            alarmStatus.check(result, location);
+            alarmStatus.check(strokes, location);
 
         } else {
             alarmStatus = null;
