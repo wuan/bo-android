@@ -39,7 +39,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     // VisibleForTesting
     protected final Set<AlarmListener> alarmListeners;
 
-    private AlarmStatus alarmStatus;
+    private final AlarmStatus alarmStatus;
 
     public AlarmManager(LocationHandler locationHandler, SharedPreferences preferences, TimerTask timerTask) {
         this.timerTask = timerTask;
@@ -52,6 +52,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
         onSharedPreferenceChanged(preferences, PreferenceKey.ALARM_ENABLED);
         onSharedPreferenceChanged(preferences, PreferenceKey.MEASUREMENT_UNIT);
         alarmInterval = 600000;
+        alarmStatus = new AlarmStatus(0, measurementSystem);
     }
 
     @Override
@@ -100,23 +101,17 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
         this.strokes = strokes;
         this.alarmActive = alarmActive;
 
-        if (alarmEnabled && alarmActive && strokes != null && location != null) {
+        boolean processAlarm = alarmEnabled && alarmActive && strokes != null && location != null;
+        if (processAlarm) {
             long now = System.currentTimeMillis();
             long thresholdTime = now - alarmInterval;
 
-            if (alarmStatus == null) {
-                alarmStatus = new AlarmStatus(thresholdTime, measurementSystem);
-            } else {
-                alarmStatus.update(thresholdTime, measurementSystem);
-            }
-
+            alarmStatus.update(thresholdTime, measurementSystem);
             alarmStatus.check(strokes, location);
-        } else {
-            alarmStatus = null;
         }
 
         for (AlarmListener alarmListener : alarmListeners) {
-            alarmListener.onAlarmResult(alarmStatus);
+            alarmListener.onAlarmResult(processAlarm ? alarmStatus : null);
         }
     }
 
