@@ -63,7 +63,7 @@ public class AlarmManagerTest {
         assertThat(alarmManager.getAlarmStatus(), is(nullValue()));
 
         verify(sharedPreferences, times(1)).registerOnSharedPreferenceChangeListener(any(AlarmManager.class));
-        verify(sharedPreferences, times(1)).getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false);
+        verify(sharedPreferences, times(1)).getBoolean(PreferenceKey.ALARM_ENABLED.toString(), true);
         verify(locationManager, times(1)).removeUpdates(any(AlarmManager.class));
         verify(timerTask, times(1)).setAlarmEnabled(false);
 
@@ -113,7 +113,7 @@ public class AlarmManagerTest {
     }
 
     private void enableAlarm() {
-        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(true);
+        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), true)).thenReturn(true);
 
         alarmManager.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.ALARM_ENABLED.toString());
     }
@@ -163,7 +163,7 @@ public class AlarmManagerTest {
 
         ArgumentCaptor<AlarmStatus> alarmStatusCaptor = ArgumentCaptor.forClass(AlarmStatus.class);
 
-        verify(alarmListener, times(1)).onAlarmResult(alarmStatusCaptor.capture());
+        verify(alarmListener, times(2)).onAlarmResult(alarmStatusCaptor.capture());
 
         assertThat(alarmStatusCaptor.getValue().getCurrentActivity().getClosestStrokeDistance(), is(500f));
         assertThat(alarmStatusCaptor.getValue().getCurrentActivity().getBearingName(), is("N"));

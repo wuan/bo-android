@@ -17,6 +17,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
 
     private Collection<? extends Stroke> strokes;
     private boolean alarmActive;
+    private boolean alarmStatusValid;
 
     public interface AlarmListener {
         void onAlarmResult(AlarmStatus alarmStatus);
@@ -89,7 +90,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     @Override
     public void onLocationChanged(Location location) {
         this.location = location;
-        
+
         check(strokes, alarmActive);
     }
 
@@ -101,8 +102,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
         this.strokes = strokes;
         this.alarmActive = alarmActive;
 
-        boolean processAlarm = alarmEnabled && alarmActive && strokes != null && location != null;
-        if (processAlarm) {
+        alarmStatusValid = alarmEnabled && alarmActive && strokes != null && location != null;
+        if (alarmStatusValid) {
             long now = System.currentTimeMillis();
             long thresholdTime = now - alarmInterval;
 
@@ -111,12 +112,12 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
         }
 
         for (AlarmListener alarmListener : alarmListeners) {
-            alarmListener.onAlarmResult(processAlarm ? alarmStatus : null);
+            alarmListener.onAlarmResult(getAlarmStatus());
         }
     }
 
     public AlarmStatus getAlarmStatus() {
-        return alarmStatus;
+        return alarmStatusValid ? alarmStatus : null;
     }
 
     public void clearAlarmListeners() {
