@@ -13,6 +13,8 @@ public class AlarmStatus {
     private final static String[] DIRECTION_LABELS = {"S", "SW", "W", "NW", "N", "NO", "O", "SO"};
 
     private final static int SECTOR_COUNT = DIRECTION_LABELS.length;
+    
+    private final Location tmpLocation;
 
     // VisibleForTesting
     protected final AlarmSector[] sectors;
@@ -25,6 +27,8 @@ public class AlarmStatus {
             sectors[i] = new AlarmSector(bearing, warnThresholdTime, measurementSystem);
             bearing += getSectorWidth();
         }
+        
+        tmpLocation = new Location(""); 
     }
 
     public void update(long warnThresholdTime, MeasurementSystem measurementSystem) {
@@ -35,7 +39,7 @@ public class AlarmStatus {
 
     public void check(Collection<? extends Stroke> strokes, Location location) {
         for (Stroke stroke : strokes) {
-            float bearingToStroke = location.bearingTo(stroke.getLocation());
+            float bearingToStroke = location.bearingTo(stroke.getLocation(tmpLocation));
             int sectorIndex = getSectorIndexForBearing(bearingToStroke);
             sectors[sectorIndex].check(stroke, location);
         }

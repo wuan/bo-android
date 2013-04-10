@@ -159,7 +159,7 @@ public class AlarmManagerTest {
         when(stroke.getMultiplicity()).thenReturn(1);
 
         Location strokeLocation = mock(Location.class);
-        when(stroke.getLocation()).thenReturn(strokeLocation);
+        when(stroke.getLocation(any(Location.class))).thenReturn(strokeLocation);
         when(location.bearingTo(strokeLocation)).thenReturn(0f);
         when(location.distanceTo(strokeLocation)).thenReturn(500000f);
 
