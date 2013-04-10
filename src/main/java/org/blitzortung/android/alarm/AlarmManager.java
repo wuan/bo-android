@@ -109,10 +109,22 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
 
             alarmStatus.update(thresholdTime, measurementSystem);
             alarmStatus.check(strokes, location);
-        }
 
+            broadcastAlarmResult();
+        } else {
+            broadcastAlarmClear();
+        }
+    }
+
+    private void broadcastAlarmResult() {
         for (AlarmListener alarmListener : alarmListeners) {
-            alarmListener.onAlarmResult(getAlarmStatus());
+            alarmListener.onAlarmResult(alarmStatus);
+        }
+    }
+
+    private void broadcastAlarmClear() {
+        for (AlarmListener alarmListener : alarmListeners) {
+            alarmListener.onAlarmClear();
         }
     }
 

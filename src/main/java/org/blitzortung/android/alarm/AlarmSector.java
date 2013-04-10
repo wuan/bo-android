@@ -12,6 +12,7 @@ public class AlarmSector {
     private float minimumAlarmRelevantStrokeDistance;
 
     private final float sectorBearing;
+    private final Location tmpLocation;
     private long thresholdTime;
     private MeasurementSystem measurementSystem;
 
@@ -23,6 +24,8 @@ public class AlarmSector {
         int size = getDistanceStepCount();
         strokeCount = new int[size];
         latestStrokeTimestamp = new long[size];
+        
+        tmpLocation = new Location("");
         
         reset();
     }
@@ -37,7 +40,7 @@ public class AlarmSector {
     }
 
     public void check(Stroke stroke, Location location) {
-        float distanceInMeters = location.distanceTo(stroke.getLocation());
+        float distanceInMeters = location.distanceTo(stroke.getLocation(tmpLocation));
         float distance = measurementSystem.calculateDistance(distanceInMeters);
         check(distance, stroke.getTimestamp(), stroke.getMultiplicity());
     }
@@ -52,6 +55,7 @@ public class AlarmSector {
                 if (timeStamp > latestStrokeTimestamp[stepIndex]) {
                     latestStrokeTimestamp[stepIndex] = timeStamp;
                 }
+                
                 if (timeStamp > thresholdTime) {
                     minimumAlarmRelevantStrokeDistance = Math.min(distance, minimumAlarmRelevantStrokeDistance);
                 }
@@ -80,28 +84,11 @@ public class AlarmSector {
     }
 
     public float getMinimumAlarmRelevantStrokeDistance() {
-        if (minimumAlarmRelevantStrokeDistance < Float.POSITIVE_INFINITY) {
-            return minimumAlarmRelevantStrokeDistance;
-        }
-
-        for (int index = 0; index < getDistanceStepCount(); index++) {
-            if (latestStrokeTimestamp[index] >= thresholdTime) {
-                return getDistanceStep(index - 1);
-            }
-        }
-
-        return Float.POSITIVE_INFINITY;
+        return minimumAlarmRelevantStrokeDistance;
     }
 
     public static float[] getDistanceSteps() {
         return DISTANCE_STEPS;
-    }
-
-    private static float getDistanceStep(int index) {
-        if (index == -1) {
-            return 0.0f;
-        }
-        return DISTANCE_STEPS[index];
     }
 
     public static int getDistanceStepCount() {

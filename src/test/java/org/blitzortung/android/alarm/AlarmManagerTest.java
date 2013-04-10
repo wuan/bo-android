@@ -114,10 +114,11 @@ public class AlarmManagerTest {
 
     private void enableAlarm() {
         when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), true)).thenReturn(true);
-
         alarmManager.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.ALARM_ENABLED.toString());
+        verify(sharedPreferences, times(2)).getBoolean(PreferenceKey.ALARM_ENABLED.toString(), true);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testCheckWithDisabledAlarm()
     {
@@ -125,29 +126,32 @@ public class AlarmManagerTest {
 
         alarmManager.check(strokes, false);
 
-        verify(alarmListener, times(1)).onAlarmResult(null);
-
+        verify(alarmListener, times(0)).onAlarmResult(any(AlarmStatus.class));
+        verify(alarmListener, times(1)).onAlarmClear();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testCheckWithEnabledAlarm()
     {
         enableAlarm();
+        verify(alarmListener, times(1)).onAlarmClear();
 
         Collection<Stroke> strokes = mock(Collection.class);
 
         alarmManager.check(strokes, false);
 
-        verify(alarmListener, times(1)).onAlarmResult(null);
+        verify(alarmListener, times(0)).onAlarmResult(any(AlarmStatus.class));
+        verify(alarmListener, times(2)).onAlarmClear();
     }
 
     @Test
     public void testCheckWithEnabledAlarmAndLocationSet()
     {
         when(locationManager.isProviderEnabled()).thenReturn(true);
-
-        Location location = mock(Location.class);
         enableAlarm();
+        
+        Location location = mock(Location.class);
         alarmManager.onLocationChanged(location);
 
         AbstractStroke stroke = mock(AbstractStroke.class);
@@ -163,7 +167,8 @@ public class AlarmManagerTest {
 
         ArgumentCaptor<AlarmStatus> alarmStatusCaptor = ArgumentCaptor.forClass(AlarmStatus.class);
 
-        verify(alarmListener, times(2)).onAlarmResult(alarmStatusCaptor.capture());
+        verify(alarmListener, times(1)).onAlarmResult(alarmStatusCaptor.capture());
+        verify(alarmListener, times(1)).onAlarmClear();
 
         assertThat(alarmStatusCaptor.getValue().getCurrentActivity().getClosestStrokeDistance(), is(500f));
         assertThat(alarmStatusCaptor.getValue().getCurrentActivity().getBearingName(), is("N"));

@@ -59,9 +59,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     }
 
     public void onResume() {
-        if (provider != null) {
-            enableProvider(provider);
-        }
+        enableProvider(provider);
     }
 
     private final LocationManager locationManager;
@@ -91,12 +89,10 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
 
     @Override
     public void onStatusChanged(String s, int i, Bundle bundle) {
-        Log.v("LocationHandler", "onStatusChanged: " + s);
     }
 
     @Override
     public void onProviderEnabled(String s) {
-        Log.v("LocationHandler", "onProviederEnabled: " + s);
     }
 
     @Override
@@ -108,12 +104,6 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String keyString) {
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString));
-    }
-
-    private void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey... keys) {
-        for (PreferenceKey key : keys) {
-            onSharedPreferenceChanged(sharedPreferences, key);
-        }
     }
 
     private void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey key) {
@@ -163,16 +153,17 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
         } else {
             location.setLongitude(Double.NaN);
             location.setLatitude(Double.NaN);
-            enableProvider(newProvider);
+            sendUpdate(null);
         }
-        provider = newProvider;
+        enableProvider(newProvider);
     }
 
     private void enableProvider(Provider newProvider) {
-        if (locationManager.isProviderEnabled(newProvider.getType())) {
-            locationManager.removeUpdates(this);
-            locationManager.requestLocationUpdates(newProvider.getType(), 0, 0, this);
+        locationManager.removeUpdates(this);
+        if (newProvider != null && newProvider != Provider.MANUAL) {
+            locationManager.requestLocationUpdates(newProvider.getType(), 5000, 0, this);
         }
+        provider = newProvider;
     }
 
     private void sendLocationUpdate() {
@@ -203,10 +194,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     }
 
     public boolean isProviderEnabled() {
-        if (provider != Provider.MANUAL) {
-            return provider == null ? false : locationManager.isProviderEnabled(provider.getType());
-        }
-        return true;
+        return provider == Provider.MANUAL || provider != null && locationManager.isProviderEnabled(provider.getType());
     }
 
 }

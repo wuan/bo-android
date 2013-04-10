@@ -43,9 +43,9 @@ public class AlarmSectorTest {
     @Test
 	public void testCheckWithOneStroke() {
 		
-		int strokeMultiplicity = 2;
 		float strokeDistance = 150f;
 		long strokeTime = 10001;
+        int strokeMultiplicity = 2;
 		
 		alarmSector.check(strokeDistance, strokeTime, strokeMultiplicity);
 		
