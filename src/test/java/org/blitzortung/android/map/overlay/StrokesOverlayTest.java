@@ -140,7 +140,7 @@ public class StrokesOverlayTest {
 
         StrokeOverlayItem strokeOverlayItem = mock(StrokeOverlayItem.class);
 
-        strokesOverlay.items.add(strokeOverlayItem);
+        strokesOverlay.strokes.add(strokeOverlayItem);
 
         when(strokeOverlayItem.getTimestamp()).thenReturn(System.currentTimeMillis());
 
@@ -229,7 +229,7 @@ public class StrokesOverlayTest {
         when(strokeOverlayItem.getMultiplicity()).thenReturn(1);
         when(strokeOverlayItem.getTitle()).thenReturn("<title>");
 
-        strokesOverlay.items.add(strokeOverlayItem);
+        strokesOverlay.strokes.add(strokeOverlayItem);
 
         doNothing().when(strokesOverlay).showPopup(any(GeoPoint.class), any(String.class));
 

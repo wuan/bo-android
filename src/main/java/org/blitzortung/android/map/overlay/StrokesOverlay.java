@@ -26,7 +26,7 @@ import java.util.List;
 public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements TimeIntervalWithOffset, LayerOverlay  {
 
     // VisibleForTesting
-    protected final ArrayList<StrokeOverlayItem> items;
+    protected final ArrayList<StrokeOverlayItem> strokes;
 
     private final StrokeColorHandler colorHandler;
     
@@ -63,7 +63,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         layerOverlayComponent = new LayerOverlayComponent(context.getResources().getString(R.string.strokes_layer));
         this.colorHandler = colorHandler;
 
-        items = new ArrayList<StrokeOverlayItem>();
+        strokes = new ArrayList<StrokeOverlayItem>();
 
         drawCenter = new Point();
         drawTopLeft = new Point();
@@ -74,12 +74,12 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
 
     @Override
     protected StrokeOverlayItem createItem(int index) {
-        return items.get(index);
+        return strokes.get(index);
     }
 
     @Override
     public int size() {
-        return items.size();
+        return strokes.size();
     }
 
     @Override
@@ -117,7 +117,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
 
     public void addStrokes(List<AbstractStroke> strokes) {
         for (AbstractStroke stroke : strokes) {
-            items.add(new StrokeOverlayItem(stroke));
+            this.strokes.add(new StrokeOverlayItem(stroke));
         }
 
         setLastFocusedIndex(-1);
@@ -128,7 +128,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         long expireTime = referenceTime - (intervalDuration - intervalOffset) * 60 * 1000;
         List<StrokeOverlayItem> toRemove = new ArrayList<StrokeOverlayItem>();
 
-        for (StrokeOverlayItem item : items) {
+        for (StrokeOverlayItem item : strokes) {
             if (item.getTimestamp() < expireTime) {
                 toRemove.add(item);
             } else {
@@ -137,13 +137,13 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         }
 
         if (toRemove.size() > 0) {
-            items.removeAll(toRemove);
+            strokes.removeAll(toRemove);
         }
     }
 
     public void clear() {
         clearPopup();
-        items.clear();
+        strokes.clear();
         setLastFocusedIndex(-1);
         populate();
     }
@@ -167,7 +167,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
 
         Drawable drawable = null;
 
-        for (StrokeOverlayItem item : items) {
+        for (StrokeOverlayItem item : strokes) {
             int section = colorHandler.getColorSection(now, item.getTimestamp(), this);
 
             if (hasRasterParameters() || current_section != section) {
@@ -226,7 +226,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
 
     @Override
     protected boolean onTap(int index) {
-        StrokeOverlayItem item = items.get(index);
+        StrokeOverlayItem item = strokes.get(index);
         if (item.getPoint() != null && item.getTimestamp() != 0) {
             String result = (String) DateFormat.format("kk:mm:ss", item.getTimestamp());
 
@@ -243,7 +243,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
 
         int totalNumberOfStrokes = 0;
 
-        for (StrokeOverlayItem item : items) {
+        for (StrokeOverlayItem item : strokes) {
             totalNumberOfStrokes += item.getMultiplicity();
         }
 
@@ -251,7 +251,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
     }
 
     public Collection<? extends Stroke> getStrokes() {
-        return items;
+        return strokes;
     }
     
     public int getIntervalDuration() {

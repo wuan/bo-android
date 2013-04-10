@@ -15,6 +15,9 @@ import java.util.Set;
 
 public class AlarmManager implements OnSharedPreferenceChangeListener, LocationHandler.Listener {
 
+    private Collection<? extends Stroke> strokes;
+    private boolean alarmActive;
+
     public interface AlarmListener {
         void onAlarmResult(AlarmStatus alarmStatus);
 
@@ -85,6 +88,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     @Override
     public void onLocationChanged(Location location) {
         this.location = location;
+        
+        check(strokes, alarmActive);
     }
 
     public boolean isAlarmEnabled() {
@@ -92,8 +97,10 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     }
 
     public void check(Collection<? extends Stroke> strokes, boolean alarmActive) {
+        this.strokes = strokes;
+        this.alarmActive = alarmActive;
 
-        if (alarmEnabled && alarmActive && location != null) {
+        if (alarmEnabled && alarmActive && strokes != null && location != null) {
             long now = System.currentTimeMillis();
             long thresholdTime = now - alarmInterval;
 
@@ -104,7 +111,6 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
             }
 
             alarmStatus.check(strokes, location);
-
         } else {
             alarmStatus = null;
         }
