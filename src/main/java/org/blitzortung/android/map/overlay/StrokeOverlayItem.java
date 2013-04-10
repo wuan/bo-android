@@ -17,10 +17,10 @@ public class StrokeOverlayItem extends OverlayItem implements Stroke {
 		super(Coordsys.toMapCoords(stroke.getLongitude(), stroke.getLatitude()), "", "");
 
 		timestamp = stroke.getTimestamp();		
-		
 		multiplicity = stroke.getMultiplicity();
 	}
 	
+    @Override
 	public long getTimestamp() {
 		return timestamp;
 	}
@@ -34,10 +34,6 @@ public class StrokeOverlayItem extends OverlayItem implements Stroke {
     }
 
     @Override
-    public Location getLocation() {
-        return getLocation(new Location("")); 
-    }
-
     public int getMultiplicity() {
 		return multiplicity;
 	}

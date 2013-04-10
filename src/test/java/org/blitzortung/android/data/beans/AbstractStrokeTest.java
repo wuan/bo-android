@@ -52,7 +52,7 @@ public class AbstractStrokeTest {
 
     @Test
     public void testGetLocation() throws Exception {
-        Location location = abstractStroke.getLocation();
+        Location location = abstractStroke.getLocation(new Location(""));
 
         assertThat(location.getLongitude(), is(11.0));
         assertThat(location.getLatitude(), is(49.0));

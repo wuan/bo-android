@@ -8,8 +8,5 @@ public interface Stroke {
 
     Location getLocation(Location location);
 
-    @Deprecated
-    Location getLocation();
-
     int getMultiplicity();
 }

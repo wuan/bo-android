@@ -26,6 +26,7 @@ public abstract class AbstractStroke implements Stroke {
 		this.latitude = latitude;
 	}
 
+    @Override
 	public long getTimestamp() {
 		return timestamp;
 	}
@@ -34,18 +35,15 @@ public abstract class AbstractStroke implements Stroke {
 		this.timestamp = timestamp;
 	}
 	
+    @Override
 	public int getMultiplicity() {
 		return 1;
 	}
 
+    @Override
     public Location getLocation(Location location) {
         location.setLongitude(getLongitude());
         location.setLatitude(getLatitude());
         return location;
     }
-    
-	public Location getLocation() {
-		return getLocation(new Location(""));
-	}
-	
 }

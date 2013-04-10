@@ -70,7 +70,7 @@ public class AlarmStatusTest {
 
         Location strokeLocation = mock(Location.class);
         AbstractStroke stroke = mock(AbstractStroke.class);
-        when(stroke.getLocation()).thenReturn(strokeLocation);
+        when(stroke.getLocation(any(Location.class))).thenReturn(strokeLocation);
 
         when(location.bearingTo(strokeLocation)).thenReturn(-180f);
 
