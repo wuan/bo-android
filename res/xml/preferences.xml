@@ -139,14 +139,14 @@
                 android:summary="@string/location_mode_summary"/>
         <EditTextPreference
                 android:defaultValue="11.0"
-                android:inputType="numberDecimal"
+                android:inputType="numberDecimal|numberSigned"
                 android:key="location_longitude"
                 android:persistent="true"
                 android:title="@string/longitude"
                 android:summary="@string/location_longitude_summary"/>
         <EditTextPreference
                 android:defaultValue="49.0"
-                android:inputType="numberDecimal"
+                android:inputType="numberDecimal|numberSigned"
                 android:key="location_latitude"
                 android:persistent="true"
                 android:title="@string/latitude"
@@ -157,7 +157,7 @@
             android:title="@string/alarm_settings"
             android:summary="@string/alarm_settings_summary">
         <CheckBoxPreference
-                android:defaultValue="false"
+                android:defaultValue="true"
                 android:enabled="true"
                 android:key="alarm_enabled"
                 android:selectable="true"

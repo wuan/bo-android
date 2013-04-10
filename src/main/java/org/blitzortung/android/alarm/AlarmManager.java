@@ -62,7 +62,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     private void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey key) {
         switch (key) {
             case ALARM_ENABLED:
-                alarmEnabled = sharedPreferences.getBoolean(key.toString(), false) && locationHandler.isProviderEnabled();
+                alarmEnabled = sharedPreferences.getBoolean(key.toString(), true) && locationHandler.isProviderEnabled();
 
                 if (alarmEnabled) {
                     locationHandler.requestUpdates(this);
