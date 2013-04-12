@@ -90,7 +90,7 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
 
     @Override
     public void onLocationChanged(Location location) {
-        item = new OwnLocationOverlayItem(location, 25000);
+        item = location != null ? new OwnLocationOverlayItem(location, 25000) : item;
 
         populate();
         refresh();

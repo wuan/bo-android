@@ -116,6 +116,33 @@ public class OwnLocationOverlayTest {
         assertThat(ownLocationOverlay.createItem(0), is(OwnLocationOverlayItem.class));
     }
 
+    @Test
+    public void testOnLocationChanged()
+    {
+
+        ownLocationOverlay.onLocationChanged(mock(Location.class));
+        
+        assertThat(ownLocationOverlay.size(), is(1));
+    }
+    
+    @Test
+    public void testOnLocationChangedWithNullLocation()
+    {
+        ownLocationOverlay.onLocationChanged(null);
+        
+        assertThat(ownLocationOverlay.size(), is(0));
+    }
+
+    @Test
+    public void testDisableOwnLocation()
+    {
+        ownLocationOverlay.onLocationChanged(mock(Location.class));
+        
+        ownLocationOverlay.disableOwnLocation();
+
+        assertThat(ownLocationOverlay.size(), is(0));
+    }
+    
     private void enableOwnLocation() {
         when(sharedPreferences.getBoolean(PreferenceKey.SHOW_LOCATION.toString(), false)).thenReturn(true);
         ownLocationOverlay.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.SHOW_LOCATION.toString());
