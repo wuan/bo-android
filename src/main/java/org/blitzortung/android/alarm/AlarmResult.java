@@ -1,16 +1,15 @@
 package org.blitzortung.android.alarm;
 
 import org.blitzortung.android.alarm.object.AlarmSector;
-import org.blitzortung.android.util.MeasurementSystem;
 
 public class AlarmResult {
 	
 	private final AlarmSector sector;
-    private final MeasurementSystem measurementSystem;
+    private final String distanceUnitName;
 
-    public AlarmResult(AlarmSector sector, MeasurementSystem measurementSystem) {
+    public AlarmResult(AlarmSector sector, String distanceUnitName) {
 		this.sector = sector;
-        this.measurementSystem = measurementSystem;
+        this.distanceUnitName = distanceUnitName;
     }
 
 	public float getClosestStrokeDistance() {
@@ -18,7 +17,7 @@ public class AlarmResult {
 	}
 
     public String getDistanceUnitName() {
-        return measurementSystem.getUnitName();
+        return distanceUnitName;
     }
 
     public String getBearingName() {

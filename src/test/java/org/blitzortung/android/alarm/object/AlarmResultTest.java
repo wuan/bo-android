@@ -2,7 +2,6 @@ package org.blitzortung.android.alarm.object;
 
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.alarm.AlarmResult;
-import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +18,7 @@ public class AlarmResultTest {
     @Mock
     private AlarmSector alarmSector;
     
-    private MeasurementSystem measurementSystem = MeasurementSystem.METRIC;
+    private String distanceUnitName = "km";
 
     private AlarmResult alarmResult;
 
@@ -29,7 +28,7 @@ public class AlarmResultTest {
 
         when(alarmSector.getClosestStrokeDistance()).thenReturn(4567f);
 
-        alarmResult = new AlarmResult(alarmSector, measurementSystem);
+        alarmResult = new AlarmResult(alarmSector, distanceUnitName);
     }
 
     @Test

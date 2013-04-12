@@ -8,6 +8,7 @@ import org.blitzortung.android.alarm.object.AlarmStatus;
 import org.blitzortung.android.data.beans.Stroke;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -56,7 +57,7 @@ public class AlarmStatusHandler {
     public AlarmResult getCurrentActivity(AlarmStatus alarmStatus) {
         AlarmSector sector = getSectorWithClosestStroke(alarmStatus);
 
-        return sector != null ? new AlarmResult(sector, alarmParameters.getMeasurementSystem()) : null;
+        return sector != null ? new AlarmResult(sector, alarmParameters.getMeasurementSystem().getUnitName()) : null;
     }
 
     public String getTextMessage(AlarmStatus alarmStatus, float notificationDistanceLimit) {
@@ -94,7 +95,7 @@ public class AlarmStatusHandler {
                 return sector;
             }
         }
-        throw new IllegalStateException(String.format("no sector for bearing %.2f found", bearing));
+        throw new IllegalStateException(String.format(Locale.ENGLISH, "no sector for bearing %.2f found", bearing));
     }
 
     private boolean sectorContainsBearing(AlarmSector sector, double bearing) {
