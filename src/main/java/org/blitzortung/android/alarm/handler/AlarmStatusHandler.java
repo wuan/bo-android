@@ -27,7 +27,7 @@ public class AlarmStatusHandler {
 
         long thresholdTime = System.currentTimeMillis() - alarmParameters.getAlarmInterval();
 
-        alarmSectorHandler.setLocation(location);
+        alarmSectorHandler.setCheckStrokeParameters(location, thresholdTime);
 
         Location strokeLocation = new Location("");
 
@@ -35,7 +35,7 @@ public class AlarmStatusHandler {
             float bearingToStroke = location.bearingTo(stroke.getLocation(strokeLocation));
 
             AlarmSector alarmSector = getSectorForBearing(alarmStatus, bearingToStroke);
-            alarmSectorHandler.check(alarmSector, stroke, thresholdTime);
+            alarmSectorHandler.checkStroke(alarmSector, stroke);
         }
         return alarmStatus;
     }

@@ -9,28 +9,33 @@ import org.blitzortung.android.data.beans.Stroke;
 public class AlarmSectorHandler {
 
     private final AlarmParameters alarmParameters;
-    private Location location;
+    
     private final Location strokeLocation;
+    
+    private Location location;
+    
+    private long thresholdTime;
 
     public AlarmSectorHandler(AlarmParameters alarmParameters) {
         this.alarmParameters = alarmParameters;
         strokeLocation = new Location("");
     }
 
-    public void setLocation(Location location) {
+    protected void setCheckStrokeParameters(Location location, long thresholdTime) {
         this.location = location;
+        this.thresholdTime = thresholdTime;
     }
 
-    protected void check(AlarmSector sector, Stroke stroke, long thresholdTime) {
+    protected void checkStroke(AlarmSector sector, Stroke stroke) {
         if (sector != null) {
             float distance = calculateDistanceTo(stroke);
 
-            if (stroke.getTimestamp() > thresholdTime) {
+            if (stroke.getTimestamp() >= thresholdTime) {
                 sector.updateClosestStrokeDistance(distance);
             }
 
             for (AlarmSectorRange range : sector.getRanges()) {
-                if (distance < range.getRangeMaximum()) {
+                if (distance <= range.getRangeMaximum()) {
                     range.addStroke(stroke);
                     break;
                 }
