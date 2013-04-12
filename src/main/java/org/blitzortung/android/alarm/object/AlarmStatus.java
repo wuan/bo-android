@@ -20,7 +20,8 @@ public class AlarmStatus {
         for (String sectorLabel : sectorLabels) {
             float minimumSectorBearing = bearing - sectorWidth / 2.0f;
             minimumSectorBearing += (minimumSectorBearing < -180f ? 360f : 0f);
-            AlarmSector alarmSector = alarmObjectFactory.createAlarmSector(alarmParameters, sectorLabel, minimumSectorBearing, bearing + sectorWidth / 2.0f);
+            final float maximumSectorBearing = bearing + sectorWidth / 2.0f;
+            AlarmSector alarmSector = alarmObjectFactory.createAlarmSector(alarmParameters, sectorLabel, minimumSectorBearing, maximumSectorBearing);
             sectors.add(alarmSector);
             bearing += sectorWidth;
         }
