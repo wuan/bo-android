@@ -3,6 +3,8 @@ package org.blitzortung.android.alarm;
 import android.content.res.Resources;
 import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
+import org.blitzortung.android.alarm.handler.AlarmStatusHandler;
+import org.blitzortung.android.alarm.object.AlarmStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,8 +22,11 @@ public class AlarmLabelHandlerTest {
     private AlarmLabelHandler alarmLabelHandler;
 
     @Mock
-    private AlarmStatus alarmStatus;
+    private AlarmStatusHandler alarmStatusHandler;
 
+    @Mock
+    private AlarmStatus alarmStatus;
+    
     @Mock
     private AlarmResult alarmResult;
 
@@ -54,21 +59,19 @@ public class AlarmLabelHandlerTest {
 
         verify(alarmLabel, times(1)).setAlarmText(textCaptor.capture());
 
-        assertThat(textCaptor.getValue().toString(), is(""));
+        assertThat(textCaptor.getValue(), is(""));
     }
 
     @Test
     public void testApplyWithNoAlarm()
     {
-        when(alarmStatus.getSectorWithClosestStroke()).thenReturn(-1);
-
-        alarmLabelHandler.apply(alarmStatus);
+        alarmLabelHandler.apply(null);
 
         verify(alarmLabel, times(1)).setAlarmTextColor(colorCaptor.capture());
         verify(alarmLabel, times(1)).setAlarmText(textCaptor.capture());
 
         assertThat(colorCaptor.getValue(), is(0x0f0));
-        assertThat(textCaptor.getValue().toString(), is(""));
+        assertThat(textCaptor.getValue(), is(""));
     }
 
     @Test
@@ -76,13 +79,13 @@ public class AlarmLabelHandlerTest {
     {
         mockAlarmInRange(50.1f, "SO");
 
-        alarmLabelHandler.apply(alarmStatus);
+        alarmLabelHandler.apply(alarmResult);
 
         verify(alarmLabel, times(1)).setAlarmTextColor(colorCaptor.capture());
         verify(alarmLabel, times(1)).setAlarmText(textCaptor.capture());
 
         assertThat(colorCaptor.getValue(), is(0x0f0));
-        assertThat(textCaptor.getValue().toString(), is("50km SO"));
+        assertThat(textCaptor.getValue(), is("50km SO"));
     }
 
     @Test
@@ -90,13 +93,13 @@ public class AlarmLabelHandlerTest {
     {
         mockAlarmInRange(20.1f, "NW");
 
-        alarmLabelHandler.apply(alarmStatus);
+        alarmLabelHandler.apply(alarmResult);
 
         verify(alarmLabel, times(1)).setAlarmTextColor(colorCaptor.capture());
         verify(alarmLabel, times(1)).setAlarmText(textCaptor.capture());
 
         assertThat(colorCaptor.getValue(), is(0xff0));
-        assertThat(textCaptor.getValue().toString(), is("20km NW"));
+        assertThat(textCaptor.getValue(), is("20km NW"));
     }
 
     @Test
@@ -104,20 +107,18 @@ public class AlarmLabelHandlerTest {
     {
         mockAlarmInRange( 20f, "S");
 
-        alarmLabelHandler.apply(alarmStatus);
+        alarmLabelHandler.apply(alarmResult);
 
         verify(alarmLabel, times(1)).setAlarmTextColor(colorCaptor.capture());
         verify(alarmLabel, times(1)).setAlarmText(textCaptor.capture());
 
         assertThat(colorCaptor.getValue(), is(0xf00));
-        assertThat(textCaptor.getValue().toString(), is("20km S"));
+        assertThat(textCaptor.getValue(), is("20km S"));
     }
 
 
     private void mockAlarmInRange(float distance, String sectorLabel)
     {
-        when(alarmStatus.getSectorWithClosestStroke()).thenReturn(0);
-        when(alarmStatus.getCurrentActivity()).thenReturn(alarmResult);
         when(alarmResult.getClosestStrokeDistance()).thenReturn(distance);
         when(alarmResult.getDistanceUnitName()).thenReturn("km");
         when(alarmResult.getBearingName()).thenReturn(sectorLabel);

@@ -1,5 +1,4 @@
 TODO:
- * configurable location sources (network, gps and manual)
  * sound alarm
  * layer configuration
  * custom layers
@@ -10,6 +9,9 @@ Version 0.9:
 added GPS based and manual location
 added support for devices without menu button
 reorganized menu
+added ability to disable stations layer in Blitzortung.org mode
+optimized alarm handling
+manual location entry: enabled negative numbers in input fields
 
 Version 0.8:
 access to historical lightning data

@@ -1,25 +1,27 @@
 package org.blitzortung.android.alarm;
 
+import org.blitzortung.android.alarm.object.AlarmSector;
+import org.blitzortung.android.util.MeasurementSystem;
+
 public class AlarmResult {
 	
 	private final AlarmSector sector;
+    private final MeasurementSystem measurementSystem;
 
-    private final String bearingName;
-	
-	public AlarmResult(AlarmSector sector, String bearingName) {
+    public AlarmResult(AlarmSector sector, MeasurementSystem measurementSystem) {
 		this.sector = sector;
-		this.bearingName = bearingName;
-	}
+        this.measurementSystem = measurementSystem;
+    }
 
 	public float getClosestStrokeDistance() {
-		return sector.getMinimumAlarmRelevantStrokeDistance();
+		return sector.getClosestStrokeDistance();
 	}
 
     public String getDistanceUnitName() {
-        return sector.getDistanceUnitName();
+        return measurementSystem.getUnitName();
     }
 
     public String getBearingName() {
-        return bearingName;
+        return sector.getLabel();
     }
 }

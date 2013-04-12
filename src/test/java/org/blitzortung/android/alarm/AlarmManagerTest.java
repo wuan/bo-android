@@ -4,31 +4,46 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import com.google.common.collect.Lists;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
-import org.blitzortung.android.app.TimerTask;
+import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
+import org.blitzortung.android.alarm.handler.AlarmStatusHandler;
+import org.blitzortung.android.alarm.object.AlarmSector;
+import org.blitzortung.android.alarm.object.AlarmStatus;
 import org.blitzortung.android.app.controller.LocationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
-import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Collection;
 
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.*;
+import static org.hamcrest.core.IsSame.sameInstance;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
 public class AlarmManagerTest {
 
-    private AlarmManager alarmManager;
+    @Mock
+    private AlarmParameters alarmParameters;
+
+    @Mock
+    private AlarmStatus alarmStatus;
+
+    @Mock
+    private AlarmResult alarmResult;
+
+    @Mock
+    private AlarmStatusHandler alarmStatusHandler;
+
+    @Mock
+    private AlarmObjectFactory alarmObjectFactory;
 
     @Mock
     private LocationHandler locationManager;
@@ -37,158 +52,144 @@ public class AlarmManagerTest {
     private SharedPreferences sharedPreferences;
 
     @Mock
-    private TimerTask timerTask;
+    private Collection<Stroke> strokes;
+
+    @Mock
+    private Location location;
 
     @Mock
     private AlarmManager.AlarmListener alarmListener;
 
+    final private long alarmInterval = 600000;
+
+    private AlarmManager alarmManager;
+
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        when(alarmParameters.getAlarmInterval()).thenReturn(alarmInterval);
+        when(alarmObjectFactory.createAlarmStatus(alarmParameters)).thenReturn(alarmStatus);
+        when(alarmObjectFactory.createAlarmStatusHandler(alarmParameters)).thenReturn(alarmStatusHandler);
+        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(false);
         when(sharedPreferences.getString(PreferenceKey.MEASUREMENT_UNIT.toString(), MeasurementSystem.METRIC.toString())).thenReturn(MeasurementSystem.METRIC.toString());
+        when(alarmStatusHandler.getCurrentActivity(alarmStatus)).thenReturn(alarmResult);
 
-        alarmManager = spy(new AlarmManager(locationManager, sharedPreferences, timerTask));
+        alarmManager = spy(new AlarmManager(locationManager, sharedPreferences, alarmObjectFactory, alarmParameters));
         alarmManager.addAlarmListener(alarmListener);
-
-        verify(sharedPreferences, times(1)).getString(PreferenceKey.MEASUREMENT_UNIT.toString(), MeasurementSystem.METRIC.toString());
     }
 
     @Test
-    public void testConstruct()
-    {
+    public void testConstruction() {
         assertFalse(alarmManager.isAlarmEnabled());
         assertThat(alarmManager.alarmListeners.size(), is(1));
-        assertThat(alarmManager.getAlarmStatus(), is(nullValue()));
 
         verify(sharedPreferences, times(1)).registerOnSharedPreferenceChangeListener(any(AlarmManager.class));
-        verify(sharedPreferences, times(1)).getBoolean(PreferenceKey.ALARM_ENABLED.toString(), true);
+        verify(sharedPreferences, times(1)).getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false);
         verify(locationManager, times(1)).removeUpdates(any(AlarmManager.class));
-        verify(timerTask, times(1)).setAlarmEnabled(false);
-
-        //verify(alarmManager, times(1)).onSharedPreferenceChanged(any(SharedPreferences.class), eq(Preferences.ALARM_ENABLED_KEY));
+        verify(sharedPreferences, times(1)).getString(PreferenceKey.MEASUREMENT_UNIT.toString(), "METRIC");
+        verify(alarmParameters, times(1)).setMeasurementSystem(MeasurementSystem.METRIC);
+        verify(alarmListener, times(0)).onAlarmClear();
     }
 
     @Test
-    public void testOnSharedPreferecesChangeWithAlarmDisabled()
-    {
-        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(false);
+    public void testCheckStrokesWithAlarmDisabledAndLocationUnset() {
+        alarmManager.checkStrokes(strokes);
 
-        alarmManager.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.ALARM_ENABLED.toString());
-
-        assertFalse(alarmManager.isAlarmEnabled());
-
-        verify(locationManager, times(1)).removeUpdates(alarmManager);
-        verify(alarmListener, times(1)).onAlarmClear();
-        verify(timerTask, times(2)).setAlarmEnabled(false);
-    }
-
-    @Test
-    public void testOnSharedPreferecesChangeWithAlarmEnabled()
-    {
-        when(locationManager.isProviderEnabled()).thenReturn(true);
-
-        enableAlarm();
-
-        assertTrue(alarmManager.isAlarmEnabled());
-
-        verify(locationManager, times(1)).requestUpdates(alarmManager);
-        verify(timerTask, times(1)).setAlarmEnabled(true);
-        verify(timerTask, times(1)).setAlarmEnabled(false);
-    }
-
-    @Test
-    public void testOnSharedPreferecesChangeWithAlarmEnabledAndProviderDisabled()
-    {
-        when(locationManager.isProviderEnabled()).thenReturn(false);
-
-        enableAlarm();
-
-        assertFalse(alarmManager.isAlarmEnabled());
-
-        verify(locationManager, times(0)).requestUpdates(alarmManager);
-        verify(timerTask, times(0)).setAlarmEnabled(true);
-        verify(timerTask, times(2)).setAlarmEnabled(false);
-    }
-
-    private void enableAlarm() {
-        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), true)).thenReturn(true);
-        alarmManager.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.ALARM_ENABLED.toString());
-        verify(sharedPreferences, times(2)).getBoolean(PreferenceKey.ALARM_ENABLED.toString(), true);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testCheckWithDisabledAlarm()
-    {
-        Collection<Stroke> strokes = mock(Collection.class);
-
-        alarmManager.check(strokes, false);
-
-        verify(alarmListener, times(0)).onAlarmResult(any(AlarmStatus.class));
+        verify(alarmStatusHandler, times(0)).checkStrokes(alarmStatus, strokes, null);
+        verify(alarmListener, times(0)).onAlarmResult(any(AlarmResult.class));
         verify(alarmListener, times(1)).onAlarmClear();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void testCheckWithEnabledAlarm()
-    {
-        enableAlarm();
-        verify(alarmListener, times(1)).onAlarmClear();
-
-        Collection<Stroke> strokes = mock(Collection.class);
-
-        alarmManager.check(strokes, false);
-
-        verify(alarmListener, times(0)).onAlarmResult(any(AlarmStatus.class));
-        verify(alarmListener, times(2)).onAlarmClear();
-    }
-
-    @Test
-    public void testCheckWithEnabledAlarmAndLocationSet()
-    {
-        when(locationManager.isProviderEnabled()).thenReturn(true);
-        enableAlarm();
-        
-        Location location = mock(Location.class);
+    public void testCheckStrokesWithAlarmDisabledAndLocationSet() {
         alarmManager.onLocationChanged(location);
 
-        AbstractStroke stroke = mock(AbstractStroke.class);
-        when(stroke.getTimestamp()).thenReturn(System.currentTimeMillis());
-        when(stroke.getMultiplicity()).thenReturn(1);
+        alarmManager.checkStrokes(strokes);
 
-        Location strokeLocation = mock(Location.class);
-        when(stroke.getLocation(any(Location.class))).thenReturn(strokeLocation);
-        when(location.bearingTo(strokeLocation)).thenReturn(0f);
-        when(location.distanceTo(strokeLocation)).thenReturn(500000f);
-
-        alarmManager.check(Lists.newArrayList(stroke), true);
-
-        ArgumentCaptor<AlarmStatus> alarmStatusCaptor = ArgumentCaptor.forClass(AlarmStatus.class);
-
-        verify(alarmListener, times(1)).onAlarmResult(alarmStatusCaptor.capture());
+        verify(alarmStatusHandler, times(0)).checkStrokes(alarmStatus, strokes, null);
+        verify(alarmListener, times(0)).onAlarmResult(any(AlarmResult.class));
         verify(alarmListener, times(1)).onAlarmClear();
-
-        assertThat(alarmStatusCaptor.getValue().getCurrentActivity().getClosestStrokeDistance(), is(500f));
-        assertThat(alarmStatusCaptor.getValue().getCurrentActivity().getBearingName(), is("N"));
     }
 
     @Test
-    public void testClearAlarmListeners()
-    {
+    public void testCheckStrokesWithAlarmEnabledAndLocationSet() {
+        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(true);
+        alarmManager.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.ALARM_ENABLED.toString());
+        alarmManager.onLocationChanged(location);
+
+        when(alarmStatusHandler.getCurrentActivity(alarmStatus)).thenReturn(alarmResult);
+
+        alarmManager.checkStrokes(strokes);
+
+        verify(alarmStatusHandler, times(1)).checkStrokes(alarmStatus, strokes, location);
+        verify(alarmListener, times(1)).onAlarmResult(alarmResult);
+        verify(alarmListener, times(0)).onAlarmClear();
+    }
+
+    @Test
+    public void testGetAlarmResult() {
+        final AlarmResult alarmResult1 = alarmManager.getAlarmResult();
+
+        verify(alarmStatusHandler, times(1)).getCurrentActivity(alarmStatus);
+        assertThat(alarmResult1, is(sameInstance(alarmResult)));
+    }
+
+    @Test
+    public void testGetTextMessage() {
+        when(alarmStatusHandler.getTextMessage(alarmStatus, 10.0f)).thenReturn("<message>");
+
+        final String textMessage = alarmManager.getTextMessage(10.0f);
+
+        verify(alarmStatusHandler, times(1)).getTextMessage(alarmStatus, 10.0f);
+        assertThat(textMessage, is("<message>"));
+    }
+
+    @Test
+    public void testAddAndClearAlarmListener() {
+        assertThat(alarmManager.getAlarmListeners().size(), is(1));
+
         alarmManager.clearAlarmListeners();
 
-        assertThat(alarmManager.alarmListeners.size(), is(0));
-    }
+        assertThat(alarmManager.getAlarmListeners().size(), is(0));
 
+        alarmManager.addAlarmListener(mock(AlarmManager.AlarmListener.class));
+        alarmManager.addAlarmListener(mock(AlarmManager.AlarmListener.class));
+
+        assertThat(alarmManager.getAlarmListeners().size(), is(2));
+    }
+    
     @Test
-    public void testRemoveAlarmListener()
-    {
+    public void testRemoveAlarmListener() {
+        assertThat(alarmManager.getAlarmListeners().size(), is(1));
+
         alarmManager.removeAlarmListener(alarmListener);
 
-        assertThat(alarmManager.alarmListeners.size(), is(0));
+        assertThat(alarmManager.getAlarmListeners().size(), is(0));
+
+        alarmManager.addAlarmListener(mock(AlarmManager.AlarmListener.class));
+        alarmManager.addAlarmListener(alarmListener);
+
+        alarmManager.removeAlarmListener(alarmListener);
+
+        assertThat(alarmManager.getAlarmListeners().size(), is(1));
     }
+    
+    @Test
+    public void testGetAlarmSectors() {
+        final Collection<AlarmSector> alarmSectors = Lists.newArrayList();
+        when(alarmStatus.getSectors()).thenReturn(alarmSectors);
 
-
+        final Collection<AlarmSector> returnedAlarmSectors = alarmManager.getAlarmSectors();
+        
+        verify(alarmStatus, times(1)).getSectors();
+        assertThat(returnedAlarmSectors, is(sameInstance(alarmSectors)));
+    }
+    
+    @Test
+    public void testGetAlarmParameters() {
+        final AlarmParameters returnedAlarmParameters = alarmManager.getAlarmParameters();
+        
+        assertThat(returnedAlarmParameters, is(sameInstance(alarmParameters)));
+    }
 }

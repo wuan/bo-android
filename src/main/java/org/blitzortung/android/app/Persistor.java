@@ -3,8 +3,9 @@ package org.blitzortung.android.app;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
-import android.location.LocationManager;
 import org.blitzortung.android.alarm.AlarmManager;
+import org.blitzortung.android.alarm.AlarmParameters;
+import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
 import org.blitzortung.android.app.controller.LocationHandler;
 import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.provider.DataResult;
@@ -37,7 +38,7 @@ public class Persistor {
         provider = new DataHandler(sharedPreferences, pInfo);
 		timerTask = new TimerTask(sharedPreferences, provider);
         locationHandler = new LocationHandler(context);
-		alarmManager = new AlarmManager(locationHandler, sharedPreferences, timerTask);
+		alarmManager = new AlarmManager(locationHandler, sharedPreferences, new AlarmObjectFactory(), new AlarmParameters());
 		strokesOverlay = new StrokesOverlay(context, new StrokeColorHandler(sharedPreferences));
 		participantsOverlay = new ParticipantsOverlay(context, new ParticipantColorHandler(sharedPreferences));
 	}

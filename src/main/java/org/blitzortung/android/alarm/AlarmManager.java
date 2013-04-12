@@ -3,7 +3,10 @@ package org.blitzortung.android.alarm;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.location.Location;
-import org.blitzortung.android.app.TimerTask;
+import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
+import org.blitzortung.android.alarm.handler.AlarmStatusHandler;
+import org.blitzortung.android.alarm.object.AlarmSector;
+import org.blitzortung.android.alarm.object.AlarmStatus;
 import org.blitzortung.android.app.controller.LocationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.Stroke;
@@ -15,45 +18,42 @@ import java.util.Set;
 
 public class AlarmManager implements OnSharedPreferenceChangeListener, LocationHandler.Listener {
 
-    private Collection<? extends Stroke> strokes;
-    private boolean alarmActive;
-    private boolean alarmStatusValid;
+    public AlarmStatus getAlarmStatus() {
+        return alarmStatus;
+    }
 
     public interface AlarmListener {
-        void onAlarmResult(AlarmStatus alarmStatus);
+        void onAlarmResult(AlarmResult alarmResult);
 
         void onAlarmClear();
     }
 
-    private final long alarmInterval;
-
-    private final TimerTask timerTask;
-
-    private final LocationHandler locationHandler;
+    private final AlarmParameters alarmParameters;
 
     private Location location;
 
     private boolean alarmEnabled;
 
-    private MeasurementSystem measurementSystem;
-
     // VisibleForTesting
     protected final Set<AlarmListener> alarmListeners;
-
+    
     private final AlarmStatus alarmStatus;
+    
+    private final AlarmStatusHandler alarmStatusHandler;
 
-    public AlarmManager(LocationHandler locationHandler, SharedPreferences preferences, TimerTask timerTask) {
-        this.timerTask = timerTask;
+    private final LocationHandler locationHandler;
+
+    public AlarmManager(LocationHandler locationHandler, SharedPreferences preferences, AlarmObjectFactory alarmObjectFactory, AlarmParameters alarmParameters) {
+        this.alarmParameters = alarmParameters;
+        this.alarmStatus = alarmObjectFactory.createAlarmStatus(alarmParameters);
+        this.alarmStatusHandler = alarmObjectFactory.createAlarmStatusHandler(alarmParameters);
+        this.locationHandler = locationHandler;
 
         alarmListeners = new HashSet<AlarmListener>();
-
-        this.locationHandler = locationHandler;
 
         preferences.registerOnSharedPreferenceChangeListener(this);
         onSharedPreferenceChanged(preferences, PreferenceKey.ALARM_ENABLED);
         onSharedPreferenceChanged(preferences, PreferenceKey.MEASUREMENT_UNIT);
-        alarmInterval = 600000;
-        alarmStatus = new AlarmStatus(0, measurementSystem);
     }
 
     @Override
@@ -64,25 +64,21 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     private void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey key) {
         switch (key) {
             case ALARM_ENABLED:
-                alarmEnabled = sharedPreferences.getBoolean(key.toString(), true) && locationHandler.isProviderEnabled();
+                alarmEnabled = sharedPreferences.getBoolean(key.toString(), false);
 
                 if (alarmEnabled) {
                     locationHandler.requestUpdates(this);
                 } else {
                     locationHandler.removeUpdates(this);
-
-                    for (AlarmListener alarmListener : alarmListeners) {
-                        alarmListener.onAlarmClear();
-                    }
+                    location = null;
+                    broadcastClear();
                 }
-
-                timerTask.setAlarmEnabled(alarmEnabled);
                 break;
 
             case MEASUREMENT_UNIT:
                 String measurementSystemName = sharedPreferences.getString(key.toString(), MeasurementSystem.METRIC.toString());
 
-                measurementSystem = MeasurementSystem.valueOf(measurementSystemName);
+                alarmParameters.setMeasurementSystem(MeasurementSystem.valueOf(measurementSystemName));
                 break;
         }
     }
@@ -90,57 +86,65 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     @Override
     public void onLocationChanged(Location location) {
         this.location = location;
-
-        check(strokes, alarmActive);
     }
 
     public boolean isAlarmEnabled() {
         return alarmEnabled;
     }
 
-    public void check(Collection<? extends Stroke> strokes, boolean alarmActive) {
-        this.strokes = strokes;
-        this.alarmActive = alarmActive;
-
-        alarmStatusValid = alarmEnabled && alarmActive && strokes != null && location != null;
-        if (alarmStatusValid) {
-            long now = System.currentTimeMillis();
-            long thresholdTime = now - alarmInterval;
-
-            alarmStatus.update(thresholdTime, measurementSystem);
-            alarmStatus.check(strokes, location);
-
-            broadcastAlarmResult();
+    public void checkStrokes(Collection<? extends Stroke> strokes) {
+        boolean alarmActive = isAlarmEnabled() && location != null;
+        
+        if (alarmActive) {
+            alarmStatusHandler.checkStrokes(alarmStatus, strokes, location);
+            broadcastResult(getAlarmResult());
         } else {
-            broadcastAlarmClear();
+            broadcastClear();
         }
     }
 
-    private void broadcastAlarmResult() {
-        for (AlarmListener alarmListener : alarmListeners) {
-            alarmListener.onAlarmResult(alarmStatus);
-        }
+    public AlarmResult getAlarmResult() {
+        return alarmStatusHandler.getCurrentActivity(alarmStatus);
     }
 
-    private void broadcastAlarmClear() {
-        for (AlarmListener alarmListener : alarmListeners) {
-            alarmListener.onAlarmClear();
-        }
-    }
-
-    public AlarmStatus getAlarmStatus() {
-        return alarmStatusValid ? alarmStatus : null;
-    }
-
-    public void clearAlarmListeners() {
-        alarmListeners.clear();
+    public String getTextMessage(float notificationDistanceLimit) {
+        return alarmStatusHandler.getTextMessage(alarmStatus, notificationDistanceLimit);
     }
 
     public void addAlarmListener(AlarmListener alarmListener) {
         alarmListeners.add(alarmListener);
     }
 
+    public Set<AlarmListener> getAlarmListeners() {
+        return alarmListeners;
+    }
+    
+    public void clearAlarmListeners() {
+        alarmListeners.clear();
+    }
+
     public void removeAlarmListener(AlarmListener alarmView) {
         alarmListeners.remove(alarmView);
     }
+
+    public Collection<AlarmSector> getAlarmSectors() {
+        return alarmStatus.getSectors();
+    }
+    
+    public AlarmParameters getAlarmParameters() {
+        return alarmParameters;
+    }
+
+    private void broadcastClear() {
+        for (AlarmListener alarmListener : alarmListeners) {
+            alarmListener.onAlarmClear();
+        }
+    }
+
+    private void broadcastResult(AlarmResult alarmResult) {
+        for (AlarmListener alarmListener : alarmListeners) {
+            alarmListener.onAlarmResult(alarmResult);
+        }
+    }
+
 }

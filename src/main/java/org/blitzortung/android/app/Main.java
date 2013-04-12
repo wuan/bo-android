@@ -20,7 +20,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import org.blitzortung.android.alarm.AlarmLabelHandler;
 import org.blitzortung.android.alarm.AlarmManager;
-import org.blitzortung.android.alarm.AlarmStatus;
+import org.blitzortung.android.alarm.AlarmResult;
 import org.blitzortung.android.app.controller.ButtonColumnHandler;
 import org.blitzortung.android.app.controller.HistoryController;
 import org.blitzortung.android.app.controller.LocationHandler;
@@ -144,7 +144,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         alarmManager = persistor.getAlarmManager();
 
         if (alarmManager.isAlarmEnabled()) {
-            onAlarmResult(alarmManager.getAlarmStatus());
+            onAlarmResult(alarmManager.getAlarmResult());
         }
 
         buttonColumnHandler = new ButtonColumnHandler<ImageButton>((RelativeLayout) findViewById(R.layout.map_overlay));
@@ -162,7 +162,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
             //noinspection EmptyCatchBlock
             try {
-                Method getActionBar = this.getClass().getMethod("getActionBar");
+                Method getActionBar = Main.class.getMethod("getActionBar");
 
                 Object actionBar;
                 actionBar = getActionBar.invoke(this);
@@ -353,8 +353,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             }
             strokesOverlay.addStrokes(result.getStrokes());
 
-            if (alarmManager.isAlarmEnabled()) {
-                alarmManager.check(strokesOverlay.getStrokes(), result.containsRealtimeData());
+            if (alarmManager.isAlarmEnabled() && result.containsRealtimeData()) {
+                alarmManager.checkStrokes(strokesOverlay.getStrokes());
             }
             strokesOverlay.refresh();
         }
@@ -533,19 +533,19 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     }
 
     @Override
-    public void onAlarmResult(AlarmStatus alarmStatus) {
+    public void onAlarmResult(AlarmResult alarmResult) {
         AlarmLabelHandler alarmLabelHandler = new AlarmLabelHandler(statusComponent, getResources());
 
-        alarmLabelHandler.apply(alarmStatus);
+        alarmLabelHandler.apply(alarmResult);
 
-        if (alarmStatus != null) {
-            if (alarmStatus.getClosestStrokeDistance() <= vibrationDistanceLimit) {
+        if (alarmResult != null) {
+            if (alarmResult.getClosestStrokeDistance() <= vibrationDistanceLimit) {
                 Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 vibrator.vibrate(40);
             }
 
-            if (alarmStatus.getClosestStrokeDistance() <= notificationDistanceLimit) {
-                notificationHandler.sendNotification(getResources().getString(R.string.activity) + ": " + alarmStatus.getTextMessage(notificationDistanceLimit));
+            if (alarmResult.getClosestStrokeDistance() <= notificationDistanceLimit) {
+                notificationHandler.sendNotification(getResources().getString(R.string.activity) + ": " + alarmManager.getTextMessage(notificationDistanceLimit));
             } else {
                 notificationHandler.clearNotification();
             }

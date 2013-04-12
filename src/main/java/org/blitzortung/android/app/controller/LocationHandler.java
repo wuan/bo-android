@@ -167,9 +167,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     }
 
     private void sendLocationUpdate() {
-        if (locationIsValid()) {
-            sendUpdate(location);
-        }
+        sendUpdate(locationIsValid() ? location : null);
     }
 
     private void sendUpdate(Location location) {
@@ -191,10 +189,6 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
 
     public void removeUpdates(LocationHandler.Listener target) {
         listeners.remove(target);
-    }
-
-    public boolean isProviderEnabled() {
-        return provider == Provider.MANUAL || provider != null && locationManager.isProviderEnabled(provider.getType());
     }
 
 }
