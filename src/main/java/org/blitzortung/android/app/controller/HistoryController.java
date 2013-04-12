@@ -80,12 +80,10 @@ public class HistoryController {
             public void onClick(View v) {
                 if (dataHandler.ffwdInterval()) {
                     if (dataHandler.isRealtime()) {
-                        disableButtonColumn();
-                        historyForward.setVisibility(View.INVISIBLE);
-                        goRealtime.setVisibility(View.INVISIBLE);
-                        updateButtonColumn();
+                        configureForRealtimeOperation();
+                    } else {
+                        updateData();
                     }
-                    updateData();
                 }
             }
         });
@@ -98,15 +96,19 @@ public class HistoryController {
         goRealtime.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (dataHandler.goRealtime()) {
-                    disableButtonColumn();
-                    historyForward.setVisibility(View.INVISIBLE);
-                    goRealtime.setVisibility(View.INVISIBLE);
-                    updateButtonColumn();
-                    timerTask.restart();
-                    timerTask.enable();
+                    configureForRealtimeOperation();
                 }
             }
         });
+    }
+
+    private void configureForRealtimeOperation() {
+        disableButtonColumn();
+        historyForward.setVisibility(View.INVISIBLE);
+        goRealtime.setVisibility(View.INVISIBLE);
+        updateButtonColumn();
+        timerTask.restart();
+        timerTask.enable();
     }
 
     private void updateButtonColumn() {
