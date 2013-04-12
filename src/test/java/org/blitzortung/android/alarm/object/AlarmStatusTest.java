@@ -1,9 +1,11 @@
 package org.blitzortung.android.alarm.object;
 
+import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.alarm.AlarmParameters;
 import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -17,6 +19,7 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
+@RunWith(RobolectricTestRunner.class)
 public class AlarmStatusTest {
 
     @Mock
