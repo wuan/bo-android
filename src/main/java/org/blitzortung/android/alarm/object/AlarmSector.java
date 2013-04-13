@@ -35,6 +35,8 @@ public class AlarmSector {
     }
 
     public void clearResults() {
+        closestStrokeDistance = Float.POSITIVE_INFINITY;
+        
         for (AlarmSectorRange range : ranges) {
             range.clearResults();
         }

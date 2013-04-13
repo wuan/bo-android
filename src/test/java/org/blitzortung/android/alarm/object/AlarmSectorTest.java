@@ -56,8 +56,11 @@ public class AlarmSectorTest {
 
     @Test
     public void testClearResults() {
+        alarmSector.updateClosestStrokeDistance(10.0f);
+        
         alarmSector.clearResults();
 
+        assertThat(alarmSector.getClosestStrokeDistance(),is (Float.POSITIVE_INFINITY));
         verify(alarmSectorRange1, times(1)).clearResults();
         verify(alarmSectorRange2, times(1)).clearResults();
     }

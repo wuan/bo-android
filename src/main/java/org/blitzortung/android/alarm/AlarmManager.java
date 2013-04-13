@@ -18,10 +18,6 @@ import java.util.Set;
 
 public class AlarmManager implements OnSharedPreferenceChangeListener, LocationHandler.Listener {
 
-    public AlarmStatus getAlarmStatus() {
-        return alarmStatus;
-    }
-
     public interface AlarmListener {
         void onAlarmResult(AlarmResult alarmResult);
 
@@ -33,6 +29,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     private Location location;
 
     private boolean alarmEnabled;
+    
+    private boolean alarmValid;
 
     // VisibleForTesting
     protected final Set<AlarmListener> alarmListeners;
@@ -54,6 +52,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
         preferences.registerOnSharedPreferenceChangeListener(this);
         onSharedPreferenceChanged(preferences, PreferenceKey.ALARM_ENABLED);
         onSharedPreferenceChanged(preferences, PreferenceKey.MEASUREMENT_UNIT);
+
+        alarmValid = false;
     }
 
     @Override
@@ -93,18 +93,19 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     }
 
     public void checkStrokes(Collection<? extends Stroke> strokes) {
-        boolean alarmActive = isAlarmEnabled() && location != null;
+        alarmValid = isAlarmEnabled() && location != null;
         
-        if (alarmActive) {
+        if (alarmValid) {
             alarmStatusHandler.checkStrokes(alarmStatus, strokes, location);
             broadcastResult(getAlarmResult());
+            
         } else {
-            broadcastClear();
+            invalidateAlarm();
         }
     }
 
     public AlarmResult getAlarmResult() {
-        return alarmStatusHandler.getCurrentActivity(alarmStatus);
+        return alarmValid ? alarmStatusHandler.getCurrentActivity(alarmStatus) : null;
     }
 
     public String getTextMessage(float notificationDistanceLimit) {
@@ -133,6 +134,16 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     
     public AlarmParameters getAlarmParameters() {
         return alarmParameters;
+    }
+
+    public AlarmStatus getAlarmStatus() {
+        return alarmValid ? alarmStatus : null;
+    }
+
+    public void invalidateAlarm() {
+        alarmValid = false;
+        alarmStatus.clearResults();
+        broadcastClear();
     }
 
     private void broadcastClear() {

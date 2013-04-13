@@ -20,6 +20,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Collection;
 
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsSame.sameInstance;
 import static org.junit.Assert.assertFalse;
@@ -129,10 +130,37 @@ public class AlarmManagerTest {
 
     @Test
     public void testGetAlarmResult() {
-        final AlarmResult alarmResult1 = alarmManager.getAlarmResult();
+        AlarmResult returnedAlarmResult = alarmManager.getAlarmResult();
+        
+        assertThat(returnedAlarmResult, is(nullValue()));
+        verify(alarmStatusHandler, times(0)).getCurrentActivity(alarmStatus);
 
-        verify(alarmStatusHandler, times(1)).getCurrentActivity(alarmStatus);
-        assertThat(alarmResult1, is(sameInstance(alarmResult)));
+        makeAlarmsValid();
+
+        returnedAlarmResult = alarmManager.getAlarmResult();
+        
+        assertThat(returnedAlarmResult, is(sameInstance(alarmResult)));
+        verify(alarmStatusHandler, times(2)).getCurrentActivity(alarmStatus);
+    }
+
+    @Test
+    public void testGetAlarmStatus() {
+        AlarmStatus returnedAlarmStatus = alarmManager.getAlarmStatus();
+
+        assertThat(returnedAlarmStatus, is(nullValue()));
+
+        makeAlarmsValid();
+
+        returnedAlarmStatus = alarmManager.getAlarmStatus();
+
+        assertThat(returnedAlarmStatus, is(sameInstance(alarmStatus)));
+    }
+
+    private void makeAlarmsValid() {
+        alarmManager.onLocationChanged(location);
+        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(true);
+        alarmManager.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.ALARM_ENABLED.toString());
+        alarmManager.checkStrokes(Lists.<Stroke>newArrayList());
     }
 
     @Test
@@ -182,8 +210,8 @@ public class AlarmManagerTest {
 
         final Collection<AlarmSector> returnedAlarmSectors = alarmManager.getAlarmSectors();
         
-        verify(alarmStatus, times(1)).getSectors();
         assertThat(returnedAlarmSectors, is(sameInstance(alarmSectors)));
+        verify(alarmStatus, times(1)).getSectors();
     }
     
     @Test
@@ -192,4 +220,6 @@ public class AlarmManagerTest {
         
         assertThat(returnedAlarmParameters, is(sameInstance(alarmParameters)));
     }
+    
+    
 }
