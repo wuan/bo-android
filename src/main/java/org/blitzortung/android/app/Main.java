@@ -353,11 +353,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             }
             strokesOverlay.addStrokes(result.getStrokes());
 
-            if (alarmManager.isAlarmEnabled() && result.containsRealtimeData()) {
-                alarmManager.checkStrokes(strokesOverlay.getStrokes());
-            } else {
-                alarmManager.invalidateAlarm();
-            }
+            alarmManager.checkStrokes(strokesOverlay.getStrokes(), result.containsRealtimeData());
+
             strokesOverlay.refresh();
         }
 

@@ -18,6 +18,8 @@ import java.util.Set;
 
 public class AlarmManager implements OnSharedPreferenceChangeListener, LocationHandler.Listener {
 
+    private Collection<? extends Stroke> lastStrokes;
+
     public interface AlarmListener {
         void onAlarmResult(AlarmResult alarmResult);
 
@@ -29,14 +31,14 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     private Location location;
 
     private boolean alarmEnabled;
-    
+
     private boolean alarmValid;
 
     // VisibleForTesting
     protected final Set<AlarmListener> alarmListeners;
-    
+
     private final AlarmStatus alarmStatus;
-    
+
     private final AlarmStatusHandler alarmStatusHandler;
 
     private final LocationHandler locationHandler;
@@ -86,19 +88,27 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     @Override
     public void onLocationChanged(Location location) {
         this.location = location;
+
+        if (location == null) {
+            invalidateAlarm();
+        } else {
+            if (lastStrokes != null) {
+                checkStrokes(lastStrokes, true);
+            }
+        }
     }
 
     public boolean isAlarmEnabled() {
         return alarmEnabled;
     }
 
-    public void checkStrokes(Collection<? extends Stroke> strokes) {
-        alarmValid = isAlarmEnabled() && location != null;
-        
+    public void checkStrokes(Collection<? extends Stroke> strokes, boolean areRealtimeStrokes) {
+        alarmValid = isAlarmEnabled() && location != null && areRealtimeStrokes;
+        lastStrokes = areRealtimeStrokes ? strokes : null;
+
         if (alarmValid) {
             alarmStatusHandler.checkStrokes(alarmStatus, strokes, location);
             broadcastResult(getAlarmResult());
-            
         } else {
             invalidateAlarm();
         }
@@ -119,7 +129,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     public Set<AlarmListener> getAlarmListeners() {
         return alarmListeners;
     }
-    
+
     public void clearAlarmListeners() {
         alarmListeners.clear();
     }
@@ -131,7 +141,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     public Collection<AlarmSector> getAlarmSectors() {
         return alarmStatus.getSectors();
     }
-    
+
     public AlarmParameters getAlarmParameters() {
         return alarmParameters;
     }
@@ -140,10 +150,14 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
         return alarmValid ? alarmStatus : null;
     }
 
-    public void invalidateAlarm() {
+    private void invalidateAlarm() {
+        boolean previousAlarmValidState = alarmValid;
         alarmValid = false;
-        alarmStatus.clearResults();
-        broadcastClear();
+
+        if (previousAlarmValidState == true) {
+            alarmStatus.clearResults();
+            broadcastClear();
+        }
     }
 
     private void broadcastClear() {

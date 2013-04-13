@@ -94,34 +94,50 @@ public class AlarmManagerTest {
     }
 
     @Test
-    public void testCheckStrokesWithAlarmDisabledAndLocationUnset() {
-        alarmManager.checkStrokes(strokes);
+    public void testCheckStrokesWithAlarmDisabledAndLocationUnsetWhenAlarmWasNotActiveBefore() {
+        alarmManager.checkStrokes(strokes, true);
 
         verify(alarmStatusHandler, times(0)).checkStrokes(alarmStatus, strokes, null);
         verify(alarmListener, times(0)).onAlarmResult(any(AlarmResult.class));
+        verify(alarmListener, times(0)).onAlarmClear();
+    }
+
+    @Test
+    public void testCheckStrokesWithAlarmDisabledAndLocationUnset() {
+        makeAlarmsValid();
+        verify(alarmListener, times(1)).onAlarmResult(any(AlarmResult.class));
+        verify(alarmListener, times(0)).onAlarmClear();
+
+        alarmManager.onLocationChanged(null);
+        alarmManager.checkStrokes(strokes, true);
+
+        verify(alarmStatusHandler, times(0)).checkStrokes(alarmStatus, strokes, null);
+        verify(alarmListener, times(1)).onAlarmResult(any(AlarmResult.class));
         verify(alarmListener, times(1)).onAlarmClear();
     }
 
     @Test
     public void testCheckStrokesWithAlarmDisabledAndLocationSet() {
-        alarmManager.onLocationChanged(location);
+        makeAlarmsValid();
+        verify(alarmListener, times(1)).onAlarmResult(any(AlarmResult.class));
+        verify(alarmListener, times(0)).onAlarmClear();
+        enableAlarmInPrefs(false);
 
-        alarmManager.checkStrokes(strokes);
+        alarmManager.checkStrokes(strokes, true);
 
         verify(alarmStatusHandler, times(0)).checkStrokes(alarmStatus, strokes, null);
-        verify(alarmListener, times(0)).onAlarmResult(any(AlarmResult.class));
+        verify(alarmListener, times(1)).onAlarmResult(any(AlarmResult.class));
         verify(alarmListener, times(1)).onAlarmClear();
     }
 
     @Test
     public void testCheckStrokesWithAlarmEnabledAndLocationSet() {
-        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(true);
-        alarmManager.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.ALARM_ENABLED.toString());
+        enableAlarmInPrefs(true);
         alarmManager.onLocationChanged(location);
 
         when(alarmStatusHandler.getCurrentActivity(alarmStatus)).thenReturn(alarmResult);
 
-        alarmManager.checkStrokes(strokes);
+        alarmManager.checkStrokes(strokes, true);
 
         verify(alarmStatusHandler, times(1)).checkStrokes(alarmStatus, strokes, location);
         verify(alarmListener, times(1)).onAlarmResult(alarmResult);
@@ -158,9 +174,13 @@ public class AlarmManagerTest {
 
     private void makeAlarmsValid() {
         alarmManager.onLocationChanged(location);
-        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(true);
+        enableAlarmInPrefs(true);
+        alarmManager.checkStrokes(Lists.<Stroke>newArrayList(), true);
+    }
+
+    private void enableAlarmInPrefs(boolean alarmEnabled) {
+        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(alarmEnabled);
         alarmManager.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.ALARM_ENABLED.toString());
-        alarmManager.checkStrokes(Lists.<Stroke>newArrayList());
     }
 
     @Test
