@@ -2,6 +2,7 @@ package org.blitzortung.android.app.controller;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -15,7 +16,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class LocationHandler implements SharedPreferences.OnSharedPreferenceChangeListener, LocationListener {
+public class LocationHandler implements SharedPreferences.OnSharedPreferenceChangeListener, LocationListener, GpsStatus.Listener {
+
+    private final Context context;
 
     public static interface Listener {
         void onLocationChanged(Location location);
@@ -71,7 +74,9 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     private Set<Listener> listeners = new HashSet<Listener>();
 
     public LocationHandler(Context context) {
+        this.context = context;
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        locationManager.addGpsStatusListener(this);
         location = new Location("");
         location.setLongitude(Double.NaN);
         location.setLatitude(Double.NaN);
@@ -151,11 +156,15 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
             updateManualLatitude(sharedPreferences);
             location.setProvider(newProvider.getType());
         } else {
-            location.setLongitude(Double.NaN);
-            location.setLatitude(Double.NaN);
-            sendUpdate(null);
+            invalidateLocation();
         }
         enableProvider(newProvider);
+    }
+
+    private void invalidateLocation() {
+        location.setLongitude(Double.NaN);
+        location.setLatitude(Double.NaN);
+        sendUpdate(null);
     }
 
     private void enableProvider(Provider newProvider) {
@@ -189,6 +198,28 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
 
     public void removeUpdates(LocationHandler.Listener target) {
         listeners.remove(target);
+    }
+
+    @Override
+    public void onGpsStatusChanged(int event) {
+
+        if (provider == Provider.GPS) {
+            switch (event) {
+                case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
+                    invalidateLocation();
+
+                    Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    long secondsElapsedSinceLastFix = (System.currentTimeMillis() - loc.getTime()) / 1000;
+                    
+                    if (secondsElapsedSinceLastFix > 15) {
+                        if (locationIsValid()) {
+                            invalidateLocation();
+                        }
+                    }
+
+                    break;
+            }
+        }
     }
 
 }
