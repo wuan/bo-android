@@ -30,13 +30,14 @@ public class AlarmSectorHandler {
         if (sector != null) {
             float distance = calculateDistanceTo(stroke);
 
-            if (stroke.getTimestamp() >= thresholdTime) {
-                sector.updateClosestStrokeDistance(distance);
-            }
-
             for (AlarmSectorRange range : sector.getRanges()) {
                 if (distance <= range.getRangeMaximum()) {
                     range.addStroke(stroke);
+
+                    if (stroke.getTimestamp() >= thresholdTime) {
+                        sector.updateClosestStrokeDistance(distance);
+                    }
+                    
                     break;
                 }
             }

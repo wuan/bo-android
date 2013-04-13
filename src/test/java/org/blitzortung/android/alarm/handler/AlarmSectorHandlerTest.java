@@ -95,6 +95,22 @@ public class AlarmSectorHandlerTest {
     }
 
     @Test
+    public void testCheckWithinThresholdTimeAndOutOfAllRanges()
+    {
+        when(stroke.getTimestamp()).thenReturn(thresholdTime);
+        when(stroke.getLocation(any(Location.class))).thenReturn(strokeLocation);
+        when(location.distanceTo(strokeLocation)).thenReturn(5000.1f);
+
+        alarmSectorHandler.checkStroke(alarmSector, stroke);
+
+        verify(alarmSector, times(0)).updateClosestStrokeDistance(anyFloat());
+        verify(alarmSectorRange1, times(1)).getRangeMaximum();
+        verify(alarmSectorRange1, times(0)).addStroke(any(Stroke.class));
+        verify(alarmSectorRange2, times(1)).getRangeMaximum();
+        verify(alarmSectorRange2, times(0)).addStroke(any(Stroke.class));
+    }
+
+    @Test
     public void testCheckOutOfThresholdTimeAndWithinRange2()
     {
         when(stroke.getTimestamp()).thenReturn(beforeThresholdTime);
