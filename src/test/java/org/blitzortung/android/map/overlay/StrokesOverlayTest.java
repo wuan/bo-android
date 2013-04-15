@@ -30,6 +30,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -164,7 +165,7 @@ public class StrokesOverlayTest {
 
         Drawable drawable = strokesOverlay.getDrawable(strokeOverlayItem, section, colorHandler);
 
-        assertThat(drawable, is(ShapeDrawable.class));
+        assertThat(drawable, is(instanceOf(ShapeDrawable.class)));
 
         ShapeDrawable shapeDrawable = (ShapeDrawable) drawable;
     }
@@ -204,7 +205,7 @@ public class StrokesOverlayTest {
         verify(projection, times(1)).toPixels(eq(center), any(Point.class));
         verify(projection, times(3)).toPixels(any(GeoPoint.class), any(Point.class));
 
-        assertThat(drawable, is(ShapeDrawable.class));
+        assertThat(drawable, is(instanceOf(ShapeDrawable.class)));
 
         ShapeDrawable shapeDrawable = (ShapeDrawable) drawable;
     }
