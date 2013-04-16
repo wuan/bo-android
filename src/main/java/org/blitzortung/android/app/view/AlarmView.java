@@ -118,7 +118,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
             lines.setStrokeWidth(size / 150);
 
             textStyle.setTextAlign(Align.CENTER);
-            textStyle.setColor(colorHandler.getLineColor());
+            textStyle.setColor(colorHandler.getTextColor());
 
             long actualTime = System.currentTimeMillis();
 
@@ -147,7 +147,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
             for (AlarmSector alarmSector : alarmStatus.getSectors()) {
                 double bearing = alarmSector.getMinimumSectorBearing();
                 temporaryCanvas.drawLine(center, center, center + (float) (radius * Math.sin(bearing / 180.0f * Math.PI)), center
-                        + (float) (radius * -Math.cos(bearing/ 180.0f * Math.PI)), lines);
+                        + (float) (radius * -Math.cos(bearing / 180.0f * Math.PI)), lines);
 
                 if (size > TEXT_MINIMUM_SIZE) {
                     drawSectorLabel(center, radiusIncrement, alarmSector, bearing + sectorWidth / 2.0);
@@ -164,10 +164,10 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
                 if (size > TEXT_MINIMUM_SIZE) {
                     String text = String.format("%.0f", rangeSteps[radiusIndex]);
-                    temporaryCanvas.drawText(text, center + (radiusIndex + 0.95f) * radiusIncrement, center
+                    temporaryCanvas.drawText(text, center + (radiusIndex + 0.85f) * radiusIncrement, center
                             + textHeight / 3f, textStyle);
                     if (radiusIndex == rangeStepCount - 1) {
-                        temporaryCanvas.drawText(alarmParameters.getMeasurementSystem().getUnitName(), center + (radiusIndex + 0.95f) * radiusIncrement, center
+                        temporaryCanvas.drawText(alarmParameters.getMeasurementSystem().getUnitName(), center + (radiusIndex + 0.85f) * radiusIncrement, center
                                 + textHeight * 1.33f, textStyle);
                     }
                 }
@@ -200,10 +200,11 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
         if (temporaryBitmap == null) {
             temporaryBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
             temporaryCanvas = new Canvas(temporaryBitmap);
-        } else {
-            background.setXfermode(XFERMODE_CLEAR);
-            temporaryCanvas.drawPaint(background);
         }
+        background.setColor(colorHandler.getBackgroundColor());
+        background.setXfermode(XFERMODE_CLEAR);
+        temporaryCanvas.drawPaint(background);
+
         background.setXfermode(XFERMODE_SRC);
     }
 

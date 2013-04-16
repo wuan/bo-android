@@ -7,7 +7,7 @@ public class StrokeColorHandler extends ColorHandler {
 	public StrokeColorHandler(SharedPreferences preferences) {
 		super(preferences);
 	}
-	
+
 	@Override
 	public int[] getColors(ColorTarget target) {
 		switch(target) {

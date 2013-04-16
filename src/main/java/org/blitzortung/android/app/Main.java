@@ -35,6 +35,7 @@ import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.dialogs.AlarmDialog;
+import org.blitzortung.android.dialogs.AlarmDialogColorHandler;
 import org.blitzortung.android.dialogs.InfoDialog;
 import org.blitzortung.android.dialogs.LayerDialog;
 import org.blitzortung.android.map.OwnMapActivity;
@@ -414,7 +415,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 break;
 
             case R.id.alarm_dialog:
-                dialog = new AlarmDialog(this, alarmManager, strokesOverlay.getColorHandler(), strokesOverlay.getIntervalDuration());
+                dialog = new AlarmDialog(this, alarmManager, new AlarmDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)), strokesOverlay.getIntervalDuration());
                 break;
 
             case R.id.layer_dialog:

@@ -11,10 +11,13 @@ import org.blitzortung.android.map.overlay.color.ColorHandler;
 
 public class AlarmDialog extends AlertDialog {
 
-	public AlarmDialog(Context context, AlarmManager alarmManager, ColorHandler colorHandler, int intervalDuration) {
+    private final ColorHandler colorHandler;
+
+    public AlarmDialog(Context context, AlarmManager alarmManager, ColorHandler colorHandler, int intervalDuration) {
 		super(context);
-		
-		setTitle(context.getString(R.string.alarms));
+        this.colorHandler = colorHandler;
+
+        setTitle(context.getString(R.string.alarms));
 
 		View dialog = getLayoutInflater().inflate(R.layout.alarm_dialog, null);
 
@@ -24,6 +27,11 @@ public class AlarmDialog extends AlertDialog {
 		
 		setView(dialog);
 	}
+
+    @Override
+    public void onStart() {
+        colorHandler.updateTarget();
+    }
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
