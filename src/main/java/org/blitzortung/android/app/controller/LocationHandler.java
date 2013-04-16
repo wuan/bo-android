@@ -7,7 +7,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import org.blitzortung.android.app.view.PreferenceKey;
 
@@ -17,8 +16,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class LocationHandler implements SharedPreferences.OnSharedPreferenceChangeListener, LocationListener, GpsStatus.Listener {
-
-    private final Context context;
 
     public static interface Listener {
         void onLocationChanged(Location location);
@@ -73,15 +70,13 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
 
     private Set<Listener> listeners = new HashSet<Listener>();
 
-    public LocationHandler(Context context) {
-        this.context = context;
+    public LocationHandler(Context context, SharedPreferences sharedPreferences) {
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         locationManager.addGpsStatusListener(this);
         location = new Location("");
         location.setLongitude(Double.NaN);
         location.setLatitude(Double.NaN);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.LOCATION_MODE);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
@@ -209,14 +204,16 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
                     invalidateLocation();
 
                     Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    long secondsElapsedSinceLastFix = (System.currentTimeMillis() - loc.getTime()) / 1000;
-                    
-                    if (secondsElapsedSinceLastFix > 15) {
-                        if (locationIsValid()) {
-                            invalidateLocation();
+                    if (loc != null) {
+                        long secondsElapsedSinceLastFix = (System.currentTimeMillis() - loc.getTime()) / 1000;
+
+                        if (secondsElapsedSinceLastFix < 15) {
+                            break;
                         }
                     }
-
+                    if (locationIsValid()) {
+                        invalidateLocation();
+                    }
                     break;
             }
         }
