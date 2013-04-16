@@ -6,37 +6,37 @@ TODO:
 Changelog:
 
 Version 0.9:
-added GPS based and manual location
-added support for devices without menu button
-reorganized menu
-added ability to disable stations layer in Blitzortung.org mode
-optimized alarm handling
-manual location entry: enabled negative numbers in input fields
+ * added GPS based and manual location
+ * added support for devices without menu button
+ * reorganized menu
+ * added ability to disable stations layer in Blitzortung.org mode
+ * optimized alarm handling
+ * manual location entry: enabled negative numbers in input fields
 
 Version 0.8:
-access to historical lightning data
-configurable time-length of data display
+* access to historical lightning data
+* configurable time-length of data display
 
 Version 0.7:
-transparent infobar
-added legend overlay
-added histogram overlay
-added local alarm overlay
-package cleanup
-raster display fix
-metric/imperia systems of measurement
-alternative data service running on port 80
-option to disable sleep mode of device
-added summary texts to preferences
-fading of map
-selectable color schemes
+* transparent infobar
+* added legend overlay
+* added histogram overlay
+* added local alarm overlay
+* package cleanup
+* raster display fix
+* metric/imperia systems of measurement
+* alternative data service running on port 80
+* option to disable sleep mode of device
+* added summary texts to preferences
+* fading of map
+* selectable color schemes
 
 Version 0.6:
-display of stroke counts for higher zoom levels
-display of raster data area extent
-notification and vibration alarm with preference integration
+* display of stroke counts for higher zoom levels
+* display of raster data area extent
+ * notification and vibration alarm with preference integration
 
-Changelog German:
+===Changelog German:===
 
 Version 0.8:
 Zugriff auf Blitzdaten der letzten 24 Stunden
