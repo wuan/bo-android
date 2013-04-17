@@ -117,7 +117,7 @@ public class ColorHandlerTest {
         when(sharedPreferences.getString("map_mode", ColorTarget.SATELLITE.toString())).thenReturn(ColorTarget.STREETMAP.toString());
         colorHandler = spy(new ColorHandlerForTest(sharedPreferences));
 
-        assertThat(colorHandler.getTextColor(), is(0xffffffff));
+        assertThat(colorHandler.getTextColor(), is(0xff000000));
 
         verify(colorHandler, times(1)).getTextColor(ColorTarget.STREETMAP);
     }
