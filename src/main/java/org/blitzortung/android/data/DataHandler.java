@@ -86,12 +86,14 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         }
 
         protected void onPostExecute(DataResult result) {
-            if (!result.hasFailed() && listener != null) {
-                listener.onDataUpdate(result);
-            }
-
-            if (!result.processWasLocked()) {
-                listener.setErrorIndicator(result.hasFailed());
+            if (listener != null) {
+                if (!result.hasFailed()) {
+                    listener.onDataUpdate(result);
+                } else {
+                    if (!result.processWasLocked()) {
+                        listener.onDataError();
+                    }
+                }
             }
         }
 

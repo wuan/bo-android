@@ -332,6 +332,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     @Override
     public void onDataUpdate(DataResult result) {
 
+        statusComponent.indicateError(false);
+
         historyController.setRealtimeData(result.containsRealtimeData());
 
         Parameters resultParameters = result.getParameters();
@@ -402,8 +404,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     }
 
     @Override
-    public void setErrorIndicator(boolean indicateError) {
-        statusComponent.indicateError(indicateError);
+    public void onDataError() {
+        statusComponent.indicateError(true);
     }
 
 

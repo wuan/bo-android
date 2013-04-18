@@ -149,7 +149,7 @@ public class HistogramView extends View implements DataListener {
     }
 
     @Override
-    public void setErrorIndicator(boolean displayError) {
+    public void onDataError() {
         onDataReset();
     }
 }

@@ -10,5 +10,5 @@ public interface DataListener {
 	
 	public void onDataReset();
 
-    public void setErrorIndicator(boolean displayError);
+    public void onDataError();
 }
