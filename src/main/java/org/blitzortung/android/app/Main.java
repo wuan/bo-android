@@ -406,6 +406,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     @Override
     public void onDataError() {
         statusComponent.indicateError(true);
+        statusComponent.stopProgress();
     }
 
 
