@@ -68,16 +68,16 @@
         <org.blitzortung.android.app.view.AlarmView
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/alarm_view"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="80sp"
+                android:layout_height="80sp"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentBottom="true"/>
 
         <org.blitzortung.android.app.view.HistogramView
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/histogram_view"
-                android:layout_width="70dp"
-                android:layout_height="50dp"
+                android:layout_width="90sp"
+                android:layout_height="60sp"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"/>
 
