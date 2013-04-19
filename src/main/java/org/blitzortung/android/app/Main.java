@@ -348,7 +348,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             strokesOverlay.setReferenceTime(result.getReferenceTime());
             strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
             strokesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
-            
+
             if (result.containsIncrementalData()) {
                 strokesOverlay.expireStrokes();
             } else {
@@ -458,7 +458,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 participantsOverlay.setEnabled(showParticipants);
                 updateOverlays();
                 break;
-                
+
             case COLOR_SCHEME:
                 strokesOverlay.refresh();
                 if (participantsOverlay != null) {
@@ -473,7 +473,13 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
             case RASTER_SIZE:
             case REGION:
-                timerTask.restart();
+                if (timerTask.isEnabled()) {
+                    timerTask.restart();
+                } else {
+                    DataHandler.UpdateTargets updateTargets = new DataHandler.UpdateTargets();
+                    updateTargets.updateStrokes();
+                    dataHandler.updateData(updateTargets);
+                }
                 break;
 
             case NOTIFICATION_DISTANCE_LIMIT:

@@ -9,6 +9,7 @@ import org.blitzortung.android.data.DataHandler;
 public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
     private boolean updateParticipants;
+    private boolean enabled;
 
     public interface TimerUpdateListener {
         public void onTimerUpdate(String timerStatus);
@@ -126,9 +127,16 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
     public void enable() {
         handler.removeCallbacks(this);
         handler.post(this);
+        enabled = true;
     }
 
+    public boolean isEnabled() 
+    {
+        return enabled;  
+    }
+    
     protected void disable() {
+        enabled = false;
         handler.removeCallbacks(this);
     }
 
