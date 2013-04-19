@@ -45,7 +45,7 @@ public class LegendView extends View {
         super(context, attrs, defStyle);
 
         padding = pxFromSp(4);
-        colorFieldSize = pxFromSp(8);
+        colorFieldSize = pxFromSp(7);
 
         foregroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
