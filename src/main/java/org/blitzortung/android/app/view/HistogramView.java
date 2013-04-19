@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.View;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.data.DataListener;
@@ -45,7 +46,7 @@ public class HistogramView extends View implements DataListener {
         super(context, attrs, defStyle);
 
         padding = pxFromDp(4);
-        textSize = pxFromDp(8);
+        textSize = pxFromSp(8);
 
         foregroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -64,6 +65,12 @@ public class HistogramView extends View implements DataListener {
     private float pxFromDp(float dp)
     {
         return dp * getContext().getResources().getDisplayMetrics().density;
+    }
+
+    private float pxFromSp(float dp)
+    {
+        final DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        return dp * displayMetrics.density * displayMetrics.scaledDensity;
     }
 
     @Override

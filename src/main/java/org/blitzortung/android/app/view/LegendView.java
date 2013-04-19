@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.View;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
@@ -43,8 +44,8 @@ public class LegendView extends View {
     public LegendView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        padding = pxFromDp(4);
-        colorFieldSize = pxFromDp(8);
+        padding = pxFromSp(4);
+        colorFieldSize = pxFromSp(8);
 
         foregroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -67,8 +68,9 @@ public class LegendView extends View {
         textWidth = (float)Math.ceil(textPaint.measureText(intervalDuration > 100 ? "< 100min" : "< 10min"));
     }
 
-    private float pxFromDp(float dp) {
-        return dp * getContext().getResources().getDisplayMetrics().density;
+    private float pxFromSp(float sp) {
+        final DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        return sp * displayMetrics.density * displayMetrics.scaledDensity;
     }
 
     @Override
