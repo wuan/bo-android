@@ -1,7 +1,6 @@
 package org.blitzortung.android.app;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -11,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.format.DateFormat;
@@ -24,7 +22,6 @@ import org.blitzortung.android.alarm.AlarmResult;
 import org.blitzortung.android.app.controller.ButtonColumnHandler;
 import org.blitzortung.android.app.controller.HistoryController;
 import org.blitzortung.android.app.controller.LocationHandler;
-import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
@@ -66,8 +63,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private AlarmManager alarmManager;
 
-    private NotificationHandler notificationHandler;
-
     private LocationHandler locationHandler;
 
     private DataHandler dataHandler;
@@ -77,10 +72,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     private Persistor persistor;
 
     private boolean clearData;
-
-    private float notificationDistanceLimit;
-
-    private float vibrationDistanceLimit;
 
     private final Set<DataListener> dataListeners = new HashSet<DataListener>();
 
@@ -140,8 +131,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         setHistoricStatusString();
         timerTask = persistor.getTimerTask();
 
-        notificationHandler = new NotificationHandler(this);
-
         alarmManager = persistor.getAlarmManager();
 
         if (alarmManager.isAlarmEnabled()) {
@@ -191,7 +180,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         setupCustomViews();
 
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
-                PreferenceKey.NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.VIBRATION_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS);
+                PreferenceKey.NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS);
 
         getMapView().invalidate();
     }
@@ -482,14 +471,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 }
                 break;
 
-            case NOTIFICATION_DISTANCE_LIMIT:
-                notificationDistanceLimit = Float.parseFloat(sharedPreferences.getString(key.toString(), "50"));
-                break;
-
-            case VIBRATION_DISTANCE_LIMIT:
-                vibrationDistanceLimit = Float.parseFloat(sharedPreferences.getString(key.toString(), "25"));
-                break;
-
             case DO_NOT_SLEEP:
                 boolean doNotSleep = sharedPreferences.getBoolean(key.toString(), false);
                 int flag = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
@@ -546,21 +527,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         AlarmLabelHandler alarmLabelHandler = new AlarmLabelHandler(statusComponent, getResources());
 
         alarmLabelHandler.apply(alarmResult);
-
-        if (alarmResult != null) {
-            if (alarmResult.getClosestStrokeDistance() <= vibrationDistanceLimit) {
-                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(40);
-            }
-
-            if (alarmResult.getClosestStrokeDistance() <= notificationDistanceLimit) {
-                notificationHandler.sendNotification(getResources().getString(R.string.activity) + ": " + alarmManager.getTextMessage(notificationDistanceLimit));
-            } else {
-                notificationHandler.clearNotification();
-            }
-        } else {
-            notificationHandler.clearNotification();
-        }
     }
 
     @Override

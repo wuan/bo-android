@@ -15,7 +15,7 @@
             android:layout_weight="1"
             android:layout_marginLeft="4dp"
             android:text=""
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:textColor="@color/text_foreground" />
 
         <TextView
@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text=""
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:textColor="@color/text_foreground" />
 
         <RelativeLayout

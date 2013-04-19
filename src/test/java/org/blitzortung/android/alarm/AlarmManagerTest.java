@@ -1,7 +1,9 @@
 package org.blitzortung.android.alarm;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.Vibrator;
 import com.google.common.collect.Lists;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
@@ -9,6 +11,7 @@ import org.blitzortung.android.alarm.handler.AlarmStatusHandler;
 import org.blitzortung.android.alarm.object.AlarmSector;
 import org.blitzortung.android.alarm.object.AlarmStatus;
 import org.blitzortung.android.app.controller.LocationHandler;
+import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.util.MeasurementSystem;
@@ -51,6 +54,15 @@ public class AlarmManagerTest {
 
     @Mock
     private SharedPreferences sharedPreferences;
+    
+    @Mock
+    private Context context;
+    
+    @Mock 
+    private Vibrator vibrator;
+    
+    @Mock
+    private NotificationHandler notificationHandler;
 
     @Mock
     private Collection<Stroke> strokes;
@@ -76,7 +88,7 @@ public class AlarmManagerTest {
         when(sharedPreferences.getString(PreferenceKey.MEASUREMENT_UNIT.toString(), MeasurementSystem.METRIC.toString())).thenReturn(MeasurementSystem.METRIC.toString());
         when(alarmStatusHandler.getCurrentActivity(alarmStatus)).thenReturn(alarmResult);
 
-        alarmManager = spy(new AlarmManager(locationManager, sharedPreferences, alarmObjectFactory, alarmParameters));
+        alarmManager = spy(new AlarmManager(locationManager, sharedPreferences, context, vibrator, notificationHandler, alarmObjectFactory, alarmParameters));
         alarmManager.addAlarmListener(alarmListener);
     }
 

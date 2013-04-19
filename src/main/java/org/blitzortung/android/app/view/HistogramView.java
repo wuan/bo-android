@@ -103,7 +103,7 @@ public class HistogramView extends View implements DataListener {
                 }
             }
 
-            canvas.drawText(String.format("max %.1f/min", (float)maximumCount/ minutesPerBin), width - 2*padding, padding + textSize/1.2f, textPaint);
+            canvas.drawText(String.format("%.1f/min _", (float)maximumCount/ minutesPerBin), width - 2*padding, padding + textSize/1.2f, textPaint);
 
             int ymax = maximumCount == 0 ? 1 : maximumCount;
 

@@ -42,10 +42,12 @@
     <string-array name="color_schemes">
         <item>Blitzortung.org</item>
         <item>Rainbow</item>
+        <item>Temperature</item>
     </string-array>
     <string-array name="color_scheme_values">
         <item>BLITZORTUNG</item>
         <item>RAINBOW</item>
+        <item>TEMPERATURE</item>
     </string-array>
 
     <string name="color_scheme">Color scheme</string>
@@ -215,8 +217,8 @@
     <string name="notification_distance_limit_summary">if selected: show notification when lightning activity is
         detected within the selected range
     </string>
-    <string name="vibration_distance_limit">Vibration distance limit</string>
-    <string name="vibration_distance_limit_summary">if selected: vibrate when lightning activity is detected within the
+    <string name="signaling_distance_limit">Signaling distance limit</string>
+    <string name="signaling_distance_limit_summary">if selected: alarm signal when lightning activity is detected within the
         selected range
     </string>
 
@@ -265,4 +267,9 @@
     <string name="map_settings_summary">Map mode and appearance related settings</string>
     <string name="location_settings_summary">Location determination mode</string>
     <string name="alarm_settings_summary">Alarm activation, background service and radiuses</string>
+    <string name="alarm_signal_settings">alarm signal settings</string>
+    <string name="alarm_audio_signal">alarm audio signal</string>
+    <string name="alarm_vibration_signal">alarm vibration duration</string>
+    <string name="alarm_audio_signal_summary">choose an audio notfication for alarm signalig</string>
+    <string name="alarm_vibration_signal_summary">choose the duration of vibration signaling in alarm case</string>
 </resources>

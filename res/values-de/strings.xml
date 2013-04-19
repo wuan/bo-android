@@ -42,10 +42,12 @@
     <string-array name="color_schemes">
         <item>Blitzortung.org</item>
         <item>Regenbogen</item>
+        <item>Temperatur</item>
     </string-array>
     <string-array name="color_scheme_values">
         <item>BLITZORTUNG</item>
         <item>RAINBOW</item>
+        <item>TEMPERATURE</item>
     </string-array>
 
     <string name="color_scheme">Farbschema</string>
@@ -214,8 +216,8 @@
     <string name="notification_distance_limit_summary">falls ausgewählt: Benachrichtigung für Blitzaktivität innerhalb
         der angegebenen Entfernung
     </string>
-    <string name="vibration_distance_limit">Radiuslimit Vibration</string>
-    <string name="vibration_distance_limit_summary">falls ausgewählt: Vibration für Blitzaktivität innerhalb der
+    <string name="signaling_distance_limit">Radiuslimit Alarmsignal</string>
+    <string name="signaling_distance_limit_summary">falls ausgewählt: Alarmsignal für Blitzaktivität innerhalb der
         angegebenen Entfernung
     </string>
 
@@ -263,4 +265,9 @@
     <string name="map_settings_summary">Kartenmodus und -aussehen</string>
     <string name="location_settings_summary">Wahl der Art der Ortsbestimmung</string>
     <string name="alarm_settings_summary">Warnung, Hintergrunddienst und Warnradien</string>
+    <string name="alarm_signal_settings">Alarmsignal</string>
+    <string name="alarm_audio_signal">Tonsignal</string>
+    <string name="alarm_vibration_signal">Vibration</string>
+    <string name="alarm_audio_signal_summary">Auswahl eines Tonsignals für den Alarm</string>
+    <string name="alarm_vibration_signal_summary">Auswahl der Vibrationsdauer für den Alarm</string>
 </resources>

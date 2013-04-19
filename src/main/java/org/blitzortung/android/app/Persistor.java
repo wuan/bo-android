@@ -1,12 +1,15 @@
 package org.blitzortung.android.app;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.os.Vibrator;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmParameters;
 import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
 import org.blitzortung.android.app.controller.LocationHandler;
+import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.map.overlay.ParticipantsOverlay;
@@ -34,13 +37,13 @@ public class Persistor {
 
     private final LocationHandler locationHandler;
 
-    public Persistor(Context context, SharedPreferences sharedPreferences, PackageInfo pInfo) {
+    public Persistor(Activity activity, SharedPreferences sharedPreferences, PackageInfo pInfo) {
         provider = new DataHandler(sharedPreferences, pInfo);
 		timerTask = new TimerTask(sharedPreferences, provider);
-        locationHandler = new LocationHandler(context, sharedPreferences);
-		alarmManager = new AlarmManager(locationHandler, sharedPreferences, new AlarmObjectFactory(), new AlarmParameters());
-		strokesOverlay = new StrokesOverlay(context, new StrokeColorHandler(sharedPreferences));
-		participantsOverlay = new ParticipantsOverlay(context, new ParticipantColorHandler(sharedPreferences));
+        locationHandler = new LocationHandler(activity, sharedPreferences);
+		alarmManager = new AlarmManager(locationHandler, sharedPreferences, activity, (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE), new NotificationHandler(activity), new AlarmObjectFactory(), new AlarmParameters());
+		strokesOverlay = new StrokesOverlay(activity, new StrokeColorHandler(sharedPreferences));
+		participantsOverlay = new ParticipantsOverlay(activity, new ParticipantColorHandler(sharedPreferences));
 	}
 
     public void updateContext(Main context)
