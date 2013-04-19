@@ -103,10 +103,11 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     }
 
     public void checkStrokes(Collection<? extends Stroke> strokes, boolean areRealtimeStrokes) {
-        alarmValid = isAlarmEnabled() && location != null && areRealtimeStrokes;
+        boolean currentAlarmValid = isAlarmEnabled() && location != null && areRealtimeStrokes;
         lastStrokes = areRealtimeStrokes ? strokes : null;
 
-        if (alarmValid) {
+        if (currentAlarmValid) {
+            alarmValid = true;
             alarmStatusHandler.checkStrokes(alarmStatus, strokes, location);
             broadcastResult(getAlarmResult());
         } else {

@@ -46,7 +46,7 @@ public class HistogramView extends View implements DataListener {
         super(context, attrs, defStyle);
 
         padding = pxFromDp(4);
-        textSize = pxFromSp(8);
+        textSize = pxFromSp(12);
 
         foregroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -70,7 +70,7 @@ public class HistogramView extends View implements DataListener {
     private float pxFromSp(float dp)
     {
         final DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        return dp * displayMetrics.density * displayMetrics.scaledDensity;
+        return dp * displayMetrics.scaledDensity;
     }
 
     @Override

@@ -45,7 +45,7 @@ public class LegendView extends View {
         super(context, attrs, defStyle);
 
         padding = pxFromSp(4);
-        colorFieldSize = pxFromSp(7);
+        colorFieldSize = pxFromSp(12);
 
         foregroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -70,7 +70,7 @@ public class LegendView extends View {
 
     private float pxFromSp(float sp) {
         final DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        return sp * displayMetrics.density * displayMetrics.scaledDensity;
+        return sp * displayMetrics.scaledDensity;
     }
 
     @Override
