@@ -15,7 +15,7 @@
 
     <string name="info">Information</string>
     <string name="info_text">Projektseite:\n\thttps://github.com/wuan/bo-android\n\nDiese Software visualisiert
-        Blitzdaten des Gemeinschaftsprojekts<b>blitzortung.org</b>. Weitere Informationen über das Projekt, oder wie Sie
+        Blitzdaten des Gemeinschaftsprojekts <b>blitzortung.org</b>.\n\nWeitere Informationen über das Projekt, oder wie Sie
         daran teilnehmen können, finden Sie unter:\n\thttp://blitzortung.org\n
     </string>
     <string name="copyright">© 2013, Andreas Würl\nblitzortung@tryb.de</string>
