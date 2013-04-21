@@ -3,17 +3,22 @@ package org.blitzortung.android.app;
 import android.content.SharedPreferences;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.app.view.PreferenceKey;
+import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Set;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.hasItems;
 import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
@@ -26,6 +31,9 @@ public class TimerTaskTest {
 
     @Mock
     private DataHandler dataHandler;
+    
+    @Captor
+    ArgumentCaptor<Set<DataChannel>> dataChannelsCaptor;
 
     @Before
     public void setUp()
@@ -64,12 +72,11 @@ public class TimerTaskTest {
 
         timerTask.run();
 
-        ArgumentCaptor<DataHandler.UpdateTargets> targetsArgumentCaptor = ArgumentCaptor.forClass(DataHandler.UpdateTargets.class);
-        verify(dataHandler, times(1)).updateData(targetsArgumentCaptor.capture());
+        verify(dataHandler, times(1)).updateData(dataChannelsCaptor.capture());
 
-        assertTrue(targetsArgumentCaptor.getValue().anyUpdateRequested());
-        assertTrue(targetsArgumentCaptor.getValue().updateStrokes());
-        assertFalse(targetsArgumentCaptor.getValue().updateParticipants());
+        final Set<DataChannel> updateChannels = dataChannelsCaptor.getValue();
+        assertThat(updateChannels.size(), is(2));
+        assertThat(updateChannels, hasItems(DataChannel.STROKES, DataChannel.PARTICIPANTS));
 
         assertThat(timerTask.getLastUpdate(), is(actualSecond));
     }

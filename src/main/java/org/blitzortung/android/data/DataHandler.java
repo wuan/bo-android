@@ -10,7 +10,9 @@ import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataProviderType;
 import org.blitzortung.android.data.provider.DataResult;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -30,38 +32,6 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     private int preferencesRasterBaselength;
     private int preferencesRegion;
-
-    public static class UpdateTargets {
-
-        boolean updateStrokes;
-
-        boolean updateStations;
-
-        public UpdateTargets() {
-            updateStrokes = false;
-            updateStations = false;
-        }
-
-        public void addStrokes() {
-            updateStrokes = true;
-        }
-
-        public boolean updateStrokes() {
-            return updateStrokes;
-        }
-
-        public void addParticipants() {
-            updateStations = true;
-        }
-
-        public boolean updateParticipants() {
-            return updateStations;
-        }
-
-        public boolean anyUpdateRequested() {
-            return updateStrokes || updateStations;
-        }
-    }
 
     public DataHandler(SharedPreferences sharedPreferences, PackageInfo pInfo) {
         parameters = new Parameters();
@@ -152,12 +122,12 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         }
     }
 
-    public void updateData(UpdateTargets updateTargets) {
+    public void updateData(Set<DataChannel> updateTargets) {
 
         listener.onBeforeDataUpdate();
 
         boolean updateParticipants = false;
-        if (updateTargets.updateParticipants()) {
+        if (updateTargets.contains(DataChannel.PARTICIPANTS)) {
             if (dataProvider.getType() == DataProviderType.HTTP || parameters.getRasterBaselength() == 0) {
                 updateParticipants = true;
             }
@@ -250,9 +220,9 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             parameters.setRegion(preferencesRegion);
         }
         if (!isRealtime()) {
-            DataHandler.UpdateTargets updateTargets = new DataHandler.UpdateTargets();
-            updateTargets.updateStrokes();
-            updateData(updateTargets);
+            Set<DataChannel> dataChannels = new HashSet<DataChannel>();
+            dataChannels.add(DataChannel.STROKES);
+            updateData(dataChannels);
         }
     }
 

@@ -4,7 +4,11 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Handler;
 import org.blitzortung.android.app.view.PreferenceKey;
+import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
@@ -48,21 +52,21 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
     public void run() {
         long actualSecond = System.currentTimeMillis() / 1000;
 
-        DataHandler.UpdateTargets updateTargets = new DataHandler.UpdateTargets();
+        Set<DataChannel> updateTargets = new HashSet<DataChannel>();
 
         int currentPeriod = backgroundOperation ? backgroundPeriod : period;
 
         if (actualSecond >= lastUpdate + currentPeriod) {
-            updateTargets.addStrokes();
+            updateTargets.add(DataChannel.STROKES);
             lastUpdate = actualSecond;
         }
 
         if (updateParticipants && actualSecond >= lastParticipantsUpdate + currentPeriod * 10 && !backgroundOperation) {
-            updateTargets.addParticipants();
+            updateTargets.add(DataChannel.PARTICIPANTS);
             lastParticipantsUpdate = actualSecond;
         }
 
-        if (updateTargets.anyUpdateRequested()) {
+        if (!updateTargets.isEmpty()) {
             dataHandler.updateData(updateTargets);
         }
 

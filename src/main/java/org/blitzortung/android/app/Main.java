@@ -27,6 +27,7 @@ import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.app.view.components.StatusComponent;
+import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Parameters;
@@ -320,7 +321,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public void onDataUpdate(DataResult result) {
-
         statusComponent.indicateError(false);
 
         historyController.setRealtimeData(result.containsRealtimeData());
@@ -396,6 +396,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public void onDataError() {
         statusComponent.indicateError(true);
         statusComponent.stopProgress();
+
+        buttonColumnHandler.enableButtonColumn();
     }
 
 
@@ -465,8 +467,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 if (timerTask.isEnabled()) {
                     timerTask.restart();
                 } else {
-                    DataHandler.UpdateTargets updateTargets = new DataHandler.UpdateTargets();
-                    updateTargets.updateStrokes();
+                    Set<DataChannel> updateTargets = new HashSet<DataChannel>();
+                    updateTargets.add(DataChannel.STROKES);
                     dataHandler.updateData(updateTargets);
                 }
                 break;

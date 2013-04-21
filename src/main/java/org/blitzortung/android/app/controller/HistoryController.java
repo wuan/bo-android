@@ -6,10 +6,13 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.TimerTask;
+import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class HistoryController {
@@ -126,8 +129,8 @@ public class HistoryController {
     }
 
     private void updateData() {
-        DataHandler.UpdateTargets updateTargets = new DataHandler.UpdateTargets();
-        updateTargets.updateStrokes();
-        dataHandler.updateData(updateTargets);
+        Set<DataChannel> dataChannels = new HashSet<DataChannel>();
+        dataChannels.add(DataChannel.STROKES);
+        dataHandler.updateData(dataChannels);
     }
 }

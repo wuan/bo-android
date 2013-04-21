@@ -73,22 +73,25 @@ public class AlarmManagerTest {
     @Mock
     private AlarmManager.AlarmListener alarmListener;
 
-    final private long alarmInterval = 600000;
-
     private AlarmManager alarmManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        long alarmInterval = 600000;
         when(alarmParameters.getAlarmInterval()).thenReturn(alarmInterval);
         when(alarmObjectFactory.createAlarmStatus(alarmParameters)).thenReturn(alarmStatus);
         when(alarmObjectFactory.createAlarmStatusHandler(alarmParameters)).thenReturn(alarmStatusHandler);
         when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(false);
         when(sharedPreferences.getString(PreferenceKey.MEASUREMENT_UNIT.toString(), MeasurementSystem.METRIC.toString())).thenReturn(MeasurementSystem.METRIC.toString());
+        when(sharedPreferences.getString(PreferenceKey.NOTIFICATION_DISTANCE_LIMIT.toString(), "50")).thenReturn("50");
+        when(sharedPreferences.getString(PreferenceKey.SIGNALING_DISTANCE_LIMIT.toString(), "25")).thenReturn("25");
+        when(sharedPreferences.getInt(PreferenceKey.ALARM_VIBRATION_SIGNAL.toString(), 3)).thenReturn(3);
+        when(sharedPreferences.getString(PreferenceKey.ALARM_SOUND_SIGNAL.toString(), "")).thenReturn("");
         when(alarmStatusHandler.getCurrentActivity(alarmStatus)).thenReturn(alarmResult);
 
-        alarmManager = spy(new AlarmManager(locationManager, sharedPreferences, context, vibrator, notificationHandler, alarmObjectFactory, alarmParameters));
+        alarmManager = new AlarmManager(locationManager, sharedPreferences, context, vibrator, notificationHandler, alarmObjectFactory, alarmParameters);
         alarmManager.addAlarmListener(alarmListener);
     }
 
