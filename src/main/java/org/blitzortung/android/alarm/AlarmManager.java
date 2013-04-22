@@ -247,4 +247,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
         }
     }
 
+    public Location getCurrentLocation() {
+        return location;
+    }
+
 }

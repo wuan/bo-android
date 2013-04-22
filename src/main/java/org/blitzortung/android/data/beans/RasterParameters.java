@@ -1,6 +1,5 @@
 package org.blitzortung.android.data.beans;
 
-import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.RectF;
 import com.google.android.maps.Projection;
@@ -28,6 +27,14 @@ public class RasterParameters {
 		lat_count = jsonObject.getInt("yc");
 	}
 
+    public float getRectCenterLongitude() {
+        return lon_start + lon_delta * lon_count / 2f;
+    }
+
+    public float getRectCenterLatitude() {
+        return lat_start - lat_delta * lat_count / 2f;
+    }
+
 	public float getCenterLongitude(int offset) {
 		return lon_start + lon_delta * (offset + 0.5f);
 	}
@@ -43,7 +50,15 @@ public class RasterParameters {
 	public float getLatitudeDelta() {
 		return lat_delta;
 	}
-	
+
+    public float getRectLongitudeDelta() {
+        return lon_delta * lon_count;
+    }
+
+    public float getRectLatitudeDelta() {
+        return lat_delta * lat_count;
+    }
+
 	public RectF getRect(Projection projection) {
 		Point leftTop = new Point();
 		leftTop = projection.toPixels(Coordsys.toMapCoords(lon_start, lat_start), leftTop);

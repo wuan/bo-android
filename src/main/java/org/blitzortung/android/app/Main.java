@@ -8,6 +8,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -16,6 +17,9 @@ import android.text.format.DateFormat;
 import android.view.*;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapController;
+import com.google.android.maps.Projection;
 import org.blitzortung.android.alarm.AlarmLabelHandler;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmResult;
@@ -31,6 +35,7 @@ import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Parameters;
+import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.dialogs.AlarmDialog;
 import org.blitzortung.android.dialogs.AlarmDialogColorHandler;
@@ -217,6 +222,31 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         alarmView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getIntervalDuration());
         alarmView.setBackgroundColor(Color.TRANSPARENT);
         alarmView.setAlpha(200);
+        alarmView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (alarmManager.isAlarmEnabled()) {
+                    final Location currentLocation = alarmManager.getCurrentLocation();
+                    if (currentLocation != null) {
+                        final OwnMapView mapView = getMapView();
+                        final MapController controller = mapView.getController();
+
+                        final Projection projection = mapView.getProjection();
+                        final AlarmResult alarmResult = alarmManager.getAlarmResult();
+                        if (alarmResult != null) {
+                            float diameter = Math.max(Math.min(alarmResult.getClosestStrokeDistance() * 1.2f, alarmResult.getMaxDistance()), 50f) * 2f;
+                            final float pixels = projection.metersToEquatorPixels(diameter * 1000f);
+                            final GeoPoint geoPoint = projection.fromPixels((int) pixels, (int) pixels);
+                            final GeoPoint zeroPont = projection.fromPixels(0, 0);
+                            controller.animateTo(new GeoPoint((int) (currentLocation.getLatitude() * 1e6), (int) (currentLocation.getLongitude() * 1e6)));
+                            controller.zoomToSpan(geoPoint.getLatitudeE6() - zeroPont.getLatitudeE6(), geoPoint.getLongitudeE6() - zeroPont.getLongitudeE6());
+                            mapView.notifyZoomListeners();
+                        }
+                    }
+
+                }
+            }
+        });
 
         HistogramView histogramView = (HistogramView) findViewById(R.id.histogram_view);
         histogramView.setStrokesOverlay(strokesOverlay);
@@ -224,6 +254,22 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             histogramView.onDataUpdate(persistor.getCurrentResult());
         }
         addDataListener(histogramView);
+        histogramView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (persistor.hasCurrentResult()) {
+                    final DataResult currentResult = persistor.getCurrentResult();
+                    if (currentResult.hasRasterParameters()) {
+                        final RasterParameters rasterParameters = currentResult.getRasterParameters();
+                        final OwnMapView mapView = getMapView();
+                        final MapController controller = mapView.getController();
+                        controller.animateTo(new GeoPoint((int) (rasterParameters.getRectCenterLatitude() * 1e6), (int) (rasterParameters.getRectCenterLongitude() * 1e6)));
+                        controller.zoomToSpan((int) (rasterParameters.getRectLongitudeDelta() * 1e6), (int) (rasterParameters.getRectLatitudeDelta() * 1e6));
+                        mapView.notifyZoomListeners();
+                    }
+                }
+            }
+        });
     }
 
 
@@ -521,7 +567,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         }
 
         statusComponent.setText(statusText);
-
     }
 
     @Override
