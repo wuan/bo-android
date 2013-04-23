@@ -1,9 +1,6 @@
 package org.blitzortung.android.alarm;
 
 import org.blitzortung.android.alarm.object.AlarmSector;
-import org.blitzortung.android.alarm.object.AlarmSectorRange;
-
-import java.util.List;
 
 public class AlarmResult {
 	
@@ -25,10 +22,5 @@ public class AlarmResult {
 
     public String getBearingName() {
         return sector.getLabel();
-    }
-
-    public float getMaxDistance() {
-        final List<AlarmSectorRange> ranges = sector.getRanges();
-        return ranges.get(ranges.size() - 1).getRangeMaximum();
     }
 }

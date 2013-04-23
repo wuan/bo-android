@@ -193,6 +193,11 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
         return alarmValid ? alarmStatus : null;
     }
 
+    public float getMaxDistance() {
+        final float[] ranges = alarmParameters.getRangeSteps();
+        return ranges[ranges.length - 1];
+    }
+    
     private void invalidateAlarm() {
         boolean previousAlarmValidState = alarmValid;
         alarmValid = false;

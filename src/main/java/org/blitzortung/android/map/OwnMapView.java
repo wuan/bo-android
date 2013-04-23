@@ -3,6 +3,7 @@ package org.blitzortung.android.map;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import com.google.android.maps.MapView;
 
@@ -67,4 +68,17 @@ public class OwnMapView extends MapView {
 			zoomListener.onZoom(getZoomLevel());
 		}
 	}
+
+    public int calculateTargetZoomLevel(float widthInMeters) {
+        double equatorLength = 40075004; // in meters
+        double widthInPixels = Math.min(getHeight(), getWidth());
+        double metersPerPixel = equatorLength / 256;
+        int zoomLevel = 1;
+        while ((metersPerPixel * widthInPixels) > widthInMeters) {
+            metersPerPixel /= 2;
+            ++zoomLevel;
+        }
+        Log.i("BO_ANDROID", "zoom level = " + zoomLevel);
+        return zoomLevel - 1;
+    }
 }
