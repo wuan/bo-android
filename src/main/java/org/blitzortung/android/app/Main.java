@@ -1,8 +1,7 @@
 package org.blitzortung.android.app;
 
 import android.app.Dialog;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -12,9 +11,11 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.*;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -54,7 +55,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, TimerTask.TimerUpdateListener,
+public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, TimerService.TimerUpdateListener,
         AlarmManager.AlarmListener {
 
     protected StatusComponent statusComponent;
@@ -64,8 +65,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     protected StrokesOverlay strokesOverlay;
 
     private ParticipantsOverlay participantsOverlay;
-
-    private TimerTask timerTask;
 
     private AlarmManager alarmManager;
 
@@ -88,6 +87,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     private ButtonColumnHandler<ImageButton> buttonColumnHandler;
 
     private HistoryController historyController;
+    private TimerService timerService;
+    private ServiceConnection conn;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,8 +107,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         preferences.registerOnSharedPreferenceChangeListener(this);
 
         if (getLastNonConfigurationInstance() == null) {
+            Log.i("BO_ANDROID", "Main.onCreate(): create new persistor");
             persistor = new Persistor(this, preferences, pInfo);
         } else {
+            Log.i("BO_ANDROID", "Main.onCreate(): reuse persistor");
             persistor = (Persistor) getLastNonConfigurationInstance();
         }
         persistor.updateContext(this);
@@ -135,7 +138,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         dataHandler = persistor.getDataHandler();
         statusComponent = new StatusComponent(this);
         setHistoricStatusString();
-        timerTask = persistor.getTimerTask();
 
         alarmManager = persistor.getAlarmManager();
 
@@ -172,7 +174,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             }
         }
 
-        historyController = new HistoryController(this, dataHandler, timerTask);
+        historyController = new HistoryController(this, dataHandler, timerService);
         historyController.setButtonHandler(buttonColumnHandler);
         if (persistor.hasCurrentResult()) {
             historyController.setRealtimeData(persistor.getCurrentResult().containsRealtimeData());
@@ -188,7 +190,34 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
                 PreferenceKey.NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS);
 
+        createAndBindToTimerService();
+        
         getMapView().invalidate();
+    }
+
+    private void createAndBindToTimerService() {
+        final Intent service = new Intent(this, TimerService.class);
+        
+        startService(service);
+        
+        conn = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                timerService = ((TimerService.TimerServiceBinder) iBinder).getService();
+                Log.i("BO_ANDROID", "Main.ServiceConnection.onServiceConnected() " + timerService);
+                timerService.setListener(Main.this);
+                timerService.setDataHandler(dataHandler);
+                timerService.restart();
+                timerService.onResume();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                timerService = null;
+            }
+        };
+
+        bindService(service, conn, 0);
     }
 
     private void setupDebugModeButton() {
@@ -358,7 +387,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public void onResume() {
         super.onResume();
 
-        timerTask.onResume(dataHandler.isRealtime());
+        if (timerService != null) {
+            timerService.onResume();
+        }
         locationHandler.onResume();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -371,7 +402,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public void onPause() {
         super.onPause();
 
-        if (timerTask.onPause()) {
+        if (timerService.onPause()) {
             locationHandler.onPause();
         }
 
@@ -424,7 +455,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         }
 
         if (!result.containsRealtimeData()) {
-            timerTask.disable();
+            timerService.disable();
             setHistoricStatusString();
         }
 
@@ -457,7 +488,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public void onDataReset() {
-        timerTask.restart();
+        timerService.restart();
         clearData = true;
 
         for (DataListener listener : dataListeners) {
@@ -537,8 +568,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
             case RASTER_SIZE:
             case REGION:
-                if (timerTask.isEnabled()) {
-                    timerTask.restart();
+                if (timerService.isEnabled()) {
+                    timerService.restart();
                 } else {
                     Set<DataChannel> updateTargets = new HashSet<DataChannel>();
                     updateTargets.add(DataChannel.STROKES);

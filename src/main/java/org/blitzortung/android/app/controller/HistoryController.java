@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import org.blitzortung.android.app.R;
-import org.blitzortung.android.app.TimerTask;
+import org.blitzortung.android.app.TimerService;
 import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
 
@@ -22,12 +22,12 @@ public class HistoryController {
     private ImageButton historyForward;
     private ImageButton goRealtime;
     private final Collection<ImageButton> buttons;
-    private final TimerTask timerTask;
+    private final TimerService timerService;
 
     private ButtonColumnHandler buttonHandler;
 
-    public HistoryController(final Activity activity, DataHandler dataHandler, TimerTask timerTask) {
-        this.timerTask = timerTask;
+    public HistoryController(final Activity activity, DataHandler dataHandler, TimerService timerService) {
+        this.timerService = timerService;
         this.dataHandler = dataHandler;
         buttons = new ArrayList<ImageButton>();
 
@@ -110,8 +110,8 @@ public class HistoryController {
         historyForward.setVisibility(View.INVISIBLE);
         goRealtime.setVisibility(View.INVISIBLE);
         updateButtonColumn();
-        timerTask.restart();
-        timerTask.enable();
+        timerService.restart();
+        timerService.enable();
     }
 
     private void updateButtonColumn() {

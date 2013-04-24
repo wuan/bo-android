@@ -19,8 +19,6 @@ import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
 public class Persistor {
 
-	private final TimerTask timerTask;
-
 	private final DataHandler provider;
 	
 	private final AlarmManager alarmManager;
@@ -39,7 +37,6 @@ public class Persistor {
 
     public Persistor(Activity activity, SharedPreferences sharedPreferences, PackageInfo pInfo) {
         provider = new DataHandler(sharedPreferences, pInfo);
-		timerTask = new TimerTask(sharedPreferences, provider);
         locationHandler = new LocationHandler(activity, sharedPreferences);
 		alarmManager = new AlarmManager(locationHandler, sharedPreferences, activity, (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE), new NotificationHandler(activity), new AlarmObjectFactory(), new AlarmParameters());
 		strokesOverlay = new StrokesOverlay(activity, new StrokeColorHandler(sharedPreferences));
@@ -51,7 +48,6 @@ public class Persistor {
         strokesOverlay.setActivity(context);
         participantsOverlay.setActivity(context);
         provider.setDataListener(context);
-        timerTask.setListener(context);
 
         alarmManager.clearAlarmListeners();
         alarmManager.addAlarmListener(context);
@@ -63,10 +59,6 @@ public class Persistor {
 	
 	public ParticipantsOverlay getParticipantsOverlay() {
 		return participantsOverlay;
-	}
-
-	public TimerTask getTimerTask() {
-		return timerTask;
 	}
 
 	public DataHandler getDataHandler() {
