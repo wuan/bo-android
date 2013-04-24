@@ -17,6 +17,8 @@ import java.util.Set;
 
 public class LocationHandler implements SharedPreferences.OnSharedPreferenceChangeListener, LocationListener, GpsStatus.Listener {
 
+    private boolean hasGpsFix;
+
     public static interface Listener {
         void onLocationChanged(Location location);
     }
@@ -163,9 +165,9 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     }
 
     private void enableProvider(Provider newProvider) {
-        locationManager.removeUpdates(this);
         if (newProvider != null && newProvider != Provider.MANUAL) {
-            locationManager.requestLocationUpdates(newProvider.getType(), 5000, 0, this);
+            locationManager.removeUpdates(this);
+            locationManager.requestLocationUpdates(newProvider.getType(), provider == Provider.GPS ? 1000 : 10000, 10, this);
         }
         provider = newProvider;
     }
@@ -201,13 +203,14 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
         if (provider == Provider.GPS) {
             switch (event) {
                 case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
-                    invalidateLocation();
-
                     Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     if (loc != null) {
                         long secondsElapsedSinceLastFix = (System.currentTimeMillis() - loc.getTime()) / 1000;
 
-                        if (secondsElapsedSinceLastFix < 15) {
+                        if (secondsElapsedSinceLastFix < 10) {
+                            if (!locationIsValid()) {
+                                onLocationChanged(location);
+                            }
                             break;
                         }
                     }
