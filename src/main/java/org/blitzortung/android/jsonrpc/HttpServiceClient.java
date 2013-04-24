@@ -68,7 +68,7 @@ public class HttpServiceClient {
 	        long startTime = System.currentTimeMillis();
 	        HttpResponse response = httpClient.execute(request);
 	        responseString = EntityUtils.toString(response.getEntity());
-	        Log.d("jsonrpc", String.format("request time %d ms (%d bytes received)", System.currentTimeMillis() - startTime, responseString.length()));
+	        Log.d("BO_ANDROID", String.format("HttpServiceClient: request time %d ms (%d bytes received)", System.currentTimeMillis() - startTime, responseString.length()));
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

@@ -47,8 +47,8 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 						strokes.add(new DefaultStroke(line));
 					}
 				}
-				Log.v(getClass().getSimpleName(),
-						String.format("read %d bytes (%d new strokes) from region %d", size, strokes.size(), region));
+				Log.v("BO_ANDROID",
+						String.format("BliztortungHttpDataProvider: read %d bytes (%d new strokes) from region %d", size, strokes.size(), region));
 
 				if (strokes.size() > 0)
 					latestTime = strokes.get(strokes.size() - 1).getTimestamp();
@@ -113,11 +113,11 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 					Participant station = new Participant(line);
 					stations.add(station);
                     } catch (NumberFormatException e) {
-                        Log.w("BlitzortungHttpProvider", String.format("error parsing '%s'", line));
+                        Log.w("BO_ANDROID", String.format("BlitzortungHttpProvider: error parsing '%s'", line));
                     }
 				}
-				Log.v("BlitzortungHttpProvider",
-						String.format("read %d bytes (%d stations) from region %d", size, stations.size(), region));
+				Log.v("BO_ANDROID",
+						String.format("BlitzortungHttpProvider: read %d bytes (%d stations) from region %d", size, stations.size(), region));
 
 				reader.close();
 			} catch (Exception e) {

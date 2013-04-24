@@ -8,6 +8,7 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Vibrator;
+import android.util.Log;
 import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
 import org.blitzortung.android.alarm.handler.AlarmStatusHandler;
 import org.blitzortung.android.alarm.object.AlarmSector;
@@ -222,6 +223,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
 
     private void processResult(AlarmResult alarmResult) {
         if (alarmResult != null) {
+            Log.v("BO_ANDROID", "AlarmManager: processResult");
+            
             long currentTimestamp = System.currentTimeMillis() / 1000;
             if (alarmResult.getClosestStrokeDistance() <= signalingDistanceLimit && signalingLastTimestamp + 15 < currentTimestamp) {
                 vibrateIfEnabled();
@@ -230,6 +233,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
             }
             
             if (alarmResult.getClosestStrokeDistance() <= notificationDistanceLimit) {
+                Log.v("BO_ANDROID", "AlarmManager: processResult sendNotification");
                 notificationHandler.sendNotification(context.getResources().getString(R.string.activity) + ": " + getTextMessage(notificationDistanceLimit));
             } else {
                 notificationHandler.clearNotification();
@@ -237,7 +241,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
         } else {
             notificationHandler.clearNotification();
         }
-        
+
+        Log.v("BO_ANDROID", "AlarmManager: processResult broadcast results");
         broadcastResult(alarmResult);
     }
 

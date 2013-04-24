@@ -17,8 +17,6 @@ import java.util.Set;
 
 public class LocationHandler implements SharedPreferences.OnSharedPreferenceChangeListener, LocationListener, GpsStatus.Listener {
 
-    private boolean hasGpsFix;
-
     public static interface Listener {
         void onLocationChanged(Location location);
     }
@@ -133,7 +131,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
             location.setLatitude(Double.valueOf(sharedPreferences.getString(PreferenceKey.LOCATION_LATITUDE.toString(), "49.0")));
             sendLocationUpdate();
         } catch (NumberFormatException e) {
-            Log.v("LocationHandler", "bad number format for manual latitude setting");
+            Log.v("BO_ANDROID", "LocationHandler: bad number format for manual latitude setting");
         }
     }
 
@@ -142,7 +140,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
             location.setLongitude(Double.valueOf(sharedPreferences.getString(PreferenceKey.LOCATION_LONGITUDE.toString(), "11.0")));
             sendLocationUpdate();
         } catch (NumberFormatException e) {
-            Log.v("LocationHandler", "bad number format for manual longitude setting");
+            Log.v("BO_ANDROID", "LocationHandler: bad number format for manual longitude setting");
         }
     }
 

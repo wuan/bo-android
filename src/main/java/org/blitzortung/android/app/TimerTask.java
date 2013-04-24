@@ -3,6 +3,7 @@ package org.blitzortung.android.app;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Handler;
+import android.util.Log;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
@@ -44,6 +45,7 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
         preferences.registerOnSharedPreferenceChangeListener(this);
         onSharedPreferenceChanged(preferences, PreferenceKey.QUERY_PERIOD);
+        onSharedPreferenceChanged(preferences, PreferenceKey.ALARM_ENABLED);
         onSharedPreferenceChanged(preferences, PreferenceKey.BACKGROUND_QUERY_PERIOD);
         onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_PARTICIPANTS);
     }
@@ -51,6 +53,10 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
     @Override
     public void run() {
         long actualSecond = System.currentTimeMillis() / 1000;
+        
+        if (backgroundOperation) {
+            Log.v("BO_ANDROID", "TimerTask: run in background");
+        }
 
         Set<DataChannel> updateTargets = new HashSet<DataChannel>();
 
@@ -86,7 +92,10 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
     public void onResume(boolean isRealtime) {
         backgroundOperation = false;
         if (isRealtime) {
+            Log.v("BO_ANDROID", "TimerTask: onResume() enable");
             enable();
+        } else {
+            Log.v("BO_ANDROID", "TimerTask: onResume() do not enable");
         }
     }
 
@@ -94,8 +103,10 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
         backgroundOperation = true;
         if (!alarmEnabled || backgroundPeriod == 0) {
             handler.removeCallbacks(this);
+            Log.v("BO_ANDROID", "TimerTask: onPause() remove callback");
             return true;
         }
+        Log.v("BO_ANDROID", "TimerTask: onPause() keep callback");
         return false;
     }
 
@@ -117,11 +128,11 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
             case SHOW_PARTICIPANTS:
                 updateParticipants = sharedPreferences.getBoolean(key.toString(), true);
                 break;
+            
+            case ALARM_ENABLED:
+                alarmEnabled = sharedPreferences.getBoolean(key.toString(), false);
+                break;
         }
-    }
-
-    public void setAlarmEnabled(boolean alarmEnabled) {
-        this.alarmEnabled = alarmEnabled;
     }
 
     public void setListener(TimerUpdateListener listener) {
@@ -162,9 +173,5 @@ public class TimerTask implements Runnable, OnSharedPreferenceChangeListener {
 
     protected boolean isInBackgroundOperation() {
         return backgroundOperation;
-    }
-
-    protected boolean getAlarmEnabled() {
-        return alarmEnabled;
     }
 }

@@ -125,16 +125,6 @@ public class TimerTaskTest {
     }
 
     @Test
-    public void testSetAlarmEnabled() {
-        timerTask.setAlarmEnabled(true);
-        assertTrue(timerTask.getAlarmEnabled());
-
-        timerTask.setAlarmEnabled(false);
-        assertFalse(timerTask.getAlarmEnabled());
-
-    }
-
-    @Test
     public void testSetListener() {
         TimerListener timerListener = new TimerListener();
 
