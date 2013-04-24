@@ -22,12 +22,11 @@ public class HistoryController {
     private ImageButton historyForward;
     private ImageButton goRealtime;
     private final Collection<ImageButton> buttons;
-    private final TimerService timerService;
+    private TimerService timerService;
 
     private ButtonColumnHandler buttonHandler;
 
-    public HistoryController(final Activity activity, DataHandler dataHandler, TimerService timerService) {
-        this.timerService = timerService;
+    public HistoryController(final Activity activity, DataHandler dataHandler) {
         this.dataHandler = dataHandler;
         buttons = new ArrayList<ImageButton>();
 
@@ -132,5 +131,9 @@ public class HistoryController {
         Set<DataChannel> dataChannels = new HashSet<DataChannel>();
         dataChannels.add(DataChannel.STROKES);
         dataHandler.updateData(dataChannels);
+    }
+
+    public void setTimerService(TimerService timerService) {
+        this.timerService = timerService;
     }
 }

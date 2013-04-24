@@ -174,7 +174,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             }
         }
 
-        historyController = new HistoryController(this, dataHandler, timerService);
+        historyController = new HistoryController(this, dataHandler);
         historyController.setButtonHandler(buttonColumnHandler);
         if (persistor.hasCurrentResult()) {
             historyController.setRealtimeData(persistor.getCurrentResult().containsRealtimeData());
@@ -209,11 +209,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 timerService.setDataHandler(dataHandler);
                 timerService.restart();
                 timerService.onResume();
+                historyController.setTimerService(timerService);
             }
 
             @Override
             public void onServiceDisconnected(ComponentName componentName) {
-                timerService = null;
             }
         };
 
