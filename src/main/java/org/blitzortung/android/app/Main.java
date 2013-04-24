@@ -258,6 +258,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                     if (currentResult.hasRasterParameters()) {
                         final RasterParameters rasterParameters = currentResult.getRasterParameters();
                         animateToLocationAndVisibleSize(rasterParameters.getRectCenterLongitude(), rasterParameters.getRectCenterLatitude(), 5000f);
+                    } else {
+                        animateToLocationAndVisibleSize(0, 0, 20000f);
                     }
                 }
             }
