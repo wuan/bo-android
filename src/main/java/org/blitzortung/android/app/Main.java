@@ -55,7 +55,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, TimerService.TimerUpdateListener,
+public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, DataService.TimerUpdateListener,
         AlarmManager.AlarmListener {
 
     protected StatusComponent statusComponent;
@@ -87,7 +87,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     private ButtonColumnHandler<ImageButton> buttonColumnHandler;
 
     private HistoryController historyController;
-    private TimerService timerService;
+    private DataService dataService;
     private ServiceConnection conn;
 
     @Override
@@ -196,20 +196,20 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     }
 
     private void createAndBindToTimerService() {
-        final Intent service = new Intent(this, TimerService.class);
+        final Intent service = new Intent(this, DataService.class);
         
         startService(service);
         
         conn = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                timerService = ((TimerService.TimerServiceBinder) iBinder).getService();
-                Log.i("BO_ANDROID", "Main.ServiceConnection.onServiceConnected() " + timerService);
-                timerService.setListener(Main.this);
-                timerService.setDataHandler(dataHandler);
-                timerService.restart();
-                timerService.onResume();
-                historyController.setTimerService(timerService);
+                dataService = ((DataService.DataServiceBinder) iBinder).getService();
+                Log.i("BO_ANDROID", "Main.ServiceConnection.onServiceConnected() " + dataService);
+                dataService.setListener(Main.this);
+                dataService.setDataHandler(dataHandler);
+                dataService.restart();
+                dataService.onResume();
+                historyController.setDataService(dataService);
             }
 
             @Override
@@ -387,8 +387,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public void onResume() {
         super.onResume();
 
-        if (timerService != null) {
-            timerService.onResume();
+        if (dataService != null) {
+            dataService.onResume();
         }
         locationHandler.onResume();
 
@@ -402,7 +402,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public void onPause() {
         super.onPause();
 
-        if (timerService.onPause()) {
+        if (dataService.onPause()) {
             locationHandler.onPause();
         }
 
@@ -455,7 +455,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         }
 
         if (!result.containsRealtimeData()) {
-            timerService.disable();
+            dataService.disable();
             setHistoricStatusString();
         }
 
@@ -488,7 +488,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public void onDataReset() {
-        timerService.restart();
+        dataService.restart();
         clearData = true;
 
         for (DataListener listener : dataListeners) {
@@ -568,8 +568,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
             case RASTER_SIZE:
             case REGION:
-                if (timerService.isEnabled()) {
-                    timerService.restart();
+                if (dataService.isEnabled()) {
+                    dataService.restart();
                 } else {
                     Set<DataChannel> updateTargets = new HashSet<DataChannel>();
                     updateTargets.add(DataChannel.STROKES);

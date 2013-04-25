@@ -15,7 +15,7 @@ import org.blitzortung.android.data.DataHandler;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TimerService extends Service implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener {
+public class DataService extends Service implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private Handler handler;
 
@@ -39,12 +39,12 @@ public class TimerService extends Service implements Runnable, SharedPreferences
 
     private TimerUpdateListener listener;
 
-    private final IBinder binder = new TimerServiceBinder();
+    private final IBinder binder = new DataServiceBinder();
 
-    public class TimerServiceBinder extends Binder {
-        TimerService getService() {
-            Log.i("BO_ANDROID", "TimerServiceBinder.getService() " + TimerService.this);
-            return TimerService.this;
+    public class DataServiceBinder extends Binder {
+        DataService getService() {
+            Log.i("BO_ANDROID", "DataServiceBinder.getService() " + DataService.this);
+            return DataService.this;
         }
     }
 
@@ -54,7 +54,7 @@ public class TimerService extends Service implements Runnable, SharedPreferences
 
     @Override
     public void onCreate() {
-        Log.i("BO_ANDROID", "TimerService.onCreate()");
+        Log.i("BO_ANDROID", "DataService.onCreate()");
         super.onCreate();
 
         handler = new Handler();
@@ -71,13 +71,13 @@ public class TimerService extends Service implements Runnable, SharedPreferences
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i("BO_ANDROID", "TimerService.onStartCommand() Received start id " + startId + ": " + intent);
+        Log.i("BO_ANDROID", "DataService.onStartCommand() Received start id " + startId + ": " + intent);
         return START_STICKY;
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i("BO_ANDROID", "TimerService.onBind() " + intent);
+        Log.i("BO_ANDROID", "DataService.onBind() " + intent);
         return binder;
     }
 
@@ -86,7 +86,7 @@ public class TimerService extends Service implements Runnable, SharedPreferences
         long currentSecond = System.currentTimeMillis() / 1000;
 
         if (backgroundOperation) {
-            Log.v("BO_ANDROID", "TimerService: run in background");
+            Log.v("BO_ANDROID", "DataService: run in background");
         }
 
         if (dataHandler != null) {

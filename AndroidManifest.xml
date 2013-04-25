@@ -28,7 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".TimerService" />
+        <service android:name=".DataService" />
         <activity
             android:name=".Preferences"
             android:label="@string/preferences" >
