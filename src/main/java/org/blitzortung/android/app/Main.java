@@ -294,6 +294,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     }
 
     private void animateToLocationAndVisibleSize(double longitude, double latitude, float diameter) {
+        Log.d("BO_ANDROID", String.format("Main.animateAndZoomTo() %.4f, %.4f, %.0fkm", longitude, latitude, diameter));
+
         final OwnMapView mapView = getMapView();
         final MapController controller = mapView.getController();
 

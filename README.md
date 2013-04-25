@@ -1,5 +1,4 @@
-TODO:
- * sound alarm
+# TODO:
  * layer configuration
  * custom layers
 
@@ -7,6 +6,16 @@ TODO:
 
 ## English
 
+### Version 1.0
+ * tap on histogram zooms to full data area
+ * tap on alarm radar zooms to current location
+ * improved UI scaling
+ * added alarm signal settings to configure vibration and/or sounds 
+ * refactored alarm logic
+ * fixed data updates on parameter change
+ * fixed background task behaviour
+ * fixed GPS signal detection
+ 
 ### Version 0.9
  * added GPS based and manual location
  * added support for devices without menu button
@@ -14,6 +23,7 @@ TODO:
  * added ability to disable stations layer in Blitzortung.org mode
  * optimized alarm handling
  * manual location entry: enabled negative numbers in input fields
+ * GPS signal loss detection
 
 ### Version 0.8
  * access to historical lightning data
@@ -40,6 +50,16 @@ TODO:
  
 ## German
 
+### Version 1.0
+ * Zoom auf vollen Datenbereich bei Tippen auf Histogram
+ * Zoom auf aktuelle Position bei Tippen auf Alarm-Radar
+ * Verbesserte Skalierung der Oberfläche
+ * neue Alarm-Signal Einstellungen konfigurieren Vibration und/oder Tonsignal 
+ * Überarbeitung der Alarm-Logik
+ * Verbesserte Behandlung von Parameteränderungen
+ * Verbessertes Verhalten des Hintergrundtasks
+ * Verbesesrte Erkennung des GPS-Signals
+ 
 ### Version 0.9
  * GPS-basierte und manuelle Ortung hinzugefügt
  * Unterstützung für Geräte ohne Menüknopf
