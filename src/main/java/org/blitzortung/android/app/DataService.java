@@ -52,6 +52,26 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         this.handler = handler;
     }
 
+    public int getPeriod() {
+        return period;
+    }
+
+    public int getBackgroundPeriod() {
+        return backgroundPeriod;
+    }
+
+    public long getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public long getLastParticipantsUpdate() {
+        return lastParticipantsUpdate;
+    }
+
+    public boolean isInBackgroundOperation() {
+        return backgroundOperation;
+    }
+
     public class DataServiceBinder extends Binder {
         DataService getService() {
             Log.d("BO_ANDROID", "DataServiceBinder.getService() " + DataService.this);
@@ -67,8 +87,6 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     public void onCreate() {
         Log.i("BO_ANDROID", "DataService.onCreate()");
         super.onCreate();
-
-        handler.post(this);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);

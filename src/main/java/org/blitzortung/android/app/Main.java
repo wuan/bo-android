@@ -384,6 +384,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public void onResume() {
         super.onResume();
 
+        Log.d("BO_ANDROID", "Main.onResume()");
+        
         if (dataService != null) {
             dataService.onResume();
         }
@@ -398,6 +400,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     @Override
     public void onPause() {
         super.onPause();
+
+        Log.d("BO_ANDROID", "Main.onPause()");
 
         if (dataService.onPause()) {
             locationHandler.onPause();
