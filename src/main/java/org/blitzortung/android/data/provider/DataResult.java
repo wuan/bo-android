@@ -130,4 +130,17 @@ public class DataResult implements Serializable {
     public Parameters getParameters() {
         return parameters;
     }
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Result(");
+        sb.append(getStrokes().size()).append(" strokes, ");
+        sb.append(getParameters());
+        if (hasRasterParameters()) {
+            sb.append(", ").append(getRasterParameters());
+        }
+        sb.append(")");
+        
+        return sb.toString();
+    }
 }

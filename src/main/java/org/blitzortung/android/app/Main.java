@@ -426,6 +426,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public void onDataUpdate(DataResult result) {
+        Log.d("BO_ANDROID", "Main.onDataUpdate() " + result);
+        
         statusComponent.indicateError(false);
 
         historyController.setRealtimeData(result.containsRealtimeData());

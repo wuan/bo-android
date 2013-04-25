@@ -112,4 +112,14 @@ public class Parameters {
         return false;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Parameter(");
+        sb.append("region ").append(region).append(", ");
+        sb.append("duration ").append(intervalDuration).append(", ");
+        sb.append("offset ").append(intervalOffset).append(")");
+        
+        return sb.toString();
+    }
 }

@@ -79,5 +79,4 @@ public class RasterParameters {
 	public int getLatitudeIndex(double latitude) {
 		return (int)((lat_start - latitude) / lat_delta + 0.5);
 	}
-
 }
