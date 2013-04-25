@@ -88,7 +88,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private HistoryController historyController;
     private DataService dataService;
-    private ServiceConnection conn;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -191,16 +190,16 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 PreferenceKey.NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS);
 
         createAndBindToTimerService();
-        
+
         getMapView().invalidate();
     }
 
     private void createAndBindToTimerService() {
-        final Intent service = new Intent(this, DataService.class);
-        
-        startService(service);
-        
-        conn = new ServiceConnection() {
+        final Intent serviceIntent = new Intent(this, DataService.class);
+
+        startService(serviceIntent);
+
+        bindService(serviceIntent, new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                 dataService = ((DataService.DataServiceBinder) iBinder).getService();
@@ -215,9 +214,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             @Override
             public void onServiceDisconnected(ComponentName componentName) {
             }
-        };
-
-        bindService(service, conn, 0);
+        }, 0);
     }
 
     private void setupDebugModeButton() {
@@ -587,7 +584,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                     getWindow().clearFlags(flag);
                 }
                 break;
-
         }
     }
 

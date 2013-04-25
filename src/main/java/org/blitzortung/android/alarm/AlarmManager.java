@@ -253,7 +253,9 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     private void playSoundIfEnabled() {
         if (alarmSoundNotificationSignal != null) {
             Ringtone r = RingtoneManager.getRingtone(context.getApplicationContext(), alarmSoundNotificationSignal);
-            r.play();
+            if (r != null) {
+                r.play();
+            }
         }
     }
 

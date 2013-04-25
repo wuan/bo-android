@@ -44,7 +44,7 @@ public class LocationHandlerTest {
         verify(sharedPreferences, times(1)).registerOnSharedPreferenceChangeListener(locationHandler);
         verify(locationManager, times(1)).addGpsStatusListener(locationHandler);
         verify(locationManager, times(1)).removeUpdates(locationHandler);
-        verify(locationManager, times(1)).requestLocationUpdates(LocationHandler.Provider.NETWORK.getType(), 5000, 0, locationHandler);       
+        verify(locationManager, times(1)).requestLocationUpdates(LocationHandler.Provider.NETWORK.getType(), 10000, 10, locationHandler);       
     }
     
     private void setLocationProviderPrefs(String provider) {

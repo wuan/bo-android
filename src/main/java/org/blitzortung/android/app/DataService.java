@@ -17,7 +17,7 @@ import java.util.Set;
 
 public class DataService extends Service implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private Handler handler;
+    private final Handler handler;
 
     private int period;
 
@@ -41,9 +41,20 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
     private final IBinder binder = new DataServiceBinder();
 
+    @SuppressWarnings("UnusedDeclaration")
+    public DataService() {
+        this(new Handler());
+        Log.d("BO_ANDROID", "DataService() created with new handler");
+    }
+
+    protected DataService(Handler handler) {
+        Log.d("BO_ANDROID", "DataService() create");
+        this.handler = handler;
+    }
+
     public class DataServiceBinder extends Binder {
         DataService getService() {
-            Log.i("BO_ANDROID", "DataServiceBinder.getService() " + DataService.this);
+            Log.d("BO_ANDROID", "DataServiceBinder.getService() " + DataService.this);
             return DataService.this;
         }
     }
@@ -57,7 +68,6 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         Log.i("BO_ANDROID", "DataService.onCreate()");
         super.onCreate();
 
-        handler = new Handler();
         handler.post(this);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);

@@ -2,9 +2,11 @@ package org.blitzortung.android.alarm;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.location.Location;
 import android.os.Vibrator;
 import com.google.common.collect.Lists;
+import com.xtremelabs.robolectric.Robolectric;
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
 import org.blitzortung.android.alarm.handler.AlarmStatusHandler;
@@ -74,10 +76,14 @@ public class AlarmManagerTest {
     private AlarmManager.AlarmListener alarmListener;
 
     private AlarmManager alarmManager;
+    
+    private Resources resources;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        resources = Robolectric.application.getResources();
 
         long alarmInterval = 600000;
         when(alarmParameters.getAlarmInterval()).thenReturn(alarmInterval);
@@ -90,7 +96,8 @@ public class AlarmManagerTest {
         when(sharedPreferences.getInt(PreferenceKey.ALARM_VIBRATION_SIGNAL.toString(), 3)).thenReturn(3);
         when(sharedPreferences.getString(PreferenceKey.ALARM_SOUND_SIGNAL.toString(), "")).thenReturn("");
         when(alarmStatusHandler.getCurrentActivity(alarmStatus)).thenReturn(alarmResult);
-
+        when(context.getResources()).thenReturn(resources);
+        
         alarmManager = new AlarmManager(locationManager, sharedPreferences, context, vibrator, notificationHandler, alarmObjectFactory, alarmParameters);
         alarmManager.addAlarmListener(alarmListener);
     }
@@ -134,15 +141,15 @@ public class AlarmManagerTest {
     @Test
     public void testCheckStrokesWithAlarmDisabledAndLocationSet() {
         makeAlarmsValid();
-        verify(alarmListener, times(1)).onAlarmResult(any(AlarmResult.class));
-        verify(alarmListener, times(0)).onAlarmClear();
         enableAlarmInPrefs(false);
+        verify(alarmListener, times(1)).onAlarmResult(any(AlarmResult.class));
+        verify(alarmListener, times(1)).onAlarmClear();
 
         alarmManager.checkStrokes(strokes, true);
 
         verify(alarmStatusHandler, times(0)).checkStrokes(alarmStatus, strokes, null);
         verify(alarmListener, times(1)).onAlarmResult(any(AlarmResult.class));
-        verify(alarmListener, times(1)).onAlarmClear();
+        verify(alarmListener, times(2)).onAlarmClear();
     }
 
     @Test
