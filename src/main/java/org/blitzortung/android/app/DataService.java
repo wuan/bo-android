@@ -37,7 +37,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
     private DataHandler dataHandler;
 
-    private TimerUpdateListener listener;
+    private DataServiceStatusListener listener;
 
     private final IBinder binder = new DataServiceBinder();
 
@@ -48,8 +48,8 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         }
     }
 
-    public interface TimerUpdateListener {
-        public void onTimerUpdate(String timerStatus);
+    public interface DataServiceStatusListener {
+        public void onDataServiceStatusUpdate(String dataServiceStatus);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
             }
 
             if (!backgroundOperation && listener != null) {
-                listener.onTimerUpdate(String.format("%d/%ds", currentPeriod - (currentSecond - lastUpdate), currentPeriod));
+                listener.onDataServiceStatusUpdate(String.format("%d/%ds", currentPeriod - (currentSecond - lastUpdate), currentPeriod));
             }
         }
         // Schedule the next update
@@ -143,7 +143,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     }
 
 
-    public void setListener(TimerUpdateListener listener) {
+    public void setListener(DataServiceStatusListener listener) {
         this.listener = listener;
     }
 

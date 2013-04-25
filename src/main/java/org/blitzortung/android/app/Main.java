@@ -55,7 +55,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, DataService.TimerUpdateListener,
+public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, DataService.DataServiceStatusListener,
         AlarmManager.AlarmListener {
 
     protected StatusComponent statusComponent;
@@ -591,8 +591,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         }
     }
 
-    public void onTimerUpdate(String timerStatus) {
-        setStatusString(timerStatus);
+    public void onDataServiceStatusUpdate(String dataServiceStatus) {
+        setStatusString(dataServiceStatus);
     }
 
     protected void setHistoricStatusString() {
