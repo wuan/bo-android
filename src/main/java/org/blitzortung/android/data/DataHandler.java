@@ -165,6 +165,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             case RASTER_SIZE:
                 preferencesRasterBaselength = Integer.parseInt(sharedPreferences.getString(key.toString(), "10000"));
                 parameters.setRasterBaselength(preferencesRasterBaselength);
+                notifyDataReset();
                 break;
 
             case INTERVAL_DURATION:

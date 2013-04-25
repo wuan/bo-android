@@ -72,6 +72,16 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         return backgroundOperation;
     }
 
+    public void reloadData() {
+        if (isEnabled()) {
+            restart();
+        } else {
+            Set<DataChannel> updateTargets = new HashSet<DataChannel>();
+            updateTargets.add(DataChannel.STROKES);
+            dataHandler.updateData(updateTargets);
+        }
+    }
+
     public class DataServiceBinder extends Binder {
         DataService getService() {
             Log.d("BO_ANDROID", "DataServiceBinder.getService() " + DataService.this);
@@ -152,10 +162,10 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     public void onResume() {
         backgroundOperation = false;
         if (dataHandler.isRealtime()) {
-            Log.v("BO_ANDROID", "TimerTask: onResume() enable");
+            Log.v("BO_ANDROID", "DataService: onResume() enable");
             enable();
         } else {
-            Log.v("BO_ANDROID", "TimerTask: onResume() do not enable");
+            Log.v("BO_ANDROID", "DataService: onResume() do not enable");
         }
     }
 
@@ -163,10 +173,10 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         backgroundOperation = true;
         if (!alarmEnabled || backgroundPeriod == 0) {
             handler.removeCallbacks(this);
-            Log.v("BO_ANDROID", "TimerTask: onPause() remove callback");
+            Log.v("BO_ANDROID", "DataService: onPause() remove callback");
             return true;
         }
-        Log.v("BO_ANDROID", "TimerTask: onPause() keep callback");
+        Log.v("BO_ANDROID", "DataService: onPause() keep callback");
         return false;
     }
 

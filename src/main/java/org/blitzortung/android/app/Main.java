@@ -1,7 +1,10 @@
 package org.blitzortung.android.app;
 
 import android.app.Dialog;
-import android.content.*;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -32,7 +35,6 @@ import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.app.view.components.StatusComponent;
-import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Parameters;
@@ -262,7 +264,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                         }
 
                         float diameter = 2 * radius;
-
                         animateToLocationAndVisibleSize(currentLocation.getLongitude(), currentLocation.getLatitude(), diameter);
                     }
 
@@ -491,7 +492,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public void onDataReset() {
-        dataService.restart();
+        dataService.reloadData();
         clearData = true;
 
         for (DataListener listener : dataListeners) {
@@ -567,17 +568,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             case MAP_FADE:
                 int alphaValue = Math.round(255.0f / 100.0f * sharedPreferences.getInt(key.toString(), 40));
                 fadeOverlay.setAlpha(alphaValue);
-                break;
-
-            case RASTER_SIZE:
-            case REGION:
-                if (dataService.isEnabled()) {
-                    dataService.restart();
-                } else {
-                    Set<DataChannel> updateTargets = new HashSet<DataChannel>();
-                    updateTargets.add(DataChannel.STROKES);
-                    dataHandler.updateData(updateTargets);
-                }
                 break;
 
             case DO_NOT_SLEEP:

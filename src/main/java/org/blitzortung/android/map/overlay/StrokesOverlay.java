@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.text.format.DateFormat;
+import android.util.Log;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Projection;
@@ -116,6 +117,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
     }
 
     public void addStrokes(List<AbstractStroke> strokes) {
+        Log.v("BO_ANDROID", "StrokesOverlay.addStrokes() #" + strokes.size());
         for (AbstractStroke stroke : strokes) {
             this.strokes.add(new StrokeOverlayItem(stroke));
         }
