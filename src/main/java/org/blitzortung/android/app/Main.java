@@ -406,7 +406,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         Log.d("BO_ANDROID", "Main.onPause()");
 
-        if (dataService.onPause()) {
+        if (dataService == null || dataService.onPause()) {
             locationHandler.onPause();
         }
 
