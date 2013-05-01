@@ -40,7 +40,7 @@ public class LocationHandlerTest {
     
     @Test
     public void testInitialization() {
-        verify(sharedPreferences, times(1)).getString(PreferenceKey.LOCATION_MODE.toString(), LocationHandler.Provider.NETWORK.toString());
+        verify(sharedPreferences, times(1)).getString(PreferenceKey.LOCATION_MODE.toString(), LocationHandler.Provider.NETWORK.getType());
         verify(sharedPreferences, times(1)).registerOnSharedPreferenceChangeListener(locationHandler);
         verify(locationManager, times(1)).addGpsStatusListener(locationHandler);
         verify(locationManager, times(1)).removeUpdates(locationHandler);
@@ -48,6 +48,6 @@ public class LocationHandlerTest {
     }
     
     private void setLocationProviderPrefs(String provider) {
-        when(sharedPreferences.getString(PreferenceKey.LOCATION_MODE.toString(), LocationHandler.Provider.NETWORK.toString())).thenReturn(provider);
+        when(sharedPreferences.getString(PreferenceKey.LOCATION_MODE.toString(), LocationHandler.Provider.NETWORK.getType())).thenReturn(provider);
     }
 }

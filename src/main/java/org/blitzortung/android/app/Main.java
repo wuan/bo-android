@@ -261,10 +261,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
                         final AlarmResult alarmResult = alarmManager.getAlarmResult();
                         if (alarmResult != null) {
-                            radius = Math.max(Math.min(alarmResult.getClosestStrokeDistance() * 1.2f, radius), 50f) * 2f;
+                            radius = Math.max(Math.min(alarmResult.getClosestStrokeDistance() * 1.2f, radius), 50f);
                         }
 
-                        float diameter = 2 * radius;
+                        float diameter = 1.5f * 2f * radius;
                         animateToLocationAndVisibleSize(currentLocation.getLongitude(), currentLocation.getLatitude(), diameter);
                     }
 
