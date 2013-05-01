@@ -59,7 +59,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     private float notificationDistanceLimit;
 
     private float signalingDistanceLimit;
-    
+
     private long signalingLastTimestamp;
 
     public AlarmManager(LocationHandler locationHandler, SharedPreferences preferences, Context context, Vibrator vibrator, NotificationHandler notificationHandler, AlarmObjectFactory alarmObjectFactory, AlarmParameters alarmParameters) {
@@ -132,24 +132,18 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     public void onLocationChanged(Location location) {
         this.location = location;
 
-        if (location == null) {
-            invalidateAlarm();
-        } else {
-            if (lastStrokes != null) {
-                checkStrokes(lastStrokes, true);
-            }
-        }
+        checkStrokes(lastStrokes, true);
     }
 
     public boolean isAlarmEnabled() {
         return alarmEnabled;
     }
 
-    public void checkStrokes(Collection<? extends Stroke> strokes, boolean areRealtimeStrokes) {
-        boolean currentAlarmValid = isAlarmEnabled() && location != null && areRealtimeStrokes;
-        lastStrokes = areRealtimeStrokes ? strokes : null;
+    public void checkStrokes(Collection<? extends Stroke> strokes, boolean strokesAreInRealtime) {
+        boolean currentAlarmIsValid = isAlarmEnabled() && location != null && strokes != null && strokesAreInRealtime;
+        lastStrokes = strokesAreInRealtime ? strokes : null;
 
-        if (currentAlarmValid) {
+        if (currentAlarmIsValid) {
             alarmValid = true;
             alarmStatusHandler.checkStrokes(alarmStatus, strokes, location);
             processResult(getAlarmResult());
@@ -198,7 +192,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
         final float[] ranges = alarmParameters.getRangeSteps();
         return ranges[ranges.length - 1];
     }
-    
+
     private void invalidateAlarm() {
         boolean previousAlarmValidState = alarmValid;
         alarmValid = false;
@@ -224,14 +218,14 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     private void processResult(AlarmResult alarmResult) {
         if (alarmResult != null) {
             Log.v("BO_ANDROID", "AlarmManager: processResult");
-            
+
             long currentTimestamp = System.currentTimeMillis() / 1000;
             if (alarmResult.getClosestStrokeDistance() <= signalingDistanceLimit && signalingLastTimestamp + 15 < currentTimestamp) {
                 vibrateIfEnabled();
                 playSoundIfEnabled();
                 signalingLastTimestamp = currentTimestamp;
             }
-            
+
             if (alarmResult.getClosestStrokeDistance() <= notificationDistanceLimit) {
                 Log.v("BO_ANDROID", "AlarmManager: processResult sendNotification");
                 notificationHandler.sendNotification(context.getResources().getString(R.string.activity) + ": " + getTextMessage(notificationDistanceLimit));

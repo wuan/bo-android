@@ -74,8 +74,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         locationManager.addGpsStatusListener(this);
         location = new Location("");
-        location.setLongitude(Double.NaN);
-        location.setLatitude(Double.NaN);
+        invalidateLocation();
 
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.LOCATION_MODE);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
@@ -97,8 +96,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
 
     @Override
     public void onProviderDisabled(String s) {
-        location.setLongitude(Double.NaN);
-        location.setLatitude(Double.NaN);
+        invalidateLocation();
     }
 
     @Override
@@ -151,15 +149,19 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
             updateManualLatitude(sharedPreferences);
             location.setProvider(newProvider.getType());
         } else {
-            invalidateLocation();
+            invalidateLocationAndSendLocationUpdate();
         }
         enableProvider(newProvider);
+    }
+
+    private void invalidateLocationAndSendLocationUpdate() {
+        sendLocationUpdateToListeners(null);
+        invalidateLocation();
     }
 
     private void invalidateLocation() {
         location.setLongitude(Double.NaN);
         location.setLatitude(Double.NaN);
-        sendUpdate(null);
     }
 
     private void enableProvider(Provider newProvider) {
@@ -171,10 +173,10 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     }
 
     private void sendLocationUpdate() {
-        sendUpdate(locationIsValid() ? location : null);
+        sendLocationUpdateToListeners(locationIsValid() ? location : null);
     }
 
-    private void sendUpdate(Location location) {
+    private void sendLocationUpdateToListeners(Location location) {
         for (Listener listener : listeners) {
             listener.onLocationChanged(location);
         }
@@ -188,7 +190,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     }
 
     private boolean locationIsValid() {
-        return !Double.isNaN(location.getLongitude()) && !Double.isNaN(location.getLatitude());
+        return location != null && !Double.isNaN(location.getLongitude()) && !Double.isNaN(location.getLatitude());
     }
 
     public void removeUpdates(LocationHandler.Listener target) {
@@ -201,19 +203,20 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
         if (provider == Provider.GPS) {
             switch (event) {
                 case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
-                    Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    if (loc != null) {
-                        long secondsElapsedSinceLastFix = (System.currentTimeMillis() - loc.getTime()) / 1000;
+                    Location lastKnownGpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    if (lastKnownGpsLocation != null) {
+                        long secondsElapsedSinceLastFix = (System.currentTimeMillis() - lastKnownGpsLocation.getTime()) / 1000;
 
                         if (secondsElapsedSinceLastFix < 10) {
                             if (!locationIsValid()) {
+                                location.set(lastKnownGpsLocation);
                                 onLocationChanged(location);
                             }
                             break;
                         }
                     }
                     if (locationIsValid()) {
-                        invalidateLocation();
+                        invalidateLocationAndSendLocationUpdate();
                     }
                     break;
             }
