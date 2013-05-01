@@ -107,7 +107,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     private void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey key) {
         switch (key) {
             case LOCATION_MODE:
-                Provider newProvider = Provider.fromString(sharedPreferences.getString(key.toString(), Provider.NETWORK.toString()));
+                Provider newProvider = Provider.fromString(sharedPreferences.getString(key.toString(), Provider.NETWORK.getType()));
                 if (newProvider != provider) {
                     updateProvider(newProvider, sharedPreferences);
                 }
@@ -165,8 +165,8 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     }
 
     private void enableProvider(Provider newProvider) {
+        locationManager.removeUpdates(this);
         if (newProvider != null && newProvider != Provider.MANUAL) {
-            locationManager.removeUpdates(this);
             locationManager.requestLocationUpdates(newProvider.getType(), provider == Provider.GPS ? 1000 : 10000, 10, this);
         }
         provider = newProvider;

@@ -104,6 +104,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         mapView.setBuiltInZoomControls(true);
 
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
 
