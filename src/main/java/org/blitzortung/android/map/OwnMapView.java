@@ -3,8 +3,12 @@ package org.blitzortung.android.map;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
+import com.apple.eawt.event.GestureListener;
 import com.google.android.maps.MapView;
+import com.google.android.maps.Projection;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -38,16 +42,41 @@ public class OwnMapView extends MapView {
 		detectAndHandleZoomAction();
 	}
 
+    private long firstTapDownTime;
+    private int tapCount;
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		boolean result = super.onTouchEvent(event);
-		
-		detectAndHandleZoomAction();
+
+        detectAndHandleDoubleTap(event);
+        detectAndHandleZoomAction();
 		
 		return result;
 	}
 
-	protected void detectAndHandleZoomAction() {
+    private void detectAndHandleDoubleTap(MotionEvent event) {
+        long currentTime = System.currentTimeMillis();
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (currentTime - firstTapDownTime < 400) {
+                tapCount++;
+            } else {
+                firstTapDownTime = currentTime;
+                tapCount = 1;
+            }
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            if (tapCount == 2 && currentTime - firstTapDownTime < 400) {
+                int x = (int)event.getX(), y = (int)event.getY();;
+                Projection p = getProjection();
+                getController().animateTo(p.fromPixels(x, y));
+                getController().zoomIn();
+
+                firstTapDownTime = 0;
+            }
+        }
+    }
+
+    protected void detectAndHandleZoomAction() {
         if (getProjection() != null) {
             float pixelSize = getProjection().metersToEquatorPixels(1000.0f);
 
