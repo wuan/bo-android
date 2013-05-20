@@ -1,6 +1,7 @@
 package org.blitzortung.android.alarm.handler;
 
 import android.location.Location;
+import android.util.Log;
 import org.blitzortung.android.alarm.AlarmParameters;
 import org.blitzortung.android.alarm.AlarmResult;
 import org.blitzortung.android.alarm.object.AlarmSector;
@@ -95,7 +96,8 @@ public class AlarmStatusHandler {
                 return sector;
             }
         }
-        throw new IllegalStateException(String.format(Locale.ENGLISH, "no sector for bearing %.2f found", bearing));
+        Log.w("BO_ANDROID", String.format(Locale.ENGLISH, "AlarmStatusHandler.getSectorForBearing(): no sector for bearing %.2f found", bearing));
+        return null;
     }
 
     private boolean sectorContainsBearing(AlarmSector sector, double bearing) {
