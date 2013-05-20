@@ -50,10 +50,10 @@ public class OwnMapActivityTest {
         when(ownMapActivity.getLayoutInflater()).thenReturn(layoutInflater);
         when(layoutInflater.inflate(R.layout.popup, ownMapView, false)).thenReturn(popUp);
 
-        assertThat(ownMapActivity.getPopup(), is(sameInstance(popUp)));
+        assertThat(ownMapView.getPopup(), is(sameInstance(popUp)));
         verify(layoutInflater, times(1)).inflate(R.layout.popup, ownMapView, false);
 
-        assertThat(ownMapActivity.getPopup(), is(sameInstance(popUp)));
+        assertThat(ownMapView.getPopup(), is(sameInstance(popUp)));
         verify(layoutInflater, times(1)).inflate(R.layout.popup, ownMapView, false);
     }
 

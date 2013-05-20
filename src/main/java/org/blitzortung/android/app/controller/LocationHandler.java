@@ -8,6 +8,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
+import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.view.PreferenceKey;
 
 import java.util.HashMap;
@@ -16,6 +18,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class LocationHandler implements SharedPreferences.OnSharedPreferenceChangeListener, LocationListener, GpsStatus.Listener {
+
+    private final Context context;
 
     public static interface Listener {
         void onLocationChanged(Location location);
@@ -71,6 +75,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     private Set<Listener> listeners = new HashSet<Listener>();
 
     public LocationHandler(Context context, SharedPreferences sharedPreferences) {
+        this.context = context;
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         locationManager.addGpsStatusListener(this);
         location = new Location("");
@@ -167,6 +172,11 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     private void enableProvider(Provider newProvider) {
         locationManager.removeUpdates(this);
         if (newProvider != null && newProvider != Provider.MANUAL) {
+            if (!locationManager.getAllProviders().contains(newProvider.getType())) {
+                Toast toast = Toast.makeText(context, String.format(context.getResources().getText(R.string.location_provider_not_available).toString(), newProvider.toString()), 5000);
+                toast.show();
+                return;
+            }
             locationManager.requestLocationUpdates(newProvider.getType(), provider == Provider.GPS ? 1000 : 10000, 10, this);
         }
         provider = newProvider;

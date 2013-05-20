@@ -270,4 +270,5 @@
     <string name="alarm_vibration_signal">Vibration</string>
     <string name="alarm_audio_signal_summary">Auswahl eines Tonsignals für den Alarm</string>
     <string name="alarm_vibration_signal_summary">Auswahl der Vibrationsdauer für den Alarm</string>
+    <string name="location_provider_not_available">Location-Provider \'%s\' nicht verfügbar</string>
 </resources>

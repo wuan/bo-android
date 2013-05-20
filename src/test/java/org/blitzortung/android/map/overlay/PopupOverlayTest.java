@@ -74,7 +74,7 @@ public class PopupOverlayTest {
         when(activity.getMapView()).thenReturn(mapView);
 
         View popUp = mock(View.class);
-        when(activity.getPopup()).thenReturn(popUp);
+        when(mapView.getPopup()).thenReturn(popUp);
 
         TextView statusText = mock(TextView.class);
         when(popUp.findViewById(R.id.popup_text)).thenReturn(statusText);
@@ -102,7 +102,7 @@ public class PopupOverlayTest {
         when(activity.getMapView()).thenReturn(mapView);
 
         View popUp = mock(View.class);
-        when(activity.getPopup()).thenReturn(popUp);
+        when(mapView.getPopup()).thenReturn(popUp);
 
         assertFalse(popupOverlay.clearPopup());
 

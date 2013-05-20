@@ -3,12 +3,12 @@ package org.blitzortung.android.map;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import com.apple.eawt.event.GestureListener;
+import android.view.View;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Projection;
+import org.blitzortung.android.app.R;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,6 +16,8 @@ import java.util.Set;
 public class OwnMapView extends MapView {
 
 	private final Set<ZoomListener> zoomListeners = new HashSet<ZoomListener>();
+
+    private View popUp = null;
 
 	public interface ZoomListener {
 		void onZoom(int zoomLevel);
@@ -66,6 +68,8 @@ public class OwnMapView extends MapView {
             }
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
             if (tapCount == 2 && currentTime - firstTapDownTime < 400) {
+                removeView(getPopup());
+
                 int x = (int)event.getX(), y = (int)event.getY();;
                 Projection p = getProjection();
                 getController().animateTo(p.fromPixels(x, y));
@@ -107,5 +111,12 @@ public class OwnMapView extends MapView {
             ++zoomLevel;
         }
         return zoomLevel - 1;
+    }
+
+    public synchronized View getPopup() {
+        if (popUp == null) {
+            popUp = LayoutInflater.from(getContext()).inflate(R.layout.popup, this, false);
+        }
+        return popUp;
     }
 }
