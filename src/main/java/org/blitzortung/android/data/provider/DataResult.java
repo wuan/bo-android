@@ -134,7 +134,8 @@ public class DataResult implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Result(");
-        sb.append(getStrokes().size()).append(" strokes, ");
+        final List<AbstractStroke> currentStrokes = getStrokes();
+        sb.append(currentStrokes != null ? currentStrokes.size() : 0).append(" strokes, ");
         sb.append(getParameters());
         if (hasRasterParameters()) {
             sb.append(", ").append(getRasterParameters());
