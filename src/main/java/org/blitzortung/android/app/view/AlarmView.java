@@ -13,6 +13,7 @@ import org.blitzortung.android.alarm.object.AlarmSector;
 import org.blitzortung.android.alarm.object.AlarmSectorRange;
 import org.blitzortung.android.alarm.object.AlarmStatus;
 import org.blitzortung.android.app.R;
+import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 
 import java.util.List;
@@ -61,6 +62,8 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
         lines.setStyle(Style.STROKE);
 
         textStyle.setColor(0xff404040);
+        textStyle.setTextSize(ViewHelper.pxFromSp(this, 10));
+        
         background.setColor(0xffb0b0b0);
     }
 

@@ -1,8 +1,8 @@
 package org.blitzortung.android.app.controller;
 
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.RelativeLayout;
+import org.blitzortung.android.app.helper.ViewHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,11 +12,7 @@ public class ButtonColumnHandler<V extends View> {
 
     private List<V> elements;
 
-    private final RelativeLayout parentLayout;
-
-    public ButtonColumnHandler(RelativeLayout parentLayout) {
-        this.parentLayout = parentLayout;
-
+    public ButtonColumnHandler() {
         elements = new ArrayList<V>();
     }
 
@@ -49,8 +45,8 @@ public class ButtonColumnHandler<V extends View> {
             if (element.getVisibility() == View.VISIBLE) {
                 RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                lp.width = (int)pxFromSp(element, 55);
-                lp.height = (int)pxFromSp(element, 55);
+                lp.width = (int) ViewHelper.pxFromSp(element, 55);
+                lp.height = (int) ViewHelper.pxFromSp(element, 55);
                 lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 1);
                 if (previousIndex < 0) {
                     lp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 1);
@@ -63,8 +59,5 @@ public class ButtonColumnHandler<V extends View> {
         }
     }
 
-    private float pxFromSp(V element, float sp) {
-        final DisplayMetrics displayMetrics = element.getContext().getResources().getDisplayMetrics();
-        return sp * displayMetrics.scaledDensity;
-    }
+
 }

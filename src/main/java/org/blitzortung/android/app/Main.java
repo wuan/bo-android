@@ -21,7 +21,6 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.*;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import org.blitzortung.android.alarm.AlarmLabelHandler;
@@ -148,7 +147,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             onAlarmResult(alarmManager.getAlarmResult());
         }
 
-        buttonColumnHandler = new ButtonColumnHandler<ImageButton>((RelativeLayout) findViewById(R.layout.map_overlay));
+        buttonColumnHandler = new ButtonColumnHandler<ImageButton>();
 
         if (Build.VERSION.SDK_INT >= 11) {
 

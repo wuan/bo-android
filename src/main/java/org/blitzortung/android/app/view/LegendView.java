@@ -6,9 +6,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.View;
 import org.blitzortung.android.app.R;
+import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 
@@ -44,8 +44,8 @@ public class LegendView extends View {
     public LegendView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        padding = pxFromSp(4);
-        colorFieldSize = pxFromSp(12);
+        padding = ViewHelper.pxFromSp(this, 4);
+        colorFieldSize = ViewHelper.pxFromSp(this, 12);
 
         foregroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -68,11 +68,6 @@ public class LegendView extends View {
         textWidth = (float)Math.ceil(textPaint.measureText(intervalDuration > 100 ? "< 100min" : "< 10min"));
     }
 
-    private float pxFromSp(float sp) {
-        final DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        return sp * displayMetrics.scaledDensity;
-    }
-
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
@@ -90,8 +85,6 @@ public class LegendView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
-        //super.onDraw(canvas);
-
         if (strokesOverlay != null) {
             ColorHandler colorHandler = strokesOverlay.getColorHandler();
             int minutesPerColor = strokesOverlay.getIntervalDuration() / colorHandler.getNumberOfColors();

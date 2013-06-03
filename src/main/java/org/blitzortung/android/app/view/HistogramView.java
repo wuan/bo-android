@@ -5,9 +5,9 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.View;
 import org.blitzortung.android.app.R;
+import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
@@ -45,8 +45,8 @@ public class HistogramView extends View implements DataListener {
     public HistogramView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        padding = pxFromDp(4);
-        textSize = pxFromSp(12);
+        padding = ViewHelper.pxFromDp(this, 4);
+        textSize = ViewHelper.pxFromSp(this, 12);
 
         foregroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -60,17 +60,6 @@ public class HistogramView extends View implements DataListener {
         textPaint.setTextAlign(Paint.Align.RIGHT);
 
         backgroundRect = new RectF();
-    }
-
-    private float pxFromDp(float dp)
-    {
-        return dp * getContext().getResources().getDisplayMetrics().density;
-    }
-
-    private float pxFromSp(float dp)
-    {
-        final DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-        return dp * displayMetrics.scaledDensity;
     }
 
     @Override
