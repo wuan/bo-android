@@ -61,7 +61,6 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
         lines.setStyle(Style.STROKE);
 
         textStyle.setColor(0xff404040);
-
         background.setColor(0xffb0b0b0);
     }
 
