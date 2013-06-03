@@ -30,8 +30,6 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
             android:layout_gravity="fill_horizontal|fill_vertical">
 
             <ImageView
