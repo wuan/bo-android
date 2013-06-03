@@ -90,6 +90,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private HistoryController historyController;
     private DataService dataService;
+    private ServiceConnection serviceConnection;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -202,7 +203,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         startService(serviceIntent);
 
-        bindService(serviceIntent, new ServiceConnection() {
+        serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                 dataService = ((DataService.DataServiceBinder) iBinder).getService();
@@ -217,7 +218,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             @Override
             public void onServiceDisconnected(ComponentName componentName) {
             }
-        }, 0);
+        };
+        
+        bindService(serviceIntent, serviceConnection, 0);
     }
 
     private void setupDebugModeButton() {
@@ -415,6 +418,12 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         if (preferences.getBoolean(PreferenceKey.SHOW_LOCATION.toString(), false)) {
             ownLocationOverlay.disableOwnLocation();
         }
+    }
+    
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbindService(serviceConnection);
     }
 
     @Override
