@@ -1,5 +1,6 @@
 package org.blitzortung.android.app.controller;
 
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -46,11 +47,10 @@ public class ButtonColumnHandler<V extends View> {
         for (int currentIndex = 0; currentIndex < elements.size(); currentIndex++) {
             V element = elements.get(currentIndex);
             if (element.getVisibility() == View.VISIBLE) {
-                //RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) element.getLayoutParams();
                 RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                lp.width = 70;
-                lp.height = 70;
+                lp.width = (int)pxFromSp(element, 55);
+                lp.height = (int)pxFromSp(element, 55);
                 lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 1);
                 if (previousIndex < 0) {
                     lp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 1);
@@ -61,5 +61,10 @@ public class ButtonColumnHandler<V extends View> {
                 previousIndex = currentIndex;
             }
         }
+    }
+
+    private float pxFromSp(V element, float sp) {
+        final DisplayMetrics displayMetrics = element.getContext().getResources().getDisplayMetrics();
+        return sp * displayMetrics.scaledDensity;
     }
 }
