@@ -3,6 +3,7 @@ package org.blitzortung.android.map;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,67 +19,58 @@ public class OwnMapView extends MapView {
 	private final Set<ZoomListener> zoomListeners = new HashSet<ZoomListener>();
 
     private View popUp = null;
+    
+    private GestureDetector gestureDetector;
 
-	public interface ZoomListener {
+    public interface ZoomListener {
 		void onZoom(int zoomLevel);
 	}
 
     public OwnMapView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public OwnMapView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        init();
     }
 
 	public OwnMapView(Context context, String apiKey) {
 		super(context, apiKey);
-	}
+        init();
+    }
 
-	private float oldPixelSize = -1;
-
-	@Override
-	public void dispatchDraw(Canvas canvas) {
-		super.dispatchDraw(canvas);
-
-		detectAndHandleZoomAction();
-	}
-
-    private long firstTapDownTime;
-    private int tapCount;
-
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		boolean result = super.onTouchEvent(event);
-
-        detectAndHandleDoubleTap(event);
-        detectAndHandleZoomAction();
-		
-		return result;
-	}
-
-    private void detectAndHandleDoubleTap(MotionEvent event) {
-        long currentTime = System.currentTimeMillis();
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            if (currentTime - firstTapDownTime < 400) {
-                tapCount++;
-            } else {
-                firstTapDownTime = currentTime;
-                tapCount = 1;
-            }
-        } else if (event.getAction() == MotionEvent.ACTION_UP) {
-            if (tapCount == 2 && currentTime - firstTapDownTime < 400) {
+    private void init() {
+        gestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDoubleTap(MotionEvent event) {
                 removeView(getPopup());
 
                 int x = (int)event.getX(), y = (int)event.getY();;
                 Projection p = getProjection();
                 getController().animateTo(p.fromPixels(x, y));
                 getController().zoomIn();
-
-                firstTapDownTime = 0;
+                return true;
             }
-        }
+        });
     }
+
+    private float oldPixelSize = -1;
+
+	@Override
+	public void dispatchDraw(Canvas canvas) {
+		detectAndHandleZoomAction();
+	}
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		boolean result = super.onTouchEvent(event);
+
+        gestureDetector.onTouchEvent(event);
+        
+        return result;
+	}
 
     protected void detectAndHandleZoomAction() {
         if (getProjection() != null) {
