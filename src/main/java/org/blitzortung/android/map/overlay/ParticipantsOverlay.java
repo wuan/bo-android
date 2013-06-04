@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
+import android.util.Log;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.data.beans.Participant;
 import org.blitzortung.android.data.beans.Participant.State;
@@ -67,6 +68,7 @@ public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> im
     }
 
     public void setParticipants(List<Participant> stations) {
+        Log.v("BO_ANDROID", String.format("ParticipantsOverlay.setParticipants() # %d, size %d", stations.size(), shapeSize));
         items.clear();
         for (Participant station : stations) {
             items.add(new ParticipantOverlayItem(station));
@@ -87,7 +89,6 @@ public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> im
     }
 
     public void refresh() {
-
         int[] colors = colorHandler.getColors();
 
         shapes.clear();

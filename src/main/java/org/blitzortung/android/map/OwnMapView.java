@@ -60,7 +60,9 @@ public class OwnMapView extends MapView {
 
 	@Override
 	public void dispatchDraw(Canvas canvas) {
-		detectAndHandleZoomAction();
+        super.dispatchDraw(canvas);
+        
+        detectAndHandleZoomAction();
 	}
 
 	@Override
