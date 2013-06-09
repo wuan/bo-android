@@ -3,7 +3,6 @@ package org.blitzortung.android.data.beans;
 import android.graphics.Point;
 import android.graphics.RectF;
 import com.google.android.maps.Projection;
-import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.data.Coordsys;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -87,9 +87,8 @@ public class RasterParametersTest {
         verify(projection, times(1)).toPixels(eq(Coordsys.toMapCoords(lon_start, lat_start)), any(Point.class));
         verify(projection, times(1)).toPixels(eq(Coordsys.toMapCoords(lon_start + lon_count * lon_delta, lat_start - lat_count * lat_delta)), any(Point.class));
 
-        // TODO RectF is not created correctly through Robolectric
-        assertThat(rect.height(), is(0f));
-        assertThat(rect.width(), is(0f));
+        assertThat(rect.height(), is(-10f));
+        assertThat(rect.width(), is(10f));
     }
 
     @Test

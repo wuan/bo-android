@@ -1,8 +1,6 @@
 package org.blitzortung.android.map.overlay.color;
 
 import android.content.SharedPreferences;
-import com.xtremelabs.robolectric.RobolectricTestRunner;
-import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.TimeIntervalWithOffset;
 import org.junit.Before;
@@ -10,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;

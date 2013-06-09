@@ -1,6 +1,5 @@
 package org.blitzortung.android.data.beans;
 
-import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Before;
@@ -10,6 +9,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -30,7 +30,7 @@ public class ParticipantTest {
     public void setUp() throws JSONException {
         MockitoAnnotations.initMocks(this);
 
-        when(jsonArray.getString(1)).thenReturn("<name>");
+        when(jsonArray.getString(1)).thenReturn("name");
         when(jsonArray.getDouble(3)).thenReturn(11.0);
         when(jsonArray.getDouble(4)).thenReturn(49.0);
 
@@ -40,7 +40,7 @@ public class ParticipantTest {
     @Test
     public void testConstruct()
     {
-        assertThat(participant.getName(), is("<name>"));
+        assertThat(participant.getName(), is("name"));
         assertThat(participant.getLongitude(), is(11.0f));
         assertThat(participant.getLatitude(), is(49.0f));
         assertThat(participant.getState(), is(Participant.State.ON));
@@ -48,7 +48,7 @@ public class ParticipantTest {
 
     @Test
     public void testExceptionHandlingDuringConstruction() throws JSONException {
-        when(jsonArray.getString(1)).thenThrow(JSONException.class);
+        when(jsonArray.getString(1)).thenThrow(new JSONException("foo"));
 
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("error with JSON format while parsing participants data");
@@ -62,7 +62,7 @@ public class ParticipantTest {
 
         participant = new Participant(jsonArray);
 
-        assertThat(participant.getName(), is("<name>"));
+        assertThat(participant.getName(), is("name"));
         assertThat(participant.getLongitude(), is(11.0f));
         assertThat(participant.getLatitude(), is(49.0f));
         assertThat(participant.getState(), is(Participant.State.ON));
@@ -75,7 +75,7 @@ public class ParticipantTest {
 
         participant = new Participant(jsonArray);
 
-        assertThat(participant.getName(), is("<name>"));
+        assertThat(participant.getName(), is("name"));
         assertThat(participant.getLongitude(), is(11.0f));
         assertThat(participant.getLatitude(), is(49.0f));
         assertThat(participant.getOfflineSince(), is(1336826723123l));
@@ -85,9 +85,9 @@ public class ParticipantTest {
     @Test
     public void testConstructFromString()
     {
-        participant = new Participant("x x x <name> x 49.0 11.0 2012-05-12&nbsp;12:45:23.123456789");
+        participant = new Participant("x x x name x 49.0 11.0 2012-05-12&nbsp;12:45:23.123456789");
 
-        assertThat(participant.getName(), is("<name>"));
+        assertThat(participant.getName(), is("name"));
         assertThat(participant.getLongitude(), is(11.0f));
         assertThat(participant.getLatitude(), is(49.0f));
         assertThat(participant.getOfflineSince(), is(1336826723123l));

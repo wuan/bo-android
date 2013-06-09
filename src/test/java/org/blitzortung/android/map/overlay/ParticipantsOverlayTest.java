@@ -9,9 +9,6 @@ import android.preference.PreferenceManager;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.common.collect.Lists;
-import com.xtremelabs.robolectric.RobolectricTestRunner;
-import com.xtremelabs.robolectric.internal.Implementation;
-import com.xtremelabs.robolectric.internal.Implements;
 import org.blitzortung.android.data.beans.Participant;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
 import org.junit.Before;
@@ -19,6 +16,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import java.util.List;
 

@@ -1,12 +1,12 @@
 package org.blitzortung.android.jsonrpc;
 
 import com.google.common.collect.Lists;
-import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -2,12 +2,12 @@ package org.blitzortung.android.map.overlay;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 
 import static org.mockito.Matchers.anyFloat;
 import static org.mockito.Matchers.eq;

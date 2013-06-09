@@ -1,19 +1,20 @@
 package org.blitzortung.android.map;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import com.xtremelabs.robolectric.RobolectricTestRunner;
-import org.blitzortung.android.app.R;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsSame.sameInstance;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.spy;
 
 @RunWith(RobolectricTestRunner.class)
 public class OwnMapActivityTest {
@@ -31,6 +32,13 @@ public class OwnMapActivityTest {
     @Mock
     private OwnMapView ownMapView;
 
+    private LayoutInflater layoutInflater = new LayoutInflater(Robolectric.application.getApplicationContext()) {
+        @Override
+        public LayoutInflater cloneInContext(Context context) {
+            return null;
+        }
+    };
+
     @Before
     public void setUp()
     {
@@ -44,17 +52,9 @@ public class OwnMapActivityTest {
     @Test
     public void testGetPopupInflatesLayoutOnlyOnce()
     {
-        LayoutInflater layoutInflater = mock(LayoutInflater.class);
-        View popUp = mock(View.class);
-
-        when(ownMapActivity.getLayoutInflater()).thenReturn(layoutInflater);
-        when(layoutInflater.inflate(R.layout.popup, ownMapView, false)).thenReturn(popUp);
+        View popUp = ownMapView.getPopup();
 
         assertThat(ownMapView.getPopup(), is(sameInstance(popUp)));
-        verify(layoutInflater, times(1)).inflate(R.layout.popup, ownMapView, false);
-
-        assertThat(ownMapView.getPopup(), is(sameInstance(popUp)));
-        verify(layoutInflater, times(1)).inflate(R.layout.popup, ownMapView, false);
     }
 
     @Test

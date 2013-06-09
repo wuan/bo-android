@@ -1,6 +1,5 @@
 package org.blitzortung.android.data.beans;
 
-import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Before;
@@ -10,6 +9,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -57,7 +57,7 @@ public class DefaultStrokeTest {
 
     @Test
     public void testExceptionHandlingDuringConstruction() throws JSONException {
-        when(jsonArray.getInt(0)).thenThrow(JSONException.class);
+        when(jsonArray.getInt(0)).thenThrow(new JSONException("foo"));
 
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("error with JSON format while parsing stroke data");

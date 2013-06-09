@@ -1,7 +1,5 @@
 package org.blitzortung.android.app;
 
-import android.widget.TextView;
-import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.app.view.components.StatusComponent;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.junit.Before;
@@ -10,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;

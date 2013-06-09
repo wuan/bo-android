@@ -8,9 +8,6 @@ import android.location.Location;
 import android.preference.PreferenceManager;
 import com.google.android.maps.Overlay;
 import com.google.common.collect.Lists;
-import com.xtremelabs.robolectric.RobolectricTestRunner;
-import com.xtremelabs.robolectric.internal.Implementation;
-import com.xtremelabs.robolectric.internal.Implements;
 import org.blitzortung.android.app.controller.LocationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.map.OwnMapView;
@@ -19,14 +16,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.shadows.ShadowPreferenceManager;
 
 import java.util.List;
 
-import static com.xtremelabs.robolectric.Robolectric.bindShadowClass;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
-
 import static org.junit.matchers.JUnitMatchers.hasItem;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -34,32 +34,21 @@ import static org.mockito.Mockito.*;
 @RunWith(RobolectricTestRunner.class)
 public class OwnLocationOverlayTest {
 
-
-    @Implements(PreferenceManager.class)
-    private static class ShadowPreferenceManager {
-
-        @Implementation
-        public static SharedPreferences getDefaultSharedPreferences(Context context) {
-            return context.getSharedPreferences("", 0);
-        }
-
-    }
     private OwnLocationOverlay ownLocationOverlay;
 
     @Mock
-    Context context;
+    private Context context;
 
     @Mock
-    Resources resources;
+    private Resources resources;
 
     @Mock
-    OwnMapView mapView;
+    private OwnMapView mapView;
 
     @Mock
-    LocationHandler locationHandler;
+    private LocationHandler locationHandler;
 
-    @Mock
-    SharedPreferences sharedPreferences;
+    private SharedPreferences sharedPreferences;
 
     private final List<Overlay> overlays = Lists.newArrayList();
 
@@ -68,11 +57,12 @@ public class OwnLocationOverlayTest {
     {
         MockitoAnnotations.initMocks(this);
 
-        bindShadowClass(ShadowPreferenceManager.class);
+        sharedPreferences = ShadowPreferenceManager.getDefaultSharedPreferences(Robolectric.application);
 
         when(context.getSystemService(Context.LOCATION_SERVICE)).thenReturn(locationHandler);
         when(context.getSharedPreferences(anyString(), anyInt())).thenReturn(sharedPreferences);
         when(context.getResources()).thenReturn(resources);
+        when(context.getApplicationContext()).thenReturn(Robolectric.application);
         when(mapView.getOverlays()).thenReturn(overlays);
 
         ownLocationOverlay = new OwnLocationOverlay(context, locationHandler, mapView);
@@ -144,7 +134,7 @@ public class OwnLocationOverlayTest {
     }
     
     private void enableOwnLocation() {
-        when(sharedPreferences.getBoolean(PreferenceKey.SHOW_LOCATION.toString(), false)).thenReturn(true);
+        sharedPreferences.edit().putBoolean(PreferenceKey.SHOW_LOCATION.toString(), true).commit();
         ownLocationOverlay.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.SHOW_LOCATION.toString());
     }
 

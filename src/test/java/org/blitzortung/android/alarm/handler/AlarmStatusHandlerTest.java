@@ -2,7 +2,6 @@ package org.blitzortung.android.alarm.handler;
 
 import android.location.Location;
 import com.google.common.collect.Lists;
-import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.alarm.AlarmParameters;
 import org.blitzortung.android.alarm.AlarmResult;
 import org.blitzortung.android.alarm.object.AlarmSector;
@@ -16,6 +15,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -48,7 +48,6 @@ public class AlarmStatusHandlerTest {
     private MeasurementSystem measurementSystem = MeasurementSystem.METRIC;
     
     private AlarmStatusHandler alarmStatusHandler;
-    
 
     @Before
     public void setUp() {
@@ -108,12 +107,10 @@ public class AlarmStatusHandlerTest {
         when(alarmSector.getMinimumSectorBearing()).thenReturn(10.0f);
         when(alarmSector.getMaximumSectorBearing()).thenReturn(15.0f);
 
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("no sector for bearing 15.00 found");
-
         alarmStatusHandler.checkStrokes(alarmStatus, Lists.newArrayList(stroke), location);
-    }
 
+        verify(alarmSectorHandler, times(1)).checkStroke(null, stroke);
+    }
 
     @Test
     public void testCheckStrokesWhenBearingIsMinimumBearingOfSpecialSector() {
@@ -163,10 +160,9 @@ public class AlarmStatusHandlerTest {
         when(alarmSector.getMinimumSectorBearing()).thenReturn(170f);
         when(alarmSector.getMaximumSectorBearing()).thenReturn(-170f);
 
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("no sector for bearing -170.00 found");
-
         alarmStatusHandler.checkStrokes(alarmStatus, Lists.newArrayList(stroke), location);
+
+        verify(alarmSectorHandler, times(1)).checkStroke(null, stroke);
     }
 
     @Test

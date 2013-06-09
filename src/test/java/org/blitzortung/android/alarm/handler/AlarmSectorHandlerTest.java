@@ -2,7 +2,6 @@ package org.blitzortung.android.alarm.handler;
 
 import android.location.Location;
 import com.google.common.collect.Lists;
-import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.alarm.AlarmParameters;
 import org.blitzortung.android.alarm.object.AlarmSector;
 import org.blitzortung.android.alarm.object.AlarmSectorRange;
@@ -13,12 +12,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyFloat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
 public class AlarmSectorHandlerTest {

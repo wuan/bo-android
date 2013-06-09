@@ -6,10 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import com.xtremelabs.robolectric.Robolectric;
-import com.xtremelabs.robolectric.RobolectricTestRunner;
-import com.xtremelabs.robolectric.internal.Implementation;
-import com.xtremelabs.robolectric.internal.Implements;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
@@ -17,31 +13,23 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.shadows.ShadowPreferenceManager;
 
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.junit.internal.matchers.IsCollectionContaining.hasItems;
 import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
 public class DataServiceTest {
-
-    @Implements(PreferenceManager.class)
-    public static class ShadowPreferenceManager {
-        private static SharedPreferences preferences = mock(SharedPreferences.class);
-
-        @SuppressWarnings("UnusedDeclaration")
-        @Implementation
-        public static SharedPreferences getDefaultSharedPreferences(Context context) {
-            return preferences;
-        }
-    }
 
     @Mock
     private Handler handler;
@@ -60,18 +48,17 @@ public class DataServiceTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        Robolectric.bindShadowClass(ShadowPreferenceManager.class);
+        sharedPreferences = ShadowPreferenceManager.getDefaultSharedPreferences(Robolectric.application);
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(Robolectric.application);
-        reset(sharedPreferences);
-        
-        when(sharedPreferences.getString(PreferenceKey.QUERY_PERIOD.toString(), "60")).thenReturn("60");
-        when(sharedPreferences.getString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), "0")).thenReturn("0");
-        when(sharedPreferences.getBoolean(PreferenceKey.SHOW_PARTICIPANTS.toString(), true)).thenReturn(true);
-        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(true);
+        sharedPreferences.edit()
+                .putString(PreferenceKey.QUERY_PERIOD.toString(), "60")
+                .putString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), "0")
+                .putBoolean(PreferenceKey.SHOW_PARTICIPANTS.toString(), true)
+                .putBoolean(PreferenceKey.ALARM_ENABLED.toString(), true)
+                .commit();
 
         when(dataHandler.getIntervalDuration()).thenReturn(60);
-        
+
         dataService = new DataService(handler);
         dataService.setDataHandler(dataHandler);
 
@@ -89,24 +76,17 @@ public class DataServiceTest {
     }
 
     @Test
-    public void testInitialization()
-    {
+    public void testInitialization() {
         verify(handler, times(0)).removeCallbacks(any(Runnable.class));
         verify(handler, times(0)).post(dataService);
-        verify(sharedPreferences, times(1)).registerOnSharedPreferenceChangeListener(any(DataService.class));
-        verify(sharedPreferences, times(1)).getString(PreferenceKey.QUERY_PERIOD.toString(), "60");
-        verify(sharedPreferences, times(1)).getString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), "0");
-        verify(sharedPreferences, times(1)).getBoolean(PreferenceKey.SHOW_PARTICIPANTS.toString(), true);
-        verify(sharedPreferences, times(1)).getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false);
-        
+
         assertThat(dataService.getPeriod(), is(60));
         assertThat(dataService.getBackgroundPeriod(), is(0));
         assertFalse(dataService.isEnabled());
     }
 
     @Test
-    public void testRun()
-    {        
+    public void testRun() {
         long actualSecond = System.currentTimeMillis() / 1000;
 
         dataService.run();
@@ -121,8 +101,7 @@ public class DataServiceTest {
         assertThat(dataService.getLastUpdate(), is(actualSecond));
     }
 
-    class TimerListener implements DataService.DataServiceStatusListener
-    {
+    class TimerListener implements DataService.DataServiceStatusListener {
         private String dataServiceStatus;
 
         @Override
@@ -146,7 +125,7 @@ public class DataServiceTest {
     }
 
     @Test
-    public void testOnResumeInRealtime  () {
+    public void testOnResumeInRealtime() {
         when(dataHandler.isRealtime()).thenReturn(true);
 
         dataService.onResume();
@@ -157,12 +136,12 @@ public class DataServiceTest {
         order.verify(handler).post(dataService);
 
         assertTrue(dataService.isEnabled());
-        
+
         assertFalse(dataService.isInBackgroundOperation());
     }
-    
+
     @Test
-    public void testOnResumeInHistoricalDataMode  () {
+    public void testOnResumeInHistoricalDataMode() {
         when(dataHandler.isRealtime()).thenReturn(false);
 
         dataService.onResume();
@@ -196,16 +175,16 @@ public class DataServiceTest {
 
         assertThat(timerListener.getDataServiceStatus(), is("60/60s"));
     }
-    
+
     @Test
     public void testEnable() {
         dataService.enable();
 
         InOrder order = inOrder(handler);
-        
+
         order.verify(handler).removeCallbacks(dataService);
         order.verify(handler).post(dataService);
-        
+
         assertTrue(dataService.isEnabled());
     }
 }

@@ -1,14 +1,14 @@
 package org.blitzortung.android.data.provider;
 
 import com.google.common.collect.Lists;
-import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.DefaultStroke;
 import org.blitzortung.android.data.beans.Participant;
 import org.blitzortung.android.data.beans.RasterParameters;
-import org.blitzortung.android.data.beans.DefaultStroke;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import java.util.List;
 

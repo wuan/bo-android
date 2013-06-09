@@ -1,10 +1,10 @@
 package org.blitzortung.android.alarm;
 
-import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;

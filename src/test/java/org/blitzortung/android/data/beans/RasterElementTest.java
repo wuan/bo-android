@@ -1,6 +1,5 @@
 package org.blitzortung.android.data.beans;
 
-import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Before;
@@ -10,6 +9,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -60,7 +60,7 @@ public class RasterElementTest {
     @Test
     public void testRuntimeExceptionWhenJSONExceptionIsCatched() throws JSONException {
         inputArray = mock(JSONArray.class);
-        when(inputArray.getInt(0)).thenThrow(mock(JSONException.class));
+        when(inputArray.getInt(0)).thenThrow(new JSONException("foo"));
 
         expectedException.expect(RuntimeException.class);
         rasterElement = new RasterElement(rasterParameters, referenceTimestamp, inputArray);

@@ -1,6 +1,5 @@
 package org.blitzortung.android.jsonrpc;
 
-import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricTestRunner;
 
 import java.io.UnsupportedEncodingException;
 
