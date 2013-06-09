@@ -33,7 +33,8 @@ public class StrokeShapeTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        strokeShape = new StrokeShape(width, color);
+        strokeShape = new StrokeShape();
+        strokeShape.update(width, color);
     }
 
     @Test

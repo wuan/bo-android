@@ -42,7 +42,8 @@ public class RasterShapeTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        rasterShape = new RasterShape(topLeft, bottomRight, color, multiplicity, textColor);
+        rasterShape = new RasterShape();
+        rasterShape.update(topLeft, bottomRight, color, multiplicity, textColor);
     }
 
     @Test
@@ -66,7 +67,8 @@ public class RasterShapeTest {
         topLeft = new Point(-4,-4);
         bottomRight = new Point(4,4);
 
-        rasterShape = new RasterShape(topLeft, bottomRight, color, multiplicity, textColor);
+        rasterShape = new RasterShape();
+        rasterShape.update(topLeft, bottomRight, color, multiplicity, textColor);
 
         rasterShape.draw(canvas, paint);
 

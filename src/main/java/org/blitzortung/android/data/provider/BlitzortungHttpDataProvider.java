@@ -1,7 +1,11 @@
 package org.blitzortung.android.data.provider;
 
 import android.util.Log;
-import org.blitzortung.android.data.beans.*;
+import org.blitzortung.android.app.Main;
+import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.DefaultStroke;
+import org.blitzortung.android.data.beans.Participant;
+import org.blitzortung.android.data.beans.RasterParameters;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -13,6 +17,8 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
+
+import static org.blitzortung.android.util.TimeFormat.parseTimestampWithMillisecondsFromFields;
 
 public class BlitzortungHttpDataProvider extends DataProvider {
 	
@@ -42,12 +48,14 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 				String line;
 				while ((line = reader.readLine()) != null) {
 					size += line.length();
-					Stroke stroke = new DefaultStroke(line);
-					if (stroke.getTimestamp() > latestTime && stroke.getTimestamp() >= startTime) {
-						strokes.add(new DefaultStroke(line));
+                    String[] fields = line.split(" ");
+                    long parsedTimestamp = parseTimestampWithMillisecondsFromFields(fields);
+
+                    if (parsedTimestamp > latestTime && parsedTimestamp >= startTime) {
+						strokes.add(new DefaultStroke(parsedTimestamp, fields));
 					}
 				}
-				Log.v("BO_ANDROID",
+				Log.v(Main.LOG_TAG,
 						String.format("BliztortungHttpDataProvider: read %d bytes (%d new strokes) from region %d", size, strokes.size(), region));
 
 				if (strokes.size() > 0)
@@ -64,7 +72,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 
 		return strokes;
 	}
-    
+
     public boolean returnsIncrementalData()
     {
         return latestTime != 0;
@@ -113,10 +121,10 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 					Participant station = new Participant(line);
 					stations.add(station);
                     } catch (NumberFormatException e) {
-                        Log.w("BO_ANDROID", String.format("BlitzortungHttpProvider: error parsing '%s'", line));
+                        Log.w(Main.LOG_TAG, String.format("BlitzortungHttpProvider: error parsing '%s'", line));
                     }
 				}
-				Log.v("BO_ANDROID",
+				Log.v(Main.LOG_TAG,
 						String.format("BlitzortungHttpProvider: read %d bytes (%d stations) from region %d", size, stations.size(), region));
 
 				reader.close();

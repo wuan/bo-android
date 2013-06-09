@@ -9,6 +9,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.view.PreferenceKey;
 
@@ -134,7 +135,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
             location.setLatitude(Double.valueOf(sharedPreferences.getString(PreferenceKey.LOCATION_LATITUDE.toString(), "49.0")));
             sendLocationUpdate();
         } catch (NumberFormatException e) {
-            Log.v("BO_ANDROID", "LocationHandler: bad number format for manual latitude setting");
+            Log.v(Main.LOG_TAG, "LocationHandler: bad number format for manual latitude setting");
         }
     }
 
@@ -143,7 +144,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
             location.setLongitude(Double.valueOf(sharedPreferences.getString(PreferenceKey.LOCATION_LONGITUDE.toString(), "11.0")));
             sendLocationUpdate();
         } catch (NumberFormatException e) {
-            Log.v("BO_ANDROID", "LocationHandler: bad number format for manual longitude setting");
+            Log.v(Main.LOG_TAG, "LocationHandler: bad number format for manual longitude setting");
         }
     }
 

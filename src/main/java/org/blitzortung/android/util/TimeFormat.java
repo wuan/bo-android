@@ -25,6 +25,11 @@ public class TimeFormat {
             throw new IllegalArgumentException(String.format("Unable to parse millisecond time string '%s'", timestampString), e);
         }
 	}
+
+    public static long parseTimestampWithMillisecondsFromFields(String[] fields) {
+        String timeString = fields[0].replace("-", "") + "T" + fields[1];
+        return parseTimeWithMilliseconds(timeString.substring(0, timeString.length() - 6));
+    }
 	
 	public static long parseTime(String timestampString) {
 		try {

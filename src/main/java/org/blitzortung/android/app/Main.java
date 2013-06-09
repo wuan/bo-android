@@ -21,6 +21,7 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.*;
 import android.widget.ImageButton;
+import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import org.blitzortung.android.alarm.AlarmLabelHandler;
@@ -50,14 +51,14 @@ import org.blitzortung.android.map.overlay.OwnLocationOverlay;
 import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, DataService.DataServiceStatusListener,
         AlarmManager.AlarmListener {
+
+    public static final String LOG_TAG = "BO_ANDROID";
 
     protected StatusComponent statusComponent;
 
@@ -93,8 +94,13 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+        try {
+            super.onCreate(savedInstanceState);
+        } catch (NoClassDefFoundError e) {
+            Log.e(Main.LOG_TAG, e.toString());
+            Toast toast = Toast.makeText(getBaseContext(), "bad android version", 1000);
+            toast.show();
+        }
         updatePackageInfo();
 
         setContentView(isDebugBuild() ? R.layout.main_debug : R.layout.main);
@@ -109,10 +115,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         preferences.registerOnSharedPreferenceChangeListener(this);
 
         if (getLastNonConfigurationInstance() == null) {
-            Log.i("BO_ANDROID", "Main.onCreate(): create new persistor");
+            Log.i(Main.LOG_TAG, "Main.onCreate(): create new persistor");
             persistor = new Persistor(this, preferences, pInfo);
         } else {
-            Log.i("BO_ANDROID", "Main.onCreate(): reuse persistor");
+            Log.i(Main.LOG_TAG, "Main.onCreate(): reuse persistor");
             persistor = (Persistor) getLastNonConfigurationInstance();
         }
         persistor.updateContext(this);
@@ -149,31 +155,21 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         buttonColumnHandler = new ButtonColumnHandler<ImageButton>();
 
-        if (Build.VERSION.SDK_INT >= 11) {
+        if (Build.VERSION.SDK_INT >= 14) {
+            ViewConfiguration config = ViewConfiguration.get(this);
 
-            ImageButton menuButton = (ImageButton) findViewById(R.id.menu);
-            menuButton.setVisibility(View.VISIBLE);
-            menuButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    openOptionsMenu();
-                }
-            });
-            buttonColumnHandler.addElement(menuButton);
-
-            //noinspection EmptyCatchBlock
-            try {
-                Method getActionBar = Main.class.getMethod("getActionBar");
-
-                Object actionBar;
-                actionBar = getActionBar.invoke(this);
-
-                Method hide = actionBar.getClass().getMethod("hide");
-                hide.invoke(actionBar);
-
-            } catch (NoSuchMethodException e) {
-            } catch (InvocationTargetException e) {
-            } catch (IllegalAccessException e) {
+            if (!config.hasPermanentMenuKey()) {
+                ImageButton menuButton = (ImageButton) findViewById(R.id.menu);
+                menuButton.setVisibility(View.VISIBLE);
+                menuButton.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        openOptionsMenu();
+                    }
+                });
+                buttonColumnHandler.addElement(menuButton);
             }
+
+            getActionBar().hide();
         }
 
         historyController = new HistoryController(this, dataHandler);
@@ -206,7 +202,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                 dataService = ((DataService.DataServiceBinder) iBinder).getService();
-                Log.i("BO_ANDROID", "Main.ServiceConnection.onServiceConnected() " + dataService);
+                Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + dataService);
                 dataService.setListener(Main.this);
                 dataService.setDataHandler(dataHandler);
                 dataService.restart();
@@ -218,7 +214,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             public void onServiceDisconnected(ComponentName componentName) {
             }
         };
-        
+
         bindService(serviceIntent, serviceConnection, 0);
     }
 
@@ -297,7 +293,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     }
 
     private void animateToLocationAndVisibleSize(double longitude, double latitude, float diameter) {
-        Log.d("BO_ANDROID", String.format("Main.animateAndZoomTo() %.4f, %.4f, %.0fkm", longitude, latitude, diameter));
+        Log.d(Main.LOG_TAG, String.format("Main.animateAndZoomTo() %.4f, %.4f, %.0fkm", longitude, latitude, diameter));
 
         final OwnMapView mapView = getMapView();
         final MapController controller = mapView.getController();
@@ -357,10 +353,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
 
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     @Override
@@ -390,8 +387,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public void onResume() {
         super.onResume();
 
-        Log.d("BO_ANDROID", "Main.onResume()");
-        
+        Log.d(Main.LOG_TAG, "Main.onResume()");
+
         if (dataService != null) {
             dataService.onResume();
         }
@@ -407,7 +404,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public void onPause() {
         super.onPause();
 
-        Log.d("BO_ANDROID", "Main.onPause()");
+        Log.d(Main.LOG_TAG, "Main.onPause()");
 
         if (dataService == null || dataService.onPause()) {
             locationHandler.onPause();
@@ -418,7 +415,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             ownLocationOverlay.disableOwnLocation();
         }
     }
-    
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -438,8 +435,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public void onDataUpdate(DataResult result) {
-        Log.d("BO_ANDROID", "Main.onDataUpdate() " + result);
-        
+        Log.d(Main.LOG_TAG, "Main.onDataUpdate() " + result);
+
         statusComponent.indicateError(false);
 
         historyController.setRealtimeData(result.containsRealtimeData());

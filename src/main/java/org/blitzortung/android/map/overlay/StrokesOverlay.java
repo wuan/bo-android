@@ -5,12 +5,11 @@ import android.graphics.*;
 import android.graphics.Paint.Style;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.Shape;
 import android.text.format.DateFormat;
 import android.util.Log;
-import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Projection;
+import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.data.TimeIntervalWithOffset;
 import org.blitzortung.android.data.beans.AbstractStroke;
@@ -47,14 +46,9 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
 
     private long referenceTime;
 
-    private final Point drawCenter;
-
-    private final Point drawTopLeft;
-
-    private final Point drawBottomRight;
-
     static {
-        Shape shape = new StrokeShape(1, 0);
+        StrokeShape shape = new StrokeShape();
+        shape.update(1, 0);
         DefaultDrawable = new ShapeDrawable(shape);
     }
 
@@ -65,10 +59,6 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         this.colorHandler = colorHandler;
 
         strokes = new ArrayList<StrokeOverlayItem>();
-
-        drawCenter = new Point();
-        drawTopLeft = new Point();
-        drawBottomRight = new Point();
 
         populate();
     }
@@ -117,13 +107,14 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
     }
 
     public void addStrokes(List<AbstractStroke> strokes) {
-        Log.v("BO_ANDROID", "StrokesOverlay.addStrokes() #" + strokes.size());
+        Log.v(Main.LOG_TAG, "StrokesOverlay.addStrokes() #" + strokes.size());
         for (AbstractStroke stroke : strokes) {
             this.strokes.add(new StrokeOverlayItem(stroke));
         }
-
+        Log.v(Main.LOG_TAG, "StrokesOverlay.addStrokes() added");
         setLastFocusedIndex(-1);
         populate();
+        Log.v(Main.LOG_TAG, "StrokesOverlay.addStrokes() done");
     }
 
     public void expireStrokes() {
@@ -144,9 +135,9 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
     }
 
     public void clear() {
+        setLastFocusedIndex(-1);
         clearPopup();
         strokes.clear();
-        setLastFocusedIndex(-1);
         populate();
     }
 
@@ -173,7 +164,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
             int section = colorHandler.getColorSection(now, item.getTimestamp(), this);
 
             if (hasRasterParameters() || current_section != section) {
-                drawable = getDrawable(item, section, colorHandler);
+                drawable = updateAndReturnDrawable(item, section, colorHandler);
             }
 
             item.setMarker(drawable);
@@ -181,33 +172,14 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
     }
 
     // VisibleForTesting
-    protected Drawable getDrawable(StrokeOverlayItem item, int section, ColorHandler colorHandler) {
+    protected Drawable updateAndReturnDrawable(StrokeOverlayItem item, int section, ColorHandler colorHandler) {
+        final Projection projection = getActivity().getMapView().getProjection();
+        final int color = colorHandler.getColor(section);
+        final int textColor = colorHandler.getTextColor();
 
-        Shape shape;
+        item.updateShape(getRasterParameters(), projection, color, textColor, zoomLevel);
 
-        Projection projection = getActivity().getMapView().getProjection();
-
-        int color = colorHandler.getColor(section);
-
-        if (hasRasterParameters()) {
-            float lon_delta = getRasterParameters().getLongitudeDelta() / 2.0f * 1e6f;
-            float lat_delta = getRasterParameters().getLatitudeDelta() / 2.0f * 1e6f;
-            GeoPoint geoPoint = item.getPoint();
-            Point center = projection.toPixels(geoPoint, drawCenter);
-            Point topLeft = projection.toPixels(new GeoPoint(
-                    (int) (geoPoint.getLatitudeE6() + lat_delta),
-                    (int) (geoPoint.getLongitudeE6() - lon_delta)), drawTopLeft);
-            Point bottomRight = projection.toPixels(new GeoPoint(
-                    (int) (geoPoint.getLatitudeE6() - lat_delta),
-                    (int) (geoPoint.getLongitudeE6() + lon_delta)), drawBottomRight);
-            topLeft.offset(-center.x, -center.y);
-            bottomRight.offset(-center.x, -center.y);
-            shape = new RasterShape(topLeft, bottomRight, color, item.getMultiplicity(), colorHandler.getTextColor());
-        } else {
-            shape = new StrokeShape(zoomLevel + 1, color);
-
-        }
-        return new ShapeDrawable(shape);
+        return item.getDrawable();
     }
 
     public void setRasterParameters(RasterParameters rasterParameters) {

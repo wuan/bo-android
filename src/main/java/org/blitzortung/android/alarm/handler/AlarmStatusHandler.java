@@ -6,6 +6,7 @@ import org.blitzortung.android.alarm.AlarmParameters;
 import org.blitzortung.android.alarm.AlarmResult;
 import org.blitzortung.android.alarm.object.AlarmSector;
 import org.blitzortung.android.alarm.object.AlarmStatus;
+import org.blitzortung.android.app.Main;
 import org.blitzortung.android.data.beans.Stroke;
 
 import java.util.Collection;
@@ -96,7 +97,7 @@ public class AlarmStatusHandler {
                 return sector;
             }
         }
-        Log.w("BO_ANDROID", String.format(Locale.ENGLISH, "AlarmStatusHandler.getSectorForBearing(): no sector for bearing %.2f found", bearing));
+        Log.w(Main.LOG_TAG, String.format(Locale.ENGLISH, "AlarmStatusHandler.getSectorForBearing(): no sector for bearing %.2f found", bearing));
         return null;
     }
 

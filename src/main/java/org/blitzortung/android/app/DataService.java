@@ -44,11 +44,11 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     @SuppressWarnings("UnusedDeclaration")
     public DataService() {
         this(new Handler());
-        Log.d("BO_ANDROID", "DataService() created with new handler");
+        Log.d(Main.LOG_TAG, "DataService() created with new handler");
     }
 
     protected DataService(Handler handler) {
-        Log.d("BO_ANDROID", "DataService() create");
+        Log.d(Main.LOG_TAG, "DataService() create");
         this.handler = handler;
     }
 
@@ -84,7 +84,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
     public class DataServiceBinder extends Binder {
         DataService getService() {
-            Log.d("BO_ANDROID", "DataServiceBinder.getService() " + DataService.this);
+            Log.d(Main.LOG_TAG, "DataServiceBinder.getService() " + DataService.this);
             return DataService.this;
         }
     }
@@ -95,7 +95,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
     @Override
     public void onCreate() {
-        Log.i("BO_ANDROID", "DataService.onCreate()");
+        Log.i(Main.LOG_TAG, "DataService.onCreate()");
         super.onCreate();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -109,13 +109,13 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i("BO_ANDROID", "DataService.onStartCommand() Received start id " + startId + ": " + intent);
+        Log.i(Main.LOG_TAG, "DataService.onStartCommand() Received start id " + startId + ": " + intent);
         return START_STICKY;
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i("BO_ANDROID", "DataService.onBind() " + intent);
+        Log.i(Main.LOG_TAG, "DataService.onBind() " + intent);
         return binder;
     }
 
@@ -124,7 +124,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         long currentSecond = System.currentTimeMillis() / 1000;
 
         if (backgroundOperation) {
-            Log.v("BO_ANDROID", "DataService: run in background");
+            Log.v(Main.LOG_TAG, "DataService: run in background");
         }
 
         if (dataHandler != null) {
@@ -162,10 +162,10 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     public void onResume() {
         backgroundOperation = false;
         if (dataHandler.isRealtime()) {
-            Log.v("BO_ANDROID", "DataService: onResume() enable");
+            Log.v(Main.LOG_TAG, "DataService: onResume() enable");
             enable();
         } else {
-            Log.v("BO_ANDROID", "DataService: onResume() do not enable");
+            Log.v(Main.LOG_TAG, "DataService: onResume() do not enable");
         }
     }
 
@@ -173,10 +173,10 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         backgroundOperation = true;
         if (!alarmEnabled || backgroundPeriod == 0) {
             handler.removeCallbacks(this);
-            Log.v("BO_ANDROID", "DataService: onPause() remove callback");
+            Log.v(Main.LOG_TAG, "DataService: onPause() remove callback");
             return true;
         }
-        Log.v("BO_ANDROID", "DataService: onPause() keep callback");
+        Log.v(Main.LOG_TAG, "DataService: onPause() keep callback");
         return false;
     }
 

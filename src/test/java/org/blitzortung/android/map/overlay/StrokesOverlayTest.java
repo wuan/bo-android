@@ -137,7 +137,7 @@ public class StrokesOverlayTest {
 
     @Test
     public void testRefresh() {
-        doReturn(mock(Drawable.class)).when(strokesOverlay).getDrawable(any(StrokeOverlayItem.class), anyInt(), any(ColorHandler.class));
+        doReturn(mock(Drawable.class)).when(strokesOverlay).updateAndReturnDrawable(any(StrokeOverlayItem.class), anyInt(), any(ColorHandler.class));
 
         StrokeOverlayItem strokeOverlayItem = mock(StrokeOverlayItem.class);
 
@@ -150,7 +150,7 @@ public class StrokesOverlayTest {
         verify(colorHandler, times(1)).updateTarget();
         verify(colorHandler, times(1)).getColorSection(anyLong(), anyLong(), any(TimeIntervalWithOffset.class));
 
-        verify(strokesOverlay, times(1)).getDrawable(eq(strokeOverlayItem), anyInt(), eq(colorHandler));
+        verify(strokesOverlay, times(1)).updateAndReturnDrawable(eq(strokeOverlayItem), anyInt(), eq(colorHandler));
         verify(strokeOverlayItem, times(1)).setMarker(any(Drawable.class));
     }
 
@@ -163,7 +163,7 @@ public class StrokesOverlayTest {
 
         when(colorHandler.getColor(section)).thenReturn(color);
 
-        Drawable drawable = strokesOverlay.getDrawable(strokeOverlayItem, section, colorHandler);
+        Drawable drawable = strokesOverlay.updateAndReturnDrawable(strokeOverlayItem, section, colorHandler);
 
         assertThat(drawable, is(instanceOf(ShapeDrawable.class)));
 
@@ -200,7 +200,7 @@ public class StrokesOverlayTest {
 
         when(colorHandler.getColor(section)).thenReturn(color);
 
-        Drawable drawable = strokesOverlay.getDrawable(strokeOverlayItem, section, colorHandler);
+        Drawable drawable = strokesOverlay.updateAndReturnDrawable(strokeOverlayItem, section, colorHandler);
 
         verify(projection, times(1)).toPixels(eq(center), any(Point.class));
         verify(projection, times(3)).toPixels(any(GeoPoint.class), any(Point.class));

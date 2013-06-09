@@ -10,6 +10,7 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.*;
 import org.apache.http.util.EntityUtils;
+import org.blitzortung.android.app.Main;
 
 import java.io.IOException;
 
@@ -68,7 +69,7 @@ public class HttpServiceClient {
 	        long startTime = System.currentTimeMillis();
 	        HttpResponse response = httpClient.execute(request);
 	        responseString = EntityUtils.toString(response.getEntity());
-	        Log.d("BO_ANDROID", String.format("HttpServiceClient: request time %d ms (%d bytes received)", System.currentTimeMillis() - startTime, responseString.length()));
+	        Log.d(Main.LOG_TAG, String.format("HttpServiceClient: request time %d ms (%d bytes received)", System.currentTimeMillis() - startTime, responseString.length()));
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

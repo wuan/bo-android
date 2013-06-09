@@ -6,12 +6,10 @@ import android.graphics.drawable.shapes.Shape;
 
 public class StrokeShape extends Shape {
 
-	private final float size;
-	private final int color;
+	private float size;
+	private int color;
 	
-	public StrokeShape(float size, int color) {
-		this.size = size;
-		this.color = color;
+	public StrokeShape() {
 	}
 	
 	@Override
@@ -22,4 +20,9 @@ public class StrokeShape extends Shape {
 		canvas.drawLine(-size / 2, 0.0f, size / 2, 0.0f, paint);
 		canvas.drawLine(0.0f, -size / 2, 0.0f, size / 2, paint);
 	}
+
+    public void update(float size, int color) {
+        this.size = size;
+        this.color = color;
+    }
 }

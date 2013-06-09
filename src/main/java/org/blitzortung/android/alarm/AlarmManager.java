@@ -13,6 +13,7 @@ import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
 import org.blitzortung.android.alarm.handler.AlarmStatusHandler;
 import org.blitzortung.android.alarm.object.AlarmSector;
 import org.blitzortung.android.alarm.object.AlarmStatus;
+import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.controller.LocationHandler;
 import org.blitzortung.android.app.controller.NotificationHandler;
@@ -217,7 +218,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
 
     private void processResult(AlarmResult alarmResult) {
         if (alarmResult != null) {
-            Log.v("BO_ANDROID", "AlarmManager: processResult");
+            Log.v(Main.LOG_TAG, "AlarmManager: processResult");
 
             long currentTimestamp = System.currentTimeMillis() / 1000;
             if (alarmResult.getClosestStrokeDistance() <= signalingDistanceLimit && signalingLastTimestamp + 15 < currentTimestamp) {
@@ -227,7 +228,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
             }
 
             if (alarmResult.getClosestStrokeDistance() <= notificationDistanceLimit) {
-                Log.v("BO_ANDROID", "AlarmManager: processResult sendNotification");
+                Log.v(Main.LOG_TAG, "AlarmManager: processResult sendNotification");
                 notificationHandler.sendNotification(context.getResources().getString(R.string.activity) + ": " + getTextMessage(notificationDistanceLimit));
             } else {
                 notificationHandler.clearNotification();
@@ -236,7 +237,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
             notificationHandler.clearNotification();
         }
 
-        Log.v("BO_ANDROID", "AlarmManager: processResult broadcast results");
+        Log.v(Main.LOG_TAG, "AlarmManager: processResult broadcast results");
         broadcastResult(alarmResult);
     }
 

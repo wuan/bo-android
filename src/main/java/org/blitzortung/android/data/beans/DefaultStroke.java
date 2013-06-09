@@ -1,6 +1,5 @@
 package org.blitzortung.android.data.beans;
 
-import org.blitzortung.android.util.TimeFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -33,11 +32,8 @@ public class DefaultStroke extends AbstractStroke implements Serializable {
 		}
 	}
 	
-	public DefaultStroke(String line) {
-		String[] fields = line.split(" ");
-		String timeString = fields[0].replace("-", "") + "T" + fields[1];
-		int len = timeString.length();
-		setTimestamp(TimeFormat.parseTimeWithMilliseconds(timeString.substring(0, len - 6)));
+	public DefaultStroke(long timestamp, String[] fields) {
+		setTimestamp(timestamp);
 		setLatitude(Float.valueOf(fields[2]));
 		setLongitude(Float.valueOf(fields[3]));
 		amplitude = Float.valueOf(fields[4].substring(0, fields[4].length() - 2));

@@ -67,7 +67,9 @@ public class DefaultStrokeTest {
     @Test
     public void testConstructFromString()
     {
-        defaultStroke = new DefaultStroke("2012-05-12 12:45:23.123456789 49.0 11.0 54.3kA 1 12.3m 6");
+        String line =  "2012-05-12 12:45:23.123456789 49.0 11.0 54.3kA 1 12.3m 6";
+        String[] fields = line.split(" ");
+        defaultStroke = new DefaultStroke(1336826723123L, fields);
 
         assertThat(defaultStroke.getTimestamp(), is(1336826723123L));
         assertThat(defaultStroke.getLongitude(), is(11.0f));

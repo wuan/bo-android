@@ -9,27 +9,16 @@ import android.graphics.drawable.shapes.Shape;
 
 public class RasterShape extends Shape {
 
+    private static final float MIN_SIZE = 1.5f;
+
     private final RectF rect;
-    private final int color;
+    private int color;
     private int alpha;
-    private final int multiplicity;
-    private final int textColor;
+    private int multiplicity;
+    private int textColor;
 
-    public RasterShape(Point topLeft, Point bottomRight, int color, int multiplicity, int textColor) {
-
-        float x1 = Math.min(topLeft.x, -1.5f);
-        float y1 = Math.min(topLeft.y, -1.5f);
-        float x2 = Math.max(bottomRight.x, 1.5f);
-        float y2 = Math.max(bottomRight.y, 1.5f);
-
-        rect = new RectF(x1, y1, x2, y2);
-        resize(rect.width(), rect.height());
-
-        this.multiplicity = multiplicity;
-        this.color = color;
-        this.textColor = textColor;
-
-        setAlphaValue();
+    public RasterShape() {
+         rect = new RectF();
     }
 
     @Override
@@ -59,4 +48,18 @@ public class RasterShape extends Shape {
         return alpha != 255;
     }
 
+    public void update(Point topLeft, Point bottomRight, int color, int multiplicity, int textColor) {
+        float x1 = Math.min(topLeft.x, -MIN_SIZE);
+        float y1 = Math.min(topLeft.y, -MIN_SIZE);
+        float x2 = Math.max(bottomRight.x, MIN_SIZE);
+        float y2 = Math.max(bottomRight.y, MIN_SIZE);
+        rect.set(x1, y1, x2, y2);
+        resize(rect.width(), rect.height());
+
+        this.multiplicity = multiplicity;
+        this.color = color;
+        this.textColor = textColor;
+
+        setAlphaValue();
+    }
 }
