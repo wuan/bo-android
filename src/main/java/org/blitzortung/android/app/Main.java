@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
+import com.google.android.maps.MapView;
 import org.blitzortung.android.alarm.AlarmLabelHandler;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmResult;
@@ -106,9 +107,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         setContentView(isDebugBuild() ? R.layout.main_debug : R.layout.main);
 
         OwnMapView mapView = (OwnMapView) findViewById(R.id.mapview);
+        mapView.setAlwaysDrawnWithCacheEnabled(true);
+        mapView.setPersistentDrawingCache(MapView.PERSISTENT_ALL_CACHES);
+        mapView.setBuiltInZoomControls(true);
         setMapView(mapView);
 
-        mapView.setBuiltInZoomControls(true);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);

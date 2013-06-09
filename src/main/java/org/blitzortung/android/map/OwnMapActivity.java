@@ -69,6 +69,10 @@ public abstract class OwnMapActivity extends MapActivity {
         } catch (Exception e) {
             Log.w(Main.LOG_TAG, "OwnMapActivity.onDestroy() failed");
         }
+    }
 
+    @Override
+    protected boolean isRouteDisplayed() {
+        return false;
     }
 }
