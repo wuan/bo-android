@@ -11,6 +11,7 @@ import android.util.Log;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
+import org.blitzortung.android.util.Period;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,10 +23,8 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     private int period;
 
     private int backgroundPeriod;
-
-    private long lastUpdate;
-
-    private long lastParticipantsUpdate;
+    
+    private final Period updatePeriod;
 
     private boolean alarmEnabled;
 
@@ -43,13 +42,14 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
     @SuppressWarnings("UnusedDeclaration")
     public DataService() {
-        this(new Handler());
+        this(new Handler(), new Period());
         Log.d(Main.LOG_TAG, "DataService() created with new handler");
     }
 
-    protected DataService(Handler handler) {
+    protected DataService(Handler handler, Period updatePeriod) {
         Log.d(Main.LOG_TAG, "DataService() create");
         this.handler = handler;
+        this.updatePeriod = updatePeriod;
     }
 
     public int getPeriod() {
@@ -61,11 +61,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     }
 
     public long getLastUpdate() {
-        return lastUpdate;
-    }
-
-    public long getLastParticipantsUpdate() {
-        return lastParticipantsUpdate;
+        return updatePeriod.getLastUpdateTime();
     }
 
     public boolean isInBackgroundOperation() {
@@ -121,8 +117,8 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
     @Override
     public void run() {
-        long currentSecond = System.currentTimeMillis() / 1000;
-
+        long currentTime = Period.getCurrentTime();
+        
         if (backgroundOperation) {
             Log.v(Main.LOG_TAG, "DataService: run in background");
         }
@@ -130,16 +126,15 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         if (dataHandler != null) {
             Set<DataChannel> updateTargets = new HashSet<DataChannel>();
 
-            int currentPeriod = backgroundOperation ? backgroundPeriod : period;
+            int currentPeriod = getCurrentPeriod();
 
-            if (currentSecond >= lastUpdate + currentPeriod) {
+            if (updatePeriod.shouldUpdate(currentTime, currentPeriod)) {
+                updatePeriod.setLastUpdateTime(currentTime);
                 updateTargets.add(DataChannel.STROKES);
-                lastUpdate = currentSecond;
-            }
-
-            if (updateParticipants && currentSecond >= lastParticipantsUpdate + currentPeriod * 10 && !backgroundOperation) {
-                updateTargets.add(DataChannel.PARTICIPANTS);
-                lastParticipantsUpdate = currentSecond;
+                
+                if (!backgroundOperation && updateParticipants && updatePeriod.isNthUpdate(10)) {
+                    updateTargets.add(DataChannel.PARTICIPANTS);
+                }
             }
 
             if (!updateTargets.isEmpty()) {
@@ -147,16 +142,23 @@ public class DataService extends Service implements Runnable, SharedPreferences.
             }
 
             if (!backgroundOperation && listener != null) {
-                listener.onDataServiceStatusUpdate(String.format("%d/%ds", currentPeriod - (currentSecond - lastUpdate), currentPeriod));
+                listener.onDataServiceStatusUpdate(String.format("%d/%ds", updatePeriod.getCurrentUpdatePeriod(currentTime, currentPeriod), currentPeriod));
             }
         }
         // Schedule the next update
-        handler.postDelayed(this, backgroundOperation ? 60000 : 1000);
+        handler.postDelayed(this, getCurrentPostDelay());
+    }
+
+    private int getCurrentPeriod() {
+        return backgroundOperation ? backgroundPeriod : period;
+    }
+
+    private int getCurrentPostDelay() {
+        return backgroundOperation ? 60000 : 1000;
     }
 
     public void restart() {
-        lastUpdate = 0;
-        lastParticipantsUpdate = 0;
+        updatePeriod.restart();
     }
 
     public void onResume() {
