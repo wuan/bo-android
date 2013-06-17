@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
+import org.blitzortung.android.util.Period;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,9 @@ public class DataServiceTest {
     private Handler handler;
 
     @Mock
+    private Period period;
+
+    @Mock
     private DataHandler dataHandler;
 
     @Captor
@@ -59,7 +63,7 @@ public class DataServiceTest {
 
         when(dataHandler.getIntervalDuration()).thenReturn(60);
 
-        dataService = new DataService(handler);
+        dataService = new DataService(handler, period);
         dataService.setDataHandler(dataHandler);
 
         dataService.onCreate();
@@ -121,7 +125,6 @@ public class DataServiceTest {
         dataService.restart();
 
         assertThat(dataService.getLastUpdate(), is(0l));
-        assertThat(dataService.getLastParticipantsUpdate(), is(0l));
     }
 
     @Test
