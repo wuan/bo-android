@@ -107,8 +107,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         setContentView(isDebugBuild() ? R.layout.main_debug : R.layout.main);
 
         OwnMapView mapView = (OwnMapView) findViewById(R.id.mapview);
-        mapView.setAlwaysDrawnWithCacheEnabled(true);
-        mapView.setPersistentDrawingCache(MapView.PERSISTENT_ALL_CACHES);
         mapView.setBuiltInZoomControls(true);
         setMapView(mapView);
 
