@@ -3,11 +3,13 @@ package org.blitzortung.android.app;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import org.blitzortung.android.app.view.PreferenceKey;
@@ -21,6 +23,9 @@ import java.util.Set;
 public class DataService extends Service implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String RETRIEVE_DATA_ACTION = "retrieveData";
+    
+    public static final String WAKE_LOCK_TAG = "boAndroidWakeLock";
+    
     private final Handler handler;
 
     private int period;
@@ -46,6 +51,8 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     private AlarmManager alarmManager;
 
     private PendingIntent pendingIntent;
+    
+    private PowerManager.WakeLock wakeLock;
 
     @SuppressWarnings("UnusedDeclaration")
     public DataService() {
@@ -118,6 +125,12 @@ public class DataService extends Service implements Runnable, SharedPreferences.
             if (!backgroundOperation) {
                 discardAlarm();
             } else {
+                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
+                wakeLock.acquire();
+                
+                Log.v(Main.LOG_TAG, "DataService: onStartCommand() acquire wake lock " + wakeLock);
+
                 restart();
                 handler.removeCallbacks(this);
                 handler.post(this);
@@ -127,6 +140,15 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         return START_STICKY;
     }
 
+    public void releaseWakeLock() {
+        Log.v(Main.LOG_TAG, "DataService: releaseWakeLock() " + wakeLock);
+
+        if (wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
+            wakeLock = null;
+        }
+    }
+    
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(Main.LOG_TAG, "DataService.onBind() " + intent);

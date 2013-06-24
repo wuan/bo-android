@@ -1,20 +1,14 @@
 package org.blitzortung.android.app;
 
 import android.app.Dialog;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
+import android.os.*;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.format.DateFormat;
@@ -483,6 +477,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         }
 
         statusComponent.stopProgress();
+
+        dataService.releaseWakeLock();
 
         buttonColumnHandler.enableButtonColumn();
         getMapView().invalidate();
