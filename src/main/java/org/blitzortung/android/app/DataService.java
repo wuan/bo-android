@@ -114,7 +114,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(Main.LOG_TAG, "DataService.onStartCommand() startId: " + startId + " " + intent);
 
-        if (RETRIEVE_DATA_ACTION.equals(intent.getAction())) {
+        if (intent != null && RETRIEVE_DATA_ACTION.equals(intent.getAction())) {
             if (!backgroundOperation) {
                 discardAlarm();
             } else {
