@@ -5,6 +5,7 @@ import org.blitzortung.android.alarm.object.AlarmSector;
 public class AlarmResult {
 	
 	private final AlarmSector sector;
+    
     private final String distanceUnitName;
 
     public AlarmResult(AlarmSector sector, String distanceUnitName) {
