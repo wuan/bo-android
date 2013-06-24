@@ -24,7 +24,6 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
-import com.google.android.maps.MapView;
 import org.blitzortung.android.alarm.AlarmLabelHandler;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmResult;
@@ -189,12 +188,12 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
                 PreferenceKey.NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS);
 
-        createAndBindToTimerService();
+        createAndBindToDataService();
 
         getMapView().invalidate();
     }
 
-    private void createAndBindToTimerService() {
+    private void createAndBindToDataService() {
         final Intent serviceIntent = new Intent(this, DataService.class);
 
         startService(serviceIntent);
@@ -420,6 +419,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.i(LOG_TAG, "Main: onDestroy()");
+        
         unbindService(serviceConnection);
     }
 

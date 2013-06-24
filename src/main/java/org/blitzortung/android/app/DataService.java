@@ -1,5 +1,7 @@
 package org.blitzortung.android.app;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,12 +20,13 @@ import java.util.Set;
 
 public class DataService extends Service implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener {
 
+    public static final String RETRIEVE_DATA_ACTION = "retrieveData";
     private final Handler handler;
 
     private int period;
 
     private int backgroundPeriod;
-    
+
     private final Period updatePeriod;
 
     private boolean alarmEnabled;
@@ -39,6 +42,10 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     private DataServiceStatusListener listener;
 
     private final IBinder binder = new DataServiceBinder();
+
+    private AlarmManager alarmManager;
+
+    private PendingIntent pendingIntent;
 
     @SuppressWarnings("UnusedDeclaration")
     public DataService() {
@@ -105,7 +112,18 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(Main.LOG_TAG, "DataService.onStartCommand() Received start id " + startId + ": " + intent);
+        Log.i(Main.LOG_TAG, "DataService.onStartCommand() startId: " + startId + " " + intent);
+
+        if (RETRIEVE_DATA_ACTION.equals(intent.getAction())) {
+            if (!backgroundOperation) {
+                discardAlarm();
+            } else {
+                restart();
+                handler.removeCallbacks(this);
+                handler.post(this);
+            }
+        }
+
         return START_STICKY;
     }
 
@@ -118,7 +136,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     @Override
     public void run() {
         long currentTime = Period.getCurrentTime();
-        
+
         if (backgroundOperation) {
             Log.v(Main.LOG_TAG, "DataService: run in background");
         }
@@ -131,7 +149,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
             if (updatePeriod.shouldUpdate(currentTime, currentPeriod)) {
                 updatePeriod.setLastUpdateTime(currentTime);
                 updateTargets.add(DataChannel.STROKES);
-                
+
                 if (!backgroundOperation && updateParticipants && updatePeriod.isNthUpdate(10)) {
                     updateTargets.add(DataChannel.PARTICIPANTS);
                 }
@@ -145,16 +163,14 @@ public class DataService extends Service implements Runnable, SharedPreferences.
                 listener.onDataServiceStatusUpdate(String.format("%d/%ds", updatePeriod.getCurrentUpdatePeriod(currentTime, currentPeriod), currentPeriod));
             }
         }
-        // Schedule the next update
-        handler.postDelayed(this, getCurrentPostDelay());
+        if (!backgroundOperation) {
+            // Schedule the next update
+            handler.postDelayed(this, 1000);
+        }
     }
 
     private int getCurrentPeriod() {
         return backgroundOperation ? backgroundPeriod : period;
-    }
-
-    private int getCurrentPostDelay() {
-        return backgroundOperation ? 60000 : 1000;
     }
 
     public void restart() {
@@ -163,6 +179,9 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
     public void onResume() {
         backgroundOperation = false;
+
+        discardAlarm();
+
         if (dataHandler.isRealtime()) {
             Log.v(Main.LOG_TAG, "DataService: onResume() enable");
             enable();
@@ -173,15 +192,15 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
     public boolean onPause() {
         backgroundOperation = true;
-        if (!alarmEnabled || backgroundPeriod == 0) {
-            handler.removeCallbacks(this);
-            Log.v(Main.LOG_TAG, "DataService: onPause() remove callback");
-            return true;
-        }
-        Log.v(Main.LOG_TAG, "DataService: onPause() keep callback");
-        return false;
-    }
 
+        handler.removeCallbacks(this);
+        Log.v(Main.LOG_TAG, "DataService: onPause() remove callback");
+
+        if (alarmEnabled && backgroundPeriod != 0) {
+            createAlarm();
+        }
+        return true;
+    }
 
     public void setListener(DataServiceStatusListener listener) {
         this.listener = listener;
@@ -228,6 +247,28 @@ public class DataService extends Service implements Runnable, SharedPreferences.
             case ALARM_ENABLED:
                 alarmEnabled = sharedPreferences.getBoolean(key.toString(), false);
                 break;
+        }
+    }
+
+    private void createAlarm() {
+        discardAlarm();
+
+        Log.v(Main.LOG_TAG, "DataService.createAlarm()");
+        Intent intent = new Intent(this, DataService.class);
+        intent.setAction(RETRIEVE_DATA_ACTION);
+        pendingIntent = PendingIntent.getService(this, 0, intent, 0);
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 0, backgroundPeriod * 1000, pendingIntent);
+    }
+
+    private void discardAlarm() {
+        if (alarmManager != null) {
+            Log.v(Main.LOG_TAG, "DataService.discardAlarm()");
+            alarmManager.cancel(pendingIntent);
+            pendingIntent.cancel();
+
+            pendingIntent = null;
+            alarmManager = null;
         }
     }
 

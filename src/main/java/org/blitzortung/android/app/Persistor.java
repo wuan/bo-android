@@ -19,13 +19,13 @@ import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
 public class Persistor {
 
-	private final DataHandler provider;
-	
-	private final AlarmManager alarmManager;
-	
-	private final StrokesOverlay strokesOverlay;
-	
-	private final ParticipantsOverlay participantsOverlay;
+    private final DataHandler provider;
+
+    private final AlarmManager alarmManager;
+
+    private final StrokesOverlay strokesOverlay;
+
+    private final ParticipantsOverlay participantsOverlay;
 
     private DataResult currentResult;
 
@@ -38,36 +38,35 @@ public class Persistor {
     public Persistor(Activity activity, SharedPreferences sharedPreferences, PackageInfo pInfo) {
         provider = new DataHandler(sharedPreferences, pInfo);
         locationHandler = new LocationHandler(activity, sharedPreferences);
-		alarmManager = new AlarmManager(locationHandler, sharedPreferences, activity, (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE), new NotificationHandler(activity), new AlarmObjectFactory(), new AlarmParameters());
-		strokesOverlay = new StrokesOverlay(activity, new StrokeColorHandler(sharedPreferences));
-		participantsOverlay = new ParticipantsOverlay(activity, new ParticipantColorHandler(sharedPreferences));
-	}
-
-    public void updateContext(Main context)
-    {
-        strokesOverlay.setActivity(context);
-        participantsOverlay.setActivity(context);
-        provider.setDataListener(context);
-
-        alarmManager.clearAlarmListeners();
-        alarmManager.addAlarmListener(context);
+        alarmManager = new AlarmManager(locationHandler, sharedPreferences, activity, (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE), new NotificationHandler(activity), new AlarmObjectFactory(), new AlarmParameters());
+        strokesOverlay = new StrokesOverlay(activity, new StrokeColorHandler(sharedPreferences));
+        participantsOverlay = new ParticipantsOverlay(activity, new ParticipantColorHandler(sharedPreferences));
     }
 
-	public StrokesOverlay getStrokesOverlay() {
-		return strokesOverlay;
-	}
-	
-	public ParticipantsOverlay getParticipantsOverlay() {
-		return participantsOverlay;
-	}
+    public void updateContext(Main mainActivity) {
+        strokesOverlay.setActivity(mainActivity);
+        participantsOverlay.setActivity(mainActivity);
+        provider.setDataListener(mainActivity);
 
-	public DataHandler getDataHandler() {
-		return provider;
-	}
+        alarmManager.clearAlarmListeners();
+        alarmManager.addAlarmListener(mainActivity);
+    }
 
-	public AlarmManager getAlarmManager() {
-		return alarmManager;
-	}
+    public StrokesOverlay getStrokesOverlay() {
+        return strokesOverlay;
+    }
+
+    public ParticipantsOverlay getParticipantsOverlay() {
+        return participantsOverlay;
+    }
+
+    public DataHandler getDataHandler() {
+        return provider;
+    }
+
+    public AlarmManager getAlarmManager() {
+        return alarmManager;
+    }
 
     public void setCurrentResult(DataResult result) {
         currentResult = result;
@@ -78,6 +77,6 @@ public class Persistor {
     }
 
     public boolean hasCurrentResult() {
-        return  currentResult != null;
+        return currentResult != null;
     }
 }
