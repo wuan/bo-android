@@ -1,5 +1,9 @@
 #!/bin/bash
 
+gm convert -background none -size 1024 icon.svg icon.png
+
+gm convert -background none -size 1024 logo.svg logo.png
+
 cp icon.png ../res/drawable-ldpi/icon.png
 gm mogrify -geometry 36x36  ../res/drawable-ldpi/icon.png
 

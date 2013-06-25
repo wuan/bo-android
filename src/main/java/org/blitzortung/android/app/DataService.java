@@ -127,7 +127,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
             } else {
                 PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
                 wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
-                wakeLock.acquire();
+                wakeLock.acquire(20000);
                 
                 Log.v(Main.LOG_TAG, "DataService: onStartCommand() acquire wake lock " + wakeLock);
 
