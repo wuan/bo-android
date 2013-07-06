@@ -122,6 +122,12 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         }
     }
 
+    public void updateDatainBackground() {
+        listener.onBeforeDataUpdate();
+
+        new FetchDataTask().execute(10, 0, dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), 0);
+    }
+    
     public void updateData(Set<DataChannel> updateTargets) {
 
         listener.onBeforeDataUpdate();

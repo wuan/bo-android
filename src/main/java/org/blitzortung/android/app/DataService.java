@@ -23,9 +23,9 @@ import java.util.Set;
 public class DataService extends Service implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String RETRIEVE_DATA_ACTION = "retrieveData";
-    
+
     public static final String WAKE_LOCK_TAG = "boAndroidWakeLock";
-    
+
     private final Handler handler;
 
     private int period;
@@ -51,7 +51,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     private AlarmManager alarmManager;
 
     private PendingIntent pendingIntent;
-    
+
     private PowerManager.WakeLock wakeLock;
 
     @SuppressWarnings("UnusedDeclaration")
@@ -128,7 +128,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
                 PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
                 wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
                 wakeLock.acquire(20000);
-                
+
                 Log.v(Main.LOG_TAG, "DataService: onStartCommand() acquire wake lock " + wakeLock);
 
                 restart();
@@ -141,14 +141,13 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     }
 
     public void releaseWakeLock() {
-        Log.v(Main.LOG_TAG, "DataService: releaseWakeLock() " + wakeLock);
-
         if (wakeLock != null && wakeLock.isHeld()) {
+            Log.v(Main.LOG_TAG, "DataService: releaseWakeLock() " + wakeLock);
             wakeLock.release();
             wakeLock = null;
         }
     }
-    
+
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(Main.LOG_TAG, "DataService.onBind() " + intent);
@@ -157,35 +156,35 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
     @Override
     public void run() {
-        long currentTime = Period.getCurrentTime();
 
         if (backgroundOperation) {
             Log.v(Main.LOG_TAG, "DataService: run in background");
-        }
+            
+            dataHandler.updateDatainBackground();
+        } else {
+            long currentTime = Period.getCurrentTime();
+            if (dataHandler != null) {
+                Set<DataChannel> updateTargets = new HashSet<DataChannel>();
 
-        if (dataHandler != null) {
-            Set<DataChannel> updateTargets = new HashSet<DataChannel>();
+                int currentPeriod = getCurrentPeriod();
 
-            int currentPeriod = getCurrentPeriod();
+                if (updatePeriod.shouldUpdate(currentTime, currentPeriod)) {
+                    updatePeriod.setLastUpdateTime(currentTime);
+                    updateTargets.add(DataChannel.STROKES);
 
-            if (updatePeriod.shouldUpdate(currentTime, currentPeriod)) {
-                updatePeriod.setLastUpdateTime(currentTime);
-                updateTargets.add(DataChannel.STROKES);
+                    if (!backgroundOperation && updateParticipants && updatePeriod.isNthUpdate(10)) {
+                        updateTargets.add(DataChannel.PARTICIPANTS);
+                    }
+                }
 
-                if (!backgroundOperation && updateParticipants && updatePeriod.isNthUpdate(10)) {
-                    updateTargets.add(DataChannel.PARTICIPANTS);
+                if (!updateTargets.isEmpty()) {
+                    dataHandler.updateData(updateTargets);
+                }
+
+                if (!backgroundOperation && listener != null) {
+                    listener.onDataServiceStatusUpdate(String.format("%d/%ds", updatePeriod.getCurrentUpdatePeriod(currentTime, currentPeriod), currentPeriod));
                 }
             }
-
-            if (!updateTargets.isEmpty()) {
-                dataHandler.updateData(updateTargets);
-            }
-
-            if (!backgroundOperation && listener != null) {
-                listener.onDataServiceStatusUpdate(String.format("%d/%ds", updatePeriod.getCurrentUpdatePeriod(currentTime, currentPeriod), currentPeriod));
-            }
-        }
-        if (!backgroundOperation) {
             // Schedule the next update
             handler.postDelayed(this, 1000);
         }
@@ -220,6 +219,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
         if (alarmEnabled && backgroundPeriod != 0) {
             createAlarm();
+            return false;
         }
         return true;
     }
@@ -260,6 +260,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
             case BACKGROUND_QUERY_PERIOD:
                 backgroundPeriod = Integer.parseInt(sharedPreferences.getString(key.toString(), "0"));
+                Log.v(Main.LOG_TAG, String.format("DataService.onSharedPreferenceChanged() backgroundPeriod=%d", backgroundPeriod));
                 break;
 
             case SHOW_PARTICIPANTS:
@@ -275,15 +276,21 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     private void createAlarm() {
         discardAlarm();
 
-        Log.v(Main.LOG_TAG, "DataService.createAlarm()");
+        Log.v(Main.LOG_TAG, String.format("DataService.createAlarm() %d", backgroundPeriod));
         Intent intent = new Intent(this, DataService.class);
         intent.setAction(RETRIEVE_DATA_ACTION);
         pendingIntent = PendingIntent.getService(this, 0, intent, 0);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 0, backgroundPeriod * 1000, pendingIntent);
+        if (alarmManager != null) {
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 0, backgroundPeriod * 1000, pendingIntent);
+        } else {
+            Log.e(Main.LOG_TAG, "DataService.createAlarm() failed");
+        }
     }
 
     private void discardAlarm() {
+        releaseWakeLock();
+
         if (alarmManager != null) {
             Log.v(Main.LOG_TAG, "DataService.discardAlarm()");
             alarmManager.cancel(pendingIntent);

@@ -11,13 +11,14 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class AlarmSectorTest {
@@ -70,7 +71,6 @@ public class AlarmSectorTest {
         final List<AlarmSectorRange> ranges = alarmSector.getRanges();
 
         assertThat(ranges, is(not(nullValue())));
-        assertThat(ranges, hasSize(2));
         assertThat(ranges, contains(alarmSectorRange1, alarmSectorRange2));
     }
 

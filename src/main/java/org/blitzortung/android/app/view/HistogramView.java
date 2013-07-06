@@ -81,6 +81,9 @@ public class HistogramView extends View implements DataListener {
             int minutesPerColor = strokesOverlay.getIntervalDuration() / colorHandler.getNumberOfColors();
             int minutesPerBin = 5;
             int ratio = minutesPerColor / minutesPerBin;
+            if (ratio == 0) {
+                return;
+            }
 
             backgroundRect.set(0, 0, width, height);
             canvas.drawRect(backgroundRect, backgroundPaint);

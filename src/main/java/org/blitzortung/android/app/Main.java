@@ -398,10 +398,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public void onPause() {
         super.onPause();
 
-        Log.d(Main.LOG_TAG, "Main.onPause()");
-
         if (dataService == null || dataService.onPause()) {
+            Log.d(Main.LOG_TAG, "Main.onPause() disable location handler");
             locationHandler.onPause();
+        } else {
+            Log.d(Main.LOG_TAG, "Main.onPause()");
         }
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);

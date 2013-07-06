@@ -1,11 +1,9 @@
 package org.blitzortung.android.app;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
@@ -16,17 +14,14 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowPreferenceManager;
 
 import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.*;
-import static org.junit.internal.matchers.IsCollectionContaining.hasItems;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
@@ -157,13 +152,29 @@ public class DataServiceTest {
         assertFalse(dataService.isInBackgroundOperation());
     }
 
-
     @Test
     public void testOnPause() {
         when(dataHandler.isRealtime()).thenReturn(true);
+
         dataService.onResume();
 
-        dataService.onPause();
+        assertTrue(dataService.onPause());
+
+        assertTrue(dataService.isInBackgroundOperation());
+    }
+
+    @Test
+    public void testOnPauseWithAlarmAndBackgroundPeriodEnabled() {
+        sharedPreferences.edit()
+                .putString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), "60")
+                .commit();
+        dataService.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.BACKGROUND_QUERY_PERIOD.toString());
+
+        when(dataHandler.isRealtime()).thenReturn(true);
+
+        dataService.onResume();
+
+        assertFalse(dataService.onPause());
 
         assertTrue(dataService.isInBackgroundOperation());
     }
