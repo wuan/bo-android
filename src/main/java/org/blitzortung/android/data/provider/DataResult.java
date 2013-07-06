@@ -26,6 +26,8 @@ public class DataResult implements Serializable {
 	private boolean processWasLocked;
 	
 	private boolean incrementalData;
+    
+    private boolean background;
 
     private long referenceTime;
 
@@ -39,6 +41,8 @@ public class DataResult implements Serializable {
 		processWasLocked = false;
 		
 		incrementalData = false;
+        
+        background = false;
 	}
 	
 	public void setStrokes(List<AbstractStroke> strokes) {
@@ -123,6 +127,14 @@ public class DataResult implements Serializable {
         return parameters.getIntervalOffset() == 0;
     }
 
+    public boolean isBackground() {
+        return background;
+    }
+
+    public void setBackground(boolean background) {
+        this.background = background;
+    }
+
     public void setParameters(Parameters parameters) {
         this.parameters = parameters;
     }
@@ -140,7 +152,11 @@ public class DataResult implements Serializable {
         if (hasRasterParameters()) {
             sb.append(", ").append(getRasterParameters());
         }
+        if (background) {
+            sb.append(", background");
+        }
         sb.append(")");
+        
         
         return sb.toString();
     }

@@ -73,8 +73,11 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             int intervalOffset = params[1];
             int rasterBaselength = params[2];
             int region = params[3];
+            boolean updateParticipants = params[4] != 0;
+            boolean background = params[5] != 0;
 
             DataResult result = new DataResult();
+            result.setBackground(background);
 
             if (lock.tryLock()) {
                 try {
@@ -97,16 +100,14 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                         result.setContainsIncrementalData();
                     }
                     result.setParameters(parameters);
+
                     result.setReferenceTime(System.currentTimeMillis());
                     result.setStrokes(strokes);
                     result.setRasterParameters(dataProvider.getRasterParameters());
                     result.setHistogram(dataProvider.getHistogram());
 
-                    if (params.length > 4) {
-                        boolean updateParticipants = (params[4] == 1);
-                        if (updateParticipants) {
-                            result.setParticipants(dataProvider.getStations(region));
-                        }
+                    if (updateParticipants) {
+                        result.setParticipants(dataProvider.getStations(region));
                     }
 
                     dataProvider.shutDown();
@@ -123,11 +124,9 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     }
 
     public void updateDatainBackground() {
-        listener.onBeforeDataUpdate();
-
-        new FetchDataTask().execute(10, 0, dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), 0);
+        new FetchDataTask().execute(10, 0, dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), 0, 1);
     }
-    
+
     public void updateData(Set<DataChannel> updateTargets) {
 
         listener.onBeforeDataUpdate();
@@ -139,7 +138,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             }
         }
 
-        new FetchDataTask().execute(parameters.getIntervalDuration(), parameters.getIntervalOffset(), dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), updateParticipants ? 1 : 0);
+        new FetchDataTask().execute(parameters.getIntervalDuration(), parameters.getIntervalOffset(), dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), updateParticipants ? 1 : 0, 0);
     }
 
     @Override

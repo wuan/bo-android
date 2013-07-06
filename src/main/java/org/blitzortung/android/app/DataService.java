@@ -129,7 +129,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
                 wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
                 wakeLock.acquire(20000);
 
-                Log.v(Main.LOG_TAG, "DataService: onStartCommand() acquire wake lock " + wakeLock);
+                Log.v(Main.LOG_TAG, "DataService.onStartCommand() acquire wake lock " + wakeLock);
 
                 restart();
                 handler.removeCallbacks(this);
@@ -142,7 +142,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
     public void releaseWakeLock() {
         if (wakeLock != null && wakeLock.isHeld()) {
-            Log.v(Main.LOG_TAG, "DataService: releaseWakeLock() " + wakeLock);
+            Log.v(Main.LOG_TAG, "DataService.releaseWakeLock() " + wakeLock);
             wakeLock.release();
             wakeLock = null;
         }
@@ -158,7 +158,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     public void run() {
 
         if (backgroundOperation) {
-            Log.v(Main.LOG_TAG, "DataService: run in background");
+            Log.v(Main.LOG_TAG, "DataService.run() in background");
             
             dataHandler.updateDatainBackground();
         } else {
@@ -204,10 +204,10 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         discardAlarm();
 
         if (dataHandler.isRealtime()) {
-            Log.v(Main.LOG_TAG, "DataService: onResume() enable");
+            Log.v(Main.LOG_TAG, "DataService.onResume() enable");
             enable();
         } else {
-            Log.v(Main.LOG_TAG, "DataService: onResume() do not enable");
+            Log.v(Main.LOG_TAG, "DataService.onResume() do not enable");
         }
     }
 
@@ -215,7 +215,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         backgroundOperation = true;
 
         handler.removeCallbacks(this);
-        Log.v(Main.LOG_TAG, "DataService: onPause() remove callback");
+        Log.v(Main.LOG_TAG, "DataService.onPause() remove callback");
 
         if (alarmEnabled && backgroundPeriod != 0) {
             createAlarm();

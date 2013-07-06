@@ -76,7 +76,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private final Set<DataListener> dataListeners = new HashSet<DataListener>();
 
-    private final Set<String> androidIdsForExtendedFunctionality = new HashSet<String>(Arrays.asList("e72d101ce1bcdee3", "348fa1e0c3af742a"));
+    private final Set<String> androidIdsForExtendedFunctionality = new HashSet<String>(Arrays.asList("e72d101ce1bcdee3", "6d1b9a3da993af2d"));
 
     private PackageInfo pInfo;
 
@@ -415,7 +415,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public void onDestroy() {
         super.onDestroy();
         Log.i(LOG_TAG, "Main: onDestroy()");
-        
+
         unbindService(serviceConnection);
     }
 
@@ -434,55 +434,59 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public void onDataUpdate(DataResult result) {
         Log.d(Main.LOG_TAG, "Main.onDataUpdate() " + result);
 
-        statusComponent.indicateError(false);
+        if (result.isBackground()) {
+            alarmManager.checkStrokes(result.getStrokes(), result.containsRealtimeData());
+        } else {
+            statusComponent.indicateError(false);
 
-        historyController.setRealtimeData(result.containsRealtimeData());
+            historyController.setRealtimeData(result.containsRealtimeData());
 
-        Parameters resultParameters = result.getParameters();
+            Parameters resultParameters = result.getParameters();
 
-        persistor.setCurrentResult(result);
+            persistor.setCurrentResult(result);
 
-        clearDataIfRequested();
+            clearDataIfRequested();
 
-        if (result.containsStrokes()) {
-            strokesOverlay.setRasterParameters(result.getRasterParameters());
-            strokesOverlay.setRegion(resultParameters.getRegion());
-            strokesOverlay.setReferenceTime(result.getReferenceTime());
-            strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
-            strokesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
+            if (result.containsStrokes()) {
+                strokesOverlay.setRasterParameters(result.getRasterParameters());
+                strokesOverlay.setRegion(resultParameters.getRegion());
+                strokesOverlay.setReferenceTime(result.getReferenceTime());
+                strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
+                strokesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
 
-            if (result.containsIncrementalData()) {
-                strokesOverlay.expireStrokes();
-            } else {
-                strokesOverlay.clear();
+                if (result.containsIncrementalData()) {
+                    strokesOverlay.expireStrokes();
+                } else {
+                    strokesOverlay.clear();
+                }
+                strokesOverlay.addStrokes(result.getStrokes());
+
+                alarmManager.checkStrokes(strokesOverlay.getStrokes(), result.containsRealtimeData());
+
+                strokesOverlay.refresh();
             }
-            strokesOverlay.addStrokes(result.getStrokes());
 
-            alarmManager.checkStrokes(strokesOverlay.getStrokes(), result.containsRealtimeData());
+            if (!result.containsRealtimeData()) {
+                dataService.disable();
+                setHistoricStatusString();
+            }
 
-            strokesOverlay.refresh();
+            if (participantsOverlay != null && result.containsParticipants()) {
+                participantsOverlay.setParticipants(result.getParticipants());
+                participantsOverlay.refresh();
+            }
+
+            for (DataListener listener : dataListeners) {
+                listener.onDataUpdate(result);
+            }
+
+            statusComponent.stopProgress();
+
+            buttonColumnHandler.enableButtonColumn();
+            getMapView().invalidate();
         }
-
-        if (!result.containsRealtimeData()) {
-            dataService.disable();
-            setHistoricStatusString();
-        }
-
-        if (participantsOverlay != null && result.containsParticipants()) {
-            participantsOverlay.setParticipants(result.getParticipants());
-            participantsOverlay.refresh();
-        }
-
-        for (DataListener listener : dataListeners) {
-            listener.onDataUpdate(result);
-        }
-
-        statusComponent.stopProgress();
 
         dataService.releaseWakeLock();
-
-        buttonColumnHandler.enableButtonColumn();
-        getMapView().invalidate();
     }
 
     private void clearDataIfRequested() {
