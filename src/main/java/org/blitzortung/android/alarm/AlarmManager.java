@@ -218,26 +218,30 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
 
     private void processResult(AlarmResult alarmResult) {
         if (alarmResult != null) {
-            Log.v(Main.LOG_TAG, "AlarmManager: processResult");
+            Log.v(Main.LOG_TAG, "AlarmManager.processResult()");
 
             long currentTimestamp = System.currentTimeMillis() / 1000;
+            
             if (alarmResult.getClosestStrokeDistance() <= signalingDistanceLimit && signalingLastTimestamp + 15 < currentTimestamp) {
+                Log.v(Main.LOG_TAG, "AlarmManager.processResult() perform alarm");
                 vibrateIfEnabled();
                 playSoundIfEnabled();
                 signalingLastTimestamp = currentTimestamp;
             }
 
             if (alarmResult.getClosestStrokeDistance() <= notificationDistanceLimit) {
-                Log.v(Main.LOG_TAG, "AlarmManager: processResult sendNotification");
+                Log.v(Main.LOG_TAG, "AlarmManager.processResult() perform notification");
                 notificationHandler.sendNotification(context.getResources().getString(R.string.activity) + ": " + getTextMessage(notificationDistanceLimit));
             } else {
                 notificationHandler.clearNotification();
             }
+            
         } else {
             notificationHandler.clearNotification();
         }
 
-        Log.v(Main.LOG_TAG, "AlarmManager: processResult broadcast results");
+        Log.v(Main.LOG_TAG, String.format("AlarmManager.processResult() broadcast result %s", alarmResult));
+        
         broadcastResult(alarmResult);
     }
 

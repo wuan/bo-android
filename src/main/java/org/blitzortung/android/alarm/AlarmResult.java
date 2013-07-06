@@ -24,4 +24,9 @@ public class AlarmResult {
     public String getBearingName() {
         return sector.getLabel();
     }
+    
+    @Override
+    public String toString() {
+        return String.format("%s %.1f %s", getBearingName(), getClosestStrokeDistance(), getDistanceUnitName());
+    }
 }
