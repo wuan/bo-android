@@ -43,6 +43,17 @@ public class AlarmStatusHandler {
         return alarmStatus;
     }
 
+
+    public long getLatestTimstampWithin(float distanceLimit, AlarmStatus alarmStatus) {
+        long latestTimestamp = 0;
+        
+        for (AlarmSector sector : alarmStatus.getSectors()) {
+            latestTimestamp = Math.max(latestTimestamp, alarmSectorHandler.getLatestTimestampWithin(distanceLimit, sector));
+        }
+        
+        return latestTimestamp;
+    }
+    
     public AlarmSector getSectorWithClosestStroke(AlarmStatus alarmStatus) {
         float minDistance = Float.POSITIVE_INFINITY;
 

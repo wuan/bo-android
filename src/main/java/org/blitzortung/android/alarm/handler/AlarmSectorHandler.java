@@ -48,4 +48,16 @@ public class AlarmSectorHandler {
         float distanceInMeters = location.distanceTo(stroke.getLocation(strokeLocation));
         return alarmParameters.getMeasurementSystem().calculateDistance(distanceInMeters);
     }
+
+    public long getLatestTimestampWithin(float distanceLimit, AlarmSector sector) {
+        long latestTimestamp = 0;
+        
+        for (AlarmSectorRange range : sector.getRanges()) {
+            if (distanceLimit <= range.getRangeMaximum()) {
+                latestTimestamp = Math.max(latestTimestamp, range.getLatestStrokeTimestamp());
+            }
+        }
+        
+        return latestTimestamp;
+    }
 }

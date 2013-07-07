@@ -59,6 +59,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
 
     private float notificationDistanceLimit;
 
+    private long notificationLastTimestamp;
+
     private float signalingDistanceLimit;
 
     private long signalingLastTimestamp;
@@ -220,28 +222,36 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
         if (alarmResult != null) {
             Log.v(Main.LOG_TAG, "AlarmManager.processResult()");
 
-            long currentTimestamp = System.currentTimeMillis() / 1000;
-            
-            if (alarmResult.getClosestStrokeDistance() <= signalingDistanceLimit && signalingLastTimestamp + 15 < currentTimestamp) {
-                Log.v(Main.LOG_TAG, "AlarmManager.processResult() perform alarm");
-                vibrateIfEnabled();
-                playSoundIfEnabled();
-                signalingLastTimestamp = currentTimestamp;
+            if (alarmResult.getClosestStrokeDistance() <= signalingDistanceLimit) {
+                long signalingLatestTimestamp = alarmStatusHandler.getLatestTimstampWithin(signalingDistanceLimit, alarmStatus);
+                if (signalingLatestTimestamp > signalingLastTimestamp) {
+                    Log.v(Main.LOG_TAG, "AlarmManager.processResult() perform alarm");
+                    vibrateIfEnabled();
+                    playSoundIfEnabled();
+                    signalingLastTimestamp = signalingLatestTimestamp;
+                } else {
+                    Log.d(Main.LOG_TAG, String.format("old signaling event: %d vs %d", signalingLatestTimestamp, signalingLastTimestamp));
+                }
             }
 
             if (alarmResult.getClosestStrokeDistance() <= notificationDistanceLimit) {
-                Log.v(Main.LOG_TAG, "AlarmManager.processResult() perform notification");
-                notificationHandler.sendNotification(context.getResources().getString(R.string.activity) + ": " + getTextMessage(notificationDistanceLimit));
+                long notificationLatestTimestamp = alarmStatusHandler.getLatestTimstampWithin(notificationDistanceLimit, alarmStatus);
+                if (notificationLatestTimestamp > notificationLastTimestamp) {
+                    Log.v(Main.LOG_TAG, "AlarmManager.processResult() perform notification");
+                    notificationHandler.sendNotification(context.getResources().getString(R.string.activity) + ": " + getTextMessage(notificationDistanceLimit));
+                    notificationLastTimestamp = notificationLatestTimestamp;
+                } else {
+                    Log.d(Main.LOG_TAG, String.format("old signaling event: %d vs %d", notificationLatestTimestamp, signalingLastTimestamp));
+                }
             } else {
                 notificationHandler.clearNotification();
             }
-            
         } else {
             notificationHandler.clearNotification();
         }
 
         Log.v(Main.LOG_TAG, String.format("AlarmManager.processResult() broadcast result %s", alarmResult));
-        
+
         broadcastResult(alarmResult);
     }
 
