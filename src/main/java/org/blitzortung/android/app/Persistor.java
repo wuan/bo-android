@@ -38,7 +38,9 @@ public class Persistor {
     public Persistor(Activity activity, SharedPreferences sharedPreferences, PackageInfo pInfo) {
         provider = new DataHandler(sharedPreferences, pInfo);
         locationHandler = new LocationHandler(activity, sharedPreferences);
-        alarmManager = new AlarmManager(locationHandler, sharedPreferences, activity, (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE), new NotificationHandler(activity), new AlarmObjectFactory(), new AlarmParameters());
+        AlarmParameters alarmParameters = new AlarmParameters();
+        alarmParameters.updateSectorLabels(activity);
+        alarmManager = new AlarmManager(locationHandler, sharedPreferences, activity, (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE), new NotificationHandler(activity), new AlarmObjectFactory(), alarmParameters);
         strokesOverlay = new StrokesOverlay(activity, new StrokeColorHandler(sharedPreferences));
         participantsOverlay = new ParticipantsOverlay(activity, new ParticipantColorHandler(sharedPreferences));
     }

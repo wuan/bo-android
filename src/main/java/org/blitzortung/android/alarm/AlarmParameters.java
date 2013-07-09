@@ -1,16 +1,22 @@
 package org.blitzortung.android.alarm;
 
+import android.content.Context;
+import org.blitzortung.android.app.R;
 import org.blitzortung.android.util.MeasurementSystem;
 
 public class AlarmParameters {
-    private final static String[] SECTOR_LABELS = {"S", "SW", "W", "NW", "N", "NO", "O", "SO"};
+    private static String[] SECTOR_LABELS;
 
     private static final float[] RANGE_STEPS = {10, 25, 50, 100, 250, 500};
 
     private static final long alarmInterval = 10 * 60 * 1000;
-    
+
     private MeasurementSystem measurementSystem;
     
+    public void updateSectorLabels(Context context) {
+        SECTOR_LABELS = context.getResources().getStringArray(R.array.direction_names);
+    }
+
     public String[] getSectorLabels() {
         return SECTOR_LABELS;
     }
@@ -18,7 +24,7 @@ public class AlarmParameters {
     public float[] getRangeSteps() {
         return RANGE_STEPS;
     }
-    
+
     public long getAlarmInterval() {
         return alarmInterval;
     }

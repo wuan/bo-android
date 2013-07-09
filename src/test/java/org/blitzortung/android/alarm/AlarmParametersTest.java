@@ -4,6 +4,7 @@ import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -17,6 +18,7 @@ public class AlarmParametersTest {
     @Before
     public void setUp() {
         alarmParameters = new AlarmParameters();
+        alarmParameters.updateSectorLabels(Robolectric.application);
     }
     
     @Test

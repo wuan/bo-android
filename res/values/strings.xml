@@ -222,6 +222,16 @@
         selected range
     </string>
 
+    <string-array name="direction_names">
+        <item>S</item>
+        <item>SW</item>
+        <item>W</item>
+        <item>NW</item>
+        <item>N</item>
+        <item>NE</item>
+        <item>E</item>
+        <item>SE</item>
+    </string-array>
     <string-array name="distance_limits">
         <item>off</item>
         <item>10 km/mi.</item>

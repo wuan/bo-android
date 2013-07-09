@@ -189,8 +189,8 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
     }
 
     private void drawSectorLabel(float center, float radiusIncrement, AlarmSector sector, double bearing) {
-        String text = sector.getLabel();
-        if (!text.equals("O")) {
+        if (bearing != 90.0) {
+            final String text = sector.getLabel();
             float textRadius = (sector.getRanges().size() - 0.5f) * radiusIncrement;
             temporaryCanvas.drawText(text, center
                     + (float) (textRadius * Math.sin(bearing / 180.0 * Math.PI)), center

@@ -221,6 +221,16 @@
         angegebenen Entfernung
     </string>
 
+    <string-array name="direction_names">
+        <item>S</item>
+        <item>SW</item>
+        <item>W</item>
+        <item>NW</item>
+        <item>N</item>
+        <item>NO</item>
+        <item>O</item>
+        <item>SO</item>
+    </string-array>
     <string-array name="distance_limits">
         <item>deaktiviert</item>
         <item>10 km/mi.</item>
