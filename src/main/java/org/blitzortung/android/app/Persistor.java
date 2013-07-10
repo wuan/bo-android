@@ -50,6 +50,7 @@ public class Persistor {
         participantsOverlay.setActivity(mainActivity);
         provider.setDataListener(mainActivity);
 
+        alarmManager.updateContext(mainActivity);
         alarmManager.clearAlarmListeners();
         alarmManager.addAlarmListener(mainActivity);
     }

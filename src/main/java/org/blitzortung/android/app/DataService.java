@@ -131,7 +131,6 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
                 Log.v(Main.LOG_TAG, "DataService.onStartCommand() acquire wake lock " + wakeLock);
 
-                restart();
                 handler.removeCallbacks(this);
                 handler.post(this);
             }
@@ -144,8 +143,8 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         if (wakeLock != null && wakeLock.isHeld()) {
             Log.v(Main.LOG_TAG, "DataService.releaseWakeLock() " + wakeLock);
             wakeLock.release();
-            wakeLock = null;
         }
+        wakeLock = null;
     }
 
     @Override
@@ -159,7 +158,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
         if (backgroundOperation) {
             Log.v(Main.LOG_TAG, "DataService.run() in background");
-            
+
             dataHandler.updateDatainBackground();
         } else {
             long currentTime = Period.getCurrentTime();

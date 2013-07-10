@@ -29,10 +29,15 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
 
     private final Vibrator vibrator;
     private final NotificationHandler notificationHandler;
-    private final Context context;
+    private Context context;
     private Collection<? extends Stroke> lastStrokes;
     private int vibrationSignalDuration;
     private Uri alarmSoundNotificationSignal;
+
+    public void updateContext(Context context) {
+        this.context = context;
+        alarmParameters.updateSectorLabels(context);
+    }
 
     public interface AlarmListener {
         void onAlarmResult(AlarmResult alarmResult);
