@@ -183,7 +183,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 PreferenceKey.NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS);
 
         createAndBindToDataService();
-
+        
         getMapView().invalidate();
     }
 
@@ -199,7 +199,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + dataService);
                 dataService.setListener(Main.this);
                 dataService.setDataHandler(dataHandler);
-                dataService.restart();
+                if (!persistor.hasCurrentResult()) {
+                    dataService.restart();
+                }
                 dataService.onResume();
                 historyController.setDataService(dataService);
             }
