@@ -486,7 +486,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             getMapView().invalidate();
         }
 
-        dataService.releaseWakeLock();
+        if (dataService != null) {
+            dataService.releaseWakeLock();
+        }
     }
 
     private void clearDataIfRequested() {
