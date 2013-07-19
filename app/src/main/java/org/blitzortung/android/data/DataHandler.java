@@ -100,6 +100,8 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                             .isIncremental(dataProvider.returnsIncrementalData())
                             .withReferenceTime(System.currentTimeMillis() + intervalOffset * 60 * 1000)
                     .withRasterParameters(dataProvider.getRasterParameters())
+                    .withRegion(region)
+                    .withRasterBaselength(rasterBaselength)
                     .withHistogram(dataProvider.getHistogram());
 
                     if (updateParticipants) {

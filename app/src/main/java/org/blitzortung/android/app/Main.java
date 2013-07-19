@@ -21,6 +21,8 @@ import android.view.*;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
@@ -32,6 +34,7 @@ import org.blitzortung.android.alarm.AlarmResult;
 import org.blitzortung.android.app.controller.ButtonColumnHandler;
 import org.blitzortung.android.app.controller.HistoryController;
 import org.blitzortung.android.app.controller.LocationHandler;
+import org.blitzortung.android.app.controller.MapController;
 import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
@@ -89,6 +92,7 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
     private DataService dataService;
     private ServiceConnection serviceConnection;
     private LegendView legendView;
+    private MapController mapController;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -101,19 +105,7 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
         }
         updatePackageInfo();
 
-        setContentView(isDebugBuild() ? R.layout.main_debug : R.layout.main);
-
-        Fragment fragmentById = getFragmentManager().findFragmentById(R.id.v2map);
-        if (fragmentById instanceof MapFragment) {
-            map = ((MapFragment) fragmentById).getMap();
-            map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-            map.setMyLocationEnabled(false);
-            UiSettings uiSettings = map.getUiSettings();
-            uiSettings.setTiltGesturesEnabled(false);
-            uiSettings.setZoomControlsEnabled(false);
-            uiSettings.setRotateGesturesEnabled(false);
-            uiSettings.setCompassEnabled(false);
-        }
+        setContentView(R.layout.main);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -162,6 +154,13 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
             if (actionBar != null) {
                 actionBar.hide();
             }
+        }
+
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.v2map);
+        mapController = new MapController(mapFragment, preferences, getResources(), strokesComponent);
+        if (persistor.hasCurrentResult()) {
+            DataResult currentResult = persistor.getCurrentResult();
+            mapController.updateMap(currentResult.data(), currentResult.getTime(), currentResult.getSpatial().getRasterParameters(), strokesComponent.getColorHandler());
         }
 
         historyController = new HistoryController(this, dataHandler);
@@ -262,7 +261,7 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
                         }
 
                         float diameter = 1.5f * 2f * radius;
-                        animateToLocationAndVisibleSize(currentLocation.getLongitude(), currentLocation.getLatitude(), diameter);
+                        animateToLocationAndVisibleSize((float)currentLocation.getLongitude(), (float)currentLocation.getLatitude(), diameter);
                     }
 
                 }
@@ -291,9 +290,10 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
         });
     }
 
-    private void animateToLocationAndVisibleSize(double longitude, double latitude, float diameter) {
+    private void animateToLocationAndVisibleSize(float longitude, float latitude, float diameter) {
         Log.d(Main.LOG_TAG, String.format("Main.animateAndZoomTo() %.4f, %.4f, %.0fkm", longitude, latitude, diameter));
 
+        mapController.animateTo(longitude, latitude, diameter);
     }
 
 
@@ -381,8 +381,6 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
         } else {
             Log.d(Main.LOG_TAG, "Main.onPause()");
         }
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     @Override
@@ -416,6 +414,12 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
         clearDataIfRequested();
 
         if (data.getStrokes() != null) {
+            if (time.isIncremental()) {
+                strokesComponent.expireStrokes();
+            } else {
+                strokesComponent.clear();
+            }
+
             RasterParameters rasterParameters = spatial.getRasterParameters();
             strokesComponent.setRasterParameters(rasterParameters);
             strokesComponent.setRegion(spatial.getRegion());
@@ -423,34 +427,13 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
             strokesComponent.setIntervalDuration(time.getIntervalDuration());
             strokesComponent.setIntervalOffset(time.getIntervalOffset());
 
-            if (time.isIncremental()) {
-                strokesComponent.expireStrokes();
-            } else {
-                strokesComponent.clear();
-            }
             strokesComponent.addStrokes(data.getStrokes());
 
             lightningActivityAlarmManager.checkStrokes(strokesComponent.getStrokes(), time.isRealtime());
 
-            float width = rasterParameters.getLongitudeDelta();
-            float height = rasterParameters.getLatitudeDelta();
-
             ColorHandler colorHandler = strokesComponent.getColorHandler();
 
-            Log.v("BO_ANDROID", String.format("reference time %d", time.getReferenceTime()));
-
-            map.clear();
-
-            addRasterDataArea(rasterParameters);
-
-            for (AbstractStroke stroke : data.getStrokes()) {
-                float longitude = stroke.getLongitude();
-                float latitude = stroke.getLatitude();
-
-                int color = colorHandler.getColor(time.getReferenceTime(), stroke.getTimestamp(), time.getIntervalDuration());
-
-                addGroundOverlay(longitude, latitude, width, height, color, 0f);
-            }
+            mapController.updateMap(data, time, rasterParameters, colorHandler);
 
             if (!time.isRealtime()) {
                 dataService.disable();
@@ -470,38 +453,13 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
             buttonColumnHandler.enableButtonColumn();
         }
 
+        legendView.forceLayout();
+
         if (dataService != null) {
             dataService.releaseWakeLock();
         }
     }
 
-    private void addRasterDataArea(RasterParameters rasterParameters) {
-        map.addPolygon(new PolygonOptions()
-                .add(
-                        new LatLng(rasterParameters.getMaxLatitude(), rasterParameters.getMinLongitude()),
-                        new LatLng(rasterParameters.getMaxLatitude(), rasterParameters.getMaxLongitude()),
-                        new LatLng(rasterParameters.getMinLatitude(), rasterParameters.getMaxLongitude()),
-                        new LatLng(rasterParameters.getMinLatitude(), rasterParameters.getMinLongitude())
-                )
-                .strokeColor(Color.WHITE)
-                .strokeWidth(1f)
-                .fillColor(Color.TRANSPARENT));
-    }
-
-    private void addGroundOverlay(float longitude, float latitude, float width, float height, int color, float transparency) {
-        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        bitmap.setPixel(0, 0, color);
-        BitmapDescriptor image = BitmapDescriptorFactory.fromBitmap(bitmap);
-        LatLngBounds bounds = new LatLngBounds(
-                new LatLng(latitude - height / 2, longitude - width / 2),
-                new LatLng(latitude + height / 2, longitude + width / 2)
-        );
-        map.addGroundOverlay(new GroundOverlayOptions()
-                .image(image)
-                .positionFromBounds(bounds)
-                .transparency(transparency)
-        );
-    }
 
     private void clearDataIfRequested() {
         if (clearData) {
@@ -568,10 +526,6 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
 
     private void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey key) {
         switch (key) {
-            case MAP_TYPE:
-                String mapTypeString = sharedPreferences.getString(key.toString(), "SATELLITE");
-                map.setMapType(mapTypeString.equals("SATELLITE") ? GoogleMap.MAP_TYPE_SATELLITE : GoogleMap.MAP_TYPE_NORMAL);
-                break;
 
             case SHOW_PARTICIPANTS:
                 boolean showParticipants = sharedPreferences.getBoolean(key.toString(), true);
@@ -637,7 +591,7 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
 
     private void updatePackageInfo() {
         try {
-            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            pInfo = getPackageManager() != null ? getPackageManager().getPackageInfo(getPackageName(), 0) : null;
         } catch (PackageManager.NameNotFoundException e) {
             throw new IllegalStateException(e);
         }

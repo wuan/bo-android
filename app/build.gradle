@@ -35,4 +35,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:+'
     compile 'com.google.android.gms:play-services:4.0.30'
     compile 'org.functionaljava:functionaljava:3.1'
+    compile 'org.roboguice:roboguice:2.0'
 }
