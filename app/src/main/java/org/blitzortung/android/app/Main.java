@@ -22,13 +22,12 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.*;
 
 import org.blitzortung.android.alarm.AlarmLabelHandler;
-import org.blitzortung.android.alarm.AlarmManager;
+import org.blitzortung.android.alarm.LightningActivityAlarmManager;
 import org.blitzortung.android.alarm.AlarmResult;
 import org.blitzortung.android.app.controller.ButtonColumnHandler;
 import org.blitzortung.android.app.controller.HistoryController;
@@ -56,7 +55,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Main extends Activity implements DataListener, OnSharedPreferenceChangeListener, DataService.DataServiceStatusListener,
-        AlarmManager.AlarmListener {
+        LightningActivityAlarmManager.AlarmListener {
 
     public static final String LOG_TAG = "BO_ANDROID";
 
@@ -66,7 +65,7 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
 
     private ParticipantsComponent participantsComponent;
 
-    private AlarmManager alarmManager;
+    private LightningActivityAlarmManager lightningActivityAlarmManager;
 
     private LocationHandler locationHandler;
 
@@ -137,10 +136,10 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
         statusComponent = new StatusComponent(this);
         setHistoricStatusString();
 
-        alarmManager = persistor.getAlarmManager();
+        lightningActivityAlarmManager = persistor.getLightningActivityAlarmManager();
 
-        if (alarmManager.isAlarmEnabled()) {
-            onAlarmResult(alarmManager.getAlarmResult());
+        if (lightningActivityAlarmManager.isAlarmEnabled()) {
+            onAlarmResult(lightningActivityAlarmManager.getAlarmResult());
         }
 
         buttonColumnHandler = new ButtonColumnHandler<ImageButton>();
@@ -182,7 +181,6 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
                 PreferenceKey.NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS);
 
         createAndBindToDataService();
-
     }
 
     private void createAndBindToDataService() {
@@ -246,19 +244,19 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
         });
 
         AlarmView alarmView = (AlarmView) findViewById(R.id.alarm_view);
-        alarmView.setAlarmManager(alarmManager);
+        alarmView.setLightningActivityAlarmManager(lightningActivityAlarmManager);
         alarmView.setColorHandler(strokesComponent.getColorHandler(), strokesComponent.getIntervalDuration());
         alarmView.setBackgroundColor(Color.TRANSPARENT);
         alarmView.setAlpha(200);
         alarmView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (alarmManager.isAlarmEnabled()) {
-                    final Location currentLocation = alarmManager.getCurrentLocation();
+                if (lightningActivityAlarmManager.isAlarmEnabled()) {
+                    final Location currentLocation = lightningActivityAlarmManager.getCurrentLocation();
                     if (currentLocation != null) {
-                        float radius = alarmManager.getMaxDistance();
+                        float radius = lightningActivityAlarmManager.getMaxDistance();
 
-                        final AlarmResult alarmResult = alarmManager.getAlarmResult();
+                        final AlarmResult alarmResult = lightningActivityAlarmManager.getAlarmResult();
                         if (alarmResult != null) {
                             radius = Math.max(Math.min(alarmResult.getClosestStrokeDistance() * 1.2f, radius), 50f);
                         }
@@ -310,13 +308,20 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
 
     public boolean isDebugBuild() {
         boolean dbg = false;
-        try {
-            PackageManager pm = getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(getPackageName(), 0);
 
-            dbg = ((pi.applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0);
-        } catch (Exception ignored) {
+        PackageManager pm = getPackageManager();
+        if (pm != null) {
+
+            PackageInfo pi = null;
+            try {
+                pi = pm.getPackageInfo(getPackageName(), 0);
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            dbg = pi != null && pi.applicationInfo != null && ((pi.applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0);
         }
+
         return dbg;
     }
 
@@ -425,7 +430,7 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
             }
             strokesComponent.addStrokes(data.getStrokes());
 
-            alarmManager.checkStrokes(strokesComponent.getStrokes(), time.isRealtime());
+            lightningActivityAlarmManager.checkStrokes(strokesComponent.getStrokes(), time.isRealtime());
 
             float width = rasterParameters.getLongitudeDelta();
             float height = rasterParameters.getLatitudeDelta();
@@ -537,7 +542,7 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
                 break;
 
             case R.id.alarm_dialog:
-                dialog = new AlarmDialog(this, alarmManager, new AlarmDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)), strokesComponent.getIntervalDuration());
+                dialog = new AlarmDialog(this, lightningActivityAlarmManager, new AlarmDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)), strokesComponent.getIntervalDuration());
                 break;
 
             case R.id.settings_dialog:

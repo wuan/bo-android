@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AlarmManager implements OnSharedPreferenceChangeListener, LocationHandler.Listener {
+public class LightningActivityAlarmManager implements OnSharedPreferenceChangeListener, LocationHandler.Listener {
 
     private final Vibrator vibrator;
     private final NotificationHandler notificationHandler;
@@ -70,7 +70,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
 
     private long signalingLastTimestamp;
 
-    public AlarmManager(LocationHandler locationHandler, SharedPreferences preferences, Context context, Vibrator vibrator, NotificationHandler notificationHandler, AlarmObjectFactory alarmObjectFactory, AlarmParameters alarmParameters) {
+    public LightningActivityAlarmManager(LocationHandler locationHandler, SharedPreferences preferences, Context context, Vibrator vibrator, NotificationHandler notificationHandler, AlarmObjectFactory alarmObjectFactory, AlarmParameters alarmParameters) {
         this.locationHandler = locationHandler;
         this.context = context;
         this.vibrator = vibrator;
@@ -225,12 +225,12 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
 
     private void processResult(AlarmResult alarmResult) {
         if (alarmResult != null) {
-            Log.v(Main.LOG_TAG, "AlarmManager.processResult()");
+            Log.v(Main.LOG_TAG, "LightningActivityAlarmManager.processResult()");
 
             if (alarmResult.getClosestStrokeDistance() <= signalingDistanceLimit) {
                 long signalingLatestTimestamp = alarmStatusHandler.getLatestTimstampWithin(signalingDistanceLimit, alarmStatus);
                 if (signalingLatestTimestamp > signalingLastTimestamp) {
-                    Log.v(Main.LOG_TAG, "AlarmManager.processResult() perform alarm");
+                    Log.v(Main.LOG_TAG, "LightningActivityAlarmManager.processResult() perform alarm");
                     vibrateIfEnabled();
                     playSoundIfEnabled();
                     signalingLastTimestamp = signalingLatestTimestamp;
@@ -242,7 +242,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
             if (alarmResult.getClosestStrokeDistance() <= notificationDistanceLimit) {
                 long notificationLatestTimestamp = alarmStatusHandler.getLatestTimstampWithin(notificationDistanceLimit, alarmStatus);
                 if (notificationLatestTimestamp > notificationLastTimestamp) {
-                    Log.v(Main.LOG_TAG, "AlarmManager.processResult() perform notification");
+                    Log.v(Main.LOG_TAG, "LightningActivityAlarmManager.processResult() perform notification");
                     notificationHandler.sendNotification(context.getResources().getString(R.string.activity) + ": " + getTextMessage(notificationDistanceLimit));
                     notificationLastTimestamp = notificationLatestTimestamp;
                 } else {
@@ -255,7 +255,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
             notificationHandler.clearNotification();
         }
 
-        Log.v(Main.LOG_TAG, String.format("AlarmManager.processResult() broadcast result %s", alarmResult));
+        Log.v(Main.LOG_TAG, String.format("LightningActivityAlarmManager.processResult() broadcast result %s", alarmResult));
 
         broadcastResult(alarmResult);
     }

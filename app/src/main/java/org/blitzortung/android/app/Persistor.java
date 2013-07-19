@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.os.Vibrator;
-import org.blitzortung.android.alarm.AlarmManager;
+import org.blitzortung.android.alarm.LightningActivityAlarmManager;
 import org.blitzortung.android.alarm.AlarmParameters;
 import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
 import org.blitzortung.android.app.controller.LocationHandler;
@@ -20,11 +20,13 @@ public class Persistor {
 
     private final DataHandler provider;
 
-    private final AlarmManager alarmManager;
+    private final LightningActivityAlarmManager lightningActivityAlarmManager;
     private final StrokesComponent strokesComponent;
     private final ParticipantsComponent participantsComponent;
 
     private DataResult currentResult;
+
+    private DataService dataService;
 
     public LocationHandler getLocationHandler() {
         return locationHandler;
@@ -37,7 +39,7 @@ public class Persistor {
         locationHandler = new LocationHandler(activity, sharedPreferences);
         AlarmParameters alarmParameters = new AlarmParameters();
         alarmParameters.updateSectorLabels(activity);
-        alarmManager = new AlarmManager(locationHandler, sharedPreferences, activity, (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE), new NotificationHandler(activity), new AlarmObjectFactory(), alarmParameters);
+        lightningActivityAlarmManager = new LightningActivityAlarmManager(locationHandler, sharedPreferences, activity, (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE), new NotificationHandler(activity), new AlarmObjectFactory(), alarmParameters);
         strokesComponent = new StrokesComponent();
         strokesComponent.setColorHandler(new StrokeColorHandler(sharedPreferences));
         participantsComponent = new ParticipantsComponent();
@@ -46,9 +48,9 @@ public class Persistor {
     public void updateContext(Main mainActivity) {
         provider.setDataListener(mainActivity);
 
-        alarmManager.updateContext(mainActivity);
-        alarmManager.clearAlarmListeners();
-        alarmManager.addAlarmListener(mainActivity);
+        lightningActivityAlarmManager.updateContext(mainActivity);
+        lightningActivityAlarmManager.clearAlarmListeners();
+        lightningActivityAlarmManager.addAlarmListener(mainActivity);
     }
 
     public StrokesComponent getStrokesComponent() {
@@ -63,8 +65,8 @@ public class Persistor {
         return provider;
     }
 
-    public AlarmManager getAlarmManager() {
-        return alarmManager;
+    public LightningActivityAlarmManager getLightningActivityAlarmManager() {
+        return lightningActivityAlarmManager;
     }
 
     public void setCurrentResult(DataResult result) {
@@ -77,5 +79,17 @@ public class Persistor {
 
     public boolean hasCurrentResult() {
         return currentResult != null;
+    }
+
+    public boolean hasDataService() {
+        return dataService != null;
+    }
+
+    public DataService getDataService() {
+        return dataService;
+    }
+
+    public void setDataService(DataService dataService) {
+        this.dataService = dataService;
     }
 }

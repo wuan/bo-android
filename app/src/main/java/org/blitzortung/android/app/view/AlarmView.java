@@ -6,7 +6,7 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
 import android.view.View;
-import org.blitzortung.android.alarm.AlarmManager;
+import org.blitzortung.android.alarm.LightningActivityAlarmManager;
 import org.blitzortung.android.alarm.AlarmParameters;
 import org.blitzortung.android.alarm.AlarmResult;
 import org.blitzortung.android.alarm.object.AlarmSector;
@@ -18,13 +18,13 @@ import org.blitzortung.android.map.color.ColorHandler;
 
 import java.util.List;
 
-public class AlarmView extends View implements AlarmManager.AlarmListener {
+public class AlarmView extends View implements LightningActivityAlarmManager.AlarmListener {
 
     private static final int TEXT_MINIMUM_SIZE = 300;
     private static final PorterDuffXfermode XFERMODE_CLEAR = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
     private static final PorterDuffXfermode XFERMODE_SRC = new PorterDuffXfermode(PorterDuff.Mode.SRC);
 
-    private AlarmManager alarmManager;
+    private LightningActivityAlarmManager lightningActivityAlarmManager;
 
     private ColorHandler colorHandler;
 
@@ -68,8 +68,8 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
     }
 
 
-    public void setAlarmManager(AlarmManager alarmManager) {
-        this.alarmManager = alarmManager;
+    public void setLightningActivityAlarmManager(LightningActivityAlarmManager lightningActivityAlarmManager) {
+        this.lightningActivityAlarmManager = lightningActivityAlarmManager;
     }
 
     @Override
@@ -84,15 +84,15 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
     @Override
     protected void onAttachedToWindow() {
-        if (alarmManager != null) {
-            alarmManager.addAlarmListener(this);
+        if (lightningActivityAlarmManager != null) {
+            lightningActivityAlarmManager.addAlarmListener(this);
         }
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        if (alarmManager != null) {
-            alarmManager.removeAlarmListener(this);
+        if (lightningActivityAlarmManager != null) {
+            lightningActivityAlarmManager.removeAlarmListener(this);
         }
     }
 
@@ -106,10 +106,10 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
         prepareTemporaryBitmap(size);
 
-        AlarmStatus alarmStatus = alarmManager.getAlarmStatus();
+        AlarmStatus alarmStatus = lightningActivityAlarmManager.getAlarmStatus();
 
         if (alarmStatus != null) {
-            AlarmParameters alarmParameters = alarmManager.getAlarmParameters();
+            AlarmParameters alarmParameters = lightningActivityAlarmManager.getAlarmParameters();
 
             final float[] rangeSteps = alarmParameters.getRangeSteps();
             final int rangeStepCount = rangeSteps.length;
