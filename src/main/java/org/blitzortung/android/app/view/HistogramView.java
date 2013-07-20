@@ -45,7 +45,7 @@ public class HistogramView extends View implements DataListener {
     public HistogramView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-        padding = ViewHelper.pxFromDp(this, 4);
+        padding = ViewHelper.pxFromDp(this, 5);
         textSize = ViewHelper.pxFromSp(this, 12);
 
         foregroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
