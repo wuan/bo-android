@@ -74,6 +74,7 @@ public class JsonRpcDataProvider extends DataProvider {
             JSONObject response = client.call("get_strokes_raster", intervalDuration, rasterSize, intervalOffset, region);
 
             readRasterData(response, strokes);
+            rasterParameters.setInfo(String.format("%.0f km", rasterSize / 1000f));
             readHistogramData(response);
         } catch (Exception e) {
             skipServer();

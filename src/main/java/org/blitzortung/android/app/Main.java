@@ -85,6 +85,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     private HistoryController historyController;
     private DataService dataService;
     private ServiceConnection serviceConnection;
+    private LegendView legendView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -183,7 +184,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 PreferenceKey.NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS);
 
         createAndBindToDataService();
-        
+
         getMapView().invalidate();
     }
 
@@ -235,7 +236,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     }
 
     private void setupCustomViews() {
-        LegendView legendView = (LegendView) findViewById(R.id.legend_view);
+        legendView = (LegendView) findViewById(R.id.legend_view);
         strokesOverlay.setIntervalDuration(dataHandler.getIntervalDuration());
         legendView.setStrokesOverlay(strokesOverlay);
         legendView.setAlpha(150);
@@ -617,19 +618,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         int intervalDuration = strokesOverlay.getIntervalDuration();
         statusText += getResources().getQuantityString(R.plurals.minute, intervalDuration, intervalDuration);
         statusText += " " + runStatus;
-
-        int region = strokesOverlay.getRegion();
-        if (region != 0) {
-            String regions[] = getResources().getStringArray(R.array.regions_values);
-            int index = 0;
-            for (String region_number : regions) {
-                if (region == Integer.parseInt(region_number)) {
-                    statusText += " " + getResources().getStringArray(R.array.regions)[index];
-                    break;
-                }
-                index++;
-            }
-        }
 
         statusComponent.setText(statusText);
     }

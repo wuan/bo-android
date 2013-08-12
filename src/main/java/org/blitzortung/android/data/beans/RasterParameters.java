@@ -18,6 +18,8 @@ public class RasterParameters {
 	private int lon_count;
 	private int lat_count;
 
+    private String info;
+
 	public RasterParameters(JSONObject jsonObject) throws JSONException {
 		lon_start = (float) jsonObject.getDouble("x0");
 		lat_start = (float) jsonObject.getDouble("y1");
@@ -79,4 +81,12 @@ public class RasterParameters {
 	public int getLatitudeIndex(double latitude) {
 		return (int)((lat_start - latitude) / lat_delta + 0.5);
 	}
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
 }

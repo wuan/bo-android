@@ -9,12 +9,15 @@ import android.util.AttributeSet;
 import android.view.View;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
+import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 
 public class LegendView extends View {
 
 
+    public static final float REGION_HEIGHT = 1.1f;
+    public static final float RASTER_HEIGHT = 0.8f;
     private float width;
     private float height;
 
@@ -23,6 +26,8 @@ public class LegendView extends View {
     private float textWidth;
 
     final private Paint textPaint;
+    final private Paint rasterTextPaint;
+    final private Paint regionTextPaint;
     final private Paint backgroundPaint;
     final private Paint foregroundPaint;
 
@@ -59,13 +64,23 @@ public class LegendView extends View {
         textPaint.setColor(0xffffffff);
         textPaint.setTextSize(colorFieldSize);
 
+        rasterTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        rasterTextPaint.setColor(0xffffffff);
+        rasterTextPaint.setTextSize(colorFieldSize * RASTER_HEIGHT);
+        rasterTextPaint.setTextAlign(Paint.Align.CENTER);
+
+        regionTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        regionTextPaint.setColor(0xffffffff);
+        regionTextPaint.setTextSize(colorFieldSize * REGION_HEIGHT);
+        regionTextPaint.setTextAlign(Paint.Align.CENTER);
+
         updateTextWidth(0);
 
         setBackgroundColor(Color.TRANSPARENT);
     }
 
     private void updateTextWidth(int intervalDuration) {
-        textWidth = (float)Math.ceil(textPaint.measureText(intervalDuration > 100 ? "< 100min" : "< 10min"));
+        textWidth = (float) Math.ceil(textPaint.measureText(intervalDuration > 100 ? "< 100min" : "< 10min"));
     }
 
     @Override
@@ -80,7 +95,15 @@ public class LegendView extends View {
 
         height = Math.min((colorFieldSize + padding) * colorHandler.getColors().length + padding, parentHeight);
 
-        super.onMeasure(MeasureSpec.makeMeasureSpec((int)width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec((int)height, MeasureSpec.EXACTLY));
+        if (hasRegion()) {
+            height += colorFieldSize * REGION_HEIGHT + padding;
+        }
+
+        if (hasRaster()) {
+            height += colorFieldSize * RASTER_HEIGHT + padding;
+        }
+
+        super.onMeasure(MeasureSpec.makeMeasureSpec((int) width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec((int) height, MeasureSpec.EXACTLY));
     }
 
     @Override
@@ -93,9 +116,11 @@ public class LegendView extends View {
             canvas.drawRect(backgroundRect, backgroundPaint);
 
             int numberOfColors = colorHandler.getNumberOfColors();
+
+            float topCoordinate = padding;
+
             for (int index = 0; index < numberOfColors; index++) {
                 foregroundPaint.setColor(colorHandler.getColor(index));
-                float topCoordinate = padding + (colorFieldSize + padding) * index;
                 legendColorRect.set(padding, topCoordinate, padding + colorFieldSize, topCoordinate + colorFieldSize);
                 canvas.drawRect(legendColorRect, foregroundPaint);
 
@@ -103,9 +128,34 @@ public class LegendView extends View {
                 String text = String.format("%c %dmin", isLastValue ? '>' : '<', (index + (isLastValue ? 0 : 1)) * minutesPerColor);
 
                 canvas.drawText(text, 2 * padding + colorFieldSize, topCoordinate + colorFieldSize / 1.1f, textPaint);
+
+                topCoordinate += colorFieldSize + padding;
             }
 
+            if (hasRegion()) {
+                canvas.drawText(getRegionName(), width / 2.0f, topCoordinate + colorFieldSize * REGION_HEIGHT / 1.1f, regionTextPaint);
+                topCoordinate += colorFieldSize * REGION_HEIGHT + padding;
+            }
+
+            if (hasRaster()) {
+                canvas.drawText("Raster: " + getRasterString(), width / 2.0f, topCoordinate + colorFieldSize * RASTER_HEIGHT / 1.1f, rasterTextPaint);
+                topCoordinate += colorFieldSize * RASTER_HEIGHT + padding;
+            }
         }
+    }
+
+    private String getRegionName() {
+        int regionNumber = strokesOverlay.getRegion();
+
+        int index = 0;
+        for (String region_number : getResources().getStringArray(R.array.regions_values)) {
+            if (regionNumber == Integer.parseInt(region_number)) {
+                return getResources().getStringArray(R.array.regions)[index];
+            }
+            index++;
+        }
+
+        return "n/a";
     }
 
     public void setStrokesOverlay(StrokesOverlay strokesOverlay) {
@@ -114,5 +164,18 @@ public class LegendView extends View {
 
     public void setAlpha(int alpha) {
         foregroundPaint.setAlpha(alpha);
+    }
+
+    private boolean hasRaster() {
+        return strokesOverlay.hasRasterParameters();
+    }
+
+    private boolean hasRegion() {
+        return strokesOverlay.getRegion() != 0;
+    }
+
+    public String getRasterString() {
+        RasterParameters rasterParameters = strokesOverlay.getRasterParameters();
+        return rasterParameters.getInfo();
     }
 }
