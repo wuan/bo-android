@@ -73,9 +73,9 @@
     <string name="region_summary">Europa, Nordamerika oder Ozeanien</string>
 
     <string-array name="regions">
-        <item>EU</item>
-        <item>USA</item>
-        <item>AU/NZ</item>
+        <item>Europa</item>
+        <item>Nordamerika</item>
+        <item>Ozeanien</item>
     </string-array>
     <string-array name="regions_values">
         <item>1</item>
