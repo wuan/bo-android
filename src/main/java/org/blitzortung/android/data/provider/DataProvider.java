@@ -2,8 +2,9 @@ package org.blitzortung.android.data.provider;
 
 import android.content.pm.PackageInfo;
 import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.Participant;
+import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.data.beans.Stroke;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public abstract class DataProvider {
 
     public abstract int[] getHistogram();
 	
-	public abstract List<Participant> getStations(int region);
+	public abstract List<Station> getStations(int region);
 	
 	public abstract DataProviderType getType();
 	

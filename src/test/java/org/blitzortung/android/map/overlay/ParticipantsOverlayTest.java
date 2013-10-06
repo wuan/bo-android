@@ -9,7 +9,7 @@ import android.preference.PreferenceManager;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.common.collect.Lists;
-import org.blitzortung.android.data.beans.Participant;
+import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,20 +73,20 @@ public class ParticipantsOverlayTest {
     @Test
     public void testSetParticipants()
     {
-        List<Participant> participants = Lists.newArrayList();
+        List<Station> stations = Lists.newArrayList();
 
-        participantsOverlay.setParticipants(participants);
+        participantsOverlay.setParticipants(stations);
 
         assertThat(participantsOverlay.size(), is(0));
 
-        participants.add(mock(Participant.class));
-        participants.add(mock(Participant.class));
+        stations.add(mock(Station.class));
+        stations.add(mock(Station.class));
 
-        participantsOverlay.setParticipants(participants);
+        participantsOverlay.setParticipants(stations);
 
         assertThat(participantsOverlay.size(), is(2));
 
-        participantsOverlay.setParticipants(participants);
+        participantsOverlay.setParticipants(stations);
 
         assertThat(participantsOverlay.size(), is(2));
     }
@@ -94,7 +94,7 @@ public class ParticipantsOverlayTest {
     @Test
     public void testClear()
     {
-        participantsOverlay.setParticipants(Lists.newArrayList(mock(Participant.class)));
+        participantsOverlay.setParticipants(Lists.newArrayList(mock(Station.class)));
 
         participantsOverlay.clear();
 
@@ -125,7 +125,7 @@ public class ParticipantsOverlayTest {
 
         participantsOverlay.items.add(participantOverlayItem);
 
-        when(participantOverlayItem.getState()).thenReturn(Participant.State.ON);
+        when(participantOverlayItem.getState()).thenReturn(Station.State.ON);
 
         participantsOverlay.refresh();
 
@@ -141,7 +141,7 @@ public class ParticipantsOverlayTest {
     public void testCreateItem()
 
     {
-        participantsOverlay.setParticipants(Lists.newArrayList(mock(Participant.class)));
+        participantsOverlay.setParticipants(Lists.newArrayList(mock(Station.class)));
 
         assertThat(participantsOverlay.createItem(0), is(notNullValue()));
     }

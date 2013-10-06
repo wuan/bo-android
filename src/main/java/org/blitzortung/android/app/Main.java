@@ -475,7 +475,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             }
 
             if (participantsOverlay != null && result.containsParticipants()) {
-                participantsOverlay.setParticipants(result.getParticipants());
+                participantsOverlay.setParticipants(result.getStations());
                 participantsOverlay.refresh();
             }
 

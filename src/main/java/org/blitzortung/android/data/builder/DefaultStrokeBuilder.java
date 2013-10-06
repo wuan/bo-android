@@ -1,0 +1,86 @@
+package org.blitzortung.android.data.builder;
+
+import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.DefaultStroke;
+import org.blitzortung.android.data.beans.Stroke;
+import org.json.JSONArray;
+import org.json.JSONException;
+
+public class DefaultStrokeBuilder {
+
+    private long timestamp;
+
+    private float longitude;
+
+    private float latitude;
+
+    private int altitude;
+
+    private float lateralError;
+
+    private float amplitude;
+
+    private short stationCount;
+
+    public DefaultStrokeBuilder() {
+        init();
+    }
+
+    public void init() {
+        longitude = 0.0f;
+        latitude = 0.0f;
+        timestamp = 0l;
+        altitude = 0;
+        amplitude = 0.0f;
+        lateralError = 0;
+        stationCount = 0;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setLongitude(float longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setLatitude(float latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setAltitude(int altitude) {
+        this.altitude = altitude;
+    }
+
+    public void setAmplitude(float amplitude) {
+        this.amplitude = amplitude;
+    }
+
+    public void setLateralError(float lateralError) {
+        this.lateralError = lateralError;
+    }
+
+    public void setStationCount(short stationCount) {
+        this.stationCount = stationCount;
+    }
+
+    public DefaultStroke fromJson(long referenceTimestamp, JSONArray jsonArray) {
+        try {
+            setTimestamp(referenceTimestamp - 1000 * jsonArray.getInt(0));
+            setLongitude((float) jsonArray.getDouble(1));
+            setLatitude((float) jsonArray.getDouble(2));
+            setLateralError((float) jsonArray.getDouble(3));
+            setAltitude(0);
+            setAmplitude((float) jsonArray.getDouble(4));
+            setStationCount((short) jsonArray.getInt(5));
+        } catch (JSONException e) {
+            throw new IllegalStateException("error with JSON format while parsing stroke data", e);
+        }
+
+        return build();
+    }
+
+    public DefaultStroke build() {
+        return new DefaultStroke(timestamp, longitude, latitude, altitude, amplitude, stationCount, lateralError);
+    }
+}

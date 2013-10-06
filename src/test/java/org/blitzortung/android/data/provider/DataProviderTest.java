@@ -1,7 +1,7 @@
 package org.blitzortung.android.data.provider;
 
 import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.Participant;
+import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.RasterParameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,7 +51,7 @@ public class DataProviderTest {
         }
 
         @Override
-        public List<Participant> getStations(int region) {
+        public List<Station> getStations(int region) {
             return null;
         }
 

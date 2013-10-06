@@ -3,9 +3,12 @@ package org.blitzortung.android.data.provider;
 import android.util.Log;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.DefaultStroke;
-import org.blitzortung.android.data.beans.Participant;
+import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.data.provider.blitzortung.IntervalTimer;
+import org.blitzortung.android.data.provider.blitzortung.MapBuilder;
+import org.blitzortung.android.data.provider.blitzortung.MapBuilderFactory;
+import org.blitzortung.android.data.provider.blitzortung.UrlFormatter;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -15,162 +18,191 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-import static org.blitzortung.android.util.TimeFormat.parseTimestampWithMillisecondsFromFields;
-
 public class BlitzortungHttpDataProvider extends DataProvider {
-	
-	private enum Type {STRIKES, STATIONS}
 
-	private class MyAuthenticator extends Authenticator {
+    private UrlFormatter urlFormatter;
 
-		public PasswordAuthentication getPasswordAuthentication() {
-			return new PasswordAuthentication(username, password.toCharArray());
-		}
-	}
+    private MapBuilder<AbstractStroke> strokeMapBuilder;
+    private MapBuilder<Station> stationMapBuilder;
 
-	private long latestTime = 0;
+    public enum Type {STROKES, STATIONS}
 
-	@Override
-	public List<AbstractStroke> getStrokes(int timeInterval, int intervalOffset, int region) {
+    private class MyAuthenticator extends Authenticator {
 
-		List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
+        public PasswordAuthentication getPasswordAuthentication() {
+            return new PasswordAuthentication(username, password.toCharArray());
+        }
+    }
 
-		if (username != null && username.length() != 0 && password != null && password.length() != 0) {
+    private long latestTime = 0;
 
-			try {
+    public BlitzortungHttpDataProvider() {
+        this(new UrlFormatter(), new MapBuilderFactory());
+    }
+
+    public BlitzortungHttpDataProvider(UrlFormatter urlFormatter, MapBuilderFactory mapBuilderFactory) {
+        this.urlFormatter = urlFormatter;
+        strokeMapBuilder = mapBuilderFactory.createAbstractStrokeMapBuilder();
+        stationMapBuilder = mapBuilderFactory.createStationMapBuilder();
+    }
+
+    @Override
+    public List<AbstractStroke> getStrokes(int timeInterval, int intervalOffset, int region) {
+
+        List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
+
+        if (username != null && username.length() != 0 && password != null && password.length() != 0) {
+
+            try {
+                IntervalTimer intervalTimer = new IntervalTimer(10 * 60 * 1000l);
                 long startTime = System.currentTimeMillis() - timeInterval * 60 * 1000;
-				BufferedReader reader = readFromUrl(Type.STRIKES, region);
 
-				int size = 0;
-				String line;
-				while ((line = reader.readLine()) != null) {
-					size += line.length();
-                    String[] fields = line.split(" ");
-                    long parsedTimestamp = parseTimestampWithMillisecondsFromFields(fields);
+                intervalTimer.startInterval(Math.max(latestTime, startTime));
 
-                    if (parsedTimestamp > latestTime && parsedTimestamp >= startTime) {
-						strokes.add(new DefaultStroke(parsedTimestamp, fields));
-					}
-				}
-				Log.v(Main.LOG_TAG,
-						String.format("BliztortungHttpDataProvider: read %d bytes (%d new strokes) from region %d", size, strokes.size(), region));
+                while (intervalTimer.hasNext()) {
+                    Date intervalTime = new Date(intervalTimer.next());
 
-				if (strokes.size() > 0)
-					latestTime = strokes.get(strokes.size() - 1).getTimestamp();
+                    BufferedReader reader = readFromUrl(Type.STROKES, region, intervalTime);
 
-				reader.close();
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
+                    int size = 0;
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        size += line.length();
 
-		} else {
-			throw new RuntimeException("no credentials provided");
-		}
+                        AbstractStroke stroke = strokeMapBuilder.buildFromLine(line);
+                        long timestamp = stroke.getTimestamp();
 
-		return strokes;
-	}
+                        if (timestamp > latestTime && timestamp >= startTime) {
+                            strokes.add(stroke);
+                        }
+                    }
+                    Log.v(Main.LOG_TAG,
+                            String.format("BliztortungHttpDataProvider: read %d bytes (%d new strokes) from region %d", size, strokes.size(), region));
 
-    public boolean returnsIncrementalData()
-    {
+                    reader.close();
+                }
+
+                if (strokes.size() > 0) {
+                    latestTime = strokes.get(strokes.size() - 1).getTimestamp();
+                }
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+        } else {
+            throw new RuntimeException("no credentials provided");
+        }
+
+        return strokes;
+    }
+
+    public boolean returnsIncrementalData() {
         return latestTime != 0;
     }
 
-	private BufferedReader readFromUrl(Type type, int region) {
+    private BufferedReader readFromUrl(Type type, int region) {
+        return readFromUrl(type, region, null);
+    }
 
-		boolean useGzipCompression = region == 1;
-		
-		Authenticator.setDefault(new MyAuthenticator());
+    private BufferedReader readFromUrl(Type type, int region, Date intervalTime) {
 
-		BufferedReader reader;
+        boolean useGzipCompression = region == 1;
 
-		try {
-			URL url;
-			url = new URL(String.format("http://blitzortung.net/Data_%d/Protected/%s.txt%s", region, type.name().toLowerCase(), useGzipCompression ? ".gz" : ""));
-			URLConnection connection = url.openConnection();
-			connection.setConnectTimeout(60000);
-			connection.setReadTimeout(60000);
-			connection.setAllowUserInteraction(false);
-			InputStream ins = connection.getInputStream();
-			if (useGzipCompression) {
-				ins = new GZIPInputStream(ins);
-			}
-			reader = new BufferedReader(new InputStreamReader(ins));
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return reader;
-	}
+        Authenticator.setDefault(new MyAuthenticator());
 
-	@Override
-	public List<Participant> getStations(int region) {
-		List<Participant> stations = new ArrayList<Participant>();
+        BufferedReader reader;
 
-		if (username != null && username.length() != 0 && password != null && password.length() != 0) {
+        try {
+            URL url;
+            String urlString = urlFormatter.getUrlFor(type, region, intervalTime, useGzipCompression);
+            url = new URL(urlString);
+            URLConnection connection = url.openConnection();
+            connection.setConnectTimeout(60000);
+            connection.setReadTimeout(60000);
+            connection.setAllowUserInteraction(false);
+            InputStream ins = connection.getInputStream();
+            if (useGzipCompression) {
+                ins = new GZIPInputStream(ins);
+            }
+            reader = new BufferedReader(new InputStreamReader(ins));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return reader;
+    }
 
-			try {
-				BufferedReader reader = readFromUrl(Type.STATIONS, region);
+    @Override
+    public List<Station> getStations(int region) {
+        List<Station> stations = new ArrayList<Station>();
 
-				int size = 0;
-				String line;
-				while ((line = reader.readLine()) != null) {
-					size += line.length();
+        if (username != null && username.length() != 0 && password != null && password.length() != 0) {
+
+            try {
+                BufferedReader reader = readFromUrl(Type.STATIONS, region);
+
+                int size = 0;
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    size += line.length();
                     try {
-					Participant station = new Participant(line);
-					stations.add(station);
+                        Station station = stationMapBuilder.buildFromLine(line);
+                        stations.add(station);
                     } catch (NumberFormatException e) {
                         Log.w(Main.LOG_TAG, String.format("BlitzortungHttpProvider: error parsing '%s'", line));
                     }
-				}
-				Log.v(Main.LOG_TAG,
-						String.format("BlitzortungHttpProvider: read %d bytes (%d stations) from region %d", size, stations.size(), region));
+                }
+                Log.v(Main.LOG_TAG,
+                        String.format("BlitzortungHttpProvider: read %d bytes (%d stations) from region %d", size, stations.size(), region));
 
-				reader.close();
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
+                reader.close();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
-		} else {
-			throw new RuntimeException("no credentials provided");
-		}
+        } else {
+            throw new RuntimeException("no credentials provided");
+        }
 
-		return stations;
-	}
+        return stations;
+    }
 
-	@Override
-	public DataProviderType getType() {
-		return DataProviderType.HTTP;
-	}
+    @Override
+    public DataProviderType getType() {
+        return DataProviderType.HTTP;
+    }
 
-	@Override
-	public void setUp() {
-	}
+    @Override
+    public void setUp() {
+    }
 
-	@Override
-	public void shutDown() {
-	}
+    @Override
+    public void shutDown() {
+    }
 
     @Override
     public int[] getHistogram() {
         return null;
     }
 
-	@Override
-	public RasterParameters getRasterParameters() {
-		return null;
-	}
+    @Override
+    public RasterParameters getRasterParameters() {
+        return null;
+    }
 
-	@Override
-	public List<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int rasterSize, int region) {
-		return null;
-	}
+    @Override
+    public List<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int rasterSize, int region) {
+        return null;
+    }
 
-	@Override
-	public void reset() {
-		latestTime = 0;
-	}
+    @Override
+    public void reset() {
+        latestTime = 0;
+    }
 
     @Override
     public boolean isCapableOfHistoricalData() {
