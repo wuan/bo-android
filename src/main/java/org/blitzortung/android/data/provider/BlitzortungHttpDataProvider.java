@@ -5,21 +5,17 @@ import org.blitzortung.android.app.Main;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.RasterParameters;
-import org.blitzortung.android.data.provider.blitzortung.IntervalTimer;
-import org.blitzortung.android.data.provider.blitzortung.MapBuilder;
-import org.blitzortung.android.data.provider.blitzortung.MapBuilderFactory;
-import org.blitzortung.android.data.provider.blitzortung.UrlFormatter;
+import org.blitzortung.android.data.provider.blitzortung.*;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 public class BlitzortungHttpDataProvider extends DataProvider {
@@ -28,6 +24,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 
     private MapBuilder<AbstractStroke> strokeMapBuilder;
     private MapBuilder<Station> stationMapBuilder;
+    private Splitter splitter;
 
     public enum Type {STROKES, STATIONS}
 
@@ -41,19 +38,25 @@ public class BlitzortungHttpDataProvider extends DataProvider {
     private long latestTime = 0;
 
     public BlitzortungHttpDataProvider() {
-        this(new UrlFormatter(), new MapBuilderFactory());
+        this(new UrlFormatter(), new Splitter(), new MapBuilderFactory());
     }
 
-    public BlitzortungHttpDataProvider(UrlFormatter urlFormatter, MapBuilderFactory mapBuilderFactory) {
+    public BlitzortungHttpDataProvider(UrlFormatter urlFormatter, Splitter splitter,
+                                       MapBuilderFactory mapBuilderFactory) {
         this.urlFormatter = urlFormatter;
+        this.splitter = splitter;
         strokeMapBuilder = mapBuilderFactory.createAbstractStrokeMapBuilder();
         stationMapBuilder = mapBuilderFactory.createStationMapBuilder();
+
     }
 
     @Override
     public List<AbstractStroke> getStrokes(int timeInterval, int intervalOffset, int region) {
 
         List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
+
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        Calendar intervalTime = new GregorianCalendar(tz);
 
         if (username != null && username.length() != 0 && password != null && password.length() != 0) {
 
@@ -64,9 +67,12 @@ public class BlitzortungHttpDataProvider extends DataProvider {
                 intervalTimer.startInterval(Math.max(latestTime, startTime));
 
                 while (intervalTimer.hasNext()) {
-                    Date intervalTime = new Date(intervalTimer.next());
+                    intervalTime.setTimeInMillis(intervalTimer.next());
 
                     BufferedReader reader = readFromUrl(Type.STROKES, region, intervalTime);
+                    if (reader == null) {
+                        continue;
+                    }
 
                     int size = 0;
                     String line;
@@ -109,17 +115,21 @@ public class BlitzortungHttpDataProvider extends DataProvider {
         return readFromUrl(type, region, null);
     }
 
-    private BufferedReader readFromUrl(Type type, int region, Date intervalTime) {
+    private BufferedReader readFromUrl(Type type, int region, Calendar intervalTime) {
 
-        boolean useGzipCompression = region == 1;
+        boolean useGzipCompression = false;
+
+        if (type == Type.STATIONS) {
+            useGzipCompression = true;
+        }
 
         Authenticator.setDefault(new MyAuthenticator());
 
         BufferedReader reader;
 
+        String urlString = urlFormatter.getUrlFor(type, region, intervalTime, useGzipCompression);
         try {
             URL url;
-            String urlString = urlFormatter.getUrlFor(type, region, intervalTime, useGzipCompression);
             url = new URL(urlString);
             URLConnection connection = url.openConnection();
             connection.setConnectTimeout(60000);
@@ -130,6 +140,9 @@ public class BlitzortungHttpDataProvider extends DataProvider {
                 ins = new GZIPInputStream(ins);
             }
             reader = new BufferedReader(new InputStreamReader(ins));
+        } catch (FileNotFoundException e) {
+            Log.w(Main.LOG_TAG, String.format("URL '%s' not found", urlString));
+            return null;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -150,7 +163,8 @@ public class BlitzortungHttpDataProvider extends DataProvider {
                 while ((line = reader.readLine()) != null) {
                     size += line.length();
                     try {
-                        Station station = stationMapBuilder.buildFromLine(line);
+                        String[] fields = splitter.splitLine(line);
+                        Station station = stationMapBuilder.buildFromFields(fields);
                         stations.add(station);
                     } catch (NumberFormatException e) {
                         Log.w(Main.LOG_TAG, String.format("BlitzortungHttpProvider: error parsing '%s'", line));

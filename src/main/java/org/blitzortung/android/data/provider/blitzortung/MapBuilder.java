@@ -19,6 +19,10 @@ public abstract class MapBuilder<T> {
     public T buildFromLine(String line) {
         String[] fields = line.split(" ");
 
+        return buildFromFields(fields);
+    }
+
+    public T buildFromFields(String[] fields) {
         prepare(fields);
 
         for (String field : fields) {

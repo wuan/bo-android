@@ -27,8 +27,8 @@ public class MapBuilderFactory {
                 keyValueBuilderMap.put("pos", new Consumer(){
                     @Override
                     public void apply(String[] values) {
-                        strokeBuilder.setLongitude(Float.parseFloat(values[0]));
-                        strokeBuilder.setLatitude(Float.parseFloat(values[1]));
+                        strokeBuilder.setLongitude(Float.parseFloat(values[1]));
+                        strokeBuilder.setLatitude(Float.parseFloat(values[0]));
                         strokeBuilder.setAltitude(Integer.parseInt(values[2]));
                     }
                 });
@@ -74,14 +74,14 @@ public class MapBuilderFactory {
                 keyValueBuilderMap.put("city", new Consumer(){
                     @Override
                     public void apply(String[] values) {
-                        stationBuilder.setName(values[0]);
+                        stationBuilder.setName(values[0].replace("\"", ""));
                     }
                 });
                 keyValueBuilderMap.put("pos", new Consumer(){
                     @Override
                     public void apply(String[] values) {
-                        stationBuilder.setLongitude(Float.parseFloat(values[0]));
-                        stationBuilder.setLatitude(Float.parseFloat(values[1]));
+                        stationBuilder.setLongitude(Float.parseFloat(values[1]));
+                        stationBuilder.setLatitude(Float.parseFloat(values[0]));
                     }
                 });
                 keyValueBuilderMap.put("last_signal", new Consumer(){

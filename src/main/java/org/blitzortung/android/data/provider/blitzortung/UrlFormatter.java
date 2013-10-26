@@ -4,10 +4,11 @@ import android.text.format.DateFormat;
 import org.blitzortung.android.data.provider.BlitzortungHttpDataProvider;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class UrlFormatter {
-    public String getUrlFor(BlitzortungHttpDataProvider.Type type, int region, Date intervalTime, boolean useGzipCompression) {
+    public String getUrlFor(BlitzortungHttpDataProvider.Type type, int region, Calendar intervalTime, boolean useGzipCompression) {
 
         String localPath;
 
@@ -17,7 +18,7 @@ public class UrlFormatter {
             localPath = type.name().toLowerCase() + ".txt";
         }
 
-        String urlFormatString = "http://blitzortung.net/Data_%d/Protected/%s%s";
+        String urlFormatString = "http://data.blitzortung.org/Data_%d/Protected/%s%s";
         return String.format(urlFormatString, region, localPath, useGzipCompression ? ".gz" : "");
     }
 }
