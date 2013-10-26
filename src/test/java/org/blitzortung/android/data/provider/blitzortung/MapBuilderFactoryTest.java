@@ -2,7 +2,7 @@ package org.blitzortung.android.data.provider.blitzortung;
 
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Station;
-import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.provider.blitzortung.generic.LineSplitter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

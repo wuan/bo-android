@@ -1,5 +1,7 @@
 package org.blitzortung.android.data.provider.blitzortung;
 
+import org.blitzortung.android.data.provider.blitzortung.generic.LineSplitter;
+
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

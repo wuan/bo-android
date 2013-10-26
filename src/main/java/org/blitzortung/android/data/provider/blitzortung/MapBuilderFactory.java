@@ -4,6 +4,8 @@ import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.builder.DefaultStrokeBuilder;
 import org.blitzortung.android.data.builder.StationBuilder;
+import org.blitzortung.android.data.provider.blitzortung.generic.Consumer;
+import org.blitzortung.android.data.provider.blitzortung.generic.LineSplitter;
 import org.blitzortung.android.util.TimeFormat;
 
 import java.util.Map;
