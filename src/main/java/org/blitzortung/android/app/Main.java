@@ -34,10 +34,7 @@ import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.provider.DataResult;
-import org.blitzortung.android.dialogs.AlarmDialog;
-import org.blitzortung.android.dialogs.AlarmDialogColorHandler;
-import org.blitzortung.android.dialogs.InfoDialog;
-import org.blitzortung.android.dialogs.LayerDialog;
+import org.blitzortung.android.dialogs.*;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.overlay.FadeOverlay;
@@ -240,6 +237,13 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         strokesOverlay.setIntervalDuration(dataHandler.getIntervalDuration());
         legendView.setStrokesOverlay(strokesOverlay);
         legendView.setAlpha(150);
+        legendView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialog(R.layout.settings_dialog);
+                Log.v(LOG_TAG, "LegendView.onClick()");
+            }
+        });
 
         AlarmView alarmView = (AlarmView) findViewById(R.id.alarm_view);
         alarmView.setAlarmManager(alarmManager);
@@ -475,7 +479,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             }
 
             if (participantsOverlay != null && result.containsParticipants()) {
-                participantsOverlay.setParticipants(result.getParticipants());
+                participantsOverlay.setParticipants(result.getStations());
                 participantsOverlay.refresh();
             }
 
@@ -538,6 +542,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
             case R.id.layer_dialog:
                 dialog = new LayerDialog(this, getMapView());
+                break;
+
+            case R.id.settings_dialog:
+                dialog = new SettingsDialog(this);
                 break;
 
             default:

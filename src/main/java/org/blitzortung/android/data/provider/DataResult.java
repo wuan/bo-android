@@ -2,8 +2,9 @@ package org.blitzortung.android.data.provider;
 
 import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.Participant;
+import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.data.beans.Stroke;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class DataResult implements Serializable {
 
 	private final List<List<AbstractStroke>> strokes;
   
-	private List<Participant> participants;
+	private List<Station> stations;
   
 	private RasterParameters rasterParameters = null;
   
@@ -59,16 +60,16 @@ public class DataResult implements Serializable {
 		return strokes.get(0);
 	}
 	
-	public void setParticipants(List<Participant> participants) {
-		this.participants = participants;
+	public void setStations(List<Station> stations) {
+		this.stations = stations;
 	}
 	
 	public boolean containsParticipants() {
-		return participants != null;
+		return stations != null;
 	}
 	
-	public List<Participant> getParticipants() {
-		return participants;
+	public List<Station> getStations() {
+		return stations;
 	}
 	
 	public boolean retrievalWasSuccessful() {

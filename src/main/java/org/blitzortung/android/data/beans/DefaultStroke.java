@@ -8,39 +8,29 @@ import java.io.Serializable;
 public class DefaultStroke extends AbstractStroke implements Serializable {
 	
 	private static final long serialVersionUID = 4201042078597105622L;
-	
+
+    private int altitude;
+
 	private float amplitude;
 	
 	private short stationCount;
 	
 	private float lateralError;
-	
-	private short type;
-	
-	public DefaultStroke(long referenceTimestamp, JSONArray jsonArray) {
-		
-		try {
-			setTimestamp(referenceTimestamp - 1000 * jsonArray.getInt(0));
-			setLongitude((float)jsonArray.getDouble(1));
-			setLatitude((float)jsonArray.getDouble(2));
-			lateralError = (float)jsonArray.getDouble(3);
-			amplitude = (float)jsonArray.getDouble(4);
-			stationCount = (short)jsonArray.getInt(5);
-			type = (short)jsonArray.getInt(6);
-		} catch (JSONException e) {
-			throw new IllegalStateException("error with JSON format while parsing stroke data", e);
-		}
-	}
-	
-	public DefaultStroke(long timestamp, String[] fields) {
-		setTimestamp(timestamp);
-		setLatitude(Float.valueOf(fields[2]));
-		setLongitude(Float.valueOf(fields[3]));
-		amplitude = Float.valueOf(fields[4].substring(0, fields[4].length() - 2));
-		type = Short.valueOf(fields[5]);
-		lateralError = Float.valueOf(fields[6].substring(0, fields[6].length() - 1));
-		stationCount = Short.valueOf(fields[7]);
-	}
+
+    public DefaultStroke(long timestamp, float xCoord, float yCoord, int altitude, float amplitude, short stationCount, float lateralError)
+    {
+        setTimestamp(timestamp);
+        setLongitude(xCoord);
+        setLatitude(yCoord);
+        this.lateralError = lateralError;
+        this.altitude = altitude;
+        this.amplitude = amplitude;
+        this.stationCount = stationCount;
+    }
+
+    public int getAltitude() {
+        return altitude;
+    }
 
 	public float getAmplitude() {
 		return amplitude;
@@ -54,8 +44,4 @@ public class DefaultStroke extends AbstractStroke implements Serializable {
 		return lateralError;
 	}
 	
-	public short getType() {
-		return type;
-	}
-
 }
