@@ -64,13 +64,12 @@ public class MainTest {
     public void testRunWithRasterAndListenerSet()
     {
         when(strokesOverlay.hasRasterParameters()).thenReturn(true);
-        when(strokesOverlay.getRegion()).thenReturn(3);
 
         main.setStatusString("foo");
 
         ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
         verify(statusComponent, times(1)).setText(argument.capture());
 
-        assertThat(argument.getValue(), is("no stroke/0 minutes foo USA"));
+        assertThat(argument.getValue(), is("no stroke/0 minutes foo"));
     }
 }

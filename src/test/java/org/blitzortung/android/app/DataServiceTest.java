@@ -187,7 +187,7 @@ public class DataServiceTest {
 
         dataService.run();
 
-        assertThat(timerListener.getDataServiceStatus(), is("60/60s"));
+        assertThat(timerListener.getDataServiceStatus(), is("0/60s"));
     }
 
     @Test
