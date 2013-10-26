@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Splitter {
+public class StationLineSplitter implements LineSplitter {
 
-    public String[] splitLine(String line) {
+    @Override
+    public String[] split(String text) {
         ArrayList<String> matchList = new ArrayList<String>();
         Pattern regex = Pattern.compile("(\\w+(;(\"[^\"]+?\"|\\S+))+)");
-        Matcher regexMatcher = regex.matcher(line);
+        Matcher regexMatcher = regex.matcher(text);
         while (regexMatcher.find()) {
             if (regexMatcher.group(0) != null) {
                 matchList.add(regexMatcher.group(1));

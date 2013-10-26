@@ -8,6 +8,7 @@ import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.data.provider.DataProvider;
+import org.blitzortung.android.data.provider.DataProviderFactory;
 import org.blitzortung.android.data.provider.DataProviderType;
 import org.blitzortung.android.data.provider.DataResult;
 
@@ -33,8 +34,14 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     private int preferencesRasterBaselength;
     private int preferencesRegion;
+    private DataProviderFactory dataProviderFactory;
 
     public DataHandler(SharedPreferences sharedPreferences, PackageInfo pInfo) {
+       this(sharedPreferences, pInfo, new DataProviderFactory());
+    }
+
+    public DataHandler(SharedPreferences sharedPreferences, PackageInfo pInfo,
+                       DataProviderFactory dataProviderFactory) {
         parameters = new Parameters();
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
@@ -49,6 +56,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.HISTORIC_TIMESTEP);
 
         updateProviderSpecifics();
+        this.dataProviderFactory = dataProviderFactory;
     }
 
     private class FetchDataTask extends AsyncTask<Integer, Integer, DataResult> {
@@ -152,7 +160,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             case DATA_SOURCE:
                 String providerTypeString = sharedPreferences.getString(key.toString(), DataProviderType.RPC.toString());
                 DataProviderType providerType = DataProviderType.valueOf(providerTypeString.toUpperCase());
-                dataProvider = providerType.getProvider();
+                dataProvider = dataProviderFactory.getDataProviderForType(providerType);
                 dataProvider.setPackageInfo(pInfo);
 
                 updateProviderSpecifics();

@@ -1,10 +1,12 @@
-package org.blitzortung.android.data.provider;
+package org.blitzortung.android.data.provider.standard;
 
 import android.util.Log;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.data.beans.*;
 import org.blitzortung.android.data.builder.DefaultStrokeBuilder;
 import org.blitzortung.android.data.builder.StationBuilder;
+import org.blitzortung.android.data.provider.DataProvider;
+import org.blitzortung.android.data.provider.DataProviderType;
 import org.blitzortung.android.jsonrpc.JsonRpcClient;
 import org.blitzortung.android.util.TimeFormat;
 import org.json.JSONArray;
@@ -47,6 +49,7 @@ public class JsonRpcDataProvider extends DataProvider {
         defaultStrokeBuilder = new DefaultStrokeBuilder();
         stationBuilder = new StationBuilder();
     }
+
     public List<AbstractStroke> getStrokes(int timeInterval, int intervalOffset, int region) {
         List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
         rasterParameters = null;

@@ -10,8 +10,25 @@ import java.util.Map;
 
 public class MapBuilderFactory {
 
+    private final LineSplitter strokeLineSplitter;
+    private final LineSplitter stationLineSplitter;
+
+    public MapBuilderFactory() {
+        this(new LineSplitter() {
+            @Override
+            public String[] split(String text) {
+                return text.split(" ");
+            }
+        }, new StationLineSplitter());
+    }
+
+    public MapBuilderFactory(LineSplitter strokeLineSplitter, LineSplitter stationLineSplitter) {
+        this.strokeLineSplitter = strokeLineSplitter;
+        this.stationLineSplitter = stationLineSplitter;
+    }
+
     public MapBuilder<AbstractStroke> createAbstractStrokeMapBuilder() {
-        return new MapBuilder<AbstractStroke>() {
+        return new MapBuilder<AbstractStroke>(strokeLineSplitter) {
 
             private final DefaultStrokeBuilder strokeBuilder = new DefaultStrokeBuilder();
 
@@ -24,7 +41,7 @@ public class MapBuilderFactory {
 
             @Override
             protected void setBuilderMap(Map<String, Consumer> keyValueBuilderMap) {
-                keyValueBuilderMap.put("pos", new Consumer(){
+                keyValueBuilderMap.put("pos", new Consumer() {
                     @Override
                     public void apply(String[] values) {
                         strokeBuilder.setLongitude(Float.parseFloat(values[1]));
@@ -32,19 +49,19 @@ public class MapBuilderFactory {
                         strokeBuilder.setAltitude(Integer.parseInt(values[2]));
                     }
                 });
-                keyValueBuilderMap.put("str", new Consumer(){
+                keyValueBuilderMap.put("str", new Consumer() {
                     @Override
                     public void apply(String[] values) {
                         strokeBuilder.setAmplitude(Float.parseFloat(values[0]));
                     }
                 });
-                keyValueBuilderMap.put("dev", new Consumer(){
+                keyValueBuilderMap.put("dev", new Consumer() {
                     @Override
                     public void apply(String[] values) {
                         strokeBuilder.setLateralError(Integer.parseInt(values[0]));
                     }
                 });
-                keyValueBuilderMap.put("sta", new Consumer(){
+                keyValueBuilderMap.put("sta", new Consumer() {
                     @Override
                     public void apply(String[] values) {
                         strokeBuilder.setStationCount((short) values.length);
@@ -60,7 +77,7 @@ public class MapBuilderFactory {
     }
 
     public MapBuilder<Station> createStationMapBuilder() {
-        return new MapBuilder<Station>() {
+        return new MapBuilder<Station>(stationLineSplitter) {
 
             private final StationBuilder stationBuilder = new StationBuilder();
 
@@ -71,20 +88,20 @@ public class MapBuilderFactory {
 
             @Override
             protected void setBuilderMap(Map<String, Consumer> keyValueBuilderMap) {
-                keyValueBuilderMap.put("city", new Consumer(){
+                keyValueBuilderMap.put("city", new Consumer() {
                     @Override
                     public void apply(String[] values) {
                         stationBuilder.setName(values[0].replace("\"", ""));
                     }
                 });
-                keyValueBuilderMap.put("pos", new Consumer(){
+                keyValueBuilderMap.put("pos", new Consumer() {
                     @Override
                     public void apply(String[] values) {
                         stationBuilder.setLongitude(Float.parseFloat(values[1]));
                         stationBuilder.setLatitude(Float.parseFloat(values[0]));
                     }
                 });
-                keyValueBuilderMap.put("last_signal", new Consumer(){
+                keyValueBuilderMap.put("last_signal", new Consumer() {
                     @Override
                     public void apply(String[] values) {
                         String dateString = values[0].replace("\"", "").replace("-", "").replace(" ", "T");

@@ -1,11 +1,13 @@
-package org.blitzortung.android.data.provider;
+package org.blitzortung.android.data.provider.blitzortung;
 
+import android.text.Html;
 import android.util.Log;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.RasterParameters;
-import org.blitzortung.android.data.provider.blitzortung.*;
+import org.blitzortung.android.data.provider.DataProvider;
+import org.blitzortung.android.data.provider.DataProviderType;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -24,7 +26,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 
     private MapBuilder<AbstractStroke> strokeMapBuilder;
     private MapBuilder<Station> stationMapBuilder;
-    private Splitter splitter;
+    private StationLineSplitter stationLineSplitter;
 
     public enum Type {STROKES, STATIONS}
 
@@ -38,13 +40,13 @@ public class BlitzortungHttpDataProvider extends DataProvider {
     private long latestTime = 0;
 
     public BlitzortungHttpDataProvider() {
-        this(new UrlFormatter(), new Splitter(), new MapBuilderFactory());
+        this(new UrlFormatter(), new StationLineSplitter(), new MapBuilderFactory());
     }
 
-    public BlitzortungHttpDataProvider(UrlFormatter urlFormatter, Splitter splitter,
+    public BlitzortungHttpDataProvider(UrlFormatter urlFormatter, StationLineSplitter stationLineSplitter,
                                        MapBuilderFactory mapBuilderFactory) {
         this.urlFormatter = urlFormatter;
-        this.splitter = splitter;
+        this.stationLineSplitter = stationLineSplitter;
         strokeMapBuilder = mapBuilderFactory.createAbstractStrokeMapBuilder();
         stationMapBuilder = mapBuilderFactory.createStationMapBuilder();
 
@@ -163,8 +165,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
                 while ((line = reader.readLine()) != null) {
                     size += line.length();
                     try {
-                        String[] fields = splitter.splitLine(line);
-                        Station station = stationMapBuilder.buildFromFields(fields);
+                        Station station = stationMapBuilder.buildFromLine(line);
                         stations.add(station);
                     } catch (NumberFormatException e) {
                         Log.w(Main.LOG_TAG, String.format("BlitzortungHttpProvider: error parsing '%s'", line));

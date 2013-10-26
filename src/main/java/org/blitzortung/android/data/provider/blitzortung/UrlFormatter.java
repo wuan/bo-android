@@ -1,11 +1,8 @@
 package org.blitzortung.android.data.provider.blitzortung;
 
 import android.text.format.DateFormat;
-import org.blitzortung.android.data.provider.BlitzortungHttpDataProvider;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 public class UrlFormatter {
     public String getUrlFor(BlitzortungHttpDataProvider.Type type, int region, Calendar intervalTime, boolean useGzipCompression) {
