@@ -2,8 +2,8 @@ package org.blitzortung.android.map.overlay;
 
 import com.google.android.maps.OverlayItem;
 import org.blitzortung.android.data.Coordsys;
-import org.blitzortung.android.data.beans.Participant;
-import org.blitzortung.android.data.beans.Participant.State;
+import org.blitzortung.android.data.beans.Station;
+import org.blitzortung.android.data.beans.Station.State;
 
 public class ParticipantOverlayItem extends OverlayItem {
 
@@ -11,7 +11,7 @@ public class ParticipantOverlayItem extends OverlayItem {
 	
 	private final State state;
 	
-	public ParticipantOverlayItem(Participant station) {
+	public ParticipantOverlayItem(Station station) {
 		super(Coordsys.toMapCoords(station.getLongitude(), station.getLatitude()), station.getName(), "");
 
 		lastDataTime = station.getOfflineSince();

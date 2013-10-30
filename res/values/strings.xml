@@ -63,7 +63,7 @@
     </string-array>
 
     <string name="show_participants">Show participant locations</string>
-    <string name="show_participants_summary">show location of all participants in map (only with Blitzortung.org data
+    <string name="show_participants_summary">show location of all stations in map (only with Blitzortung.org data
         source)
     </string>
     <string name="show_location">Show own location</string>
@@ -153,7 +153,7 @@
     </string-array>
 
     <string name="data_source">Data source</string>
-    <string name="data_source_summary">integrated data source or access to blitzortung.org (only for participants)
+    <string name="data_source_summary">integrated data source or access to blitzortung.org (only for stations)
     </string>
 
     <string-array name="data_sources">

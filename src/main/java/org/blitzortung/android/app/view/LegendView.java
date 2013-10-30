@@ -150,7 +150,8 @@ public class LegendView extends View {
         int index = 0;
         for (String region_number : getResources().getStringArray(R.array.regions_values)) {
             if (regionNumber == Integer.parseInt(region_number)) {
-                return getResources().getStringArray(R.array.regions)[index];
+                String region = getResources().getStringArray(R.array.regions)[index];
+                return region;
             }
             index++;
         }

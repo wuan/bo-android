@@ -3,7 +3,7 @@ package org.blitzortung.android.data.provider;
 import com.google.common.collect.Lists;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.DefaultStroke;
-import org.blitzortung.android.data.beans.Participant;
+import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.RasterParameters;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,12 +55,12 @@ public class DataResultTest {
 
     @Test
     public void testSetParticipants() {
-        List<Participant> participants = Lists.newArrayList();
-        participants.add(mock(Participant.class));
+        List<Station> stations = Lists.newArrayList();
+        stations.add(mock(Station.class));
 
-        dataResult.setParticipants(participants);
+        dataResult.setStations(stations);
 
-        assertThat(dataResult.getParticipants(), is(participants));
+        assertThat(dataResult.getStations(), is(stations));
         assertTrue(dataResult.hasFailed());
         assertFalse(dataResult.retrievalWasSuccessful());
         assertFalse(dataResult.containsStrokes());

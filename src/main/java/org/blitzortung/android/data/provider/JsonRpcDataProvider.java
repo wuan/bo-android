@@ -3,6 +3,8 @@ package org.blitzortung.android.data.provider;
 import android.util.Log;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.data.beans.*;
+import org.blitzortung.android.data.builder.DefaultStrokeBuilder;
+import org.blitzortung.android.data.builder.StationBuilder;
 import org.blitzortung.android.jsonrpc.JsonRpcClient;
 import org.blitzortung.android.util.TimeFormat;
 import org.json.JSONArray;
@@ -24,7 +26,11 @@ public class JsonRpcDataProvider extends DataProvider {
     }
 
     static private final String[] SERVERS = new String[]{"http://bo1.tryb.de:7080/", "http://bo2.tryb.de/"};
+
     static private int CURRENT_SERVER = 0;
+
+    private final DefaultStrokeBuilder defaultStrokeBuilder;
+    private final StationBuilder stationBuilder;
 
     private JsonRpcClient client;
 
@@ -33,8 +39,14 @@ public class JsonRpcDataProvider extends DataProvider {
     private int[] histogram;
 
     private RasterParameters rasterParameters = null;
+
     private boolean incrementalResult;
 
+    public JsonRpcDataProvider()
+    {
+        defaultStrokeBuilder = new DefaultStrokeBuilder();
+        stationBuilder = new StationBuilder();
+    }
     public List<AbstractStroke> getStrokes(int timeInterval, int intervalOffset, int region) {
         List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
         rasterParameters = null;
@@ -96,15 +108,15 @@ public class JsonRpcDataProvider extends DataProvider {
     }
 
     @Override
-    public List<Participant> getStations(int region) {
-        List<Participant> stations = new ArrayList<Participant>();
+    public List<Station> getStations(int region) {
+        List<Station> stations = new ArrayList<Station>();
 
         try {
             JSONObject response = client.call("get_stations");
             JSONArray stations_array = (JSONArray) response.get("stations");
 
             for (int i = 0; i < stations_array.length(); i++) {
-                stations.add(new Participant(stations_array.getJSONArray(i)));
+                stations.add(stationBuilder.fromJson(stations_array.getJSONArray(i)));
             }
         } catch (Exception e) {
             skipServer();
@@ -146,7 +158,7 @@ public class JsonRpcDataProvider extends DataProvider {
         long referenceTimestamp = getReferenceTimestamp(response);
         JSONArray strokes_array = (JSONArray) response.get("s");
         for (int i = 0; i < strokes_array.length(); i++) {
-            strokes.add(new DefaultStroke(referenceTimestamp, strokes_array.getJSONArray(i)));
+            strokes.add(defaultStrokeBuilder.fromJson(referenceTimestamp, strokes_array.getJSONArray(i)));
         }
         if (response.has("next")) {
             nextId = (Integer) response.get("next");

@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo;
 import android.os.AsyncTask;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataProviderType;
 import org.blitzortung.android.data.provider.DataResult;
@@ -107,7 +108,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                     result.setHistogram(dataProvider.getHistogram());
 
                     if (updateParticipants) {
-                        result.setParticipants(dataProvider.getStations(region));
+                        result.setStations(dataProvider.getStations(region));
                     }
 
                     dataProvider.shutDown();
