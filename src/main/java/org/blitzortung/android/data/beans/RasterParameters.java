@@ -29,6 +29,22 @@ public class RasterParameters {
 		lat_count = jsonObject.getInt("yc");
 	}
 
+    public float getMinLatitude() {
+        return lat_start - lat_count * lat_delta;
+    }
+
+    public float getMaxLatitude() {
+        return lat_start;
+    }
+
+    public float getMinLongitude() {
+        return lon_start;
+    }
+
+    public float getMaxLongitude() {
+        return lon_start + lon_count * lon_delta;
+    }
+
     public float getRectCenterLongitude() {
         return lon_start + lon_delta * lon_count / 2f;
     }

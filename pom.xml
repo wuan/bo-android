@@ -35,6 +35,14 @@
             <version>4.2.2_r2</version>
             <scope>provided</scope>
         </dependency>
+
+        <!--<dependency>
+            <groupId>com.google.android.gms</groupId>
+            <artifactId>google-play-services</artifactId>
+            <version>4</version>
+            <scope>runtime</scope>
+        </dependency>-->
+
         <dependency>
             <groupId>com.google.android.maps</groupId>
             <artifactId>maps</artifactId>

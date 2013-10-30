@@ -6,6 +6,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.*;
@@ -16,6 +17,9 @@ import android.util.Log;
 import android.view.*;
 import android.widget.ImageButton;
 import android.widget.Toast;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.*;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import org.blitzortung.android.alarm.AlarmLabelHandler;
@@ -32,6 +36,7 @@ import org.blitzortung.android.app.view.components.StatusComponent;
 import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Parameters;
+import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.dialogs.AlarmDialog;
@@ -44,6 +49,7 @@ import org.blitzortung.android.map.overlay.FadeOverlay;
 import org.blitzortung.android.map.overlay.OwnLocationOverlay;
 import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
+import org.blitzortung.android.map.overlay.color.ColorHandler;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -71,6 +77,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     private OwnLocationOverlay ownLocationOverlay;
 
     private Persistor persistor;
+
+    private GoogleMap map;
 
     private boolean clearData;
 
@@ -103,6 +111,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         OwnMapView mapView = (OwnMapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
         setMapView(mapView);
+
+        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.v2map)).getMap();
+        map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -451,7 +462,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             clearDataIfRequested();
 
             if (result.containsStrokes()) {
-                strokesOverlay.setRasterParameters(result.getRasterParameters());
+                RasterParameters rasterParameters = result.getRasterParameters();
+                strokesOverlay.setRasterParameters(rasterParameters);
                 strokesOverlay.setRegion(resultParameters.getRegion());
                 strokesOverlay.setReferenceTime(result.getReferenceTime());
                 strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
@@ -467,6 +479,44 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 alarmManager.checkStrokes(strokesOverlay.getStrokes(), result.containsRealtimeData());
 
                 strokesOverlay.refresh();
+
+                float width = rasterParameters.getLongitudeDelta();
+                float height = rasterParameters.getLatitudeDelta();
+
+                ColorHandler colorHandler = strokesOverlay.getColorHandler();
+
+                map.clear();
+                for (AbstractStroke stroke : result.getStrokes()) {
+                    float longitude = stroke.getLongitude();
+                    float latitude = stroke.getLatitude();
+
+                    int color = colorHandler.getColor(result.getReferenceTime(), stroke.getTimestamp(), result.getParameters().getIntervalDuration());
+
+                    Polygon polygon = map.addPolygon(new PolygonOptions()
+                            .add(
+                                    new LatLng(rasterParameters.getMaxLatitude(), rasterParameters.getMinLongitude()),
+                                    new LatLng(rasterParameters.getMaxLatitude(), rasterParameters.getMaxLongitude()),
+                                    new LatLng(rasterParameters.getMinLatitude(), rasterParameters.getMaxLongitude()),
+                                    new LatLng(rasterParameters.getMinLatitude(), rasterParameters.getMinLongitude())
+                            )
+                            .strokeColor(Color.WHITE)
+                            .strokeWidth(1f)
+                            .fillColor(Color.TRANSPARENT));
+
+                    Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+                    bitmap.setPixel(0, 0, color);
+                    BitmapDescriptor image = BitmapDescriptorFactory.fromBitmap(bitmap);
+                    LatLngBounds bounds = new LatLngBounds(
+                            new LatLng(latitude - height / 2, longitude - width / 2),
+                            new LatLng(latitude + height / 2, longitude + width / 2)
+                    );
+                    // Adds a ground overlay with 50% transparency.
+                    GroundOverlay groundOverlay = map.addGroundOverlay(new GroundOverlayOptions()
+                            .image(image)
+                            .positionFromBounds(bounds)
+                            .transparency(0f));
+
+                }
             }
 
             if (!result.containsRealtimeData()) {
