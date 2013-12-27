@@ -112,7 +112,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         map = ((MapFragment) getFragmentManager().findFragmentById(R.id.v2map)).getMap();
         map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
-
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);

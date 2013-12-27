@@ -17,7 +17,7 @@
             android:required="true"/>
 
     <uses-sdk
-            android:minSdkVersion="14"
+            android:minSdkVersion="17"
             android:targetSdkVersion="17"/>
 
     <application
@@ -47,6 +47,9 @@
         <meta-data
                 android:name="com.google.android.maps.v2.API_KEY"
                 android:value="AIzaSyBfr_lMWjPbzh1pPSzJx96t_1yQc1iISb8"/>
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>
