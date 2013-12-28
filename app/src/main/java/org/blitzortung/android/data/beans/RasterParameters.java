@@ -2,7 +2,6 @@ package org.blitzortung.android.data.beans;
 
 import android.graphics.Point;
 import android.graphics.RectF;
-import com.google.android.maps.Projection;
 import org.blitzortung.android.data.Coordsys;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -77,14 +76,6 @@ public class RasterParameters {
         return lat_delta * lat_count;
     }
 
-	public RectF getRect(Projection projection) {
-		Point leftTop = new Point();
-		leftTop = projection.toPixels(Coordsys.toMapCoords(lon_start, lat_start), leftTop);
-		Point bottomRight = new Point();
-		bottomRight = projection.toPixels(Coordsys.toMapCoords(lon_start + lon_count * lon_delta, lat_start - lat_count * lat_delta), bottomRight);
-        return new RectF(leftTop.x, leftTop.y, bottomRight.x, bottomRight.y);
-	}
-	
 	@Override
 	public String toString() {
 		return String.format(Locale.US, "RasterParameters(%.4f, %.4f; %.4f, %.4f)", lon_start, lon_delta, lat_start, lat_delta);

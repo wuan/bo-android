@@ -1,8 +1,8 @@
 package org.blitzortung.android.dialogs;
 
 import android.content.SharedPreferences;
-import org.blitzortung.android.map.overlay.color.ColorTarget;
-import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
+import org.blitzortung.android.map.color.ColorTarget;
+import org.blitzortung.android.map.color.StrokeColorHandler;
 
 public class AlarmDialogColorHandler extends StrokeColorHandler {
 

@@ -11,7 +11,6 @@ import com.google.android.maps.OverlayItem;
 import com.google.common.collect.Lists;
 import org.blitzortung.android.app.controller.LocationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
-import org.blitzortung.android.map.OwnMapView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

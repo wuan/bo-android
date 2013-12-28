@@ -1,7 +1,6 @@
 package org.blitzortung.android.app;
 
 import org.blitzortung.android.app.view.components.StatusComponent;
-import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +30,7 @@ public class MainTest {
 
         main = new Main();
         main.statusComponent = statusComponent;
-        main.strokesOverlay = strokesOverlay;
+        main.strokesComponent = strokesOverlay;
     }
 
     @Test

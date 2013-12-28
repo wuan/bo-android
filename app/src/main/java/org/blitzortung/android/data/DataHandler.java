@@ -4,9 +4,9 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageInfo;
 import android.os.AsyncTask;
+
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataProviderType;
 import org.blitzortung.android.data.provider.DataResult;
@@ -77,6 +77,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             boolean updateParticipants = params[4] != 0;
             boolean background = params[5] != 0;
 
+            ResultBuilder resultBuilder = new ResultBuilder();
             DataResult result = new DataResult();
             result.setBackground(background);
 
@@ -85,30 +86,21 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                     dataProvider.setUp();
                     dataProvider.setCredentials(username, password);
 
-                    List<AbstractStroke> strokes;
-                    if (rasterBaselength == 0) {
-                        strokes = dataProvider.getStrokes(intervalDuration, intervalOffset, region);
-                    } else {
-                        strokes = dataProvider.getStrokesRaster(intervalDuration, intervalOffset, rasterBaselength, region);
-                    }
-                    Parameters parameters = new Parameters();
-                    parameters.setIntervalDuration(intervalDuration);
-                    parameters.setIntervalOffset(intervalOffset);
-                    parameters.setRegion(region);
-                    parameters.setRasterBaselength(rasterBaselength);
-
-                    if (dataProvider.returnsIncrementalData()) {
-                        result.setContainsIncrementalData();
-                    }
-                    result.setParameters(parameters);
-
-                    result.setReferenceTime(System.currentTimeMillis());
-                    result.setStrokes(strokes);
-                    result.setRasterParameters(dataProvider.getRasterParameters());
-                    result.setHistogram(dataProvider.getHistogram());
+                    resultBuilder.withIntervalDuration(intervalDuration)
+                            .withIntervalOffset(intervalOffset)
+                            .withRegion(region)
+                            .withRasterBaselength(rasterBaselength)
+                            .withStrokes(rasterBaselength == 0
+                                    ? dataProvider.getStrokes(intervalDuration, intervalOffset, region)
+                                    : dataProvider.getStrokesRaster(intervalDuration, intervalOffset, rasterBaselength, region)
+                                    )
+                            .isIncremental(dataProvider.returnsIncrementalData())
+                            .withReferenceTime(System.currentTimeMillis())
+                    .withRasterParameters(dataProvider.getRasterParameters())
+                    .withHistogram(dataProvider.getHistogram());
 
                     if (updateParticipants) {
-                        result.setStations(dataProvider.getStations(region));
+                        resultBuilder.withParticipants(dataProvider.getStations(region));
                     }
 
                     dataProvider.shutDown();
@@ -117,10 +109,10 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                 } finally {
                     lock.unlock();
                 }
+                return resultBuilder.build();
             } else {
-                result.setProcessWasLocked();
+                return DataResult.PROCESS_LOCKED;
             }
-            return result;
         }
     }
 

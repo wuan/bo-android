@@ -8,6 +8,8 @@ import org.blitzortung.android.data.beans.Stroke;
 
 import java.util.List;
 
+import fj.data.Array;
+
 public abstract class DataProvider {
 	
 	protected String username;
@@ -20,17 +22,17 @@ public abstract class DataProvider {
 	
 	public abstract void shutDown();
 	
-	public abstract List<AbstractStroke> getStrokes(int intervalDuration, int intervalOffset, int region);
+	public abstract Array<AbstractStroke> getStrokes(int intervalDuration, int intervalOffset, int region);
     
     public abstract boolean returnsIncrementalData();
 	
-	public abstract List<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int params, int region);
+	public abstract Array<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int params, int region);
 	
 	public abstract RasterParameters getRasterParameters();
 
     public abstract int[] getHistogram();
 	
-	public abstract List<Station> getStations(int region);
+	public abstract Array<Station> getStations(int region);
 	
 	public abstract DataProviderType getType();
 	

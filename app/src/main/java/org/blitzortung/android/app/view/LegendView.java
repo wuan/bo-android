@@ -10,8 +10,8 @@ import android.view.View;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.data.beans.RasterParameters;
-import org.blitzortung.android.map.overlay.StrokesOverlay;
-import org.blitzortung.android.map.overlay.color.ColorHandler;
+import org.blitzortung.android.data.component.StrokesComponent;
+import org.blitzortung.android.map.color.ColorHandler;
 
 public class LegendView extends View {
 
@@ -159,7 +159,7 @@ public class LegendView extends View {
         return "n/a";
     }
 
-    public void setStrokesOverlay(StrokesOverlay strokesOverlay) {
+    public void setStrokesOverlay(StrokesComponent strokesOverlay) {
         this.strokesOverlay = strokesOverlay;
     }
 

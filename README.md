@@ -20,7 +20,7 @@
  * added GPS based and manual location
  * added support for devices without menu button
  * reorganized menu
- * added ability to disable stations layer in Blitzortung.org mode
+ * added ability to disable participants layer in Blitzortung.org mode
  * optimized alarm handling
  * manual location entry: enabled negative numbers in input fields
  * GPS signal loss detection

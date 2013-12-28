@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import org.blitzortung.android.app.R;
-import org.blitzortung.android.map.overlay.LayerOverlay;
 
 public class LayerAdapter extends ArrayAdapter<LayerOverlay> {
 

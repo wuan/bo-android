@@ -9,9 +9,9 @@ import android.view.View;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.data.DataListener;
+import org.blitzortung.android.data.component.StrokesComponent;
 import org.blitzortung.android.data.provider.DataResult;
-import org.blitzortung.android.map.overlay.StrokesOverlay;
-import org.blitzortung.android.map.overlay.color.ColorHandler;
+import org.blitzortung.android.map.color.ColorHandler;
 
 public class HistogramView extends View implements DataListener {
 
@@ -119,7 +119,7 @@ public class HistogramView extends View implements DataListener {
         }
     }
 
-    public void setStrokesOverlay(StrokesOverlay strokesOverlay) {
+    public void setStrokesComponent(StrokesComponent strokesOverlay) {
         this.strokesOverlay = strokesOverlay;
     }
 

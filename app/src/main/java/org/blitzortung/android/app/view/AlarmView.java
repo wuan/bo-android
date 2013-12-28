@@ -14,7 +14,7 @@ import org.blitzortung.android.alarm.object.AlarmSectorRange;
 import org.blitzortung.android.alarm.object.AlarmStatus;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
-import org.blitzortung.android.map.overlay.color.ColorHandler;
+import org.blitzortung.android.map.color.ColorHandler;
 
 import java.util.List;
 

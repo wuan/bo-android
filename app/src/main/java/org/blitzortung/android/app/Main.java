@@ -1,6 +1,8 @@
 package org.blitzortung.android.app;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.app.Fragment;
 import android.content.*;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ApplicationInfo;
@@ -17,11 +19,11 @@ import android.util.Log;
 import android.view.*;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.*;
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapController;
+
 import org.blitzortung.android.alarm.AlarmLabelHandler;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmResult;
@@ -38,40 +40,32 @@ import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.data.component.ParticipantsComponent;
+import org.blitzortung.android.data.component.StrokesComponent;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.dialogs.*;
-import org.blitzortung.android.map.OwnMapActivity;
-import org.blitzortung.android.map.OwnMapView;
-import org.blitzortung.android.map.overlay.FadeOverlay;
-import org.blitzortung.android.map.overlay.OwnLocationOverlay;
-import org.blitzortung.android.map.overlay.ParticipantsOverlay;
-import org.blitzortung.android.map.overlay.StrokesOverlay;
-import org.blitzortung.android.map.overlay.color.ColorHandler;
+import org.blitzortung.android.map.color.ColorHandler;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, DataService.DataServiceStatusListener,
+public class Main extends Activity implements DataListener, OnSharedPreferenceChangeListener, DataService.DataServiceStatusListener,
         AlarmManager.AlarmListener {
 
     public static final String LOG_TAG = "BO_ANDROID";
 
     protected StatusComponent statusComponent;
 
-    private FadeOverlay fadeOverlay;
+    protected StrokesComponent strokesComponent;
 
-    protected StrokesOverlay strokesOverlay;
-
-    private ParticipantsOverlay participantsOverlay;
+    private ParticipantsComponent participantsComponent;
 
     private AlarmManager alarmManager;
 
     private LocationHandler locationHandler;
 
     private DataHandler dataHandler;
-
-    private OwnLocationOverlay ownLocationOverlay;
 
     private Persistor persistor;
 
@@ -105,12 +99,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         setContentView(isDebugBuild() ? R.layout.main_debug : R.layout.main);
 
-        OwnMapView mapView = (OwnMapView) findViewById(R.id.mapview);
-        mapView.setBuiltInZoomControls(true);
-        setMapView(mapView);
-
-        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.v2map)).getMap();
-        map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        Fragment fragmentById = getFragmentManager().findFragmentById(R.id.v2map);
+        if (fragmentById instanceof MapFragment) {
+            map = ((MapFragment) fragmentById).getMap();
+            map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        }
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -126,24 +119,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         persistor.updateContext(this);
 
         locationHandler = persistor.getLocationHandler();
-        strokesOverlay = persistor.getStrokesOverlay();
-        participantsOverlay = persistor.getParticipantsOverlay();
-
-        mapView.addZoomListener(new OwnMapView.ZoomListener() {
-
-            @Override
-            public void onZoom(int zoomLevel) {
-                strokesOverlay.updateZoomLevel(zoomLevel);
-                participantsOverlay.updateZoomLevel(zoomLevel);
-            }
-
-        });
-
-        fadeOverlay = new FadeOverlay(strokesOverlay.getColorHandler());
-
-        ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), persistor.getLocationHandler(), getMapView());
-
-        addOverlays(fadeOverlay, strokesOverlay, participantsOverlay, ownLocationOverlay);
+        strokesComponent = persistor.getStrokesComponent();
+        participantsComponent = persistor.getParticipantsComponent();
 
         dataHandler = persistor.getDataHandler();
         statusComponent = new StatusComponent(this);
@@ -192,7 +169,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         createAndBindToDataService();
 
-        getMapView().invalidate();
     }
 
     private void createAndBindToDataService() {
@@ -244,8 +220,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private void setupCustomViews() {
         legendView = (LegendView) findViewById(R.id.legend_view);
-        strokesOverlay.setIntervalDuration(dataHandler.getIntervalDuration());
-        legendView.setStrokesOverlay(strokesOverlay);
+        strokesComponent.setIntervalDuration(dataHandler.getIntervalDuration());
+        legendView.setStrokesOverlay(strokesComponent);
         legendView.setAlpha(150);
         legendView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -257,7 +233,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         AlarmView alarmView = (AlarmView) findViewById(R.id.alarm_view);
         alarmView.setAlarmManager(alarmManager);
-        alarmView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getIntervalDuration());
+        alarmView.setColorHandler(strokesComponent.getColorHandler(), strokesComponent.getIntervalDuration());
         alarmView.setBackgroundColor(Color.TRANSPARENT);
         alarmView.setAlpha(200);
         alarmView.setOnClickListener(new View.OnClickListener() {
@@ -282,7 +258,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         });
 
         HistogramView histogramView = (HistogramView) findViewById(R.id.histogram_view);
-        histogramView.setStrokesOverlay(strokesOverlay);
+        histogramView.setStrokesComponent(strokesComponent);
         if (persistor.hasCurrentResult()) {
             histogramView.onDataUpdate(persistor.getCurrentResult());
         }
@@ -306,36 +282,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     private void animateToLocationAndVisibleSize(double longitude, double latitude, float diameter) {
         Log.d(Main.LOG_TAG, String.format("Main.animateAndZoomTo() %.4f, %.4f, %.0fkm", longitude, latitude, diameter));
 
-        final OwnMapView mapView = getMapView();
-        final MapController controller = mapView.getController();
-
-        final int startZoomLevel = mapView.getZoomLevel();
-        final int targetZoomLevel = mapView.calculateTargetZoomLevel(diameter * 1000f);
-
-        controller.animateTo(new GeoPoint((int) (latitude * 1e6), (int) (longitude * 1e6)), new Runnable() {
-            @Override
-            public void run() {
-                if (startZoomLevel != targetZoomLevel) {
-                    final boolean zoomOut = targetZoomLevel - startZoomLevel < 0;
-                    final int zoomCount = Math.abs(targetZoomLevel - startZoomLevel);
-                    Handler handler = new Handler();
-                    long delay = 0;
-                    for (int i = 0; i < zoomCount; i++) {
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (zoomOut) {
-                                    controller.zoomOut();
-                                } else {
-                                    controller.zoomIn();
-                                }
-                            }
-                        }, delay);
-                        delay += 150;
-                    }
-                }
-            }
-        });
     }
 
 
@@ -345,8 +291,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public Object onRetainNonConfigurationInstance() {
-        strokesOverlay.clearPopup();
-        participantsOverlay.clearPopup();
         return persistor;
     }
 
@@ -406,9 +350,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         locationHandler.onResume();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (preferences.getBoolean(PreferenceKey.SHOW_LOCATION.toString(), false)) {
-            ownLocationOverlay.enableOwnLocation();
-        }
     }
 
     @Override
@@ -423,9 +364,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         }
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (preferences.getBoolean(PreferenceKey.SHOW_LOCATION.toString(), false)) {
-            ownLocationOverlay.disableOwnLocation();
-        }
     }
 
     @Override
@@ -434,11 +372,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         Log.i(LOG_TAG, "Main: onDestroy()");
 
         unbindService(serviceConnection);
-    }
-
-    @Override
-    protected boolean isRouteDisplayed() {
-        return false;
     }
 
     @Override
@@ -466,27 +399,25 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
             if (result.containsStrokes()) {
                 RasterParameters rasterParameters = result.getRasterParameters();
-                strokesOverlay.setRasterParameters(rasterParameters);
-                strokesOverlay.setRegion(resultParameters.getRegion());
-                strokesOverlay.setReferenceTime(result.getReferenceTime());
-                strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
-                strokesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
+                strokesComponent.setRasterParameters(rasterParameters);
+                strokesComponent.setRegion(resultParameters.getRegion());
+                strokesComponent.setReferenceTime(result.getReferenceTime());
+                strokesComponent.setIntervalDuration(resultParameters.getIntervalDuration());
+                strokesComponent.setIntervalOffset(resultParameters.getIntervalOffset());
 
                 if (result.containsIncrementalData()) {
-                    strokesOverlay.expireStrokes();
+                    strokesComponent.expireStrokes();
                 } else {
-                    strokesOverlay.clear();
+                    strokesComponent.clear();
                 }
-                strokesOverlay.addStrokes(result.getStrokes());
+                strokesComponent.addStrokes(result.getStrokes());
 
-                alarmManager.checkStrokes(strokesOverlay.getStrokes(), result.containsRealtimeData());
-
-                strokesOverlay.refresh();
+                alarmManager.checkStrokes(strokesComponent.getStrokes(), result.containsRealtimeData());
 
                 float width = rasterParameters.getLongitudeDelta();
                 float height = rasterParameters.getLatitudeDelta();
 
-                ColorHandler colorHandler = strokesOverlay.getColorHandler();
+                ColorHandler colorHandler = strokesComponent.getColorHandler();
 
                 map.clear();
                 for (AbstractStroke stroke : result.getStrokes()) {
@@ -527,9 +458,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 setHistoricStatusString();
             }
 
-            if (participantsOverlay != null && result.containsParticipants()) {
-                participantsOverlay.setParticipants(result.getStations());
-                participantsOverlay.refresh();
+            if (participantsComponent != null && result.containsParticipants()) {
+                participantsComponent.setParticipants(result.getParticipants());
             }
 
             for (DataListener listener : dataListeners) {
@@ -539,7 +469,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             statusComponent.stopProgress();
 
             buttonColumnHandler.enableButtonColumn();
-            getMapView().invalidate();
         }
 
         if (dataService != null) {
@@ -551,10 +480,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         if (clearData) {
             clearData = false;
 
-            strokesOverlay.clear();
+            strokesComponent.clear();
 
-            if (participantsOverlay != null) {
-                participantsOverlay.clear();
+            if (participantsComponent != null) {
+                participantsComponent.clear();
             }
         }
     }
@@ -586,11 +515,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 break;
 
             case R.id.alarm_dialog:
-                dialog = new AlarmDialog(this, alarmManager, new AlarmDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)), strokesOverlay.getIntervalDuration());
-                break;
-
-            case R.id.layer_dialog:
-                dialog = new LayerDialog(this, getMapView());
+                dialog = new AlarmDialog(this, alarmManager, new AlarmDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)), strokesComponent.getIntervalDuration());
                 break;
 
             case R.id.settings_dialog:
@@ -618,29 +543,21 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         switch (key) {
             case MAP_TYPE:
                 String mapTypeString = sharedPreferences.getString(key.toString(), "SATELLITE");
-                getMapView().setSatellite(mapTypeString.equals("SATELLITE"));
-                strokesOverlay.refresh();
-                if (participantsOverlay != null) {
-                    participantsOverlay.refresh();
-                }
+                map.setMapType(mapTypeString.equals("SATELLITE") ? GoogleMap.MAP_TYPE_SATELLITE : GoogleMap.MAP_TYPE_NORMAL);
                 break;
 
             case SHOW_PARTICIPANTS:
                 boolean showParticipants = sharedPreferences.getBoolean(key.toString(), true);
-                participantsOverlay.setEnabled(showParticipants);
-                updateOverlays();
+                // TODO refresh map
                 break;
 
             case COLOR_SCHEME:
-                strokesOverlay.refresh();
-                if (participantsOverlay != null) {
-                    participantsOverlay.refresh();
-                }
+                // TODO refresh map
                 break;
 
             case MAP_FADE:
                 int alphaValue = Math.round(255.0f / 100.0f * sharedPreferences.getInt(key.toString(), 40));
-                fadeOverlay.setAlpha(alphaValue);
+                // TODO
                 break;
 
             case DO_NOT_SLEEP:
@@ -661,18 +578,18 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     }
 
     protected void setHistoricStatusString() {
-        if (!strokesOverlay.hasRealtimeData()) {
-            long referenceTime = strokesOverlay.getReferenceTime() + strokesOverlay.getIntervalOffset() * 60 * 1000;
+        if (!strokesComponent.hasRealtimeData()) {
+            long referenceTime = strokesComponent.getReferenceTime() + strokesComponent.getIntervalOffset() * 60 * 1000;
             String timeString = (String) DateFormat.format("@ kk:mm", referenceTime);
             setStatusString(timeString);
         }
     }
 
     protected void setStatusString(String runStatus) {
-        int numberOfStrokes = strokesOverlay.getTotalNumberOfStrokes();
+        int numberOfStrokes = strokesComponent.getTotalNumberOfStrokes();
         String statusText = getResources().getQuantityString(R.plurals.stroke, numberOfStrokes, numberOfStrokes);
         statusText += "/";
-        int intervalDuration = strokesOverlay.getIntervalDuration();
+        int intervalDuration = strokesComponent.getIntervalDuration();
         statusText += getResources().getQuantityString(R.plurals.minute, intervalDuration, intervalDuration);
         statusText += " " + runStatus;
 

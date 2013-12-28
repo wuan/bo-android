@@ -58,9 +58,9 @@ public class DataResultTest {
         List<Station> stations = Lists.newArrayList();
         stations.add(mock(Station.class));
 
-        dataResult.setStations(stations);
+        dataResult.setParticipants(stations);
 
-        assertThat(dataResult.getStations(), is(stations));
+        assertThat(dataResult.getParticipants(), is(stations));
         assertTrue(dataResult.hasFailed());
         assertFalse(dataResult.retrievalWasSuccessful());
         assertFalse(dataResult.containsStrokes());

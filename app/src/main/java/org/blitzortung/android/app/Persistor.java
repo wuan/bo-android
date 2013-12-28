@@ -11,21 +11,17 @@ import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
 import org.blitzortung.android.app.controller.LocationHandler;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.data.DataHandler;
+import org.blitzortung.android.data.component.ParticipantsComponent;
+import org.blitzortung.android.data.component.StrokesComponent;
 import org.blitzortung.android.data.provider.DataResult;
-import org.blitzortung.android.map.overlay.ParticipantsOverlay;
-import org.blitzortung.android.map.overlay.StrokesOverlay;
-import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
-import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
 public class Persistor {
 
     private final DataHandler provider;
 
     private final AlarmManager alarmManager;
-
-    private final StrokesOverlay strokesOverlay;
-
-    private final ParticipantsOverlay participantsOverlay;
+    private final StrokesComponent strokesComponent;
+    private final ParticipantsComponent participantsComponent;
 
     private DataResult currentResult;
 
@@ -41,13 +37,11 @@ public class Persistor {
         AlarmParameters alarmParameters = new AlarmParameters();
         alarmParameters.updateSectorLabels(activity);
         alarmManager = new AlarmManager(locationHandler, sharedPreferences, activity, (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE), new NotificationHandler(activity), new AlarmObjectFactory(), alarmParameters);
-        strokesOverlay = new StrokesOverlay(activity, new StrokeColorHandler(sharedPreferences));
-        participantsOverlay = new ParticipantsOverlay(activity, new ParticipantColorHandler(sharedPreferences));
+        strokesComponent = new StrokesComponent();
+        participantsComponent = new ParticipantsComponent();
     }
 
     public void updateContext(Main mainActivity) {
-        strokesOverlay.setActivity(mainActivity);
-        participantsOverlay.setActivity(mainActivity);
         provider.setDataListener(mainActivity);
 
         alarmManager.updateContext(mainActivity);
@@ -55,12 +49,12 @@ public class Persistor {
         alarmManager.addAlarmListener(mainActivity);
     }
 
-    public StrokesOverlay getStrokesOverlay() {
-        return strokesOverlay;
+    public StrokesComponent getStrokesComponent() {
+        return strokesComponent;
     }
 
-    public ParticipantsOverlay getParticipantsOverlay() {
-        return participantsOverlay;
+    public ParticipantsComponent getParticipantsComponent() {
+        return participantsComponent;
     }
 
     public DataHandler getDataHandler() {

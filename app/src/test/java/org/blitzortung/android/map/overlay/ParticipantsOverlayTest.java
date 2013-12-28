@@ -10,7 +10,7 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.common.collect.Lists;
 import org.blitzortung.android.data.beans.Station;
-import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
+import org.blitzortung.android.map.color.ParticipantColorHandler;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

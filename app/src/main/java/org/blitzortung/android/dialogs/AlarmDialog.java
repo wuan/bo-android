@@ -7,7 +7,7 @@ import android.view.View;
 import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.view.AlarmView;
-import org.blitzortung.android.map.overlay.color.ColorHandler;
+import org.blitzortung.android.map.color.ColorHandler;
 
 public class AlarmDialog extends AlertDialog {
 

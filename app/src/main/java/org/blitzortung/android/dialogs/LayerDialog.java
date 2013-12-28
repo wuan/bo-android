@@ -2,15 +2,12 @@ package org.blitzortung.android.dialogs;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.pm.PackageInfo;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.*;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.Overlay;
 import org.blitzortung.android.app.R;
-import org.blitzortung.android.map.OwnMapView;
-import org.blitzortung.android.map.overlay.LayerOverlay;
 
 import java.util.ArrayList;
 import java.util.List;

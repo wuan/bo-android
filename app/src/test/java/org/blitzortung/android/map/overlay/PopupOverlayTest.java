@@ -7,8 +7,6 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 import org.blitzortung.android.app.R;
-import org.blitzortung.android.map.OwnMapActivity;
-import org.blitzortung.android.map.OwnMapView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
