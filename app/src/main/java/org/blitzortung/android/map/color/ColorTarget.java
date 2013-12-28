@@ -1,4 +1,4 @@
-package org.blitzortung.android.map.overlay.color;
+package org.blitzortung.android.map.color;
 
 public enum ColorTarget {
 	SATELLITE,
