@@ -11,6 +11,7 @@ public class DataResult implements Serializable {
 	private static final long serialVersionUID = -2104015890700948020L;
 
     public static final DataResult PROCESS_LOCKED = new DataResult(null, null, null);
+    public static final DataResult PROCESS_FAILED = new DataResult(null, null, null);
 
     private final DataComponent dataComponent;
     private final TimeComponent timeComponent;
@@ -22,7 +23,7 @@ public class DataResult implements Serializable {
         this.spatialComponent = spatialComponent;
     }
 
-    public DataComponent getData()
+    public DataComponent data()
     {
         return this.dataComponent;
     }

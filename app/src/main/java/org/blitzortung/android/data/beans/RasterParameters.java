@@ -1,8 +1,5 @@
 package org.blitzortung.android.data.beans;
 
-import android.graphics.Point;
-import android.graphics.RectF;
-import org.blitzortung.android.data.Coordsys;
 import org.json.JSONException;
 import org.json.JSONObject;
 

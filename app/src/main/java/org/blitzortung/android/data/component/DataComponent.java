@@ -15,4 +15,16 @@ public class DataComponent {
         this.participants = participants;
         this.histogram = histogram;
     }
+
+    public Array<AbstractStroke> getStrokes() {
+        return strokes;
+    }
+
+    public Array<Station> getParticipants() {
+        return participants;
+    }
+
+    public int[] getHistogram() {
+        return histogram;
+    }
 }

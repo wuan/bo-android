@@ -31,7 +31,7 @@ public class LegendView extends View {
     final private Paint backgroundPaint;
     final private Paint foregroundPaint;
 
-    private StrokesOverlay strokesOverlay;
+    private StrokesComponent strokesComponent;
 
     private final RectF backgroundRect;
     private final RectF legendColorRect;
@@ -88,10 +88,10 @@ public class LegendView extends View {
         int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
         int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
 
-        updateTextWidth(strokesOverlay.getIntervalDuration());
+        updateTextWidth(strokesComponent.getIntervalDuration());
         width = Math.min(3 * padding + colorFieldSize + textWidth, parentWidth);
 
-        ColorHandler colorHandler = strokesOverlay.getColorHandler();
+        ColorHandler colorHandler = strokesComponent.getColorHandler();
 
         height = Math.min((colorFieldSize + padding) * colorHandler.getColors().length + padding, parentHeight);
 
@@ -108,9 +108,9 @@ public class LegendView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
-        if (strokesOverlay != null) {
-            ColorHandler colorHandler = strokesOverlay.getColorHandler();
-            int minutesPerColor = strokesOverlay.getIntervalDuration() / colorHandler.getNumberOfColors();
+        if (strokesComponent != null) {
+            ColorHandler colorHandler = strokesComponent.getColorHandler();
+            int minutesPerColor = strokesComponent.getIntervalDuration() / colorHandler.getNumberOfColors();
 
             backgroundRect.set(0, 0, width, height);
             canvas.drawRect(backgroundRect, backgroundPaint);
@@ -145,7 +145,7 @@ public class LegendView extends View {
     }
 
     private String getRegionName() {
-        int regionNumber = strokesOverlay.getRegion();
+        int regionNumber = strokesComponent.getRegion();
 
         int index = 0;
         for (String region_number : getResources().getStringArray(R.array.regions_values)) {
@@ -159,8 +159,8 @@ public class LegendView extends View {
         return "n/a";
     }
 
-    public void setStrokesOverlay(StrokesComponent strokesOverlay) {
-        this.strokesOverlay = strokesOverlay;
+    public void setStrokesComponent(StrokesComponent strokesComponent) {
+        this.strokesComponent = strokesComponent;
     }
 
     public void setAlpha(int alpha) {
@@ -168,15 +168,15 @@ public class LegendView extends View {
     }
 
     private boolean hasRaster() {
-        return strokesOverlay.hasRasterParameters();
+        return strokesComponent.hasRasterParameters();
     }
 
     private boolean hasRegion() {
-        return strokesOverlay.getRegion() != 0;
+        return strokesComponent.getRegion() != 0;
     }
 
     public String getRasterString() {
-        RasterParameters rasterParameters = strokesOverlay.getRasterParameters();
+        RasterParameters rasterParameters = strokesComponent.getRasterParameters();
         return rasterParameters.getInfo();
     }
 }

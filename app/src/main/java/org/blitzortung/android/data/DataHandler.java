@@ -58,12 +58,10 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
         protected void onPostExecute(DataResult result) {
             if (listener != null) {
-                if (!result.hasFailed()) {
+                if (result == DataResult.PROCESS_FAILED) {
+                    listener.onDataError();
+                } else if (result == DataResult.PROCESS_LOCKED) {
                     listener.onDataUpdate(result);
-                } else {
-                    if (!result.processWasLocked()) {
-                        listener.onDataError();
-                    }
                 }
             }
         }
@@ -75,11 +73,8 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             int rasterBaselength = params[2];
             int region = params[3];
             boolean updateParticipants = params[4] != 0;
-            boolean background = params[5] != 0;
 
             ResultBuilder resultBuilder = new ResultBuilder();
-            DataResult result = new DataResult();
-            result.setBackground(background);
 
             if (lock.tryLock()) {
                 try {
@@ -106,6 +101,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                     dataProvider.shutDown();
                 } catch (RuntimeException e) {
                     e.printStackTrace();
+                    return DataResult.PROCESS_FAILED;
                 } finally {
                     lock.unlock();
                 }

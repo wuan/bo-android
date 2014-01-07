@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
+import fj.data.Array;
+
 public class JsonRpcDataProvider extends DataProvider {
 
     private static final SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
@@ -47,7 +49,7 @@ public class JsonRpcDataProvider extends DataProvider {
         defaultStrokeBuilder = new DefaultStrokeBuilder();
         stationBuilder = new StationBuilder();
     }
-    public List<AbstractStroke> getStrokes(int timeInterval, int intervalOffset, int region) {
+    public Array<AbstractStroke> getStrokes(int timeInterval, int intervalOffset, int region) {
         List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
         rasterParameters = null;
 
@@ -68,7 +70,7 @@ public class JsonRpcDataProvider extends DataProvider {
 
         Log.v(Main.LOG_TAG,
                 String.format("JsonRpcDataProvider: read %d bytes (%d new strokes, region %d)", client.getLastNumberOfTransferredBytes(), strokes.size(), region));
-        return strokes;
+        return Array.iterableArray(strokes);
     }
     
     public boolean returnsIncrementalData()
@@ -76,7 +78,7 @@ public class JsonRpcDataProvider extends DataProvider {
         return incrementalResult;
     }
 
-    public List<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int rasterSize, int region) {
+    public Array<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int rasterSize, int region) {
         List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
 
         nextId = 0;
@@ -96,7 +98,7 @@ public class JsonRpcDataProvider extends DataProvider {
         Log.v(Main.LOG_TAG,
                 String.format("JsonRpcDataProvider: read %d bytes (%d raster positions, region %d)", client.getLastNumberOfTransferredBytes(), strokes.size(), region));
 
-        return strokes;
+        return Array.iterableArray(strokes);
     }
 
     public int[] getHistogram() {
@@ -108,7 +110,7 @@ public class JsonRpcDataProvider extends DataProvider {
     }
 
     @Override
-    public List<Station> getStations(int region) {
+    public Array<Station> getStations(int region) {
         List<Station> stations = new ArrayList<Station>();
 
         try {
@@ -122,7 +124,7 @@ public class JsonRpcDataProvider extends DataProvider {
             skipServer();
             throw new RuntimeException(e);
         }
-        return stations;
+        return Array.iterableArray(stations);
     }
 
     @Override

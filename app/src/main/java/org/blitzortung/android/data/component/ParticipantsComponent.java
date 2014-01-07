@@ -2,27 +2,26 @@ package org.blitzortung.android.data.component;
 
 import org.blitzortung.android.data.beans.Station;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+
+import fj.data.Array;
 
 public class ParticipantsComponent {
-    private final List<Station> participants;
+    private Array<Station> participants;
 
     public ParticipantsComponent() {
-        participants = new ArrayList<Station>();
+        participants = Array.empty();
     }
 
-    public void setParticipants(Collection<Station> participants) {
-        this.participants.clear();
-        this.participants.addAll(participants);
+    public void setParticipants(Array<Station> participants) {
+        this.participants = participants;
     }
 
     public Collection<Station> getParticipants() {
-        return participants;
+        return participants.toCollection();
     }
 
     public void clear() {
-       participants.clear();
+       participants = Array.empty();
     }
 }

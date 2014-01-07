@@ -107,4 +107,8 @@ public class StrokesComponent {
             }
         }, Integer.valueOf(0));
     }
+
+    public boolean hasRasterParameters() {
+        return rasterParameters != null;
+    }
 }

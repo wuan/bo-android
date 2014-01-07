@@ -18,6 +18,8 @@ import java.net.URLConnection;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
 
+import fj.data.Array;
+
 public class BlitzortungHttpDataProvider extends DataProvider {
 
     private UrlFormatter urlFormatter;
@@ -51,7 +53,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
     }
 
     @Override
-    public List<AbstractStroke> getStrokes(int timeInterval, int intervalOffset, int region) {
+    public Array<AbstractStroke> getStrokes(int timeInterval, int intervalOffset, int region) {
 
         List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
 
@@ -104,7 +106,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
             throw new RuntimeException("no credentials provided");
         }
 
-        return strokes;
+        return Array.iterableArray(strokes);
     }
 
     public boolean returnsIncrementalData() {
@@ -150,7 +152,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
     }
 
     @Override
-    public List<Station> getStations(int region) {
+    public Array<Station> getStations(int region) {
         List<Station> stations = new ArrayList<Station>();
 
         if (username != null && username.length() != 0 && password != null && password.length() != 0) {
@@ -182,7 +184,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
             throw new RuntimeException("no credentials provided");
         }
 
-        return stations;
+        return Array.iterableArray(stations);
     }
 
     @Override
@@ -209,7 +211,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
     }
 
     @Override
-    public List<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int rasterSize, int region) {
+    public Array<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int rasterSize, int region) {
         return null;
     }
 

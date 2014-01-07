@@ -25,7 +25,7 @@ public class HistogramView extends View implements DataListener {
     final private Paint foregroundPaint;
     final private Paint textPaint;
 
-    private StrokesOverlay strokesOverlay;
+    private StrokesComponent strokesOverlay;
 
     private int[] histogram;
 
@@ -129,7 +129,7 @@ public class HistogramView extends View implements DataListener {
 
     @Override
     public void onDataUpdate(DataResult result) {
-        histogram = result.getHistogram();
+        histogram = result.data().getHistogram();
 
         boolean viewShouldBeVisible = histogram != null && histogram.length > 0;
 

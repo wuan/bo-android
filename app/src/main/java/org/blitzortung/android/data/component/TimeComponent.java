@@ -7,10 +7,29 @@ public class TimeComponent {
     private final boolean incremental;
 
     public TimeComponent(int intervalDuration, int intervalOffset, long referenceTime, boolean incremental) {
-
         this.intervalDuration = intervalDuration;
         this.intervalOffset = intervalOffset;
         this.referenceTime = referenceTime;
         this.incremental = incremental;
+    }
+
+    public boolean isRealtime() {
+        return intervalOffset == 0;
+    }
+
+    public long getReferenceTime() {
+        return referenceTime;
+    }
+
+    public int getIntervalDuration() {
+        return intervalDuration;
+    }
+
+    public int getIntervalOffset() {
+        return intervalOffset;
+    }
+
+    public boolean isIncremental() {
+        return incremental;
     }
 }

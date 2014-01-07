@@ -12,4 +12,16 @@ public class SpatialComponent {
         this.rasterBaselength = rasterBaselength;
         this.rasterParameters = rasterParameters;
     }
+
+    public RasterParameters getRasterParameters() {
+        return rasterParameters;
+    }
+
+    public int getRegion() {
+        return region;
+    }
+
+    public boolean hasRasterParameters() {
+        return rasterParameters != null;
+    }
 }

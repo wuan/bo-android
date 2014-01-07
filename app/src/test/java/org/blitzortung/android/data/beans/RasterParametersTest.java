@@ -3,7 +3,7 @@ package org.blitzortung.android.data.beans;
 import android.graphics.Point;
 import android.graphics.RectF;
 import com.google.android.maps.Projection;
-import org.blitzortung.android.data.Coordsys;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;

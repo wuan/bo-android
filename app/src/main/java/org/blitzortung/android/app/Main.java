@@ -1,5 +1,6 @@
 package org.blitzortung.android.app;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
@@ -37,11 +38,13 @@ import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.app.view.components.StatusComponent;
 import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.DataListener;
-import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.data.component.DataComponent;
 import org.blitzortung.android.data.component.ParticipantsComponent;
+import org.blitzortung.android.data.component.SpatialComponent;
 import org.blitzortung.android.data.component.StrokesComponent;
+import org.blitzortung.android.data.component.TimeComponent;
 import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.dialogs.*;
 import org.blitzortung.android.map.color.ColorHandler;
@@ -148,13 +151,16 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
                 buttonColumnHandler.addElement(menuButton);
             }
 
-            getActionBar().hide();
+            ActionBar actionBar = getActionBar();
+            if (actionBar != null) {
+                actionBar.hide();
+            }
         }
 
         historyController = new HistoryController(this, dataHandler);
         historyController.setButtonHandler(buttonColumnHandler);
         if (persistor.hasCurrentResult()) {
-            historyController.setRealtimeData(persistor.getCurrentResult().containsRealtimeData());
+            historyController.setRealtimeData(persistor.getCurrentResult().getTime().isRealtime());
         }
         buttonColumnHandler.addAllElements(historyController.getButtons());
 
@@ -221,7 +227,7 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
     private void setupCustomViews() {
         legendView = (LegendView) findViewById(R.id.legend_view);
         strokesComponent.setIntervalDuration(dataHandler.getIntervalDuration());
-        legendView.setStrokesOverlay(strokesComponent);
+        legendView.setStrokesComponent(strokesComponent);
         legendView.setAlpha(150);
         legendView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -267,9 +273,9 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
             @Override
             public void onClick(View view) {
                 if (persistor.hasCurrentResult()) {
-                    final DataResult currentResult = persistor.getCurrentResult();
-                    if (currentResult.hasRasterParameters()) {
-                        final RasterParameters rasterParameters = currentResult.getRasterParameters();
+                    final SpatialComponent spatial = persistor.getCurrentResult().getSpatial();
+                    if (spatial.hasRasterParameters()) {
+                        final RasterParameters rasterParameters = spatial.getRasterParameters();
                         animateToLocationAndVisibleSize(rasterParameters.getRectCenterLongitude(), rasterParameters.getRectCenterLatitude(), 5000f);
                     } else {
                         animateToLocationAndVisibleSize(0, 0, 20000f);
@@ -384,82 +390,80 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
     public void onDataUpdate(DataResult result) {
         Log.d(Main.LOG_TAG, "Main.onDataUpdate() " + result);
 
-        if (result.isBackground()) {
-            alarmManager.checkStrokes(result.getStrokes(), result.containsRealtimeData());
-        } else {
-            statusComponent.indicateError(false);
+        final DataComponent data = result.data();
+        final TimeComponent time = result.getTime();
+        final SpatialComponent spatial = result.getSpatial();
 
-            historyController.setRealtimeData(result.containsRealtimeData());
+        statusComponent.indicateError(false);
 
-            Parameters resultParameters = result.getParameters();
+        historyController.setRealtimeData(time.isRealtime());
 
-            persistor.setCurrentResult(result);
+        persistor.setCurrentResult(result);
 
-            clearDataIfRequested();
+        clearDataIfRequested();
 
-            if (result.containsStrokes()) {
-                RasterParameters rasterParameters = result.getRasterParameters();
-                strokesComponent.setRasterParameters(rasterParameters);
-                strokesComponent.setRegion(resultParameters.getRegion());
-                strokesComponent.setReferenceTime(result.getReferenceTime());
-                strokesComponent.setIntervalDuration(resultParameters.getIntervalDuration());
-                strokesComponent.setIntervalOffset(resultParameters.getIntervalOffset());
+        if (data.getStrokes() != null) {
+            RasterParameters rasterParameters = spatial.getRasterParameters();
+            strokesComponent.setRasterParameters(rasterParameters);
+            strokesComponent.setRegion(spatial.getRegion());
+            strokesComponent.setReferenceTime(time.getReferenceTime());
+            strokesComponent.setIntervalDuration(time.getIntervalDuration());
+            strokesComponent.setIntervalOffset(time.getIntervalOffset());
 
-                if (result.containsIncrementalData()) {
-                    strokesComponent.expireStrokes();
-                } else {
-                    strokesComponent.clear();
-                }
-                strokesComponent.addStrokes(result.getStrokes());
+            if (time.isIncremental()) {
+                strokesComponent.expireStrokes();
+            } else {
+                strokesComponent.clear();
+            }
+            strokesComponent.addStrokes(data.getStrokes());
 
-                alarmManager.checkStrokes(strokesComponent.getStrokes(), result.containsRealtimeData());
+            alarmManager.checkStrokes(strokesComponent.getStrokes(), time.isRealtime());
 
-                float width = rasterParameters.getLongitudeDelta();
-                float height = rasterParameters.getLatitudeDelta();
+            float width = rasterParameters.getLongitudeDelta();
+            float height = rasterParameters.getLatitudeDelta();
 
-                ColorHandler colorHandler = strokesComponent.getColorHandler();
+            ColorHandler colorHandler = strokesComponent.getColorHandler();
 
-                map.clear();
-                for (AbstractStroke stroke : result.getStrokes()) {
-                    float longitude = stroke.getLongitude();
-                    float latitude = stroke.getLatitude();
+            map.clear();
+            for (AbstractStroke stroke : data.getStrokes()) {
+                float longitude = stroke.getLongitude();
+                float latitude = stroke.getLatitude();
 
-                    int color = colorHandler.getColor(result.getReferenceTime(), stroke.getTimestamp(), result.getParameters().getIntervalDuration());
+                int color = colorHandler.getColor(time.getReferenceTime(), stroke.getTimestamp(), time.getIntervalDuration());
 
-                    Polygon polygon = map.addPolygon(new PolygonOptions()
-                            .add(
-                                    new LatLng(rasterParameters.getMaxLatitude(), rasterParameters.getMinLongitude()),
-                                    new LatLng(rasterParameters.getMaxLatitude(), rasterParameters.getMaxLongitude()),
-                                    new LatLng(rasterParameters.getMinLatitude(), rasterParameters.getMaxLongitude()),
-                                    new LatLng(rasterParameters.getMinLatitude(), rasterParameters.getMinLongitude())
-                            )
-                            .strokeColor(Color.WHITE)
-                            .strokeWidth(1f)
-                            .fillColor(Color.TRANSPARENT));
+                Polygon polygon = map.addPolygon(new PolygonOptions()
+                        .add(
+                                new LatLng(rasterParameters.getMaxLatitude(), rasterParameters.getMinLongitude()),
+                                new LatLng(rasterParameters.getMaxLatitude(), rasterParameters.getMaxLongitude()),
+                                new LatLng(rasterParameters.getMinLatitude(), rasterParameters.getMaxLongitude()),
+                                new LatLng(rasterParameters.getMinLatitude(), rasterParameters.getMinLongitude())
+                        )
+                        .strokeColor(Color.WHITE)
+                        .strokeWidth(1f)
+                        .fillColor(Color.TRANSPARENT));
 
-                    Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-                    bitmap.setPixel(0, 0, color);
-                    BitmapDescriptor image = BitmapDescriptorFactory.fromBitmap(bitmap);
-                    LatLngBounds bounds = new LatLngBounds(
-                            new LatLng(latitude - height / 2, longitude - width / 2),
-                            new LatLng(latitude + height / 2, longitude + width / 2)
-                    );
-                    // Adds a ground overlay with 50% transparency.
-                    GroundOverlay groundOverlay = map.addGroundOverlay(new GroundOverlayOptions()
-                            .image(image)
-                            .positionFromBounds(bounds)
-                            .transparency(0f));
+                Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+                bitmap.setPixel(0, 0, color);
+                BitmapDescriptor image = BitmapDescriptorFactory.fromBitmap(bitmap);
+                LatLngBounds bounds = new LatLngBounds(
+                        new LatLng(latitude - height / 2, longitude - width / 2),
+                        new LatLng(latitude + height / 2, longitude + width / 2)
+                );
+                // Adds a ground overlay with 50% transparency.
+                GroundOverlay groundOverlay = map.addGroundOverlay(new GroundOverlayOptions()
+                        .image(image)
+                        .positionFromBounds(bounds)
+                        .transparency(0f));
 
-                }
             }
 
-            if (!result.containsRealtimeData()) {
+            if (!time.isRealtime()) {
                 dataService.disable();
                 setHistoricStatusString();
             }
 
-            if (participantsComponent != null && result.containsParticipants()) {
-                participantsComponent.setParticipants(result.getParticipants());
+            if (participantsComponent != null && data.getParticipants() != null) {
+                participantsComponent.setParticipants(data.getParticipants());
             }
 
             for (DataListener listener : dataListeners) {
