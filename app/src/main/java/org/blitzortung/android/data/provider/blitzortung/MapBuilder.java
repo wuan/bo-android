@@ -1,7 +1,8 @@
 package org.blitzortung.android.data.provider.blitzortung;
 
 import android.text.Html;
-import android.text.Spanned;
+import org.blitzortung.android.data.provider.blitzortung.generic.Consumer;
+import org.blitzortung.android.data.provider.blitzortung.generic.LineSplitter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,20 +10,19 @@ import java.util.Map;
 public abstract class MapBuilder<T> {
 
     private final Map<String, Consumer> keyValueBuilderMap;
+    private final LineSplitter lineSplitter;
 
-    MapBuilder() {
+    MapBuilder(LineSplitter lineSplitter) {
+        this.lineSplitter = lineSplitter;
+
         keyValueBuilderMap = new HashMap<String, Consumer>();
 
         setBuilderMap(keyValueBuilderMap);
     }
 
     public T buildFromLine(String line) {
-        String[] fields = line.split(" ");
+        String[] fields = lineSplitter.split(line);
 
-        return buildFromFields(fields);
-    }
-
-    public T buildFromFields(String[] fields) {
         prepare(fields);
 
         for (String field : fields) {
@@ -30,7 +30,7 @@ public abstract class MapBuilder<T> {
             if (parts.length > 1) {
                 String key = parts[0];
                 if (keyValueBuilderMap.containsKey(key)) {
-                String[] values = Html.fromHtml(parts[1]).toString().split(";");
+                    String[] values = Html.fromHtml(parts[1]).toString().split(";");
                     keyValueBuilderMap.get(key).apply(values);
                 }
             }
