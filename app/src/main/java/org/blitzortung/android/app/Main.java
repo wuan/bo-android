@@ -22,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.*;
@@ -434,36 +435,16 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
             Log.v("BO_ANDROID", String.format("reference time %d", time.getReferenceTime()));
 
             map.clear();
+
+            addRasterDataArea(rasterParameters);
+
             for (AbstractStroke stroke : data.getStrokes()) {
                 float longitude = stroke.getLongitude();
                 float latitude = stroke.getLatitude();
 
                 int color = colorHandler.getColor(time.getReferenceTime(), stroke.getTimestamp(), time.getIntervalDuration());
 
-                Polygon polygon = map.addPolygon(new PolygonOptions()
-                        .add(
-                                new LatLng(rasterParameters.getMaxLatitude(), rasterParameters.getMinLongitude()),
-                                new LatLng(rasterParameters.getMaxLatitude(), rasterParameters.getMaxLongitude()),
-                                new LatLng(rasterParameters.getMinLatitude(), rasterParameters.getMaxLongitude()),
-                                new LatLng(rasterParameters.getMinLatitude(), rasterParameters.getMinLongitude())
-                        )
-                        .strokeColor(Color.WHITE)
-                        .strokeWidth(1f)
-                        .fillColor(Color.TRANSPARENT));
-
-                Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-                bitmap.setPixel(0, 0, color);
-                BitmapDescriptor image = BitmapDescriptorFactory.fromBitmap(bitmap);
-                LatLngBounds bounds = new LatLngBounds(
-                        new LatLng(latitude - height / 2, longitude - width / 2),
-                        new LatLng(latitude + height / 2, longitude + width / 2)
-                );
-                // Adds a ground overlay with 50% transparency.
-                GroundOverlay groundOverlay = map.addGroundOverlay(new GroundOverlayOptions()
-                        .image(image)
-                        .positionFromBounds(bounds)
-                        .transparency(0f));
-
+                addGroundOverlay(longitude, latitude, width, height, color, 0f);
             }
 
             if (!time.isRealtime()) {
@@ -487,6 +468,34 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
         if (dataService != null) {
             dataService.releaseWakeLock();
         }
+    }
+
+    private void addRasterDataArea(RasterParameters rasterParameters) {
+        map.addPolygon(new PolygonOptions()
+                .add(
+                        new LatLng(rasterParameters.getMaxLatitude(), rasterParameters.getMinLongitude()),
+                        new LatLng(rasterParameters.getMaxLatitude(), rasterParameters.getMaxLongitude()),
+                        new LatLng(rasterParameters.getMinLatitude(), rasterParameters.getMaxLongitude()),
+                        new LatLng(rasterParameters.getMinLatitude(), rasterParameters.getMinLongitude())
+                )
+                .strokeColor(Color.WHITE)
+                .strokeWidth(1f)
+                .fillColor(Color.TRANSPARENT));
+    }
+
+    private void addGroundOverlay(float longitude, float latitude, float width, float height, int color, float transparency) {
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        bitmap.setPixel(0, 0, color);
+        BitmapDescriptor image = BitmapDescriptorFactory.fromBitmap(bitmap);
+        LatLngBounds bounds = new LatLngBounds(
+                new LatLng(latitude - height / 2, longitude - width / 2),
+                new LatLng(latitude + height / 2, longitude + width / 2)
+        );
+        map.addGroundOverlay(new GroundOverlayOptions()
+                .image(image)
+                .positionFromBounds(bounds)
+                .transparency(transparency)
+        );
     }
 
     private void clearDataIfRequested() {
