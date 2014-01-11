@@ -81,13 +81,6 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"/>
 
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:id="@+id/v2map"
-                  android:layout_width="200sp"
-                  android:layout_height="200sp"
-                  android:layout_alignParentRight="true"
-                  android:layout_alignParentBottom="true"
-                  android:name="com.google.android.gms.maps.MapFragment"/>
 
     </RelativeLayout>
 

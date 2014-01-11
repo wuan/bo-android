@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.*;
 
 import org.blitzortung.android.alarm.AlarmLabelHandler;
@@ -106,6 +107,12 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
         if (fragmentById instanceof MapFragment) {
             map = ((MapFragment) fragmentById).getMap();
             map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+            map.setMyLocationEnabled(false);
+            UiSettings uiSettings = map.getUiSettings();
+            uiSettings.setTiltGesturesEnabled(false);
+            uiSettings.setZoomControlsEnabled(false);
+            uiSettings.setRotateGesturesEnabled(false);
+            uiSettings.setCompassEnabled(false);
         }
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -423,6 +430,8 @@ public class Main extends Activity implements DataListener, OnSharedPreferenceCh
             float height = rasterParameters.getLatitudeDelta();
 
             ColorHandler colorHandler = strokesComponent.getColorHandler();
+
+            Log.v("BO_ANDROID", String.format("reference time %d", time.getReferenceTime()));
 
             map.clear();
             for (AbstractStroke stroke : data.getStrokes()) {

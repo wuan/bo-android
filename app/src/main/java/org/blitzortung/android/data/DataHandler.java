@@ -60,7 +60,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             if (listener != null) {
                 if (result == DataResult.PROCESS_FAILED) {
                     listener.onDataError();
-                } else if (result == DataResult.PROCESS_LOCKED) {
+                } else if (result != DataResult.PROCESS_LOCKED) {
                     listener.onDataUpdate(result);
                 }
             }
@@ -90,7 +90,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                                     : dataProvider.getStrokesRaster(intervalDuration, intervalOffset, rasterBaselength, region)
                                     )
                             .isIncremental(dataProvider.returnsIncrementalData())
-                            .withReferenceTime(System.currentTimeMillis())
+                            .withReferenceTime(System.currentTimeMillis() + intervalOffset * 60 * 1000)
                     .withRasterParameters(dataProvider.getRasterParameters())
                     .withHistogram(dataProvider.getHistogram());
 

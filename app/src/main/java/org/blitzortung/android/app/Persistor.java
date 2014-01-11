@@ -14,6 +14,7 @@ import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.component.ParticipantsComponent;
 import org.blitzortung.android.data.component.StrokesComponent;
 import org.blitzortung.android.data.provider.DataResult;
+import org.blitzortung.android.map.color.StrokeColorHandler;
 
 public class Persistor {
 
@@ -38,6 +39,7 @@ public class Persistor {
         alarmParameters.updateSectorLabels(activity);
         alarmManager = new AlarmManager(locationHandler, sharedPreferences, activity, (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE), new NotificationHandler(activity), new AlarmObjectFactory(), alarmParameters);
         strokesComponent = new StrokesComponent();
+        strokesComponent.setColorHandler(new StrokeColorHandler(sharedPreferences));
         participantsComponent = new ParticipantsComponent();
     }
 

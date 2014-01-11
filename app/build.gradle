@@ -22,6 +22,7 @@ android {
         versionCode 99
         versionName "2.0"
     }
+
     buildTypes {
         release {
             runProguard false
