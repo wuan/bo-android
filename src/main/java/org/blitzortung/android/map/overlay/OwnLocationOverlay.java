@@ -48,8 +48,10 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
 
             @Override
             public void onZoom(int newZoomLevel) {
-                zoomLevel = newZoomLevel;
-                refresh();
+                if (newZoomLevel != zoomLevel) {
+                    zoomLevel = newZoomLevel;
+                    refresh();
+                }
             }
 
         });
@@ -102,7 +104,7 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
 
     public void disableOwnLocation() {
         locationManager.removeUpdates(this);
-        
+
         item = null;
         populate();
     }

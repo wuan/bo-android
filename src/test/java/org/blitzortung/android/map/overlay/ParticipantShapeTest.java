@@ -33,7 +33,7 @@ public class ParticipantShapeTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        participantShape = new ParticipantShape(size, color);
+        participantShape = new ParticipantShape();
     }
 
     @Test

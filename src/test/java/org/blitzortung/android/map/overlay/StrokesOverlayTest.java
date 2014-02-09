@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.Shape;
 import android.preference.PreferenceManager;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
@@ -31,6 +32,8 @@ import org.robolectric.annotation.Implements;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -154,11 +157,9 @@ public class StrokesOverlayTest {
 
         when(colorHandler.getColor(section)).thenReturn(color);
 
-        Drawable drawable = strokesOverlay.updateAndReturnDrawable(strokeOverlayItem, section, colorHandler);
+        Shape drawable = strokesOverlay.updateAndReturnDrawable(strokeOverlayItem, section, colorHandler);
 
-        assertThat(drawable, is(instanceOf(ShapeDrawable.class)));
-
-        ShapeDrawable shapeDrawable = (ShapeDrawable) drawable;
+        assertThat(drawable, is(not(nullValue())));
     }
 
     @Test
@@ -191,14 +192,12 @@ public class StrokesOverlayTest {
 
         when(colorHandler.getColor(section)).thenReturn(color);
 
-        Drawable drawable = strokesOverlay.updateAndReturnDrawable(strokeOverlayItem, section, colorHandler);
+        Shape drawable = strokesOverlay.updateAndReturnDrawable(strokeOverlayItem, section, colorHandler);
 
         verify(projection, times(1)).toPixels(eq(center), any(Point.class));
         verify(projection, times(3)).toPixels(any(GeoPoint.class), any(Point.class));
 
         assertThat(drawable, is(instanceOf(ShapeDrawable.class)));
-
-        ShapeDrawable shapeDrawable = (ShapeDrawable) drawable;
     }
 
 

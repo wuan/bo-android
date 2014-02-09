@@ -1,5 +1,6 @@
 package org.blitzortung.android.app;
 
+import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.*;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -130,12 +131,12 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         });
 
         fadeOverlay = new FadeOverlay(strokesOverlay.getColorHandler());
-
         ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), persistor.getLocationHandler(), getMapView());
 
         addOverlays(fadeOverlay, strokesOverlay, participantsOverlay, ownLocationOverlay);
 
         dataHandler = persistor.getDataHandler();
+        strokesOverlay.setIntervalDuration(dataHandler.getIntervalDuration());
         statusComponent = new StatusComponent(this);
         setHistoricStatusString();
 
@@ -161,7 +162,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 buttonColumnHandler.addElement(menuButton);
             }
 
-            getActionBar().hide();
+            final ActionBar actionBar = getActionBar();
+            if (actionBar != null) {
+                actionBar.hide();
+            }
         }
 
         historyController = new HistoryController(this, dataHandler);
@@ -234,7 +238,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private void setupCustomViews() {
         legendView = (LegendView) findViewById(R.id.legend_view);
-        strokesOverlay.setIntervalDuration(dataHandler.getIntervalDuration());
         legendView.setStrokesOverlay(strokesOverlay);
         legendView.setAlpha(150);
         legendView.setOnClickListener(new View.OnClickListener() {

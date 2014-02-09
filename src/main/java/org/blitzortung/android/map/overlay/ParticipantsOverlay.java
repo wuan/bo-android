@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.Shape;
 import android.util.Log;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
@@ -20,45 +19,47 @@ import java.util.List;
 public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> implements LayerOverlay {
 
     // VisibleForTesting
-    protected final ArrayList<ParticipantOverlayItem> items;
+    protected final ArrayList<ParticipantOverlayItem> participants;
 
     private final ParticipantColorHandler colorHandler;
 
     static private final Drawable DefaultDrawable;
 
     static {
-        Shape shape = new ParticipantShape(1, 0);
-        DefaultDrawable = new ShapeDrawable(shape);
+        DefaultDrawable = new ShapeDrawable(new ParticipantShape());
     }
 
-    private final EnumMap<State, Drawable> shapes = new EnumMap<State, Drawable>(State.class);
+    private final EnumMap<State, ShapeDrawable> shapes;
 
     private final LayerOverlayComponent layerOverlayComponent;
 
     // VisibleForTesting
-    protected int shapeSize;
+    private int zoomLevel;
+    private ParticipantOverlayItem item;
 
     public ParticipantsOverlay(Context context, ParticipantColorHandler colorHandler) {
         super(boundCenter(DefaultDrawable));
 
-        layerOverlayComponent = new LayerOverlayComponent(context.getResources().getString(R.string.participants_layer));
+        shapes = new EnumMap<State, ShapeDrawable>(State.class);
+        shapes.put(State.ON, new ShapeDrawable(new ParticipantShape()));
+        shapes.put(State.DELAYED, new ShapeDrawable(new ParticipantShape()));
+        shapes.put(State.OFF, new ShapeDrawable(new ParticipantShape()));
 
+        layerOverlayComponent = new LayerOverlayComponent(context.getResources().getString(R.string.participants_layer));
         this.colorHandler = colorHandler;
 
-        items = new ArrayList<ParticipantOverlayItem>();
-
-        setLastFocusedIndex(-1);
+        participants = new ArrayList<ParticipantOverlayItem>();
         populate();
     }
 
     @Override
     protected ParticipantOverlayItem createItem(int index) {
-        return items.get(index);
+        return participants.get(index);
     }
 
     @Override
     public int size() {
-        return items.size();
+        return participants.size();
     }
 
     @Override
@@ -69,53 +70,66 @@ public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> im
     }
 
     public void setParticipants(List<Station> stations) {
-        Log.v(Main.LOG_TAG, String.format("ParticipantsOverlay.setStations() # %d, size %d", stations.size(), shapeSize));
-        items.clear();
+        Log.v(Main.LOG_TAG, String.format("ParticipantsOverlay.setStations() #%d", stations.size()));
+        updateShapes();
+
+        participants.clear();
         for (Station station : stations) {
-            items.add(new ParticipantOverlayItem(station));
+            final ParticipantOverlayItem item = new ParticipantOverlayItem(station);
+            item.setMarker(shapes.get(item.getParticipantState()));
+            participants.add(item);
         }
+        Log.v(Main.LOG_TAG, String.format("ParticipantsOverlay.setStations() set"));
+        setLastFocusedIndex(-1);
+
         populate();
+        Log.v(Main.LOG_TAG, String.format("ParticipantsOverlay.setStations() finished"));
     }
 
     public void clear() {
-        items.clear();
         setLastFocusedIndex(-1);
+        clearPopup();
+        participants.clear();
         populate();
     }
 
     public void updateZoomLevel(int zoomLevel) {
-        shapeSize = Math.max(1, zoomLevel - 3);
-
-        refresh();
-    }
-
-    public void refresh() {
-        int[] colors = colorHandler.getColors();
-
-        shapes.clear();
-        shapes.put(State.ON, getDrawable(colors[0]));
-        shapes.put(State.DELAYED, getDrawable(colors[1]));
-        shapes.put(State.OFF, getDrawable(colors[2]));
-
-        for (ParticipantOverlayItem item : items) {
-            item.setMarker(shapes.get(item.getState()));
+        if (zoomLevel != this.zoomLevel) {
+            this.zoomLevel = zoomLevel;
+            refresh();
         }
     }
 
-    // VisibleForTesting
-    protected Drawable getDrawable(int color) {
-        Shape shape = new ParticipantShape(shapeSize, color);
-        return new ShapeDrawable(shape);
+    public void refresh() {
+        updateShapes();
+
+        for (ParticipantOverlayItem item : participants) {
+            item.setMarker(shapes.get(item.getParticipantState()));
+        }
+    }
+
+    private void updateShapes() {
+        float shapeSize = (float) Math.max(1, zoomLevel - 3);
+        colorHandler.updateTarget();
+
+        int[] colors = colorHandler.getColors();
+        updateShape(State.ON, shapeSize, colors[0]);
+        updateShape(State.DELAYED, shapeSize, colors[1]);
+        updateShape(State.OFF, shapeSize, colors[2]);
+    }
+
+    private void updateShape(State state, float shapeSize, int color) {
+        ((ParticipantShape) shapes.get(state).getShape()).update(shapeSize, color);
     }
 
     @Override
     protected boolean onTap(int index) {
-        ParticipantOverlayItem item = items.get(index);
+        ParticipantOverlayItem item = participants.get(index);
 
         if (item.getTitle() != null) {
             String label = item.getTitle();
-            long lastDataTime = item.getLastDataTime();
-            if (lastDataTime != 0) {
+            if (item.getParticipantState() != State.ON) {
+                long lastDataTime = item.getLastDataTime();
                 label += "\n" + buildTimeString(lastDataTime);
             }
             showPopup(item.getPoint(), label);

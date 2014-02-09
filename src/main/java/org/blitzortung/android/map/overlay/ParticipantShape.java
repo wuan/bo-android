@@ -2,23 +2,32 @@ package org.blitzortung.android.map.overlay;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.drawable.shapes.Shape;
 
 public class ParticipantShape extends Shape {
 
-	private final float width;
-	private final float height;
-	private final int color;
+    private final RectF rect;
+	private int color;
 	
-	public ParticipantShape(float size, int color) {
-		width = size;
-		height = size;
-		this.color = color;
+	public ParticipantShape() {
+        rect = new RectF();
+		color = 0x00000000;
 	}
 	
 	@Override
 	public void draw(Canvas canvas, Paint paint) {
 		paint.setColor(color);
-		canvas.drawRect(-width / 2, height / 2, width / 2, -height / 2, paint);
+        paint.setAlpha(0xff);
+        paint.setStyle(Paint.Style.FILL);
+		canvas.drawRect(rect, paint);
 	}
+    
+    public void update(float size, int color) {
+        float halfSize = size / 2f;
+        rect.set(-halfSize, -halfSize, halfSize, halfSize);
+        resize(rect.width(), rect.width());
+        
+        this.color = color;
+    }
 }

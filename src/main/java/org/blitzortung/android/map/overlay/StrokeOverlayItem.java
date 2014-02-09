@@ -1,6 +1,7 @@
 package org.blitzortung.android.map.overlay;
 
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.location.Location;
@@ -18,8 +19,6 @@ public class StrokeOverlayItem extends OverlayItem implements Stroke {
 	
 	private final int multiplicity;
 
-    private final ShapeDrawable drawable;
-
     private static final Point center = new Point();
 
     private static final Point topLeft = new Point();
@@ -28,10 +27,10 @@ public class StrokeOverlayItem extends OverlayItem implements Stroke {
 
 	public StrokeOverlayItem(AbstractStroke stroke) {
 		super(Coordsys.toMapCoords(stroke.getLongitude(), stroke.getLatitude()), "", "");
+        super.setMarker(new ShapeDrawable());
 
 		timestamp = stroke.getTimestamp();		
 		multiplicity = stroke.getMultiplicity();
-        drawable = new ShapeDrawable();
 	}
 	
     @Override
@@ -52,20 +51,28 @@ public class StrokeOverlayItem extends OverlayItem implements Stroke {
 		return multiplicity;
 	}
 
-    public void setShape(Shape shape) {
-        drawable.setShape(shape);
+    @Override
+    public void setMarker(Drawable drawable) {
+        throw new IllegalStateException("cannot overwrite marker of stroke overlay item");
     }
 
-    public ShapeDrawable getDrawable() {
-        return drawable;
+    private ShapeDrawable getDrawable() {
+        return (ShapeDrawable)getMarker(0);
+    }
+    
+    public Shape getShape() {
+        return getDrawable().getShape();
+    }
+    
+    public void setShape(Shape shape) {
+        getDrawable().setShape(shape);
     }
 
     public void updateShape(RasterParameters rasterParameters, Projection projection, int color, int textColor, int zoomLevel) {
-        Shape shape = drawable.getShape();
+        Shape shape = getShape();
         if (rasterParameters != null) {
             if (shape == null) {
                 shape = new RasterShape();
-                drawable.setShape(shape);
             }
             RasterShape rasterShape = (RasterShape)shape;
 
@@ -85,7 +92,6 @@ public class StrokeOverlayItem extends OverlayItem implements Stroke {
         } else {
             if (shape == null) {
                 shape = new StrokeShape();
-                drawable.setShape(shape);
             }
             StrokeShape strokeShape = (StrokeShape) shape;
             strokeShape.update(zoomLevel + 1, color);

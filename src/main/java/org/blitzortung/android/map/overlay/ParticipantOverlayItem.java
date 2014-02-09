@@ -9,21 +9,20 @@ public class ParticipantOverlayItem extends OverlayItem {
 
 	private final long lastDataTime;
 	
-	private final State state;
-	
-	public ParticipantOverlayItem(Station station) {
+	private final State participantState;
+
+    public ParticipantOverlayItem(Station station) {
 		super(Coordsys.toMapCoords(station.getLongitude(), station.getLatitude()), station.getName(), "");
 
 		lastDataTime = station.getOfflineSince();
-		state = station.getState();
-	}
+		participantState = station.getState();
+    }
 	
 	public long getLastDataTime() {
 		return lastDataTime;
 	}
 	
-	public State getState() {
-		return state;
+	public State getParticipantState() {
+		return participantState;
 	}
-
 }

@@ -5,6 +5,7 @@ import android.graphics.*;
 import android.graphics.Paint.Style;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.Shape;
 import android.text.format.DateFormat;
 import android.util.Log;
 import com.google.android.maps.MapView;
@@ -23,13 +24,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements TimeIntervalWithOffset, LayerOverlay  {
+public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements TimeIntervalWithOffset, LayerOverlay {
 
     // VisibleForTesting
     protected final ArrayList<StrokeOverlayItem> strokes;
 
     private final StrokeColorHandler colorHandler;
-    
+
     private final LayerOverlayComponent layerOverlayComponent;
 
     private int zoomLevel;
@@ -114,7 +115,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         Log.v(Main.LOG_TAG, "StrokesOverlay.addStrokes() added");
         setLastFocusedIndex(-1);
         populate();
-        Log.v(Main.LOG_TAG, "StrokesOverlay.addStrokes() done");
+        Log.v(Main.LOG_TAG, "StrokesOverlay.addStrokes() finished");
     }
 
     public void expireStrokes() {
@@ -143,7 +144,6 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
 
     public void updateZoomLevel(int zoomLevel) {
         this.zoomLevel = zoomLevel;
-
         refresh();
     }
 
@@ -158,28 +158,28 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
 
         colorHandler.updateTarget();
 
-        Drawable drawable = null;
+        Shape drawable = null;
 
         for (StrokeOverlayItem item : strokes) {
             int section = colorHandler.getColorSection(now, item.getTimestamp(), this);
 
             if (hasRasterParameters() || current_section != section) {
                 drawable = updateAndReturnDrawable(item, section, colorHandler);
+            } else {
+                item.setShape(drawable);
             }
-
-            item.setMarker(drawable);
         }
     }
 
     // VisibleForTesting
-    protected Drawable updateAndReturnDrawable(StrokeOverlayItem item, int section, ColorHandler colorHandler) {
+    protected Shape updateAndReturnDrawable(StrokeOverlayItem item, int section, ColorHandler colorHandler) {
         final Projection projection = getActivity().getMapView().getProjection();
         final int color = colorHandler.getColor(section);
         final int textColor = colorHandler.getTextColor();
 
         item.updateShape(getRasterParameters(), projection, color, textColor, zoomLevel);
 
-        return item.getDrawable();
+        return item.getShape();
     }
 
     public void setRasterParameters(RasterParameters rasterParameters) {
@@ -195,7 +195,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
     }
 
     public boolean hasRealtimeData() {
-         return intervalOffset == 0;
+        return intervalOffset == 0;
     }
 
     @Override
@@ -227,7 +227,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
     public Collection<? extends Stroke> getStrokes() {
         return strokes;
     }
-    
+
     public int getIntervalDuration() {
         return intervalDuration;
     }
