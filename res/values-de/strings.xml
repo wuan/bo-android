@@ -18,7 +18,7 @@
         Blitzdaten des Gemeinschaftsprojekts <b>blitzortung.org</b>.\n\nWeitere Informationen über das Projekt, oder wie Sie
         daran teilnehmen können, finden Sie unter:\n\thttp://blitzortung.org\n
     </string>
-    <string name="copyright">© 2013, Andreas Würl\nblitzortung@tryb.de</string>
+    <string name="copyright">© 2011-2014, Andreas Würl\nblitzortung@tryb.de</string>
     <string name="legend">Legende</string>
     <string name="total_time">Gesamtzeit</string>
     <string name="activity">Aktivität</string>

@@ -143,8 +143,10 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
     }
 
     public void updateZoomLevel(int zoomLevel) {
-        this.zoomLevel = zoomLevel;
-        refresh();
+        if (hasRasterParameters() || zoomLevel != this.zoomLevel) {
+            this.zoomLevel = zoomLevel;
+            refresh();
+        }
     }
 
     public ColorHandler getColorHandler() {
