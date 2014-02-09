@@ -43,6 +43,8 @@ import org.blitzortung.android.map.overlay.OwnLocationOverlay;
 import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -162,9 +164,21 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 buttonColumnHandler.addElement(menuButton);
             }
 
-            final ActionBar actionBar = getActionBar();
-            if (actionBar != null) {
-                actionBar.hide();
+            //noinspection EmptyCatchBlock
+            try {
+                Method getActionBar = Main.class.getMethod("getActionBar");
+
+                Object actionBar;
+                actionBar = getActionBar.invoke(this);
+
+                if (actionBar != null) {
+                    Method hide = actionBar.getClass().getMethod("hide");
+                    hide.invoke(actionBar);
+                }
+
+            } catch (NoSuchMethodException e) {
+            } catch (InvocationTargetException e) {
+            } catch (IllegalAccessException e) {
             }
         }
 
