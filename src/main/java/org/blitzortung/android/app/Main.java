@@ -494,6 +494,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
             buttonColumnHandler.enableButtonColumn();
             getMapView().invalidate();
+            legendView.invalidate();
         }
 
         if (dataService != null) {
