@@ -37,11 +37,12 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     private DataProviderFactory dataProviderFactory;
 
     public DataHandler(SharedPreferences sharedPreferences, PackageInfo pInfo) {
-       this(sharedPreferences, pInfo, new DataProviderFactory());
+        this(sharedPreferences, pInfo, new DataProviderFactory());
     }
 
     public DataHandler(SharedPreferences sharedPreferences, PackageInfo pInfo,
                        DataProviderFactory dataProviderFactory) {
+        this.dataProviderFactory = dataProviderFactory;
         parameters = new Parameters();
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
@@ -56,7 +57,6 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.HISTORIC_TIMESTEP);
 
         updateProviderSpecifics();
-        this.dataProviderFactory = dataProviderFactory;
     }
 
     private class FetchDataTask extends AsyncTask<Integer, Integer, DataResult> {
