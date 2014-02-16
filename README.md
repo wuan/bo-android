@@ -88,3 +88,13 @@
  * Darstellung der Blitzzahlen
  * Darstellung der Gesamtfläche der Rasterdaten
  * Benachrichtigungen und Vibrationsalarm
+
+
+#Setup
+
+add the following lines to your .gradle/gradle.properties file
+
+    KEYSTORE_RELEASE_FILE=<path to release keystore>
+    KEYSTORE_RELEASE_PASSWORD=<release keystore password>
+    RELEASE_KEY_ALIAS=<release android key alias>
+    RELEASE_KEY_PASSWORD=<release android key password>

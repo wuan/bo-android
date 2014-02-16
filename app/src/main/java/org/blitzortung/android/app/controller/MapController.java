@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
 import org.blitzortung.android.app.Main;
@@ -38,6 +39,7 @@ public class MapController implements GoogleMap.OnCameraChangeListener, SharedPr
     private final MapFragment mapFragment;
     private final StrokesComponent strokesComponent;
     private final GoogleMap map;
+    private int mapShadingAlphaValue;
 
     public MapController(MapFragment mapFragment, SharedPreferences preferences, Resources resources, StrokesComponent strokesComponent) {
         this.mapFragment = mapFragment;
@@ -73,6 +75,8 @@ public class MapController implements GoogleMap.OnCameraChangeListener, SharedPr
 
         map.clear();
 
+        dimMap();
+
         addRasterDataArea(rasterParameters);
 
         for (AbstractStroke stroke : data.getStrokes()) {
@@ -82,6 +86,20 @@ public class MapController implements GoogleMap.OnCameraChangeListener, SharedPr
             int color = colorHandler.getColor(time.getReferenceTime(), stroke.getTimestamp(), time.getIntervalDuration());
 
             addGroundOverlay(longitude, latitude, width, height, color, 0f);
+        }
+    }
+
+    private void dimMap() {
+        for (int factor = -1; factor <= 1; factor += 2) {
+            PolygonOptions localPolygonOptions1 = new PolygonOptions();
+            localPolygonOptions1.fillColor(Color.argb(mapShadingAlphaValue, 0, 0, 0));
+            localPolygonOptions1.strokeColor(Color.argb(0, 0, 0, 0));
+            localPolygonOptions1.add(new LatLng(-85.0, factor * 179.99999));
+            localPolygonOptions1.add(new LatLng(85.0, factor * 179.99999));
+            localPolygonOptions1.add(new LatLng(85.0, 0));
+            localPolygonOptions1.add(new LatLng(-85.0, 0));
+            localPolygonOptions1.zIndex(-1.0f);
+            map.addPolygon(localPolygonOptions1);
         }
     }
 
@@ -123,16 +141,15 @@ public class MapController implements GoogleMap.OnCameraChangeListener, SharedPr
         map.animateCamera(cameraUpdate);
     }
 
-    public static float getZoomForMetersWide (
+    public static float getZoomForMetersWide(
             final float desiredMeters,
             final float mapWidth,
-            final float latitude )
-    {
-        final float latitudinalAdjustment = (float) Math.cos( Math.PI * latitude / 180.0f );
+            final float latitude) {
+        final float latitudinalAdjustment = (float) Math.cos(Math.PI * latitude / 180.0f);
 
-        final float arg = EQUATOR_LENGTH * mapWidth * latitudinalAdjustment / ( desiredMeters * 256.0f );
+        final float arg = EQUATOR_LENGTH * mapWidth * latitudinalAdjustment / (desiredMeters * 256.0f);
 
-        return (float) (Math.log( arg ) / Math.log( 2.0 ));
+        return (float) (Math.log(arg) / Math.log(2.0));
     }
 
     @Override
@@ -151,6 +168,7 @@ public class MapController implements GoogleMap.OnCameraChangeListener, SharedPr
             case MAP_TYPE:
                 String mapTypeString = sharedPreferences.getString(key.toString(), "SATELLITE");
                 map.setMapType(mapTypeString.equals("SATELLITE") ? GoogleMap.MAP_TYPE_SATELLITE : GoogleMap.MAP_TYPE_NORMAL);
+                mapFragment.getView().forceLayout();
                 break;
 
             case SHOW_PARTICIPANTS:
@@ -159,8 +177,7 @@ public class MapController implements GoogleMap.OnCameraChangeListener, SharedPr
                 break;
 
             case MAP_FADE:
-                int alphaValue = Math.round(255.0f / 100.0f * sharedPreferences.getInt(key.toString(), 40));
-                // TODO
+                mapShadingAlphaValue = Math.round(255.0f / 100.0f * sharedPreferences.getInt(key.toString(), 40));
                 break;
         }
     }
