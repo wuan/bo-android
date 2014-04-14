@@ -108,7 +108,7 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
         AlarmStatus alarmStatus = alarmManager.getAlarmStatus();
 
-        if (alarmStatus != null) {
+        if (alarmStatus != null && intervalDuration != 0) {
             AlarmParameters alarmParameters = alarmManager.getAlarmParameters();
 
             final float[] rangeSteps = alarmParameters.getRangeSteps();

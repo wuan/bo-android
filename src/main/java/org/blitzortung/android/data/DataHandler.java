@@ -138,7 +138,9 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     public void updateData(Set<DataChannel> updateTargets) {
 
-        listener.onBeforeDataUpdate();
+        if (listener != null) {
+            listener.onBeforeDataUpdate();
+        }
 
         boolean updateParticipants = false;
         if (updateTargets.contains(DataChannel.PARTICIPANTS)) {

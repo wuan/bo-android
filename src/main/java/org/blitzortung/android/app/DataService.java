@@ -6,6 +6,8 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -92,6 +94,10 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         }
     }
 
+    public DataHandler getDataHandler() {
+        return dataHandler;
+    }
+
     public class DataServiceBinder extends Binder {
         DataService getService() {
             Log.d(Main.LOG_TAG, "DataServiceBinder.getService() " + DataService.this);
@@ -115,6 +121,12 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         onSharedPreferenceChanged(preferences, PreferenceKey.ALARM_ENABLED);
         onSharedPreferenceChanged(preferences, PreferenceKey.BACKGROUND_QUERY_PERIOD);
         onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_PARTICIPANTS);
+
+        backgroundOperation = true;
+
+        if (dataHandler == null) {
+            dataHandler = new DataHandler(preferences, getPackageInfo());
+        }
     }
 
     @Override
@@ -123,9 +135,12 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
         if (intent != null && RETRIEVE_DATA_ACTION.equals(intent.getAction())) {
             if (!backgroundOperation) {
+                Log.i(Main.LOG_TAG, "DataService.onStartCommand() discard alarm");
                 discardAlarm();
             } else {
                 releaseWakeLock();
+                Log.i(Main.LOG_TAG, "DataService.onStartCommand() wakeLock released");
+
                 PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
                 wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
                 wakeLock.acquire();
@@ -228,7 +243,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         return true;
     }
 
-    public void setListener(DataServiceStatusListener listener) {
+    public void setStatusListener(DataServiceStatusListener listener) {
         this.listener = listener;
     }
 
@@ -305,5 +320,11 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         }
     }
 
-
+    private PackageInfo getPackageInfo() {
+        try {
+            return getPackageManager().getPackageInfo(getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }

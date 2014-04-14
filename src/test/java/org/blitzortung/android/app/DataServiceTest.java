@@ -183,7 +183,7 @@ public class DataServiceTest {
     public void testSetListener() {
         TimerListener timerListener = new TimerListener();
 
-        dataService.setListener(timerListener);
+        dataService.setStatusListener(timerListener);
 
         dataService.run();
 

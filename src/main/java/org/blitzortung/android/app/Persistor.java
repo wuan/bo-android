@@ -19,8 +19,6 @@ import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
 public class Persistor {
 
-    private final DataHandler provider;
-
     private final AlarmManager alarmManager;
 
     private final StrokesOverlay strokesOverlay;
@@ -36,7 +34,6 @@ public class Persistor {
     private final LocationHandler locationHandler;
 
     public Persistor(Activity activity, SharedPreferences sharedPreferences, PackageInfo pInfo) {
-        provider = new DataHandler(sharedPreferences, pInfo);
         locationHandler = new LocationHandler(activity, sharedPreferences);
         AlarmParameters alarmParameters = new AlarmParameters();
         alarmParameters.updateSectorLabels(activity);
@@ -48,7 +45,6 @@ public class Persistor {
     public void updateContext(Main mainActivity) {
         strokesOverlay.setActivity(mainActivity);
         participantsOverlay.setActivity(mainActivity);
-        provider.setDataListener(mainActivity);
 
         alarmManager.updateContext(mainActivity);
         alarmManager.clearAlarmListeners();
@@ -61,10 +57,6 @@ public class Persistor {
 
     public ParticipantsOverlay getParticipantsOverlay() {
         return participantsOverlay;
-    }
-
-    public DataHandler getDataHandler() {
-        return provider;
     }
 
     public AlarmManager getAlarmManager() {

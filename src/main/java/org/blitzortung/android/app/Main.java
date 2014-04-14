@@ -30,7 +30,6 @@ import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.app.view.components.StatusComponent;
-import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.RasterParameters;
@@ -64,8 +63,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private LocationHandler locationHandler;
 
-    private DataHandler dataHandler;
-
     private OwnLocationOverlay ownLocationOverlay;
 
     private Persistor persistor;
@@ -84,6 +81,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     private DataService dataService;
     private ServiceConnection serviceConnection;
     private LegendView legendView;
+    private AlarmView alarmView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -101,7 +99,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         OwnMapView mapView = (OwnMapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
         setMapView(mapView);
-
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -135,8 +132,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         addOverlays(fadeOverlay, strokesOverlay, participantsOverlay, ownLocationOverlay);
 
-        dataHandler = persistor.getDataHandler();
-        strokesOverlay.setIntervalDuration(dataHandler.getIntervalDuration());
         statusComponent = new StatusComponent(this);
         setHistoricStatusString();
 
@@ -168,7 +163,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             }
         }
 
-        historyController = new HistoryController(this, dataHandler);
+        historyController = new HistoryController(this);
         historyController.setButtonHandler(buttonColumnHandler);
         if (persistor.hasCurrentResult()) {
             historyController.setRealtimeData(persistor.getCurrentResult().containsRealtimeData());
@@ -199,8 +194,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                 dataService = ((DataService.DataServiceBinder) iBinder).getService();
                 Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + dataService);
-                dataService.setListener(Main.this);
-                dataService.setDataHandler(dataHandler);
+                dataService.setStatusListener(Main.this);
+                dataService.getDataHandler().setDataListener(Main.this);
+                strokesOverlay.setIntervalDuration(dataService.getDataHandler().getIntervalDuration());
                 if (!persistor.hasCurrentResult()) {
                     dataService.restart();
                 }
@@ -228,7 +224,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             rasterToggle.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     buttonColumnHandler.disableButtonColumn();
-                    dataHandler.toggleExtendedMode();
+                    dataService.getDataHandler().toggleExtendedMode();
                     onDataReset();
                 }
             });
@@ -248,7 +244,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             }
         });
 
-        AlarmView alarmView = (AlarmView) findViewById(R.id.alarm_view);
+        alarmView = (AlarmView) findViewById(R.id.alarm_view);
         alarmView.setAlarmManager(alarmManager);
         alarmView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getIntervalDuration());
         alarmView.setBackgroundColor(Color.TRANSPARENT);
@@ -472,6 +468,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 strokesOverlay.addStrokes(result.getStrokes());
 
                 alarmManager.checkStrokes(strokesOverlay.getStrokes(), result.containsRealtimeData());
+                alarmView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getIntervalDuration());
 
                 strokesOverlay.refresh();
             }
