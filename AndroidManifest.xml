@@ -28,7 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <service android:name=".DataService"/>
+        <service android:name=".AppService"/>
         <activity
                 android:name=".Preferences"
                 android:label="@string/preferences"/>

@@ -22,7 +22,7 @@ import org.blitzortung.android.util.Period;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DataService extends Service implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener {
+public class AppService extends Service implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String RETRIEVE_DATA_ACTION = "retrieveData";
 
@@ -57,13 +57,13 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     private PowerManager.WakeLock wakeLock;
 
     @SuppressWarnings("UnusedDeclaration")
-    public DataService() {
+    public AppService() {
         this(new Handler(), new Period());
-        Log.d(Main.LOG_TAG, "DataService() created with new handler");
+        Log.d(Main.LOG_TAG, "AppService() created with new handler");
     }
 
-    protected DataService(Handler handler, Period updatePeriod) {
-        Log.d(Main.LOG_TAG, "DataService() create");
+    protected AppService(Handler handler, Period updatePeriod) {
+        Log.d(Main.LOG_TAG, "AppService() create");
         this.handler = handler;
         this.updatePeriod = updatePeriod;
     }
@@ -99,9 +99,9 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     }
 
     public class DataServiceBinder extends Binder {
-        DataService getService() {
-            Log.d(Main.LOG_TAG, "DataServiceBinder.getService() " + DataService.this);
-            return DataService.this;
+        AppService getService() {
+            Log.d(Main.LOG_TAG, "DataServiceBinder.getService() " + AppService.this);
+            return AppService.this;
         }
     }
 
@@ -111,7 +111,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
     @Override
     public void onCreate() {
-        Log.i(Main.LOG_TAG, "DataService.onCreate()");
+        Log.i(Main.LOG_TAG, "AppService.onCreate()");
         super.onCreate();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -131,21 +131,21 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(Main.LOG_TAG, "DataService.onStartCommand() startId: " + startId + " " + intent);
+        Log.i(Main.LOG_TAG, "AppService.onStartCommand() startId: " + startId + " " + intent);
 
         if (intent != null && RETRIEVE_DATA_ACTION.equals(intent.getAction())) {
             if (!backgroundOperation) {
-                Log.i(Main.LOG_TAG, "DataService.onStartCommand() discard alarm");
+                Log.i(Main.LOG_TAG, "AppService.onStartCommand() discard alarm");
                 discardAlarm();
             } else {
                 releaseWakeLock();
-                Log.i(Main.LOG_TAG, "DataService.onStartCommand() wakeLock released");
+                Log.i(Main.LOG_TAG, "AppService.onStartCommand() wakeLock released");
 
                 PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
                 wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
                 wakeLock.acquire();
 
-                Log.v(Main.LOG_TAG, "DataService.onStartCommand() acquire wake lock " + wakeLock);
+                Log.v(Main.LOG_TAG, "AppService.onStartCommand() acquire wake lock " + wakeLock);
 
                 handler.removeCallbacks(this);
                 handler.post(this);
@@ -157,11 +157,11 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
     public void releaseWakeLock() {
         if (wakeLock != null && wakeLock.isHeld()) {
-            Log.v(Main.LOG_TAG, "DataService.releaseWakeLock() " + wakeLock);
+            Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() " + wakeLock);
             try {
                 wakeLock.release();
             } catch (RuntimeException e) {
-                Log.v(Main.LOG_TAG, "DataService.releaseWakeLock() failed: " + e.toString());
+                Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() failed: " + e.toString());
             }
         }
         wakeLock = null;
@@ -169,7 +169,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i(Main.LOG_TAG, "DataService.onBind() " + intent);
+        Log.i(Main.LOG_TAG, "AppService.onBind() " + intent);
         return binder;
     }
 
@@ -177,7 +177,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     public void run() {
 
         if (backgroundOperation) {
-            Log.v(Main.LOG_TAG, "DataService.run() in background");
+            Log.v(Main.LOG_TAG, "AppService.run() in background");
 
             dataHandler.updateDatainBackground();
         } else {
@@ -223,10 +223,10 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         discardAlarm();
 
         if (dataHandler.isRealtime()) {
-            Log.v(Main.LOG_TAG, "DataService.onResume() enable");
+            Log.v(Main.LOG_TAG, "AppService.onResume() enable");
             enable();
         } else {
-            Log.v(Main.LOG_TAG, "DataService.onResume() do not enable");
+            Log.v(Main.LOG_TAG, "AppService.onResume() do not enable");
         }
     }
 
@@ -234,7 +234,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         backgroundOperation = true;
 
         handler.removeCallbacks(this);
-        Log.v(Main.LOG_TAG, "DataService.onPause() remove callback");
+        Log.v(Main.LOG_TAG, "AppService.onPause() remove callback");
 
         if (alarmEnabled && backgroundPeriod != 0) {
             createAlarm();
@@ -279,7 +279,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
 
             case BACKGROUND_QUERY_PERIOD:
                 backgroundPeriod = Integer.parseInt(sharedPreferences.getString(key.toString(), "0"));
-                Log.v(Main.LOG_TAG, String.format("DataService.onSharedPreferenceChanged() backgroundPeriod=%d", backgroundPeriod));
+                Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() backgroundPeriod=%d", backgroundPeriod));
                 break;
 
             case SHOW_PARTICIPANTS:
@@ -295,15 +295,15 @@ public class DataService extends Service implements Runnable, SharedPreferences.
     private void createAlarm() {
         discardAlarm();
 
-        Log.v(Main.LOG_TAG, String.format("DataService.createAlarm() %d", backgroundPeriod));
-        Intent intent = new Intent(this, DataService.class);
+        Log.v(Main.LOG_TAG, String.format("AppService.createAlarm() %d", backgroundPeriod));
+        Intent intent = new Intent(this, AppService.class);
         intent.setAction(RETRIEVE_DATA_ACTION);
         pendingIntent = PendingIntent.getService(this, 0, intent, 0);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         if (alarmManager != null) {
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 0, backgroundPeriod * 1000, pendingIntent);
         } else {
-            Log.e(Main.LOG_TAG, "DataService.createAlarm() failed");
+            Log.e(Main.LOG_TAG, "AppService.createAlarm() failed");
         }
     }
 
@@ -311,7 +311,7 @@ public class DataService extends Service implements Runnable, SharedPreferences.
         releaseWakeLock();
 
         if (alarmManager != null) {
-            Log.v(Main.LOG_TAG, "DataService.discardAlarm()");
+            Log.v(Main.LOG_TAG, "AppService.discardAlarm()");
             alarmManager.cancel(pendingIntent);
             pendingIntent.cancel();
 

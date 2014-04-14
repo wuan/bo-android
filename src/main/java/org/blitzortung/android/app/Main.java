@@ -46,7 +46,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, DataService.DataServiceStatusListener,
+public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, AppService.DataServiceStatusListener,
         AlarmManager.AlarmListener {
 
     public static final String LOG_TAG = "BO_ANDROID";
@@ -78,7 +78,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     private ButtonColumnHandler<ImageButton> buttonColumnHandler;
 
     private HistoryController historyController;
-    private DataService dataService;
+    private AppService appService;
     private ServiceConnection serviceConnection;
     private LegendView legendView;
     private AlarmView alarmView;
@@ -185,23 +185,23 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     }
 
     private void createAndBindToDataService() {
-        final Intent serviceIntent = new Intent(this, DataService.class);
+        final Intent serviceIntent = new Intent(this, AppService.class);
 
         startService(serviceIntent);
 
         serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                dataService = ((DataService.DataServiceBinder) iBinder).getService();
-                Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + dataService);
-                dataService.setStatusListener(Main.this);
-                dataService.getDataHandler().setDataListener(Main.this);
-                strokesOverlay.setIntervalDuration(dataService.getDataHandler().getIntervalDuration());
+                appService = ((AppService.DataServiceBinder) iBinder).getService();
+                Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + appService);
+                appService.setStatusListener(Main.this);
+                appService.getDataHandler().setDataListener(Main.this);
+                strokesOverlay.setIntervalDuration(appService.getDataHandler().getIntervalDuration());
                 if (!persistor.hasCurrentResult()) {
-                    dataService.restart();
+                    appService.restart();
                 }
-                dataService.onResume();
-                historyController.setDataService(dataService);
+                appService.onResume();
+                historyController.setAppService(appService);
             }
 
             @Override
@@ -224,7 +224,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             rasterToggle.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     buttonColumnHandler.disableButtonColumn();
-                    dataService.getDataHandler().toggleExtendedMode();
+                    appService.getDataHandler().toggleExtendedMode();
                     onDataReset();
                 }
             });
@@ -389,8 +389,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         Log.d(Main.LOG_TAG, "Main.onResume()");
 
-        if (dataService != null) {
-            dataService.onResume();
+        if (appService != null) {
+            appService.onResume();
         }
         locationHandler.onResume();
 
@@ -404,7 +404,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public void onPause() {
         super.onPause();
 
-        if (dataService == null || dataService.onPause()) {
+        if (appService == null || appService.onPause()) {
             Log.d(Main.LOG_TAG, "Main.onPause() disable location handler");
             locationHandler.onPause();
         } else {
@@ -474,7 +474,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             }
 
             if (!result.containsRealtimeData()) {
-                dataService.disable();
+                appService.disable();
                 setHistoricStatusString();
             }
 
@@ -494,8 +494,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             legendView.invalidate();
         }
 
-        if (dataService != null) {
-            dataService.releaseWakeLock();
+        if (appService != null) {
+            appService.releaseWakeLock();
         }
     }
 
@@ -513,7 +513,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     @Override
     public void onDataReset() {
-        dataService.reloadData();
+        appService.reloadData();
         clearData = true;
 
         for (DataListener listener : dataListeners) {
