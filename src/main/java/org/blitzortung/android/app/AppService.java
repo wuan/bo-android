@@ -150,6 +150,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         if (dataListener != null) {
             dataListener.onDataReset();
         }
+        releaseWakeLock();
     }
 
     @Override
@@ -157,6 +158,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         if (dataListener != null) {
             dataListener.onDataError();
         }
+        releaseWakeLock();
     }
 
     public void setDataListener(DataListener dataListener) {
@@ -238,7 +240,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
                 PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
                 wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
-                wakeLock.acquire(10000);
+                wakeLock.acquire(20000);
 
                 Log.v(Main.LOG_TAG, "AppService.onStartCommand() acquire wake lock " + wakeLock);
 
