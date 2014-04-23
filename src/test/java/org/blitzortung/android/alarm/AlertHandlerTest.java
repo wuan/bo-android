@@ -35,7 +35,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
-public class AlertManagerTest {
+public class AlertHandlerTest {
 
     @Mock
     private AlarmParameters alarmParameters;
@@ -76,7 +76,7 @@ public class AlertManagerTest {
     @Mock
     private AlertListener alarmListener;
 
-    private AlertManager alertManager;
+    private AlertHandler alertHandler;
     
     private Resources resources;
 
@@ -99,17 +99,17 @@ public class AlertManagerTest {
         when(alarmStatusHandler.getCurrentActivity(alarmStatus)).thenReturn(alarmResult);
         when(context.getResources()).thenReturn(resources);
         
-        alertManager = new AlertManager(locationManager, sharedPreferences, context, vibrator, notificationHandler, alarmObjectFactory, alarmParameters);
-        alertManager.setAlertListener(alarmListener);
+        alertHandler = new AlertHandler(locationManager, sharedPreferences, context, vibrator, notificationHandler, alarmObjectFactory, alarmParameters);
+        alertHandler.setAlertListener(alarmListener);
     }
 
     @Test
     public void testConstruction() {
-        assertFalse(alertManager.isAlarmEnabled());
+        assertFalse(alertHandler.isAlarmEnabled());
 
-        verify(sharedPreferences, times(1)).registerOnSharedPreferenceChangeListener(any(AlertManager.class));
+        verify(sharedPreferences, times(1)).registerOnSharedPreferenceChangeListener(any(AlertHandler.class));
         verify(sharedPreferences, times(1)).getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false);
-        verify(locationManager, times(1)).removeUpdates(any(AlertManager.class));
+        verify(locationManager, times(1)).removeUpdates(any(AlertHandler.class));
         verify(sharedPreferences, times(1)).getString(PreferenceKey.MEASUREMENT_UNIT.toString(), "METRIC");
         verify(alarmParameters, times(1)).setMeasurementSystem(MeasurementSystem.METRIC);
         verify(alarmListener, times(0)).onAlertCancel();
@@ -117,7 +117,7 @@ public class AlertManagerTest {
 
     @Test
     public void testCheckStrokesWithAlarmDisabledAndLocationUnsetWhenAlarmWasNotActiveBefore() {
-        alertManager.checkStrokes(strokes);
+        alertHandler.checkStrokes(strokes);
 
         verify(alarmStatusHandler, times(0)).checkStrokes(alarmStatus, strokes, null);
         verify(alarmListener, times(0)).onAlert(alarmStatus, any(AlarmResult.class));
@@ -130,8 +130,8 @@ public class AlertManagerTest {
         verify(alarmListener, times(1)).onAlert(alarmStatus, any(AlarmResult.class));
         verify(alarmListener, times(0)).onAlertCancel();
 
-        alertManager.onLocationChanged(null);
-        alertManager.checkStrokes(strokes);
+        alertHandler.onLocationChanged(null);
+        alertHandler.checkStrokes(strokes);
 
         verify(alarmStatusHandler, times(0)).checkStrokes(alarmStatus, strokes, null);
         verify(alarmListener, times(1)).onAlert(alarmStatus, any(AlarmResult.class));
@@ -145,7 +145,7 @@ public class AlertManagerTest {
         verify(alarmListener, times(1)).onAlert(alarmStatus, any(AlarmResult.class));
         verify(alarmListener, times(1)).onAlertCancel();
 
-        alertManager.checkStrokes(strokes);
+        alertHandler.checkStrokes(strokes);
 
         verify(alarmStatusHandler, times(0)).checkStrokes(alarmStatus, strokes, null);
         verify(alarmListener, times(1)).onAlert(alarmStatus, any(AlarmResult.class));
@@ -155,11 +155,11 @@ public class AlertManagerTest {
     @Test
     public void testCheckStrokesWithAlarmEnabledAndLocationSet() {
         enableAlarmInPrefs(true);
-        alertManager.onLocationChanged(location);
+        alertHandler.onLocationChanged(location);
 
         when(alarmStatusHandler.getCurrentActivity(alarmStatus)).thenReturn(alarmResult);
 
-        alertManager.checkStrokes(strokes);
+        alertHandler.checkStrokes(strokes);
 
         verify(alarmStatusHandler, times(1)).checkStrokes(alarmStatus, strokes, location);
         verify(alarmListener, times(1)).onAlert(alarmStatus, alarmResult);
@@ -168,14 +168,14 @@ public class AlertManagerTest {
 
     @Test
     public void testGetAlarmResult() {
-        AlarmResult returnedAlarmResult = alertManager.getAlarmResult();
+        AlarmResult returnedAlarmResult = alertHandler.getAlarmResult();
         
         assertThat(returnedAlarmResult, is(nullValue()));
         verify(alarmStatusHandler, times(0)).getCurrentActivity(alarmStatus);
 
         makeAlarmsValid();
 
-        returnedAlarmResult = alertManager.getAlarmResult();
+        returnedAlarmResult = alertHandler.getAlarmResult();
         
         assertThat(returnedAlarmResult, is(sameInstance(alarmResult)));
         verify(alarmStatusHandler, times(2)).getCurrentActivity(alarmStatus);
@@ -183,33 +183,33 @@ public class AlertManagerTest {
 
     @Test
     public void testGetAlarmStatus() {
-        AlarmStatus returnedAlarmStatus = alertManager.getAlarmStatus();
+        AlarmStatus returnedAlarmStatus = alertHandler.getAlarmStatus();
 
         assertThat(returnedAlarmStatus, is(nullValue()));
 
         makeAlarmsValid();
 
-        returnedAlarmStatus = alertManager.getAlarmStatus();
+        returnedAlarmStatus = alertHandler.getAlarmStatus();
 
         assertThat(returnedAlarmStatus, is(sameInstance(alarmStatus)));
     }
 
     private void makeAlarmsValid() {
-        alertManager.onLocationChanged(location);
+        alertHandler.onLocationChanged(location);
         enableAlarmInPrefs(true);
-        alertManager.checkStrokes(Lists.<Stroke>newArrayList());
+        alertHandler.checkStrokes(Lists.<Stroke>newArrayList());
     }
 
     private void enableAlarmInPrefs(boolean alarmEnabled) {
         when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(alarmEnabled);
-        alertManager.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.ALARM_ENABLED.toString());
+        alertHandler.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.ALARM_ENABLED.toString());
     }
 
     @Test
     public void testGetTextMessage() {
         when(alarmStatusHandler.getTextMessage(alarmStatus, 10.0f)).thenReturn("<message>");
 
-        final String textMessage = alertManager.getTextMessage(10.0f);
+        final String textMessage = alertHandler.getTextMessage(10.0f);
 
         verify(alarmStatusHandler, times(1)).getTextMessage(alarmStatus, 10.0f);
         assertThat(textMessage, is("<message>"));
@@ -220,7 +220,7 @@ public class AlertManagerTest {
         final Collection<AlarmSector> alarmSectors = Lists.newArrayList();
         when(alarmStatus.getSectors()).thenReturn(alarmSectors);
 
-        final Collection<AlarmSector> returnedAlarmSectors = alertManager.getAlarmSectors();
+        final Collection<AlarmSector> returnedAlarmSectors = alertHandler.getAlarmSectors();
         
         assertThat(returnedAlarmSectors, is(sameInstance(alarmSectors)));
         verify(alarmStatus, times(1)).getSectors();
@@ -228,7 +228,7 @@ public class AlertManagerTest {
     
     @Test
     public void testGetAlarmParameters() {
-        final AlarmParameters returnedAlarmParameters = alertManager.getAlarmParameters();
+        final AlarmParameters returnedAlarmParameters = alertHandler.getAlarmParameters();
         
         assertThat(returnedAlarmParameters, is(sameInstance(alarmParameters)));
     }

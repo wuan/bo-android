@@ -9,7 +9,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.*;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -21,7 +20,7 @@ import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import org.blitzortung.android.alarm.AlarmLabelHandler;
-import org.blitzortung.android.alarm.AlertManager;
+import org.blitzortung.android.alarm.AlertHandler;
 import org.blitzortung.android.alarm.AlarmResult;
 import org.blitzortung.android.alarm.listener.AlertListener;
 import org.blitzortung.android.alarm.object.AlarmStatus;
@@ -64,7 +63,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private OwnLocationOverlay ownLocationOverlay;
 
-    private Persistor persistor;
+    private Persister persister;
 
     private boolean clearData;
 
@@ -104,16 +103,16 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         preferences.registerOnSharedPreferenceChangeListener(this);
 
         if (getLastNonConfigurationInstance() == null) {
-            Log.i(Main.LOG_TAG, "Main.onCreate(): create new persistor");
-            persistor = new Persistor(this, preferences, pInfo);
+            Log.i(Main.LOG_TAG, "Main.onCreate(): create new persister");
+            persister = new Persister(this, preferences, pInfo);
         } else {
-            Log.i(Main.LOG_TAG, "Main.onCreate(): reuse persistor");
-            persistor = (Persistor) getLastNonConfigurationInstance();
+            Log.i(Main.LOG_TAG, "Main.onCreate(): reuse persister");
+            persister = (Persister) getLastNonConfigurationInstance();
         }
-        persistor.updateContext(this);
+        persister.updateContext(this);
 
-        strokesOverlay = persistor.getStrokesOverlay();
-        participantsOverlay = persistor.getParticipantsOverlay();
+        strokesOverlay = persister.getStrokesOverlay();
+        participantsOverlay = persister.getParticipantsOverlay();
 
         mapView.addZoomListener(new OwnMapView.ZoomListener() {
 
@@ -157,8 +156,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         historyController = new HistoryController(this);
         historyController.setButtonHandler(buttonColumnHandler);
-        if (persistor.hasCurrentResult()) {
-            historyController.setRealtimeData(persistor.getCurrentResult().containsRealtimeData());
+        if (persister.hasCurrentResult()) {
+            historyController.setRealtimeData(persister.getCurrentResult().containsRealtimeData());
         }
         buttonColumnHandler.addAllElements(historyController.getButtons());
 
@@ -192,7 +191,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 appService.setLocationListener(Main.this);
 
                 strokesOverlay.setIntervalDuration(appService.getDataHandler().getIntervalDuration());
-                if (!persistor.hasCurrentResult()) {
+                if (!persister.hasCurrentResult()) {
                     appService.restart();
                 }
                 if (appService.isAlarmEnabled()) {
@@ -250,13 +249,13 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         alarmView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final AlertManager alertManager = appService.getAlertManager();
-                if (alertManager != null && alertManager.isAlarmEnabled()) {
-                    final Location currentLocation = alertManager.getCurrentLocation();
+                final AlertHandler alertHandler = appService.getAlertHandler();
+                if (alertHandler != null && alertHandler.isAlarmEnabled()) {
+                    final Location currentLocation = alertHandler.getCurrentLocation();
                     if (currentLocation != null) {
-                        float radius = alertManager.getMaxDistance();
+                        float radius = alertHandler.getMaxDistance();
 
-                        final AlarmResult alarmResult = alertManager.getAlarmResult();
+                        final AlarmResult alarmResult = alertHandler.getAlarmResult();
                         if (alarmResult != null) {
                             radius = Math.max(Math.min(alarmResult.getClosestStrokeDistance() * 1.2f, radius), 50f);
                         }
@@ -271,15 +270,15 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         HistogramView histogramView = (HistogramView) findViewById(R.id.histogram_view);
         histogramView.setStrokesOverlay(strokesOverlay);
-        if (persistor.hasCurrentResult()) {
-            histogramView.onDataUpdate(persistor.getCurrentResult());
+        if (persister.hasCurrentResult()) {
+            histogramView.onDataUpdate(persister.getCurrentResult());
         }
         addDataListener(histogramView);
         histogramView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (persistor.hasCurrentResult()) {
-                    final DataResult currentResult = persistor.getCurrentResult();
+                if (persister.hasCurrentResult()) {
+                    final DataResult currentResult = persister.getCurrentResult();
                     if (currentResult.hasRasterParameters()) {
                         final RasterParameters rasterParameters = currentResult.getRasterParameters();
                         animateToLocationAndVisibleSize(rasterParameters.getRectCenterLongitude(), rasterParameters.getRectCenterLatitude(), 5000f);
@@ -335,7 +334,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public Object onRetainNonConfigurationInstance() {
         strokesOverlay.clearPopup();
         participantsOverlay.clearPopup();
-        return persistor;
+        return persister;
     }
 
     public boolean isDebugBuild() {
@@ -443,7 +442,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         Parameters resultParameters = result.getParameters();
 
-        persistor.setCurrentResult(result);
+        persister.setCurrentResult(result);
 
         clearDataIfRequested();
 

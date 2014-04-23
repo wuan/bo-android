@@ -14,7 +14,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import org.blitzortung.android.alarm.AlarmParameters;
 import org.blitzortung.android.alarm.AlarmResult;
-import org.blitzortung.android.alarm.AlertManager;
+import org.blitzortung.android.alarm.AlertHandler;
 import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
 import org.blitzortung.android.alarm.listener.AlertListener;
 import org.blitzortung.android.alarm.object.AlarmStatus;
@@ -64,7 +64,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
     private PowerManager.WakeLock wakeLock;
     private LocationHandler locationHandler;
-    private AlertManager alertManager;
+    private AlertHandler alertHandler;
     private DataListener dataListener;
     private LocationHandler.Listener locationListener;
 
@@ -112,15 +112,15 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     public boolean isAlarmEnabled() {
-        return alertManager.isAlarmEnabled();
+        return alertHandler.isAlarmEnabled();
     }
 
     public AlarmResult getAlarmResult() {
-        return alertManager.getAlarmResult();
+        return alertHandler.getAlarmResult();
     }
 
-    public AlertManager getAlertManager() {
-        return alertManager;
+    public AlertHandler getAlertHandler() {
+        return alertHandler;
     }
 
     @Override
@@ -137,9 +137,9 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         }
 
         if (result.containsRealtimeData()) {
-            alertManager.checkStrokes(result.getStrokes());
+            alertHandler.checkStrokes(result.getStrokes());
         } else {
-            alertManager.cancelAlert();
+            alertHandler.cancelAlert();
         }
 
         releaseWakeLock();
@@ -164,11 +164,11 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     public void setAlertListener(AlertListener alertListener) {
-        alertManager.setAlertListener(alertListener);
+        alertHandler.setAlertListener(alertListener);
     }
 
     public AlarmStatus getAlarmStatus() {
-        return alertManager.getAlarmStatus();
+        return alertHandler.getAlarmStatus();
     }
 
     public void clearLocationListener() {
@@ -221,7 +221,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         locationHandler.requestUpdates(this);
         AlarmParameters alarmParameters = new AlarmParameters();
         alarmParameters.updateSectorLabels(this);
-        alertManager = new AlertManager(locationHandler, preferences, this,
+        alertHandler = new AlertHandler(locationHandler, preferences, this,
                 (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE),
                 new NotificationHandler(this),
                 new AlarmObjectFactory(), alarmParameters);

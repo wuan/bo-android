@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AlertManager implements OnSharedPreferenceChangeListener, LocationHandler.Listener {
+public class AlertHandler implements OnSharedPreferenceChangeListener, LocationHandler.Listener {
 
     private final Vibrator vibrator;
     private final NotificationHandler notificationHandler;
@@ -35,11 +35,6 @@ public class AlertManager implements OnSharedPreferenceChangeListener, LocationH
     private Collection<? extends Stroke> lastStrokes;
     private int vibrationSignalDuration;
     private Uri alarmSoundNotificationSignal;
-
-    public void updateContext(Context context) {
-        this.context = context;
-        alarmParameters.updateSectorLabels(context);
-    }
 
     private final AlarmParameters alarmParameters;
 
@@ -65,7 +60,7 @@ public class AlertManager implements OnSharedPreferenceChangeListener, LocationH
 
     private long signalingLastTimestamp;
 
-    public AlertManager(LocationHandler locationHandler, SharedPreferences preferences, Context context, Vibrator vibrator, NotificationHandler notificationHandler, AlarmObjectFactory alarmObjectFactory, AlarmParameters alarmParameters) {
+    public AlertHandler(LocationHandler locationHandler, SharedPreferences preferences, Context context, Vibrator vibrator, NotificationHandler notificationHandler, AlarmObjectFactory alarmObjectFactory, AlarmParameters alarmParameters) {
         this.locationHandler = locationHandler;
         this.context = context;
         this.vibrator = vibrator;
@@ -207,12 +202,14 @@ public class AlertManager implements OnSharedPreferenceChangeListener, LocationH
 
     private void processResult(AlarmResult alarmResult) {
         if (alarmResult != null) {
-            Log.v(Main.LOG_TAG, "AlertManager.processResult()");
+            Log.v(Main.LOG_TAG, "AlertHandler.processResult()");
+
+            alarmParameters.updateSectorLabels(context);
 
             if (alarmResult.getClosestStrokeDistance() <= signalingDistanceLimit) {
                 long signalingLatestTimestamp = alarmStatusHandler.getLatestTimstampWithin(signalingDistanceLimit, alarmStatus);
                 if (signalingLatestTimestamp > signalingLastTimestamp) {
-                    Log.v(Main.LOG_TAG, "AlertManager.processResult() perform alarm");
+                    Log.v(Main.LOG_TAG, "AlertHandler.processResult() perform alarm");
                     vibrateIfEnabled();
                     playSoundIfEnabled();
                     signalingLastTimestamp = signalingLatestTimestamp;
@@ -224,11 +221,11 @@ public class AlertManager implements OnSharedPreferenceChangeListener, LocationH
             if (alarmResult.getClosestStrokeDistance() <= notificationDistanceLimit) {
                 long notificationLatestTimestamp = alarmStatusHandler.getLatestTimstampWithin(notificationDistanceLimit, alarmStatus);
                 if (notificationLatestTimestamp > notificationLastTimestamp) {
-                    Log.v(Main.LOG_TAG, "AlertManager.processResult() perform notification");
+                    Log.v(Main.LOG_TAG, "AlertHandler.processResult() perform notification");
                     notificationHandler.sendNotification(context.getResources().getString(R.string.activity) + ": " + getTextMessage(notificationDistanceLimit));
                     notificationLastTimestamp = notificationLatestTimestamp;
                 } else {
-                    Log.d(Main.LOG_TAG, String.format("old signaling event: %d vs %d", notificationLatestTimestamp, signalingLastTimestamp));
+                    Log.d(Main.LOG_TAG, String.format("AlertHandler.processResult() previous signaling event: %d vs %d", notificationLatestTimestamp, signalingLastTimestamp));
                 }
             } else {
                 notificationHandler.clearNotification();
@@ -237,7 +234,7 @@ public class AlertManager implements OnSharedPreferenceChangeListener, LocationH
             notificationHandler.clearNotification();
         }
 
-        Log.v(Main.LOG_TAG, String.format("AlertManager.processResult() broadcast result %s", alarmResult));
+        Log.v(Main.LOG_TAG, String.format("AlertHandler.processResult() broadcast result %s", alarmResult));
 
         broadcastResult(alarmResult);
     }

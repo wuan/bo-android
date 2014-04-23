@@ -6,7 +6,6 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
 import android.view.View;
-import org.blitzortung.android.alarm.AlertManager;
 import org.blitzortung.android.alarm.AlarmParameters;
 import org.blitzortung.android.alarm.AlarmResult;
 import org.blitzortung.android.alarm.listener.AlertListener;
@@ -25,7 +24,7 @@ public class AlarmView extends View implements AlertListener {
     private static final PorterDuffXfermode XFERMODE_CLEAR = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
     private static final PorterDuffXfermode XFERMODE_SRC = new PorterDuffXfermode(PorterDuff.Mode.SRC);
 
-    //private AlertManager alertManager;
+    //private AlertHandler alertManager;
 
     private ColorHandler colorHandler;
 
