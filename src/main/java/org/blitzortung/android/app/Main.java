@@ -81,6 +81,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     private LegendView legendView;
     private AlarmView alarmView;
 
+    private Set<AlertListener> alertListeners = new HashSet<AlertListener>();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         try {
@@ -267,6 +269,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 }
             }
         });
+        alertListeners.add(alarmView);
 
         HistogramView histogramView = (HistogramView) findViewById(R.id.histogram_view);
         histogramView.setStrokesOverlay(strokesOverlay);
@@ -525,7 +528,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 break;
 
             case R.id.alarm_dialog:
-                dialog = new AlarmDialog(this, new AlarmDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)), strokesOverlay.getIntervalDuration());
+                dialog = new AlarmDialog(this, appService, new AlarmDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)), strokesOverlay.getIntervalDuration());
                 break;
 
             case R.id.layer_dialog:
@@ -623,13 +626,18 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         AlarmLabelHandler alarmLabelHandler = new AlarmLabelHandler(statusComponent, getResources());
         alarmLabelHandler.apply(alarmResult);
 
-        alarmView.onAlert(alarmStatus, alarmResult);
+        for (AlertListener alertListener : alertListeners) {
+            alertListener.onAlert(alarmStatus, alarmResult);
+        }
     }
 
     @Override
     public void onAlertCancel() {
         statusComponent.setAlarmText("");
-        alarmView.onAlertCancel();
+
+        for (AlertListener alertListener : alertListeners) {
+            alertListener.onAlertCancel();
+        }
     }
 
     private void updatePackageInfo() {
@@ -643,5 +651,13 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     @Override
     public void onLocationChanged(Location location) {
         ownLocationOverlay.onLocationChanged(location);
+    }
+
+    public void registerAlertListener(AlertListener alertListener) {
+        alertListeners.add(alertListener);
+    }
+
+    public void removeAlertListener(AlertListener alertListener) {
+        alertListeners.remove(alertListener);
     }
 }
