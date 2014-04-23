@@ -257,7 +257,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
             notificationHandler.clearNotification();
         }
 
-        Log.v(Main.LOG_TAG, String.format("AlarmManager.processResult() broadcast result %s", alarmResult));
+        Log.v(Main.LOG_TAG, "AlarmManager.processResult() broadcast result " + alarmResult);
 
         broadcastResult(alarmResult);
     }
@@ -271,7 +271,10 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
             Ringtone r = RingtoneManager.getRingtone(context, alarmSoundNotificationSignal);
             if (r != null) {
                 r.setStreamType(AudioManager.STREAM_NOTIFICATION);
-                r.play();
+                if (!r.isPlaying()) {
+                    r.play();
+                }
+                Log.v(Main.LOG_TAG, "playing " + r.getTitle(context));
             }
         } 
     }
