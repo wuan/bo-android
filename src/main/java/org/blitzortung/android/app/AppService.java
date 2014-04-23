@@ -386,8 +386,20 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
                 break;
 
             case BACKGROUND_QUERY_PERIOD:
-                backgroundPeriod = Integer.parseInt(sharedPreferences.getString(key.toString(), "0"));
-                Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() backgroundPeriod=%d", backgroundPeriod));
+                int newBackgroundPeriod = Integer.parseInt(sharedPreferences.getString(key.toString(), "0"));
+
+                if (backgroundOperation) {
+                    if (backgroundPeriod == 0 && newBackgroundPeriod > 0) {
+                        Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() create alarm with backgroundPeriod=%d", newBackgroundPeriod));
+                        createAlarm();
+                    } else if (backgroundPeriod > 0 && newBackgroundPeriod == 0) {
+                        discardAlarm();
+                        Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() discard alarm", newBackgroundPeriod));
+                    }
+                } else {
+                    Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() backgroundPeriod=%d", newBackgroundPeriod));
+                }
+                backgroundPeriod = newBackgroundPeriod;
                 break;
 
             case SHOW_PARTICIPANTS:
