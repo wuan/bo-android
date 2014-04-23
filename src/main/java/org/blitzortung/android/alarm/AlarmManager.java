@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.location.Location;
+import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -131,7 +132,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
                 break;
 
             case ALARM_SOUND_SIGNAL:
-                alarmSoundNotificationSignal = Uri.parse(sharedPreferences.getString(key.toString(), ""));
+                final String signalUri = sharedPreferences.getString(key.toString(), "");
+                alarmSoundNotificationSignal = !signalUri.isEmpty() ? Uri.parse(signalUri) : null;
                 break;
         }
     }
@@ -265,12 +267,13 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     }
 
     private void playSoundIfEnabled() {
-        if (alarmSoundNotificationSignal != null) {
-            Ringtone r = RingtoneManager.getRingtone(context.getApplicationContext(), alarmSoundNotificationSignal);
+        if (alarmSoundNotificationSignal != null ) {
+            Ringtone r = RingtoneManager.getRingtone(context, alarmSoundNotificationSignal);
             if (r != null) {
+                r.setStreamType(AudioManager.STREAM_NOTIFICATION);
                 r.play();
             }
-        }
+        } 
     }
 
     public Location getCurrentLocation() {
