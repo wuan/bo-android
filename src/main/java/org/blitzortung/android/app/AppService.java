@@ -147,12 +147,16 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
     @Override
     public void onDataReset() {
-
+        if (dataListener != null) {
+            dataListener.onDataReset();
+        }
     }
 
     @Override
     public void onDataError() {
-
+        if (dataListener != null) {
+            dataListener.onDataError();
+        }
     }
 
     public void setDataListener(DataListener dataListener) {
