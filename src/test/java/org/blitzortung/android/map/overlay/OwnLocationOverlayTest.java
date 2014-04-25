@@ -123,7 +123,7 @@ public class OwnLocationOverlayTest {
         when(context.getApplicationContext()).thenReturn(Robolectric.application);
         when(mapView.getOverlays()).thenReturn(overlays);
 
-        ownLocationOverlay = new OwnLocationOverlay(context, locationHandler, mapView);
+        ownLocationOverlay = new OwnLocationOverlay(context, mapView);
     }
 
     @Test

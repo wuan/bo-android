@@ -8,21 +8,29 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.Binder;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.PowerManager;
+import android.location.Location;
+import android.os.*;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import org.blitzortung.android.alarm.AlarmParameters;
+import org.blitzortung.android.alarm.AlarmResult;
+import org.blitzortung.android.alarm.AlertManager;
+import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
+import org.blitzortung.android.alarm.listener.AlertListener;
+import org.blitzortung.android.alarm.object.AlarmStatus;
+import org.blitzortung.android.app.controller.LocationHandler;
+import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
+import org.blitzortung.android.data.DataListener;
+import org.blitzortung.android.data.provider.DataResult;
 import org.blitzortung.android.util.Period;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class AppService extends Service implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener {
+public class AppService extends Service implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener, DataListener, LocationHandler.Listener {
 
     public static final String RETRIEVE_DATA_ACTION = "retrieveData";
 
@@ -55,6 +63,10 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     private PendingIntent pendingIntent;
 
     private PowerManager.WakeLock wakeLock;
+    private LocationHandler locationHandler;
+    private AlertManager alertManager;
+    private DataListener dataListener;
+    private LocationHandler.Listener locationListener;
 
     @SuppressWarnings("UnusedDeclaration")
     public AppService() {
@@ -66,6 +78,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         Log.d(Main.LOG_TAG, "AppService() create");
         this.handler = handler;
         this.updatePeriod = updatePeriod;
+        backgroundOperation = true;
     }
 
     public int getPeriod() {
@@ -98,6 +111,77 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         return dataHandler;
     }
 
+    public boolean isAlarmEnabled() {
+        return alertManager.isAlarmEnabled();
+    }
+
+    public AlarmResult getAlarmResult() {
+        return alertManager.getAlarmResult();
+    }
+
+    public AlertManager getAlertManager() {
+        return alertManager;
+    }
+
+    @Override
+    public void onBeforeDataUpdate() {
+        if (dataListener != null) {
+            dataListener.onBeforeDataUpdate();
+        }
+    }
+
+    @Override
+    public void onDataUpdate(DataResult result) {
+        if (!result.isBackground() && dataListener != null) {
+            dataListener.onDataUpdate(result);
+        }
+
+        if (result.containsRealtimeData()) {
+            alertManager.checkStrokes(result.getStrokes());
+        } else {
+            alertManager.cancelAlert();
+        }
+
+        releaseWakeLock();
+    }
+
+    @Override
+    public void onDataReset() {
+
+    }
+
+    @Override
+    public void onDataError() {
+
+    }
+
+    public void setDataListener(DataListener dataListener) {
+        this.dataListener = dataListener;
+    }
+
+    public void setAlertListener(AlertListener alertListener) {
+        alertManager.setAlertListener(alertListener);
+    }
+
+    public AlarmStatus getAlarmStatus() {
+        return alertManager.getAlarmStatus();
+    }
+
+    public void clearLocationListener() {
+        locationListener = null;
+    }
+
+    public void setLocationListener(LocationHandler.Listener locationListener) {
+        this.locationListener = locationListener;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if (locationListener != null) {
+            locationListener.onLocationChanged(location);
+        }
+    }
+
     public class DataServiceBinder extends Binder {
         AppService getService() {
             Log.d(Main.LOG_TAG, "DataServiceBinder.getService() " + AppService.this);
@@ -126,7 +210,17 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
         if (dataHandler == null) {
             dataHandler = new DataHandler(preferences, getPackageInfo());
+            dataHandler.setDataListener(this);
         }
+
+        locationHandler = new LocationHandler(this, preferences);
+        locationHandler.requestUpdates(this);
+        AlarmParameters alarmParameters = new AlarmParameters();
+        alarmParameters.updateSectorLabels(this);
+        alertManager = new AlertManager(locationHandler, preferences, this,
+                (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE),
+                new NotificationHandler(this),
+                new AlarmObjectFactory(), alarmParameters);
     }
 
     @Override
@@ -134,21 +228,26 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         Log.i(Main.LOG_TAG, "AppService.onStartCommand() startId: " + startId + " " + intent);
 
         if (intent != null && RETRIEVE_DATA_ACTION.equals(intent.getAction())) {
-            if (!backgroundOperation) {
-                Log.i(Main.LOG_TAG, "AppService.onStartCommand() discard alarm");
-                discardAlarm();
-            } else {
+            if (backgroundOperation) {
                 releaseWakeLock();
                 Log.i(Main.LOG_TAG, "AppService.onStartCommand() wakeLock released");
 
                 PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
                 wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
-                wakeLock.acquire();
+                wakeLock.acquire(10000);
 
                 Log.v(Main.LOG_TAG, "AppService.onStartCommand() acquire wake lock " + wakeLock);
 
                 handler.removeCallbacks(this);
                 handler.post(this);
+            }
+        } else {
+            if (backgroundOperation) {
+                if (alarmManager == null && backgroundPeriod > 0) {
+                    createAlarm();
+                }
+            } else {
+                discardAlarm();
             }
         }
 
@@ -170,6 +269,9 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(Main.LOG_TAG, "AppService.onBind() " + intent);
+
+        backgroundOperation = false;
+
         return binder;
     }
 
@@ -236,7 +338,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         handler.removeCallbacks(this);
         Log.v(Main.LOG_TAG, "AppService.onPause() remove callback");
 
-        if (alarmEnabled && backgroundPeriod != 0) {
+        if (alarmEnabled && backgroundPeriod > 0) {
             createAlarm();
             return false;
         }

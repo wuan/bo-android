@@ -4,7 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.View;
-import org.blitzortung.android.alarm.AlarmManager;
+import org.blitzortung.android.alarm.AlertManager;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
@@ -13,7 +13,7 @@ public class AlarmDialog extends AlertDialog {
 
     private final ColorHandler colorHandler;
 
-    public AlarmDialog(Context context, AlarmManager alarmManager, ColorHandler colorHandler, int intervalDuration) {
+    public AlarmDialog(Context context, ColorHandler colorHandler, int intervalDuration) {
 		super(context);
         this.colorHandler = colorHandler;
 
@@ -22,7 +22,6 @@ public class AlarmDialog extends AlertDialog {
 		View dialog = getLayoutInflater().inflate(R.layout.alarm_dialog, null);
 
 		AlarmView alarmView = (AlarmView) dialog.findViewById(R.id.alarm_diagram);
-		alarmView.setAlarmManager(alarmManager);
 		alarmView.setColorHandler(colorHandler, intervalDuration);
 		
 		setView(dialog);

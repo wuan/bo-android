@@ -9,8 +9,10 @@ import java.util.Collection;
 public class AlarmStatus {
 
     private final Collection<AlarmSector> sectors;
+    private final AlarmParameters alarmParameters;
 
     public AlarmStatus(AlarmObjectFactory alarmObjectFactory, AlarmParameters alarmParameters) {
+        this.alarmParameters = alarmParameters;
         final String[] sectorLabels = alarmParameters.getSectorLabels();
         float sectorWidth = 360f / sectorLabels.length;
         
@@ -35,5 +37,9 @@ public class AlarmStatus {
 
     public Collection<AlarmSector> getSectors() {
         return sectors;
+    }
+
+    public AlarmParameters getAlarmParameters() {
+        return alarmParameters;
     }
 }

@@ -28,11 +28,9 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
 
     private OwnLocationOverlayItem item;
 
-    private final LocationHandler locationManager;
-
     private int zoomLevel;
 
-    public OwnLocationOverlay(Context context, LocationHandler locationHandler, OwnMapView mapView) {
+    public OwnLocationOverlay(Context context, OwnMapView mapView) {
         super(DEFAULT_DRAWABLE);
 
         layerOverlayComponent = new LayerOverlayComponent(context.getResources().getString(R.string.own_location_layer));
@@ -40,9 +38,6 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
         item = null;
 
         populate();
-
-        this.locationManager = locationHandler;
-        locationHandler.requestUpdates(this);
 
         mapView.addZoomListener(new OwnMapView.ZoomListener() {
 
@@ -99,12 +94,9 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
     }
 
     public void enableOwnLocation() {
-        locationManager.requestUpdates(this);
     }
 
     public void disableOwnLocation() {
-        locationManager.removeUpdates(this);
-
         item = null;
         populate();
     }

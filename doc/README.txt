@@ -1,4 +1,4 @@
 upcoming features:
 
 * animation
-* background task and close activity alarm
+* background task and close context alarm
