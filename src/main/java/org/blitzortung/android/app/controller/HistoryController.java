@@ -4,10 +4,9 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
+import org.blitzortung.android.app.AppService;
 import org.blitzortung.android.app.R;
-import org.blitzortung.android.app.DataService;
 import org.blitzortung.android.data.DataChannel;
-import org.blitzortung.android.data.DataHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,17 +16,15 @@ import java.util.Set;
 
 public class HistoryController {
 
-    private final DataHandler dataHandler;
     private ImageButton historyRewind;
     private ImageButton historyForward;
     private ImageButton goRealtime;
     private final Collection<ImageButton> buttons;
-    private DataService dataService;
+    private AppService appService;
 
     private ButtonColumnHandler buttonHandler;
 
-    public HistoryController(final Activity activity, DataHandler dataHandler) {
-        this.dataHandler = dataHandler;
+    public HistoryController(final Activity activity) {
         buttons = new ArrayList<ImageButton>();
 
         setupHistoryRewindButton(activity);
@@ -42,7 +39,7 @@ public class HistoryController {
     }
 
     public void setRealtimeData(boolean realtimeData) {
-        if (dataHandler.isCapableOfHistoricalData()) {
+        if (appService != null && appService.getDataHandler().isCapableOfHistoricalData()) {
             historyRewind.setVisibility(View.VISIBLE);
             int historyButtonsVisibility = realtimeData ? View.INVISIBLE : View.VISIBLE;
             historyForward.setVisibility(historyButtonsVisibility);
@@ -60,7 +57,7 @@ public class HistoryController {
         buttons.add(historyRewind);
         historyRewind.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (dataHandler.rewInterval()) {
+                if (appService.getDataHandler().rewInterval()) {
                     disableButtonColumn();
                     historyForward.setVisibility(View.VISIBLE);
                     goRealtime.setVisibility(View.VISIBLE);
@@ -80,8 +77,8 @@ public class HistoryController {
         historyForward.setVisibility(View.INVISIBLE);
         historyForward.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (dataHandler.ffwdInterval()) {
-                    if (dataHandler.isRealtime()) {
+                if (appService.getDataHandler().ffwdInterval()) {
+                    if (appService.getDataHandler().isRealtime()) {
                         configureForRealtimeOperation();
                     } else {
                         updateData();
@@ -97,7 +94,7 @@ public class HistoryController {
         goRealtime.setVisibility(View.INVISIBLE);
         goRealtime.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (dataHandler.goRealtime()) {
+                if (appService.getDataHandler().goRealtime()) {
                     configureForRealtimeOperation();
                 }
             }
@@ -109,8 +106,8 @@ public class HistoryController {
         historyForward.setVisibility(View.INVISIBLE);
         goRealtime.setVisibility(View.INVISIBLE);
         updateButtonColumn();
-        dataService.restart();
-        dataService.enable();
+        appService.restart();
+        appService.enable();
     }
 
     private void updateButtonColumn() {
@@ -130,10 +127,10 @@ public class HistoryController {
     private void updateData() {
         Set<DataChannel> dataChannels = new HashSet<DataChannel>();
         dataChannels.add(DataChannel.STROKES);
-        dataHandler.updateData(dataChannels);
+        appService.getDataHandler().updateData(dataChannels);
     }
 
-    public void setDataService(DataService dataService) {
-        this.dataService = dataService;
+    public void setAppService(AppService appService) {
+        this.appService = appService;
     }
 }

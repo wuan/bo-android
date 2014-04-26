@@ -6,9 +6,9 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
 import android.view.View;
-import org.blitzortung.android.alarm.AlarmManager;
 import org.blitzortung.android.alarm.AlarmParameters;
 import org.blitzortung.android.alarm.AlarmResult;
+import org.blitzortung.android.alarm.listener.AlertListener;
 import org.blitzortung.android.alarm.object.AlarmSector;
 import org.blitzortung.android.alarm.object.AlarmSectorRange;
 import org.blitzortung.android.alarm.object.AlarmStatus;
@@ -18,13 +18,13 @@ import org.blitzortung.android.map.overlay.color.ColorHandler;
 
 import java.util.List;
 
-public class AlarmView extends View implements AlarmManager.AlarmListener {
+public class AlarmView extends View implements AlertListener {
 
     private static final int TEXT_MINIMUM_SIZE = 300;
     private static final PorterDuffXfermode XFERMODE_CLEAR = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
     private static final PorterDuffXfermode XFERMODE_SRC = new PorterDuffXfermode(PorterDuff.Mode.SRC);
 
-    private AlarmManager alarmManager;
+    //private AlertHandler alertManager;
 
     private ColorHandler colorHandler;
 
@@ -42,6 +42,8 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
     private Bitmap temporaryBitmap;
     private Canvas temporaryCanvas;
+    private AlarmStatus alarmStatus;
+    private AlarmResult alarmResult;
 
     @SuppressWarnings("unused")
     public AlarmView(Context context, AttributeSet attrs) {
@@ -67,11 +69,6 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
         background.setColor(0xffb0b0b0);
     }
 
-
-    public void setAlarmManager(AlarmManager alarmManager) {
-        this.alarmManager = alarmManager;
-    }
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
@@ -84,16 +81,10 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
     @Override
     protected void onAttachedToWindow() {
-        if (alarmManager != null) {
-            alarmManager.addAlarmListener(this);
-        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        if (alarmManager != null) {
-            alarmManager.removeAlarmListener(this);
-        }
     }
 
     @Override
@@ -106,11 +97,8 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
 
         prepareTemporaryBitmap(size);
 
-        AlarmStatus alarmStatus = alarmManager.getAlarmStatus();
-
-        if (alarmStatus != null) {
-            AlarmParameters alarmParameters = alarmManager.getAlarmParameters();
-
+        if (alarmStatus != null && intervalDuration != 0) {
+            AlarmParameters alarmParameters = alarmStatus.getAlarmParameters();
             final float[] rangeSteps = alarmParameters.getRangeSteps();
             final int rangeStepCount = rangeSteps.length;
             final float radiusIncrement = radius / rangeStepCount;
@@ -211,12 +199,16 @@ public class AlarmView extends View implements AlarmManager.AlarmListener {
     }
 
     @Override
-    public void onAlarmResult(AlarmResult alarmResult) {
+    public void onAlert(AlarmStatus alarmStatus, AlarmResult alarmResult) {
+        this.alarmStatus = alarmStatus;
+        this.alarmResult = alarmResult;
         invalidate();
     }
 
     @Override
-    public void onAlarmClear() {
+    public void onAlertCancel() {
+        alarmStatus = null;
+        alarmResult = null;
         invalidate();
     }
 

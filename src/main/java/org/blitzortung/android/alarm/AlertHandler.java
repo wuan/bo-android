@@ -12,6 +12,7 @@ import android.os.Vibrator;
 import android.util.Log;
 import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
 import org.blitzortung.android.alarm.handler.AlarmStatusHandler;
+import org.blitzortung.android.alarm.listener.AlertListener;
 import org.blitzortung.android.alarm.object.AlarmSector;
 import org.blitzortung.android.alarm.object.AlarmStatus;
 import org.blitzortung.android.app.Main;
@@ -26,7 +27,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AlarmManager implements OnSharedPreferenceChangeListener, LocationHandler.Listener {
+public class AlertHandler implements OnSharedPreferenceChangeListener, LocationHandler.Listener {
 
     private final Vibrator vibrator;
     private final NotificationHandler notificationHandler;
@@ -34,17 +35,6 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     private Collection<? extends Stroke> lastStrokes;
     private int vibrationSignalDuration;
     private Uri alarmSoundNotificationSignal;
-
-    public void updateContext(Context context) {
-        this.context = context;
-        alarmParameters.updateSectorLabels(context);
-    }
-
-    public interface AlarmListener {
-        void onAlarmResult(AlarmResult alarmResult);
-
-        void onAlarmClear();
-    }
 
     private final AlarmParameters alarmParameters;
 
@@ -54,8 +44,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
 
     private boolean alarmValid;
 
-    // VisibleForTesting
-    protected final Set<AlarmListener> alarmListeners;
+    private AlertListener alertListener;
 
     private final AlarmStatus alarmStatus;
 
@@ -71,7 +60,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
 
     private long signalingLastTimestamp;
 
-    public AlarmManager(LocationHandler locationHandler, SharedPreferences preferences, Context context, Vibrator vibrator, NotificationHandler notificationHandler, AlarmObjectFactory alarmObjectFactory, AlarmParameters alarmParameters) {
+    public AlertHandler(LocationHandler locationHandler, SharedPreferences preferences, Context context, Vibrator vibrator, NotificationHandler notificationHandler, AlarmObjectFactory alarmObjectFactory, AlarmParameters alarmParameters) {
         this.locationHandler = locationHandler;
         this.context = context;
         this.vibrator = vibrator;
@@ -80,8 +69,6 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
         this.alarmStatusHandler = alarmObjectFactory.createAlarmStatusHandler(alarmParameters);
         this.alarmParameters = alarmParameters;
 
-
-        alarmListeners = new HashSet<AlarmListener>();
 
         preferences.registerOnSharedPreferenceChangeListener(this);
         onSharedPreferenceChanged(preferences, PreferenceKey.ALARM_ENABLED);
@@ -142,16 +129,16 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     public void onLocationChanged(Location location) {
         this.location = location;
 
-        checkStrokes(lastStrokes, true);
+        checkStrokes(lastStrokes);
     }
 
     public boolean isAlarmEnabled() {
         return alarmEnabled;
     }
 
-    public void checkStrokes(Collection<? extends Stroke> strokes, boolean strokesAreInRealtime) {
-        boolean currentAlarmIsValid = isAlarmEnabled() && location != null && strokes != null && strokesAreInRealtime;
-        lastStrokes = strokesAreInRealtime ? strokes : null;
+    public void checkStrokes(Collection<? extends Stroke> strokes) {
+        boolean currentAlarmIsValid = isAlarmEnabled() && location != null && strokes != null;
+        lastStrokes = strokes;
 
         if (currentAlarmIsValid) {
             alarmValid = true;
@@ -170,20 +157,8 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
         return alarmStatusHandler.getTextMessage(alarmStatus, notificationDistanceLimit);
     }
 
-    public void addAlarmListener(AlarmListener alarmListener) {
-        alarmListeners.add(alarmListener);
-    }
-
-    public Set<AlarmListener> getAlarmListeners() {
-        return alarmListeners;
-    }
-
-    public void clearAlarmListeners() {
-        alarmListeners.clear();
-    }
-
-    public void removeAlarmListener(AlarmListener alarmView) {
-        alarmListeners.remove(alarmView);
+    public void setAlertListener(AlertListener alertListener) {
+        this.alertListener = alertListener;
     }
 
     public Collection<AlarmSector> getAlarmSectors() {
@@ -214,25 +189,27 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
     }
 
     private void broadcastClear() {
-        for (AlarmListener alarmListener : alarmListeners) {
-            alarmListener.onAlarmClear();
+        if (alertListener != null) {
+            alertListener.onAlertCancel();
         }
     }
 
     private void broadcastResult(AlarmResult alarmResult) {
-        for (AlarmListener alarmListener : alarmListeners) {
-            alarmListener.onAlarmResult(alarmResult);
+        if (alertListener != null) {
+            alertListener.onAlert(alarmStatus, alarmResult);
         }
     }
 
     private void processResult(AlarmResult alarmResult) {
         if (alarmResult != null) {
-            Log.v(Main.LOG_TAG, "AlarmManager.processResult()");
+            Log.v(Main.LOG_TAG, "AlertHandler.processResult()");
+
+            alarmParameters.updateSectorLabels(context);
 
             if (alarmResult.getClosestStrokeDistance() <= signalingDistanceLimit) {
                 long signalingLatestTimestamp = alarmStatusHandler.getLatestTimstampWithin(signalingDistanceLimit, alarmStatus);
                 if (signalingLatestTimestamp > signalingLastTimestamp) {
-                    Log.v(Main.LOG_TAG, "AlarmManager.processResult() perform alarm");
+                    Log.v(Main.LOG_TAG, "AlertHandler.processResult() perform alarm");
                     vibrateIfEnabled();
                     playSoundIfEnabled();
                     signalingLastTimestamp = signalingLatestTimestamp;
@@ -244,11 +221,11 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
             if (alarmResult.getClosestStrokeDistance() <= notificationDistanceLimit) {
                 long notificationLatestTimestamp = alarmStatusHandler.getLatestTimstampWithin(notificationDistanceLimit, alarmStatus);
                 if (notificationLatestTimestamp > notificationLastTimestamp) {
-                    Log.v(Main.LOG_TAG, "AlarmManager.processResult() perform notification");
+                    Log.v(Main.LOG_TAG, "AlertHandler.processResult() perform notification");
                     notificationHandler.sendNotification(context.getResources().getString(R.string.activity) + ": " + getTextMessage(notificationDistanceLimit));
                     notificationLastTimestamp = notificationLatestTimestamp;
                 } else {
-                    Log.d(Main.LOG_TAG, String.format("old signaling event: %d vs %d", notificationLatestTimestamp, signalingLastTimestamp));
+                    Log.d(Main.LOG_TAG, String.format("AlertHandler.processResult() previous signaling event: %d vs %d", notificationLatestTimestamp, signalingLastTimestamp));
                 }
             } else {
                 notificationHandler.clearNotification();
@@ -257,7 +234,7 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
             notificationHandler.clearNotification();
         }
 
-        Log.v(Main.LOG_TAG, "AlarmManager.processResult() broadcast result " + alarmResult);
+        Log.v(Main.LOG_TAG, String.format("AlertHandler.processResult() broadcast result %s", alarmResult));
 
         broadcastResult(alarmResult);
     }
@@ -270,17 +247,20 @@ public class AlarmManager implements OnSharedPreferenceChangeListener, LocationH
         if (alarmSoundNotificationSignal != null ) {
             Ringtone r = RingtoneManager.getRingtone(context, alarmSoundNotificationSignal);
             if (r != null) {
-                r.setStreamType(AudioManager.STREAM_NOTIFICATION);
                 if (!r.isPlaying()) {
+                    r.setStreamType(AudioManager.STREAM_NOTIFICATION);
                     r.play();
                 }
                 Log.v(Main.LOG_TAG, "playing " + r.getTitle(context));
             }
-        } 
+        }
     }
 
     public Location getCurrentLocation() {
         return location;
     }
 
+    public void cancelAlert() {
+        broadcastClear();
+    }
 }

@@ -25,7 +25,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
-public class DataServiceTest {
+public class AppServiceTest {
 
     @Mock
     private Handler handler;
@@ -41,7 +41,7 @@ public class DataServiceTest {
 
     private SharedPreferences sharedPreferences;
 
-    private DataService dataService;
+    private AppService appService;
 
     @Before
     public void setUp() {
@@ -58,49 +58,49 @@ public class DataServiceTest {
 
         when(dataHandler.getIntervalDuration()).thenReturn(60);
 
-        dataService = new DataService(handler, period);
-        dataService.setDataHandler(dataHandler);
+        appService = new AppService(handler, period);
+        appService.setDataHandler(dataHandler);
 
-        dataService.onCreate();
+        appService.onCreate();
     }
 
     @Test
     public void testOnBind() {
         Intent intent = mock(Intent.class);
-        final IBinder binder = dataService.onBind(intent);
+        final IBinder binder = appService.onBind(intent);
 
-        assertThat(binder, is(instanceOf(DataService.DataServiceBinder.class)));
+        assertThat(binder, is(instanceOf(AppService.DataServiceBinder.class)));
 
-        assertThat(((DataService.DataServiceBinder) binder).getService(), is(sameInstance(dataService)));
+        assertThat(((AppService.DataServiceBinder) binder).getService(), is(sameInstance(appService)));
     }
 
     @Test
     public void testInitialization() {
         verify(handler, times(0)).removeCallbacks(any(Runnable.class));
-        verify(handler, times(0)).post(dataService);
+        verify(handler, times(0)).post(appService);
 
-        assertThat(dataService.getPeriod(), is(60));
-        assertThat(dataService.getBackgroundPeriod(), is(0));
-        assertFalse(dataService.isEnabled());
+        assertThat(appService.getPeriod(), is(60));
+        assertThat(appService.getBackgroundPeriod(), is(0));
+        assertFalse(appService.isEnabled());
     }
 
     @Test
     public void testRun() {
         long actualSecond = System.currentTimeMillis() / 1000;
 
-        dataService.run();
+        appService.run();
 
         verify(dataHandler, times(1)).updateData(dataChannelsCaptor.capture());
-        verify(handler, times(1)).postDelayed(dataService, 1000);
+        verify(handler, times(1)).postDelayed(appService, 1000);
 
         final Set<DataChannel> updateChannels = dataChannelsCaptor.getValue();
         assertThat(updateChannels.size(), is(2));
         assertThat(updateChannels, hasItems(DataChannel.STROKES, DataChannel.PARTICIPANTS));
 
-        assertThat(dataService.getLastUpdate(), is(actualSecond));
+        assertThat(appService.getLastUpdate(), is(actualSecond));
     }
 
-    class TimerListener implements DataService.DataServiceStatusListener {
+    class TimerListener implements AppService.DataServiceStatusListener {
         private String dataServiceStatus;
 
         @Override
@@ -115,52 +115,52 @@ public class DataServiceTest {
 
     @Test
     public void testRestart() {
-        dataService.run();
+        appService.run();
 
-        dataService.restart();
+        appService.restart();
 
-        assertThat(dataService.getLastUpdate(), is(0l));
+        assertThat(appService.getLastUpdate(), is(0l));
     }
 
     @Test
     public void testOnResumeInRealtime() {
         when(dataHandler.isRealtime()).thenReturn(true);
 
-        dataService.onResume();
+        appService.onResume();
 
         InOrder order = inOrder(handler);
 
-        order.verify(handler).removeCallbacks(dataService);
-        order.verify(handler).post(dataService);
+        order.verify(handler).removeCallbacks(appService);
+        order.verify(handler).post(appService);
 
-        assertTrue(dataService.isEnabled());
+        assertTrue(appService.isEnabled());
 
-        assertFalse(dataService.isInBackgroundOperation());
+        assertFalse(appService.isInBackgroundOperation());
     }
 
     @Test
     public void testOnResumeInHistoricalDataMode() {
         when(dataHandler.isRealtime()).thenReturn(false);
 
-        dataService.onResume();
+        appService.onResume();
 
-        verify(handler, times(0)).removeCallbacks(dataService);
-        verify(handler, times(0)).post(dataService);
+        verify(handler, times(0)).removeCallbacks(appService);
+        verify(handler, times(0)).post(appService);
 
-        assertFalse(dataService.isEnabled());
+        assertFalse(appService.isEnabled());
 
-        assertFalse(dataService.isInBackgroundOperation());
+        assertFalse(appService.isInBackgroundOperation());
     }
 
     @Test
     public void testOnPause() {
         when(dataHandler.isRealtime()).thenReturn(true);
 
-        dataService.onResume();
+        appService.onResume();
 
-        assertTrue(dataService.onPause());
+        assertTrue(appService.onPause());
 
-        assertTrue(dataService.isInBackgroundOperation());
+        assertTrue(appService.isInBackgroundOperation());
     }
 
     @Test
@@ -168,37 +168,37 @@ public class DataServiceTest {
         sharedPreferences.edit()
                 .putString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), "60")
                 .commit();
-        dataService.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.BACKGROUND_QUERY_PERIOD.toString());
+        appService.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.BACKGROUND_QUERY_PERIOD.toString());
 
         when(dataHandler.isRealtime()).thenReturn(true);
 
-        dataService.onResume();
+        appService.onResume();
 
-        assertFalse(dataService.onPause());
+        assertFalse(appService.onPause());
 
-        assertTrue(dataService.isInBackgroundOperation());
+        assertTrue(appService.isInBackgroundOperation());
     }
 
     @Test
     public void testSetListener() {
         TimerListener timerListener = new TimerListener();
 
-        dataService.setListener(timerListener);
+        appService.setStatusListener(timerListener);
 
-        dataService.run();
+        appService.run();
 
         assertThat(timerListener.getDataServiceStatus(), is("0/60s"));
     }
 
     @Test
     public void testEnable() {
-        dataService.enable();
+        appService.enable();
 
         InOrder order = inOrder(handler);
 
-        order.verify(handler).removeCallbacks(dataService);
-        order.verify(handler).post(dataService);
+        order.verify(handler).removeCallbacks(appService);
+        order.verify(handler).post(appService);
 
-        assertTrue(dataService.isEnabled());
+        assertTrue(appService.isEnabled());
     }
 }
