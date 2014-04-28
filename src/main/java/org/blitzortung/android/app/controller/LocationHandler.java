@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.GpsStatus;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,13 +17,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class LocationHandler implements SharedPreferences.OnSharedPreferenceChangeListener, LocationListener, GpsStatus.Listener {
+public class LocationHandler implements SharedPreferences.OnSharedPreferenceChangeListener, android.location.LocationListener, GpsStatus.Listener {
 
     private final Context context;
-
-    public static interface Listener {
-        void onLocationChanged(Location location);
-    }
 
     public static enum Provider {
         NETWORK(LocationManager.NETWORK_PROVIDER),
@@ -73,7 +68,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
 
     private final Location location;
 
-    private Set<Listener> listeners = new HashSet<Listener>();
+    private Set<LocationListener> listeners = new HashSet<LocationListener>();
 
     public LocationHandler(Context context, SharedPreferences sharedPreferences) {
         this.context = context;
@@ -188,12 +183,12 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     }
 
     private void sendLocationUpdateToListeners(Location location) {
-        for (Listener listener : listeners) {
+        for (LocationListener listener : listeners) {
             listener.onLocationChanged(location);
         }
     }
 
-    public void requestUpdates(LocationHandler.Listener target) {
+    public void requestUpdates(LocationListener target) {
         listeners.add(target);
         if (locationIsValid()) {
             target.onLocationChanged(location);
@@ -204,7 +199,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
         return location != null && !Double.isNaN(location.getLongitude()) && !Double.isNaN(location.getLatitude());
     }
 
-    public void removeUpdates(LocationHandler.Listener target) {
+    public void removeUpdates(LocationListener target) {
         listeners.remove(target);
     }
 

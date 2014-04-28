@@ -32,7 +32,7 @@ public class LocationHandlerTest {
     private LocationManager locationManager;
 
     @Mock
-    private LocationHandler.Listener locationListener;
+    private LocationListener locationListener;
     
     private LocationHandler locationHandler;
 

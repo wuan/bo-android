@@ -10,12 +10,12 @@ import android.location.Location;
 import android.preference.PreferenceManager;
 import com.google.android.maps.ItemizedOverlay;
 import org.blitzortung.android.app.R;
-import org.blitzortung.android.app.controller.LocationHandler;
+import org.blitzortung.android.app.controller.LocationListener;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.components.LayerOverlayComponent;
 
-public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> implements LocationHandler.Listener, SharedPreferences.OnSharedPreferenceChangeListener, LayerOverlay {
+public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> implements LocationListener, SharedPreferences.OnSharedPreferenceChangeListener, LayerOverlay {
 
     static private final Drawable DEFAULT_DRAWABLE;
 

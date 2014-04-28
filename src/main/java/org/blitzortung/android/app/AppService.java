@@ -19,6 +19,7 @@ import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
 import org.blitzortung.android.alarm.listener.AlertListener;
 import org.blitzortung.android.alarm.object.AlarmStatus;
 import org.blitzortung.android.app.controller.LocationHandler;
+import org.blitzortung.android.app.controller.LocationListener;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.DataChannel;
@@ -30,10 +31,9 @@ import org.blitzortung.android.util.Period;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AppService extends Service implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener, DataListener, LocationHandler.Listener {
+public class AppService extends Service implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener, DataListener, LocationListener {
 
     public static final String RETRIEVE_DATA_ACTION = "retrieveData";
-
     public static final String WAKE_LOCK_TAG = "boAndroidWakeLock";
 
     private final Handler handler;
@@ -53,6 +53,8 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     private boolean enabled;
 
     private DataHandler dataHandler;
+    private AlertHandler alertHandler;
+    private LocationHandler locationHandler;
 
     private DataServiceStatusListener listener;
 
@@ -63,10 +65,9 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     private PendingIntent pendingIntent;
 
     private PowerManager.WakeLock wakeLock;
-    private LocationHandler locationHandler;
-    private AlertHandler alertHandler;
     private DataListener dataListener;
-    private LocationHandler.Listener locationListener;
+    private LocationListener locationListener;
+    private Location lastLocation;
 
     @SuppressWarnings("UnusedDeclaration")
     public AppService() {
@@ -177,12 +178,16 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         locationListener = null;
     }
 
-    public void setLocationListener(LocationHandler.Listener locationListener) {
+    public void setLocationListener(LocationListener locationListener) {
         this.locationListener = locationListener;
+        if (lastLocation != null) {
+            locationListener.onLocationChanged(lastLocation);
+        }
     }
 
     @Override
     public void onLocationChanged(Location location) {
+        this.lastLocation = location;
         if (locationListener != null) {
             locationListener.onLocationChanged(location);
         }
@@ -309,7 +314,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
                 }
 
                 if (!backgroundOperation && listener != null) {
-                    listener.onDataServiceStatusUpdate(String.format("%d/%ds", updatePeriod.getCurrentUpdatePeriod(currentTime, currentPeriod), currentPeriod));
+                    listener.onDataServiceStatusUpdate("" + updatePeriod.getCurrentUpdatePeriod(currentTime, currentPeriod) + "/"  + currentPeriod);
                 }
             }
             // Schedule the next update

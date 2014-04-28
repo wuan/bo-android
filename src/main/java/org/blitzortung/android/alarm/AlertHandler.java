@@ -18,16 +18,15 @@ import org.blitzortung.android.alarm.object.AlarmStatus;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.controller.LocationHandler;
+import org.blitzortung.android.app.controller.LocationListener;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.util.MeasurementSystem;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
-public class AlertHandler implements OnSharedPreferenceChangeListener, LocationHandler.Listener {
+public class AlertHandler implements OnSharedPreferenceChangeListener, LocationListener {
 
     private final Vibrator vibrator;
     private final NotificationHandler notificationHandler;

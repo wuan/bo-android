@@ -1,6 +1,5 @@
 package org.blitzortung.android.app;
 
-import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.*;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -26,7 +25,7 @@ import org.blitzortung.android.alarm.listener.AlertListener;
 import org.blitzortung.android.alarm.object.AlarmStatus;
 import org.blitzortung.android.app.controller.ButtonColumnHandler;
 import org.blitzortung.android.app.controller.HistoryController;
-import org.blitzortung.android.app.controller.LocationHandler;
+import org.blitzortung.android.app.controller.LocationListener;
 import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
@@ -51,7 +50,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener, AppService.DataServiceStatusListener,
-        AlertListener, LocationHandler.Listener {
+        AlertListener, LocationListener {
 
     public static final String LOG_TAG = "BO_ANDROID";
 
