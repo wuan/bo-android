@@ -252,17 +252,20 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
                 handler.removeCallbacks(this);
                 handler.post(this);
             }
-        } else {
-            if (backgroundOperation) {
-                if (alarmManager == null && backgroundPeriod > 0) {
-                    createAlarm();
-                }
-            } else {
-                discardAlarm();
-            }
         }
+        controlAlarm();
 
         return START_STICKY;
+    }
+
+    private void controlAlarm() {
+        if (backgroundOperation) {
+            if (alarmManager == null && backgroundPeriod > 0) {
+                createAlarm();
+            }
+        } else {
+            discardAlarm();
+        }
     }
 
     public void releaseWakeLock() {
@@ -314,7 +317,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
                 }
 
                 if (!backgroundOperation && listener != null) {
-                    listener.onDataServiceStatusUpdate("" + updatePeriod.getCurrentUpdatePeriod(currentTime, currentPeriod) + "/"  + currentPeriod);
+                    listener.onDataServiceStatusUpdate("" + updatePeriod.getCurrentUpdatePeriod(currentTime, currentPeriod) + "/" + currentPeriod);
                 }
             }
             // Schedule the next update
@@ -391,20 +394,20 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
                 break;
 
             case BACKGROUND_QUERY_PERIOD:
-                int newBackgroundPeriod = Integer.parseInt(sharedPreferences.getString(key.toString(), "0"));
+                int previousBackgroundPeriod = backgroundPeriod;
+                backgroundPeriod = Integer.parseInt(sharedPreferences.getString(key.toString(), "0"));
 
                 if (backgroundOperation) {
-                    if (backgroundPeriod == 0 && newBackgroundPeriod > 0) {
-                        Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() create alarm with backgroundPeriod=%d", newBackgroundPeriod));
+                    if (previousBackgroundPeriod == 0 && backgroundPeriod > 0) {
+                        Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() create alarm with backgroundPeriod=%d", backgroundPeriod));
                         createAlarm();
-                    } else if (backgroundPeriod > 0 && newBackgroundPeriod == 0) {
+                    } else if (previousBackgroundPeriod > 0 && backgroundPeriod == 0) {
                         discardAlarm();
-                        Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() discard alarm", newBackgroundPeriod));
+                        Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() discard alarm", backgroundPeriod));
                     }
                 } else {
-                    Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() backgroundPeriod=%d", newBackgroundPeriod));
+                    Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() backgroundPeriod=%d", backgroundPeriod));
                 }
-                backgroundPeriod = newBackgroundPeriod;
                 break;
 
             case SHOW_PARTICIPANTS:

@@ -32,13 +32,13 @@
         <dependency>
             <groupId>android</groupId>
             <artifactId>android</artifactId>
-            <version>4.4.2_r2</version>
+            <version>4.4.2_r3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.android.maps</groupId>
             <artifactId>maps</artifactId>
-            <version>19_r2</version>
+            <version>19_r4</version>
             <scope>provided</scope>
         </dependency>
 
