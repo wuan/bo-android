@@ -240,14 +240,9 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
         if (intent != null && RETRIEVE_DATA_ACTION.equals(intent.getAction())) {
             if (backgroundOperation) {
-                releaseWakeLock();
-                Log.i(Main.LOG_TAG, "AppService.onStartCommand() wakeLock released");
+                acquireWakeLock();
 
-                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-                wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
-                wakeLock.acquire(20000);
-
-                Log.v(Main.LOG_TAG, "AppService.onStartCommand() acquire wake lock " + wakeLock);
+                Log.v(Main.LOG_TAG, "AppService.onStartCommand() acquired wake lock " + wakeLock);
 
                 handler.removeCallbacks(this);
                 handler.post(this);
@@ -256,6 +251,14 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         controlAlarm();
 
         return START_STICKY;
+    }
+
+    private void acquireWakeLock() {
+        releaseWakeLock();
+
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
+        wakeLock.acquire(20000);
     }
 
     private void controlAlarm() {
