@@ -362,6 +362,12 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         return true;
     }
 
+    @Override
+    public void onDestroy() {
+        Log.v(Main.LOG_TAG, "AppService.onDestroy()");
+        super.onDestroy();
+    }
+
     public void setStatusListener(DataServiceStatusListener listener) {
         this.listener = listener;
     }
