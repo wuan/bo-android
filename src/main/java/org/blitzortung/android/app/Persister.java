@@ -3,7 +3,7 @@ package org.blitzortung.android.app;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
-import org.blitzortung.android.data.provider.DataResult;
+import org.blitzortung.android.data.provider.result.DataResult;
 import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;

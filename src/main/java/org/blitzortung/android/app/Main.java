@@ -34,7 +34,7 @@ import org.blitzortung.android.app.view.components.StatusComponent;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.RasterParameters;
-import org.blitzortung.android.data.provider.DataResult;
+import org.blitzortung.android.data.provider.result.DataResult;
 import org.blitzortung.android.dialogs.*;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
@@ -138,35 +138,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         buttonColumnHandler = new ButtonColumnHandler<ImageButton>();
 
         if (Build.VERSION.SDK_INT >= 14) {
-            ViewConfiguration config = ViewConfiguration.get(this);
-
-            if (!config.hasPermanentMenuKey()) {
-                ImageButton menuButton = (ImageButton) findViewById(R.id.menu);
-                menuButton.setVisibility(View.VISIBLE);
-                menuButton.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        openOptionsMenu();
-                    }
-                });
-                buttonColumnHandler.addElement(menuButton);
-            }
-
-            //noinspection EmptyCatchBlock
-            try {
-                Method getActionBar = Main.class.getMethod("getActionBar");
-
-                Object actionBar;
-                actionBar = getActionBar.invoke(this);
-
-                if (actionBar != null) {
-                    Method hide = actionBar.getClass().getMethod("hide");
-                    hide.invoke(actionBar);
-                }
-
-            } catch (NoSuchMethodException e) {
-            } catch (InvocationTargetException e) {
-            } catch (IllegalAccessException e) {
-            }
+            hideActionBar();
         }
 
         historyController = new HistoryController(this);
@@ -672,5 +644,37 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     public void removeAlertListener(AlertListener alertListener) {
         alertListeners.remove(alertListener);
+    }
+
+    private void hideActionBar() {
+        ViewConfiguration config = ViewConfiguration.get(this);
+
+        if (!config.hasPermanentMenuKey()) {
+            ImageButton menuButton = (ImageButton) findViewById(R.id.menu);
+            menuButton.setVisibility(View.VISIBLE);
+            menuButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    openOptionsMenu();
+                }
+            });
+            buttonColumnHandler.addElement(menuButton);
+        }
+
+        //noinspection EmptyCatchBlock
+        try {
+            Method getActionBar = Main.class.getMethod("getActionBar");
+
+            Object actionBar;
+            actionBar = getActionBar.invoke(this);
+
+            if (actionBar != null) {
+                Method hide = actionBar.getClass().getMethod("hide");
+                hide.invoke(actionBar);
+            }
+
+        } catch (NoSuchMethodException e) {
+        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException e) {
+        }
     }
 }

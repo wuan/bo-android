@@ -25,7 +25,10 @@ import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.DataListener;
-import org.blitzortung.android.data.provider.DataResult;
+import org.blitzortung.android.data.provider.result.DataEvent;
+import org.blitzortung.android.data.provider.result.DataResult;
+import org.blitzortung.android.data.provider.result.StatusEvent;
+import org.blitzortung.android.protocol.ListenerContainer;
 import org.blitzortung.android.util.Period;
 
 import java.util.HashSet;
@@ -45,8 +48,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     private final Period updatePeriod;
 
     private boolean alarmEnabled;
-
-    private boolean backgroundOperation;
 
     private boolean updateParticipants;
 
@@ -69,6 +70,18 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     private LocationListener locationListener;
     private Location lastLocation;
 
+    ListenerContainer<DataEvent, DataListener> dataListenerContainer = new ListenerContainer<DataEvent, DataListener>() {
+        @Override
+        public void addedFirstListener() {
+            discardAlarm();
+        }
+
+        @Override
+        public void removedLastListener() {
+            createAlarm();
+        }
+    };
+
     @SuppressWarnings("UnusedDeclaration")
     public AppService() {
         this(new Handler(), new Period());
@@ -79,7 +92,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         Log.d(Main.LOG_TAG, "AppService() create");
         this.handler = handler;
         this.updatePeriod = updatePeriod;
-        backgroundOperation = true;
     }
 
     public int getPeriod() {
@@ -92,10 +104,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
     public long getLastUpdate() {
         return updatePeriod.getLastUpdateTime();
-    }
-
-    public boolean isInBackgroundOperation() {
-        return backgroundOperation;
     }
 
     public void reloadData() {
@@ -125,41 +133,22 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     @Override
-    public void onBeforeDataUpdate() {
-        if (dataListener != null) {
-            dataListener.onBeforeDataUpdate();
+    public void onUpdated(DataEvent result) {
+        onUpdated(result);
+
+        if (result instanceof DataResult) {
+            checkForWarning((DataResult) result);
         }
+
+        releaseWakeLock();
     }
 
-    @Override
-    public void onDataUpdate(DataResult result) {
-        if (!result.isBackground() && dataListener != null) {
-            dataListener.onDataUpdate(result);
-        }
-
+    private void checkForWarning(DataResult result) {
         if (result.containsRealtimeData()) {
             alertHandler.checkStrokes(result.getStrokes());
         } else {
             alertHandler.cancelAlert();
         }
-
-        releaseWakeLock();
-    }
-
-    @Override
-    public void onDataReset() {
-        if (dataListener != null) {
-            dataListener.onDataReset();
-        }
-        releaseWakeLock();
-    }
-
-    @Override
-    public void onDataError() {
-        if (dataListener != null) {
-            dataListener.onDataError();
-        }
-        releaseWakeLock();
     }
 
     public void setDataListener(DataListener dataListener) {
@@ -217,8 +206,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         onSharedPreferenceChanged(preferences, PreferenceKey.BACKGROUND_QUERY_PERIOD);
         onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_PARTICIPANTS);
 
-        backgroundOperation = true;
-
         if (dataHandler == null) {
             dataHandler = new DataHandler(preferences, getPackageInfo());
             dataHandler.setDataListener(this);
@@ -239,16 +226,17 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         Log.i(Main.LOG_TAG, "AppService.onStartCommand() startId: " + startId + " " + intent);
 
         if (intent != null && RETRIEVE_DATA_ACTION.equals(intent.getAction())) {
-            if (backgroundOperation) {
-                acquireWakeLock();
+            acquireWakeLock();
 
-                Log.v(Main.LOG_TAG, "AppService.onStartCommand() acquired wake lock " + wakeLock);
+            Log.v(Main.LOG_TAG, "AppService.onStartCommand() acquired wake lock " + wakeLock);
 
-                handler.removeCallbacks(this);
-                handler.post(this);
-            }
+            handler.removeCallbacks(this);
+            handler.post(this);
         }
-        controlAlarm();
+
+        if (!dataListenerContainer.isEmpty()) {
+            createAlarm();
+        }
 
         return START_STICKY;
     }
@@ -259,16 +247,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
         wakeLock.acquire(20000);
-    }
-
-    private void controlAlarm() {
-        if (backgroundOperation) {
-            if (alarmManager == null && backgroundPeriod > 0) {
-                createAlarm();
-            }
-        } else {
-            discardAlarm();
-        }
     }
 
     public void releaseWakeLock() {
@@ -287,15 +265,13 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     public IBinder onBind(Intent intent) {
         Log.i(Main.LOG_TAG, "AppService.onBind() " + intent);
 
-        backgroundOperation = false;
-
         return binder;
     }
 
     @Override
     public void run() {
 
-        if (backgroundOperation) {
+        if (dataListenerContainer.isEmpty()) {
             Log.v(Main.LOG_TAG, "AppService.run() in background");
 
             dataHandler.updateDatainBackground();
@@ -304,13 +280,11 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
             if (dataHandler != null) {
                 Set<DataChannel> updateTargets = new HashSet<DataChannel>();
 
-                int currentPeriod = getCurrentPeriod();
-
-                if (updatePeriod.shouldUpdate(currentTime, currentPeriod)) {
+                if (updatePeriod.shouldUpdate(currentTime, period)) {
                     updatePeriod.setLastUpdateTime(currentTime);
                     updateTargets.add(DataChannel.STROKES);
 
-                    if (!backgroundOperation && updateParticipants && updatePeriod.isNthUpdate(10)) {
+                    if (updateParticipants && updatePeriod.isNthUpdate(10)) {
                         updateTargets.add(DataChannel.PARTICIPANTS);
                     }
                 }
@@ -319,17 +293,12 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
                     dataHandler.updateData(updateTargets);
                 }
 
-                if (!backgroundOperation && listener != null) {
-                    listener.onDataServiceStatusUpdate("" + updatePeriod.getCurrentUpdatePeriod(currentTime, currentPeriod) + "/" + currentPeriod);
-                }
+                final String statusString = "" + updatePeriod.getCurrentUpdatePeriod(currentTime, period) + "/" + period;
+                dataListenerContainer.broadcast(new StatusEvent(statusString));
             }
             // Schedule the next update
             handler.postDelayed(this, 1000);
         }
-    }
-
-    private int getCurrentPeriod() {
-        return backgroundOperation ? backgroundPeriod : period;
     }
 
     public void restart() {
@@ -337,10 +306,8 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     public void onResume() {
-        backgroundOperation = false;
 
-        discardAlarm();
-
+        createAlarm();
         if (dataHandler.isRealtime()) {
             Log.v(Main.LOG_TAG, "AppService.onResume() enable");
             enable();
@@ -350,15 +317,11 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     public boolean onPause() {
-        backgroundOperation = true;
-
-        handler.removeCallbacks(this);
         Log.v(Main.LOG_TAG, "AppService.onPause() remove callback");
+        handler.removeCallbacks(this);
 
-        if (alarmEnabled && backgroundPeriod > 0) {
-            createAlarm();
-            return false;
-        }
+        discardAlarm();
+
         return true;
     }
 
@@ -406,7 +369,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
                 int previousBackgroundPeriod = backgroundPeriod;
                 backgroundPeriod = Integer.parseInt(sharedPreferences.getString(key.toString(), "0"));
 
-                if (backgroundOperation) {
+                if (dataListenerContainer.isEmpty()) {
                     if (previousBackgroundPeriod == 0 && backgroundPeriod > 0) {
                         Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() create alarm with backgroundPeriod=%d", backgroundPeriod));
                         createAlarm();

@@ -1,4 +1,4 @@
-package org.blitzortung.android.data.provider;
+package org.blitzortung.android.data.provider.result;
 
 import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.AbstractStroke;
@@ -10,9 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataResult implements Serializable {
-
-	private static final long serialVersionUID = -2104015890700948020L;
+public class DataResult implements DataEvent {
 
 	private final List<List<AbstractStroke>> strokes;
   
@@ -24,26 +22,16 @@ public class DataResult implements Serializable {
 
     private boolean fail;
 	
-	private boolean processWasLocked;
-	
 	private boolean incrementalData;
     
-    private boolean background;
-
     private long referenceTime;
 
     private Parameters parameters;
 
     public DataResult() {
         strokes = new ArrayList<List<AbstractStroke>>();
-
 		fail = true;
-		
-		processWasLocked = false;
-		
 		incrementalData = false;
-        
-        background = false;
 	}
 	
 	public void setStrokes(List<AbstractStroke> strokes) {
@@ -72,20 +60,8 @@ public class DataResult implements Serializable {
 		return stations;
 	}
 	
-	public boolean retrievalWasSuccessful() {
-		return !fail && !processWasLocked;
-	}
-	
 	public boolean hasFailed() {
 		return fail;
-	}
-	
-	public void setProcessWasLocked() {
-		processWasLocked = true;
-	}
-	
-	public boolean processWasLocked() {
-		return processWasLocked;
 	}
 	
 	public boolean hasRasterParameters() {
@@ -128,14 +104,6 @@ public class DataResult implements Serializable {
         return parameters.getIntervalOffset() == 0;
     }
 
-    public boolean isBackground() {
-        return background;
-    }
-
-    public void setBackground(boolean background) {
-        this.background = background;
-    }
-
     public void setParameters(Parameters parameters) {
         this.parameters = parameters;
     }
@@ -152,9 +120,6 @@ public class DataResult implements Serializable {
         sb.append(getParameters());
         if (hasRasterParameters()) {
             sb.append(", ").append(getRasterParameters());
-        }
-        if (background) {
-            sb.append(", background");
         }
         sb.append(")");
         

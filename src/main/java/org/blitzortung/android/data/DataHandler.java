@@ -6,11 +6,14 @@ import android.content.pm.PackageInfo;
 import android.os.AsyncTask;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataProviderFactory;
 import org.blitzortung.android.data.provider.DataProviderType;
-import org.blitzortung.android.data.provider.DataResult;
+import org.blitzortung.android.data.provider.result.ClearDataEvent;
+import org.blitzortung.android.data.provider.result.DataEvent;
+import org.blitzortung.android.data.provider.result.DataResult;
+import org.blitzortung.android.data.provider.result.RequestStartedEvent;
+import org.blitzortung.android.util.optional.Optional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +26,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     private final Lock lock = new ReentrantLock();
 
     private final PackageInfo pInfo;
+    private final FetchDataTask DATA_RETRIEVAL_TASK = new FetchDataTask();
     private DataProvider dataProvider;
 
     private String username;
@@ -35,6 +39,9 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     private int preferencesRasterBaselength;
     private int preferencesRegion;
     private DataProviderFactory dataProviderFactory;
+
+    private static final RequestStartedEvent REQUEST_STARTED_EVENT = new RequestStartedEvent();
+    private static final ClearDataEvent CLEAR_DATA_EVENT = new ClearDataEvent();
 
     public DataHandler(SharedPreferences sharedPreferences, PackageInfo pInfo) {
         this(sharedPreferences, pInfo, new DataProviderFactory());
@@ -59,36 +66,31 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         updateProviderSpecifics();
     }
 
-    private class FetchDataTask extends AsyncTask<Integer, Integer, DataResult> {
+    private class FetchDataTask extends AsyncTask<Integer, Integer, Optional<DataResult>> {
 
         protected void onProgressUpdate(Integer... progress) {
         }
 
-        protected void onPostExecute(DataResult result) {
+        protected void onPostExecute(Optional<DataResult> result) {
             if (listener != null) {
-                if (!result.hasFailed()) {
-                    listener.onDataUpdate(result);
-                } else {
-                    if (!result.processWasLocked()) {
-                        listener.onDataError();
-                    }
+                if (result.isPresent()) {
+                    listener.onUpdated(result.get());
                 }
             }
         }
 
         @Override
-        protected DataResult doInBackground(Integer... params) {
+        protected Optional<DataResult> doInBackground(Integer... params) {
             int intervalDuration = params[0];
             int intervalOffset = params[1];
             int rasterBaselength = params[2];
             int region = params[3];
             boolean updateParticipants = params[4] != 0;
-            boolean background = params[5] != 0;
 
-            DataResult result = new DataResult();
-            result.setBackground(background);
+            DataResult result = null;
 
             if (lock.tryLock()) {
+                result = new DataResult();
                 try {
                     dataProvider.setUp();
                     dataProvider.setCredentials(username, password);
@@ -125,22 +127,18 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                 } finally {
                     lock.unlock();
                 }
-            } else {
-                result.setProcessWasLocked();
             }
-            return result;
+            return Optional.fromNullable(result);
         }
     }
 
     public void updateDatainBackground() {
-        new FetchDataTask().execute(10, 0, dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), 0, 1);
+        DATA_RETRIEVAL_TASK.execute(10, 0, dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), 0);
     }
 
     public void updateData(Set<DataChannel> updateTargets) {
 
-        if (listener != null) {
-            listener.onBeforeDataUpdate();
-        }
+        sendEvent(REQUEST_STARTED_EVENT);
 
         boolean updateParticipants = false;
         if (updateTargets.contains(DataChannel.PARTICIPANTS)) {
@@ -149,7 +147,13 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             }
         }
 
-        new FetchDataTask().execute(parameters.getIntervalDuration(), parameters.getIntervalOffset(), dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), updateParticipants ? 1 : 0, 0);
+        DATA_RETRIEVAL_TASK.execute(parameters.getIntervalDuration(), parameters.getIntervalOffset(), dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), updateParticipants ? 1 : 0, 0);
+    }
+
+    private void sendEvent(DataEvent dataEvent) {
+        if (listener != null) {
+            listener.onUpdated(dataEvent);
+        }
     }
 
     @Override
@@ -223,9 +227,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     }
 
     private void notifyDataReset() {
-        if (listener != null) {
-            listener.onDataReset();
-        }
+        sendEvent(CLEAR_DATA_EVENT);
     }
 
     public void toggleExtendedMode() {
@@ -273,10 +275,6 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     public boolean isRealtime() {
         return parameters.isRealtime();
-    }
-
-    public boolean matches(Parameters resultParameters) {
-        return parameters.equals(resultParameters);
     }
 
     public boolean isCapableOfHistoricalData() {

@@ -9,7 +9,8 @@ import android.view.View;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.data.DataListener;
-import org.blitzortung.android.data.provider.DataResult;
+import org.blitzortung.android.data.provider.result.DataEvent;
+import org.blitzortung.android.data.provider.result.DataResult;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 
@@ -124,12 +125,16 @@ public class HistogramView extends View implements DataListener {
     }
 
     @Override
-    public void onBeforeDataUpdate() {
+    public void onUpdated(DataEvent result) {
+        if (result instanceof DataResult) {
+            updateHistogram((DataResult) result);
+        } else {
+            clearHistogram();
+        }
     }
 
-    @Override
-    public void onDataUpdate(DataResult result) {
-        histogram = result.getHistogram();
+    private void updateHistogram(DataResult dataEvent) {
+        histogram = dataEvent.getHistogram();
 
         boolean viewShouldBeVisible = histogram != null && histogram.length > 0;
 
@@ -140,15 +145,10 @@ public class HistogramView extends View implements DataListener {
         }
     }
 
-    @Override
-    public void onDataReset() {
+    public void clearHistogram() {
         histogram = new int[0];
 
         setVisibility(View.INVISIBLE);
     }
 
-    @Override
-    public void onDataError() {
-        onDataReset();
-    }
 }

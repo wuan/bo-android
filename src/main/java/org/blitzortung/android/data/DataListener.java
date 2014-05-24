@@ -1,14 +1,7 @@
 package org.blitzortung.android.data;
 
-import org.blitzortung.android.data.provider.DataResult;
+import org.blitzortung.android.data.provider.result.DataEvent;
+import org.blitzortung.android.protocol.Listener;
 
-public interface DataListener {
-
-    public void onBeforeDataUpdate();
-
-	public void onDataUpdate(DataResult result);
-	
-	public void onDataReset();
-
-    public void onDataError();
+public interface DataListener extends Listener<DataEvent> {
 }

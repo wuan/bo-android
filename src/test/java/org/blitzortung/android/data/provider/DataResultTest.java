@@ -5,6 +5,7 @@ import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.DefaultStroke;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.data.provider.result.DataResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,10 +31,8 @@ public class DataResultTest {
     @Test
     public void testConstruction() {
         assertTrue(dataResult.hasFailed());
-        assertFalse(dataResult.retrievalWasSuccessful());
         assertFalse(dataResult.containsStrokes());
         assertFalse(dataResult.containsParticipants());
-        assertFalse(dataResult.processWasLocked());
         assertFalse(dataResult.containsIncrementalData());
     }
 
@@ -46,10 +45,8 @@ public class DataResultTest {
 
         assertThat(dataResult.getStrokes(), is(strokes));
         assertFalse(dataResult.hasFailed());
-        assertTrue(dataResult.retrievalWasSuccessful());
         assertTrue(dataResult.containsStrokes());
         assertFalse(dataResult.containsParticipants());
-        assertFalse(dataResult.processWasLocked());
         assertFalse(dataResult.containsIncrementalData());
     }
 
@@ -62,19 +59,9 @@ public class DataResultTest {
 
         assertThat(dataResult.getStations(), is(stations));
         assertTrue(dataResult.hasFailed());
-        assertFalse(dataResult.retrievalWasSuccessful());
         assertFalse(dataResult.containsStrokes());
         assertTrue(dataResult.containsParticipants());
-        assertFalse(dataResult.processWasLocked());
         assertFalse(dataResult.containsIncrementalData());
-    }
-
-    @Test
-    public void testSetProcessWasLocked()
-    {
-        dataResult.setProcessWasLocked();
-
-        assertTrue(dataResult.processWasLocked());
     }
 
     @Test
