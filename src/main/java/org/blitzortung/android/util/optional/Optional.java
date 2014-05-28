@@ -20,4 +20,8 @@ public abstract class Optional<T> {
         }
         return new Some<T>(value);
     }
+
+    public static <T> Optional<T> absent() {
+        return new None<T>();
+    }
 }

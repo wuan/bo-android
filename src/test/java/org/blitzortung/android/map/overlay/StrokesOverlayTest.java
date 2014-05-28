@@ -59,9 +59,6 @@ public class StrokesOverlayTest {
     private StrokeColorHandler colorHandler;
 
     @Mock
-    private Context context;
-
-    @Mock
     private Resources resources;
 
     @Mock
@@ -76,13 +73,12 @@ public class StrokesOverlayTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        when(context.getResources()).thenReturn(resources);
+        when(ownMapActivity.getResources()).thenReturn(resources);
 
         when(colorHandler.getColors()).thenReturn(colors);
 
-        strokesOverlay = spy(new StrokesOverlay(context, colorHandler));
+        strokesOverlay = spy(new StrokesOverlay(ownMapActivity, colorHandler));
 
-        strokesOverlay.setActivity(ownMapActivity);
         when(ownMapActivity.getMapView()).thenReturn(ownMapView);
     }
 

@@ -10,6 +10,7 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.common.collect.Lists;
 import org.blitzortung.android.data.beans.Station;
+import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class ParticipantsOverlayTest {
     private ParticipantsOverlay participantsOverlay;
 
     @Mock
-    private Context context;
+    private OwnMapActivity context;
 
     @Mock
     private Resources resources;

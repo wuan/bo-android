@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.core.Is.is;
@@ -31,9 +32,9 @@ public class PopupOverlayTest {
 
     class PopupOverlayForTest extends PopupOverlay<PopupOverlayItemForTest>
     {
-        public PopupOverlayForTest(Drawable defaultMarker)
+        public PopupOverlayForTest(OwnMapActivity mapActivity, Drawable defaultMarker)
         {
-            super(defaultMarker);
+            super(mapActivity, defaultMarker);
         }
 
         @Override
@@ -49,17 +50,19 @@ public class PopupOverlayTest {
 
     private PopupOverlayForTest popupOverlay;
 
+    @Mock
+    private OwnMapActivity activity;
+
     @Before
     public void setUp()
     {
-        popupOverlay = spy(new PopupOverlayForTest(mock(Drawable.class)));
+        popupOverlay = spy(new PopupOverlayForTest(activity, mock(Drawable.class)));
     }
 
     @Test
     public void testSetGetActivity()
     {
-        OwnMapActivity activity = mock(OwnMapActivity.class);
-        popupOverlay.setActivity(activity);
+        activity = mock(OwnMapActivity.class);
 
         assertThat(popupOverlay.getActivity(), is(activity));
     }
@@ -67,9 +70,6 @@ public class PopupOverlayTest {
     @Test
     public void testShowPopup()
     {
-        OwnMapActivity activity = mock(OwnMapActivity.class);
-        popupOverlay.setActivity(activity);
-
         OwnMapView mapView = mock(OwnMapView.class);
         when(activity.getMapView()).thenReturn(mapView);
 
@@ -95,9 +95,6 @@ public class PopupOverlayTest {
     @Test
     public void testClearPopup()
     {
-        OwnMapActivity activity = mock(OwnMapActivity.class);
-        popupOverlay.setActivity(activity);
-
         OwnMapView mapView = mock(OwnMapView.class);
         when(activity.getMapView()).thenReturn(mapView);
 

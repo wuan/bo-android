@@ -19,9 +19,13 @@ public abstract class ListenerContainer<P, T extends Listener<P>> {
                 addedFirstListener();
             }
             listeners.add(listener);
-            if (currentPayload != null) {
-                listener.onUpdated(currentPayload);
-            }
+            sendCurrentPayloadTo(listener);
+        }
+    }
+
+    protected void sendCurrentPayloadTo(T listener) {
+        if (currentPayload != null) {
+            listener.onUpdated(currentPayload);
         }
     }
 
@@ -32,15 +36,18 @@ public abstract class ListenerContainer<P, T extends Listener<P>> {
                 removedLastListener();
             }
         }
-
     }
 
     public abstract void addedFirstListener();
 
     public abstract void removedLastListener();
 
-    public void broadcast(P payload) {
+    public void storeAndBroadcast(P payload) {
         currentPayload = payload;
+        broadcast(payload);
+    }
+
+    public void broadcast(P payload) {
         for (T listener : listeners) {
             listener.onUpdated(payload);
         }

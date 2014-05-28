@@ -14,7 +14,7 @@ public class Some<T> extends Optional<T> {
 
     @Override
     public T get() {
-        return null;
+        return value;
     }
 
     @Override

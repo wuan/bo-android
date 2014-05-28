@@ -9,6 +9,7 @@ import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.Station.State;
+import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.components.LayerOverlayComponent;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
 
@@ -37,15 +38,15 @@ public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> im
     private int zoomLevel;
     private ParticipantOverlayItem item;
 
-    public ParticipantsOverlay(Context context, ParticipantColorHandler colorHandler) {
-        super(boundCenter(DefaultDrawable));
+    public ParticipantsOverlay(OwnMapActivity mapActivity, ParticipantColorHandler colorHandler) {
+        super(mapActivity, boundCenter(DefaultDrawable));
 
         shapes = new EnumMap<State, ShapeDrawable>(State.class);
         shapes.put(State.ON, new ShapeDrawable(new ParticipantShape()));
         shapes.put(State.DELAYED, new ShapeDrawable(new ParticipantShape()));
         shapes.put(State.OFF, new ShapeDrawable(new ParticipantShape()));
 
-        layerOverlayComponent = new LayerOverlayComponent(context.getResources().getString(R.string.participants_layer));
+        layerOverlayComponent = new LayerOverlayComponent(mapActivity.getResources().getString(R.string.participants_layer));
         this.colorHandler = colorHandler;
 
         participants = new ArrayList<ParticipantOverlayItem>();

@@ -16,6 +16,7 @@ import org.blitzortung.android.data.TimeIntervalWithOffset;
 import org.blitzortung.android.data.beans.AbstractStroke;
 import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.components.LayerOverlayComponent;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
@@ -53,10 +54,10 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         DefaultDrawable = new ShapeDrawable(shape);
     }
 
-    public StrokesOverlay(Context context, StrokeColorHandler colorHandler) {
-        super(boundCenter(DefaultDrawable));
+    public StrokesOverlay(OwnMapActivity mapActivity, StrokeColorHandler colorHandler) {
+        super(mapActivity, boundCenter(DefaultDrawable));
 
-        layerOverlayComponent = new LayerOverlayComponent(context.getResources().getString(R.string.strokes_layer));
+        layerOverlayComponent = new LayerOverlayComponent(mapActivity.getResources().getString(R.string.strokes_layer));
         this.colorHandler = colorHandler;
 
         strokes = new ArrayList<StrokeOverlayItem>();

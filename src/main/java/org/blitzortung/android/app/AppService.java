@@ -26,7 +26,7 @@ import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.provider.result.DataEvent;
-import org.blitzortung.android.data.provider.result.DataResult;
+import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.blitzortung.android.data.provider.result.StatusEvent;
 import org.blitzortung.android.protocol.ListenerContainer;
 import org.blitzortung.android.util.Period;
@@ -57,8 +57,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     private AlertHandler alertHandler;
     private LocationHandler locationHandler;
 
-    private DataServiceStatusListener listener;
-
     private final IBinder binder = new DataServiceBinder();
 
     private AlarmManager alarmManager;
@@ -66,7 +64,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     private PendingIntent pendingIntent;
 
     private PowerManager.WakeLock wakeLock;
-    private DataListener dataListener;
     private LocationListener locationListener;
     private Location lastLocation;
 
@@ -74,10 +71,12 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         @Override
         public void addedFirstListener() {
             discardAlarm();
+            onResume();
         }
 
         @Override
         public void removedLastListener() {
+            onPause();
             createAlarm();
         }
     };
@@ -134,16 +133,17 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
     @Override
     public void onUpdated(DataEvent result) {
-        onUpdated(result);
 
-        if (result instanceof DataResult) {
-            checkForWarning((DataResult) result);
+        dataListenerContainer.storeAndBroadcast(result);
+
+        if (result instanceof ResultEvent) {
+            checkForWarning((ResultEvent) result);
         }
 
         releaseWakeLock();
     }
 
-    private void checkForWarning(DataResult result) {
+    private void checkForWarning(ResultEvent result) {
         if (result.containsRealtimeData()) {
             alertHandler.checkStrokes(result.getStrokes());
         } else {
@@ -151,8 +151,12 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         }
     }
 
-    public void setDataListener(DataListener dataListener) {
-        this.dataListener = dataListener;
+    public void addDataListener(DataListener dataListener) {
+        dataListenerContainer.addListener(dataListener);
+    }
+
+    public void removeDataListener(DataListener dataListener) {
+        dataListenerContainer.removeListener(dataListener);
     }
 
     public void setAlertListener(AlertListener alertListener) {
@@ -187,10 +191,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
             Log.d(Main.LOG_TAG, "DataServiceBinder.getService() " + AppService.this);
             return AppService.this;
         }
-    }
-
-    public interface DataServiceStatusListener {
-        public void onDataServiceStatusUpdate(String dataServiceStatus);
     }
 
     @Override
@@ -306,8 +306,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     public void onResume() {
-
-        createAlarm();
         if (dataHandler.isRealtime()) {
             Log.v(Main.LOG_TAG, "AppService.onResume() enable");
             enable();
@@ -320,8 +318,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         Log.v(Main.LOG_TAG, "AppService.onPause() remove callback");
         handler.removeCallbacks(this);
 
-        discardAlarm();
-
         return true;
     }
 
@@ -329,10 +325,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     public void onDestroy() {
         Log.v(Main.LOG_TAG, "AppService.onDestroy()");
         super.onDestroy();
-    }
-
-    public void setStatusListener(DataServiceStatusListener listener) {
-        this.listener = listener;
     }
 
     public void enable() {
@@ -395,15 +387,17 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     private void createAlarm() {
         discardAlarm();
 
-        Log.v(Main.LOG_TAG, String.format("AppService.createAlarm() %d", backgroundPeriod));
-        Intent intent = new Intent(this, AppService.class);
-        intent.setAction(RETRIEVE_DATA_ACTION);
-        pendingIntent = PendingIntent.getService(this, 0, intent, 0);
-        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        if (alarmManager != null) {
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 0, backgroundPeriod * 1000, pendingIntent);
-        } else {
-            Log.e(Main.LOG_TAG, "AppService.createAlarm() failed");
+        if (dataListenerContainer.isEmpty() && backgroundPeriod > 0) {
+            Log.v(Main.LOG_TAG, String.format("AppService.createAlarm() %d", backgroundPeriod));
+            Intent intent = new Intent(this, AppService.class);
+            intent.setAction(RETRIEVE_DATA_ACTION);
+            pendingIntent = PendingIntent.getService(this, 0, intent, 0);
+            alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            if (alarmManager != null) {
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 0, backgroundPeriod * 1000, pendingIntent);
+            } else {
+                Log.e(Main.LOG_TAG, "AppService.createAlarm() failed");
+            }
         }
     }
 

@@ -100,19 +100,6 @@ public class AppServiceTest {
         assertThat(appService.getLastUpdate(), is(actualSecond));
     }
 
-    class TimerListener implements AppService.DataServiceStatusListener {
-        private String dataServiceStatus;
-
-        @Override
-        public void onDataServiceStatusUpdate(String dataServiceStatus) {
-            this.dataServiceStatus = dataServiceStatus;
-        }
-
-        public String getDataServiceStatus() {
-            return dataServiceStatus;
-        }
-    }
-
     @Test
     public void testRestart() {
         appService.run();
@@ -134,8 +121,6 @@ public class AppServiceTest {
         order.verify(handler).post(appService);
 
         assertTrue(appService.isEnabled());
-
-        assertFalse(appService.isInBackgroundOperation());
     }
 
     @Test
@@ -148,8 +133,6 @@ public class AppServiceTest {
         verify(handler, times(0)).post(appService);
 
         assertFalse(appService.isEnabled());
-
-        assertFalse(appService.isInBackgroundOperation());
     }
 
     @Test
@@ -159,8 +142,6 @@ public class AppServiceTest {
         appService.onResume();
 
         assertTrue(appService.onPause());
-
-        assertTrue(appService.isInBackgroundOperation());
     }
 
     @Test
@@ -175,19 +156,6 @@ public class AppServiceTest {
         appService.onResume();
 
         assertFalse(appService.onPause());
-
-        assertTrue(appService.isInBackgroundOperation());
-    }
-
-    @Test
-    public void testSetListener() {
-        TimerListener timerListener = new TimerListener();
-
-        appService.setStatusListener(timerListener);
-
-        appService.run();
-
-        assertThat(timerListener.getDataServiceStatus(), is("0/60s"));
     }
 
     @Test

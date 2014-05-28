@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataResult implements DataEvent {
+public class ResultEvent implements DataEvent {
 
 	private final List<List<AbstractStroke>> strokes;
   
@@ -28,7 +28,7 @@ public class DataResult implements DataEvent {
 
     private Parameters parameters;
 
-    public DataResult() {
+    public ResultEvent() {
         strokes = new ArrayList<List<AbstractStroke>>();
 		fail = true;
 		incrementalData = false;

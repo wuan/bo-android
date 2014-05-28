@@ -1,7 +1,9 @@
 package org.blitzortung.android.app.controller;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
+import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.helper.ViewHelper;
 
 import java.util.ArrayList;
@@ -24,11 +26,11 @@ public class ButtonColumnHandler<V extends View> {
         this.elements.addAll(elements);
     }
 
-    public void disableButtonColumn() {
+    public void lockButtonColumn() {
         enableButtonElements(false);
     }
 
-    public void enableButtonColumn() {
+    public void unlockButtonColumn() {
         enableButtonElements(true);
     }
 
@@ -40,8 +42,10 @@ public class ButtonColumnHandler<V extends View> {
 
     public void updateButtonColumn() {
         int previousIndex = -1;
+        Log.v(Main.LOG_TAG, "ButtonColumnHandler.updateButtonColumn() started");
         for (int currentIndex = 0; currentIndex < elements.size(); currentIndex++) {
             V element = elements.get(currentIndex);
+            Log.v(Main.LOG_TAG, "ButtonColumnHandler.updateButtonColumn() " + currentIndex + " " + element.getVisibility());
             if (element.getVisibility() == View.VISIBLE) {
                 RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);

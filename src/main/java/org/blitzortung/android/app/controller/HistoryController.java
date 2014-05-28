@@ -7,6 +7,9 @@ import android.widget.Toast;
 import org.blitzortung.android.app.AppService;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.data.DataChannel;
+import org.blitzortung.android.data.DataListener;
+import org.blitzortung.android.data.provider.result.DataEvent;
+import org.blitzortung.android.data.provider.result.ResultEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class HistoryController {
+public class HistoryController implements DataListener {
 
     private ImageButton historyRewind;
     private ImageButton historyForward;
@@ -121,7 +124,7 @@ public class HistoryController {
     }
 
     private void disableButtonColumn() {
-        buttonHandler.disableButtonColumn();
+        buttonHandler.lockButtonColumn();
     }
 
     private void updateData() {
@@ -132,5 +135,13 @@ public class HistoryController {
 
     public void setAppService(AppService appService) {
         this.appService = appService;
+    }
+
+    @Override
+    public void onUpdated(DataEvent payload) {
+        if (payload instanceof ResultEvent) {
+            ResultEvent resultEvent = (ResultEvent) payload;
+            setRealtimeData(resultEvent.containsRealtimeData());
+        }
     }
 }
