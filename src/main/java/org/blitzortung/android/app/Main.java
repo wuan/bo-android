@@ -402,6 +402,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             statusComponent.startProgress();
         } else if (event instanceof ResultEvent) {
             ResultEvent result = (ResultEvent) event;
+
+            if (result.getParameters().getIntervalDuration() != appService.getDataHandler().getIntervalDuration()) {
+                reloadData();
+            }
+
             currentResult = Optional.of(result);
 
             Log.d(Main.LOG_TAG, "Main.onDataUpdate() " + result);
