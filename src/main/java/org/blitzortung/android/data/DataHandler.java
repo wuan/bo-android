@@ -83,7 +83,6 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
         @Override
         protected Optional<ResultEvent> doInBackground(Integer... params) {
-            Log.v(Main.LOG_TAG, "doInBackground(" + params + ")");
             int intervalDuration = params[0];
             int intervalOffset = params[1];
             int rasterBaselength = params[2];

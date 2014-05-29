@@ -134,7 +134,9 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     @Override
     public void onUpdated(DataEvent result) {
 
-        dataListenerContainer.storeAndBroadcast(result);
+        if (!dataListenerContainer.isEmpty()) {
+            dataListenerContainer.storeAndBroadcast(result);
+        }
 
         if (result instanceof ResultEvent) {
             checkForWarning((ResultEvent) result);
@@ -147,7 +149,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         if (!result.hasFailed() && result.containsRealtimeData()) {
             alertHandler.checkStrokes(result.getStrokes());
         } else {
-            alertHandler.cancelAlert();
+            alertHandler.invalidateAlert();
         }
     }
 

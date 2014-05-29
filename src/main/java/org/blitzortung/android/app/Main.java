@@ -176,7 +176,12 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
                 strokesOverlay.setIntervalDuration(appService.getDataHandler().getIntervalDuration());
                 if (appService.isAlarmEnabled()) {
-                    onAlert(appService.getAlarmStatus(), appService.getAlarmResult());
+                    final AlarmResult alarmResult = appService.getAlarmResult();
+                    if (alarmResult != null) {
+                        onAlert(appService.getAlarmStatus(), alarmResult);
+                    } else {
+                        onAlertCancel();
+                    }
                 }
 
                 appService.onResume();
@@ -371,8 +376,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     @Override
     public void onPause() {
         super.onPause();
-
-        Log.d(Main.LOG_TAG, "Main.onPause() disable location handler");
 
         if (appService != null) {
             appService.removeDataListener(this);
