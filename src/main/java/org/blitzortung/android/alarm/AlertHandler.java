@@ -144,7 +144,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
             alarmStatusHandler.checkStrokes(alarmStatus, strokes, location);
             processResult(getAlarmResult());
         } else {
-            invalidateAlarm();
+            invalidateAlert();
         }
     }
 
@@ -177,7 +177,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
         return ranges[ranges.length - 1];
     }
 
-    private void invalidateAlarm() {
+    public void invalidateAlert() {
         boolean previousAlarmValidState = alarmValid;
         alarmValid = false;
 
@@ -201,7 +201,6 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
 
     private void processResult(AlarmResult alarmResult) {
         if (alarmResult != null) {
-            Log.v(Main.LOG_TAG, "AlertHandler.processResult()");
 
             alarmParameters.updateSectorLabels(context);
 
@@ -257,9 +256,5 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
 
     public Location getCurrentLocation() {
         return location;
-    }
-
-    public void cancelAlert() {
-        broadcastClear();
     }
 }

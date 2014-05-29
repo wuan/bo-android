@@ -113,10 +113,8 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         for (AbstractStroke stroke : strokes) {
             this.strokes.add(new StrokeOverlayItem(stroke));
         }
-        Log.v(Main.LOG_TAG, "StrokesOverlay.addStrokes() added");
         setLastFocusedIndex(-1);
         populate();
-        Log.v(Main.LOG_TAG, "StrokesOverlay.addStrokes() finished");
     }
 
     public void expireStrokes() {
