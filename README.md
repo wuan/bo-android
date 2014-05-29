@@ -59,6 +59,20 @@
  
 ## German
 
+### Version 1.3 (Android 4.0+)
+ - Probleme mit Warntönen auf einigen Geräten beseitigt
+ - Hintergrundabfrage ab Neustart
+ - Überarbeitete Struktur mit Service
+
+### Version 1.2 (Android 4.0+)
+ - Hardwarebeschleunigung aktiviert
+
+### Version 1.1
+ - verwendet AlarmManager und WakeLocks um den Betrieb des Hintergrunddienstes sicherzustellen
+ - die Größe der im Hintergrund übertragenen Daten wurde stark reduziert.
+ - Alarmsignal nur bei Änderung der Situation
+ - Zugriff auf Blitzortung.org Daten angepasst
+
 ### Version 1.0
  * Zoom auf vollen Datenbereich bei Tippen auf Histogram
  * Zoom auf aktuelle Position bei Tippen auf Alarm-Radar
