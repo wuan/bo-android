@@ -75,7 +75,8 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         protected void onPostExecute(Optional<ResultEvent> result) {
             if (listener != null) {
                 if (result.isPresent()) {
-                    listener.onUpdated(result.get());
+                    final ResultEvent payload = result.get();
+                    listener.onUpdated(payload);
                 }
             }
         }

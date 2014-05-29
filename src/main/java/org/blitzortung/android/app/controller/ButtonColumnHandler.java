@@ -42,10 +42,8 @@ public class ButtonColumnHandler<V extends View> {
 
     public void updateButtonColumn() {
         int previousIndex = -1;
-        Log.v(Main.LOG_TAG, "ButtonColumnHandler.updateButtonColumn() started");
         for (int currentIndex = 0; currentIndex < elements.size(); currentIndex++) {
             V element = elements.get(currentIndex);
-            Log.v(Main.LOG_TAG, "ButtonColumnHandler.updateButtonColumn() " + currentIndex + " " + element.getVisibility());
             if (element.getVisibility() == View.VISIBLE) {
                 RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
