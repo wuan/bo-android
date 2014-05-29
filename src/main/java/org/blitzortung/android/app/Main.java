@@ -122,7 +122,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 strokesOverlay.updateZoomLevel(zoomLevel);
                 participantsOverlay.updateZoomLevel(zoomLevel);
             }
-
         });
 
         fadeOverlay = new FadeOverlay(strokesOverlay.getColorHandler());
@@ -134,10 +133,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         setHistoricStatusString();
 
         buttonColumnHandler = new ButtonColumnHandler<ImageButton>();
-
-        if (Build.VERSION.SDK_INT >= 14) {
-            hideActionBar();
-        }
 
         historyController = new HistoryController(this);
         historyController.setButtonHandler(buttonColumnHandler);
@@ -636,23 +631,4 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         alertListeners.remove(alertListener);
     }
 
-    private void hideActionBar() {
-        ViewConfiguration config = ViewConfiguration.get(this);
-
-        if (!config.hasPermanentMenuKey()) {
-            ImageButton menuButton = (ImageButton) findViewById(R.id.menu);
-            menuButton.setVisibility(View.VISIBLE);
-            menuButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    openOptionsMenu();
-                }
-            });
-            buttonColumnHandler.addElement(menuButton);
-        }
-
-        final ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
-        }
-    }
 }
