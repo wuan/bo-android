@@ -6,6 +6,11 @@
 
 ## English
 
+### Version 1.3 (Android 4.0+)
+ - fixed sound notifications
+ - background operation starting with boot
+ - reworked structure with separate app service
+
 ### Version 1.2 (Android 4.0+)
  * enabled Hardware acceleration
 
@@ -62,7 +67,7 @@
 ### Version 1.3 (Android 4.0+)
  - Probleme mit Warntönen auf einigen Geräten beseitigt
  - Hintergrundabfrage ab Neustart
- - Überarbeitete Struktur mit Service
+ - Überarbeitete Struktur mit Datenervice
 
 ### Version 1.2 (Android 4.0+)
  - Hardwarebeschleunigung aktiviert
