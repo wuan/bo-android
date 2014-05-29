@@ -141,7 +141,9 @@ public class HistoryController implements DataListener {
     public void onUpdated(DataEvent payload) {
         if (payload instanceof ResultEvent) {
             ResultEvent resultEvent = (ResultEvent) payload;
-            setRealtimeData(resultEvent.containsRealtimeData());
+            if (!resultEvent.hasFailed()) {
+                setRealtimeData(resultEvent.containsRealtimeData());
+            }
         }
     }
 }

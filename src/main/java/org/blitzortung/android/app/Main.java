@@ -1,5 +1,6 @@
 package org.blitzortung.android.app;
 
+import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.*;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -147,6 +148,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         setupDebugModeButton();
 
         buttonColumnHandler.lockButtonColumn();
+        buttonColumnHandler.updateButtonColumn();
 
         setupCustomViews();
 
@@ -403,47 +405,51 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         } else if (event instanceof ResultEvent) {
             ResultEvent result = (ResultEvent) event;
 
-            if (result.getParameters().getIntervalDuration() != appService.getDataHandler().getIntervalDuration()) {
-                reloadData();
-            }
+            if (result.hasFailed()) {
+                statusComponent.indicateError(true);
+            } else {
+                statusComponent.indicateError(false);
 
-            currentResult = Optional.of(result);
-
-            Log.d(Main.LOG_TAG, "Main.onDataUpdate() " + result);
-
-            statusComponent.indicateError(false);
-
-            Parameters resultParameters = result.getParameters();
-
-            clearDataIfRequested();
-
-            if (result.containsStrokes()) {
-                strokesOverlay.setRasterParameters(result.getRasterParameters());
-                strokesOverlay.setRegion(resultParameters.getRegion());
-                strokesOverlay.setReferenceTime(result.getReferenceTime());
-                strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
-                strokesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
-
-                if (result.containsIncrementalData()) {
-                    strokesOverlay.expireStrokes();
-                } else {
-                    strokesOverlay.clear();
+                if (result.getParameters().getIntervalDuration() != appService.getDataHandler().getIntervalDuration()) {
+                    reloadData();
                 }
-                strokesOverlay.addStrokes(result.getStrokes());
 
-                alarmView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getIntervalDuration());
+                currentResult = Optional.of(result);
 
-                strokesOverlay.refresh();
-            }
+                Log.d(Main.LOG_TAG, "Main.onDataUpdate() " + result);
 
-            if (!result.containsRealtimeData()) {
-                appService.disable();
-                setHistoricStatusString();
-            }
+                Parameters resultParameters = result.getParameters();
 
-            if (participantsOverlay != null && result.containsParticipants()) {
-                participantsOverlay.setParticipants(result.getStations());
-                participantsOverlay.refresh();
+                clearDataIfRequested();
+
+                if (result.containsStrokes()) {
+                    strokesOverlay.setRasterParameters(result.getRasterParameters());
+                    strokesOverlay.setRegion(resultParameters.getRegion());
+                    strokesOverlay.setReferenceTime(result.getReferenceTime());
+                    strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
+                    strokesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
+
+                    if (result.containsIncrementalData()) {
+                        strokesOverlay.expireStrokes();
+                    } else {
+                        strokesOverlay.clear();
+                    }
+                    strokesOverlay.addStrokes(result.getStrokes());
+
+                    alarmView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getIntervalDuration());
+
+                    strokesOverlay.refresh();
+                }
+
+                if (!result.containsRealtimeData()) {
+                    appService.disable();
+                    setHistoricStatusString();
+                }
+
+                if (participantsOverlay != null && result.containsParticipants()) {
+                    participantsOverlay.setParticipants(result.getStations());
+                    participantsOverlay.refresh();
+                }
             }
 
             for (DataListener listener : dataListeners) {
@@ -644,21 +650,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             buttonColumnHandler.addElement(menuButton);
         }
 
-        //noinspection EmptyCatchBlock
-        try {
-            Method getActionBar = Main.class.getMethod("getActionBar");
-
-            Object actionBar;
-            actionBar = getActionBar.invoke(this);
-
-            if (actionBar != null) {
-                Method hide = actionBar.getClass().getMethod("hide");
-                hide.invoke(actionBar);
-            }
-
-        } catch (NoSuchMethodException e) {
-        } catch (InvocationTargetException e) {
-        } catch (IllegalAccessException e) {
+        final ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
         }
     }
 }

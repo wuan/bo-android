@@ -134,14 +134,18 @@ public class HistogramView extends View implements DataListener {
     }
 
     private void updateHistogram(ResultEvent dataEvent) {
-        histogram = dataEvent.getHistogram();
+        if (dataEvent.hasFailed()) {
+            setVisibility(View.INVISIBLE);
+        } else {
+            histogram = dataEvent.getHistogram();
 
-        boolean viewShouldBeVisible = histogram != null && histogram.length > 0;
+            boolean viewShouldBeVisible = histogram != null && histogram.length > 0;
 
-        setVisibility(viewShouldBeVisible ? View.VISIBLE : View.INVISIBLE);
+            setVisibility(viewShouldBeVisible ? View.VISIBLE : View.INVISIBLE);
 
-        if (viewShouldBeVisible) {
-            invalidate();
+            if (viewShouldBeVisible) {
+                invalidate();
+            }
         }
     }
 

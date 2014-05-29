@@ -114,16 +114,19 @@ public class ResultEvent implements DataEvent {
     
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Result(");
-        final List<AbstractStroke> currentStrokes = getStrokes();
-        sb.append(currentStrokes != null ? currentStrokes.size() : 0).append(" strokes, ");
-        sb.append(getParameters());
-        if (hasRasterParameters()) {
-            sb.append(", ").append(getRasterParameters());
+        if (fail) {
+            sb.append("FailedResult()");
+        } else {
+            sb.append("Result(");
+            final List<AbstractStroke> currentStrokes = getStrokes();
+            sb.append(currentStrokes != null ? currentStrokes.size() : 0).append(" strokes, ");
+            sb.append(getParameters());
+            if (hasRasterParameters()) {
+                sb.append(", ").append(getRasterParameters());
+            }
+            sb.append(")");
         }
-        sb.append(")");
-        
-        
+
         return sb.toString();
     }
 }

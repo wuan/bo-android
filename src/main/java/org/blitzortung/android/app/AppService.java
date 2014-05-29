@@ -144,7 +144,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     private void checkForWarning(ResultEvent result) {
-        if (result.containsRealtimeData()) {
+        if (!result.hasFailed() && result.containsRealtimeData()) {
             alertHandler.checkStrokes(result.getStrokes());
         } else {
             alertHandler.cancelAlert();
