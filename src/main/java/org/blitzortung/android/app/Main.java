@@ -98,6 +98,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             toast.show();
         }
         updatePackageInfo();
+
         currentResult = Optional.absent();
         dataListeners = new HashSet<DataListener>();
         alertListeners = new HashSet<AlertListener>();
@@ -133,7 +134,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         setHistoricStatusString();
 
         buttonColumnHandler = new ButtonColumnHandler<ImageButton>();
-
         historyController = new HistoryController(this);
         historyController.setButtonHandler(buttonColumnHandler);
         addDataListener(historyController);
@@ -633,5 +633,5 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     public void removeAlertListener(AlertListener alertListener) {
         alertListeners.remove(alertListener);
     }
-
+    
 }

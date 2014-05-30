@@ -6,6 +6,20 @@
 
 ## English
 
+### Version 1.3 (Android 4.0+)
+ - fixed sound notifications
+ - background operation starting with boot
+ - reworked structure with separate app service
+
+### Version 1.2 (Android 4.0+)
+ * enabled Hardware acceleration
+
+### Version 1.1
+ * use AlarmManager and WakeLocks to ensure background service operation
+ * reduce amount of transferred data, when running in background
+ * alarm signal only at situation changes
+ * updated Blitzortung.org data access
+
 ### Version 1.0
  * tap on histogram zooms to full data area
  * tap on alarm radar zooms to current location
@@ -49,6 +63,20 @@
  * notification and vibration alarm with preference integration
  
 ## German
+
+### Version 1.3 (Android 4.0+)
+ - Probleme mit Warntönen auf einigen Geräten beseitigt
+ - Hintergrundabfrage ab Neustart
+ - Überarbeitete Struktur mit Datenervice
+
+### Version 1.2 (Android 4.0+)
+ - Hardwarebeschleunigung aktiviert
+
+### Version 1.1
+ - verwendet AlarmManager und WakeLocks um den Betrieb des Hintergrunddienstes sicherzustellen
+ - die Größe der im Hintergrund übertragenen Daten wurde stark reduziert.
+ - Alarmsignal nur bei Änderung der Situation
+ - Zugriff auf Blitzortung.org Daten angepasst
 
 ### Version 1.0
  * Zoom auf vollen Datenbereich bei Tippen auf Histogram

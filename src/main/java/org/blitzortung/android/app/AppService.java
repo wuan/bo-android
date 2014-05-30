@@ -203,15 +203,21 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
 
+        if (wakeLock == null) {
+            Log.d(Main.LOG_TAG, "AppService.onCreate() create wakelock");
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
+        }
+
+        if (dataHandler == null) {
+            dataHandler = new DataHandler(wakeLock, preferences, getPackageInfo());
+            dataHandler.setDataListener(this);
+        }
+
         onSharedPreferenceChanged(preferences, PreferenceKey.QUERY_PERIOD);
         onSharedPreferenceChanged(preferences, PreferenceKey.ALARM_ENABLED);
         onSharedPreferenceChanged(preferences, PreferenceKey.BACKGROUND_QUERY_PERIOD);
         onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_PARTICIPANTS);
-
-        if (dataHandler == null) {
-            dataHandler = new DataHandler(preferences, getPackageInfo());
-            dataHandler.setDataListener(this);
-        }
 
         locationHandler = new LocationHandler(this, preferences);
         locationHandler.requestUpdates(this);
@@ -244,15 +250,11 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     private void acquireWakeLock() {
-        releaseWakeLock();
-
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
         wakeLock.acquire(20000);
     }
 
     public void releaseWakeLock() {
-        if (wakeLock != null && wakeLock.isHeld()) {
+        if (wakeLock.isHeld()) {
             Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() " + wakeLock);
             try {
                 wakeLock.release();
@@ -260,7 +262,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
                 Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() failed: " + e.toString());
             }
         }
-        wakeLock = null;
     }
 
     @Override
@@ -404,8 +405,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     private void discardAlarm() {
-        releaseWakeLock();
-
         if (alarmManager != null) {
             Log.v(Main.LOG_TAG, "AppService.discardAlarm()");
             alarmManager.cancel(pendingIntent);

@@ -1,9 +1,11 @@
 package org.blitzortung.android.data;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageInfo;
 import android.os.AsyncTask;
+import android.os.PowerManager;
 import android.util.Log;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.view.PreferenceKey;
@@ -43,13 +45,15 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     public static final RequestStartedEvent REQUEST_STARTED_EVENT = new RequestStartedEvent();
     public static final ClearDataEvent CLEAR_DATA_EVENT = new ClearDataEvent();
+    private PowerManager.WakeLock wakeLock;
 
-    public DataHandler(SharedPreferences sharedPreferences, PackageInfo pInfo) {
-        this(sharedPreferences, pInfo, new DataProviderFactory());
+    public DataHandler(PowerManager.WakeLock wakeLock, SharedPreferences sharedPreferences, PackageInfo pInfo) {
+        this(wakeLock, sharedPreferences, pInfo, new DataProviderFactory());
     }
 
-    public DataHandler(SharedPreferences sharedPreferences, PackageInfo pInfo,
+    public DataHandler(PowerManager.WakeLock wakeLock, SharedPreferences sharedPreferences, PackageInfo pInfo,
                        DataProviderFactory dataProviderFactory) {
+        this.wakeLock = wakeLock;
         this.dataProviderFactory = dataProviderFactory;
         parameters = new Parameters();
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
@@ -134,8 +138,32 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         }
     }
 
+    private class FetchBackgroundDataTask extends FetchDataTask {
+
+        private PowerManager.WakeLock wakeLock;
+
+        public FetchBackgroundDataTask(PowerManager.WakeLock wakeLock) {
+            super();
+            this.wakeLock = wakeLock;
+        }
+
+        @Override
+        protected void onPostExecute(Optional<ResultEvent> result) {
+            super.onPostExecute(result);
+            wakeLock.release();
+            Log.v(Main.LOG_TAG, "FetchBackgroundDataTask released wakelock " + wakeLock);
+        }
+
+        @Override
+        protected Optional<ResultEvent> doInBackground(Integer... params) {
+            wakeLock.acquire(20000);
+            Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquire wakelock " + wakeLock);
+            return super.doInBackground(params);
+        }
+    }
+
     public void updateDatainBackground() {
-        new FetchDataTask().execute(10, 0, dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), 0);
+        new FetchBackgroundDataTask(wakeLock).execute(10, 0, dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), 0);
     }
 
     public void updateData(Set<DataChannel> updateTargets) {
