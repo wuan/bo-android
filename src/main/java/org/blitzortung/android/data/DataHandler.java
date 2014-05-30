@@ -156,7 +156,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
         @Override
         protected Optional<ResultEvent> doInBackground(Integer... params) {
-            wakeLock.acquire(20000);
+            wakeLock.acquire();
             Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquire wakelock " + wakeLock);
             return super.doInBackground(params);
         }
