@@ -98,6 +98,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             toast.show();
         }
         updatePackageInfo();
+
         currentResult = Optional.absent();
         dataListeners = new HashSet<DataListener>();
         alertListeners = new HashSet<AlertListener>();
@@ -133,12 +134,10 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         statusComponent = new StatusComponent(this);
         setHistoricStatusString();
 
+        hideActionBar();
+
         buttonColumnHandler = new ButtonColumnHandler<ImageButton>();
-
-        if (Build.VERSION.SDK_INT >= 14) {
-            hideActionBar();
-        }
-
+        configureMenuAccess();
         historyController = new HistoryController(this);
         historyController.setButtonHandler(buttonColumnHandler);
         addDataListener(historyController);
@@ -639,7 +638,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         alertListeners.remove(alertListener);
     }
 
-    private void hideActionBar() {
+    private void configureMenuAccess() {
         ViewConfiguration config = ViewConfiguration.get(this);
 
         if (!config.hasPermanentMenuKey()) {
@@ -652,7 +651,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             });
             buttonColumnHandler.addElement(menuButton);
         }
+    }
 
+    private void hideActionBar() {
         final ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.hide();
