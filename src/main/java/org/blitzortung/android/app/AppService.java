@@ -259,7 +259,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
             try {
                 wakeLock.release();
             } catch (RuntimeException e) {
-                Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() failed: " + e.toString());
+                Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() failed", e);
             }
         }
     }
