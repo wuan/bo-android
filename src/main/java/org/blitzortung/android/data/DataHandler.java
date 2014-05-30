@@ -1,6 +1,5 @@
 package org.blitzortung.android.data;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageInfo;
@@ -15,8 +14,8 @@ import org.blitzortung.android.data.provider.DataProviderFactory;
 import org.blitzortung.android.data.provider.DataProviderType;
 import org.blitzortung.android.data.provider.result.ClearDataEvent;
 import org.blitzortung.android.data.provider.result.DataEvent;
-import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.blitzortung.android.data.provider.result.RequestStartedEvent;
+import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.blitzortung.android.util.optional.Optional;
 
 import java.util.HashSet;
@@ -160,7 +159,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
         @Override
         protected Optional<ResultEvent> doInBackground(Integer... params) {
-            wakeLock.acquire();
+            wakeLock.acquire(30000);
             Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquire wakelock " + wakeLock);
             return super.doInBackground(params);
         }

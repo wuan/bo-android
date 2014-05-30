@@ -250,14 +250,14 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     private void acquireWakeLock() {
-        wakeLock.acquire();
+        wakeLock.acquire(30000);
     }
 
     public void releaseWakeLock() {
         if (wakeLock.isHeld()) {
-            Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() " + wakeLock);
             try {
                 wakeLock.release();
+                Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() " + wakeLock);
             } catch (RuntimeException e) {
                 Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() failed", e);
             }
