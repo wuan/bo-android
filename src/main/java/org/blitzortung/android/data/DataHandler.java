@@ -150,8 +150,12 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         @Override
         protected void onPostExecute(Optional<ResultEvent> result) {
             super.onPostExecute(result);
-            wakeLock.release();
-            Log.v(Main.LOG_TAG, "FetchBackgroundDataTask released wakelock " + wakeLock);
+            try {
+                wakeLock.release();
+                Log.v(Main.LOG_TAG, "FetchBackgroundDataTask released wakelock " + wakeLock);
+            } catch (RuntimeException e) {
+                Log.e(Main.LOG_TAG, "FetchBackgroundDataTask release wakelock failed ", e);
+            }
         }
 
         @Override
