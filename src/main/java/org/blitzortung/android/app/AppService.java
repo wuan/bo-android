@@ -279,6 +279,8 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
             dataHandler.updateDatainBackground();
         } else {
+            releaseWakeLock();
+
             long currentTime = Period.getCurrentTime();
             if (dataHandler != null) {
                 Set<DataChannel> updateTargets = new HashSet<DataChannel>();
