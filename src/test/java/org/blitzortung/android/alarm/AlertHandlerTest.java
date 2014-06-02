@@ -90,12 +90,12 @@ public class AlertHandlerTest {
         when(alarmParameters.getAlarmInterval()).thenReturn(alarmInterval);
         when(alarmObjectFactory.createAlarmStatus(alarmParameters)).thenReturn(alarmStatus);
         when(alarmObjectFactory.createAlarmStatusHandler(alarmParameters)).thenReturn(alarmStatusHandler);
-        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(false);
+        when(sharedPreferences.getBoolean(PreferenceKey.ALERT_ENABLED.toString(), false)).thenReturn(false);
         when(sharedPreferences.getString(PreferenceKey.MEASUREMENT_UNIT.toString(), MeasurementSystem.METRIC.toString())).thenReturn(MeasurementSystem.METRIC.toString());
-        when(sharedPreferences.getString(PreferenceKey.NOTIFICATION_DISTANCE_LIMIT.toString(), "50")).thenReturn("50");
-        when(sharedPreferences.getString(PreferenceKey.SIGNALING_DISTANCE_LIMIT.toString(), "25")).thenReturn("25");
-        when(sharedPreferences.getInt(PreferenceKey.ALARM_VIBRATION_SIGNAL.toString(), 3)).thenReturn(3);
-        when(sharedPreferences.getString(PreferenceKey.ALARM_SOUND_SIGNAL.toString(), "")).thenReturn("");
+        when(sharedPreferences.getString(PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT.toString(), "50")).thenReturn("50");
+        when(sharedPreferences.getString(PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT.toString(), "25")).thenReturn("25");
+        when(sharedPreferences.getInt(PreferenceKey.ALERT_VIBRATION_SIGNAL.toString(), 3)).thenReturn(3);
+        when(sharedPreferences.getString(PreferenceKey.ALERT_SOUND_SIGNAL.toString(), "")).thenReturn("");
         when(alarmStatusHandler.getCurrentActivity(alarmStatus)).thenReturn(alarmResult);
         when(context.getResources()).thenReturn(resources);
         
@@ -105,10 +105,10 @@ public class AlertHandlerTest {
 
     @Test
     public void testConstruction() {
-        assertFalse(alertHandler.isAlarmEnabled());
+        assertFalse(alertHandler.isAlertEnabled());
 
         verify(sharedPreferences, times(1)).registerOnSharedPreferenceChangeListener(any(AlertHandler.class));
-        verify(sharedPreferences, times(1)).getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false);
+        verify(sharedPreferences, times(1)).getBoolean(PreferenceKey.ALERT_ENABLED.toString(), false);
         verify(locationManager, times(1)).removeUpdates(any(AlertHandler.class));
         verify(sharedPreferences, times(1)).getString(PreferenceKey.MEASUREMENT_UNIT.toString(), "METRIC");
         verify(alarmParameters, times(1)).setMeasurementSystem(MeasurementSystem.METRIC);
@@ -201,8 +201,8 @@ public class AlertHandlerTest {
     }
 
     private void enableAlarmInPrefs(boolean alarmEnabled) {
-        when(sharedPreferences.getBoolean(PreferenceKey.ALARM_ENABLED.toString(), false)).thenReturn(alarmEnabled);
-        alertHandler.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.ALARM_ENABLED.toString());
+        when(sharedPreferences.getBoolean(PreferenceKey.ALERT_ENABLED.toString(), false)).thenReturn(alarmEnabled);
+        alertHandler.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.ALERT_ENABLED.toString());
     }
 
     @Test

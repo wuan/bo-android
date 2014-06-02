@@ -48,8 +48,6 @@ import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 import org.blitzortung.android.util.optional.Optional;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -152,7 +150,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         setupCustomViews();
 
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
-                PreferenceKey.NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS);
+                PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS);
 
         createAndBindToDataService();
     }
@@ -174,7 +172,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 appService.setLocationListener(Main.this);
 
                 strokesOverlay.setIntervalDuration(appService.getDataHandler().getIntervalDuration());
-                if (appService.isAlarmEnabled()) {
+                if (appService.isAlertEnabled()) {
                     final AlarmResult alarmResult = appService.getAlarmResult();
                     if (alarmResult != null) {
                         onAlert(appService.getAlarmStatus(), alarmResult);
@@ -234,7 +232,7 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
             @Override
             public void onClick(View view) {
                 final AlertHandler alertHandler = appService.getAlertHandler();
-                if (alertHandler != null && alertHandler.isAlarmEnabled()) {
+                if (alertHandler != null && alertHandler.isAlertEnabled()) {
                     final Location currentLocation = alertHandler.getCurrentLocation();
                     if (currentLocation != null) {
                         float radius = alertHandler.getMaxDistance();

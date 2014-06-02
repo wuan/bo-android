@@ -39,7 +39,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
 
     private Location location;
 
-    private boolean alarmEnabled;
+    private boolean alertEnabled;
 
     private boolean alarmValid;
 
@@ -70,12 +70,12 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
 
 
         preferences.registerOnSharedPreferenceChangeListener(this);
-        onSharedPreferenceChanged(preferences, PreferenceKey.ALARM_ENABLED);
+        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED);
         onSharedPreferenceChanged(preferences, PreferenceKey.MEASUREMENT_UNIT);
-        onSharedPreferenceChanged(preferences, PreferenceKey.NOTIFICATION_DISTANCE_LIMIT);
-        onSharedPreferenceChanged(preferences, PreferenceKey.SIGNALING_DISTANCE_LIMIT);
-        onSharedPreferenceChanged(preferences, PreferenceKey.ALARM_VIBRATION_SIGNAL);
-        onSharedPreferenceChanged(preferences, PreferenceKey.ALARM_SOUND_SIGNAL);
+        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT);
+        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT);
+        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_VIBRATION_SIGNAL);
+        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_SOUND_SIGNAL);
 
         alarmValid = false;
     }
@@ -87,10 +87,10 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
 
     private void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey key) {
         switch (key) {
-            case ALARM_ENABLED:
-                alarmEnabled = sharedPreferences.getBoolean(key.toString(), false);
+            case ALERT_ENABLED:
+                alertEnabled = sharedPreferences.getBoolean(key.toString(), false);
 
-                if (alarmEnabled) {
+                if (alertEnabled) {
                     locationHandler.requestUpdates(this);
                 } else {
                     locationHandler.removeUpdates(this);
@@ -105,19 +105,19 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
                 alarmParameters.setMeasurementSystem(MeasurementSystem.valueOf(measurementSystemName));
                 break;
 
-            case NOTIFICATION_DISTANCE_LIMIT:
+            case ALERT_NOTIFICATION_DISTANCE_LIMIT:
                 notificationDistanceLimit = Float.parseFloat(sharedPreferences.getString(key.toString(), "50"));
                 break;
 
-            case SIGNALING_DISTANCE_LIMIT:
+            case ALERT_SIGNALING_DISTANCE_LIMIT:
                 signalingDistanceLimit = Float.parseFloat(sharedPreferences.getString(key.toString(), "25"));
                 break;
 
-            case ALARM_VIBRATION_SIGNAL:
+            case ALERT_VIBRATION_SIGNAL:
                 vibrationSignalDuration = sharedPreferences.getInt(key.toString(), 3) * 10;
                 break;
 
-            case ALARM_SOUND_SIGNAL:
+            case ALERT_SOUND_SIGNAL:
                 final String signalUri = sharedPreferences.getString(key.toString(), "");
                 alarmSoundNotificationSignal = !signalUri.isEmpty() ? Uri.parse(signalUri) : null;
                 break;
@@ -131,12 +131,12 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
         checkStrokes(lastStrokes);
     }
 
-    public boolean isAlarmEnabled() {
-        return alarmEnabled;
+    public boolean isAlertEnabled() {
+        return alertEnabled;
     }
 
     public void checkStrokes(Collection<? extends Stroke> strokes) {
-        boolean currentAlarmIsValid = isAlarmEnabled() && location != null && strokes != null;
+        boolean currentAlarmIsValid = isAlertEnabled() && location != null && strokes != null;
         lastStrokes = strokes;
 
         if (currentAlarmIsValid) {

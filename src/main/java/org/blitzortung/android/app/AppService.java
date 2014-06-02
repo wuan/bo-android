@@ -47,8 +47,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
     private final Period updatePeriod;
 
-    private boolean alarmEnabled;
-
     private boolean updateParticipants;
 
     private boolean enabled;
@@ -119,8 +117,8 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         return dataHandler;
     }
 
-    public boolean isAlarmEnabled() {
-        return alertHandler.isAlarmEnabled();
+    public boolean isAlertEnabled() {
+        return alertHandler.isAlertEnabled();
     }
 
     public AlarmResult getAlarmResult() {
@@ -215,12 +213,11 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         }
 
         onSharedPreferenceChanged(preferences, PreferenceKey.QUERY_PERIOD);
-        onSharedPreferenceChanged(preferences, PreferenceKey.ALARM_ENABLED);
+        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED);
         onSharedPreferenceChanged(preferences, PreferenceKey.BACKGROUND_QUERY_PERIOD);
         onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_PARTICIPANTS);
 
         locationHandler = new LocationHandler(this, preferences);
-        locationHandler.requestUpdates(this);
         AlarmParameters alarmParameters = new AlarmParameters();
         alarmParameters.updateSectorLabels(this);
         alertHandler = new AlertHandler(locationHandler, preferences, this,
@@ -313,6 +310,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     public void onResume() {
         if (dataHandler.isRealtime()) {
             Log.v(Main.LOG_TAG, "AppService.onResume() enable");
+            locationHandler.requestUpdates(this);
             enable();
         } else {
             Log.v(Main.LOG_TAG, "AppService.onResume() do not enable");
@@ -322,6 +320,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     public boolean onPause() {
         Log.v(Main.LOG_TAG, "AppService.onPause() remove callback");
         handler.removeCallbacks(this);
+        locationHandler.removeUpdates(this);
 
         return true;
     }
@@ -366,7 +365,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
                 int previousBackgroundPeriod = backgroundPeriod;
                 backgroundPeriod = Integer.parseInt(sharedPreferences.getString(key.toString(), "0"));
 
-                if (dataListenerContainer.isEmpty()) {
+                if (dataListenerContainer.isEmpty() && isAlertEnabled()) {
                     if (previousBackgroundPeriod == 0 && backgroundPeriod > 0) {
                         Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() create alarm with backgroundPeriod=%d", backgroundPeriod));
                         createAlarm();
@@ -381,10 +380,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
             case SHOW_PARTICIPANTS:
                 updateParticipants = sharedPreferences.getBoolean(key.toString(), true);
-                break;
-
-            case ALARM_ENABLED:
-                alarmEnabled = sharedPreferences.getBoolean(key.toString(), false);
                 break;
         }
     }

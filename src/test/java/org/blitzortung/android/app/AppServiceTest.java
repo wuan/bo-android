@@ -53,7 +53,7 @@ public class AppServiceTest {
                 .putString(PreferenceKey.QUERY_PERIOD.toString(), "60")
                 .putString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), "0")
                 .putBoolean(PreferenceKey.SHOW_PARTICIPANTS.toString(), true)
-                .putBoolean(PreferenceKey.ALARM_ENABLED.toString(), true)
+                .putBoolean(PreferenceKey.ALERT_ENABLED.toString(), true)
                 .commit();
 
         when(dataHandler.getIntervalDuration()).thenReturn(60);

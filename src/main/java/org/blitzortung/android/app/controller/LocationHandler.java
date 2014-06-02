@@ -11,6 +11,8 @@ import android.widget.Toast;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.view.PreferenceKey;
+import org.blitzortung.android.protocol.Listener;
+import org.blitzortung.android.protocol.ListenerContainer;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,14 +54,6 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
         public static Provider fromString(String string) {
             return stringToValueMap.get(string);
         }
-    }
-
-    public void onPause() {
-        locationManager.removeUpdates(this);
-    }
-
-    public void onResume() {
-        enableProvider(provider);
     }
 
     private final LocationManager locationManager;
@@ -189,18 +183,24 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     }
 
     public void requestUpdates(LocationListener target) {
+        if (listeners.isEmpty()) {
+            enableProvider(provider);
+        }
         listeners.add(target);
         if (locationIsValid()) {
             target.onLocationChanged(location);
         }
     }
 
-    private boolean locationIsValid() {
-        return location != null && !Double.isNaN(location.getLongitude()) && !Double.isNaN(location.getLatitude());
-    }
-
     public void removeUpdates(LocationListener target) {
         listeners.remove(target);
+        if (listeners.isEmpty()) {
+            locationManager.removeUpdates(this);
+        }
+    }
+
+    private boolean locationIsValid() {
+        return location != null && !Double.isNaN(location.getLongitude()) && !Double.isNaN(location.getLatitude());
     }
 
     @Override
