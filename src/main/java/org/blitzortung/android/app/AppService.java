@@ -14,6 +14,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import org.blitzortung.android.alarm.AlarmParameters;
 import org.blitzortung.android.alarm.AlarmResult;
+import org.blitzortung.android.alarm.AlertEvent;
 import org.blitzortung.android.alarm.AlertHandler;
 import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
 import org.blitzortung.android.alarm.listener.AlertListener;
@@ -34,7 +35,7 @@ import org.blitzortung.android.util.Period;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AppService extends Service implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener, DataListener, LocationListener {
+public class AppService extends Service implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener, DataListener, AlertListener, LocationListener {
 
     public static final String RETRIEVE_DATA_ACTION = "retrieveData";
     public static final String WAKE_LOCK_TAG = "boAndroidWakeLock";
@@ -79,6 +80,18 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         }
     };
 
+    ListenerContainer<AlertEvent, AlertListener> alertListenerContainer = new ListenerContainer<AlertEvent, AlertListener>() {
+        @Override
+        public void addedFirstListener() {
+            alertHandler.setAlertListener(AppService.this);
+        }
+
+        @Override
+        public void removedLastListener() {
+            alertHandler.unsetAlertListener();
+        }
+    };
+
     @SuppressWarnings("UnusedDeclaration")
     public AppService() {
         this(new Handler(), new Period());
@@ -118,7 +131,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     public boolean isAlertEnabled() {
-        return alertHandler.isAlertEnabled();
+        return alertHandler != null ? alertHandler.isAlertEnabled() : false;
     }
 
     public AlarmResult getAlarmResult() {
@@ -159,8 +172,12 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         dataListenerContainer.removeListener(dataListener);
     }
 
-    public void setAlertListener(AlertListener alertListener) {
-        alertHandler.setAlertListener(alertListener);
+    public void addAlertListener(AlertListener alertListener) {
+        alertListenerContainer.addListener(alertListener);
+    }
+
+    public void removeAlertListener(AlertListener alertListener) {
+        alertListenerContainer.removeListener(alertListener);
     }
 
     public AlarmStatus getAlarmStatus() {

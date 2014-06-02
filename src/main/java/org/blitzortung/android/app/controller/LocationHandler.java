@@ -185,6 +185,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     public void requestUpdates(LocationListener target) {
         if (listeners.isEmpty()) {
             enableProvider(provider);
+            Log.d(Main.LOG_TAG, "LocationHandler.requestUpdates() enable provider");
         }
         listeners.add(target);
         if (locationIsValid()) {
@@ -196,6 +197,9 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
         listeners.remove(target);
         if (listeners.isEmpty()) {
             locationManager.removeUpdates(this);
+            Log.d(Main.LOG_TAG, "LocationHandler.removeUpdates() disable provider");
+        } else {
+            Log.d(Main.LOG_TAG, "LocationHandler.removeUpdates() " + listeners.size() + " entries remaining");
         }
     }
 

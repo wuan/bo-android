@@ -2,7 +2,7 @@ package org.blitzortung.android.alarm;
 
 import org.blitzortung.android.alarm.object.AlarmSector;
 
-public class AlarmResult {
+public class AlarmResult implements AlertEvent {
 	
 	private final AlarmSector sector;
     

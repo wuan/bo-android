@@ -10,6 +10,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Vibrator;
 import android.util.Log;
+import org.blitzortung.android.AlertResultEvent;
 import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
 import org.blitzortung.android.alarm.handler.AlarmStatusHandler;
 import org.blitzortung.android.alarm.listener.AlertListener;
@@ -90,13 +91,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
             case ALERT_ENABLED:
                 alertEnabled = sharedPreferences.getBoolean(key.toString(), false);
 
-                if (alertEnabled) {
-                    locationHandler.requestUpdates(this);
-                } else {
-                    locationHandler.removeUpdates(this);
-                    location = null;
-                    broadcastClear();
-                }
+                updateLocationHandler();
                 break;
 
             case MEASUREMENT_UNIT:
@@ -121,6 +116,16 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
                 final String signalUri = sharedPreferences.getString(key.toString(), "");
                 alarmSoundNotificationSignal = !signalUri.isEmpty() ? Uri.parse(signalUri) : null;
                 break;
+        }
+    }
+
+    private void updateLocationHandler() {
+        if (alertEnabled && alertListener != null) {
+            locationHandler.requestUpdates(this);
+        } else {
+            locationHandler.removeUpdates(this);
+            location = null;
+            broadcastClear();
         }
     }
 
@@ -158,6 +163,12 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
 
     public void setAlertListener(AlertListener alertListener) {
         this.alertListener = alertListener;
+        updateLocationHandler();
+    }
+
+    public void unsetAlertListener() {
+        alertListener = null;
+        updateLocationHandler();
     }
 
     public Collection<AlarmSector> getAlarmSectors() {
@@ -189,13 +200,13 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
 
     private void broadcastClear() {
         if (alertListener != null) {
-            alertListener.onAlertCancel();
+            alertListener.onUpdated(new AlertCancelEvent());
         }
     }
 
     private void broadcastResult(AlarmResult alarmResult) {
         if (alertListener != null) {
-            alertListener.onAlert(alarmStatus, alarmResult);
+            alertListener.onUpdated(new AlertResultEvent(alarmStatus, alarmResult));
         }
     }
 
@@ -242,7 +253,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
     }
 
     private void playSoundIfEnabled() {
-        if (alarmSoundNotificationSignal != null ) {
+        if (alarmSoundNotificationSignal != null) {
             Ringtone r = RingtoneManager.getRingtone(context, alarmSoundNotificationSignal);
             if (r != null) {
                 if (!r.isPlaying()) {
@@ -257,4 +268,5 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
     public Location getCurrentLocation() {
         return location;
     }
+
 }
