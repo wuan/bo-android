@@ -12,13 +12,13 @@ import org.blitzortung.android.map.overlay.color.ColorHandler;
 public class AlarmDialog extends AlertDialog {
 
     private final ColorHandler colorHandler;
-    private final Main context;
     private final AlarmView alarmView;
+    private final AppService service;
 
     public AlarmDialog(Main context, AppService service, ColorHandler colorHandler, int intervalDuration) {
         super(context);
-        this.context = context;
         this.colorHandler = colorHandler;
+        this.service = service;
 
         setTitle(context.getString(R.string.alarms));
 
@@ -27,7 +27,7 @@ public class AlarmDialog extends AlertDialog {
         alarmView = (AlarmView) dialog.findViewById(R.id.alarm_diagram);
         alarmView.setColorHandler(colorHandler, intervalDuration);
         if (service != null) {
-            alarmView.onAlert(service.getAlarmStatus(), service.getAlarmResult());
+            alarmView.onEvent(service.getAlertEvent());
         }
 
         setView(dialog);
@@ -37,7 +37,7 @@ public class AlarmDialog extends AlertDialog {
     public void onStart() {
         super.onStart();
 
-        context.registerAlertListener(alarmView);
+        service.addAlertListener(alarmView);
         colorHandler.updateTarget();
     }
 
@@ -45,7 +45,7 @@ public class AlarmDialog extends AlertDialog {
     protected void onStop() {
         super.onStop();
 
-        context.removeAlertListener(alarmView);
+        service.removeAlertListener(alarmView);
     }
 
     @Override

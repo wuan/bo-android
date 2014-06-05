@@ -26,7 +26,7 @@ import org.blitzortung.android.alarm.listener.AlertListener;
 import org.blitzortung.android.alarm.object.AlarmStatus;
 import org.blitzortung.android.app.controller.ButtonColumnHandler;
 import org.blitzortung.android.app.controller.HistoryController;
-import org.blitzortung.android.app.controller.LocationListener;
+import org.blitzortung.android.location.LocationListener;
 import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
@@ -46,14 +46,15 @@ import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
+import org.blitzortung.android.protocol.Event;
+import org.blitzortung.android.protocol.Listener;
 import org.blitzortung.android.util.optional.Optional;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Main extends OwnMapActivity implements DataListener, OnSharedPreferenceChangeListener,
-        AlertListener, LocationListener {
+public class Main extends OwnMapActivity implements Listener, OnSharedPreferenceChangeListener {
 
     public static final String LOG_TAG = "BO_ANDROID";
 
@@ -69,8 +70,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private boolean clearData;
 
-    private Set<DataListener> dataListeners;
-
     private final Set<String> androidIdsForExtendedFunctionality = new HashSet<String>(Arrays.asList("e72d101ce1bcdee3", "6d1b9a3da993af2d"));
 
     private PackageInfo pInfo;
@@ -83,8 +82,8 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     private LegendView legendView;
     private AlarmView alarmView;
 
-    private Set<AlertListener> alertListeners;
     private Optional<ResultEvent> currentResult;
+    private HistogramView histogramView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,8 +97,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         updatePackageInfo();
 
         currentResult = Optional.absent();
-        dataListeners = new HashSet<DataListener>();
-        alertListeners = new HashSet<AlertListener>();
 
         setContentView(isDebugBuild() ? R.layout.main_debug : R.layout.main);
 
@@ -138,7 +135,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         configureMenuAccess();
         historyController = new HistoryController(this);
         historyController.setButtonHandler(buttonColumnHandler);
-        addDataListener(historyController);
 
         buttonColumnHandler.addAllElements(historyController.getButtons());
 
@@ -167,20 +163,16 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + appService);
                 historyController.setAppService(appService);
 
+                appService.addDataListener(historyController);
+                appService.addLocationListener(ownLocationOverlay);
                 appService.addDataListener(Main.this);
-                appService.setAlertListener(Main.this);
-                appService.setLocationListener(Main.this);
+                appService.addAlertListener(histogramView);
+                appService.addAlertListener(alarmView);
+                appService.addLocationListener(Main.this);
+                appService.addAlertListener(statusComponent);
+
 
                 strokesOverlay.setIntervalDuration(appService.getDataHandler().getIntervalDuration());
-                if (appService.isAlertEnabled()) {
-                    final AlarmResult alarmResult = appService.getAlarmResult();
-                    if (alarmResult != null) {
-                        onAlert(appService.getAlarmStatus(), alarmResult);
-                    } else {
-                        onAlertCancel();
-                    }
-                }
-
                 appService.onResume();
             }
 
@@ -249,11 +241,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 }
             }
         });
-        alertListeners.add(alarmView);
 
-        HistogramView histogramView = (HistogramView) findViewById(R.id.histogram_view);
+        histogramView = (HistogramView) findViewById(R.id.histogram_view);
         histogramView.setStrokesOverlay(strokesOverlay);
-        addDataListener(histogramView);
         histogramView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -303,11 +293,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 }
             }
         });
-    }
-
-
-    private void addDataListener(DataListener listener) {
-        dataListeners.add(listener);
     }
 
     public boolean isDebugBuild() {
@@ -376,12 +361,9 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         if (appService != null) {
             appService.removeDataListener(this);
+            appService.removeLocationListener(ownLocationOverlay);
         }
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (preferences.getBoolean(PreferenceKey.SHOW_LOCATION.toString(), false)) {
-            appService.clearLocationListener();
-        }
     }
 
     @Override
@@ -398,7 +380,13 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
     }
 
     @Override
-    public void onUpdated(DataEvent event) {
+    public void onEvent(Event event) {
+        if (event instanceof DataEvent) {
+            onDataEvent((DataEvent) event);
+        }
+    }
+
+    private void onDataEvent(DataEvent event) {
         if (event instanceof RequestStartedEvent) {
             buttonColumnHandler.lockButtonColumn();
             statusComponent.startProgress();
@@ -452,10 +440,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
                 }
             }
 
-            for (DataListener listener : dataListeners) {
-                listener.onUpdated(result);
-            }
-
             statusComponent.stopProgress();
 
             buttonColumnHandler.unlockButtonColumn();
@@ -472,11 +456,6 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
     private void reloadData() {
         appService.reloadData();
-        clearData = true;
-
-        for (DataListener listener : dataListeners) {
-            listener.onUpdated(DataHandler.CLEAR_DATA_EVENT);
-        }
     }
 
     private void clearDataIfRequested() {
@@ -596,44 +575,12 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
         statusComponent.setText(statusText);
     }
 
-    @Override
-    public void onAlert(AlarmStatus alarmStatus, AlarmResult alarmResult) {
-        AlarmLabelHandler alarmLabelHandler = new AlarmLabelHandler(statusComponent, getResources());
-        alarmLabelHandler.apply(alarmResult);
-
-        for (AlertListener alertListener : alertListeners) {
-            alertListener.onAlert(alarmStatus, alarmResult);
-        }
-    }
-
-    @Override
-    public void onAlertCancel() {
-        statusComponent.setAlarmText("");
-
-        for (AlertListener alertListener : alertListeners) {
-            alertListener.onAlertCancel();
-        }
-    }
-
     private void updatePackageInfo() {
         try {
             pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
             throw new IllegalStateException(e);
         }
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        ownLocationOverlay.onLocationChanged(location);
-    }
-
-    public void registerAlertListener(AlertListener alertListener) {
-        alertListeners.add(alertListener);
-    }
-
-    public void removeAlertListener(AlertListener alertListener) {
-        alertListeners.remove(alertListener);
     }
 
     private void configureMenuAccess() {

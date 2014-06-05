@@ -10,12 +10,14 @@ import android.location.Location;
 import android.preference.PreferenceManager;
 import com.google.android.maps.ItemizedOverlay;
 import org.blitzortung.android.app.R;
-import org.blitzortung.android.app.controller.LocationListener;
+import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.components.LayerOverlayComponent;
+import org.blitzortung.android.protocol.Event;
+import org.blitzortung.android.protocol.Listener;
 
-public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> implements LocationListener, SharedPreferences.OnSharedPreferenceChangeListener, LayerOverlay {
+public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> implements Listener, SharedPreferences.OnSharedPreferenceChangeListener, LayerOverlay {
 
     static private final Drawable DEFAULT_DRAWABLE;
 
@@ -86,11 +88,15 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-        item = location != null ? new OwnLocationOverlayItem(location, 25000) : item;
+    public void onEvent(Event event) {
+        if (event instanceof LocationEvent) {
+            Location location = ((LocationEvent) event).getLocation();
 
-        populate();
-        refresh();
+            item = location != null ? new OwnLocationOverlayItem(location, 25000) : item;
+
+            populate();
+            refresh();
+        }
     }
 
     public void enableOwnLocation() {

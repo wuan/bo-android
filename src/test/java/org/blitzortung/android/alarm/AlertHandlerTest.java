@@ -11,7 +11,7 @@ import org.blitzortung.android.alarm.handler.AlarmStatusHandler;
 import org.blitzortung.android.alarm.listener.AlertListener;
 import org.blitzortung.android.alarm.object.AlarmSector;
 import org.blitzortung.android.alarm.object.AlarmStatus;
-import org.blitzortung.android.app.controller.LocationHandler;
+import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.Stroke;

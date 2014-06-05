@@ -5,10 +5,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import org.blitzortung.android.AlertResultEvent;
 import org.blitzortung.android.alarm.AlarmLabel;
+import org.blitzortung.android.alarm.AlarmLabelHandler;
+import org.blitzortung.android.alarm.AlertEvent;
 import org.blitzortung.android.app.R;
+import org.blitzortung.android.protocol.Event;
+import org.blitzortung.android.protocol.Listener;
 
-public class StatusComponent implements AlarmLabel {
+public class StatusComponent implements AlarmLabel, Listener {
 
     private TextView status;
 
@@ -18,8 +23,9 @@ public class StatusComponent implements AlarmLabel {
 
     private ImageView errorIndicator;
 
-    public StatusComponent(Activity activity)
-    {
+    private final AlarmLabelHandler alarmLabelHandler;
+
+    public StatusComponent(Activity activity) {
         status = (TextView) activity.findViewById(R.id.status);
 
         warning = (TextView) activity.findViewById(R.id.warning);
@@ -29,6 +35,8 @@ public class StatusComponent implements AlarmLabel {
 
         errorIndicator = (ImageView) activity.findViewById(R.id.error_indicator);
         errorIndicator.setVisibility(View.INVISIBLE);
+
+        alarmLabelHandler = new AlarmLabelHandler(this, activity.getResources());
     }
 
     public void startProgress() {
@@ -57,5 +65,15 @@ public class StatusComponent implements AlarmLabel {
     @Override
     public void setAlarmText(String alarmText) {
         warning.setText(alarmText);
+    }
+
+    @Override
+    public void onEvent(Event event) {
+        if (event instanceof AlertEvent) {
+            alarmLabelHandler.apply(
+                    event instanceof AlertResultEvent
+                            ? ((AlertResultEvent) event).getAlertResult()
+                            : null);
+        }
     }
 }

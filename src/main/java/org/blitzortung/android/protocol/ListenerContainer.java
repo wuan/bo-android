@@ -3,17 +3,17 @@ package org.blitzortung.android.protocol;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class ListenerContainer<P, T extends Listener<P>> {
+public abstract class ListenerContainer<P extends Event> {
 
-    private final Set<T> listeners;
+    private final Set<Listener> listeners;
 
     private P currentPayload;
 
     public ListenerContainer() {
-        listeners = new HashSet<T>();
+        listeners = new HashSet<Listener>();
     }
 
-    public void addListener(T listener) {
+    public void addListener(Listener listener) {
         if (!listeners.contains(listener)) {
             if (listeners.isEmpty()) {
                 addedFirstListener();
@@ -23,13 +23,13 @@ public abstract class ListenerContainer<P, T extends Listener<P>> {
         }
     }
 
-    protected void sendCurrentPayloadTo(T listener) {
+    protected void sendCurrentPayloadTo(Listener listener) {
         if (currentPayload != null) {
-            listener.onUpdated(currentPayload);
+            listener.onEvent(currentPayload);
         }
     }
 
-    public void removeListener(T listener) {
+    public void removeListener(Listener listener) {
         if (listeners.contains(listener)) {
             listeners.remove(listener);
             if (listeners.isEmpty()) {
@@ -48,8 +48,8 @@ public abstract class ListenerContainer<P, T extends Listener<P>> {
     }
 
     public void broadcast(P payload) {
-        for (T listener : listeners) {
-            listener.onUpdated(payload);
+        for (Listener listener : listeners) {
+            listener.onEvent(payload);
         }
     }
 

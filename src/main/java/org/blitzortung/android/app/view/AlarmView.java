@@ -6,19 +6,22 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
 import android.view.View;
+import org.blitzortung.android.AlertResultEvent;
 import org.blitzortung.android.alarm.AlarmParameters;
 import org.blitzortung.android.alarm.AlarmResult;
-import org.blitzortung.android.alarm.listener.AlertListener;
+import org.blitzortung.android.alarm.AlertEvent;
 import org.blitzortung.android.alarm.object.AlarmSector;
 import org.blitzortung.android.alarm.object.AlarmSectorRange;
 import org.blitzortung.android.alarm.object.AlarmStatus;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
+import org.blitzortung.android.protocol.Event;
+import org.blitzortung.android.protocol.Listener;
 
 import java.util.List;
 
-public class AlarmView extends View implements AlertListener {
+public class AlarmView extends View implements Listener {
 
     private static final int TEXT_MINIMUM_SIZE = 300;
     private static final PorterDuffXfermode XFERMODE_CLEAR = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
@@ -199,17 +202,19 @@ public class AlarmView extends View implements AlertListener {
     }
 
     @Override
-    public void onAlert(AlarmStatus alarmStatus, AlarmResult alarmResult) {
-        this.alarmStatus = alarmStatus;
-        this.alarmResult = alarmResult;
-        invalidate();
-    }
+    public void onEvent(Event event) {
+        if (event instanceof AlertEvent) {
+            if (event instanceof AlertResultEvent) {
+                AlertResultEvent alertResultEvent = (AlertResultEvent) event;
 
-    @Override
-    public void onAlertCancel() {
-        alarmStatus = null;
-        alarmResult = null;
-        invalidate();
+                this.alarmStatus = alertResultEvent.getAlertStatus();
+                this.alarmResult = alertResultEvent.getAlertResult();
+            } else {
+                alarmStatus = null;
+                alarmResult = null;
+            }
+            invalidate();
+        }
     }
 
     public void setColorHandler(ColorHandler colorHandler, int intervalDuration) {

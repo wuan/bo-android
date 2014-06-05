@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.location.LocationManager;
 import com.google.common.collect.Lists;
 import org.blitzortung.android.app.view.PreferenceKey;
+import org.blitzortung.android.location.LocationHandler;
+import org.blitzortung.android.location.LocationListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

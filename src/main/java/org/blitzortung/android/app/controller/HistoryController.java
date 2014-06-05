@@ -7,9 +7,10 @@ import android.widget.Toast;
 import org.blitzortung.android.app.AppService;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.data.DataChannel;
-import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
+import org.blitzortung.android.protocol.Event;
+import org.blitzortung.android.protocol.Listener;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class HistoryController implements DataListener {
+public class HistoryController implements Listener {
 
     private ImageButton historyRewind;
     private ImageButton historyForward;
@@ -138,11 +139,13 @@ public class HistoryController implements DataListener {
     }
 
     @Override
-    public void onUpdated(DataEvent payload) {
-        if (payload instanceof ResultEvent) {
-            ResultEvent resultEvent = (ResultEvent) payload;
-            if (!resultEvent.hasFailed()) {
-                setRealtimeData(resultEvent.containsRealtimeData());
+    public void onEvent(Event event) {
+        if (event instanceof DataEvent) {
+            if (event instanceof ResultEvent) {
+                ResultEvent resultEvent = (ResultEvent) event;
+                if (!resultEvent.hasFailed()) {
+                    setRealtimeData(resultEvent.containsRealtimeData());
+                }
             }
         }
     }

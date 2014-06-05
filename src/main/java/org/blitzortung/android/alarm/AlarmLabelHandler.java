@@ -29,7 +29,6 @@ public class AlarmLabelHandler {
             }
             warningText = String.format("%.0f%s %s", alarmResult.getClosestStrokeDistance(), alarmResult.getDistanceUnitName(), alarmResult.getBearingName());
         }
-        String string = resources.getString(R.string.activity);
         int color = resources.getColor(textColorResource);
         alarmLabel.setAlarmTextColor(color);
         alarmLabel.setAlarmText(warningText);

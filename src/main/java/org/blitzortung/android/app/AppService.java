@@ -17,25 +17,25 @@ import org.blitzortung.android.alarm.AlarmResult;
 import org.blitzortung.android.alarm.AlertEvent;
 import org.blitzortung.android.alarm.AlertHandler;
 import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
-import org.blitzortung.android.alarm.listener.AlertListener;
 import org.blitzortung.android.alarm.object.AlarmStatus;
-import org.blitzortung.android.app.controller.LocationHandler;
-import org.blitzortung.android.app.controller.LocationListener;
+import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
-import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.blitzortung.android.data.provider.result.StatusEvent;
+import org.blitzortung.android.map.overlay.OwnLocationOverlay;
+import org.blitzortung.android.protocol.Event;
+import org.blitzortung.android.protocol.Listener;
 import org.blitzortung.android.protocol.ListenerContainer;
 import org.blitzortung.android.util.Period;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class AppService extends Service implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener, DataListener, AlertListener, LocationListener {
+public class AppService extends Service implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener, Listener {
 
     public static final String RETRIEVE_DATA_ACTION = "retrieveData";
     public static final String WAKE_LOCK_TAG = "boAndroidWakeLock";
@@ -63,10 +63,8 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     private PendingIntent pendingIntent;
 
     private PowerManager.WakeLock wakeLock;
-    private LocationListener locationListener;
-    private Location lastLocation;
 
-    ListenerContainer<DataEvent, DataListener> dataListenerContainer = new ListenerContainer<DataEvent, DataListener>() {
+    ListenerContainer<DataEvent> dataListenerContainer = new ListenerContainer<DataEvent>() {
         @Override
         public void addedFirstListener() {
             discardAlarm();
@@ -80,7 +78,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         }
     };
 
-    ListenerContainer<AlertEvent, AlertListener> alertListenerContainer = new ListenerContainer<AlertEvent, AlertListener>() {
+    ListenerContainer<AlertEvent> alertListenerContainer = new ListenerContainer<AlertEvent>() {
         @Override
         public void addedFirstListener() {
             alertHandler.setAlertListener(AppService.this);
@@ -117,6 +115,8 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     public void reloadData() {
+        dataListenerContainer.broadcast(DataHandler.CLEAR_DATA_EVENT);
+
         if (isEnabled()) {
             restart();
         } else {
@@ -143,7 +143,13 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     @Override
-    public void onUpdated(DataEvent result) {
+    public void onEvent(Event event) {
+        if (event instanceof DataEvent) {
+            onDataEvent((DataEvent) event);
+        }
+    }
+
+    private void onDataEvent(DataEvent result) {
 
         if (!dataListenerContainer.isEmpty()) {
             dataListenerContainer.storeAndBroadcast(result);
@@ -164,19 +170,19 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         }
     }
 
-    public void addDataListener(DataListener dataListener) {
+    public void addDataListener(Listener dataListener) {
         dataListenerContainer.addListener(dataListener);
     }
 
-    public void removeDataListener(DataListener dataListener) {
+    public void removeDataListener(Listener dataListener) {
         dataListenerContainer.removeListener(dataListener);
     }
 
-    public void addAlertListener(AlertListener alertListener) {
+    public void addAlertListener(Listener alertListener) {
         alertListenerContainer.addListener(alertListener);
     }
 
-    public void removeAlertListener(AlertListener alertListener) {
+    public void removeAlertListener(Listener alertListener) {
         alertListenerContainer.removeListener(alertListener);
     }
 
@@ -184,23 +190,16 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         return alertHandler.getAlarmStatus();
     }
 
-    public void clearLocationListener() {
-        locationListener = null;
+    public void removeLocationListener(Listener listener) {
+        locationHandler.removeUpdates(listener);
     }
 
-    public void setLocationListener(LocationListener locationListener) {
-        this.locationListener = locationListener;
-        if (lastLocation != null) {
-            locationListener.onLocationChanged(lastLocation);
-        }
+    public void addLocationListener(Listener locationListener) {
+        locationHandler.requestUpdates(locationListener);
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        this.lastLocation = location;
-        if (locationListener != null) {
-            locationListener.onLocationChanged(location);
-        }
+    public AlertEvent getAlertEvent() {
+        return alertHandler.getAlertEvent();
     }
 
     public class DataServiceBinder extends Binder {

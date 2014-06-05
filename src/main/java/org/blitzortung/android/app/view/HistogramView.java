@@ -8,13 +8,14 @@ import android.util.AttributeSet;
 import android.view.View;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
-import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
+import org.blitzortung.android.protocol.Event;
+import org.blitzortung.android.protocol.Listener;
 
-public class HistogramView extends View implements DataListener {
+public class HistogramView extends View implements Listener {
 
     private float width;
     private float height;
@@ -125,11 +126,13 @@ public class HistogramView extends View implements DataListener {
     }
 
     @Override
-    public void onUpdated(DataEvent result) {
-        if (result instanceof ResultEvent) {
-            updateHistogram((ResultEvent) result);
-        } else {
-            clearHistogram();
+    public void onEvent(Event result) {
+        if (result instanceof DataEvent) {
+            if (result instanceof ResultEvent) {
+                updateHistogram((ResultEvent) result);
+            } else {
+                clearHistogram();
+            }
         }
     }
 

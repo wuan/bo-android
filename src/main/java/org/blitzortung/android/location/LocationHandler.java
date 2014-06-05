@@ -1,4 +1,4 @@
-package org.blitzortung.android.app.controller;
+package org.blitzortung.android.location;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -56,13 +56,25 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
         }
     }
 
+    private ListenerContainer<LocationEvent> listenerContainer = new ListenerContainer<LocationEvent>() {
+        @Override
+        public void addedFirstListener() {
+            enableProvider(provider);
+            Log.d(Main.LOG_TAG, "LocationHandler enable provider");
+        }
+
+        @Override
+        public void removedLastListener() {
+            locationManager.removeUpdates(LocationHandler.this);
+            Log.d(Main.LOG_TAG, "LocationHandler disable provider");
+        }
+    };
+
     private final LocationManager locationManager;
 
     private Provider provider;
 
     private final Location location;
-
-    private Set<LocationListener> listeners = new HashSet<LocationListener>();
 
     public LocationHandler(Context context, SharedPreferences sharedPreferences) {
         this.context = context;
@@ -177,30 +189,19 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     }
 
     private void sendLocationUpdateToListeners(Location location) {
-        for (LocationListener listener : listeners) {
-            listener.onLocationChanged(location);
-        }
+        listenerContainer.broadcast(new LocationEvent(location));
     }
 
-    public void requestUpdates(LocationListener target) {
-        if (listeners.isEmpty()) {
-            enableProvider(provider);
-            Log.d(Main.LOG_TAG, "LocationHandler.requestUpdates() enable provider");
-        }
-        listeners.add(target);
+    public void requestUpdates(Listener target) {
+        listenerContainer.addListener(target);
+
         if (locationIsValid()) {
-            target.onLocationChanged(location);
+            target.onEvent(new LocationEvent(location));
         }
     }
 
-    public void removeUpdates(LocationListener target) {
-        listeners.remove(target);
-        if (listeners.isEmpty()) {
-            locationManager.removeUpdates(this);
-            Log.d(Main.LOG_TAG, "LocationHandler.removeUpdates() disable provider");
-        } else {
-            Log.d(Main.LOG_TAG, "LocationHandler.removeUpdates() " + listeners.size() + " entries remaining");
-        }
+    public void removeUpdates(Listener target) {
+        listenerContainer.removeListener(target);
     }
 
     private boolean locationIsValid() {

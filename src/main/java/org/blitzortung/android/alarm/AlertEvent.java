@@ -1,4 +1,6 @@
 package org.blitzortung.android.alarm;
 
-public interface AlertEvent {
+import org.blitzortung.android.protocol.Event;
+
+public interface AlertEvent extends Event {
 }

@@ -14,11 +14,11 @@ public class AlertResultEvent implements AlertEvent {
         this.alarmResult = alarmResult;
     }
 
-    public AlarmStatus getAlarmStatus() {
+    public AlarmStatus getAlertStatus() {
         return alarmStatus;
     }
 
-    public AlarmResult getAlarmResult() {
+    public AlarmResult getAlertResult() {
         return alarmResult;
     }
 }

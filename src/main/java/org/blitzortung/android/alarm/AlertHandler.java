@@ -13,21 +13,21 @@ import android.util.Log;
 import org.blitzortung.android.AlertResultEvent;
 import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
 import org.blitzortung.android.alarm.handler.AlarmStatusHandler;
-import org.blitzortung.android.alarm.listener.AlertListener;
 import org.blitzortung.android.alarm.object.AlarmSector;
 import org.blitzortung.android.alarm.object.AlarmStatus;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
-import org.blitzortung.android.app.controller.LocationHandler;
-import org.blitzortung.android.app.controller.LocationListener;
+import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.protocol.Event;
+import org.blitzortung.android.protocol.Listener;
 import org.blitzortung.android.util.MeasurementSystem;
 
 import java.util.Collection;
 
-public class AlertHandler implements OnSharedPreferenceChangeListener, LocationListener {
+public class AlertHandler implements OnSharedPreferenceChangeListener, Listener {
 
     private final Vibrator vibrator;
     private final NotificationHandler notificationHandler;
@@ -44,7 +44,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
 
     private boolean alarmValid;
 
-    private AlertListener alertListener;
+    private Listener alertListener;
 
     private final AlarmStatus alarmStatus;
 
@@ -130,7 +130,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
     }
 
     @Override
-    public void onLocationChanged(Location location) {
+    public void onEvent(Event event) {
         this.location = location;
 
         checkStrokes(lastStrokes);
@@ -161,7 +161,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
         return alarmStatusHandler.getTextMessage(alarmStatus, notificationDistanceLimit);
     }
 
-    public void setAlertListener(AlertListener alertListener) {
+    public void setAlertListener(Listener alertListener) {
         this.alertListener = alertListener;
         updateLocationHandler();
     }
@@ -200,13 +200,13 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
 
     private void broadcastClear() {
         if (alertListener != null) {
-            alertListener.onUpdated(new AlertCancelEvent());
+            alertListener.onEvent(new AlertCancelEvent());
         }
     }
 
     private void broadcastResult(AlarmResult alarmResult) {
         if (alertListener != null) {
-            alertListener.onUpdated(new AlertResultEvent(alarmStatus, alarmResult));
+            alertListener.onEvent(new AlertResultEvent(alarmStatus, alarmResult));
         }
     }
 
@@ -269,4 +269,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
         return location;
     }
 
+    public AlertEvent getAlertEvent() {
+        return alarmValid ? new AlertResultEvent(alarmStatus, getAlarmResult()) : new AlertCancelEvent();
+    }
 }

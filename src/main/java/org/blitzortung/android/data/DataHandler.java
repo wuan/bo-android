@@ -16,6 +16,7 @@ import org.blitzortung.android.data.provider.result.ClearDataEvent;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.RequestStartedEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
+import org.blitzortung.android.protocol.Listener;
 import org.blitzortung.android.util.optional.Optional;
 
 import java.util.HashSet;
@@ -36,7 +37,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     private final Parameters parameters;
 
-    private DataListener listener;
+    private Listener listener;
 
     private int preferencesRasterBaselength;
     private int preferencesRegion;
@@ -79,7 +80,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             if (listener != null) {
                 if (result.isPresent()) {
                     final ResultEvent payload = result.get();
-                    listener.onUpdated(payload);
+                    listener.onEvent(payload);
                 }
             }
         }
@@ -185,7 +186,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     private void sendEvent(DataEvent dataEvent) {
         if (listener != null) {
-            listener.onUpdated(dataEvent);
+            listener.onEvent(dataEvent);
         }
     }
 
@@ -286,7 +287,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         parameters.setRasterBaselength(preferencesRasterBaselength);
     }
 
-    public void setDataListener(DataListener listener) {
+    public void setDataListener(Listener listener) {
         this.listener = listener;
     }
 
