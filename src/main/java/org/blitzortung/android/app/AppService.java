@@ -250,7 +250,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     private void acquireWakeLock() {
-        wakeLock.acquire(30000);
+        wakeLock.acquire();
     }
 
     public void releaseWakeLock() {
@@ -279,6 +279,8 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
             dataHandler.updateDatainBackground();
         } else {
+            releaseWakeLock();
+
             long currentTime = Period.getCurrentTime();
             if (dataHandler != null) {
                 Set<DataChannel> updateTargets = new HashSet<DataChannel>();
