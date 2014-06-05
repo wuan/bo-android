@@ -1,6 +1,5 @@
 package org.blitzortung.android.app;
 
-import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Intent;
