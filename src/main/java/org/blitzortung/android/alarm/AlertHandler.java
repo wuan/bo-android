@@ -119,7 +119,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, LocationL
 
             case ALARM_SOUND_SIGNAL:
                 final String signalUri = sharedPreferences.getString(key.toString(), "");
-                alarmSoundNotificationSignal = !signalUri.isEmpty() ? Uri.parse(signalUri) : null;
+                alarmSoundNotificationSignal = signalUri.length() > 0 ? Uri.parse(signalUri) : null;
                 break;
         }
     }
