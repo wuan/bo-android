@@ -5,15 +5,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import org.blitzortung.android.AlertResultEvent;
-import org.blitzortung.android.alarm.AlarmLabel;
-import org.blitzortung.android.alarm.AlarmLabelHandler;
-import org.blitzortung.android.alarm.AlertEvent;
+import org.blitzortung.android.alert.AlertLabelHandler;
+import org.blitzortung.android.alert.event.AlertResultEvent;
+import org.blitzortung.android.alert.AlertLabel;
+import org.blitzortung.android.alert.event.AlertEvent;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.protocol.Event;
 import org.blitzortung.android.protocol.Listener;
 
-public class StatusComponent implements AlarmLabel, Listener {
+public class StatusComponent implements AlertLabel, Listener {
 
     private TextView status;
 
@@ -23,7 +23,7 @@ public class StatusComponent implements AlarmLabel, Listener {
 
     private ImageView errorIndicator;
 
-    private final AlarmLabelHandler alarmLabelHandler;
+    private final AlertLabelHandler alertLabelHandler;
 
     public StatusComponent(Activity activity) {
         status = (TextView) activity.findViewById(R.id.status);
@@ -36,7 +36,7 @@ public class StatusComponent implements AlarmLabel, Listener {
         errorIndicator = (ImageView) activity.findViewById(R.id.error_indicator);
         errorIndicator.setVisibility(View.INVISIBLE);
 
-        alarmLabelHandler = new AlarmLabelHandler(this, activity.getResources());
+        alertLabelHandler = new AlertLabelHandler(this, activity.getResources());
     }
 
     public void startProgress() {
@@ -70,7 +70,7 @@ public class StatusComponent implements AlarmLabel, Listener {
     @Override
     public void onEvent(Event event) {
         if (event instanceof AlertEvent) {
-            alarmLabelHandler.apply(
+            alertLabelHandler.apply(
                     event instanceof AlertResultEvent
                             ? ((AlertResultEvent) event).getAlertResult()
                             : null);

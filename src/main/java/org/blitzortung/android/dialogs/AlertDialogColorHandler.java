@@ -4,9 +4,9 @@ import android.content.SharedPreferences;
 import org.blitzortung.android.map.overlay.color.ColorTarget;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
 
-public class AlarmDialogColorHandler extends StrokeColorHandler {
+public class AlertDialogColorHandler extends StrokeColorHandler {
 
-    public AlarmDialogColorHandler(SharedPreferences preferences) {
+    public AlertDialogColorHandler(SharedPreferences preferences) {
 		super(preferences);
 	}
 

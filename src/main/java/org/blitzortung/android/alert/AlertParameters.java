@@ -1,10 +1,10 @@
-package org.blitzortung.android.alarm;
+package org.blitzortung.android.alert;
 
 import android.content.Context;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.util.MeasurementSystem;
 
-public class AlarmParameters {
+public class AlertParameters {
     private static String[] SECTOR_LABELS;
 
     private static final float[] RANGE_STEPS = {10, 25, 50, 100, 250, 500};

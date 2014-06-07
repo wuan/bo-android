@@ -6,13 +6,13 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
 import android.view.View;
-import org.blitzortung.android.AlertResultEvent;
-import org.blitzortung.android.alarm.AlarmParameters;
-import org.blitzortung.android.alarm.AlarmResult;
-import org.blitzortung.android.alarm.AlertEvent;
-import org.blitzortung.android.alarm.object.AlarmSector;
-import org.blitzortung.android.alarm.object.AlarmSectorRange;
-import org.blitzortung.android.alarm.object.AlarmStatus;
+import org.blitzortung.android.alert.AlertParameters;
+import org.blitzortung.android.alert.event.AlertResultEvent;
+import org.blitzortung.android.alert.AlertResult;
+import org.blitzortung.android.alert.event.AlertEvent;
+import org.blitzortung.android.alert.object.AlertSector;
+import org.blitzortung.android.alert.object.AlertSectorRange;
+import org.blitzortung.android.alert.object.AlertStatus;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
@@ -45,8 +45,8 @@ public class AlarmView extends View implements Listener {
 
     private Bitmap temporaryBitmap;
     private Canvas temporaryCanvas;
-    private AlarmStatus alarmStatus;
-    private AlarmResult alarmResult;
+    private AlertStatus alertStatus;
+    private AlertResult alertResult;
 
     @SuppressWarnings("unused")
     public AlarmView(Context context, AttributeSet attrs) {
@@ -100,12 +100,12 @@ public class AlarmView extends View implements Listener {
 
         prepareTemporaryBitmap(size);
 
-        if (alarmStatus != null && intervalDuration != 0) {
-            AlarmParameters alarmParameters = alarmStatus.getAlarmParameters();
-            final float[] rangeSteps = alarmParameters.getRangeSteps();
+        if (alertStatus != null && intervalDuration != 0) {
+            AlertParameters alertParameters = alertStatus.getAlertParameters();
+            final float[] rangeSteps = alertParameters.getRangeSteps();
             final int rangeStepCount = rangeSteps.length;
             final float radiusIncrement = radius / rangeStepCount;
-            final float sectorWidth = 360 / alarmParameters.getSectorLabels().length;
+            final float sectorWidth = 360 / alertParameters.getSectorLabels().length;
 
             lines.setColor(colorHandler.getLineColor());
             lines.setStrokeWidth(size / 150);
@@ -115,21 +115,21 @@ public class AlarmView extends View implements Listener {
 
             long actualTime = System.currentTimeMillis();
 
-            for (AlarmSector alarmSector : alarmStatus.getSectors()) {
+            for (AlertSector alertSector : alertStatus.getSectors()) {
 
-                float startAngle = alarmSector.getMinimumSectorBearing() + 90 + 180;
+                float startAngle = alertSector.getMinimumSectorBearing() + 90 + 180;
 
-                final List<AlarmSectorRange> ranges = alarmSector.getRanges();
+                final List<AlertSectorRange> ranges = alertSector.getRanges();
                 for (int rangeIndex = ranges.size() - 1; rangeIndex >= 0; rangeIndex--) {
-                    AlarmSectorRange alarmSectorRange = ranges.get(rangeIndex);
+                    AlertSectorRange alertSectorRange = ranges.get(rangeIndex);
 
                     float sectorRadius = (rangeIndex + 1) * radiusIncrement;
                     float leftTop = center - sectorRadius;
                     float bottomRight = center + sectorRadius;
 
-                    boolean drawColor = alarmSectorRange.getStrokeCount() > 0;
+                    boolean drawColor = alertSectorRange.getStrokeCount() > 0;
                     if (drawColor) {
-                        final int color = colorHandler.getColor(actualTime, alarmSectorRange.getLatestStrokeTimestamp(), intervalDuration);
+                        final int color = colorHandler.getColor(actualTime, alertSectorRange.getLatestStrokeTimestamp(), intervalDuration);
                         sectorPaint.setColor(color);
                     }
                     arcArea.set(leftTop, leftTop, bottomRight, bottomRight);
@@ -137,13 +137,13 @@ public class AlarmView extends View implements Listener {
                 }
             }
 
-            for (AlarmSector alarmSector : alarmStatus.getSectors()) {
-                double bearing = alarmSector.getMinimumSectorBearing();
+            for (AlertSector alertSector : alertStatus.getSectors()) {
+                double bearing = alertSector.getMinimumSectorBearing();
                 temporaryCanvas.drawLine(center, center, center + (float) (radius * Math.sin(bearing / 180.0f * Math.PI)), center
                         + (float) (radius * -Math.cos(bearing / 180.0f * Math.PI)), lines);
 
                 if (size > TEXT_MINIMUM_SIZE) {
-                    drawSectorLabel(center, radiusIncrement, alarmSector, bearing + sectorWidth / 2.0);
+                    drawSectorLabel(center, radiusIncrement, alertSector, bearing + sectorWidth / 2.0);
                 }
             }
 
@@ -160,7 +160,7 @@ public class AlarmView extends View implements Listener {
                     temporaryCanvas.drawText(text, center + (radiusIndex + 0.85f) * radiusIncrement, center
                             + textHeight / 3f, textStyle);
                     if (radiusIndex == rangeStepCount - 1) {
-                        temporaryCanvas.drawText(alarmParameters.getMeasurementSystem().getUnitName(), center + (radiusIndex + 0.85f) * radiusIncrement, center
+                        temporaryCanvas.drawText(alertParameters.getMeasurementSystem().getUnitName(), center + (radiusIndex + 0.85f) * radiusIncrement, center
                                 + textHeight * 1.33f, textStyle);
                     }
                 }
@@ -179,7 +179,7 @@ public class AlarmView extends View implements Listener {
         canvas.drawBitmap(temporaryBitmap, 0, 0, transfer);
     }
 
-    private void drawSectorLabel(float center, float radiusIncrement, AlarmSector sector, double bearing) {
+    private void drawSectorLabel(float center, float radiusIncrement, AlertSector sector, double bearing) {
         if (bearing != 90.0) {
             final String text = sector.getLabel();
             float textRadius = (sector.getRanges().size() - 0.5f) * radiusIncrement;
@@ -207,11 +207,11 @@ public class AlarmView extends View implements Listener {
             if (event instanceof AlertResultEvent) {
                 AlertResultEvent alertResultEvent = (AlertResultEvent) event;
 
-                this.alarmStatus = alertResultEvent.getAlertStatus();
-                this.alarmResult = alertResultEvent.getAlertResult();
+                this.alertStatus = alertResultEvent.getAlertStatus();
+                this.alertResult = alertResultEvent.getAlertResult();
             } else {
-                alarmStatus = null;
-                alarmResult = null;
+                alertStatus = null;
+                alertResult = null;
             }
             invalidate();
         }

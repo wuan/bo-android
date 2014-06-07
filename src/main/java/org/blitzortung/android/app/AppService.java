@@ -8,16 +8,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.*;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import org.blitzortung.android.alarm.AlarmParameters;
-import org.blitzortung.android.alarm.AlarmResult;
-import org.blitzortung.android.alarm.AlertEvent;
-import org.blitzortung.android.alarm.AlertHandler;
-import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
-import org.blitzortung.android.alarm.object.AlarmStatus;
+import org.blitzortung.android.alert.AlertParameters;
+import org.blitzortung.android.alert.AlertResult;
+import org.blitzortung.android.alert.event.AlertEvent;
+import org.blitzortung.android.alert.AlertHandler;
+import org.blitzortung.android.alert.factory.AlertObjectFactory;
+import org.blitzortung.android.alert.object.AlertStatus;
 import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
@@ -26,7 +25,6 @@ import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.blitzortung.android.data.provider.result.StatusEvent;
-import org.blitzortung.android.map.overlay.OwnLocationOverlay;
 import org.blitzortung.android.protocol.Event;
 import org.blitzortung.android.protocol.Listener;
 import org.blitzortung.android.protocol.ListenerContainer;
@@ -134,7 +132,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         return alertHandler != null ? alertHandler.isAlertEnabled() : false;
     }
 
-    public AlarmResult getAlarmResult() {
+    public AlertResult getAlarmResult() {
         return alertHandler.getAlarmResult();
     }
 
@@ -186,8 +184,8 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         alertListenerContainer.removeListener(alertListener);
     }
 
-    public AlarmStatus getAlarmStatus() {
-        return alertHandler.getAlarmStatus();
+    public AlertStatus getAlarmStatus() {
+        return alertHandler.getAlertStatus();
     }
 
     public void removeLocationListener(Listener listener) {
@@ -234,12 +232,12 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_PARTICIPANTS);
 
         locationHandler = new LocationHandler(this, preferences);
-        AlarmParameters alarmParameters = new AlarmParameters();
-        alarmParameters.updateSectorLabels(this);
+        AlertParameters alertParameters = new AlertParameters();
+        alertParameters.updateSectorLabels(this);
         alertHandler = new AlertHandler(locationHandler, preferences, this,
                 (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE),
                 new NotificationHandler(this),
-                new AlarmObjectFactory(), alarmParameters);
+                new AlertObjectFactory(), alertParameters);
     }
 
     @Override

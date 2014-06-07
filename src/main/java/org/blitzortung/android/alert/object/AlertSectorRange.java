@@ -1,8 +1,8 @@
-package org.blitzortung.android.alarm.object;
+package org.blitzortung.android.alert.object;
 
 import org.blitzortung.android.data.beans.Stroke;
 
-public class AlarmSectorRange {
+public class AlertSectorRange {
 
     private final float rangeMinimum;
     
@@ -12,7 +12,7 @@ public class AlarmSectorRange {
     
     private long latestStrokeTimestamp;
 
-    public AlarmSectorRange(float rangeMinimum, float rangeMaximum) {
+    public AlertSectorRange(float rangeMinimum, float rangeMaximum) {
         this.rangeMinimum = rangeMinimum;
         this.rangeMaximum = rangeMaximum;
     }

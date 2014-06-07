@@ -9,13 +9,13 @@ import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 
-public class AlarmDialog extends AlertDialog {
+public class AlertDialog extends android.app.AlertDialog {
 
     private final ColorHandler colorHandler;
     private final AlarmView alarmView;
     private final AppService service;
 
-    public AlarmDialog(Main context, AppService service, ColorHandler colorHandler, int intervalDuration) {
+    public AlertDialog(Main context, AppService service, ColorHandler colorHandler, int intervalDuration) {
         super(context);
         this.colorHandler = colorHandler;
         this.service = service;

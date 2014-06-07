@@ -1,14 +1,14 @@
-package org.blitzortung.android.alarm.handler;
+package org.blitzortung.android.alert.handler;
 
 import android.location.Location;
-import org.blitzortung.android.alarm.AlarmParameters;
-import org.blitzortung.android.alarm.object.AlarmSector;
-import org.blitzortung.android.alarm.object.AlarmSectorRange;
+import org.blitzortung.android.alert.AlertParameters;
+import org.blitzortung.android.alert.object.AlertSector;
+import org.blitzortung.android.alert.object.AlertSectorRange;
 import org.blitzortung.android.data.beans.Stroke;
 
-public class AlarmSectorHandler {
+public class AlertSectorHandler {
 
-    private final AlarmParameters alarmParameters;
+    private final AlertParameters alertParameters;
     
     private final Location strokeLocation;
     
@@ -16,8 +16,8 @@ public class AlarmSectorHandler {
     
     private long thresholdTime;
 
-    public AlarmSectorHandler(AlarmParameters alarmParameters) {
-        this.alarmParameters = alarmParameters;
+    public AlertSectorHandler(AlertParameters alertParameters) {
+        this.alertParameters = alertParameters;
         strokeLocation = new Location("");
     }
 
@@ -26,11 +26,11 @@ public class AlarmSectorHandler {
         this.thresholdTime = thresholdTime;
     }
 
-    protected void checkStroke(AlarmSector sector, Stroke stroke) {
+    protected void checkStroke(AlertSector sector, Stroke stroke) {
         if (sector != null) {
             float distance = calculateDistanceTo(stroke);
 
-            for (AlarmSectorRange range : sector.getRanges()) {
+            for (AlertSectorRange range : sector.getRanges()) {
                 if (distance <= range.getRangeMaximum()) {
                     range.addStroke(stroke);
 
@@ -46,13 +46,13 @@ public class AlarmSectorHandler {
 
     private float calculateDistanceTo(Stroke stroke) {
         float distanceInMeters = location.distanceTo(stroke.getLocation(strokeLocation));
-        return alarmParameters.getMeasurementSystem().calculateDistance(distanceInMeters);
+        return alertParameters.getMeasurementSystem().calculateDistance(distanceInMeters);
     }
 
-    public long getLatestTimestampWithin(float distanceLimit, AlarmSector sector) {
+    public long getLatestTimestampWithin(float distanceLimit, AlertSector sector) {
         long latestTimestamp = 0;
         
-        for (AlarmSectorRange range : sector.getRanges()) {
+        for (AlertSectorRange range : sector.getRanges()) {
             if (distanceLimit <= range.getRangeMaximum()) {
                 latestTimestamp = Math.max(latestTimestamp, range.getLatestStrokeTimestamp());
             }

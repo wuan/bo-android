@@ -1,6 +1,6 @@
-package org.blitzortung.android.alarm;
+package org.blitzortung.android.alert;
 
-public interface AlarmLabel {
+public interface AlertLabel {
     void setAlarmTextColor(int color);
 
     void setAlarmText(String alarmText);

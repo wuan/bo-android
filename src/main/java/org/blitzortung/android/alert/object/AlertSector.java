@@ -1,14 +1,14 @@
-package org.blitzortung.android.alarm.object;
+package org.blitzortung.android.alert.object;
 
-import org.blitzortung.android.alarm.AlarmParameters;
-import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
+import org.blitzortung.android.alert.AlertParameters;
+import org.blitzortung.android.alert.factory.AlertObjectFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AlarmSector {
+public class AlertSector {
 
-    private final List<AlarmSectorRange> ranges;
+    private final List<AlertSectorRange> ranges;
 
     private final float minimumSectorBearing;
 
@@ -18,18 +18,18 @@ public class AlarmSector {
 
     private float closestStrokeDistance;
 
-    public AlarmSector(AlarmObjectFactory alarmObjectFactory, AlarmParameters alarmParameters, String label, float minimumSectorBearing, float maximumSectorBearing) {
+    public AlertSector(AlertObjectFactory alertObjectFactory, AlertParameters alertParameters, String label, float minimumSectorBearing, float maximumSectorBearing) {
         this.label = label;
         this.minimumSectorBearing = minimumSectorBearing;
         this.maximumSectorBearing = maximumSectorBearing;
         this.closestStrokeDistance = Float.POSITIVE_INFINITY;
 
-        final float[] rangeSteps = alarmParameters.getRangeSteps();
-        ranges = new ArrayList<AlarmSectorRange>();
+        final float[] rangeSteps = alertParameters.getRangeSteps();
+        ranges = new ArrayList<AlertSectorRange>();
         float rangeMinimum = 0.0f;
         for (float rangeMaximum : rangeSteps) {
-            AlarmSectorRange alarmSectorRange = alarmObjectFactory.createAlarmSectorRange(rangeMinimum, rangeMaximum);
-            ranges.add(alarmSectorRange);
+            AlertSectorRange alertSectorRange = alertObjectFactory.createAlarmSectorRange(rangeMinimum, rangeMaximum);
+            ranges.add(alertSectorRange);
             rangeMinimum = rangeMaximum;
         }
     }
@@ -37,12 +37,12 @@ public class AlarmSector {
     public void clearResults() {
         closestStrokeDistance = Float.POSITIVE_INFINITY;
         
-        for (AlarmSectorRange range : ranges) {
+        for (AlertSectorRange range : ranges) {
             range.clearResults();
         }
     }
 
-    public List<AlarmSectorRange> getRanges() {
+    public List<AlertSectorRange> getRanges() {
         return ranges;
     }
 

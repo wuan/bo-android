@@ -1,4 +1,4 @@
-package org.blitzortung.android.alarm;
+package org.blitzortung.android.alert;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -10,11 +10,13 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Vibrator;
 import android.util.Log;
-import org.blitzortung.android.AlertResultEvent;
-import org.blitzortung.android.alarm.factory.AlarmObjectFactory;
-import org.blitzortung.android.alarm.handler.AlarmStatusHandler;
-import org.blitzortung.android.alarm.object.AlarmSector;
-import org.blitzortung.android.alarm.object.AlarmStatus;
+import org.blitzortung.android.alert.event.AlertResultEvent;
+import org.blitzortung.android.alert.event.AlertCancelEvent;
+import org.blitzortung.android.alert.event.AlertEvent;
+import org.blitzortung.android.alert.factory.AlertObjectFactory;
+import org.blitzortung.android.alert.handler.AlertStatusHandler;
+import org.blitzortung.android.alert.object.AlertSector;
+import org.blitzortung.android.alert.object.AlertStatus;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.location.LocationHandler;
@@ -36,7 +38,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
     private int vibrationSignalDuration;
     private Uri alarmSoundNotificationSignal;
 
-    private final AlarmParameters alarmParameters;
+    private final AlertParameters alertParameters;
 
     private Location location;
 
@@ -46,9 +48,9 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
 
     private Listener alertListener;
 
-    private final AlarmStatus alarmStatus;
+    private final AlertStatus alertStatus;
 
-    private final AlarmStatusHandler alarmStatusHandler;
+    private final AlertStatusHandler alertStatusHandler;
 
     private final LocationHandler locationHandler;
 
@@ -60,14 +62,14 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
 
     private long signalingLastTimestamp;
 
-    public AlertHandler(LocationHandler locationHandler, SharedPreferences preferences, Context context, Vibrator vibrator, NotificationHandler notificationHandler, AlarmObjectFactory alarmObjectFactory, AlarmParameters alarmParameters) {
+    public AlertHandler(LocationHandler locationHandler, SharedPreferences preferences, Context context, Vibrator vibrator, NotificationHandler notificationHandler, AlertObjectFactory alertObjectFactory, AlertParameters alertParameters) {
         this.locationHandler = locationHandler;
         this.context = context;
         this.vibrator = vibrator;
         this.notificationHandler = notificationHandler;
-        this.alarmStatus = alarmObjectFactory.createAlarmStatus(alarmParameters);
-        this.alarmStatusHandler = alarmObjectFactory.createAlarmStatusHandler(alarmParameters);
-        this.alarmParameters = alarmParameters;
+        this.alertStatus = alertObjectFactory.createAlarmStatus(alertParameters);
+        this.alertStatusHandler = alertObjectFactory.createAlarmStatusHandler(alertParameters);
+        this.alertParameters = alertParameters;
 
 
         preferences.registerOnSharedPreferenceChangeListener(this);
@@ -97,7 +99,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
             case MEASUREMENT_UNIT:
                 String measurementSystemName = sharedPreferences.getString(key.toString(), MeasurementSystem.METRIC.toString());
 
-                alarmParameters.setMeasurementSystem(MeasurementSystem.valueOf(measurementSystemName));
+                alertParameters.setMeasurementSystem(MeasurementSystem.valueOf(measurementSystemName));
                 break;
 
             case ALERT_NOTIFICATION_DISTANCE_LIMIT:
@@ -146,19 +148,19 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
 
         if (currentAlarmIsValid) {
             alarmValid = true;
-            alarmStatusHandler.checkStrokes(alarmStatus, strokes, location);
+            alertStatusHandler.checkStrokes(alertStatus, strokes, location);
             processResult(getAlarmResult());
         } else {
             invalidateAlert();
         }
     }
 
-    public AlarmResult getAlarmResult() {
-        return alarmValid ? alarmStatusHandler.getCurrentActivity(alarmStatus) : null;
+    public AlertResult getAlarmResult() {
+        return alarmValid ? alertStatusHandler.getCurrentActivity(alertStatus) : null;
     }
 
     public String getTextMessage(float notificationDistanceLimit) {
-        return alarmStatusHandler.getTextMessage(alarmStatus, notificationDistanceLimit);
+        return alertStatusHandler.getTextMessage(alertStatus, notificationDistanceLimit);
     }
 
     public void setAlertListener(Listener alertListener) {
@@ -171,20 +173,20 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
         updateLocationHandler();
     }
 
-    public Collection<AlarmSector> getAlarmSectors() {
-        return alarmStatus.getSectors();
+    public Collection<AlertSector> getAlarmSectors() {
+        return alertStatus.getSectors();
     }
 
-    public AlarmParameters getAlarmParameters() {
-        return alarmParameters;
+    public AlertParameters getAlertParameters() {
+        return alertParameters;
     }
 
-    public AlarmStatus getAlarmStatus() {
-        return alarmValid ? alarmStatus : null;
+    public AlertStatus getAlertStatus() {
+        return alarmValid ? alertStatus : null;
     }
 
     public float getMaxDistance() {
-        final float[] ranges = alarmParameters.getRangeSteps();
+        final float[] ranges = alertParameters.getRangeSteps();
         return ranges[ranges.length - 1];
     }
 
@@ -193,7 +195,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
         alarmValid = false;
 
         if (previousAlarmValidState) {
-            alarmStatus.clearResults();
+            alertStatus.clearResults();
             broadcastClear();
         }
     }
@@ -204,19 +206,19 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
         }
     }
 
-    private void broadcastResult(AlarmResult alarmResult) {
+    private void broadcastResult(AlertResult alertResult) {
         if (alertListener != null) {
-            alertListener.onEvent(new AlertResultEvent(alarmStatus, alarmResult));
+            alertListener.onEvent(new AlertResultEvent(alertStatus, alertResult));
         }
     }
 
-    private void processResult(AlarmResult alarmResult) {
-        if (alarmResult != null) {
+    private void processResult(AlertResult alertResult) {
+        if (alertResult != null) {
 
-            alarmParameters.updateSectorLabels(context);
+            alertParameters.updateSectorLabels(context);
 
-            if (alarmResult.getClosestStrokeDistance() <= signalingDistanceLimit) {
-                long signalingLatestTimestamp = alarmStatusHandler.getLatestTimstampWithin(signalingDistanceLimit, alarmStatus);
+            if (alertResult.getClosestStrokeDistance() <= signalingDistanceLimit) {
+                long signalingLatestTimestamp = alertStatusHandler.getLatestTimstampWithin(signalingDistanceLimit, alertStatus);
                 if (signalingLatestTimestamp > signalingLastTimestamp) {
                     Log.v(Main.LOG_TAG, "AlertHandler.processResult() perform alarm");
                     vibrateIfEnabled();
@@ -227,8 +229,8 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
                 }
             }
 
-            if (alarmResult.getClosestStrokeDistance() <= notificationDistanceLimit) {
-                long notificationLatestTimestamp = alarmStatusHandler.getLatestTimstampWithin(notificationDistanceLimit, alarmStatus);
+            if (alertResult.getClosestStrokeDistance() <= notificationDistanceLimit) {
+                long notificationLatestTimestamp = alertStatusHandler.getLatestTimstampWithin(notificationDistanceLimit, alertStatus);
                 if (notificationLatestTimestamp > notificationLastTimestamp) {
                     Log.v(Main.LOG_TAG, "AlertHandler.processResult() perform notification");
                     notificationHandler.sendNotification(context.getResources().getString(R.string.activity) + ": " + getTextMessage(notificationDistanceLimit));
@@ -243,9 +245,9 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
             notificationHandler.clearNotification();
         }
 
-        Log.v(Main.LOG_TAG, String.format("AlertHandler.processResult() broadcast result %s", alarmResult));
+        Log.v(Main.LOG_TAG, String.format("AlertHandler.processResult() broadcast result %s", alertResult));
 
-        broadcastResult(alarmResult);
+        broadcastResult(alertResult);
     }
 
     private void vibrateIfEnabled() {
@@ -270,6 +272,6 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
     }
 
     public AlertEvent getAlertEvent() {
-        return alarmValid ? new AlertResultEvent(alarmStatus, getAlarmResult()) : new AlertCancelEvent();
+        return alarmValid ? new AlertResultEvent(alertStatus, getAlarmResult()) : new AlertCancelEvent();
     }
 }

@@ -24,21 +24,15 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
-import org.blitzortung.android.alarm.AlarmLabelHandler;
-import org.blitzortung.android.alarm.AlertHandler;
-import org.blitzortung.android.alarm.AlarmResult;
-import org.blitzortung.android.alarm.listener.AlertListener;
-import org.blitzortung.android.alarm.object.AlarmStatus;
+import org.blitzortung.android.alert.AlertHandler;
+import org.blitzortung.android.alert.AlertResult;
 import org.blitzortung.android.app.controller.ButtonColumnHandler;
 import org.blitzortung.android.app.controller.HistoryController;
-import org.blitzortung.android.location.LocationListener;
 import org.blitzortung.android.app.view.AlarmView;
 import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.app.view.components.StatusComponent;
-import org.blitzortung.android.data.DataHandler;
-import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.provider.result.*;
@@ -234,9 +228,9 @@ public class Main extends OwnMapActivity implements Listener, OnSharedPreference
                     if (currentLocation != null) {
                         float radius = alertHandler.getMaxDistance();
 
-                        final AlarmResult alarmResult = alertHandler.getAlarmResult();
-                        if (alarmResult != null) {
-                            radius = Math.max(Math.min(alarmResult.getClosestStrokeDistance() * 1.2f, radius), 50f);
+                        final AlertResult alertResult = alertHandler.getAlarmResult();
+                        if (alertResult != null) {
+                            radius = Math.max(Math.min(alertResult.getClosestStrokeDistance() * 1.2f, radius), 50f);
                         }
 
                         float diameter = 1.5f * 2f * radius;
@@ -491,7 +485,7 @@ public class Main extends OwnMapActivity implements Listener, OnSharedPreference
                 break;
 
             case R.id.alarm_dialog:
-                dialog = new AlarmDialog(this, appService, new AlarmDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)), strokesOverlay.getIntervalDuration());
+                dialog = new AlertDialog(this, appService, new AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)), strokesOverlay.getIntervalDuration());
                 break;
 
             case R.id.layer_dialog:

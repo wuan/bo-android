@@ -1,4 +1,4 @@
-package org.blitzortung.android.alarm;
+package org.blitzortung.android.alert;
 
 import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
@@ -11,19 +11,19 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
-public class AlarmParametersTest {
+public class AlertParametersTest {
     
-    private AlarmParameters alarmParameters;
+    private AlertParameters alertParameters;
     
     @Before
     public void setUp() {
-        alarmParameters = new AlarmParameters();
-        alarmParameters.updateSectorLabels(Robolectric.application);
+        alertParameters = new AlertParameters();
+        alertParameters.updateSectorLabels(Robolectric.application);
     }
     
     @Test
     public void testGetSectorLabels() {
-        final String[] sectorLabels = alarmParameters.getSectorLabels();
+        final String[] sectorLabels = alertParameters.getSectorLabels();
         
         assertThat(sectorLabels, is(not(nullValue())));
         assertThat(sectorLabels.length, is(8));
@@ -31,7 +31,7 @@ public class AlarmParametersTest {
 
     @Test
     public void testGetRangeSteps() {
-        final float[] rangeSteps = alarmParameters.getRangeSteps();
+        final float[] rangeSteps = alertParameters.getRangeSteps();
 
         assertThat(rangeSteps, is(not(nullValue())));
         assertThat(rangeSteps.length, is(6));
@@ -39,11 +39,11 @@ public class AlarmParametersTest {
     
     @Test
     public void testGetSetMeasurementSystem() {
-        assertThat(alarmParameters.getMeasurementSystem(), is(nullValue()));
+        assertThat(alertParameters.getMeasurementSystem(), is(nullValue()));
         
-        alarmParameters.setMeasurementSystem(MeasurementSystem.METRIC);
+        alertParameters.setMeasurementSystem(MeasurementSystem.METRIC);
 
-        assertThat(alarmParameters.getMeasurementSystem(), is(MeasurementSystem.METRIC));
+        assertThat(alertParameters.getMeasurementSystem(), is(MeasurementSystem.METRIC));
     }
  
 }
