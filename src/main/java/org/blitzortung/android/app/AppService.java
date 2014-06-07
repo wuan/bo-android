@@ -263,7 +263,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     private void acquireWakeLock() {
-        wakeLock.acquire(30000);
+        wakeLock.acquire();
     }
 
     public void releaseWakeLock() {
