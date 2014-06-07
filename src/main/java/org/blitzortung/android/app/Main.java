@@ -381,11 +381,11 @@ public class Main extends OwnMapActivity implements DataListener, OnSharedPrefer
 
         if (appService != null) {
             appService.removeDataListener(this);
-        }
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (preferences.getBoolean(PreferenceKey.SHOW_LOCATION.toString(), false)) {
-            appService.clearLocationListener();
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            if (preferences.getBoolean(PreferenceKey.SHOW_LOCATION.toString(), false)) {
+                appService.clearLocationListener();
+            }
         }
     }
 
