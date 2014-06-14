@@ -31,6 +31,7 @@ import java.util.Collection;
 
 public class AlertHandler implements OnSharedPreferenceChangeListener, Listener {
 
+    public static final AlertCancelEvent ALERT_CANCEL_EVENT = new AlertCancelEvent();
     private final Vibrator vibrator;
     private final NotificationHandler notificationHandler;
     private Context context;
@@ -202,7 +203,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
 
     private void broadcastClear() {
         if (alertListener != null) {
-            alertListener.onEvent(new AlertCancelEvent());
+            alertListener.onEvent(ALERT_CANCEL_EVENT);
         }
     }
 
@@ -272,6 +273,6 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
     }
 
     public AlertEvent getAlertEvent() {
-        return alarmValid ? new AlertResultEvent(alertStatus, getAlarmResult()) : new AlertCancelEvent();
+        return alarmValid ? new AlertResultEvent(alertStatus, getAlarmResult()) : ALERT_CANCEL_EVENT;
     }
 }

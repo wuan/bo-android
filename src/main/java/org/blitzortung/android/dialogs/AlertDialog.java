@@ -1,6 +1,5 @@
 package org.blitzortung.android.dialogs;
 
-import android.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.View;
 import org.blitzortung.android.app.AppService;

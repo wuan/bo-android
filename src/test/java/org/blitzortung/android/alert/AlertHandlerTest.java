@@ -6,14 +6,19 @@ import android.content.res.Resources;
 import android.location.Location;
 import android.os.Vibrator;
 import com.google.common.collect.Lists;
+import org.blitzortung.android.alert.event.AlertCancelEvent;
+import org.blitzortung.android.alert.event.AlertEvent;
+import org.blitzortung.android.alert.event.AlertResultEvent;
 import org.blitzortung.android.alert.factory.AlertObjectFactory;
 import org.blitzortung.android.alert.handler.AlertStatusHandler;
 import org.blitzortung.android.alert.object.AlertSector;
 import org.blitzortung.android.alert.object.AlertStatus;
+import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.protocol.Listener;
 import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,7 +78,7 @@ public class AlertHandlerTest {
     private Location location;
 
     @Mock
-    private AlertListener alarmListener;
+    private Listener alarmListener;
 
     private AlertHandler alertHandler;
     
@@ -111,7 +116,7 @@ public class AlertHandlerTest {
         verify(locationManager, times(1)).removeUpdates(any(AlertHandler.class));
         verify(sharedPreferences, times(1)).getString(PreferenceKey.MEASUREMENT_UNIT.toString(), "METRIC");
         verify(alertParameters, times(1)).setMeasurementSystem(MeasurementSystem.METRIC);
-        verify(alarmListener, times(0)).onAlertCancel();
+        verify(alarmListener, times(0)).onEvent(AlertHandler.ALERT_CANCEL_EVENT);
     }
 
     @Test
@@ -119,50 +124,49 @@ public class AlertHandlerTest {
         alertHandler.checkStrokes(strokes);
 
         verify(alertStatusHandler, times(0)).checkStrokes(alertStatus, strokes, null);
-        verify(alarmListener, times(0)).onAlert(alertStatus, any(AlertResult.class));
-        verify(alarmListener, times(0)).onAlertCancel();
+        verifyZeroInteractions(alarmListener);
     }
 
     @Test
     public void testCheckStrokesWithAlarmDisabledAndLocationUnset() {
         makeAlarmsValid();
-        verify(alarmListener, times(1)).onAlert(alertStatus, any(AlertResult.class));
-        verify(alarmListener, times(0)).onAlertCancel();
+        verify(alarmListener, times(1)).onEvent(any(AlertResultEvent.class));
+        verify(alarmListener, times(0)).onEvent(AlertHandler.ALERT_CANCEL_EVENT);
 
-        alertHandler.onLocationChanged(null);
+        alertHandler.onEvent(new LocationEvent(null));
         alertHandler.checkStrokes(strokes);
 
         verify(alertStatusHandler, times(0)).checkStrokes(alertStatus, strokes, null);
-        verify(alarmListener, times(1)).onAlert(alertStatus, any(AlertResult.class));
-        verify(alarmListener, times(1)).onAlertCancel();
+        verify(alarmListener, times(1)).onEvent(any(AlertResultEvent.class));
+        verify(alarmListener, times(1)).onEvent(AlertHandler.ALERT_CANCEL_EVENT);
     }
 
     @Test
     public void testCheckStrokesWithAlarmDisabledAndLocationSet() {
         makeAlarmsValid();
         enableAlarmInPrefs(false);
-        verify(alarmListener, times(1)).onAlert(alertStatus, any(AlertResult.class));
-        verify(alarmListener, times(1)).onAlertCancel();
+        verify(alarmListener, times(1)).onEvent(any(AlertResultEvent.class));
+        verify(alarmListener, times(1)).onEvent(AlertHandler.ALERT_CANCEL_EVENT);
 
         alertHandler.checkStrokes(strokes);
 
         verify(alertStatusHandler, times(0)).checkStrokes(alertStatus, strokes, null);
-        verify(alarmListener, times(1)).onAlert(alertStatus, any(AlertResult.class));
-        verify(alarmListener, times(2)).onAlertCancel();
+        verify(alarmListener, times(1)).onEvent(any(AlertResultEvent.class));
+        verify(alarmListener, times(2)).onEvent(AlertHandler.ALERT_CANCEL_EVENT);
     }
 
     @Test
     public void testCheckStrokesWithAlarmEnabledAndLocationSet() {
         enableAlarmInPrefs(true);
-        alertHandler.onLocationChanged(location);
+        alertHandler.onEvent(new LocationEvent(location));
 
         when(alertStatusHandler.getCurrentActivity(alertStatus)).thenReturn(alertResult);
 
         alertHandler.checkStrokes(strokes);
 
         verify(alertStatusHandler, times(1)).checkStrokes(alertStatus, strokes, location);
-        verify(alarmListener, times(1)).onAlert(alertStatus, alertResult);
-        verify(alarmListener, times(0)).onAlertCancel();
+        verify(alarmListener, times(1)).onEvent(any(AlertResultEvent.class));
+        verify(alarmListener, times(0)).onEvent(AlertHandler.ALERT_CANCEL_EVENT);
     }
 
     @Test
@@ -194,7 +198,7 @@ public class AlertHandlerTest {
     }
 
     private void makeAlarmsValid() {
-        alertHandler.onLocationChanged(location);
+        alertHandler.onEvent(new LocationEvent(location));
         enableAlarmInPrefs(true);
         alertHandler.checkStrokes(Lists.<Stroke>newArrayList());
     }
