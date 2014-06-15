@@ -17,6 +17,7 @@ import org.blitzortung.android.alert.event.AlertEvent;
 import org.blitzortung.android.alert.AlertHandler;
 import org.blitzortung.android.alert.factory.AlertObjectFactory;
 import org.blitzortung.android.alert.object.AlertStatus;
+import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
@@ -144,6 +145,9 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     public void onEvent(Event event) {
         if (event instanceof DataEvent) {
             onDataEvent((DataEvent) event);
+        } else if (event instanceof LocationEvent) {
+            onLocationEvent((LocationEvent) event);
+            Log.d(Main.LOG_TAG, "AppService.onEvent() unhandled " + event);
         }
     }
 
@@ -159,6 +163,12 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
         releaseWakeLock();
     }
+
+    private void onLocationEvent(LocationEvent event) {
+
+
+    }
+
 
     private void checkForWarning(ResultEvent result) {
         if (!result.hasFailed() && result.containsRealtimeData()) {
@@ -324,7 +334,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     public void onResume() {
         if (dataHandler.isRealtime()) {
             Log.v(Main.LOG_TAG, "AppService.onResume() enable");
-            locationHandler.requestUpdates(this);
             enable();
         } else {
             Log.v(Main.LOG_TAG, "AppService.onResume() do not enable");
@@ -333,8 +342,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
     public boolean onPause() {
         Log.v(Main.LOG_TAG, "AppService.onPause() remove callback");
-        handler.removeCallbacks(this);
-        locationHandler.removeUpdates(this);
+        disable();
 
         return true;
     }

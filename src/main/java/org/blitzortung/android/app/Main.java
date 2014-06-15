@@ -28,7 +28,7 @@ import org.blitzortung.android.alert.AlertHandler;
 import org.blitzortung.android.alert.AlertResult;
 import org.blitzortung.android.app.controller.ButtonColumnHandler;
 import org.blitzortung.android.app.controller.HistoryController;
-import org.blitzortung.android.app.view.AlarmView;
+import org.blitzortung.android.app.view.AlertView;
 import org.blitzortung.android.app.view.HistogramView;
 import org.blitzortung.android.app.view.LegendView;
 import org.blitzortung.android.app.view.PreferenceKey;
@@ -79,7 +79,7 @@ public class Main extends OwnMapActivity implements Listener, OnSharedPreference
     private AppService appService;
     private ServiceConnection serviceConnection;
     private LegendView legendView;
-    private AlarmView alarmView;
+    private AlertView alertView;
 
     private Optional<ResultEvent> currentResult;
     private HistogramView histogramView;
@@ -165,11 +165,11 @@ public class Main extends OwnMapActivity implements Listener, OnSharedPreference
                 appService.addDataListener(historyController);
                 appService.addLocationListener(ownLocationOverlay);
                 appService.addDataListener(Main.this);
-                appService.addAlertListener(histogramView);
-                appService.addAlertListener(alarmView);
+                appService.addDataListener(histogramView);
+                appService.addAlertListener(alertView);
+                appService.addLocationListener(alertView);
                 appService.addLocationListener(Main.this);
                 appService.addAlertListener(statusComponent);
-
 
                 strokesOverlay.setIntervalDuration(appService.getDataHandler().getIntervalDuration());
                 appService.onResume();
@@ -215,11 +215,11 @@ public class Main extends OwnMapActivity implements Listener, OnSharedPreference
             }
         });
 
-        alarmView = (AlarmView) findViewById(R.id.alarm_view);
-        alarmView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getIntervalDuration());
-        alarmView.setBackgroundColor(Color.TRANSPARENT);
-        alarmView.setAlpha(200);
-        alarmView.setOnClickListener(new View.OnClickListener() {
+        alertView = (AlertView) findViewById(R.id.alert_view);
+        alertView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getIntervalDuration());
+        alertView.setBackgroundColor(Color.TRANSPARENT);
+        alertView.setAlpha(200);
+        alertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final AlertHandler alertHandler = appService.getAlertHandler();
@@ -423,7 +423,7 @@ public class Main extends OwnMapActivity implements Listener, OnSharedPreference
                     }
                     strokesOverlay.addStrokes(result.getStrokes());
 
-                    alarmView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getIntervalDuration());
+                    alertView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getIntervalDuration());
 
                     strokesOverlay.refresh();
                 }
@@ -446,7 +446,7 @@ public class Main extends OwnMapActivity implements Listener, OnSharedPreference
             getMapView().invalidate();
             legendView.invalidate();
         } else if (event instanceof ClearDataEvent) {
-            reloadData();
+            clearData();
         } else if (event instanceof StatusEvent) {
             StatusEvent statusEvent = (StatusEvent) event;
             setStatusString(statusEvent.getStatus());
@@ -459,23 +459,19 @@ public class Main extends OwnMapActivity implements Listener, OnSharedPreference
 
     private void clearDataIfRequested() {
         if (clearData) {
-            clearData = false;
-
-            strokesOverlay.clear();
-
-            if (participantsOverlay != null) {
-                participantsOverlay.clear();
-            }
+            clearData();
         }
     }
 
-    public void onDataError() {
-        statusComponent.indicateError(true);
-        statusComponent.stopProgress();
+    private void clearData() {
+        clearData = false;
 
-        buttonColumnHandler.unlockButtonColumn();
+        strokesOverlay.clear();
+
+        if (participantsOverlay != null) {
+            participantsOverlay.clear();
+        }
     }
-
 
     protected Dialog onCreateDialog(int id) {
         Dialog dialog;

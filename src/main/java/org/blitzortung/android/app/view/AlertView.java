@@ -4,7 +4,9 @@ import android.content.Context;
 import android.graphics.*;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
+import android.location.Location;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import org.blitzortung.android.alert.AlertParameters;
 import org.blitzortung.android.alert.event.AlertResultEvent;
@@ -13,15 +15,17 @@ import org.blitzortung.android.alert.event.AlertEvent;
 import org.blitzortung.android.alert.object.AlertSector;
 import org.blitzortung.android.alert.object.AlertSectorRange;
 import org.blitzortung.android.alert.object.AlertStatus;
+import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
+import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 import org.blitzortung.android.protocol.Event;
 import org.blitzortung.android.protocol.Listener;
 
 import java.util.List;
 
-public class AlarmView extends View implements Listener {
+public class AlertView extends View implements Listener {
 
     private static final int TEXT_MINIMUM_SIZE = 300;
     private static final PorterDuffXfermode XFERMODE_CLEAR = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
@@ -49,16 +53,16 @@ public class AlarmView extends View implements Listener {
     private AlertResult alertResult;
 
     @SuppressWarnings("unused")
-    public AlarmView(Context context, AttributeSet attrs) {
+    public AlertView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
     @SuppressWarnings("unused")
-    public AlarmView(Context context) {
+    public AlertView(Context context) {
         this(context, null, 0);
     }
 
-    public AlarmView(Context context, AttributeSet attrs, int defStyle) {
+    public AlertView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
         alarmNotAvailableTextLines = context.getString(R.string.alarms_not_available).split("\n");
@@ -68,7 +72,7 @@ public class AlarmView extends View implements Listener {
 
         textStyle.setColor(0xff404040);
         textStyle.setTextSize(ViewHelper.pxFromSp(this, 10));
-        
+
         background.setColor(0xffb0b0b0);
     }
 
@@ -214,6 +218,14 @@ public class AlarmView extends View implements Listener {
                 alertResult = null;
             }
             invalidate();
+        } else if (event instanceof LocationEvent) {
+            LocationEvent locationEvent = (LocationEvent) event;
+
+            final Location location = locationEvent.getLocation();
+            final int visibility = location != null ? View.VISIBLE : View.INVISIBLE;
+            setVisibility(visibility);
+        } else {
+            Log.w(Main.LOG_TAG, "AlertView.onEvent() unhandled " + event);
         }
     }
 

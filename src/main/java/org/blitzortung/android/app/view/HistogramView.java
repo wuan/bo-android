@@ -130,8 +130,6 @@ public class HistogramView extends View implements Listener {
         if (result instanceof DataEvent) {
             if (result instanceof ResultEvent) {
                 updateHistogram((ResultEvent) result);
-            } else {
-                clearHistogram();
             }
         }
     }
