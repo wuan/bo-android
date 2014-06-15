@@ -111,7 +111,6 @@ public class HistoryController implements Listener {
         goRealtime.setVisibility(View.INVISIBLE);
         updateButtonColumn();
         appService.restart();
-        appService.enable();
     }
 
     private void updateButtonColumn() {

@@ -19,6 +19,8 @@ import org.blitzortung.android.alert.object.AlertSector;
 import org.blitzortung.android.alert.object.AlertStatus;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
+import org.blitzortung.android.data.provider.result.ResultEvent;
+import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
@@ -93,8 +95,6 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
         switch (key) {
             case ALERT_ENABLED:
                 alertEnabled = sharedPreferences.getBoolean(key.toString(), false);
-
-                updateLocationHandler();
                 break;
 
             case MEASUREMENT_UNIT:
@@ -127,16 +127,23 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
             locationHandler.requestUpdates(this);
         } else {
             locationHandler.removeUpdates(this);
-            location = null;
+            //location = null;
             broadcastClear();
         }
     }
 
     @Override
     public void onEvent(Event event) {
-        this.location = location;
+        Log.v(Main.LOG_TAG, "AlertHandler.onEvent() data: " + event);
+        if (event instanceof ResultEvent) {
+            ResultEvent resultEvent = (ResultEvent) event;
+            checkStrokes(resultEvent.getStrokes());
+        } else if (event instanceof LocationEvent) {
+            LocationEvent locationEvent = (LocationEvent) event;
 
-        checkStrokes(lastStrokes);
+            this.location = locationEvent.getLocation();
+            checkStrokes(lastStrokes);
+        }
     }
 
     public boolean isAlertEnabled() {

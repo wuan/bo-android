@@ -113,7 +113,7 @@ public class AppServiceTest {
     public void testOnResumeInRealtime() {
         when(dataHandler.isRealtime()).thenReturn(true);
 
-        appService.onResume();
+        appService.resumeDataService();
 
         InOrder order = inOrder(handler);
 
@@ -127,7 +127,7 @@ public class AppServiceTest {
     public void testOnResumeInHistoricalDataMode() {
         when(dataHandler.isRealtime()).thenReturn(false);
 
-        appService.onResume();
+        appService.resumeDataService();
 
         verify(handler, times(0)).removeCallbacks(appService);
         verify(handler, times(0)).post(appService);
@@ -139,9 +139,9 @@ public class AppServiceTest {
     public void testOnPause() {
         when(dataHandler.isRealtime()).thenReturn(true);
 
-        appService.onResume();
+        appService.resumeDataService();
 
-        assertTrue(appService.onPause());
+        assertTrue(appService.suspendDataService());
     }
 
     @Test
@@ -153,9 +153,9 @@ public class AppServiceTest {
 
         when(dataHandler.isRealtime()).thenReturn(true);
 
-        appService.onResume();
+        appService.resumeDataService();
 
-        assertFalse(appService.onPause());
+        assertFalse(appService.suspendDataService());
     }
 
     @Test

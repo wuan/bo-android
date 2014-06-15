@@ -53,6 +53,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
     private DataHandler dataHandler;
     private AlertHandler alertHandler;
+    private boolean alertEnabled;
     private LocationHandler locationHandler;
 
     private final IBinder binder = new DataServiceBinder();
@@ -66,26 +67,22 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     ListenerContainer<DataEvent> dataListenerContainer = new ListenerContainer<DataEvent>() {
         @Override
         public void addedFirstListener() {
-            discardAlarm();
-            onResume();
+            resumeDataService();
         }
 
         @Override
         public void removedLastListener() {
-            onPause();
-            createAlarm();
+            suspendDataService();
         }
     };
 
     ListenerContainer<AlertEvent> alertListenerContainer = new ListenerContainer<AlertEvent>() {
         @Override
         public void addedFirstListener() {
-            alertHandler.setAlertListener(AppService.this);
         }
 
         @Override
         public void removedLastListener() {
-            alertHandler.unsetAlertListener();
         }
     };
 
@@ -129,14 +126,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         return dataHandler;
     }
 
-    public boolean isAlertEnabled() {
-        return alertHandler != null ? alertHandler.isAlertEnabled() : false;
-    }
-
-    public AlertResult getAlarmResult() {
-        return alertHandler.getAlarmResult();
-    }
-
     public AlertHandler getAlertHandler() {
         return alertHandler;
     }
@@ -145,37 +134,21 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     public void onEvent(Event event) {
         if (event instanceof DataEvent) {
             onDataEvent((DataEvent) event);
-        } else if (event instanceof LocationEvent) {
-            onLocationEvent((LocationEvent) event);
-            Log.d(Main.LOG_TAG, "AppService.onEvent() unhandled " + event);
-        }
-    }
-
-    private void onDataEvent(DataEvent result) {
-
-        if (!dataListenerContainer.isEmpty()) {
-            dataListenerContainer.storeAndBroadcast(result);
-        }
-
-        if (result instanceof ResultEvent) {
-            checkForWarning((ResultEvent) result);
-        }
-
-        releaseWakeLock();
-    }
-
-    private void onLocationEvent(LocationEvent event) {
-
-
-    }
-
-
-    private void checkForWarning(ResultEvent result) {
-        if (!result.hasFailed() && result.containsRealtimeData()) {
-            alertHandler.checkStrokes(result.getStrokes());
+        } else if (event instanceof AlertEvent) {
+            alertListenerContainer.broadcast((AlertEvent) event);
         } else {
-            alertHandler.invalidateAlert();
+            Log.w(Main.LOG_TAG, "AppService.onEvent() unhandled " + event);
         }
+    }
+
+    private void onDataEvent(DataEvent dataEvent) {
+        if (!dataListenerContainer.isEmpty()) {
+            dataListenerContainer.storeAndBroadcast(dataEvent);
+        }
+        if (alertEnabled) {
+            alertHandler.onEvent(dataEvent);
+        }
+        releaseWakeLock();
     }
 
     public void addDataListener(Listener dataListener) {
@@ -236,11 +209,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
             dataHandler.setDataListener(this);
         }
 
-        onSharedPreferenceChanged(preferences, PreferenceKey.QUERY_PERIOD);
-        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED);
-        onSharedPreferenceChanged(preferences, PreferenceKey.BACKGROUND_QUERY_PERIOD);
-        onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_PARTICIPANTS);
-
         locationHandler = new LocationHandler(this, preferences);
         AlertParameters alertParameters = new AlertParameters();
         alertParameters.updateSectorLabels(this);
@@ -248,6 +216,11 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
                 (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE),
                 new NotificationHandler(this),
                 new AlertObjectFactory(), alertParameters);
+
+        onSharedPreferenceChanged(preferences, PreferenceKey.QUERY_PERIOD);
+        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED);
+        onSharedPreferenceChanged(preferences, PreferenceKey.BACKGROUND_QUERY_PERIOD);
+        onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_PARTICIPANTS);
     }
 
     @Override
@@ -261,10 +234,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
             handler.removeCallbacks(this);
             handler.post(this);
-        }
-
-        if (!dataListenerContainer.isEmpty()) {
-            createAlarm();
         }
 
         return START_STICKY;
@@ -329,34 +298,43 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
     public void restart() {
         updatePeriod.restart();
+        enable();
     }
 
-    public void onResume() {
+    public void resumeDataService() {
         if (dataHandler.isRealtime()) {
-            Log.v(Main.LOG_TAG, "AppService.onResume() enable");
+            Log.v(Main.LOG_TAG, "AppService.resumeDataService() realtime data");
             enable();
         } else {
-            Log.v(Main.LOG_TAG, "AppService.onResume() do not enable");
+            Log.v(Main.LOG_TAG, "AppService.resumeDataService() historic data");
         }
+
+        discardAlarm();
     }
 
-    public boolean onPause() {
-        Log.v(Main.LOG_TAG, "AppService.onPause() remove callback");
+    public boolean suspendDataService() {
+        Log.v(Main.LOG_TAG, "AppService.suspendDataService()");
         disable();
+
+        if (backgroundPeriod == 0) {
+            locationHandler.removeUpdates(alertHandler);
+        } else {
+            createAlarm();
+        }
 
         return true;
     }
 
     @Override
     public void onDestroy() {
-        Log.v(Main.LOG_TAG, "AppService.onDestroy()");
         super.onDestroy();
+        Log.v(Main.LOG_TAG, "AppService.onDestroy()");
     }
 
     public void enable() {
+        enabled = true;
         handler.removeCallbacks(this);
         handler.post(this);
-        enabled = true;
     }
 
     public boolean isEnabled() {
@@ -364,8 +342,8 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     protected void disable() {
-        enabled = false;
         handler.removeCallbacks(this);
+        enabled = false;
     }
 
     public void setDataHandler(DataHandler dataHandler) {
@@ -379,6 +357,20 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
     private void onSharedPreferenceChanged(SharedPreferences sharedPreferences, PreferenceKey key) {
         switch (key) {
+            case ALERT_ENABLED:
+                alertEnabled = sharedPreferences.getBoolean(key.toString(), false);
+
+                if (dataListenerContainer.isEmpty() && backgroundPeriod > 0) {
+                    if (alertEnabled) {
+                        alertHandler.setAlertListener(this);
+                        createAlarm();
+                    } else {
+                        alertHandler.unsetAlertListener();
+                        discardAlarm();
+                    }
+                }
+                break;
+
             case QUERY_PERIOD:
                 period = Integer.parseInt(sharedPreferences.getString(key.toString(), "60"));
                 break;
@@ -387,13 +379,15 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
                 int previousBackgroundPeriod = backgroundPeriod;
                 backgroundPeriod = Integer.parseInt(sharedPreferences.getString(key.toString(), "0"));
 
-                if (dataListenerContainer.isEmpty() && isAlertEnabled()) {
+                if (dataListenerContainer.isEmpty() && alertEnabled) {
                     if (previousBackgroundPeriod == 0 && backgroundPeriod > 0) {
                         Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() create alarm with backgroundPeriod=%d", backgroundPeriod));
+                        alertHandler.setAlertListener(this);
                         createAlarm();
                     } else if (previousBackgroundPeriod > 0 && backgroundPeriod == 0) {
-                        discardAlarm();
                         Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() discard alarm", backgroundPeriod));
+                        alertHandler.unsetAlertListener();
+                        discardAlarm();
                     }
                 } else {
                     Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() backgroundPeriod=%d", backgroundPeriod));

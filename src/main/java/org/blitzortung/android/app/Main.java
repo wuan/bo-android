@@ -93,6 +93,8 @@ public class Main extends OwnMapActivity implements Listener, OnSharedPreference
             Toast toast = Toast.makeText(getBaseContext(), "bad android version", 1000);
             toast.show();
         }
+        Log.v(LOG_TAG, "Main.onCreate()");
+
         updatePackageInfo();
 
         currentResult = Optional.absent();
@@ -160,19 +162,24 @@ public class Main extends OwnMapActivity implements Listener, OnSharedPreference
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                 appService = ((AppService.DataServiceBinder) iBinder).getService();
                 Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + appService);
-                historyController.setAppService(appService);
 
+                historyController.setAppService(appService);
                 appService.addDataListener(historyController);
-                appService.addLocationListener(ownLocationOverlay);
-                appService.addDataListener(Main.this);
-                appService.addDataListener(histogramView);
-                appService.addAlertListener(alertView);
-                appService.addLocationListener(alertView);
                 appService.addLocationListener(Main.this);
+                appService.addDataListener(Main.this);
+                appService.addAlertListener(Main.this);
+
+                appService.addLocationListener(ownLocationOverlay);
+                appService.addDataListener(histogramView);
+
+                appService.addLocationListener(alertView);
+                appService.addAlertListener(alertView);
+
                 appService.addAlertListener(statusComponent);
 
                 strokesOverlay.setIntervalDuration(appService.getDataHandler().getIntervalDuration());
-                appService.onResume();
+
+                appService.resumeDataService();
             }
 
             @Override
@@ -339,36 +346,60 @@ public class Main extends OwnMapActivity implements Listener, OnSharedPreference
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService);
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+
+        Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
-        Log.d(Main.LOG_TAG, "Main.onResume()");
+        Log.d(Main.LOG_TAG, "Main.onResume() service: " + appService);
 
         if (appService != null) {
             appService.addDataListener(this);
-        }
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (preferences.getBoolean(PreferenceKey.SHOW_LOCATION.toString(), false)) {
-            ownLocationOverlay.enableOwnLocation();
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        Log.v(Main.LOG_TAG, "Main.onPause()");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
 
         if (appService != null) {
+            Log.v(Main.LOG_TAG, "Main.onStop() remove listeners");
             appService.removeDataListener(this);
+            appService.removeLocationListener(this);
             appService.removeLocationListener(ownLocationOverlay);
-        }
 
+            appService.removeDataListener(historyController);
+            appService.removeDataListener(histogramView);
+            appService.removeLocationListener(alertView);
+            appService.removeAlertListener(alertView);
+            appService.removeAlertListener(statusComponent);
+        } else {
+            Log.i(LOG_TAG, "Main.onStop()");
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i(LOG_TAG, "Main: onDestroy()");
+        Log.i(LOG_TAG, "Main: onDestroy() unbind service");
 
         unbindService(serviceConnection);
     }

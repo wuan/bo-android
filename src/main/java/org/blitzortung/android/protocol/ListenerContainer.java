@@ -56,4 +56,12 @@ public abstract class ListenerContainer<P extends Event> {
     public boolean isEmpty() {
         return listeners.isEmpty();
     }
+
+    public int size() {
+        return listeners.size();
+    }
+
+    public Set<Listener> getListeners() {
+        return listeners;
+    }
 }

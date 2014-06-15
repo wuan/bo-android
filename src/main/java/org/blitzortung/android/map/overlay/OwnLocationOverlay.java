@@ -8,7 +8,9 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.location.Location;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import com.google.android.maps.ItemizedOverlay;
+import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.app.view.PreferenceKey;
@@ -89,6 +91,7 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
 
     @Override
     public void onEvent(Event event) {
+        Log.d(Main.LOG_TAG, "OwnLocationOverlay.onEvent() " + event);
         if (event instanceof LocationEvent) {
             Location location = ((LocationEvent) event).getLocation();
 

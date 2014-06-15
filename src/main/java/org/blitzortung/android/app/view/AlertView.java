@@ -213,6 +213,7 @@ public class AlertView extends View implements Listener {
 
                 this.alertStatus = alertResultEvent.getAlertStatus();
                 this.alertResult = alertResultEvent.getAlertResult();
+                Log.v(Main.LOG_TAG, "AlertView.onEvent() AlertResult " + alertStatus);
             } else {
                 alertStatus = null;
                 alertResult = null;
@@ -224,6 +225,8 @@ public class AlertView extends View implements Listener {
             final Location location = locationEvent.getLocation();
             final int visibility = location != null ? View.VISIBLE : View.INVISIBLE;
             setVisibility(visibility);
+            invalidate();
+            Log.v(Main.LOG_TAG, "AlertView.onEvent() Location " + location);
         } else {
             Log.w(Main.LOG_TAG, "AlertView.onEvent() unhandled " + event);
         }
