@@ -380,14 +380,14 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         } else {
             discardAlarm();
             if (dataHandler.isRealtime()) {
-                Log.v(Main.LOG_TAG, "AppService.configureServiceMode() realtime data (was enabled: " + enabled + ")");
+                Log.v(Main.LOG_TAG, "AppService.configureServiceMode() realtime data");
                 if (!enabled) {
                     enabled = true;
                     handler.removeCallbacks(this);
                     handler.post(this);
                 }
             } else {
-                Log.v(Main.LOG_TAG, "AppService.configureServiceMode() historic data (was enabled: " + enabled + ")");
+                Log.v(Main.LOG_TAG, "AppService.configureServiceMode() historic data");
                 enabled = false;
                 handler.removeCallbacks(this);
                 if (lastParameters != null && !lastParameters.equals(dataHandler.getParameters())) {
