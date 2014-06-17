@@ -6,8 +6,14 @@
 
 ## English
 
-### Version 1.3 (Android 4.0+)
+Version 1.1.3 & 1.3.0 (Android 4.0+):
+ - workaround for Android wakelock timeout bug
+ - fixed Android 2.2 incompatibility
  - fixed sound notifications
+ - use AlarmManager and WakeLocks to ensure background service operation
+ - reduce amount of transferred data, when running in background
+ - alarm signal only at situation changes
+ - enabled Hardware acceleration (1.3 only)
  - background operation starting with boot
  - reworked structure with separate app service
 
@@ -64,10 +70,17 @@
  
 ## German
 
-### Version 1.3 (Android 4.0+)
+Version 1.1.3 & 1.3.0 (Android 4.0+):
+ - Vermeidung des Android wakelock timeout Fehlers
+ - Android 2.2 Inkompatibilität beseitigt
  - Probleme mit Warntönen auf einigen Geräten beseitigt
+ - verwendet AlarmManager und WakeLocks um den Betrieb des Hintergrunddienstes sicherzustellen
+ - Hintergrunddaten: reduzierte Übertragungsmenge
+ - Alarmsignal nur bei Änderung der Situation
+ - Zugriff auf Blitzortung.org Daten angepasst
+ - Hardwarebeschleunigung aktiv (nur 1.3.0)
  - Hintergrundabfrage ab Neustart
- - Überarbeitete Struktur mit Datenervice
+ - Überarbeitete Struktur mit Datenservice
 
 ### Version 1.2 (Android 4.0+)
  - Hardwarebeschleunigung aktiviert

@@ -5,10 +5,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import org.blitzortung.android.alarm.AlarmLabel;
+import org.blitzortung.android.alert.AlertLabelHandler;
+import org.blitzortung.android.alert.event.AlertResultEvent;
+import org.blitzortung.android.alert.AlertLabel;
+import org.blitzortung.android.alert.event.AlertEvent;
 import org.blitzortung.android.app.R;
+import org.blitzortung.android.protocol.Consumer;
 
-public class StatusComponent implements AlarmLabel {
+public class StatusComponent implements AlertLabel {
 
     private TextView status;
 
@@ -18,8 +22,9 @@ public class StatusComponent implements AlarmLabel {
 
     private ImageView errorIndicator;
 
-    public StatusComponent(Activity activity)
-    {
+    private final AlertLabelHandler alertLabelHandler;
+
+    public StatusComponent(Activity activity) {
         status = (TextView) activity.findViewById(R.id.status);
 
         warning = (TextView) activity.findViewById(R.id.warning);
@@ -29,6 +34,8 @@ public class StatusComponent implements AlarmLabel {
 
         errorIndicator = (ImageView) activity.findViewById(R.id.error_indicator);
         errorIndicator.setVisibility(View.INVISIBLE);
+
+        alertLabelHandler = new AlertLabelHandler(this, activity.getResources());
     }
 
     public void startProgress() {
@@ -57,5 +64,19 @@ public class StatusComponent implements AlarmLabel {
     @Override
     public void setAlarmText(String alarmText) {
         warning.setText(alarmText);
+    }
+
+    private final Consumer<AlertEvent> alertEventConsumer = new Consumer<AlertEvent>() {
+        @Override
+        public void consume(AlertEvent event) {
+            alertLabelHandler.apply(
+                    event instanceof AlertResultEvent
+                            ? ((AlertResultEvent) event).getAlertResult()
+                            : null);
+        }
+    };
+
+    public Consumer<AlertEvent> getAlertEventConsumer() {
+        return alertEventConsumer;
     }
 }

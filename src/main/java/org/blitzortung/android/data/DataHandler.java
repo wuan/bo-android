@@ -16,6 +16,7 @@ import org.blitzortung.android.data.provider.result.ClearDataEvent;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.RequestStartedEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
+import org.blitzortung.android.protocol.Consumer;
 import org.blitzortung.android.util.optional.Optional;
 
 import java.util.HashSet;
@@ -36,7 +37,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     private final Parameters parameters;
 
-    private DataListener listener;
+    private Consumer<DataEvent> dataEventConsumer;
 
     private int preferencesRasterBaselength;
     private int preferencesRegion;
@@ -44,7 +45,14 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     public static final RequestStartedEvent REQUEST_STARTED_EVENT = new RequestStartedEvent();
     public static final ClearDataEvent CLEAR_DATA_EVENT = new ClearDataEvent();
+
     private PowerManager.WakeLock wakeLock;
+
+    public static final Set<DataChannel> DEFAULT_DATA_CHANNELS = new HashSet<DataChannel>();
+
+    static {
+        DEFAULT_DATA_CHANNELS.add(DataChannel.STROKES);
+    }
 
     public DataHandler(PowerManager.WakeLock wakeLock, SharedPreferences sharedPreferences, PackageInfo pInfo) {
         this(wakeLock, sharedPreferences, pInfo, new DataProviderFactory());
@@ -76,11 +84,9 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         }
 
         protected void onPostExecute(Optional<ResultEvent> result) {
-            if (listener != null) {
-                if (result.isPresent()) {
-                    final ResultEvent payload = result.get();
-                    listener.onUpdated(payload);
-                }
+            if (result.isPresent()) {
+                final ResultEvent payload = result.get();
+                sendEvent(payload);
             }
         }
 
@@ -173,6 +179,10 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         new FetchBackgroundDataTask(wakeLock).execute(10, 0, dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), 0);
     }
 
+    public void updateData() {
+        updateData(DEFAULT_DATA_CHANNELS);
+    }
+
     public void updateData(Set<DataChannel> updateTargets) {
 
         sendEvent(REQUEST_STARTED_EVENT);
@@ -188,8 +198,8 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     }
 
     private void sendEvent(DataEvent dataEvent) {
-        if (listener != null) {
-            listener.onUpdated(dataEvent);
+        if (dataEventConsumer != null) {
+            dataEventConsumer.consume(dataEvent);
         }
     }
 
@@ -290,8 +300,8 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         parameters.setRasterBaselength(preferencesRasterBaselength);
     }
 
-    public void setDataListener(DataListener listener) {
-        this.listener = listener;
+    public void setDataConsumer(Consumer<DataEvent> consumer) {
+        this.dataEventConsumer = consumer;
     }
 
     public int getIntervalDuration() {
@@ -316,6 +326,10 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     public boolean isCapableOfHistoricalData() {
         return dataProvider.isCapableOfHistoricalData();
+    }
+
+    public Parameters getParameters() {
+        return parameters;
     }
 
 }

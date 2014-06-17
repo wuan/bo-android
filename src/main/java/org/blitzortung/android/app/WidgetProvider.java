@@ -5,7 +5,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.widget.RemoteViews;
-import org.blitzortung.android.app.view.AlarmView;
+import org.blitzortung.android.app.view.AlertView;
 
 public class WidgetProvider extends AppWidgetProvider {
 
@@ -23,11 +23,11 @@ public class WidgetProvider extends AppWidgetProvider {
                                  AppWidgetManager appWidgetManager,
                                  int appWidgetId) {
 
-        AlarmView alarmView = new AlarmView(context);
-        alarmView.measure(150, 150);
-        alarmView.layout(0, 0, 150, 150);
-        alarmView.setDrawingCacheEnabled(true);
-        Bitmap bitmap=alarmView.getDrawingCache();
+        AlertView alertView = new AlertView(context);
+        alertView.measure(150, 150);
+        alertView.layout(0, 0, 150, 150);
+        alertView.setDrawingCacheEnabled(true);
+        Bitmap bitmap= alertView.getDrawingCache();
 
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
                 R.layout.widget);
