@@ -9,7 +9,8 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.google.common.collect.Lists;
-import org.blitzortung.android.app.controller.LocationHandler;
+import org.blitzortung.android.location.LocationEvent;
+import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.map.OwnMapView;
 import org.junit.Before;
@@ -167,8 +168,7 @@ public class OwnLocationOverlayTest {
     @Test
     public void testOnLocationChanged()
     {
-
-        ownLocationOverlay.onLocationChanged(mock(Location.class));
+        ownLocationOverlay.getLocationEventConsumer().consume(new LocationEvent(mock(Location.class)));
         
         assertThat(ownLocationOverlay.size(), is(1));
     }
@@ -176,16 +176,16 @@ public class OwnLocationOverlayTest {
     @Test
     public void testOnLocationChangedWithNullLocation()
     {
-        ownLocationOverlay.onLocationChanged(null);
-        
+        ownLocationOverlay.getLocationEventConsumer().consume(new LocationEvent(null));
+
         assertThat(ownLocationOverlay.size(), is(0));
     }
 
     @Test
     public void testDisableOwnLocation()
     {
-        ownLocationOverlay.onLocationChanged(mock(Location.class));
-        
+        ownLocationOverlay.getLocationEventConsumer().consume(new LocationEvent(mock(Location.class)));
+
         ownLocationOverlay.disableOwnLocation();
 
         assertThat(ownLocationOverlay.size(), is(0));
@@ -198,6 +198,6 @@ public class OwnLocationOverlayTest {
 
     private void updateLocation()
     {
-        ownLocationOverlay.onLocationChanged(mock(Location.class));
+        ownLocationOverlay.getLocationEventConsumer().consume(new LocationEvent(mock(Location.class)));
     }
 }

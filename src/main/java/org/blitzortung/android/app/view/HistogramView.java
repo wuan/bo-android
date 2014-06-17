@@ -8,13 +8,13 @@ import android.util.AttributeSet;
 import android.view.View;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
-import org.blitzortung.android.data.DataListener;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
+import org.blitzortung.android.protocol.Consumer;
 
-public class HistogramView extends View implements DataListener {
+public class HistogramView extends View {
 
     private float width;
     private float height;
@@ -96,7 +96,7 @@ public class HistogramView extends View implements DataListener {
                 }
             }
 
-            canvas.drawText(String.format("%.1f/min _", (float)maximumCount/ minutesPerBin), width - 2*padding, padding + textSize/1.2f, textPaint);
+            canvas.drawText(String.format("%.1f/min _", (float) maximumCount / minutesPerBin), width - 2 * padding, padding + textSize / 1.2f, textPaint);
 
             int ymax = maximumCount == 0 ? 1 : maximumCount;
 
@@ -109,7 +109,7 @@ public class HistogramView extends View implements DataListener {
             foregroundPaint.setStrokeWidth(2);
             for (int i = 0; i < histogram.length - 1; i++) {
                 foregroundPaint.setColor(colorHandler.getColor((histogram.length - 1 - i) / ratio));
-                canvas.drawLine(x0 + xd * i, y0 - yd * histogram[i], x0 + xd * (i+1), y0 - yd * histogram[i+1], foregroundPaint);
+                canvas.drawLine(x0 + xd * i, y0 - yd * histogram[i], x0 + xd * (i + 1), y0 - yd * histogram[i + 1], foregroundPaint);
             }
 
             foregroundPaint.setStrokeWidth(1);
@@ -124,13 +124,17 @@ public class HistogramView extends View implements DataListener {
         this.strokesOverlay = strokesOverlay;
     }
 
-    @Override
-    public void onUpdated(DataEvent result) {
-        if (result instanceof ResultEvent) {
-            updateHistogram((ResultEvent) result);
-        } else {
-            clearHistogram();
+    private final Consumer<DataEvent> dataEventConsumer = new Consumer<DataEvent>() {
+        @Override
+        public void consume(DataEvent event) {
+            if (event instanceof ResultEvent) {
+                updateHistogram((ResultEvent) event);
+            }
         }
+    };
+
+    public Consumer<DataEvent> getDataConsumer() {
+        return dataEventConsumer;
     }
 
     private void updateHistogram(ResultEvent dataEvent) {

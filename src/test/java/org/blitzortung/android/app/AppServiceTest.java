@@ -53,7 +53,7 @@ public class AppServiceTest {
                 .putString(PreferenceKey.QUERY_PERIOD.toString(), "60")
                 .putString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), "0")
                 .putBoolean(PreferenceKey.SHOW_PARTICIPANTS.toString(), true)
-                .putBoolean(PreferenceKey.ALARM_ENABLED.toString(), true)
+                .putBoolean(PreferenceKey.ALERT_ENABLED.toString(), true)
                 .commit();
 
         when(dataHandler.getIntervalDuration()).thenReturn(60);
@@ -113,7 +113,7 @@ public class AppServiceTest {
     public void testOnResumeInRealtime() {
         when(dataHandler.isRealtime()).thenReturn(true);
 
-        appService.onResume();
+        //appService.resumeDataService();
 
         InOrder order = inOrder(handler);
 
@@ -127,7 +127,7 @@ public class AppServiceTest {
     public void testOnResumeInHistoricalDataMode() {
         when(dataHandler.isRealtime()).thenReturn(false);
 
-        appService.onResume();
+        //appService.resumeDataService();
 
         verify(handler, times(0)).removeCallbacks(appService);
         verify(handler, times(0)).post(appService);
@@ -139,9 +139,9 @@ public class AppServiceTest {
     public void testOnPause() {
         when(dataHandler.isRealtime()).thenReturn(true);
 
-        appService.onResume();
+        //appService.resumeDataService();
 
-        assertTrue(appService.onPause());
+        //assertTrue(appService.suspendDataService());
     }
 
     @Test
@@ -153,14 +153,14 @@ public class AppServiceTest {
 
         when(dataHandler.isRealtime()).thenReturn(true);
 
-        appService.onResume();
+        //appService.resumeDataService();
 
-        assertFalse(appService.onPause());
+        //assertFalse(appService.suspendDataService());
     }
 
     @Test
     public void testEnable() {
-        appService.enable();
+        //appService.enable();
 
         InOrder order = inOrder(handler);
 
