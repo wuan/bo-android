@@ -45,7 +45,14 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     public static final RequestStartedEvent REQUEST_STARTED_EVENT = new RequestStartedEvent();
     public static final ClearDataEvent CLEAR_DATA_EVENT = new ClearDataEvent();
+
     private PowerManager.WakeLock wakeLock;
+
+    public static final Set<DataChannel> DEFAULT_DATA_CHANNELS = new HashSet<DataChannel>();
+
+    static {
+        DEFAULT_DATA_CHANNELS.add(DataChannel.STROKES);
+    }
 
     public DataHandler(PowerManager.WakeLock wakeLock, SharedPreferences sharedPreferences, PackageInfo pInfo) {
         this(wakeLock, sharedPreferences, pInfo, new DataProviderFactory());
@@ -172,6 +179,10 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         new FetchBackgroundDataTask(wakeLock).execute(10, 0, dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), 0);
     }
 
+    public void updateData() {
+        updateData(DEFAULT_DATA_CHANNELS);
+    }
+
     public void updateData(Set<DataChannel> updateTargets) {
 
         sendEvent(REQUEST_STARTED_EVENT);
@@ -289,7 +300,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         parameters.setRasterBaselength(preferencesRasterBaselength);
     }
 
-    public void setDataListener(Consumer<DataEvent> consumer) {
+    public void setDataConsumer(Consumer<DataEvent> consumer) {
         this.dataEventConsumer = consumer;
     }
 
@@ -315,6 +326,10 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     public boolean isCapableOfHistoricalData() {
         return dataProvider.isCapableOfHistoricalData();
+    }
+
+    public Parameters getParameters() {
+        return parameters;
     }
 
 }

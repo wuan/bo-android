@@ -12,7 +12,7 @@ import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.protocol.Consumer;
-import org.blitzortung.android.protocol.ListenerContainer;
+import org.blitzortung.android.protocol.ConsumerContainer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +54,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
         }
     }
 
-    private ListenerContainer<LocationEvent> consumerContainer = new ListenerContainer<LocationEvent>() {
+    private ConsumerContainer<LocationEvent> consumerContainer = new ConsumerContainer<LocationEvent>() {
         @Override
         public void addedFirstConsumer() {
             enableProvider(provider);
@@ -191,7 +191,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     }
 
     public void requestUpdates(Consumer<LocationEvent> locationConsumer) {
-        consumerContainer.addListener(locationConsumer);
+        consumerContainer.addConsumer(locationConsumer);
 
         if (locationIsValid()) {
             locationConsumer.consume(new LocationEvent(location));
@@ -199,8 +199,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     }
 
     public void removeUpdates(Consumer<LocationEvent> locationEventConsumer) {
-        consumerContainer.removeListener(locationEventConsumer);
-        Log.v(Main.LOG_TAG, "LocationHandler.removeUpdates() #" + consumerContainer.size() + " elements left: " + consumerContainer.getConsumers());
+        consumerContainer.removeConsumer(locationEventConsumer);
     }
 
     private boolean locationIsValid() {

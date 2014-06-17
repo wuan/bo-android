@@ -3,23 +3,27 @@ package org.blitzortung.android.protocol;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class ListenerContainer<P> {
+public abstract class ConsumerContainer<P> {
 
     private final Set<Consumer<P>> consumers;
 
     private P currentPayload;
 
-    public ListenerContainer() {
+    public ConsumerContainer() {
         consumers = new HashSet<Consumer<P>>();
     }
 
-    public void addListener(Consumer<P> listener) {
-        if (!consumers.contains(listener)) {
-            if (consumers.isEmpty()) {
+    public void addConsumer(Consumer<P> consumer) {
+        if (consumer == null) {
+            throw new IllegalArgumentException("consumer may not be null");
+        }
+        if (!consumers.contains(consumer)) {
+            final boolean isFirst = consumers.isEmpty();
+            consumers.add(consumer);
+            if (isFirst) {
                 addedFirstConsumer();
             }
-            consumers.add(listener);
-            sendCurrentPayloadTo(listener);
+            sendCurrentPayloadTo(consumer);
         }
     }
 
@@ -29,9 +33,9 @@ public abstract class ListenerContainer<P> {
         }
     }
 
-    public void removeListener(Consumer<P> listener) {
-        if (consumers.contains(listener)) {
-            consumers.remove(listener);
+    public void removeConsumer(Consumer<P> consumer) {
+        if (consumers.contains(consumer)) {
+            consumers.remove(consumer);
             if (consumers.isEmpty()) {
                 removedLastConsumer();
             }

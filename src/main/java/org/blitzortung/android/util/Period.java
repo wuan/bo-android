@@ -15,6 +15,10 @@ public class Period {
     }
     
     public boolean shouldUpdate(long currentTime, int currentPeriod) {
+        if (lastUpdateTime == 0) {
+            lastUpdateTime = currentTime;
+            return true;
+        }
         return currentTime >= lastUpdateTime + currentPeriod;
     }
 

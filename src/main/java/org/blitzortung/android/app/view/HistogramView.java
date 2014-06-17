@@ -32,7 +32,6 @@ public class HistogramView extends View {
 
     private final int defaultForegroundColor;
     private final RectF backgroundRect;
-    private Consumer<DataEvent> dataConsumer;
 
     @SuppressWarnings("unused")
     public HistogramView(Context context, AttributeSet attrs) {
@@ -135,7 +134,7 @@ public class HistogramView extends View {
     };
 
     public Consumer<DataEvent> getDataConsumer() {
-        return dataConsumer;
+        return dataEventConsumer;
     }
 
     private void updateHistogram(ResultEvent dataEvent) {

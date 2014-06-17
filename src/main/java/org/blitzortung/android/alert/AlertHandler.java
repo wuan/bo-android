@@ -19,6 +19,7 @@ import org.blitzortung.android.alert.object.AlertSector;
 import org.blitzortung.android.alert.object.AlertStatus;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
+import org.blitzortung.android.data.provider.result.ClearDataEvent;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.blitzortung.android.location.LocationEvent;
@@ -49,7 +50,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
 
     private boolean alarmValid;
 
-    private Consumer<AlertEvent> alertEventConsumer;
+    protected Consumer<AlertEvent> alertEventConsumer;
 
     private final AlertStatus alertStatus;
 
@@ -126,7 +127,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
             locationHandler.requestUpdates(locationEventConsumer);
         } else {
             locationHandler.removeUpdates(locationEventConsumer);
-            //location = null;
+            location = null;
             broadcastClear();
         }
     }
@@ -134,7 +135,6 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
     private final Consumer<LocationEvent> locationEventConsumer = new Consumer<LocationEvent>() {
         @Override
         public void consume(LocationEvent event) {
-
             location = event.getLocation();
             checkStrokes(lastStrokes);
         }
@@ -149,8 +149,13 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
         public void consume(DataEvent event) {
             if (event instanceof ResultEvent) {
                 ResultEvent resultEvent = (ResultEvent) event;
-                checkStrokes(resultEvent.getStrokes());
-            } else if (event instanceof LocationEvent) {
+                if (resultEvent.containsRealtimeData()) {
+                    checkStrokes(resultEvent.getStrokes());
+                } else {
+                    invalidateAlert();
+                }
+            } else if (event instanceof ClearDataEvent) {
+                invalidateAlert();
             }
         }
     };
@@ -184,7 +189,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
         return alertStatusHandler.getTextMessage(alertStatus, notificationDistanceLimit);
     }
 
-    public void setAlertListener(Consumer<AlertEvent> alertEventConsumer) {
+    public void setAlertEventConsumer(Consumer<AlertEvent> alertEventConsumer) {
         this.alertEventConsumer = alertEventConsumer;
         updateLocationHandler();
     }
@@ -212,6 +217,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
     }
 
     public void invalidateAlert() {
+        lastStrokes = null;
         boolean previousAlarmValidState = alarmValid;
         alarmValid = false;
 

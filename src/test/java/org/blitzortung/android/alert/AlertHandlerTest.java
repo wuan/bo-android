@@ -6,7 +6,6 @@ import android.content.res.Resources;
 import android.location.Location;
 import android.os.Vibrator;
 import com.google.common.collect.Lists;
-import org.blitzortung.android.alert.event.AlertCancelEvent;
 import org.blitzortung.android.alert.event.AlertEvent;
 import org.blitzortung.android.alert.event.AlertResultEvent;
 import org.blitzortung.android.alert.factory.AlertObjectFactory;
@@ -18,7 +17,7 @@ import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.Stroke;
-import org.blitzortung.android.protocol.Listener;
+import org.blitzortung.android.protocol.Consumer;
 import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,7 +77,7 @@ public class AlertHandlerTest {
     private Location location;
 
     @Mock
-    private Listener alarmListener;
+    private Consumer<AlertEvent> alertEventConsumer;
 
     private AlertHandler alertHandler;
     
@@ -104,7 +103,7 @@ public class AlertHandlerTest {
         when(context.getResources()).thenReturn(resources);
         
         alertHandler = new AlertHandler(locationManager, sharedPreferences, context, vibrator, notificationHandler, alertObjectFactory, alertParameters);
-        alertHandler.setAlertListener(alarmListener);
+        alertHandler.setAlertEventConsumer(alertEventConsumer);
     }
 
     @Test
@@ -113,10 +112,10 @@ public class AlertHandlerTest {
 
         verify(sharedPreferences, times(1)).registerOnSharedPreferenceChangeListener(any(AlertHandler.class));
         verify(sharedPreferences, times(1)).getBoolean(PreferenceKey.ALERT_ENABLED.toString(), false);
-        verify(locationManager, times(1)).removeUpdates(any(AlertHandler.class));
+        verify(locationManager, times(1)).removeUpdates(any(Consumer.class));
         verify(sharedPreferences, times(1)).getString(PreferenceKey.MEASUREMENT_UNIT.toString(), "METRIC");
         verify(alertParameters, times(1)).setMeasurementSystem(MeasurementSystem.METRIC);
-        verify(alarmListener, times(0)).onEvent(AlertHandler.ALERT_CANCEL_EVENT);
+        verify(alertEventConsumer, times(0)).consume(AlertHandler.ALERT_CANCEL_EVENT);
     }
 
     @Test
@@ -124,49 +123,49 @@ public class AlertHandlerTest {
         alertHandler.checkStrokes(strokes);
 
         verify(alertStatusHandler, times(0)).checkStrokes(alertStatus, strokes, null);
-        verifyZeroInteractions(alarmListener);
+        verifyZeroInteractions(alertEventConsumer);
     }
 
     @Test
     public void testCheckStrokesWithAlarmDisabledAndLocationUnset() {
         makeAlarmsValid();
-        verify(alarmListener, times(1)).onEvent(any(AlertResultEvent.class));
-        verify(alarmListener, times(0)).onEvent(AlertHandler.ALERT_CANCEL_EVENT);
+        verify(alertEventConsumer, times(1)).consume(any(AlertResultEvent.class));
+        verify(alertEventConsumer, times(0)).consume(AlertHandler.ALERT_CANCEL_EVENT);
 
-        alertHandler.onEvent(new LocationEvent(null));
+        alertHandler.getLocationEventConsumer().consume(new LocationEvent(null));
         alertHandler.checkStrokes(strokes);
 
         verify(alertStatusHandler, times(0)).checkStrokes(alertStatus, strokes, null);
-        verify(alarmListener, times(1)).onEvent(any(AlertResultEvent.class));
-        verify(alarmListener, times(1)).onEvent(AlertHandler.ALERT_CANCEL_EVENT);
+        verify(alertEventConsumer, times(1)).consume(any(AlertResultEvent.class));
+        verify(alertEventConsumer, times(1)).consume(AlertHandler.ALERT_CANCEL_EVENT);
     }
 
     @Test
     public void testCheckStrokesWithAlarmDisabledAndLocationSet() {
         makeAlarmsValid();
         enableAlarmInPrefs(false);
-        verify(alarmListener, times(1)).onEvent(any(AlertResultEvent.class));
-        verify(alarmListener, times(1)).onEvent(AlertHandler.ALERT_CANCEL_EVENT);
+        verify(alertEventConsumer, times(1)).consume(any(AlertResultEvent.class));
+        verify(alertEventConsumer, times(1)).consume(AlertHandler.ALERT_CANCEL_EVENT);
 
         alertHandler.checkStrokes(strokes);
 
         verify(alertStatusHandler, times(0)).checkStrokes(alertStatus, strokes, null);
-        verify(alarmListener, times(1)).onEvent(any(AlertResultEvent.class));
-        verify(alarmListener, times(2)).onEvent(AlertHandler.ALERT_CANCEL_EVENT);
+        verify(alertEventConsumer, times(1)).consume(any(AlertResultEvent.class));
+        verify(alertEventConsumer, times(2)).consume(AlertHandler.ALERT_CANCEL_EVENT);
     }
 
     @Test
     public void testCheckStrokesWithAlarmEnabledAndLocationSet() {
         enableAlarmInPrefs(true);
-        alertHandler.onEvent(new LocationEvent(location));
+        alertHandler.getLocationEventConsumer().consume(new LocationEvent(location));
 
         when(alertStatusHandler.getCurrentActivity(alertStatus)).thenReturn(alertResult);
 
         alertHandler.checkStrokes(strokes);
 
         verify(alertStatusHandler, times(1)).checkStrokes(alertStatus, strokes, location);
-        verify(alarmListener, times(1)).onEvent(any(AlertResultEvent.class));
-        verify(alarmListener, times(0)).onEvent(AlertHandler.ALERT_CANCEL_EVENT);
+        verify(alertEventConsumer, times(1)).consume(any(AlertResultEvent.class));
+        verify(alertEventConsumer, times(0)).consume(AlertHandler.ALERT_CANCEL_EVENT);
     }
 
     @Test
@@ -198,7 +197,7 @@ public class AlertHandlerTest {
     }
 
     private void makeAlarmsValid() {
-        alertHandler.onEvent(new LocationEvent(location));
+        alertHandler.getLocationEventConsumer().consume(new LocationEvent(location));
         enableAlarmInPrefs(true);
         alertHandler.checkStrokes(Lists.<Stroke>newArrayList());
     }

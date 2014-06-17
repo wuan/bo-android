@@ -162,21 +162,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
                 appService = ((AppService.DataServiceBinder) iBinder).getService();
                 Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + appService);
 
-                historyController.setAppService(appService);
-                appService.addDataConsumer(historyController.getDataConsumer());
-                appService.addDataConsumer(getDataEventConsumer());
-
-                appService.addLocationListener(ownLocationOverlay.getLocationEventConsumer());
-                appService.addDataConsumer(histogramView.getDataConsumer());
-
-                appService.addLocationListener(alertView.getLocationEventConsumer());
-                appService.addAlertConsumer(alertView.getAlertEventConsumer());
-
-                appService.addAlertConsumer(statusComponent.getAlertEventConsumer());
-
-                strokesOverlay.setIntervalDuration(appService.getDataHandler().getIntervalDuration());
-
-                appService.resumeDataService();
+                setupService();
             }
 
             @Override
@@ -185,6 +171,24 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         };
 
         bindService(serviceIntent, serviceConnection, 0);
+    }
+
+    private void setupService() {
+        if (appService != null) {
+            historyController.setAppService(appService);
+            appService.addDataConsumer(historyController.getDataConsumer());
+            appService.addDataConsumer(getDataEventConsumer());
+
+            appService.addLocationConsumer(ownLocationOverlay.getLocationEventConsumer());
+            appService.addDataConsumer(histogramView.getDataConsumer());
+
+            appService.addLocationConsumer(alertView.getLocationEventConsumer());
+            appService.addAlertConsumer(alertView.getAlertEventConsumer());
+
+            appService.addAlertConsumer(statusComponent.getAlertEventConsumer());
+
+            strokesOverlay.setIntervalDuration(appService.getDataHandler().getIntervalDuration());
+        }
     }
 
     private void setupDebugModeButton() {
@@ -346,6 +350,8 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
     public void onStart() {
         super.onStart();
 
+        setupService();
+
         Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService);
     }
 
@@ -375,12 +381,17 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
 
         if (appService != null) {
             Log.v(Main.LOG_TAG, "Main.onStop() remove listeners");
-            appService.removeLocationListener(ownLocationOverlay.getLocationEventConsumer());
 
+            historyController.setAppService(null);
             appService.removeDataConsumer(historyController.getDataConsumer());
+            appService.removeDataConsumer(getDataEventConsumer());
+
+            appService.removeLocationConsumer(ownLocationOverlay.getLocationEventConsumer());
             appService.removeDataConsumer(histogramView.getDataConsumer());
-            appService.removeLocationListener(alertView.getLocationEventConsumer());
+
+            appService.removeLocationConsumer(alertView.getLocationEventConsumer());
             appService.removeAlertListener(alertView.getAlertEventConsumer());
+
             appService.removeAlertListener(statusComponent.getAlertEventConsumer());
         } else {
             Log.i(LOG_TAG, "Main.onStop()");
@@ -446,7 +457,6 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
                     }
 
                     if (!result.containsRealtimeData()) {
-                        appService.disable();
                         setHistoricStatusString();
                     }
 

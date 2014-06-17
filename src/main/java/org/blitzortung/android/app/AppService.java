@@ -15,6 +15,9 @@ import org.blitzortung.android.alert.AlertParameters;
 import org.blitzortung.android.alert.event.AlertEvent;
 import org.blitzortung.android.alert.AlertHandler;
 import org.blitzortung.android.alert.factory.AlertObjectFactory;
+import org.blitzortung.android.data.Parameters;
+import org.blitzortung.android.data.provider.result.ClearDataEvent;
+import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.app.controller.NotificationHandler;
@@ -24,7 +27,7 @@ import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.StatusEvent;
 import org.blitzortung.android.protocol.Consumer;
-import org.blitzortung.android.protocol.ListenerContainer;
+import org.blitzortung.android.protocol.ConsumerContainer;
 import org.blitzortung.android.util.Period;
 
 import java.util.HashSet;
@@ -43,6 +46,8 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
     private final Period updatePeriod;
 
+    private Parameters lastParameters;
+
     private boolean updateParticipants;
 
     private boolean enabled;
@@ -60,25 +65,29 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
     private PowerManager.WakeLock wakeLock;
 
-    ListenerContainer<DataEvent> dataListenerContainer = new ListenerContainer<DataEvent>() {
+    ConsumerContainer<DataEvent> dataConsumerContainer = new ConsumerContainer<DataEvent>() {
         @Override
         public void addedFirstConsumer() {
-            resumeDataService();
+            Log.d(Main.LOG_TAG, "added first data consumer");
+            configureServiceMode();
         }
 
         @Override
         public void removedLastConsumer() {
-            suspendDataService();
+            Log.d(Main.LOG_TAG, "removed last data consumer");
+            configureServiceMode();
         }
     };
 
-    ListenerContainer<AlertEvent> alertListenerContainer = new ListenerContainer<AlertEvent>() {
+    ConsumerContainer<AlertEvent> alertConsumerContainer = new ConsumerContainer<AlertEvent>() {
         @Override
         public void addedFirstConsumer() {
+            Log.d(Main.LOG_TAG, "added first alert consumer");
         }
 
         @Override
         public void removedLastConsumer() {
+            Log.d(Main.LOG_TAG, "removed last alert consumer");
         }
     };
 
@@ -107,8 +116,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     public void reloadData() {
-        dataListenerContainer.broadcast(DataHandler.CLEAR_DATA_EVENT);
-
         if (isEnabled()) {
             restart();
         } else {
@@ -129,52 +136,62 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     private final Consumer<DataEvent> dataEventConsumer = new Consumer<DataEvent>() {
         @Override
         public void consume(DataEvent event) {
-            if (!dataListenerContainer.isEmpty()) {
-                dataListenerContainer.storeAndBroadcast(event);
+            if (!dataConsumerContainer.isEmpty()) {
+                dataConsumerContainer.storeAndBroadcast(event);
             }
+
             if (alertEnabled) {
                 alertHandler.getDataEventConsumer().consume(event);
             }
+
+            if (event instanceof ClearDataEvent) {
+                restart();
+            } else if (event instanceof ResultEvent) {
+                ResultEvent resultEvent = (ResultEvent) event;
+                lastParameters = resultEvent.getParameters();
+                configureServiceMode();
+            }
+
             releaseWakeLock();
         }
     };
 
-    public ListenerContainer<DataEvent> getDataListenerContainer() {
-        return dataListenerContainer;
+    public ConsumerContainer<DataEvent> getDataConsumerContainer() {
+        return dataConsumerContainer;
     }
 
     private final Consumer<AlertEvent> alertEventConsumer = new Consumer<AlertEvent>() {
         @Override
         public void consume(AlertEvent event) {
-            alertListenerContainer.broadcast(event);
+            alertConsumerContainer.storeAndBroadcast(event);
         }
     };
 
-    public ListenerContainer<AlertEvent> getAlertListenerContainer() {
-        return alertListenerContainer;
+    public ConsumerContainer<AlertEvent> getAlertConsumerContainer() {
+        return alertConsumerContainer;
     }
 
     public void addDataConsumer(Consumer<DataEvent> dataConsumer) {
-        dataListenerContainer.addListener(dataConsumer);
+        dataConsumerContainer.addConsumer(dataConsumer);
     }
 
     public void removeDataConsumer(Consumer<DataEvent> dataConsumer) {
-        dataListenerContainer.removeListener(dataConsumer);
+        dataConsumerContainer.removeConsumer(dataConsumer);
     }
 
     public void addAlertConsumer(Consumer<AlertEvent> alertConsumer) {
-        alertListenerContainer.addListener(alertConsumer);
+        alertConsumerContainer.addConsumer(alertConsumer);
     }
 
     public void removeAlertListener(Consumer<AlertEvent> alertConsumer) {
-        alertListenerContainer.removeListener(alertConsumer);
+        alertConsumerContainer.removeConsumer(alertConsumer);
     }
 
-    public void removeLocationListener(Consumer<LocationEvent> locationConsumer) {
+    public void removeLocationConsumer(Consumer<LocationEvent> locationConsumer) {
         locationHandler.removeUpdates(locationConsumer);
     }
 
-    public void addLocationListener(Consumer<LocationEvent> locationListener) {
+    public void addLocationConsumer(Consumer<LocationEvent> locationListener) {
         locationHandler.requestUpdates(locationListener);
     }
 
@@ -205,7 +222,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
         if (dataHandler == null) {
             dataHandler = new DataHandler(wakeLock, preferences, getPackageInfo());
-            dataHandler.setDataListener(dataEventConsumer);
+            dataHandler.setDataConsumer(dataEventConsumer);
         }
 
         locationHandler = new LocationHandler(this, preferences);
@@ -231,6 +248,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
             Log.v(Main.LOG_TAG, "AppService.onStartCommand() acquired wake lock " + wakeLock);
 
+            enabled = false;
             handler.removeCallbacks(this);
             handler.post(this);
         }
@@ -262,11 +280,15 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
     @Override
     public void run() {
+        if (dataConsumerContainer.isEmpty()) {
+            if (alertEnabled && backgroundPeriod > 0) {
+                Log.v(Main.LOG_TAG, "AppService.run() in background");
 
-        if (dataListenerContainer.isEmpty()) {
-            Log.v(Main.LOG_TAG, "AppService.run() in background");
-
-            dataHandler.updateDatainBackground();
+                dataHandler.updateDatainBackground();
+            } else {
+                enabled = false;
+                handler.removeCallbacks(this);
+            }
         } else {
             releaseWakeLock();
 
@@ -288,7 +310,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
                 }
 
                 final String statusString = "" + updatePeriod.getCurrentUpdatePeriod(currentTime, period) + "/" + period;
-                dataListenerContainer.broadcast(new StatusEvent(statusString));
+                dataConsumerContainer.broadcast(new StatusEvent(statusString));
             }
             // Schedule the next update
             handler.postDelayed(this, 1000);
@@ -296,32 +318,8 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     }
 
     public void restart() {
+        configureServiceMode();
         updatePeriod.restart();
-        enable();
-    }
-
-    public void resumeDataService() {
-        if (dataHandler.isRealtime()) {
-            Log.v(Main.LOG_TAG, "AppService.resumeDataService() realtime data");
-            enable();
-        } else {
-            Log.v(Main.LOG_TAG, "AppService.resumeDataService() historic data");
-        }
-
-        discardAlarm();
-    }
-
-    public boolean suspendDataService() {
-        Log.v(Main.LOG_TAG, "AppService.suspendDataService()");
-        disable();
-
-        if (backgroundPeriod == 0) {
-            locationHandler.removeUpdates(alertHandler.getLocationEventConsumer());
-        } else {
-            createAlarm();
-        }
-
-        return true;
     }
 
     @Override
@@ -330,19 +328,8 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         Log.v(Main.LOG_TAG, "AppService.onDestroy()");
     }
 
-    public void enable() {
-        enabled = true;
-        handler.removeCallbacks(this);
-        handler.post(this);
-    }
-
     public boolean isEnabled() {
         return enabled;
-    }
-
-    protected void disable() {
-        handler.removeCallbacks(this);
-        enabled = false;
     }
 
     public void setDataHandler(DataHandler dataHandler) {
@@ -359,15 +346,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
             case ALERT_ENABLED:
                 alertEnabled = sharedPreferences.getBoolean(key.toString(), false);
 
-                if (dataListenerContainer.isEmpty() && backgroundPeriod > 0) {
-                    if (alertEnabled) {
-                        alertHandler.setAlertListener(alertEventConsumer);
-                        createAlarm();
-                    } else {
-                        alertHandler.unsetAlertListener();
-                        discardAlarm();
-                    }
-                }
+                configureServiceMode();
                 break;
 
             case QUERY_PERIOD:
@@ -375,22 +354,11 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
                 break;
 
             case BACKGROUND_QUERY_PERIOD:
-                int previousBackgroundPeriod = backgroundPeriod;
                 backgroundPeriod = Integer.parseInt(sharedPreferences.getString(key.toString(), "0"));
 
-                if (dataListenerContainer.isEmpty() && alertEnabled) {
-                    if (previousBackgroundPeriod == 0 && backgroundPeriod > 0) {
-                        Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() create alarm with backgroundPeriod=%d", backgroundPeriod));
-                        alertHandler.setAlertListener(alertEventConsumer);
-                        createAlarm();
-                    } else if (previousBackgroundPeriod > 0 && backgroundPeriod == 0) {
-                        Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() discard alarm", backgroundPeriod));
-                        alertHandler.unsetAlertListener();
-                        discardAlarm();
-                    }
-                } else {
-                    Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() backgroundPeriod=%d", backgroundPeriod));
-                }
+                Log.v(Main.LOG_TAG, String.format("AppService.onSharedPreferenceChanged() backgroundPeriod=%d", backgroundPeriod));
+                discardAlarm();
+                configureServiceMode();
                 break;
 
             case SHOW_PARTICIPANTS:
@@ -399,11 +367,40 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         }
     }
 
-    private void createAlarm() {
-        discardAlarm();
+    private void configureServiceMode() {
+        final boolean backgroundOperation = dataConsumerContainer.isEmpty();
+        if (backgroundOperation) {
+            if (alertEnabled && backgroundPeriod > 0) {
+                alertHandler.setAlertEventConsumer(alertEventConsumer);
+                createAlarm();
+            } else {
+                alertHandler.unsetAlertListener();
+                discardAlarm();
+            }
+        } else {
+            discardAlarm();
+            if (dataHandler.isRealtime()) {
+                Log.v(Main.LOG_TAG, "AppService.configureServiceMode() realtime data (was enabled: " + enabled + ")");
+                if (!enabled) {
+                    enabled = true;
+                    handler.removeCallbacks(this);
+                    handler.post(this);
+                }
+            } else {
+                Log.v(Main.LOG_TAG, "AppService.configureServiceMode() historic data (was enabled: " + enabled + ")");
+                enabled = false;
+                handler.removeCallbacks(this);
+                if (lastParameters != null && !lastParameters.equals(dataHandler.getParameters())) {
+                    dataHandler.updateData();
+                }
+            }
+            alertHandler.setAlertEventConsumer(alertEventConsumer);
+        }
+    }
 
-        if (dataListenerContainer.isEmpty() && backgroundPeriod > 0) {
-            Log.v(Main.LOG_TAG, String.format("AppService.createAlarm() %d", backgroundPeriod));
+    private void createAlarm() {
+        if (alarmManager == null && dataConsumerContainer.isEmpty() && backgroundPeriod > 0) {
+            Log.v(Main.LOG_TAG, String.format("AppService.createAlarm() with backgroundPeriod=%d", backgroundPeriod));
             Intent intent = new Intent(this, AppService.class);
             intent.setAction(RETRIEVE_DATA_ACTION);
             pendingIntent = PendingIntent.getService(this, 0, intent, 0);

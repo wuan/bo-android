@@ -168,7 +168,7 @@ public class OwnLocationOverlayTest {
     @Test
     public void testOnLocationChanged()
     {
-        ownLocationOverlay.onEvent(new LocationEvent(mock(Location.class)));
+        ownLocationOverlay.getLocationEventConsumer().consume(new LocationEvent(mock(Location.class)));
         
         assertThat(ownLocationOverlay.size(), is(1));
     }
@@ -176,7 +176,7 @@ public class OwnLocationOverlayTest {
     @Test
     public void testOnLocationChangedWithNullLocation()
     {
-        ownLocationOverlay.onEvent(new LocationEvent(null));
+        ownLocationOverlay.getLocationEventConsumer().consume(new LocationEvent(null));
 
         assertThat(ownLocationOverlay.size(), is(0));
     }
@@ -184,7 +184,7 @@ public class OwnLocationOverlayTest {
     @Test
     public void testDisableOwnLocation()
     {
-        ownLocationOverlay.onEvent(new LocationEvent(mock(Location.class)));
+        ownLocationOverlay.getLocationEventConsumer().consume(new LocationEvent(mock(Location.class)));
 
         ownLocationOverlay.disableOwnLocation();
 
@@ -198,6 +198,6 @@ public class OwnLocationOverlayTest {
 
     private void updateLocation()
     {
-        ownLocationOverlay.onEvent(new LocationEvent(mock(Location.class)));
+        ownLocationOverlay.getLocationEventConsumer().consume(new LocationEvent(mock(Location.class)));
     }
 }

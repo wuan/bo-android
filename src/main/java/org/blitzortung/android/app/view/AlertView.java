@@ -6,16 +6,13 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.location.Location;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import org.blitzortung.android.alert.AlertParameters;
-import org.blitzortung.android.alert.event.AlertResultEvent;
-import org.blitzortung.android.alert.AlertResult;
 import org.blitzortung.android.alert.event.AlertEvent;
+import org.blitzortung.android.alert.event.AlertResultEvent;
 import org.blitzortung.android.alert.object.AlertSector;
 import org.blitzortung.android.alert.object.AlertSectorRange;
 import org.blitzortung.android.alert.object.AlertStatus;
-import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.location.LocationEvent;
@@ -29,8 +26,6 @@ public class AlertView extends View {
     private static final int TEXT_MINIMUM_SIZE = 300;
     private static final PorterDuffXfermode XFERMODE_CLEAR = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
     private static final PorterDuffXfermode XFERMODE_SRC = new PorterDuffXfermode(PorterDuff.Mode.SRC);
-
-    //private AlertHandler alertManager;
 
     private ColorHandler colorHandler;
 
@@ -49,7 +44,6 @@ public class AlertView extends View {
     private Bitmap temporaryBitmap;
     private Canvas temporaryCanvas;
     private AlertStatus alertStatus;
-    private AlertResult alertResult;
 
     @SuppressWarnings("unused")
     public AlertView(Context context, AttributeSet attrs) {
@@ -211,11 +205,8 @@ public class AlertView extends View {
                 AlertResultEvent alertResultEvent = (AlertResultEvent) event;
 
                 alertStatus = alertResultEvent.getAlertStatus();
-                alertResult = alertResultEvent.getAlertResult();
-                Log.v(Main.LOG_TAG, "AlertView.onEvent() AlertResult " + alertStatus);
             } else {
                 alertStatus = null;
-                alertResult = null;
             }
             invalidate();
         }
@@ -232,7 +223,6 @@ public class AlertView extends View {
             final int visibility = location != null ? View.VISIBLE : View.INVISIBLE;
             setVisibility(visibility);
             invalidate();
-            Log.v(Main.LOG_TAG, "AlertView.onEvent() Location " + location);
         }
     };
 
