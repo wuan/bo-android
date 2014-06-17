@@ -16,7 +16,7 @@ import org.blitzortung.android.data.provider.result.ClearDataEvent;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.RequestStartedEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
-import org.blitzortung.android.protocol.Listener;
+import org.blitzortung.android.protocol.Consumer;
 import org.blitzortung.android.util.optional.Optional;
 
 import java.util.HashSet;
@@ -37,7 +37,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     private final Parameters parameters;
 
-    private Listener listener;
+    private Consumer<DataEvent> dataEventConsumer;
 
     private int preferencesRasterBaselength;
     private int preferencesRegion;
@@ -77,11 +77,9 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         }
 
         protected void onPostExecute(Optional<ResultEvent> result) {
-            if (listener != null) {
-                if (result.isPresent()) {
-                    final ResultEvent payload = result.get();
-                    listener.onEvent(payload);
-                }
+            if (result.isPresent()) {
+                final ResultEvent payload = result.get();
+                sendEvent(payload);
             }
         }
 
@@ -189,8 +187,8 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     }
 
     private void sendEvent(DataEvent dataEvent) {
-        if (listener != null) {
-            listener.onEvent(dataEvent);
+        if (dataEventConsumer != null) {
+            dataEventConsumer.consume(dataEvent);
         }
     }
 
@@ -291,8 +289,8 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         parameters.setRasterBaselength(preferencesRasterBaselength);
     }
 
-    public void setDataListener(Listener listener) {
-        this.listener = listener;
+    public void setDataListener(Consumer<DataEvent> consumer) {
+        this.dataEventConsumer = consumer;
     }
 
     public int getIntervalDuration() {

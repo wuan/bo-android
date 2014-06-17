@@ -8,18 +8,15 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.location.Location;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import com.google.android.maps.ItemizedOverlay;
-import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
-import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.app.view.PreferenceKey;
+import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.components.LayerOverlayComponent;
-import org.blitzortung.android.protocol.Event;
-import org.blitzortung.android.protocol.Listener;
+import org.blitzortung.android.protocol.Consumer;
 
-public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> implements Listener, SharedPreferences.OnSharedPreferenceChangeListener, LayerOverlay {
+public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> implements SharedPreferences.OnSharedPreferenceChangeListener, LayerOverlay {
 
     static private final Drawable DEFAULT_DRAWABLE;
 
@@ -89,17 +86,20 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
         return item == null ? 0 : 1;
     }
 
-    @Override
-    public void onEvent(Event event) {
-        Log.d(Main.LOG_TAG, "OwnLocationOverlay.onEvent() " + event);
-        if (event instanceof LocationEvent) {
-            Location location = ((LocationEvent) event).getLocation();
+    private Consumer<LocationEvent> locationEventConsumer = new Consumer<LocationEvent>() {
+        @Override
+        public void consume(LocationEvent event) {
+            Location location = event.getLocation();
 
             item = location != null ? new OwnLocationOverlayItem(location, 25000) : item;
 
             populate();
             refresh();
         }
+    };
+
+    public Consumer<LocationEvent> getLocationEventConsumer() {
+        return locationEventConsumer;
     }
 
     public void enableOwnLocation() {

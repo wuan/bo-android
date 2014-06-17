@@ -10,10 +10,9 @@ import org.blitzortung.android.alert.event.AlertResultEvent;
 import org.blitzortung.android.alert.AlertLabel;
 import org.blitzortung.android.alert.event.AlertEvent;
 import org.blitzortung.android.app.R;
-import org.blitzortung.android.protocol.Event;
-import org.blitzortung.android.protocol.Listener;
+import org.blitzortung.android.protocol.Consumer;
 
-public class StatusComponent implements AlertLabel, Listener {
+public class StatusComponent implements AlertLabel {
 
     private TextView status;
 
@@ -67,13 +66,17 @@ public class StatusComponent implements AlertLabel, Listener {
         warning.setText(alarmText);
     }
 
-    @Override
-    public void onEvent(Event event) {
-        if (event instanceof AlertEvent) {
+    private final Consumer<AlertEvent> alertEventConsumer = new Consumer<AlertEvent>() {
+        @Override
+        public void consume(AlertEvent event) {
             alertLabelHandler.apply(
                     event instanceof AlertResultEvent
                             ? ((AlertResultEvent) event).getAlertResult()
                             : null);
         }
+    };
+
+    public Consumer<AlertEvent> getAlertEventConsumer() {
+        return alertEventConsumer;
     }
 }

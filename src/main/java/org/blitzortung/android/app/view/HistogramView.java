@@ -12,10 +12,9 @@ import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
-import org.blitzortung.android.protocol.Event;
-import org.blitzortung.android.protocol.Listener;
+import org.blitzortung.android.protocol.Consumer;
 
-public class HistogramView extends View implements Listener {
+public class HistogramView extends View {
 
     private float width;
     private float height;
@@ -33,6 +32,7 @@ public class HistogramView extends View implements Listener {
 
     private final int defaultForegroundColor;
     private final RectF backgroundRect;
+    private Consumer<DataEvent> dataConsumer;
 
     @SuppressWarnings("unused")
     public HistogramView(Context context, AttributeSet attrs) {
@@ -97,7 +97,7 @@ public class HistogramView extends View implements Listener {
                 }
             }
 
-            canvas.drawText(String.format("%.1f/min _", (float)maximumCount/ minutesPerBin), width - 2*padding, padding + textSize/1.2f, textPaint);
+            canvas.drawText(String.format("%.1f/min _", (float) maximumCount / minutesPerBin), width - 2 * padding, padding + textSize / 1.2f, textPaint);
 
             int ymax = maximumCount == 0 ? 1 : maximumCount;
 
@@ -110,7 +110,7 @@ public class HistogramView extends View implements Listener {
             foregroundPaint.setStrokeWidth(2);
             for (int i = 0; i < histogram.length - 1; i++) {
                 foregroundPaint.setColor(colorHandler.getColor((histogram.length - 1 - i) / ratio));
-                canvas.drawLine(x0 + xd * i, y0 - yd * histogram[i], x0 + xd * (i+1), y0 - yd * histogram[i+1], foregroundPaint);
+                canvas.drawLine(x0 + xd * i, y0 - yd * histogram[i], x0 + xd * (i + 1), y0 - yd * histogram[i + 1], foregroundPaint);
             }
 
             foregroundPaint.setStrokeWidth(1);
@@ -125,13 +125,17 @@ public class HistogramView extends View implements Listener {
         this.strokesOverlay = strokesOverlay;
     }
 
-    @Override
-    public void onEvent(Event result) {
-        if (result instanceof DataEvent) {
-            if (result instanceof ResultEvent) {
-                updateHistogram((ResultEvent) result);
+    private final Consumer<DataEvent> dataEventConsumer = new Consumer<DataEvent>() {
+        @Override
+        public void consume(DataEvent event) {
+            if (event instanceof ResultEvent) {
+                updateHistogram((ResultEvent) event);
             }
         }
+    };
+
+    public Consumer<DataEvent> getDataConsumer() {
+        return dataConsumer;
     }
 
     private void updateHistogram(ResultEvent dataEvent) {

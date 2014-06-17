@@ -9,8 +9,7 @@ import org.blitzortung.android.app.R;
 import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
-import org.blitzortung.android.protocol.Event;
-import org.blitzortung.android.protocol.Listener;
+import org.blitzortung.android.protocol.Consumer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class HistoryController implements Listener {
+public class HistoryController {
 
     private ImageButton historyRewind;
     private ImageButton historyForward;
@@ -137,9 +136,9 @@ public class HistoryController implements Listener {
         this.appService = appService;
     }
 
-    @Override
-    public void onEvent(Event event) {
-        if (event instanceof DataEvent) {
+    private Consumer<DataEvent> dataEventConsumer = new Consumer<DataEvent>() {
+        @Override
+        public void consume(DataEvent event) {
             if (event instanceof ResultEvent) {
                 ResultEvent resultEvent = (ResultEvent) event;
                 if (!resultEvent.hasFailed()) {
@@ -147,5 +146,9 @@ public class HistoryController implements Listener {
                 }
             }
         }
+    };
+
+    public Consumer<DataEvent> getDataConsumer() {
+        return dataEventConsumer;
     }
 }

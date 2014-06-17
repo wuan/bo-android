@@ -3,44 +3,44 @@ package org.blitzortung.android.protocol;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class ListenerContainer<P extends Event> {
+public abstract class ListenerContainer<P> {
 
-    private final Set<Listener> listeners;
+    private final Set<Consumer<P>> consumers;
 
     private P currentPayload;
 
     public ListenerContainer() {
-        listeners = new HashSet<Listener>();
+        consumers = new HashSet<Consumer<P>>();
     }
 
-    public void addListener(Listener listener) {
-        if (!listeners.contains(listener)) {
-            if (listeners.isEmpty()) {
-                addedFirstListener();
+    public void addListener(Consumer<P> listener) {
+        if (!consumers.contains(listener)) {
+            if (consumers.isEmpty()) {
+                addedFirstConsumer();
             }
-            listeners.add(listener);
+            consumers.add(listener);
             sendCurrentPayloadTo(listener);
         }
     }
 
-    protected void sendCurrentPayloadTo(Listener listener) {
+    protected void sendCurrentPayloadTo(Consumer<P> consumer) {
         if (currentPayload != null) {
-            listener.onEvent(currentPayload);
+            consumer.consume(currentPayload);
         }
     }
 
-    public void removeListener(Listener listener) {
-        if (listeners.contains(listener)) {
-            listeners.remove(listener);
-            if (listeners.isEmpty()) {
-                removedLastListener();
+    public void removeListener(Consumer<P> listener) {
+        if (consumers.contains(listener)) {
+            consumers.remove(listener);
+            if (consumers.isEmpty()) {
+                removedLastConsumer();
             }
         }
     }
 
-    public abstract void addedFirstListener();
+    public abstract void addedFirstConsumer();
 
-    public abstract void removedLastListener();
+    public abstract void removedLastConsumer();
 
     public void storeAndBroadcast(P payload) {
         currentPayload = payload;
@@ -48,20 +48,20 @@ public abstract class ListenerContainer<P extends Event> {
     }
 
     public void broadcast(P payload) {
-        for (Listener listener : listeners) {
-            listener.onEvent(payload);
+        for (Consumer<P> listener : consumers) {
+            listener.consume(payload);
         }
     }
 
     public boolean isEmpty() {
-        return listeners.isEmpty();
+        return consumers.isEmpty();
     }
 
     public int size() {
-        return listeners.size();
+        return consumers.size();
     }
 
-    public Set<Listener> getListeners() {
-        return listeners;
+    public Set<Consumer<P>> getConsumers() {
+        return consumers;
     }
 }

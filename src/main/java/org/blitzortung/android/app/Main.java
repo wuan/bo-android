@@ -45,15 +45,14 @@ import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrokesOverlay;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
 import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
-import org.blitzortung.android.protocol.Event;
-import org.blitzortung.android.protocol.Listener;
+import org.blitzortung.android.protocol.Consumer;
 import org.blitzortung.android.util.optional.Optional;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Main extends OwnMapActivity implements Listener, OnSharedPreferenceChangeListener {
+public class Main extends OwnMapActivity implements OnSharedPreferenceChangeListener {
 
     public static final String LOG_TAG = "BO_ANDROID";
 
@@ -164,18 +163,16 @@ public class Main extends OwnMapActivity implements Listener, OnSharedPreference
                 Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + appService);
 
                 historyController.setAppService(appService);
-                appService.addDataListener(historyController);
-                appService.addLocationListener(Main.this);
-                appService.addDataListener(Main.this);
-                appService.addAlertListener(Main.this);
+                appService.addDataConsumer(historyController.getDataConsumer());
+                appService.addDataConsumer(getDataEventConsumer());
 
-                appService.addLocationListener(ownLocationOverlay);
-                appService.addDataListener(histogramView);
+                appService.addLocationListener(ownLocationOverlay.getLocationEventConsumer());
+                appService.addDataConsumer(histogramView.getDataConsumer());
 
-                appService.addLocationListener(alertView);
-                appService.addAlertListener(alertView);
+                appService.addLocationListener(alertView.getLocationEventConsumer());
+                appService.addAlertConsumer(alertView.getAlertEventConsumer());
 
-                appService.addAlertListener(statusComponent);
+                appService.addAlertConsumer(statusComponent.getAlertEventConsumer());
 
                 strokesOverlay.setIntervalDuration(appService.getDataHandler().getIntervalDuration());
 
@@ -364,10 +361,6 @@ public class Main extends OwnMapActivity implements Listener, OnSharedPreference
         super.onResume();
 
         Log.d(Main.LOG_TAG, "Main.onResume() service: " + appService);
-
-        if (appService != null) {
-            appService.addDataListener(this);
-        }
     }
 
     @Override
@@ -382,15 +375,13 @@ public class Main extends OwnMapActivity implements Listener, OnSharedPreference
 
         if (appService != null) {
             Log.v(Main.LOG_TAG, "Main.onStop() remove listeners");
-            appService.removeDataListener(this);
-            appService.removeLocationListener(this);
-            appService.removeLocationListener(ownLocationOverlay);
+            appService.removeLocationListener(ownLocationOverlay.getLocationEventConsumer());
 
-            appService.removeDataListener(historyController);
-            appService.removeDataListener(histogramView);
-            appService.removeLocationListener(alertView);
-            appService.removeAlertListener(alertView);
-            appService.removeAlertListener(statusComponent);
+            appService.removeDataConsumer(historyController.getDataConsumer());
+            appService.removeDataConsumer(histogramView.getDataConsumer());
+            appService.removeLocationListener(alertView.getLocationEventConsumer());
+            appService.removeAlertListener(alertView.getAlertEventConsumer());
+            appService.removeAlertListener(statusComponent.getAlertEventConsumer());
         } else {
             Log.i(LOG_TAG, "Main.onStop()");
         }
@@ -409,79 +400,79 @@ public class Main extends OwnMapActivity implements Listener, OnSharedPreference
         return false;
     }
 
-    @Override
-    public void onEvent(Event event) {
-        if (event instanceof DataEvent) {
-            onDataEvent((DataEvent) event);
-        }
-    }
+    private Consumer<DataEvent> dataEventConsumer = new Consumer<DataEvent>() {
+        @Override
+        public void consume(DataEvent event) {
+            if (event instanceof RequestStartedEvent) {
+                buttonColumnHandler.lockButtonColumn();
+                statusComponent.startProgress();
+            } else if (event instanceof ResultEvent) {
+                ResultEvent result = (ResultEvent) event;
 
-    private void onDataEvent(DataEvent event) {
-        if (event instanceof RequestStartedEvent) {
-            buttonColumnHandler.lockButtonColumn();
-            statusComponent.startProgress();
-        } else if (event instanceof ResultEvent) {
-            ResultEvent result = (ResultEvent) event;
+                if (result.hasFailed()) {
+                    statusComponent.indicateError(true);
+                } else {
+                    statusComponent.indicateError(false);
 
-            if (result.hasFailed()) {
-                statusComponent.indicateError(true);
-            } else {
-                statusComponent.indicateError(false);
-
-                if (result.getParameters().getIntervalDuration() != appService.getDataHandler().getIntervalDuration()) {
-                    reloadData();
-                }
-
-                currentResult = Optional.of(result);
-
-                Log.d(Main.LOG_TAG, "Main.onDataUpdate() " + result);
-
-                Parameters resultParameters = result.getParameters();
-
-                clearDataIfRequested();
-
-                if (result.containsStrokes()) {
-                    strokesOverlay.setRasterParameters(result.getRasterParameters());
-                    strokesOverlay.setRegion(resultParameters.getRegion());
-                    strokesOverlay.setReferenceTime(result.getReferenceTime());
-                    strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
-                    strokesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
-
-                    if (result.containsIncrementalData()) {
-                        strokesOverlay.expireStrokes();
-                    } else {
-                        strokesOverlay.clear();
+                    if (result.getParameters().getIntervalDuration() != appService.getDataHandler().getIntervalDuration()) {
+                        reloadData();
                     }
-                    strokesOverlay.addStrokes(result.getStrokes());
 
-                    alertView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getIntervalDuration());
+                    currentResult = Optional.of(result);
 
-                    strokesOverlay.refresh();
+                    Log.d(Main.LOG_TAG, "Main.onDataUpdate() " + result);
+
+                    Parameters resultParameters = result.getParameters();
+
+                    clearDataIfRequested();
+
+                    if (result.containsStrokes()) {
+                        strokesOverlay.setRasterParameters(result.getRasterParameters());
+                        strokesOverlay.setRegion(resultParameters.getRegion());
+                        strokesOverlay.setReferenceTime(result.getReferenceTime());
+                        strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
+                        strokesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
+
+                        if (result.containsIncrementalData()) {
+                            strokesOverlay.expireStrokes();
+                        } else {
+                            strokesOverlay.clear();
+                        }
+                        strokesOverlay.addStrokes(result.getStrokes());
+
+                        alertView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getIntervalDuration());
+
+                        strokesOverlay.refresh();
+                    }
+
+                    if (!result.containsRealtimeData()) {
+                        appService.disable();
+                        setHistoricStatusString();
+                    }
+
+                    if (participantsOverlay != null && result.containsParticipants()) {
+                        participantsOverlay.setParticipants(result.getStations());
+                        participantsOverlay.refresh();
+                    }
                 }
 
-                if (!result.containsRealtimeData()) {
-                    appService.disable();
-                    setHistoricStatusString();
-                }
+                statusComponent.stopProgress();
 
-                if (participantsOverlay != null && result.containsParticipants()) {
-                    participantsOverlay.setParticipants(result.getStations());
-                    participantsOverlay.refresh();
-                }
+                buttonColumnHandler.unlockButtonColumn();
+
+                getMapView().invalidate();
+                legendView.invalidate();
+            } else if (event instanceof ClearDataEvent) {
+                clearData();
+            } else if (event instanceof StatusEvent) {
+                StatusEvent statusEvent = (StatusEvent) event;
+                setStatusString(statusEvent.getStatus());
             }
-
-            statusComponent.stopProgress();
-
-            buttonColumnHandler.unlockButtonColumn();
-
-            getMapView().invalidate();
-            legendView.invalidate();
-        } else if (event instanceof ClearDataEvent) {
-            clearData();
-        } else if (event instanceof StatusEvent) {
-            StatusEvent statusEvent = (StatusEvent) event;
-            setStatusString(statusEvent.getStatus());
         }
+    };
+
+    public Consumer<DataEvent> getDataEventConsumer() {
+        return dataEventConsumer;
     }
 
     private void reloadData() {

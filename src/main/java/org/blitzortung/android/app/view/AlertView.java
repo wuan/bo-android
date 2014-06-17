@@ -20,12 +20,11 @@ import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
-import org.blitzortung.android.protocol.Event;
-import org.blitzortung.android.protocol.Listener;
+import org.blitzortung.android.protocol.Consumer;
 
 import java.util.List;
 
-public class AlertView extends View implements Listener {
+public class AlertView extends View {
 
     private static final int TEXT_MINIMUM_SIZE = 300;
     private static final PorterDuffXfermode XFERMODE_CLEAR = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
@@ -205,31 +204,40 @@ public class AlertView extends View implements Listener {
         background.setXfermode(XFERMODE_SRC);
     }
 
-    @Override
-    public void onEvent(Event event) {
-        if (event instanceof AlertEvent) {
+    private Consumer<AlertEvent> alertEventConsumer = new Consumer<AlertEvent>() {
+        @Override
+        public void consume(AlertEvent event) {
             if (event instanceof AlertResultEvent) {
                 AlertResultEvent alertResultEvent = (AlertResultEvent) event;
 
-                this.alertStatus = alertResultEvent.getAlertStatus();
-                this.alertResult = alertResultEvent.getAlertResult();
+                alertStatus = alertResultEvent.getAlertStatus();
+                alertResult = alertResultEvent.getAlertResult();
                 Log.v(Main.LOG_TAG, "AlertView.onEvent() AlertResult " + alertStatus);
             } else {
                 alertStatus = null;
                 alertResult = null;
             }
             invalidate();
-        } else if (event instanceof LocationEvent) {
-            LocationEvent locationEvent = (LocationEvent) event;
+        }
+    };
 
+    public Consumer<AlertEvent> getAlertEventConsumer() {
+        return alertEventConsumer;
+    }
+
+    private Consumer<LocationEvent> locationEventConsumer = new Consumer<LocationEvent>() {
+        @Override
+        public void consume(LocationEvent locationEvent) {
             final Location location = locationEvent.getLocation();
             final int visibility = location != null ? View.VISIBLE : View.INVISIBLE;
             setVisibility(visibility);
             invalidate();
             Log.v(Main.LOG_TAG, "AlertView.onEvent() Location " + location);
-        } else {
-            Log.w(Main.LOG_TAG, "AlertView.onEvent() unhandled " + event);
         }
+    };
+
+    public Consumer<LocationEvent> getLocationEventConsumer() {
+        return locationEventConsumer;
     }
 
     public void setColorHandler(ColorHandler colorHandler, int intervalDuration) {

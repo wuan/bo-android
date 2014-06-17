@@ -19,19 +19,19 @@ import org.blitzortung.android.alert.object.AlertSector;
 import org.blitzortung.android.alert.object.AlertStatus;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
+import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.Stroke;
-import org.blitzortung.android.protocol.Event;
-import org.blitzortung.android.protocol.Listener;
+import org.blitzortung.android.protocol.Consumer;
 import org.blitzortung.android.util.MeasurementSystem;
 
 import java.util.Collection;
 
-public class AlertHandler implements OnSharedPreferenceChangeListener, Listener {
+public class AlertHandler implements OnSharedPreferenceChangeListener {
 
     public static final AlertCancelEvent ALERT_CANCEL_EVENT = new AlertCancelEvent();
     private final Vibrator vibrator;
@@ -49,7 +49,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
 
     private boolean alarmValid;
 
-    private Listener alertListener;
+    private Consumer<AlertEvent> alertEventConsumer;
 
     private final AlertStatus alertStatus;
 
@@ -73,7 +73,6 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
         this.alertStatus = alertObjectFactory.createAlarmStatus(alertParameters);
         this.alertStatusHandler = alertObjectFactory.createAlarmStatusHandler(alertParameters);
         this.alertParameters = alertParameters;
-
 
         preferences.registerOnSharedPreferenceChangeListener(this);
         onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED);
@@ -123,27 +122,41 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
     }
 
     private void updateLocationHandler() {
-        if (alertEnabled && alertListener != null) {
-            locationHandler.requestUpdates(this);
+        if (alertEnabled && alertEventConsumer != null) {
+            locationHandler.requestUpdates(locationEventConsumer);
         } else {
-            locationHandler.removeUpdates(this);
+            locationHandler.removeUpdates(locationEventConsumer);
             //location = null;
             broadcastClear();
         }
     }
 
-    @Override
-    public void onEvent(Event event) {
-        Log.v(Main.LOG_TAG, "AlertHandler.onEvent() data: " + event);
-        if (event instanceof ResultEvent) {
-            ResultEvent resultEvent = (ResultEvent) event;
-            checkStrokes(resultEvent.getStrokes());
-        } else if (event instanceof LocationEvent) {
-            LocationEvent locationEvent = (LocationEvent) event;
+    private final Consumer<LocationEvent> locationEventConsumer = new Consumer<LocationEvent>() {
+        @Override
+        public void consume(LocationEvent event) {
 
-            this.location = locationEvent.getLocation();
+            location = event.getLocation();
             checkStrokes(lastStrokes);
         }
+    };
+
+    public Consumer<LocationEvent> getLocationEventConsumer() {
+        return locationEventConsumer;
+    }
+
+    private final Consumer<DataEvent> dataEventConsumer = new Consumer<DataEvent>() {
+        @Override
+        public void consume(DataEvent event) {
+            if (event instanceof ResultEvent) {
+                ResultEvent resultEvent = (ResultEvent) event;
+                checkStrokes(resultEvent.getStrokes());
+            } else if (event instanceof LocationEvent) {
+            }
+        }
+    };
+
+    public Consumer<DataEvent> getDataEventConsumer() {
+        return dataEventConsumer;
     }
 
     public boolean isAlertEnabled() {
@@ -171,13 +184,13 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
         return alertStatusHandler.getTextMessage(alertStatus, notificationDistanceLimit);
     }
 
-    public void setAlertListener(Listener alertListener) {
-        this.alertListener = alertListener;
+    public void setAlertListener(Consumer<AlertEvent> alertEventConsumer) {
+        this.alertEventConsumer = alertEventConsumer;
         updateLocationHandler();
     }
 
     public void unsetAlertListener() {
-        alertListener = null;
+        alertEventConsumer = null;
         updateLocationHandler();
     }
 
@@ -209,14 +222,14 @@ public class AlertHandler implements OnSharedPreferenceChangeListener, Listener 
     }
 
     private void broadcastClear() {
-        if (alertListener != null) {
-            alertListener.onEvent(ALERT_CANCEL_EVENT);
+        if (alertEventConsumer != null) {
+            alertEventConsumer.consume(ALERT_CANCEL_EVENT);
         }
     }
 
     private void broadcastResult(AlertResult alertResult) {
-        if (alertListener != null) {
-            alertListener.onEvent(new AlertResultEvent(alertStatus, alertResult));
+        if (alertEventConsumer != null) {
+            alertEventConsumer.consume(new AlertResultEvent(alertStatus, alertResult));
         }
     }
 

@@ -26,7 +26,7 @@ public class AlertDialog extends android.app.AlertDialog {
         alertView = (AlertView) dialog.findViewById(R.id.alarm_diagram);
         alertView.setColorHandler(colorHandler, intervalDuration);
         if (service != null) {
-            alertView.onEvent(service.getAlertEvent());
+            alertView.getAlertEventConsumer().consume(service.getAlertEvent());
         }
 
         setView(dialog);
@@ -36,7 +36,7 @@ public class AlertDialog extends android.app.AlertDialog {
     public void onStart() {
         super.onStart();
 
-        service.addAlertListener(alertView);
+        service.addAlertConsumer(alertView.getAlertEventConsumer());
         colorHandler.updateTarget();
     }
 
@@ -44,7 +44,7 @@ public class AlertDialog extends android.app.AlertDialog {
     protected void onStop() {
         super.onStop();
 
-        service.removeAlertListener(alertView);
+        service.removeAlertListener(alertView.getAlertEventConsumer());
     }
 
     @Override

@@ -11,13 +11,11 @@ import android.widget.Toast;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.view.PreferenceKey;
-import org.blitzortung.android.protocol.Listener;
+import org.blitzortung.android.protocol.Consumer;
 import org.blitzortung.android.protocol.ListenerContainer;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class LocationHandler implements SharedPreferences.OnSharedPreferenceChangeListener, android.location.LocationListener, GpsStatus.Listener {
 
@@ -56,15 +54,15 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
         }
     }
 
-    private ListenerContainer<LocationEvent> listenerContainer = new ListenerContainer<LocationEvent>() {
+    private ListenerContainer<LocationEvent> consumerContainer = new ListenerContainer<LocationEvent>() {
         @Override
-        public void addedFirstListener() {
+        public void addedFirstConsumer() {
             enableProvider(provider);
             Log.d(Main.LOG_TAG, "LocationHandler enable provider");
         }
 
         @Override
-        public void removedLastListener() {
+        public void removedLastConsumer() {
             locationManager.removeUpdates(LocationHandler.this);
             Log.d(Main.LOG_TAG, "LocationHandler disable provider");
         }
@@ -189,20 +187,20 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     }
 
     private void sendLocationUpdateToListeners(Location location) {
-        listenerContainer.broadcast(new LocationEvent(location));
+        consumerContainer.broadcast(new LocationEvent(location));
     }
 
-    public void requestUpdates(Listener target) {
-        listenerContainer.addListener(target);
+    public void requestUpdates(Consumer<LocationEvent> locationConsumer) {
+        consumerContainer.addListener(locationConsumer);
 
         if (locationIsValid()) {
-            target.onEvent(new LocationEvent(location));
+            locationConsumer.consume(new LocationEvent(location));
         }
     }
 
-    public void removeUpdates(Listener target) {
-        listenerContainer.removeListener(target);
-        Log.v(Main.LOG_TAG, "LocationHandler.removeUpdates() #" + listenerContainer.size() + " elements left: " + listenerContainer.getListeners());
+    public void removeUpdates(Consumer<LocationEvent> locationEventConsumer) {
+        consumerContainer.removeListener(locationEventConsumer);
+        Log.v(Main.LOG_TAG, "LocationHandler.removeUpdates() #" + consumerContainer.size() + " elements left: " + consumerContainer.getConsumers());
     }
 
     private boolean locationIsValid() {
