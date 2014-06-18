@@ -187,14 +187,14 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
                 return;
             }
             final int minTime = backgroundMode
-                    ? 60000
+                    ? 120000
                     : (
                     provider == Provider.GPS
                             ? 1000
-                            : 10000);
+                            : 20000);
             final int minDistance = backgroundMode
-                    ? 50
-                    : 10;
+                    ? 200
+                    : 50;
             Log.v(Main.LOG_TAG, "LocationHandler.enableProvider() " + newProvider + ", minTime: " + minTime + ", minDist: " + minDistance);
             locationManager.requestLocationUpdates(newProvider.getType(), minTime, minDistance, this);
         }
