@@ -20,6 +20,8 @@ import java.util.Map;
 public class LocationHandler implements SharedPreferences.OnSharedPreferenceChangeListener, android.location.LocationListener, GpsStatus.Listener {
 
     private final Context context;
+    private boolean backgroundMode = true;
+    private int backgroundPeriod;
 
     public static enum Provider {
         NETWORK(LocationManager.NETWORK_PROVIDER),
@@ -82,6 +84,8 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
         invalidateLocation();
 
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.LOCATION_MODE);
+        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.BACKGROUND_QUERY_PERIOD);
+
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
@@ -125,6 +129,11 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
             case LOCATION_LATITUDE:
                 updateManualLatitude(sharedPreferences);
                 break;
+
+            case BACKGROUND_QUERY_PERIOD:
+                backgroundPeriod = Integer.parseInt(sharedPreferences.getString(key.toString(), "0"));
+                break;
+
 
         }
     }
@@ -177,7 +186,17 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
                 toast.show();
                 return;
             }
-            locationManager.requestLocationUpdates(newProvider.getType(), provider == Provider.GPS ? 1000 : 10000, 10, this);
+            final int minTime = backgroundMode
+                    ? 60000
+                    : (
+                    provider == Provider.GPS
+                            ? 1000
+                            : 10000);
+            final int minDistance = backgroundMode
+                    ? 50
+                    : 10;
+            Log.v(Main.LOG_TAG, "LocationHandler.enableProvider() " + newProvider + ", minTime: " + minTime + ", minDist: " + minDistance);
+            locationManager.requestLocationUpdates(newProvider.getType(), minTime, minDistance, this);
         }
         provider = newProvider;
     }
@@ -203,7 +222,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     }
 
     private boolean locationIsValid() {
-        return location != null && !Double.isNaN(location.getLongitude()) && !Double.isNaN(location.getLatitude());
+        return !Double.isNaN(location.getLongitude()) && !Double.isNaN(location.getLatitude());
     }
 
     @Override
@@ -230,6 +249,14 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
                     break;
             }
         }
+    }
+
+    public void enableBackgroundMode() {
+        backgroundMode = true;
+    }
+
+    public void disableBackgroundMode() {
+        backgroundMode = false;
     }
 
 }
