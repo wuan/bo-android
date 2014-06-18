@@ -65,8 +65,4 @@ public abstract class ConsumerContainer<P> {
     public int size() {
         return consumers.size();
     }
-
-    public boolean contains(Consumer<P> consumer) {
-        return consumers.contains(consumer);
-    }
 }
