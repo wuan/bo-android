@@ -191,10 +191,12 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     }
 
     public void requestUpdates(Consumer<LocationEvent> locationConsumer) {
-        consumerContainer.addConsumer(locationConsumer);
+        if (!consumerContainer.contains(locationConsumer)) {
+            consumerContainer.addConsumer(locationConsumer);
 
-        if (locationIsValid()) {
-            locationConsumer.consume(new LocationEvent(location));
+            if (locationIsValid()) {
+                locationConsumer.consume(new LocationEvent(location));
+            }
         }
     }
 
