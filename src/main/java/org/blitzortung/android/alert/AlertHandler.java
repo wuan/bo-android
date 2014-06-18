@@ -149,7 +149,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
         public void consume(DataEvent event) {
             if (event instanceof ResultEvent) {
                 ResultEvent resultEvent = (ResultEvent) event;
-                if (resultEvent.containsRealtimeData()) {
+                if (!resultEvent.hasFailed() && resultEvent.containsRealtimeData()) {
                     checkStrokes(resultEvent.getStrokes());
                 } else {
                     invalidateAlert();
