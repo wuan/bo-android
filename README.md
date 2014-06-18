@@ -1,10 +1,12 @@
-# TODO:
- * layer configuration
- * custom layers
-
 # Changelogs
 
 ## English
+
+Version 1.3.2 (Android 4.0+):
+ - fixed NPE
+
+Version 1.3.1 (Android 4.0+):
+ - do not require location manager, when not active
 
 Version 1.1.3 & 1.3.0 (Android 4.0+):
  - workaround for Android wakelock timeout bug
@@ -69,6 +71,12 @@ Version 1.1.3 & 1.3.0 (Android 4.0+):
  * notification and vibration alarm with preference integration
  
 ## German
+
+Version 1.3.2 (Android 4.0+):
+ - Nullpointer-Exception beseitigt
+
+Version 1.3.1 (Android 4.0+):
+ - deaktiviere Ortsbestimmung, falls nicht benötigt
 
 Version 1.1.3 & 1.3.0 (Android 4.0+):
  - Vermeidung des Android wakelock timeout Fehlers
