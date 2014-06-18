@@ -361,14 +361,15 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
     private void configureServiceMode() {
         Log.v(Main.LOG_TAG, "AppService.configureServiceMode() entered");
-        alertHandler.unsetAlertListener();
         final boolean backgroundOperation = dataConsumerContainer.isEmpty();
         if (backgroundOperation) {
             if (alertEnabled && backgroundPeriod > 0) {
                 locationHandler.enableBackgroundMode();
                 alertHandler.setAlertEventConsumer(alertEventConsumer);
+                alertHandler.reconfigureLocationHandler();
                 createAlarm();
             } else {
+                alertHandler.unsetAlertListener();
                 discardAlarm();
             }
         } else {
@@ -391,6 +392,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
             locationHandler.disableBackgroundMode();
             Log.v(Main.LOG_TAG, "AppService.configureServiceMode() set alert event consumer");
             alertHandler.setAlertEventConsumer(alertEventConsumer);
+            alertHandler.reconfigureLocationHandler();
         }
         Log.v(Main.LOG_TAG, "AppService.configureServiceMode() done");
     }

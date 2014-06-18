@@ -135,6 +135,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
     private final Consumer<LocationEvent> locationEventConsumer = new Consumer<LocationEvent>() {
         @Override
         public void consume(LocationEvent event) {
+            Log.v(Main.LOG_TAG, "AlertHandler received location " + location);
             location = event.getLocation();
             checkStrokes(lastStrokes);
         }
@@ -300,5 +301,9 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
 
     public AlertEvent getAlertEvent() {
         return alarmValid ? new AlertResultEvent(alertStatus, getAlarmResult()) : ALERT_CANCEL_EVENT;
+    }
+
+    public void reconfigureLocationHandler() {
+        locationHandler.updateProvider();
     }
 }

@@ -255,4 +255,8 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
         backgroundMode = false;
     }
 
+    public void updateProvider() {
+        enableProvider(provider);
+    }
+
 }
