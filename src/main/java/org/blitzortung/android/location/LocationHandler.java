@@ -187,17 +187,11 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     }
 
     private void sendLocationUpdateToListeners(Location location) {
-        consumerContainer.broadcast(new LocationEvent(location));
+        consumerContainer.storeAndBroadcast(new LocationEvent(location));
     }
 
     public void requestUpdates(Consumer<LocationEvent> locationConsumer) {
-        if (!consumerContainer.contains(locationConsumer)) {
-            consumerContainer.addConsumer(locationConsumer);
-
-            if (locationIsValid()) {
-                locationConsumer.consume(new LocationEvent(location));
-            }
-        }
+        consumerContainer.addConsumer(locationConsumer);
     }
 
     public void removeUpdates(Consumer<LocationEvent> locationEventConsumer) {
