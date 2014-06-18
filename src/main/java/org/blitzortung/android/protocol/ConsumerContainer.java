@@ -17,6 +17,7 @@ public abstract class ConsumerContainer<P> {
         if (consumer == null) {
             throw new IllegalArgumentException("consumer may not be null");
         }
+
         if (!consumers.contains(consumer)) {
             final boolean isFirst = consumers.isEmpty();
             consumers.add(consumer);
@@ -52,8 +53,8 @@ public abstract class ConsumerContainer<P> {
     }
 
     public void broadcast(P payload) {
-        for (Consumer<P> listener : consumers) {
-            listener.consume(payload);
+        for (Consumer<P> consumer : consumers) {
+            consumer.consume(payload);
         }
     }
 
@@ -65,7 +66,7 @@ public abstract class ConsumerContainer<P> {
         return consumers.size();
     }
 
-    public Set<Consumer<P>> getConsumers() {
-        return consumers;
+    public boolean contains(Consumer<P> consumer) {
+        return consumers.contains(consumer);
     }
 }
