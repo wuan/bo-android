@@ -1,12 +1,10 @@
 package org.blitzortung.android.data.builder;
 
-import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.DefaultStroke;
-import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.beans.DefaultStrike;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-public class DefaultStrokeBuilder {
+public class DefaultStrikeBuilder {
 
     private long timestamp;
 
@@ -22,7 +20,7 @@ public class DefaultStrokeBuilder {
 
     private short stationCount;
 
-    public DefaultStrokeBuilder() {
+    public DefaultStrikeBuilder() {
         init();
     }
 
@@ -64,7 +62,7 @@ public class DefaultStrokeBuilder {
         this.stationCount = stationCount;
     }
 
-    public DefaultStroke fromJson(long referenceTimestamp, JSONArray jsonArray) {
+    public DefaultStrike fromJson(long referenceTimestamp, JSONArray jsonArray) {
         try {
             setTimestamp(referenceTimestamp - 1000 * jsonArray.getInt(0));
             setLongitude((float) jsonArray.getDouble(1));
@@ -74,13 +72,13 @@ public class DefaultStrokeBuilder {
             setAmplitude((float) jsonArray.getDouble(4));
             setStationCount((short) jsonArray.getInt(5));
         } catch (JSONException e) {
-            throw new IllegalStateException("error with JSON format while parsing stroke data", e);
+            throw new IllegalStateException("error with JSON format while parsing strike data", e);
         }
 
         return build();
     }
 
-    public DefaultStroke build() {
-        return new DefaultStroke(timestamp, longitude, latitude, altitude, amplitude, stationCount, lateralError);
+    public DefaultStrike build() {
+        return new DefaultStrike(timestamp, longitude, latitude, altitude, amplitude, stationCount, lateralError);
     }
 }

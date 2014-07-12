@@ -1,7 +1,7 @@
 package org.blitzortung.android.app;
 
 import org.blitzortung.android.app.view.components.StatusComponent;
-import org.blitzortung.android.map.overlay.StrokesOverlay;
+import org.blitzortung.android.map.overlay.StrikesOverlay;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +23,7 @@ public class MainTest {
     private StatusComponent statusComponent;
 
     @Mock
-    private StrokesOverlay strokesOverlay;
+    private StrikesOverlay strikesOverlay;
 
     @Before
     public void setUp() {
@@ -31,45 +31,45 @@ public class MainTest {
 
         main = new Main();
         main.statusComponent = statusComponent;
-        main.strokesOverlay = strokesOverlay;
+        main.strikesOverlay = strikesOverlay;
     }
 
     @Test
     public void testCreateStatusText() {
-        when(strokesOverlay.getTotalNumberOfStrokes()).thenReturn(0);
+        when(strikesOverlay.getTotalNumberOfStrikes()).thenReturn(0);
 
         main.setStatusString("foo");
 
         ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
         verify(statusComponent, times(1)).setText(argument.capture());
 
-        assertThat(argument.getValue(), is("no stroke/0 minutes foo"));
+        assertThat(argument.getValue(), is("no strike/0 minutes foo"));
     }
 
 
     @Test
-    public void testCreateStatusTextWithStrokeNumberSet()
+    public void testCreateStatusTextWithStrikeNumberSet()
     {
-        when(strokesOverlay.getTotalNumberOfStrokes()).thenReturn(1234);
+        when(strikesOverlay.getTotalNumberOfStrikes()).thenReturn(1234);
 
         main.setStatusString("foo");
 
         ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
         verify(statusComponent, times(1)).setText(argument.capture());
 
-        assertThat(argument.getValue(), is("1234 strokes/0 minutes foo"));
+        assertThat(argument.getValue(), is("1234 strikes/0 minutes foo"));
     }
 
     @Test
     public void testRunWithRasterAndListenerSet()
     {
-        when(strokesOverlay.hasRasterParameters()).thenReturn(true);
+        when(strikesOverlay.hasRasterParameters()).thenReturn(true);
 
         main.setStatusString("foo");
 
         ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
         verify(statusComponent, times(1)).setText(argument.capture());
 
-        assertThat(argument.getValue(), is("no stroke/0 minutes foo"));
+        assertThat(argument.getValue(), is("no strike/0 minutes foo"));
     }
 }

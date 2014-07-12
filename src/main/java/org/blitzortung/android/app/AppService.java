@@ -120,7 +120,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
             restart();
         } else {
             Set<DataChannel> updateTargets = new HashSet<DataChannel>();
-            updateTargets.add(DataChannel.STROKES);
+            updateTargets.add(DataChannel.STRIKES);
             dataHandler.updateData(updateTargets);
         }
     }
@@ -290,7 +290,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
                 if (updatePeriod.shouldUpdate(currentTime, period)) {
                     updatePeriod.setLastUpdateTime(currentTime);
-                    updateTargets.add(DataChannel.STROKES);
+                    updateTargets.add(DataChannel.STRIKES);
 
                     if (updateParticipants && updatePeriod.isNthUpdate(10)) {
                         updateTargets.add(DataChannel.PARTICIPANTS);

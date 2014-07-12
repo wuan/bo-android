@@ -1,10 +1,9 @@
 package org.blitzortung.android.data.provider;
 
 import android.content.pm.PackageInfo;
-import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.RasterParameters;
-import org.blitzortung.android.data.beans.Stroke;
 
 import java.util.List;
 
@@ -20,11 +19,11 @@ public abstract class DataProvider {
 	
 	public abstract void shutDown();
 	
-	public abstract List<AbstractStroke> getStrokes(int intervalDuration, int intervalOffset, int region);
+	public abstract List<StrikeAbstract> getStrikes(int intervalDuration, int intervalOffset, int region);
     
     public abstract boolean returnsIncrementalData();
 	
-	public abstract List<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int params, int region);
+	public abstract List<StrikeAbstract> getStrikesRaster(int intervalDuration, int intervalOffset, int params, int region);
 	
 	public abstract RasterParameters getRasterParameters();
 

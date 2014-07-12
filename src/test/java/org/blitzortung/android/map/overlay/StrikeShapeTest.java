@@ -15,7 +15,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(RobolectricTestRunner.class)
-public class StrokeShapeTest {
+public class StrikeShapeTest {
 
     @Mock
     private Canvas canvas;
@@ -23,7 +23,7 @@ public class StrokeShapeTest {
     @Mock
     private Paint paint;
 
-    private StrokeShape strokeShape;
+    private StrikeShape strikeShape;
 
     private final int color = 0x102030;
 
@@ -33,14 +33,14 @@ public class StrokeShapeTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        strokeShape = new StrokeShape();
-        strokeShape.update(width, color);
+        strikeShape = new StrikeShape();
+        strikeShape.update(width, color);
     }
 
     @Test
     public void testDraw()
     {
-        strokeShape.draw(canvas, paint);
+        strikeShape.draw(canvas, paint);
 
         verify(paint, times(1)).setColor(color);
         verify(paint, times(1)).setStrokeWidth(width/4);

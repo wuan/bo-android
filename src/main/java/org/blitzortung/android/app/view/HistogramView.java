@@ -10,7 +10,7 @@ import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
-import org.blitzortung.android.map.overlay.StrokesOverlay;
+import org.blitzortung.android.map.overlay.StrikesOverlay;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 import org.blitzortung.android.protocol.Consumer;
 
@@ -26,7 +26,7 @@ public class HistogramView extends View {
     final private Paint foregroundPaint;
     final private Paint textPaint;
 
-    private StrokesOverlay strokesOverlay;
+    private StrikesOverlay strikesOverlay;
 
     private int[] histogram;
 
@@ -77,9 +77,9 @@ public class HistogramView extends View {
     @Override
     public void onDraw(Canvas canvas) {
 
-        if (strokesOverlay != null && histogram != null && histogram.length > 0) {
-            ColorHandler colorHandler = strokesOverlay.getColorHandler();
-            int minutesPerColor = strokesOverlay.getIntervalDuration() / colorHandler.getNumberOfColors();
+        if (strikesOverlay != null && histogram != null && histogram.length > 0) {
+            ColorHandler colorHandler = strikesOverlay.getColorHandler();
+            int minutesPerColor = strikesOverlay.getIntervalDuration() / colorHandler.getNumberOfColors();
             int minutesPerBin = 5;
             int ratio = minutesPerColor / minutesPerBin;
             if (ratio == 0) {
@@ -120,8 +120,8 @@ public class HistogramView extends View {
         }
     }
 
-    public void setStrokesOverlay(StrokesOverlay strokesOverlay) {
-        this.strokesOverlay = strokesOverlay;
+    public void setStrikesOverlay(StrikesOverlay strikesOverlay) {
+        this.strikesOverlay = strikesOverlay;
     }
 
     private final Consumer<DataEvent> dataEventConsumer = new Consumer<DataEvent>() {

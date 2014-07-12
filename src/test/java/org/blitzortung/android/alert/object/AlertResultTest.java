@@ -26,7 +26,7 @@ public class AlertResultTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        when(alertSector.getClosestStrokeDistance()).thenReturn(4567f);
+        when(alertSector.getClosestStrikeDistance()).thenReturn(4567f);
 
         alertResult = new AlertResult(alertSector, distanceUnitName);
     }
@@ -39,7 +39,7 @@ public class AlertResultTest {
 
     @Test
     public void testGetDistance() throws Exception {
-        assertThat(alertResult.getClosestStrokeDistance(), is(4567f));
+        assertThat(alertResult.getClosestStrikeDistance(), is(4567f));
     }
     
     @Test

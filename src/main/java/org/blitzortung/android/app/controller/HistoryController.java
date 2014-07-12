@@ -130,7 +130,7 @@ public class HistoryController {
 
     private void updateData() {
         Set<DataChannel> dataChannels = new HashSet<DataChannel>();
-        dataChannels.add(DataChannel.STROKES);
+        dataChannels.add(DataChannel.STRIKES);
         dataHandler.updateData(dataChannels);
     }
 

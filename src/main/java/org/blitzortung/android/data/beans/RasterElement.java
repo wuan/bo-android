@@ -5,7 +5,7 @@ import org.json.JSONException;
 
 import java.io.Serializable;
 
-public class RasterElement extends AbstractStroke implements Serializable {
+public class RasterElement extends StrikeAbstract implements Serializable {
 
 	private static final long serialVersionUID = 6765788323616893614L;
 	
@@ -19,7 +19,7 @@ public class RasterElement extends AbstractStroke implements Serializable {
 			
 			setTimestamp(referenceTimestamp + 1000 * jsonArray.getInt(3));
 		} catch (JSONException e) {
-			throw new RuntimeException("error with json format while parsing stroke data", e);
+			throw new RuntimeException("error with json format while parsing strike data", e);
 		}
 	}
 	

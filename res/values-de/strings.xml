@@ -3,7 +3,7 @@
 
     <string name="app_name">Blitzortung Gewitter-Monitor</string>
 
-    <plurals name="stroke">
+    <plurals name="strike">
         <item quantity="zero">kein Blitz</item>
         <item quantity="one">1 Blitz</item>
         <item quantity="other">%d Blitze</item>
@@ -272,7 +272,7 @@
     <string name="participants_layer">Teilnehmende Stationen</string>
     <string name="own_location_layer">Eigener Ort</string>
     <string name="visible">sichtbar</string>
-    <string name="strokes_layer">Blitze</string>
+    <string name="strikes_layer">Blitze</string>
     <string name="data_settings_summary">Einstellung Zeitparameter und Datenquelle</string>
     <string name="map_settings_summary">Kartenmodus und -aussehen</string>
     <string name="location_settings_summary">Wahl der Art der Ortsbestimmung</string>

@@ -1,11 +1,10 @@
 package org.blitzortung.android.data.provider.blitzortung;
 
-import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.Station;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.Matchers.is;
@@ -23,16 +22,16 @@ public class MapBuilderFactoryIntegrationTest {
     }
 
     @Test
-    public void testStrokeBuilder() {
-        MapBuilder<AbstractStroke> strokeMapBuilder = mapBuilderFactory.createAbstractStrokeMapBuilder();
+    public void testStrikeBuilder() {
+        MapBuilder<StrikeAbstract> strikeMapBuilder = mapBuilderFactory.createAbstractStrikeMapBuilder();
         String line = "2013-08-08 10:30:03.644038642 pos;44.162701;8.931001;0 str;4.75 typ;0 dev;20146 sta;10;24;226,529,391,233,145,398,425,533,701,336,336,515,434,392,439,283,674,573,559,364,111,43,582,594\n";
 
-        AbstractStroke stroke = strokeMapBuilder.buildFromLine(line);
+        StrikeAbstract strike = strikeMapBuilder.buildFromLine(line);
 
-        assertThat(stroke.getTimestamp(), is(1375957803644L));
-        assertThat(stroke.getLatitude(), is(44.162701f));
-        assertThat(stroke.getLongitude(), is(8.931001f));
-        assertThat(stroke.getMultiplicity(), is(1));
+        assertThat(strike.getTimestamp(), is(1375957803644L));
+        assertThat(strike.getLatitude(), is(44.162701f));
+        assertThat(strike.getLongitude(), is(8.931001f));
+        assertThat(strike.getMultiplicity(), is(1));
     }
 
     @Test

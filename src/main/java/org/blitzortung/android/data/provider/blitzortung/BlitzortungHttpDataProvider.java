@@ -1,9 +1,8 @@
 package org.blitzortung.android.data.provider.blitzortung;
 
-import android.text.Html;
 import android.util.Log;
 import org.blitzortung.android.app.Main;
-import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.provider.DataProvider;
@@ -24,11 +23,10 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 
     private UrlFormatter urlFormatter;
 
-    private MapBuilder<AbstractStroke> strokeMapBuilder;
+    private MapBuilder<StrikeAbstract> strikeMapBuilder;
     private MapBuilder<Station> stationMapBuilder;
-    private StationLineSplitter stationLineSplitter;
 
-    public enum Type {STROKES, STATIONS}
+    public enum Type {STRIKES, STATIONS}
 
     private class MyAuthenticator extends Authenticator {
 
@@ -40,22 +38,20 @@ public class BlitzortungHttpDataProvider extends DataProvider {
     private long latestTime = 0;
 
     public BlitzortungHttpDataProvider() {
-        this(new UrlFormatter(), new StationLineSplitter(), new MapBuilderFactory());
+        this(new UrlFormatter(), new MapBuilderFactory());
     }
 
-    public BlitzortungHttpDataProvider(UrlFormatter urlFormatter, StationLineSplitter stationLineSplitter,
-                                       MapBuilderFactory mapBuilderFactory) {
+    public BlitzortungHttpDataProvider(UrlFormatter urlFormatter, MapBuilderFactory mapBuilderFactory) {
         this.urlFormatter = urlFormatter;
-        this.stationLineSplitter = stationLineSplitter;
-        strokeMapBuilder = mapBuilderFactory.createAbstractStrokeMapBuilder();
+        strikeMapBuilder = mapBuilderFactory.createAbstractStrikeMapBuilder();
         stationMapBuilder = mapBuilderFactory.createStationMapBuilder();
 
     }
 
     @Override
-    public List<AbstractStroke> getStrokes(int timeInterval, int intervalOffset, int region) {
+    public List<StrikeAbstract> getStrikes(int timeInterval, int intervalOffset, int region) {
 
-        List<AbstractStroke> strokes = new ArrayList<AbstractStroke>();
+        List<StrikeAbstract> strikes = new ArrayList<StrikeAbstract>();
 
         TimeZone tz = TimeZone.getTimeZone("UTC");
         Calendar intervalTime = new GregorianCalendar(tz);
@@ -71,7 +67,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
                 while (intervalTimer.hasNext()) {
                     intervalTime.setTimeInMillis(intervalTimer.next());
 
-                    BufferedReader reader = readFromUrl(Type.STROKES, region, intervalTime);
+                    BufferedReader reader = readFromUrl(Type.STRIKES, region, intervalTime);
                     if (reader == null) {
                         continue;
                     }
@@ -81,21 +77,21 @@ public class BlitzortungHttpDataProvider extends DataProvider {
                     while ((line = reader.readLine()) != null) {
                         size += line.length();
 
-                        AbstractStroke stroke = strokeMapBuilder.buildFromLine(line);
-                        long timestamp = stroke.getTimestamp();
+                        StrikeAbstract strike = strikeMapBuilder.buildFromLine(line);
+                        long timestamp = strike.getTimestamp();
 
                         if (timestamp > latestTime && timestamp >= startTime) {
-                            strokes.add(stroke);
+                            strikes.add(strike);
                         }
                     }
                     Log.v(Main.LOG_TAG,
-                            String.format("BliztortungHttpDataProvider: read %d bytes (%d new strokes) from region %d", size, strokes.size(), region));
+                            String.format("BliztortungHttpDataProvider: read %d bytes (%d new strikes) from region %d", size, strikes.size(), region));
 
                     reader.close();
                 }
 
-                if (strokes.size() > 0) {
-                    latestTime = strokes.get(strokes.size() - 1).getTimestamp();
+                if (strikes.size() > 0) {
+                    latestTime = strikes.get(strikes.size() - 1).getTimestamp();
                 }
 
             } catch (Exception e) {
@@ -106,7 +102,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
             throw new RuntimeException("no credentials provided");
         }
 
-        return strokes;
+        return strikes;
     }
 
     public boolean returnsIncrementalData() {
@@ -210,7 +206,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
     }
 
     @Override
-    public List<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int rasterSize, int region) {
+    public List<StrikeAbstract> getStrikesRaster(int intervalDuration, int intervalOffset, int rasterSize, int region) {
         return null;
     }
 

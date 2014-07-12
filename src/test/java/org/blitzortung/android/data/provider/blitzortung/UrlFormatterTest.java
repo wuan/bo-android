@@ -33,12 +33,12 @@ public class UrlFormatterTest {
     }
 
     @Test
-    public void testGetUrlForStrokes() throws Exception {
+    public void testGetUrlForStrikes() throws Exception {
         TimeZone tz = TimeZone.getTimeZone("UTC");
         Calendar date = new GregorianCalendar(tz);
         date.setTimeInMillis(1381065000000l);
 
-        assertThat(urlFormatter.getUrlFor(BlitzortungHttpDataProvider.Type.STROKES, 1, date, false),
+        assertThat(urlFormatter.getUrlFor(BlitzortungHttpDataProvider.Type.STRIKES, 1, date, false),
                 is("http://data.blitzortung.org/Data_1/Protected/Strokes/2013/10/06/13/10.log"));
     }
 

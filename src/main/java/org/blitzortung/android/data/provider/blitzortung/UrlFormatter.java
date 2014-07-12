@@ -9,7 +9,7 @@ public class UrlFormatter {
 
         String localPath;
 
-        if (type == BlitzortungHttpDataProvider.Type.STROKES) {
+        if (type == BlitzortungHttpDataProvider.Type.STRIKES) {
             localPath = "Strokes/" + DateFormat.format("yyyy/MM/dd/kk/mm", intervalTime) + ".log";
         } else {
             localPath = type.name().toLowerCase() + ".txt";

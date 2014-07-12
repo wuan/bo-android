@@ -3,10 +3,10 @@
 
     <string name="app_name">Blitzortung Lightning Monitor</string>
 
-    <plurals name="stroke">
-        <item quantity="zero">no stroke</item>
-        <item quantity="one">1 stroke</item>
-        <item quantity="other">%d strokes</item>
+    <plurals name="strike">
+        <item quantity="zero">no strike</item>
+        <item quantity="one">1 strike</item>
+        <item quantity="other">%d strikes</item>
     </plurals>
     <plurals name="minute">
         <item quantity="one">1 minutes</item>
@@ -274,7 +274,7 @@
     <string name="own_location_layer">Own location</string>
     <string name="layer_name">Layer name</string>
     <string name="visible">visible</string>
-    <string name="strokes_layer">Strokes</string>
+    <string name="strikes_layer">Strikes</string>
     <string name="data_settings_summary">detailed settings to control data transmission and source</string>
     <string name="map_settings_summary">Map mode and appearance related settings</string>
     <string name="location_settings_summary">Location determination mode</string>

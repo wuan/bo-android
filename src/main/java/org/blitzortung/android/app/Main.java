@@ -42,9 +42,9 @@ import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.overlay.FadeOverlay;
 import org.blitzortung.android.map.overlay.OwnLocationOverlay;
 import org.blitzortung.android.map.overlay.ParticipantsOverlay;
-import org.blitzortung.android.map.overlay.StrokesOverlay;
+import org.blitzortung.android.map.overlay.StrikesOverlay;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
-import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
+import org.blitzortung.android.map.overlay.color.StrikeColorHandler;
 import org.blitzortung.android.protocol.Consumer;
 import org.blitzortung.android.util.optional.Optional;
 
@@ -60,7 +60,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
 
     private FadeOverlay fadeOverlay;
 
-    protected StrokesOverlay strokesOverlay;
+    protected StrikesOverlay strikesOverlay;
 
     private ParticipantsOverlay participantsOverlay;
 
@@ -108,23 +108,23 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
 
-        strokesOverlay = new StrokesOverlay(this, new StrokeColorHandler(preferences));
+        strikesOverlay = new StrikesOverlay(this, new StrikeColorHandler(preferences));
         participantsOverlay = new ParticipantsOverlay(this, new ParticipantColorHandler(preferences));
 
         mapView.addZoomListener(new OwnMapView.ZoomListener() {
 
             @Override
             public void onZoom(int zoomLevel) {
-                strokesOverlay.updateZoomLevel(zoomLevel);
+                strikesOverlay.updateZoomLevel(zoomLevel);
                 participantsOverlay.updateZoomLevel(zoomLevel);
             }
 
         });
 
-        fadeOverlay = new FadeOverlay(strokesOverlay.getColorHandler());
+        fadeOverlay = new FadeOverlay(strikesOverlay.getColorHandler());
         ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
 
-        addOverlays(fadeOverlay, strokesOverlay, participantsOverlay, ownLocationOverlay);
+        addOverlays(fadeOverlay, strikesOverlay, participantsOverlay, ownLocationOverlay);
 
         statusComponent = new StatusComponent(this);
         setHistoricStatusString();
@@ -187,7 +187,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
 
             appService.addAlertConsumer(statusComponent.getAlertEventConsumer());
 
-            strokesOverlay.setIntervalDuration(appService.getDataHandler().getIntervalDuration());
+            strikesOverlay.setIntervalDuration(appService.getDataHandler().getIntervalDuration());
         }
     }
 
@@ -213,7 +213,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
 
     private void setupCustomViews() {
         legendView = (LegendView) findViewById(R.id.legend_view);
-        legendView.setStrokesOverlay(strokesOverlay);
+        legendView.setStrikesOverlay(strikesOverlay);
         legendView.setAlpha(150);
         legendView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -224,7 +224,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         });
 
         alertView = (AlertView) findViewById(R.id.alert_view);
-        alertView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getIntervalDuration());
+        alertView.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.getIntervalDuration());
         alertView.setBackgroundColor(Color.TRANSPARENT);
         alertView.setAlpha(200);
         alertView.setOnClickListener(new View.OnClickListener() {
@@ -238,7 +238,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
 
                         final AlertResult alertResult = alertHandler.getAlarmResult();
                         if (alertResult != null) {
-                            radius = Math.max(Math.min(alertResult.getClosestStrokeDistance() * 1.2f, radius), 50f);
+                            radius = Math.max(Math.min(alertResult.getClosestStrikeDistance() * 1.2f, radius), 50f);
                         }
 
                         float diameter = 1.5f * 2f * radius;
@@ -250,7 +250,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         });
 
         histogramView = (HistogramView) findViewById(R.id.histogram_view);
-        histogramView.setStrokesOverlay(strokesOverlay);
+        histogramView.setStrikesOverlay(strikesOverlay);
         histogramView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -437,23 +437,23 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
 
                     clearDataIfRequested();
 
-                    if (result.containsStrokes()) {
-                        strokesOverlay.setRasterParameters(result.getRasterParameters());
-                        strokesOverlay.setRegion(resultParameters.getRegion());
-                        strokesOverlay.setReferenceTime(result.getReferenceTime());
-                        strokesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
-                        strokesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
+                    if (result.containsStrikes()) {
+                        strikesOverlay.setRasterParameters(result.getRasterParameters());
+                        strikesOverlay.setRegion(resultParameters.getRegion());
+                        strikesOverlay.setReferenceTime(result.getReferenceTime());
+                        strikesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
+                        strikesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
 
                         if (result.containsIncrementalData()) {
-                            strokesOverlay.expireStrokes();
+                            strikesOverlay.expireStrikes();
                         } else {
-                            strokesOverlay.clear();
+                            strikesOverlay.clear();
                         }
-                        strokesOverlay.addStrokes(result.getStrokes());
+                        strikesOverlay.addStrikes(result.getStrikes());
 
-                        alertView.setColorHandler(strokesOverlay.getColorHandler(), strokesOverlay.getIntervalDuration());
+                        alertView.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.getIntervalDuration());
 
-                        strokesOverlay.refresh();
+                        strikesOverlay.refresh();
                     }
 
                     if (!result.containsRealtimeData()) {
@@ -498,7 +498,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
     private void clearData() {
         clearData = false;
 
-        strokesOverlay.clear();
+        strikesOverlay.clear();
 
         if (participantsOverlay != null) {
             participantsOverlay.clear();
@@ -513,7 +513,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
                 break;
 
             case R.id.alarm_dialog:
-                dialog = new AlertDialog(this, appService, new AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)), strokesOverlay.getIntervalDuration());
+                dialog = new AlertDialog(this, appService, new AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)), strikesOverlay.getIntervalDuration());
                 break;
 
             case R.id.layer_dialog:
@@ -546,7 +546,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
             case MAP_TYPE:
                 String mapTypeString = sharedPreferences.getString(key.toString(), "SATELLITE");
                 getMapView().setSatellite(mapTypeString.equals("SATELLITE"));
-                strokesOverlay.refresh();
+                strikesOverlay.refresh();
                 if (participantsOverlay != null) {
                     participantsOverlay.refresh();
                 }
@@ -559,7 +559,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
                 break;
 
             case COLOR_SCHEME:
-                strokesOverlay.refresh();
+                strikesOverlay.refresh();
                 if (participantsOverlay != null) {
                     participantsOverlay.refresh();
                 }
@@ -584,18 +584,18 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
     }
 
     protected void setHistoricStatusString() {
-        if (!strokesOverlay.hasRealtimeData()) {
-            long referenceTime = strokesOverlay.getReferenceTime() + strokesOverlay.getIntervalOffset() * 60 * 1000;
+        if (!strikesOverlay.hasRealtimeData()) {
+            long referenceTime = strikesOverlay.getReferenceTime() + strikesOverlay.getIntervalOffset() * 60 * 1000;
             String timeString = (String) DateFormat.format("@ kk:mm", referenceTime);
             setStatusString(timeString);
         }
     }
 
     protected void setStatusString(String runStatus) {
-        int numberOfStrokes = strokesOverlay.getTotalNumberOfStrokes();
-        String statusText = getResources().getQuantityString(R.plurals.stroke, numberOfStrokes, numberOfStrokes);
+        int numberOfStrikes = strikesOverlay.getTotalNumberOfStrikes();
+        String statusText = getResources().getQuantityString(R.plurals.strike, numberOfStrikes, numberOfStrikes);
         statusText += "/";
-        int intervalDuration = strokesOverlay.getIntervalDuration();
+        int intervalDuration = strikesOverlay.getIntervalDuration();
         statusText += getResources().getQuantityString(R.plurals.minute, intervalDuration, intervalDuration);
         statusText += " " + runStatus;
 

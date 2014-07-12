@@ -1,7 +1,7 @@
 package org.blitzortung.android.map.overlay;
 
 import com.google.android.maps.GeoPoint;
-import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,12 +14,12 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-public class StrokeOverlayItemTest {
+public class StrikeOverlayItemTest {
 
-    private StrokeOverlayItem strokeOverlayItem;
+    private StrikeOverlayItem strikeOverlayItem;
 
     @Mock
-    private AbstractStroke stroke;
+    private StrikeAbstract strike;
 
     private long time;
     @Before
@@ -29,18 +29,18 @@ public class StrokeOverlayItemTest {
 
         time = System.currentTimeMillis();
 
-        when(stroke.getLongitude()).thenReturn(11.0f);
-        when(stroke.getLatitude()).thenReturn(49.0f);
-        when(stroke.getTimestamp()).thenReturn(time);
-        when(stroke.getMultiplicity()).thenReturn(3);
+        when(strike.getLongitude()).thenReturn(11.0f);
+        when(strike.getLatitude()).thenReturn(49.0f);
+        when(strike.getTimestamp()).thenReturn(time);
+        when(strike.getMultiplicity()).thenReturn(3);
 
-        strokeOverlayItem = new StrokeOverlayItem(stroke);
+        strikeOverlayItem = new StrikeOverlayItem(strike);
     }
 
     @Test
     public void testConstruction()
     {
-        GeoPoint point = strokeOverlayItem.getPoint();
+        GeoPoint point = strikeOverlayItem.getPoint();
 
         assertThat(point.getLongitudeE6(), is(11000000));
         assertThat(point.getLatitudeE6(), is(49000000));
@@ -49,13 +49,13 @@ public class StrokeOverlayItemTest {
     @Test
     public void testGetTimestamp()
     {
-        assertThat(strokeOverlayItem.getTimestamp(), is(time));
+        assertThat(strikeOverlayItem.getTimestamp(), is(time));
     }
 
     @Test
     public void testGetMultiplicity()
     {
-        assertThat(strokeOverlayItem.getMultiplicity(), is(3));
+        assertThat(strikeOverlayItem.getMultiplicity(), is(3));
     }
 
 

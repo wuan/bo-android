@@ -1,6 +1,6 @@
 package org.blitzortung.android.data.provider.blitzortung;
 
-import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.provider.blitzortung.generic.LineSplitter;
 import org.junit.Before;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 public class MapBuilderFactoryTest {
 
     @Mock
-    private LineSplitter strokeLineSplitter;
+    private LineSplitter strikeLineSplitter;
 
     @Mock
     private LineSplitter stationLineSplitter;
@@ -30,15 +30,15 @@ public class MapBuilderFactoryTest {
     {
         MockitoAnnotations.initMocks(this);
 
-        mapBuilderFactory = new MapBuilderFactory(strokeLineSplitter, stationLineSplitter);
+        mapBuilderFactory = new MapBuilderFactory(strikeLineSplitter, stationLineSplitter);
     }
 
     @Test
-    public void testStrokeBuilder() {
-        MapBuilder<AbstractStroke> strokeMapBuilder = mapBuilderFactory.createAbstractStrokeMapBuilder();
+    public void testStrikeBuilder() {
+        MapBuilder<StrikeAbstract> strikeMapBuilder = mapBuilderFactory.createAbstractStrikeMapBuilder();
 
-        when(strokeLineSplitter.split("<line>")).thenReturn(
-                new String[] {
+        when(strikeLineSplitter.split("<line>")).thenReturn(
+                new String[]{
                         "2013-08-08",
                         "10:30:03.644038642",
                         "pos;44.162701;8.931001;0",
@@ -47,12 +47,12 @@ public class MapBuilderFactoryTest {
                 }
         );
 
-        AbstractStroke stroke = strokeMapBuilder.buildFromLine("<line>");
+        StrikeAbstract strike = strikeMapBuilder.buildFromLine("<line>");
 
-        assertThat(stroke.getTimestamp(), is(1375957803644L));
-        assertThat(stroke.getLatitude(), is(44.162701f));
-        assertThat(stroke.getLongitude(), is(8.931001f));
-        assertThat(stroke.getMultiplicity(), is(1));
+        assertThat(strike.getTimestamp(), is(1375957803644L));
+        assertThat(strike.getLatitude(), is(44.162701f));
+        assertThat(strike.getLongitude(), is(8.931001f));
+        assertThat(strike.getMultiplicity(), is(1));
     }
 
     @Test

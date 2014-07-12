@@ -57,11 +57,11 @@ public class AlertSectorTest {
 
     @Test
     public void testClearResults() {
-        alertSector.updateClosestStrokeDistance(10.0f);
+        alertSector.updateClosestStrikeDistance(10.0f);
         
         alertSector.clearResults();
 
-        assertThat(alertSector.getClosestStrokeDistance(),is (Float.POSITIVE_INFINITY));
+        assertThat(alertSector.getClosestStrikeDistance(),is (Float.POSITIVE_INFINITY));
         verify(alertSectorRange1, times(1)).clearResults();
         verify(alertSectorRange2, times(1)).clearResults();
     }
@@ -90,21 +90,21 @@ public class AlertSectorTest {
     }
     
     @Test
-    public void testGetClosestStrokeDistanceAndUpdateClosestStrokeDistance()
+    public void testGetClosestStrikeDistanceAndUpdateClosestStrikeDistance()
     {
-        assertThat(alertSector.getClosestStrokeDistance(), is(Float.POSITIVE_INFINITY));
+        assertThat(alertSector.getClosestStrikeDistance(), is(Float.POSITIVE_INFINITY));
         
-        alertSector.updateClosestStrokeDistance(25.0f);
+        alertSector.updateClosestStrikeDistance(25.0f);
 
-        assertThat(alertSector.getClosestStrokeDistance(), is(25f));
+        assertThat(alertSector.getClosestStrikeDistance(), is(25f));
 
-        alertSector.updateClosestStrokeDistance(10.0f);
+        alertSector.updateClosestStrikeDistance(10.0f);
 
-        assertThat(alertSector.getClosestStrokeDistance(), is(10f));
+        assertThat(alertSector.getClosestStrikeDistance(), is(10f));
 
-        alertSector.updateClosestStrokeDistance(25.0f);
+        alertSector.updateClosestStrikeDistance(25.0f);
 
-        assertThat(alertSector.getClosestStrokeDistance(), is(10f));
+        assertThat(alertSector.getClosestStrikeDistance(), is(10f));
     }
 
 }

@@ -10,7 +10,7 @@ import android.view.View;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.data.beans.RasterParameters;
-import org.blitzortung.android.map.overlay.StrokesOverlay;
+import org.blitzortung.android.map.overlay.StrikesOverlay;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 
 public class LegendView extends View {
@@ -31,7 +31,7 @@ public class LegendView extends View {
     final private Paint backgroundPaint;
     final private Paint foregroundPaint;
 
-    private StrokesOverlay strokesOverlay;
+    private StrikesOverlay strikesOverlay;
 
     private final RectF backgroundRect;
     private final RectF legendColorRect;
@@ -88,10 +88,10 @@ public class LegendView extends View {
         int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
         int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
 
-        updateTextWidth(strokesOverlay.getIntervalDuration());
+        updateTextWidth(strikesOverlay.getIntervalDuration());
         width = Math.min(3 * padding + colorFieldSize + textWidth, parentWidth);
 
-        ColorHandler colorHandler = strokesOverlay.getColorHandler();
+        ColorHandler colorHandler = strikesOverlay.getColorHandler();
 
         height = Math.min((colorFieldSize + padding) * colorHandler.getColors().length + padding, parentHeight);
 
@@ -108,9 +108,9 @@ public class LegendView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
-        if (strokesOverlay != null) {
-            ColorHandler colorHandler = strokesOverlay.getColorHandler();
-            int minutesPerColor = strokesOverlay.getIntervalDuration() / colorHandler.getNumberOfColors();
+        if (strikesOverlay != null) {
+            ColorHandler colorHandler = strikesOverlay.getColorHandler();
+            int minutesPerColor = strikesOverlay.getIntervalDuration() / colorHandler.getNumberOfColors();
 
             backgroundRect.set(0, 0, width, height);
             canvas.drawRect(backgroundRect, backgroundPaint);
@@ -145,7 +145,7 @@ public class LegendView extends View {
     }
 
     private String getRegionName() {
-        int regionNumber = strokesOverlay.getRegion();
+        int regionNumber = strikesOverlay.getRegion();
 
         int index = 0;
         for (String region_number : getResources().getStringArray(R.array.regions_values)) {
@@ -159,8 +159,8 @@ public class LegendView extends View {
         return "n/a";
     }
 
-    public void setStrokesOverlay(StrokesOverlay strokesOverlay) {
-        this.strokesOverlay = strokesOverlay;
+    public void setStrikesOverlay(StrikesOverlay strikesOverlay) {
+        this.strikesOverlay = strikesOverlay;
     }
 
     public void setAlpha(int alpha) {
@@ -168,15 +168,15 @@ public class LegendView extends View {
     }
 
     private boolean hasRaster() {
-        return strokesOverlay.hasRasterParameters();
+        return strikesOverlay.hasRasterParameters();
     }
 
     private boolean hasRegion() {
-        return strokesOverlay.getRegion() != 0;
+        return strikesOverlay.getRegion() != 0;
     }
 
     public String getRasterString() {
-        RasterParameters rasterParameters = strokesOverlay.getRasterParameters();
+        RasterParameters rasterParameters = strikesOverlay.getRasterParameters();
         return rasterParameters.getInfo();
     }
 }

@@ -1,6 +1,6 @@
 package org.blitzortung.android.data.builder;
 
-import org.blitzortung.android.data.beans.DefaultStroke;
+import org.blitzortung.android.data.beans.DefaultStrike;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Before;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-public class DefaultStrokeBuilderTest {
+public class DefaultStrikeBuilderTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -26,14 +26,14 @@ public class DefaultStrokeBuilderTest {
     @Mock
     private JSONArray jsonArray;
 
-    private DefaultStrokeBuilder builder;
+    private DefaultStrikeBuilder builder;
     private long referenceTimestamp;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        builder = new DefaultStrokeBuilder();
+        builder = new DefaultStrikeBuilder();
     }
 
     @Test
@@ -48,15 +48,15 @@ public class DefaultStrokeBuilderTest {
         when(jsonArray.getInt(5)).thenReturn(6);
         when(jsonArray.getInt(6)).thenReturn(1);
 
-        DefaultStroke stroke = builder.fromJson(referenceTimestamp, jsonArray);
+        DefaultStrike strike = builder.fromJson(referenceTimestamp, jsonArray);
 
-        assertThat(stroke.getTimestamp(), is(referenceTimestamp - 10 * 1000));
-        assertThat(stroke.getLongitude(), is(11.0f));
-        assertThat(stroke.getLatitude(), is(49.0f));
-        assertThat(stroke.getLateralError(), is(12.3f));
-        assertThat(stroke.getAltitude(), is(0));
-        assertThat(stroke.getAmplitude(), is(54.3f));
-        assertThat(stroke.getStationCount(), is((short)6));
+        assertThat(strike.getTimestamp(), is(referenceTimestamp - 10 * 1000));
+        assertThat(strike.getLongitude(), is(11.0f));
+        assertThat(strike.getLatitude(), is(49.0f));
+        assertThat(strike.getLateralError(), is(12.3f));
+        assertThat(strike.getAltitude(), is(0));
+        assertThat(strike.getAmplitude(), is(54.3f));
+        assertThat(strike.getStationCount(), is((short)6));
 
     }
 
@@ -65,7 +65,7 @@ public class DefaultStrokeBuilderTest {
         when(jsonArray.getInt(0)).thenThrow(new JSONException("foo"));
 
         expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage("error with JSON format while parsing stroke data");
+        expectedException.expectMessage("error with JSON format while parsing strike data");
 
         builder.fromJson(referenceTimestamp, jsonArray);
     }

@@ -66,7 +66,7 @@ Version 1.1.3 & 1.3.0 (Android 4.0+):
  * selectable color schemes
 
 ### Version 0.6
- * display of stroke counts for higher zoom levels
+ * display of strike counts for higher zoom levels
  * display of raster data area extent
  * notification and vibration alarm with preference integration
  

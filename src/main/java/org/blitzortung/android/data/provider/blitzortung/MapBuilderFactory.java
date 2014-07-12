@@ -1,8 +1,8 @@
 package org.blitzortung.android.data.provider.blitzortung;
 
-import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.Station;
-import org.blitzortung.android.data.builder.DefaultStrokeBuilder;
+import org.blitzortung.android.data.builder.DefaultStrikeBuilder;
 import org.blitzortung.android.data.builder.StationBuilder;
 import org.blitzortung.android.data.provider.blitzortung.generic.Consumer;
 import org.blitzortung.android.data.provider.blitzortung.generic.LineSplitter;
@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class MapBuilderFactory {
 
-    private final LineSplitter strokeLineSplitter;
+    private final LineSplitter strikeLineSplitter;
     private final LineSplitter stationLineSplitter;
 
     public MapBuilderFactory() {
@@ -24,21 +24,21 @@ public class MapBuilderFactory {
         }, new StationLineSplitter());
     }
 
-    public MapBuilderFactory(LineSplitter strokeLineSplitter, LineSplitter stationLineSplitter) {
-        this.strokeLineSplitter = strokeLineSplitter;
+    public MapBuilderFactory(LineSplitter strikeLineSplitter, LineSplitter stationLineSplitter) {
+        this.strikeLineSplitter = strikeLineSplitter;
         this.stationLineSplitter = stationLineSplitter;
     }
 
-    public MapBuilder<AbstractStroke> createAbstractStrokeMapBuilder() {
-        return new MapBuilder<AbstractStroke>(strokeLineSplitter) {
+    public MapBuilder<StrikeAbstract> createAbstractStrikeMapBuilder() {
+        return new MapBuilder<StrikeAbstract>(strikeLineSplitter) {
 
-            private final DefaultStrokeBuilder strokeBuilder = new DefaultStrokeBuilder();
+            private final DefaultStrikeBuilder strikeBuilder = new DefaultStrikeBuilder();
 
             @Override
             protected void prepare(String[] fields) {
-                strokeBuilder.init();
+                strikeBuilder.init();
 
-                strokeBuilder.setTimestamp(TimeFormat.parseTimestampWithMillisecondsFromFields(fields));
+                strikeBuilder.setTimestamp(TimeFormat.parseTimestampWithMillisecondsFromFields(fields));
             }
 
             @Override
@@ -46,34 +46,34 @@ public class MapBuilderFactory {
                 keyValueBuilderMap.put("pos", new Consumer() {
                     @Override
                     public void apply(String[] values) {
-                        strokeBuilder.setLongitude(Float.parseFloat(values[1]));
-                        strokeBuilder.setLatitude(Float.parseFloat(values[0]));
-                        strokeBuilder.setAltitude(Integer.parseInt(values[2]));
+                        strikeBuilder.setLongitude(Float.parseFloat(values[1]));
+                        strikeBuilder.setLatitude(Float.parseFloat(values[0]));
+                        strikeBuilder.setAltitude(Integer.parseInt(values[2]));
                     }
                 });
                 keyValueBuilderMap.put("str", new Consumer() {
                     @Override
                     public void apply(String[] values) {
-                        strokeBuilder.setAmplitude(Float.parseFloat(values[0]));
+                        strikeBuilder.setAmplitude(Float.parseFloat(values[0]));
                     }
                 });
                 keyValueBuilderMap.put("dev", new Consumer() {
                     @Override
                     public void apply(String[] values) {
-                        strokeBuilder.setLateralError(Integer.parseInt(values[0]));
+                        strikeBuilder.setLateralError(Integer.parseInt(values[0]));
                     }
                 });
                 keyValueBuilderMap.put("sta", new Consumer() {
                     @Override
                     public void apply(String[] values) {
-                        strokeBuilder.setStationCount((short) values.length);
+                        strikeBuilder.setStationCount((short) values.length);
                     }
                 });
             }
 
             @Override
-            public AbstractStroke build() {
-                return strokeBuilder.build();
+            public StrikeAbstract build() {
+                return strikeBuilder.build();
             }
         };
     }

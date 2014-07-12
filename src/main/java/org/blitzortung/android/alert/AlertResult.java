@@ -13,8 +13,8 @@ public class AlertResult {
         this.distanceUnitName = distanceUnitName;
     }
 
-	public float getClosestStrokeDistance() {
-		return sector.getClosestStrokeDistance();
+	public float getClosestStrikeDistance() {
+		return sector.getClosestStrikeDistance();
 	}
 
     public String getDistanceUnitName() {
@@ -27,6 +27,6 @@ public class AlertResult {
     
     @Override
     public String toString() {
-        return String.format("%s %.1f %s", getBearingName(), getClosestStrokeDistance(), getDistanceUnitName());
+        return String.format("%s %.1f %s", getBearingName(), getClosestStrikeDistance(), getDistanceUnitName());
     }
 }

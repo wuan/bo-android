@@ -1,6 +1,5 @@
 package org.blitzortung.android.map.overlay;
 
-import android.content.Context;
 import android.graphics.*;
 import android.graphics.Paint.Style;
 import android.graphics.drawable.Drawable;
@@ -13,24 +12,24 @@ import com.google.android.maps.Projection;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.data.TimeIntervalWithOffset;
-import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.RasterParameters;
-import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.beans.Strike;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.components.LayerOverlayComponent;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
-import org.blitzortung.android.map.overlay.color.StrokeColorHandler;
+import org.blitzortung.android.map.overlay.color.StrikeColorHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements TimeIntervalWithOffset, LayerOverlay {
+public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements TimeIntervalWithOffset, LayerOverlay {
 
     // VisibleForTesting
-    protected final ArrayList<StrokeOverlayItem> strokes;
+    protected final ArrayList<StrikeOverlayItem> strikes;
 
-    private final StrokeColorHandler colorHandler;
+    private final StrikeColorHandler colorHandler;
 
     private final LayerOverlayComponent layerOverlayComponent;
 
@@ -49,30 +48,30 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
     private long referenceTime;
 
     static {
-        StrokeShape shape = new StrokeShape();
+        StrikeShape shape = new StrikeShape();
         shape.update(1, 0);
         DefaultDrawable = new ShapeDrawable(shape);
     }
 
-    public StrokesOverlay(OwnMapActivity mapActivity, StrokeColorHandler colorHandler) {
+    public StrikesOverlay(OwnMapActivity mapActivity, StrikeColorHandler colorHandler) {
         super(mapActivity, boundCenter(DefaultDrawable));
 
-        layerOverlayComponent = new LayerOverlayComponent(mapActivity.getResources().getString(R.string.strokes_layer));
+        layerOverlayComponent = new LayerOverlayComponent(mapActivity.getResources().getString(R.string.strikes_layer));
         this.colorHandler = colorHandler;
 
-        strokes = new ArrayList<StrokeOverlayItem>();
+        strikes = new ArrayList<StrikeOverlayItem>();
 
         populate();
     }
 
     @Override
-    protected StrokeOverlayItem createItem(int index) {
-        return strokes.get(index);
+    protected StrikeOverlayItem createItem(int index) {
+        return strikes.get(index);
     }
 
     @Override
     public int size() {
-        return strokes.size();
+        return strikes.size();
     }
 
     @Override
@@ -108,20 +107,20 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         }
     }
 
-    public void addStrokes(List<AbstractStroke> strokes) {
-        Log.v(Main.LOG_TAG, "StrokesOverlay.addStrokes() #" + strokes.size());
-        for (AbstractStroke stroke : strokes) {
-            this.strokes.add(new StrokeOverlayItem(stroke));
+    public void addStrikes(List<StrikeAbstract> strikes) {
+        Log.v(Main.LOG_TAG, "StrikesOverlay.addStrikes() #" + strikes.size());
+        for (StrikeAbstract strike : strikes) {
+            this.strikes.add(new StrikeOverlayItem(strike));
         }
         setLastFocusedIndex(-1);
         populate();
     }
 
-    public void expireStrokes() {
+    public void expireStrikes() {
         long expireTime = referenceTime - (intervalDuration - intervalOffset) * 60 * 1000;
-        List<StrokeOverlayItem> toRemove = new ArrayList<StrokeOverlayItem>();
+        List<StrikeOverlayItem> toRemove = new ArrayList<StrikeOverlayItem>();
 
-        for (StrokeOverlayItem item : strokes) {
+        for (StrikeOverlayItem item : strikes) {
             if (item.getTimestamp() < expireTime) {
                 toRemove.add(item);
             } else {
@@ -130,14 +129,14 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         }
 
         if (toRemove.size() > 0) {
-            strokes.removeAll(toRemove);
+            strikes.removeAll(toRemove);
         }
     }
 
     public void clear() {
         setLastFocusedIndex(-1);
         clearPopup();
-        strokes.clear();
+        strikes.clear();
         populate();
     }
 
@@ -161,7 +160,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
 
         Shape drawable = null;
 
-        for (StrokeOverlayItem item : strokes) {
+        for (StrikeOverlayItem item : strikes) {
             int section = colorHandler.getColorSection(now, item.getTimestamp(), this);
 
             if (hasRasterParameters() || current_section != section) {
@@ -173,7 +172,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
     }
 
     // VisibleForTesting
-    protected Shape updateAndReturnDrawable(StrokeOverlayItem item, int section, ColorHandler colorHandler) {
+    protected Shape updateAndReturnDrawable(StrikeOverlayItem item, int section, ColorHandler colorHandler) {
         final Projection projection = getActivity().getMapView().getProjection();
         final int color = colorHandler.getColor(section);
         final int textColor = colorHandler.getTextColor();
@@ -201,7 +200,7 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
 
     @Override
     protected boolean onTap(int index) {
-        StrokeOverlayItem item = strokes.get(index);
+        StrikeOverlayItem item = strikes.get(index);
         if (item.getPoint() != null && item.getTimestamp() != 0) {
             String result = (String) DateFormat.format("kk:mm:ss", item.getTimestamp());
 
@@ -214,19 +213,19 @@ public class StrokesOverlay extends PopupOverlay<StrokeOverlayItem> implements T
         return false;
     }
 
-    public int getTotalNumberOfStrokes() {
+    public int getTotalNumberOfStrikes() {
 
-        int totalNumberOfStrokes = 0;
+        int totalNumberOfStrikes = 0;
 
-        for (StrokeOverlayItem item : strokes) {
-            totalNumberOfStrokes += item.getMultiplicity();
+        for (StrikeOverlayItem item : strikes) {
+            totalNumberOfStrikes += item.getMultiplicity();
         }
 
-        return totalNumberOfStrokes;
+        return totalNumberOfStrikes;
     }
 
-    public Collection<? extends Stroke> getStrokes() {
-        return strokes;
+    public Collection<? extends Strike> getStrikes() {
+        return strikes;
     }
 
     public int getIntervalDuration() {

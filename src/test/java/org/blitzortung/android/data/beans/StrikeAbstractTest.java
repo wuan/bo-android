@@ -10,11 +10,11 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
-public class AbstractStrokeTest {
+public class StrikeAbstractTest {
 
-    static class AbstractStrokeForTest extends AbstractStroke
+    static class StrikeAbstractForTest extends StrikeAbstract
     {
-        public AbstractStrokeForTest()
+        public StrikeAbstractForTest()
         {
             setTimestamp(1234l);
             setLongitude(11.0f);
@@ -22,37 +22,37 @@ public class AbstractStrokeTest {
         }
     }
 
-    private AbstractStrokeForTest abstractStroke;
+    private StrikeAbstractForTest abstractStrike;
 
     @Before
     public void setUp()
     {
-         abstractStroke = new AbstractStrokeForTest();
+         abstractStrike = new StrikeAbstractForTest();
     }
 
     @Test
     public void testGetLongitude() throws Exception {
-        assertThat(abstractStroke.getLongitude(), is(11.0f));
+        assertThat(abstractStrike.getLongitude(), is(11.0f));
     }
 
     @Test
     public void testGetLatitude() throws Exception {
-        assertThat(abstractStroke.getLatitude(), is(49.0f));
+        assertThat(abstractStrike.getLatitude(), is(49.0f));
     }
 
     @Test
     public void testGetTimestamp() throws Exception {
-        assertThat(abstractStroke.getTimestamp(), is(1234l));
+        assertThat(abstractStrike.getTimestamp(), is(1234l));
     }
 
     @Test
     public void testGetMultiplicity() throws Exception {
-        assertThat(abstractStroke.getMultiplicity(), is(1));
+        assertThat(abstractStrike.getMultiplicity(), is(1));
     }
 
     @Test
     public void testGetLocation() throws Exception {
-        Location location = abstractStroke.getLocation(new Location(""));
+        Location location = abstractStrike.getLocation(new Location(""));
 
         assertThat(location.getLongitude(), is(11.0));
         assertThat(location.getLatitude(), is(49.0));

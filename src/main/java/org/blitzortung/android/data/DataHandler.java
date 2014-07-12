@@ -8,7 +8,7 @@ import android.os.PowerManager;
 import android.util.Log;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.view.PreferenceKey;
-import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataProviderFactory;
 import org.blitzortung.android.data.provider.DataProviderType;
@@ -51,7 +51,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     public static final Set<DataChannel> DEFAULT_DATA_CHANNELS = new HashSet<DataChannel>();
 
     static {
-        DEFAULT_DATA_CHANNELS.add(DataChannel.STROKES);
+        DEFAULT_DATA_CHANNELS.add(DataChannel.STRIKES);
     }
 
     public DataHandler(PowerManager.WakeLock wakeLock, SharedPreferences sharedPreferences, PackageInfo pInfo) {
@@ -106,11 +106,11 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                     dataProvider.setUp();
                     dataProvider.setCredentials(username, password);
 
-                    List<AbstractStroke> strokes;
+                    List<StrikeAbstract> strikes;
                     if (rasterBaselength == 0) {
-                        strokes = dataProvider.getStrokes(intervalDuration, intervalOffset, region);
+                        strikes = dataProvider.getStrikes(intervalDuration, intervalOffset, region);
                     } else {
-                        strokes = dataProvider.getStrokesRaster(intervalDuration, intervalOffset, rasterBaselength, region);
+                        strikes = dataProvider.getStrikesRaster(intervalDuration, intervalOffset, rasterBaselength, region);
                     }
                     Parameters parameters = new Parameters();
                     parameters.setIntervalDuration(intervalDuration);
@@ -124,7 +124,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                     result.setParameters(parameters);
 
                     result.setReferenceTime(System.currentTimeMillis());
-                    result.setStrokes(strokes);
+                    result.setStrikes(strikes);
                     result.setRasterParameters(dataProvider.getRasterParameters());
                     result.setHistogram(dataProvider.getHistogram());
 
@@ -287,7 +287,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         }
         if (!isRealtime()) {
             Set<DataChannel> dataChannels = new HashSet<DataChannel>();
-            dataChannels.add(DataChannel.STROKES);
+            dataChannels.add(DataChannel.STRIKES);
             updateData(dataChannels);
         }
     }

@@ -95,7 +95,7 @@ public class AppServiceTest {
 
         final Set<DataChannel> updateChannels = dataChannelsCaptor.getValue();
         assertThat(updateChannels.size(), is(2));
-        assertThat(updateChannels, hasItems(DataChannel.STROKES, DataChannel.PARTICIPANTS));
+        assertThat(updateChannels, hasItems(DataChannel.STRIKES, DataChannel.PARTICIPANTS));
 
         assertThat(appService.getLastUpdate(), is(actualSecond));
     }

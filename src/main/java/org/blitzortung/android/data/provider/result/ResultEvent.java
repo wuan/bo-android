@@ -1,18 +1,16 @@
 package org.blitzortung.android.data.provider.result;
 
 import org.blitzortung.android.data.Parameters;
-import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.RasterParameters;
-import org.blitzortung.android.data.beans.Stroke;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ResultEvent implements DataEvent {
 
-	private final List<List<AbstractStroke>> strokes;
+	private final List<List<StrikeAbstract>> strikes;
   
 	private List<Station> stations;
   
@@ -29,23 +27,23 @@ public class ResultEvent implements DataEvent {
     private Parameters parameters;
 
     public ResultEvent() {
-        strokes = new ArrayList<List<AbstractStroke>>();
+        strikes = new ArrayList<List<StrikeAbstract>>();
 		fail = true;
 		incrementalData = false;
 	}
 	
-	public void setStrokes(List<AbstractStroke> strokes) {
-        this.strokes.clear();
-		this.strokes.add(strokes);
+	public void setStrikes(List<StrikeAbstract> strikes) {
+        this.strikes.clear();
+		this.strikes.add(strikes);
 		fail = false;
 	}
 	
-	public boolean containsStrokes() {
-		return ! strokes.isEmpty();
+	public boolean containsStrikes() {
+		return ! strikes.isEmpty();
 	}
 	
-	public List<AbstractStroke> getStrokes() {
-		return strokes.get(0);
+	public List<StrikeAbstract> getStrikes() {
+		return strikes.get(0);
 	}
 	
 	public void setStations(List<Station> stations) {
@@ -118,8 +116,8 @@ public class ResultEvent implements DataEvent {
             sb.append("FailedResult()");
         } else {
             sb.append("Result(");
-            final List<AbstractStroke> currentStrokes = getStrokes();
-            sb.append(currentStrokes != null ? currentStrokes.size() : 0).append(" strokes, ");
+            final List<StrikeAbstract> currentStrikes = getStrikes();
+            sb.append(currentStrikes != null ? currentStrikes.size() : 0).append(" strikes, ");
             sb.append(getParameters());
             if (hasRasterParameters()) {
                 sb.append(", ").append(getRasterParameters());

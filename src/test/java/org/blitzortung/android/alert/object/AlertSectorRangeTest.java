@@ -1,6 +1,6 @@
 package org.blitzortung.android.alert.object;
 
-import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.beans.Strike;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,48 +32,48 @@ public class AlertSectorRangeTest {
     }
 
     @Test
-    public void testGetStrokeCountInitialValue() {
-        assertThat(alertSectorRange.getStrokeCount(), is(0));
+    public void testGetStrikeCountInitialValue() {
+        assertThat(alertSectorRange.getStrikeCount(), is(0));
     }
     
     @Test
-    public void testSetGetStrokeCount() {
-        Stroke stroke = mock(Stroke.class);
-        when(stroke.getMultiplicity()).thenReturn(1).thenReturn(2);
+    public void testSetGetStrikeCount() {
+        Strike strike = mock(Strike.class);
+        when(strike.getMultiplicity()).thenReturn(1).thenReturn(2);
         
-        alertSectorRange.addStroke(stroke);
-        assertThat(alertSectorRange.getStrokeCount(), is(1));
+        alertSectorRange.addStrike(strike);
+        assertThat(alertSectorRange.getStrikeCount(), is(1));
 
-        alertSectorRange.addStroke(stroke);
-        assertThat(alertSectorRange.getStrokeCount(), is(3));
+        alertSectorRange.addStrike(strike);
+        assertThat(alertSectorRange.getStrikeCount(), is(3));
     }
 
     @Test
-    public void testGetLatestStrokeTimestampInitialValue() {
-        assertThat(alertSectorRange.getLatestStrokeTimestamp(), is(0l));
+    public void testGetLatestStrikeTimestampInitialValue() {
+        assertThat(alertSectorRange.getLatestStrikeTimestamp(), is(0l));
     }
     
     @Test
-    public void testGetLatestStrokeTimestamp() {
-        Stroke stroke = mock(Stroke.class);
-        when(stroke.getTimestamp()).thenReturn(1000l).thenReturn(5000l);
+    public void testGetLatestStrikeTimestamp() {
+        Strike strike = mock(Strike.class);
+        when(strike.getTimestamp()).thenReturn(1000l).thenReturn(5000l);
         
-        alertSectorRange.addStroke(stroke);
-        assertThat(alertSectorRange.getLatestStrokeTimestamp(), is(1000l));
+        alertSectorRange.addStrike(strike);
+        assertThat(alertSectorRange.getLatestStrikeTimestamp(), is(1000l));
 
-        alertSectorRange.addStroke(stroke);
-        assertThat(alertSectorRange.getLatestStrokeTimestamp(), is(5000l));
+        alertSectorRange.addStrike(strike);
+        assertThat(alertSectorRange.getLatestStrikeTimestamp(), is(5000l));
     }
     
     @Test
     public void testReset() {
-        Stroke stroke = mock(Stroke.class);
-        when(stroke.getTimestamp()).thenReturn(5000l);
-        when(stroke.getMultiplicity()).thenReturn(2);
+        Strike strike = mock(Strike.class);
+        when(strike.getTimestamp()).thenReturn(5000l);
+        when(strike.getMultiplicity()).thenReturn(2);
         
         alertSectorRange.clearResults();
         
-        assertThat(alertSectorRange.getStrokeCount(), is(0));
-        assertThat(alertSectorRange.getLatestStrokeTimestamp(), is(0l));
+        assertThat(alertSectorRange.getStrikeCount(), is(0));
+        assertThat(alertSectorRange.getLatestStrikeTimestamp(), is(0l));
     }
 }

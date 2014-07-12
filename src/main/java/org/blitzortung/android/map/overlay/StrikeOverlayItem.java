@@ -9,11 +9,11 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
 import org.blitzortung.android.data.Coordsys;
-import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.RasterParameters;
-import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.beans.Strike;
 
-public class StrokeOverlayItem extends OverlayItem implements Stroke {
+public class StrikeOverlayItem extends OverlayItem implements Strike {
 
 	private final long timestamp;
 	
@@ -25,12 +25,12 @@ public class StrokeOverlayItem extends OverlayItem implements Stroke {
 
     private static final Point bottomRight = new Point();
 
-	public StrokeOverlayItem(AbstractStroke stroke) {
-		super(Coordsys.toMapCoords(stroke.getLongitude(), stroke.getLatitude()), "", "");
+	public StrikeOverlayItem(StrikeAbstract strike) {
+		super(Coordsys.toMapCoords(strike.getLongitude(), strike.getLatitude()), "", "");
         super.setMarker(new ShapeDrawable());
 
-		timestamp = stroke.getTimestamp();		
-		multiplicity = stroke.getMultiplicity();
+		timestamp = strike.getTimestamp();
+		multiplicity = strike.getMultiplicity();
 	}
 	
     @Override
@@ -53,7 +53,7 @@ public class StrokeOverlayItem extends OverlayItem implements Stroke {
 
     @Override
     public void setMarker(Drawable drawable) {
-        throw new IllegalStateException("cannot overwrite marker of stroke overlay item");
+        throw new IllegalStateException("cannot overwrite marker of strike overlay item");
     }
 
     private ShapeDrawable getDrawable() {
@@ -91,10 +91,10 @@ public class StrokeOverlayItem extends OverlayItem implements Stroke {
             rasterShape.update(topLeft, bottomRight, color, getMultiplicity(), textColor);
         } else {
             if (shape == null) {
-                shape = new StrokeShape();
+                shape = new StrikeShape();
             }
-            StrokeShape strokeShape = (StrokeShape) shape;
-            strokeShape.update(zoomLevel + 1, color);
+            StrikeShape strikeShape = (StrikeShape) shape;
+            strikeShape.update(zoomLevel + 1, color);
 
         }
         setShape(shape);

@@ -7,7 +7,7 @@ import org.blitzortung.android.alert.AlertResult;
 import org.blitzortung.android.alert.object.AlertSector;
 import org.blitzortung.android.alert.object.AlertStatus;
 import org.blitzortung.android.app.Main;
-import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.beans.Strike;
 
 import java.util.Collection;
 import java.util.Locale;
@@ -24,21 +24,21 @@ public class AlertStatusHandler {
         this.alertParameters = alertParameters;
     }
 
-    public AlertStatus checkStrokes(AlertStatus alertStatus, Collection<? extends Stroke> strokes, Location location) {
+    public AlertStatus checkStrikes(AlertStatus alertStatus, Collection<? extends Strike> strikes, Location location) {
 
         alertStatus.clearResults();
 
         long thresholdTime = System.currentTimeMillis() - alertParameters.getAlarmInterval();
 
-        alertSectorHandler.setCheckStrokeParameters(location, thresholdTime);
+        alertSectorHandler.setCheckStrikeParameters(location, thresholdTime);
 
-        Location strokeLocation = new Location("");
+        Location strikeLocation = new Location("");
 
-        for (Stroke stroke : strokes) {
-            float bearingToStroke = location.bearingTo(stroke.getLocation(strokeLocation));
+        for (Strike strike : strikes) {
+            float bearingToStrike = location.bearingTo(strike.getLocation(strikeLocation));
 
-            AlertSector alertSector = getSectorForBearing(alertStatus, bearingToStroke);
-            alertSectorHandler.checkStroke(alertSector, stroke);
+            AlertSector alertSector = getSectorForBearing(alertStatus, bearingToStrike);
+            alertSectorHandler.checkStrike(alertSector, strike);
         }
         return alertStatus;
     }
@@ -54,27 +54,27 @@ public class AlertStatusHandler {
         return latestTimestamp;
     }
     
-    public AlertSector getSectorWithClosestStroke(AlertStatus alertStatus) {
+    public AlertSector getSectorWithClosestStrike(AlertStatus alertStatus) {
         float minDistance = Float.POSITIVE_INFINITY;
 
-        AlertSector sectorWithClosestStroke = null;
+        AlertSector sectorWithClosestStrike = null;
         for (AlertSector sector : alertStatus.getSectors()) {
-            if (sector.getClosestStrokeDistance() < minDistance) {
-                minDistance = sector.getClosestStrokeDistance();
-                sectorWithClosestStroke = sector;
+            if (sector.getClosestStrikeDistance() < minDistance) {
+                minDistance = sector.getClosestStrikeDistance();
+                sectorWithClosestStrike = sector;
             }
         }
-        return sectorWithClosestStroke;
+        return sectorWithClosestStrike;
     }
 
     public AlertResult getCurrentActivity(AlertStatus alertStatus) {
-        AlertSector sector = getSectorWithClosestStroke(alertStatus);
+        AlertSector sector = getSectorWithClosestStrike(alertStatus);
 
         return sector != null ? new AlertResult(sector, alertParameters.getMeasurementSystem().getUnitName()) : null;
     }
 
     public String getTextMessage(AlertStatus alertStatus, float notificationDistanceLimit) {
-        SortedMap<Float, AlertSector> distanceSectors = getSectorsSortedByClosestStrokeDistance(alertStatus, notificationDistanceLimit);
+        SortedMap<Float, AlertSector> distanceSectors = getSectorsSortedByClosestStrikeDistance(alertStatus, notificationDistanceLimit);
 
         StringBuilder sb = new StringBuilder();
 
@@ -82,7 +82,7 @@ public class AlertStatusHandler {
             for (AlertSector sector : distanceSectors.values()) {
                 sb.append(sector.getLabel());
                 sb.append(" ");
-                sb.append(String.format("%.0f%s", sector.getClosestStrokeDistance(), alertParameters.getMeasurementSystem().getUnitName()));
+                sb.append(String.format("%.0f%s", sector.getClosestStrikeDistance(), alertParameters.getMeasurementSystem().getUnitName()));
                 sb.append(", ");
             }
             sb.setLength(sb.length() - 2);
@@ -91,12 +91,12 @@ public class AlertStatusHandler {
         return sb.toString();
     }
 
-    private SortedMap<Float, AlertSector> getSectorsSortedByClosestStrokeDistance(AlertStatus alertStatus, float notificationDistanceLimit) {
+    private SortedMap<Float, AlertSector> getSectorsSortedByClosestStrikeDistance(AlertStatus alertStatus, float notificationDistanceLimit) {
         SortedMap<Float, AlertSector> distanceSectors = new TreeMap<Float, AlertSector>();
 
         for (AlertSector sector : alertStatus.getSectors()) {
-            if (sector.getClosestStrokeDistance() <= notificationDistanceLimit) {
-                distanceSectors.put(sector.getClosestStrokeDistance(), sector);
+            if (sector.getClosestStrikeDistance() <= notificationDistanceLimit) {
+                distanceSectors.put(sector.getClosestStrikeDistance(), sector);
             }
         }
         return distanceSectors;

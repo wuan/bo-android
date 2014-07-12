@@ -1,6 +1,6 @@
 package org.blitzortung.android.data.provider;
 
-import org.blitzortung.android.data.beans.AbstractStroke;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.RasterParameters;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class DataProviderTest {
         }
 
         @Override
-        public List<AbstractStroke> getStrokes(int intervalDuration, int intervalOffset, int region) {
+        public List<StrikeAbstract> getStrikes(int intervalDuration, int intervalOffset, int region) {
             return null;
         }
 
@@ -36,7 +36,7 @@ public class DataProviderTest {
         }
 
         @Override
-        public List<AbstractStroke> getStrokesRaster(int intervalDuration, int intervalOffset, int params, int region) {
+        public List<StrikeAbstract> getStrikesRaster(int intervalDuration, int intervalOffset, int params, int region) {
             return null;
         }
 

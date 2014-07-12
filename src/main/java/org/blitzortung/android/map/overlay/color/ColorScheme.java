@@ -11,7 +11,7 @@ public enum ColorScheme {
         this.colors = colors;
     }
 
-    public int[] getStrokeColors()
+    public int[] getStrikeColors()
     {
         return colors;
     }

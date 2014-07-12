@@ -19,6 +19,7 @@ import org.blitzortung.android.alert.object.AlertSector;
 import org.blitzortung.android.alert.object.AlertStatus;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
+import org.blitzortung.android.data.beans.Strike;
 import org.blitzortung.android.data.provider.result.ClearDataEvent;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
@@ -26,7 +27,6 @@ import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
-import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.protocol.Consumer;
 import org.blitzortung.android.util.MeasurementSystem;
 
@@ -38,7 +38,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
     private final Vibrator vibrator;
     private final NotificationHandler notificationHandler;
     private Context context;
-    private Collection<? extends Stroke> lastStrokes;
+    private Collection<? extends Strike> lastStrikes;
     private int vibrationSignalDuration;
     private Uri alarmSoundNotificationSignal;
 
@@ -137,7 +137,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
         public void consume(LocationEvent event) {
             Log.v(Main.LOG_TAG, "AlertHandler received location " + location);
             location = event.getLocation();
-            checkStrokes(lastStrokes);
+            checkStrikes(lastStrikes);
         }
     };
 
@@ -151,7 +151,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
             if (event instanceof ResultEvent) {
                 ResultEvent resultEvent = (ResultEvent) event;
                 if (!resultEvent.hasFailed() && resultEvent.containsRealtimeData()) {
-                    checkStrokes(resultEvent.getStrokes());
+                    checkStrikes(resultEvent.getStrikes());
                 } else {
                     invalidateAlert();
                 }
@@ -169,13 +169,13 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
         return alertEnabled;
     }
 
-    public void checkStrokes(Collection<? extends Stroke> strokes) {
-        boolean currentAlarmIsValid = isAlertEnabled() && location != null && strokes != null;
-        lastStrokes = strokes;
+    public void checkStrikes(Collection<? extends Strike> strikes) {
+        boolean currentAlarmIsValid = isAlertEnabled() && location != null && strikes != null;
+        lastStrikes = strikes;
 
         if (currentAlarmIsValid) {
             alarmValid = true;
-            alertStatusHandler.checkStrokes(alertStatus, strokes, location);
+            alertStatusHandler.checkStrikes(alertStatus, strikes, location);
             processResult(getAlarmResult());
         } else {
             invalidateAlert();
@@ -218,7 +218,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
     }
 
     public void invalidateAlert() {
-        lastStrokes = null;
+        lastStrikes = null;
         boolean previousAlarmValidState = alarmValid;
         alarmValid = false;
 
@@ -245,7 +245,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
 
             alertParameters.updateSectorLabels(context);
 
-            if (alertResult.getClosestStrokeDistance() <= signalingDistanceLimit) {
+            if (alertResult.getClosestStrikeDistance() <= signalingDistanceLimit) {
                 long signalingLatestTimestamp = alertStatusHandler.getLatestTimstampWithin(signalingDistanceLimit, alertStatus);
                 if (signalingLatestTimestamp > signalingLastTimestamp) {
                     Log.v(Main.LOG_TAG, "AlertHandler.processResult() perform alarm");
@@ -257,7 +257,7 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
                 }
             }
 
-            if (alertResult.getClosestStrokeDistance() <= notificationDistanceLimit) {
+            if (alertResult.getClosestStrikeDistance() <= notificationDistanceLimit) {
                 long notificationLatestTimestamp = alertStatusHandler.getLatestTimstampWithin(notificationDistanceLimit, alertStatus);
                 if (notificationLatestTimestamp > notificationLastTimestamp) {
                     Log.v(Main.LOG_TAG, "AlertHandler.processResult() perform notification");

@@ -124,9 +124,9 @@ public class AlertView extends View {
                     float leftTop = center - sectorRadius;
                     float bottomRight = center + sectorRadius;
 
-                    boolean drawColor = alertSectorRange.getStrokeCount() > 0;
+                    boolean drawColor = alertSectorRange.getStrikeCount() > 0;
                     if (drawColor) {
-                        final int color = colorHandler.getColor(actualTime, alertSectorRange.getLatestStrokeTimestamp(), intervalDuration);
+                        final int color = colorHandler.getColor(actualTime, alertSectorRange.getLatestStrikeTimestamp(), intervalDuration);
                         sectorPaint.setColor(color);
                     }
                     arcArea.set(leftTop, leftTop, bottomRight, bottomRight);

@@ -4,12 +4,12 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.shapes.Shape;
 
-public class StrokeShape extends Shape {
+public class StrikeShape extends Shape {
 
 	private float size;
 	private int color;
 	
-	public StrokeShape() {
+	public StrikeShape() {
 	}
 	
 	@Override

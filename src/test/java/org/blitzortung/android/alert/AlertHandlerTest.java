@@ -12,11 +12,11 @@ import org.blitzortung.android.alert.factory.AlertObjectFactory;
 import org.blitzortung.android.alert.handler.AlertStatusHandler;
 import org.blitzortung.android.alert.object.AlertSector;
 import org.blitzortung.android.alert.object.AlertStatus;
+import org.blitzortung.android.data.beans.Strike;
 import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
-import org.blitzortung.android.data.beans.Stroke;
 import org.blitzortung.android.protocol.Consumer;
 import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
@@ -71,7 +71,7 @@ public class AlertHandlerTest {
     private NotificationHandler notificationHandler;
 
     @Mock
-    private Collection<Stroke> strokes;
+    private Collection<Strike> strikes;
 
     @Mock
     private Location location;
@@ -119,51 +119,51 @@ public class AlertHandlerTest {
     }
 
     @Test
-    public void testCheckStrokesWithAlarmDisabledAndLocationUnsetWhenAlarmWasNotActiveBefore() {
-        alertHandler.checkStrokes(strokes);
+    public void testCheckStrikesWithAlarmDisabledAndLocationUnsetWhenAlarmWasNotActiveBefore() {
+        alertHandler.checkStrikes(strikes);
 
-        verify(alertStatusHandler, times(0)).checkStrokes(alertStatus, strokes, null);
+        verify(alertStatusHandler, times(0)).checkStrikes(alertStatus, strikes, null);
         verifyZeroInteractions(alertEventConsumer);
     }
 
     @Test
-    public void testCheckStrokesWithAlarmDisabledAndLocationUnset() {
+    public void testCheckStrikesWithAlarmDisabledAndLocationUnset() {
         makeAlarmsValid();
         verify(alertEventConsumer, times(1)).consume(any(AlertResultEvent.class));
         verify(alertEventConsumer, times(0)).consume(AlertHandler.ALERT_CANCEL_EVENT);
 
         alertHandler.getLocationEventConsumer().consume(new LocationEvent(null));
-        alertHandler.checkStrokes(strokes);
+        alertHandler.checkStrikes(strikes);
 
-        verify(alertStatusHandler, times(0)).checkStrokes(alertStatus, strokes, null);
+        verify(alertStatusHandler, times(0)).checkStrikes(alertStatus, strikes, null);
         verify(alertEventConsumer, times(1)).consume(any(AlertResultEvent.class));
         verify(alertEventConsumer, times(1)).consume(AlertHandler.ALERT_CANCEL_EVENT);
     }
 
     @Test
-    public void testCheckStrokesWithAlarmDisabledAndLocationSet() {
+    public void testCheckStrikesWithAlarmDisabledAndLocationSet() {
         makeAlarmsValid();
         enableAlarmInPrefs(false);
         verify(alertEventConsumer, times(1)).consume(any(AlertResultEvent.class));
         verify(alertEventConsumer, times(1)).consume(AlertHandler.ALERT_CANCEL_EVENT);
 
-        alertHandler.checkStrokes(strokes);
+        alertHandler.checkStrikes(strikes);
 
-        verify(alertStatusHandler, times(0)).checkStrokes(alertStatus, strokes, null);
+        verify(alertStatusHandler, times(0)).checkStrikes(alertStatus, strikes, null);
         verify(alertEventConsumer, times(1)).consume(any(AlertResultEvent.class));
         verify(alertEventConsumer, times(2)).consume(AlertHandler.ALERT_CANCEL_EVENT);
     }
 
     @Test
-    public void testCheckStrokesWithAlarmEnabledAndLocationSet() {
+    public void testCheckStrikesWithAlarmEnabledAndLocationSet() {
         enableAlarmInPrefs(true);
         alertHandler.getLocationEventConsumer().consume(new LocationEvent(location));
 
         when(alertStatusHandler.getCurrentActivity(alertStatus)).thenReturn(alertResult);
 
-        alertHandler.checkStrokes(strokes);
+        alertHandler.checkStrikes(strikes);
 
-        verify(alertStatusHandler, times(1)).checkStrokes(alertStatus, strokes, location);
+        verify(alertStatusHandler, times(1)).checkStrikes(alertStatus, strikes, location);
         verify(alertEventConsumer, times(1)).consume(any(AlertResultEvent.class));
         verify(alertEventConsumer, times(0)).consume(AlertHandler.ALERT_CANCEL_EVENT);
     }
@@ -199,7 +199,7 @@ public class AlertHandlerTest {
     private void makeAlarmsValid() {
         alertHandler.getLocationEventConsumer().consume(new LocationEvent(location));
         enableAlarmInPrefs(true);
-        alertHandler.checkStrokes(Lists.<Stroke>newArrayList());
+        alertHandler.checkStrikes(Lists.<Strike>newArrayList());
     }
 
     private void enableAlarmInPrefs(boolean alarmEnabled) {

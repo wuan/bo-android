@@ -88,7 +88,7 @@ public class AlertLabelHandlerTest {
 
     private void mockAlarmInRange(float distance, String sectorLabel)
     {
-        when(alertResult.getClosestStrokeDistance()).thenReturn(distance);
+        when(alertResult.getClosestStrikeDistance()).thenReturn(distance);
         when(alertResult.getDistanceUnitName()).thenReturn("km");
         when(alertResult.getBearingName()).thenReturn(sectorLabel);
     }

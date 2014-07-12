@@ -2,9 +2,9 @@ package org.blitzortung.android.map.overlay.color;
 
 import android.content.SharedPreferences;
 
-public class StrokeColorHandler extends ColorHandler {
+public class StrikeColorHandler extends ColorHandler {
 
-	public StrokeColorHandler(SharedPreferences preferences) {
+	public StrikeColorHandler(SharedPreferences preferences) {
 		super(preferences);
 	}
 
@@ -12,10 +12,10 @@ public class StrokeColorHandler extends ColorHandler {
 	public int[] getColors(ColorTarget target) {
 		switch(target) {
 		case SATELLITE:
-			return getColorScheme().getStrokeColors();
+			return getColorScheme().getStrikeColors();
 
 		case STREETMAP:
-			return modifyBrightness(getColorScheme().getStrokeColors(), 0.8f);
+			return modifyBrightness(getColorScheme().getStrikeColors(), 0.8f);
 		}
 		throw new IllegalStateException("Unhandled color target " + target);
 	}

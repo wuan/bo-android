@@ -20,14 +20,14 @@ public class AlertLabelHandler {
         int textColorResource = R.color.Green;
 
         if (alertResult != null) {
-            if (alertResult.getClosestStrokeDistance() > 50) {
+            if (alertResult.getClosestStrikeDistance() > 50) {
                 textColorResource = R.color.Green;
-            } else if (alertResult.getClosestStrokeDistance() > 20) {
+            } else if (alertResult.getClosestStrikeDistance() > 20) {
                 textColorResource = R.color.Yellow;
             } else {
                 textColorResource = R.color.Red;
             }
-            warningText = String.format("%.0f%s %s", alertResult.getClosestStrokeDistance(), alertResult.getDistanceUnitName(), alertResult.getBearingName());
+            warningText = String.format("%.0f%s %s", alertResult.getClosestStrikeDistance(), alertResult.getDistanceUnitName(), alertResult.getBearingName());
         }
         int color = resources.getColor(textColorResource);
         alertLabel.setAlarmTextColor(color);

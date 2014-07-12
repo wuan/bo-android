@@ -2,7 +2,7 @@ package org.blitzortung.android.data.beans;
 
 import android.location.Location;
 
-public abstract class AbstractStroke implements Stroke {
+public abstract class StrikeAbstract implements Strike {
 
 	private long timestamp;
 

@@ -1,11 +1,8 @@
 package org.blitzortung.android.data.beans;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import java.io.Serializable;
 
-public class DefaultStroke extends AbstractStroke implements Serializable {
+public class DefaultStrike extends StrikeAbstract implements Serializable {
 	
 	private static final long serialVersionUID = 4201042078597105622L;
 
@@ -17,7 +14,7 @@ public class DefaultStroke extends AbstractStroke implements Serializable {
 	
 	private float lateralError;
 
-    public DefaultStroke(long timestamp, float xCoord, float yCoord, int altitude, float amplitude, short stationCount, float lateralError)
+    public DefaultStrike(long timestamp, float xCoord, float yCoord, int altitude, float amplitude, short stationCount, float lateralError)
     {
         setTimestamp(timestamp);
         setLongitude(xCoord);

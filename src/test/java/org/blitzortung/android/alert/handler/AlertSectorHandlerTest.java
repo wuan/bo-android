@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import org.blitzortung.android.alert.AlertParameters;
 import org.blitzortung.android.alert.object.AlertSector;
 import org.blitzortung.android.alert.object.AlertSectorRange;
-import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.beans.Strike;
 import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,13 +22,13 @@ import static org.mockito.Mockito.*;
 public class AlertSectorHandlerTest {
     
     @Mock
-    private Stroke stroke;
+    private Strike strike;
     
     @Mock
     private Location location;
 
     @Mock
-    private Location strokeLocation;
+    private Location strikeLocation;
 
     private long now;
 
@@ -60,7 +60,7 @@ public class AlertSectorHandlerTest {
         beforeThresholdTime = thresholdTime - 1;
         
         alertSectorHandler = new AlertSectorHandler(alertParameters);
-        alertSectorHandler.setCheckStrokeParameters(location, thresholdTime);
+        alertSectorHandler.setCheckStrikeParameters(location, thresholdTime);
         
         when(alertSector.getRanges()).thenReturn(Lists.newArrayList(alertSectorRange1, alertSectorRange2));
         when(alertParameters.getMeasurementSystem()).thenReturn(measurementSystem);
@@ -71,7 +71,7 @@ public class AlertSectorHandlerTest {
     @Test
     public void testCheckWithNullAsSector()
     {
-        alertSectorHandler.checkStroke(null, stroke);
+        alertSectorHandler.checkStrike(null, strike);
         
         verify(location, times(0)).distanceTo(any(Location.class));
         verify(alertParameters, times(0)).getMeasurementSystem();
@@ -80,63 +80,63 @@ public class AlertSectorHandlerTest {
     @Test
     public void testCheckWithinThresholdTimeAndRange1()
     {
-        when(stroke.getTimestamp()).thenReturn(thresholdTime);
-        when(stroke.getLocation(any(Location.class))).thenReturn(strokeLocation);
-        when(location.distanceTo(strokeLocation)).thenReturn(2500f);
+        when(strike.getTimestamp()).thenReturn(thresholdTime);
+        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(location.distanceTo(strikeLocation)).thenReturn(2500f);
         
-        alertSectorHandler.checkStroke(alertSector, stroke);
+        alertSectorHandler.checkStrike(alertSector, strike);
         
-        verify(alertSector, times(1)).updateClosestStrokeDistance(2.5f);
+        verify(alertSector, times(1)).updateClosestStrikeDistance(2.5f);
         verify(alertSectorRange1, times(1)).getRangeMaximum();
-        verify(alertSectorRange1, times(1)).addStroke(stroke);
+        verify(alertSectorRange1, times(1)).addStrike(strike);
         verify(alertSectorRange2, times(0)).getRangeMaximum();
     }
 
     @Test
     public void testCheckWithinThresholdTimeAndOutOfAllRanges()
     {
-        when(stroke.getTimestamp()).thenReturn(thresholdTime);
-        when(stroke.getLocation(any(Location.class))).thenReturn(strokeLocation);
-        when(location.distanceTo(strokeLocation)).thenReturn(5000.1f);
+        when(strike.getTimestamp()).thenReturn(thresholdTime);
+        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(location.distanceTo(strikeLocation)).thenReturn(5000.1f);
 
-        alertSectorHandler.checkStroke(alertSector, stroke);
+        alertSectorHandler.checkStrike(alertSector, strike);
 
-        verify(alertSector, times(0)).updateClosestStrokeDistance(anyFloat());
+        verify(alertSector, times(0)).updateClosestStrikeDistance(anyFloat());
         verify(alertSectorRange1, times(1)).getRangeMaximum();
-        verify(alertSectorRange1, times(0)).addStroke(any(Stroke.class));
+        verify(alertSectorRange1, times(0)).addStrike(any(Strike.class));
         verify(alertSectorRange2, times(1)).getRangeMaximum();
-        verify(alertSectorRange2, times(0)).addStroke(any(Stroke.class));
+        verify(alertSectorRange2, times(0)).addStrike(any(Strike.class));
     }
 
     @Test
     public void testCheckOutOfThresholdTimeAndWithinRange2()
     {
-        when(stroke.getTimestamp()).thenReturn(beforeThresholdTime);
-        when(stroke.getLocation(any(Location.class))).thenReturn(strokeLocation);
-        when(location.distanceTo(strokeLocation)).thenReturn(2500.1f);
+        when(strike.getTimestamp()).thenReturn(beforeThresholdTime);
+        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(location.distanceTo(strikeLocation)).thenReturn(2500.1f);
 
-        alertSectorHandler.checkStroke(alertSector, stroke);
+        alertSectorHandler.checkStrike(alertSector, strike);
 
-        verify(alertSector, times(0)).updateClosestStrokeDistance(anyFloat());
+        verify(alertSector, times(0)).updateClosestStrikeDistance(anyFloat());
         verify(alertSectorRange1, times(1)).getRangeMaximum();
-        verify(alertSectorRange1, times(0)).addStroke(any(Stroke.class));
+        verify(alertSectorRange1, times(0)).addStrike(any(Strike.class));
         verify(alertSectorRange2, times(1)).getRangeMaximum();
-        verify(alertSectorRange2, times(1)).addStroke(stroke);
+        verify(alertSectorRange2, times(1)).addStrike(strike);
     }
 
     @Test
     public void testCheckOutOfThresholdTimeAndAllRanges()
     {
-        when(stroke.getTimestamp()).thenReturn(beforeThresholdTime);
-        when(stroke.getLocation(any(Location.class))).thenReturn(strokeLocation);
-        when(location.distanceTo(strokeLocation)).thenReturn(5000.1f);
+        when(strike.getTimestamp()).thenReturn(beforeThresholdTime);
+        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(location.distanceTo(strikeLocation)).thenReturn(5000.1f);
 
-        alertSectorHandler.checkStroke(alertSector, stroke);
+        alertSectorHandler.checkStrike(alertSector, strike);
 
-        verify(alertSector, times(0)).updateClosestStrokeDistance(anyFloat());
+        verify(alertSector, times(0)).updateClosestStrikeDistance(anyFloat());
         verify(alertSectorRange1, times(1)).getRangeMaximum();
-        verify(alertSectorRange1, times(0)).addStroke(any(Stroke.class));
+        verify(alertSectorRange1, times(0)).addStrike(any(Strike.class));
         verify(alertSectorRange2, times(1)).getRangeMaximum();
-        verify(alertSectorRange2, times(0)).addStroke(any(Stroke.class));
+        verify(alertSectorRange2, times(0)).addStrike(any(Strike.class));
     }
 }

@@ -6,7 +6,7 @@ import org.blitzortung.android.alert.AlertParameters;
 import org.blitzortung.android.alert.AlertResult;
 import org.blitzortung.android.alert.object.AlertSector;
 import org.blitzortung.android.alert.object.AlertStatus;
-import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.beans.Strike;
 import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
 import org.junit.Rule;
@@ -40,7 +40,7 @@ public class AlertStatusHandlerTest {
     private AlertSector alertSector;
 
     @Mock
-    private Stroke stroke;
+    private Strike strike;
 
     @Mock
     private Location location;
@@ -60,121 +60,121 @@ public class AlertStatusHandlerTest {
     }
 
     @Test
-    public void testCheckStrokesWhenBearingIsMinimumBearingOfSector() {
+    public void testCheckStrikesWhenBearingIsMinimumBearingOfSector() {
 
-        Location strokeLocation = mock(Location.class);
-        when(stroke.getLocation(any(Location.class))).thenReturn(strokeLocation);
-        when(location.bearingTo(strokeLocation)).thenReturn(10.0f);
+        Location strikeLocation = mock(Location.class);
+        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(location.bearingTo(strikeLocation)).thenReturn(10.0f);
         when(alertStatus.getSectors()).thenReturn(Lists.newArrayList(alertSector));
         when(alertSector.getMinimumSectorBearing()).thenReturn(10.0f);
         when(alertSector.getMaximumSectorBearing()).thenReturn(15.0f);
 
-        final AlertStatus returnedAlertStatus = alertStatusHandler.checkStrokes(alertStatus, Lists.newArrayList(stroke), location);
+        final AlertStatus returnedAlertStatus = alertStatusHandler.checkStrikes(alertStatus, Lists.newArrayList(strike), location);
 
         assertThat(returnedAlertStatus, is(alertStatus));
 
         verify(alertStatus, times(1)).clearResults();
-        verify(alertSectorHandler, times(1)).setCheckStrokeParameters(eq(location), anyLong());
-        verify(alertSectorHandler, times(1)).checkStroke(alertSector, stroke);
+        verify(alertSectorHandler, times(1)).setCheckStrikeParameters(eq(location), anyLong());
+        verify(alertSectorHandler, times(1)).checkStrike(alertSector, strike);
     }
 
     @Test
-    public void testCheckStrokesWhenBearingIsNearMaximumBearingOfSector() {
+    public void testCheckStrikesWhenBearingIsNearMaximumBearingOfSector() {
 
-        Location strokeLocation = mock(Location.class);
-        when(stroke.getLocation(any(Location.class))).thenReturn(strokeLocation);
-        when(location.bearingTo(strokeLocation)).thenReturn(14.999999f);
+        Location strikeLocation = mock(Location.class);
+        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(location.bearingTo(strikeLocation)).thenReturn(14.999999f);
         when(alertStatus.getSectors()).thenReturn(Lists.newArrayList(alertSector));
         when(alertSector.getMinimumSectorBearing()).thenReturn(10.0f);
         when(alertSector.getMaximumSectorBearing()).thenReturn(15.0f);
 
-        final AlertStatus returnedAlertStatus = alertStatusHandler.checkStrokes(alertStatus, Lists.newArrayList(stroke), location);
+        final AlertStatus returnedAlertStatus = alertStatusHandler.checkStrikes(alertStatus, Lists.newArrayList(strike), location);
 
         assertThat(returnedAlertStatus, is(alertStatus));
 
         verify(alertStatus, times(1)).clearResults();
-        verify(alertSectorHandler, times(1)).setCheckStrokeParameters(eq(location), anyLong());
-        verify(alertSectorHandler, times(1)).checkStroke(alertSector, stroke);
+        verify(alertSectorHandler, times(1)).setCheckStrikeParameters(eq(location), anyLong());
+        verify(alertSectorHandler, times(1)).checkStrike(alertSector, strike);
     }
 
     @Test
-    public void testCheckStrokesThrowsExceptionWhenNoSectorIfFoundForBearing() {
+    public void testCheckStrikesThrowsExceptionWhenNoSectorIfFoundForBearing() {
 
-        Location strokeLocation = mock(Location.class);
-        when(stroke.getLocation(any(Location.class))).thenReturn(strokeLocation);
-        when(location.bearingTo(strokeLocation)).thenReturn(15f);
+        Location strikeLocation = mock(Location.class);
+        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(location.bearingTo(strikeLocation)).thenReturn(15f);
         when(alertStatus.getSectors()).thenReturn(Lists.newArrayList(alertSector));
         when(alertSector.getMinimumSectorBearing()).thenReturn(10.0f);
         when(alertSector.getMaximumSectorBearing()).thenReturn(15.0f);
 
-        alertStatusHandler.checkStrokes(alertStatus, Lists.newArrayList(stroke), location);
+        alertStatusHandler.checkStrikes(alertStatus, Lists.newArrayList(strike), location);
 
-        verify(alertSectorHandler, times(1)).checkStroke(null, stroke);
+        verify(alertSectorHandler, times(1)).checkStrike(null, strike);
     }
 
     @Test
-    public void testCheckStrokesWhenBearingIsMinimumBearingOfSpecialSector() {
+    public void testCheckStrikesWhenBearingIsMinimumBearingOfSpecialSector() {
 
-        Location strokeLocation = mock(Location.class);
-        when(stroke.getLocation(any(Location.class))).thenReturn(strokeLocation);
-        when(location.bearingTo(strokeLocation)).thenReturn(170f);
+        Location strikeLocation = mock(Location.class);
+        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(location.bearingTo(strikeLocation)).thenReturn(170f);
         when(alertStatus.getSectors()).thenReturn(Lists.newArrayList(alertSector));
         when(alertSector.getMinimumSectorBearing()).thenReturn(170f);
         when(alertSector.getMaximumSectorBearing()).thenReturn(-170f);
 
-        final AlertStatus returnedAlertStatus = alertStatusHandler.checkStrokes(alertStatus, Lists.newArrayList(stroke), location);
+        final AlertStatus returnedAlertStatus = alertStatusHandler.checkStrikes(alertStatus, Lists.newArrayList(strike), location);
 
         assertThat(returnedAlertStatus, is(alertStatus));
 
         verify(alertStatus, times(1)).clearResults();
-        verify(alertSectorHandler, times(1)).setCheckStrokeParameters(eq(location), anyLong());
-        verify(alertSectorHandler, times(1)).checkStroke(alertSector, stroke);
+        verify(alertSectorHandler, times(1)).setCheckStrikeParameters(eq(location), anyLong());
+        verify(alertSectorHandler, times(1)).checkStrike(alertSector, strike);
     }
 
     @Test
-    public void testCheckStrokesWhenBearingIsNearMaximumBearingOfSpecialSector() {
+    public void testCheckStrikesWhenBearingIsNearMaximumBearingOfSpecialSector() {
 
-        Location strokeLocation = mock(Location.class);
-        when(stroke.getLocation(any(Location.class))).thenReturn(strokeLocation);
-        when(location.bearingTo(strokeLocation)).thenReturn(-170.00001f);
+        Location strikeLocation = mock(Location.class);
+        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(location.bearingTo(strikeLocation)).thenReturn(-170.00001f);
         when(alertStatus.getSectors()).thenReturn(Lists.newArrayList(alertSector));
         when(alertSector.getMinimumSectorBearing()).thenReturn(170f);
         when(alertSector.getMaximumSectorBearing()).thenReturn(-170f);
 
-        final AlertStatus returnedAlertStatus = alertStatusHandler.checkStrokes(alertStatus, Lists.newArrayList(stroke), location);
+        final AlertStatus returnedAlertStatus = alertStatusHandler.checkStrikes(alertStatus, Lists.newArrayList(strike), location);
 
         assertThat(returnedAlertStatus, is(alertStatus));
 
         verify(alertStatus, times(1)).clearResults();
-        verify(alertSectorHandler, times(1)).setCheckStrokeParameters(eq(location), anyLong());
-        verify(alertSectorHandler, times(1)).checkStroke(alertSector, stroke);
+        verify(alertSectorHandler, times(1)).setCheckStrikeParameters(eq(location), anyLong());
+        verify(alertSectorHandler, times(1)).checkStrike(alertSector, strike);
     }
 
     @Test
-    public void testCheckStrokesThrowsExceptionWhenNoSectorIfFoundForBearingInCaseOfSpecialSector() {
+    public void testCheckStrikesThrowsExceptionWhenNoSectorIfFoundForBearingInCaseOfSpecialSector() {
 
-        Location strokeLocation = mock(Location.class);
-        when(stroke.getLocation(any(Location.class))).thenReturn(strokeLocation);
-        when(location.bearingTo(strokeLocation)).thenReturn(-170f);
+        Location strikeLocation = mock(Location.class);
+        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(location.bearingTo(strikeLocation)).thenReturn(-170f);
         when(alertStatus.getSectors()).thenReturn(Lists.newArrayList(alertSector));
         when(alertSector.getMinimumSectorBearing()).thenReturn(170f);
         when(alertSector.getMaximumSectorBearing()).thenReturn(-170f);
 
-        alertStatusHandler.checkStrokes(alertStatus, Lists.newArrayList(stroke), location);
+        alertStatusHandler.checkStrikes(alertStatus, Lists.newArrayList(strike), location);
 
-        verify(alertSectorHandler, times(1)).checkStroke(null, stroke);
+        verify(alertSectorHandler, times(1)).checkStrike(null, strike);
     }
 
     @Test
-    public void testGetSectorWithClosestStroke() {
+    public void testGetSectorWithClosestStrike() {
         AlertSector alertSector1 = mockAlarmSector("N", 50f);
         AlertSector alertSector2 = mockAlarmSector("NW", 30f);
         AlertSector alertSector3 = mockAlarmSector("S", 10f);
 
         when(alertStatus.getSectors()).thenReturn(Lists.newArrayList(alertSector1, alertSector2, alertSector3));
 
-        final AlertSector sectorWithClosestStroke = alertStatusHandler.getSectorWithClosestStroke(alertStatus);
-        assertThat(sectorWithClosestStroke, is(alertSector3));
+        final AlertSector sectorWithClosestStrike = alertStatusHandler.getSectorWithClosestStrike(alertStatus);
+        assertThat(sectorWithClosestStrike, is(alertSector3));
     }
     
     @Test
@@ -186,7 +186,7 @@ public class AlertStatusHandlerTest {
         final AlertResult currentActivity = alertStatusHandler.getCurrentActivity(alertStatus);
         
         assertThat(currentActivity.getBearingName(), is("foo"));
-        assertThat(currentActivity.getClosestStrokeDistance(), is(50f));
+        assertThat(currentActivity.getClosestStrikeDistance(), is(50f));
         assertThat(currentActivity.getDistanceUnitName(), is("km"));
 
     }
@@ -208,7 +208,7 @@ public class AlertStatusHandlerTest {
     private AlertSector mockAlarmSector(String label, float distance) {
         AlertSector mockedAlertSector = mock(AlertSector.class);
         when(mockedAlertSector.getLabel()).thenReturn(label);
-        when(mockedAlertSector.getClosestStrokeDistance()).thenReturn(distance);
+        when(mockedAlertSector.getClosestStrikeDistance()).thenReturn(distance);
         return mockedAlertSector;
     }
 

@@ -1,10 +1,9 @@
 package org.blitzortung.android.data.provider;
 
 import com.google.common.collect.Lists;
-import org.blitzortung.android.data.beans.AbstractStroke;
-import org.blitzortung.android.data.beans.DefaultStroke;
-import org.blitzortung.android.data.beans.Station;
-import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.data.beans.*;
+import org.blitzortung.android.data.beans.StrikeAbstract;
+import org.blitzortung.android.data.beans.DefaultStrike;
 import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,21 +30,21 @@ public class ResultEventTest {
     @Test
     public void testConstruction() {
         assertTrue(resultEvent.hasFailed());
-        assertFalse(resultEvent.containsStrokes());
+        assertFalse(resultEvent.containsStrikes());
         assertFalse(resultEvent.containsParticipants());
         assertFalse(resultEvent.containsIncrementalData());
     }
 
     @Test
-    public void testSetStrokes() {
-        List<AbstractStroke> strokes = Lists.newArrayList();
-        strokes.add(mock(DefaultStroke.class));
+    public void testSetStrikes() {
+        List<StrikeAbstract> strikes = Lists.newArrayList();
+        strikes.add(mock(DefaultStrike.class));
 
-        resultEvent.setStrokes(strokes);
+        resultEvent.setStrikes(strikes);
 
-        assertThat(resultEvent.getStrokes(), is(strokes));
+        assertThat(resultEvent.getStrikes(), is(strikes));
         assertFalse(resultEvent.hasFailed());
-        assertTrue(resultEvent.containsStrokes());
+        assertTrue(resultEvent.containsStrikes());
         assertFalse(resultEvent.containsParticipants());
         assertFalse(resultEvent.containsIncrementalData());
     }
@@ -59,7 +58,7 @@ public class ResultEventTest {
 
         assertThat(resultEvent.getStations(), is(stations));
         assertTrue(resultEvent.hasFailed());
-        assertFalse(resultEvent.containsStrokes());
+        assertFalse(resultEvent.containsStrikes());
         assertTrue(resultEvent.containsParticipants());
         assertFalse(resultEvent.containsIncrementalData());
     }

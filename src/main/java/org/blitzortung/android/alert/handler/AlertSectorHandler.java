@@ -4,13 +4,13 @@ import android.location.Location;
 import org.blitzortung.android.alert.AlertParameters;
 import org.blitzortung.android.alert.object.AlertSector;
 import org.blitzortung.android.alert.object.AlertSectorRange;
-import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.beans.Strike;
 
 public class AlertSectorHandler {
 
     private final AlertParameters alertParameters;
     
-    private final Location strokeLocation;
+    private final Location strikeLocation;
     
     private Location location;
     
@@ -18,24 +18,24 @@ public class AlertSectorHandler {
 
     public AlertSectorHandler(AlertParameters alertParameters) {
         this.alertParameters = alertParameters;
-        strokeLocation = new Location("");
+        strikeLocation = new Location("");
     }
 
-    protected void setCheckStrokeParameters(Location location, long thresholdTime) {
+    protected void setCheckStrikeParameters(Location location, long thresholdTime) {
         this.location = location;
         this.thresholdTime = thresholdTime;
     }
 
-    protected void checkStroke(AlertSector sector, Stroke stroke) {
+    protected void checkStrike(AlertSector sector, Strike strike) {
         if (sector != null) {
-            float distance = calculateDistanceTo(stroke);
+            float distance = calculateDistanceTo(strike);
 
             for (AlertSectorRange range : sector.getRanges()) {
                 if (distance <= range.getRangeMaximum()) {
-                    range.addStroke(stroke);
+                    range.addStrike(strike);
 
-                    if (stroke.getTimestamp() >= thresholdTime) {
-                        sector.updateClosestStrokeDistance(distance);
+                    if (strike.getTimestamp() >= thresholdTime) {
+                        sector.updateClosestStrikeDistance(distance);
                     }
                     
                     break;
@@ -44,8 +44,8 @@ public class AlertSectorHandler {
         }
     }
 
-    private float calculateDistanceTo(Stroke stroke) {
-        float distanceInMeters = location.distanceTo(stroke.getLocation(strokeLocation));
+    private float calculateDistanceTo(Strike strike) {
+        float distanceInMeters = location.distanceTo(strike.getLocation(strikeLocation));
         return alertParameters.getMeasurementSystem().calculateDistance(distanceInMeters);
     }
 
@@ -54,7 +54,7 @@ public class AlertSectorHandler {
         
         for (AlertSectorRange range : sector.getRanges()) {
             if (distanceLimit <= range.getRangeMaximum()) {
-                latestTimestamp = Math.max(latestTimestamp, range.getLatestStrokeTimestamp());
+                latestTimestamp = Math.max(latestTimestamp, range.getLatestStrikeTimestamp());
             }
         }
         

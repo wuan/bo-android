@@ -16,13 +16,13 @@ public class AlertSector {
 
     private String label;
 
-    private float closestStrokeDistance;
+    private float closestStrikeDistance;
 
     public AlertSector(AlertObjectFactory alertObjectFactory, AlertParameters alertParameters, String label, float minimumSectorBearing, float maximumSectorBearing) {
         this.label = label;
         this.minimumSectorBearing = minimumSectorBearing;
         this.maximumSectorBearing = maximumSectorBearing;
-        this.closestStrokeDistance = Float.POSITIVE_INFINITY;
+        this.closestStrikeDistance = Float.POSITIVE_INFINITY;
 
         final float[] rangeSteps = alertParameters.getRangeSteps();
         ranges = new ArrayList<AlertSectorRange>();
@@ -35,7 +35,7 @@ public class AlertSector {
     }
 
     public void clearResults() {
-        closestStrokeDistance = Float.POSITIVE_INFINITY;
+        closestStrikeDistance = Float.POSITIVE_INFINITY;
         
         for (AlertSectorRange range : ranges) {
             range.clearResults();
@@ -58,11 +58,11 @@ public class AlertSector {
         return label;
     }
 
-    public void updateClosestStrokeDistance(float distance) {
-        closestStrokeDistance = Math.min(distance, closestStrokeDistance);
+    public void updateClosestStrikeDistance(float distance) {
+        closestStrikeDistance = Math.min(distance, closestStrikeDistance);
     }
 
-    public float getClosestStrokeDistance() {
-        return closestStrokeDistance;
+    public float getClosestStrikeDistance() {
+        return closestStrikeDistance;
     }
 }

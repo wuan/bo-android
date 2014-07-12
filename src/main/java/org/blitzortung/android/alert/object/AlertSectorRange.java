@@ -1,6 +1,6 @@
 package org.blitzortung.android.alert.object;
 
-import org.blitzortung.android.data.beans.Stroke;
+import org.blitzortung.android.data.beans.Strike;
 
 public class AlertSectorRange {
 
@@ -8,9 +8,9 @@ public class AlertSectorRange {
     
     private final float rangeMaximum;
     
-    private int strokeCount;
+    private int strikeCount;
     
-    private long latestStrokeTimestamp;
+    private long latestStrikeTimestamp;
 
     public AlertSectorRange(float rangeMinimum, float rangeMaximum) {
         this.rangeMinimum = rangeMinimum;
@@ -19,8 +19,8 @@ public class AlertSectorRange {
     
     public void clearResults()
     {
-        strokeCount = 0;
-        latestStrokeTimestamp = 0;  
+        strikeCount = 0;
+        latestStrikeTimestamp = 0;
     }
 
     public float getRangeMinimum() {
@@ -31,26 +31,26 @@ public class AlertSectorRange {
         return rangeMaximum;
     }
 
-    public int getStrokeCount() {
-        return strokeCount;
+    public int getStrikeCount() {
+        return strikeCount;
     }
 
-    public long getLatestStrokeTimestamp() {
-        return latestStrokeTimestamp;
+    public long getLatestStrikeTimestamp() {
+        return latestStrikeTimestamp;
     }
 
-    public void addStroke(Stroke stroke) {
-        updateLatestStrokeTimestamp(stroke.getTimestamp());
-        incrementStrokeCountBy(stroke.getMultiplicity());
+    public void addStrike(Strike strike) {
+        updateLatestStrikeTimestamp(strike.getTimestamp());
+        incrementStrikeCountBy(strike.getMultiplicity());
     }
 
-    private void updateLatestStrokeTimestamp(long latestStrokeTimestamp) {
-        if (latestStrokeTimestamp > this.getLatestStrokeTimestamp()) {
-            this.latestStrokeTimestamp = latestStrokeTimestamp;
+    private void updateLatestStrikeTimestamp(long latestStrikeTimestamp) {
+        if (latestStrikeTimestamp > this.getLatestStrikeTimestamp()) {
+            this.latestStrikeTimestamp = latestStrikeTimestamp;
         }
     }
 
-    private void incrementStrokeCountBy(int increment) {
-        strokeCount += increment;
+    private void incrementStrikeCountBy(int increment) {
+        strikeCount += increment;
     }
 }
