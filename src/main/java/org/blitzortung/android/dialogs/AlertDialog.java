@@ -2,6 +2,7 @@ package org.blitzortung.android.dialogs;
 
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import org.blitzortung.android.app.AppService;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
@@ -21,7 +22,7 @@ public class AlertDialog extends android.app.AlertDialog {
 
         setTitle(context.getString(R.string.alarms));
 
-        View dialog = getLayoutInflater().inflate(R.layout.alarm_dialog, null);
+        View dialog = getLayoutInflater().inflate(R.layout.alarm_dialog, (ViewGroup)context.getWindow().getDecorView().getRootView());
 
         alertView = (AlertView) dialog.findViewById(R.id.alarm_diagram);
         alertView.setColorHandler(colorHandler, intervalDuration);
