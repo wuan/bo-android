@@ -1,5 +1,6 @@
 package org.blitzortung.android.app;
 
+import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -127,7 +128,10 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         statusComponent = new StatusComponent(this);
         setHistoricStatusString();
 
+        hideActionBar();
+
         buttonColumnHandler = new ButtonColumnHandler<ImageButton>();
+        configureMenuAccess();
         historyController = new HistoryController(this);
         historyController.setButtonHandler(buttonColumnHandler);
 
@@ -501,14 +505,16 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
     }
 
     protected Dialog onCreateDialog(int id) {
-        Dialog dialog;
+        Dialog dialog = null;
         switch (id) {
             case R.id.info_dialog:
                 dialog = new InfoDialog(this, pInfo);
                 break;
 
             case R.id.alarm_dialog:
-                dialog = new AlertDialog(this, appService, new AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)), strokesOverlay.getIntervalDuration());
+                if (appService != null) {
+                    dialog = new AlertDialog(this, appService, new AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)), strikesOverlay.getIntervalDuration());
+                }
                 break;
 
             case R.id.layer_dialog:
@@ -518,9 +524,6 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
             case R.id.settings_dialog:
                 dialog = new SettingsDialog(this);
                 break;
-
-            default:
-                dialog = null;
         }
         return dialog;
     }
@@ -604,5 +607,26 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
             throw new IllegalStateException(e);
         }
     }
-    
+
+    private void configureMenuAccess() {
+        ViewConfiguration config = ViewConfiguration.get(this);
+
+        if (!config.hasPermanentMenuKey()) {
+            ImageButton menuButton = (ImageButton) findViewById(R.id.menu);
+            menuButton.setVisibility(View.VISIBLE);
+            menuButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    openOptionsMenu();
+                }
+            });
+            buttonColumnHandler.addElement(menuButton);
+        }
+    }
+
+    private void hideActionBar() {
+        final ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
+    }
 }
