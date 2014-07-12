@@ -506,14 +506,16 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
     }
 
     protected Dialog onCreateDialog(int id) {
-        Dialog dialog;
+        Dialog dialog = null;
         switch (id) {
             case R.id.info_dialog:
                 dialog = new InfoDialog(this, pInfo);
                 break;
 
             case R.id.alarm_dialog:
-                dialog = new AlertDialog(this, appService, new AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)), strikesOverlay.getIntervalDuration());
+                if (appService != null) {
+                    dialog = new AlertDialog(this, appService, new AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)), strikesOverlay.getIntervalDuration());
+                }
                 break;
 
             case R.id.layer_dialog:
@@ -523,9 +525,6 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
             case R.id.settings_dialog:
                 dialog = new SettingsDialog(this);
                 break;
-
-            default:
-                dialog = null;
         }
         return dialog;
     }
