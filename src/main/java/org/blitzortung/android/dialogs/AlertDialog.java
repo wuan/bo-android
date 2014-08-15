@@ -36,7 +36,9 @@ public class AlertDialog extends android.app.AlertDialog {
     public void onStart() {
         super.onStart();
 
-        service.addAlertConsumer(alertView.getAlertEventConsumer());
+        if (service != null) {
+            service.addAlertConsumer(alertView.getAlertEventConsumer());
+        }
         colorHandler.updateTarget();
     }
 
@@ -44,7 +46,9 @@ public class AlertDialog extends android.app.AlertDialog {
     protected void onStop() {
         super.onStop();
 
-        service.removeAlertListener(alertView.getAlertEventConsumer());
+        if (service != null) {
+            service.removeAlertListener(alertView.getAlertEventConsumer());
+        }
     }
 
     @Override
@@ -55,5 +59,4 @@ public class AlertDialog extends android.app.AlertDialog {
         }
         return super.onKeyUp(keyCode, event);
     }
-
 }
