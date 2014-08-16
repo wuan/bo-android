@@ -128,10 +128,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         statusComponent = new StatusComponent(this);
         setHistoricStatusString();
 
-        hideActionBar();
-
         buttonColumnHandler = new ButtonColumnHandler<ImageButton>();
-        configureMenuAccess();
         historyController = new HistoryController(this);
         historyController.setButtonHandler(buttonColumnHandler);
 
@@ -605,28 +602,6 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
             pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
             throw new IllegalStateException(e);
-        }
-    }
-
-    private void configureMenuAccess() {
-        ViewConfiguration config = ViewConfiguration.get(this);
-
-        if (!config.hasPermanentMenuKey()) {
-            ImageButton menuButton = (ImageButton) findViewById(R.id.menu);
-            menuButton.setVisibility(View.VISIBLE);
-            menuButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    openOptionsMenu();
-                }
-            });
-            buttonColumnHandler.addElement(menuButton);
-        }
-    }
-
-    private void hideActionBar() {
-        final ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
         }
     }
 }
