@@ -514,7 +514,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
 
             case R.id.alarm_dialog:
                 if (appService != null) {
-                    dialog = new AlertDialog(this, appService, new AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)), strikesOverlay.getIntervalDuration());
+                    dialog = new AlertDialog(this, appService, new AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)));
                 }
                 break;
 

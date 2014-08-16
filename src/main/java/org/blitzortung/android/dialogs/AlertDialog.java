@@ -1,5 +1,7 @@
 package org.blitzortung.android.dialogs;
 
+import android.content.Context;
+import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,32 +14,38 @@ import org.blitzortung.android.map.overlay.color.ColorHandler;
 public class AlertDialog extends android.app.AlertDialog {
 
     private final ColorHandler colorHandler;
-    private final AlertView alertView;
+    private AlertView alertView;
     private final AppService service;
+    int intervalDuration;
 
-    public AlertDialog(Main context, AppService service, ColorHandler colorHandler, int intervalDuration) {
+    public AlertDialog(Context context, AppService service, ColorHandler colorHandler) {
         super(context);
         this.colorHandler = colorHandler;
         this.service = service;
+    }
 
-        setTitle(context.getString(R.string.alarms));
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        View dialog = getLayoutInflater().inflate(R.layout.alarm_dialog, (ViewGroup)context.getWindow().getDecorView().getRootView());
+        setContentView(R.layout.alarm_dialog);
+    }
 
-        alertView = (AlertView) dialog.findViewById(R.id.alarm_diagram);
-        alertView.setColorHandler(colorHandler, intervalDuration);
-        if (service != null) {
-            alertView.getAlertEventConsumer().consume(service.getAlertEvent());
-        }
-
-        setView(dialog);
+    public void setIntervalDuration(int intervalDuration) {
+        this.intervalDuration = intervalDuration;
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
+        alertView = (AlertView) findViewById(R.id.alarm_diagram);
+
+        setTitle(getContext().getString(R.string.alarms));
+
         if (service != null) {
+            alertView.setColorHandler(colorHandler, service.getDataHandler().getIntervalDuration());
+            alertView.getAlertEventConsumer().consume(service.getAlertEvent());
             service.addAlertConsumer(alertView.getAlertEventConsumer());
         }
         colorHandler.updateTarget();
