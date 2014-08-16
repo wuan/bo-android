@@ -101,7 +101,7 @@ public class ResultEvent implements DataEvent {
     }
 
     public boolean containsRealtimeData() {
-        return parameters.getIntervalOffset() == 0;
+        return parameters != null && parameters.getIntervalOffset() == 0;
     }
 
     public void setParameters(Parameters parameters) {
