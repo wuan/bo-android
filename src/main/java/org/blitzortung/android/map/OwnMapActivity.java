@@ -24,11 +24,8 @@ public abstract class OwnMapActivity extends MapActivity {
         return mapView;
     }
 
-    public void addOverlays(Overlay... addedOverlays) {
-        for (Overlay overlay : addedOverlays) {
-            overlays.add(overlay);
-        }
-        updateOverlays();
+    public void addOverlay(Overlay overlay) {
+        overlays.add(overlay);
     }
 
     public void updateOverlays() {
