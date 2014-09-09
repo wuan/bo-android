@@ -124,7 +124,11 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         fadeOverlay = new FadeOverlay(strikesOverlay.getColorHandler());
         ownLocationOverlay = new OwnLocationOverlay(getBaseContext(), getMapView());
 
-        addOverlays(fadeOverlay, strikesOverlay, participantsOverlay, ownLocationOverlay);
+        addOverlay(fadeOverlay);
+        addOverlay(strikesOverlay);
+        addOverlay(participantsOverlay);
+        addOverlay(ownLocationOverlay);
+        updateOverlays();
 
         statusComponent = new StatusComponent(this);
         setHistoricStatusString();
