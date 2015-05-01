@@ -3,13 +3,14 @@ package org.blitzortung.android.map;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsSame.sameInstance;
@@ -32,7 +33,7 @@ public class OwnMapActivityTest {
     @Mock
     private OwnMapView ownMapView;
 
-    private LayoutInflater layoutInflater = new LayoutInflater(Robolectric.application.getApplicationContext()) {
+    private LayoutInflater layoutInflater = new LayoutInflater(RuntimeEnvironment.application.getApplicationContext()) {
         @Override
         public LayoutInflater cloneInContext(Context context) {
             return null;

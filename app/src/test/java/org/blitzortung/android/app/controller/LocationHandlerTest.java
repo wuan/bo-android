@@ -4,7 +4,9 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
+
 import com.google.common.collect.Lists;
+
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.location.LocationHandler;
@@ -14,13 +16,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class LocationHandlerTest {
@@ -43,7 +47,7 @@ public class LocationHandlerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        Application application = Robolectric.application;
+        Application application = RuntimeEnvironment.application;
         when(context.getSystemService(Context.LOCATION_SERVICE)).thenReturn(locationManager);
         when(context.getResources()).thenReturn(application.getResources());
         when(locationManager.getAllProviders()).thenReturn(Lists.newArrayList("network", "gps"));

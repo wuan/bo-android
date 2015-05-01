@@ -46,7 +46,7 @@ public class StrikeColorHandlerTest {
         int[] colors = strikeColorHandler.getColors(ColorTarget.STREETMAP);
 
         assertThat(colors.length, is(6));
-        assertThat(colors, is(new int[]{0, 0, 0, 0, 0, 0}));
+        assertThat(colors, is(new int[]{0xFFB6C7C7, 0xFFADC24D, 0xFFB29641, 0xFFB66636, 0xFFB9302F, 0xFF932524}));
 
         verify(strikeColorHandler, times(1)).modifyBrightness(eq(new int[]{0xffe4f9f9, 0xffd8f360, 0xffdfbc51, 0xffe48044, 0xffe73c3b, 0xffb82e2d}), anyFloat());
     }

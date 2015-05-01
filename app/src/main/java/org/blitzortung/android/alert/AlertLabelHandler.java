@@ -1,6 +1,7 @@
 package org.blitzortung.android.alert;
 
 import android.content.res.Resources;
+
 import org.blitzortung.android.app.R;
 
 public class AlertLabelHandler {

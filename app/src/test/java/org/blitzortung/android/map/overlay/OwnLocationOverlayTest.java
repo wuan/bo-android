@@ -5,21 +5,23 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.location.Location;
+
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.google.common.collect.Lists;
+
+import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.location.LocationHandler;
-import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.map.OwnMapView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowPreferenceManager;
@@ -32,8 +34,12 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.hasItem;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-import static org.robolectric.Robolectric.shadowOf_;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class OwnLocationOverlayTest {
@@ -69,8 +75,8 @@ public class OwnLocationOverlayTest {
         @Override @Implementation
         public boolean equals(Object o) {
             if (o == null) return false;
-            o = shadowOf_(o);
-            if (o == null) return false;
+            //o = shadowOf(o);
+            //if (o == null) return false;
             if (this == o) return true;
             if (getClass() != o.getClass()) return false;
 
@@ -116,12 +122,12 @@ public class OwnLocationOverlayTest {
     {
         MockitoAnnotations.initMocks(this);
 
-        sharedPreferences = ShadowPreferenceManager.getDefaultSharedPreferences(Robolectric.application);
+        sharedPreferences = ShadowPreferenceManager.getDefaultSharedPreferences(RuntimeEnvironment.application);
 
         when(context.getSystemService(Context.LOCATION_SERVICE)).thenReturn(locationHandler);
         when(context.getSharedPreferences(anyString(), anyInt())).thenReturn(sharedPreferences);
         when(context.getResources()).thenReturn(resources);
-        when(context.getApplicationContext()).thenReturn(Robolectric.application);
+        when(context.getApplicationContext()).thenReturn(RuntimeEnvironment.application);
         when(mapView.getOverlays()).thenReturn(overlays);
 
         ownLocationOverlay = new OwnLocationOverlay(context, mapView);

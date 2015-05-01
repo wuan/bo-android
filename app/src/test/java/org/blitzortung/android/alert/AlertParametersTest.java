@@ -4,13 +4,17 @@ import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(manifest = "app/src/main/AndroidManifest.xml", emulateSdk = 19)
 public class AlertParametersTest {
     
     private AlertParameters alertParameters;
@@ -18,7 +22,7 @@ public class AlertParametersTest {
     @Before
     public void setUp() {
         alertParameters = new AlertParameters();
-        alertParameters.updateSectorLabels(Robolectric.application);
+        alertParameters.updateSectorLabels(RuntimeEnvironment.application);
     }
     
     @Test

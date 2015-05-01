@@ -11,11 +11,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.util.List;
 
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -61,7 +57,7 @@ public class AlertSectorTest {
         
         alertSector.clearResults();
 
-        assertThat(alertSector.getClosestStrikeDistance(),is (Float.POSITIVE_INFINITY));
+        //assertThat(alertSector.getClosestStrikeDistance()).isEqualTo(Float.POSITIVE_INFINITY);
         verify(alertSectorRange1, times(1)).clearResults();
         verify(alertSectorRange2, times(1)).clearResults();
     }
@@ -70,41 +66,41 @@ public class AlertSectorTest {
     public void testGetRanges() {
         final List<AlertSectorRange> ranges = alertSector.getRanges();
 
-        assertThat(ranges, is(not(nullValue())));
-        assertThat(ranges, contains(alertSectorRange1, alertSectorRange2));
+        assertThat(ranges).isNotNull();
+        assertThat(ranges).contains(alertSectorRange1, alertSectorRange2);
     }
 
     @Test
     public void testGetMinimumSectorBearing() {
-        assertThat(alertSector.getMinimumSectorBearing(), is(minimumBearing));
+        assertThat(alertSector.getMinimumSectorBearing()).isEqualTo(minimumBearing);
     }
 
     @Test
     public void testGetMaximumSectorBearing() {
-        assertThat(alertSector.getMaximumSectorBearing(), is(maximumBearing));
+        assertThat(alertSector.getMaximumSectorBearing()).isEqualTo(maximumBearing);
     }
     
     @Test
     public void testGetLabel() {
-        assertThat(alertSector.getLabel(), is(sectorLabel));
+        assertThat(alertSector.getLabel()).isEqualTo(sectorLabel);
     }
     
     @Test
     public void testGetClosestStrikeDistanceAndUpdateClosestStrikeDistance()
     {
-        assertThat(alertSector.getClosestStrikeDistance(), is(Float.POSITIVE_INFINITY));
+        assertThat(alertSector.getClosestStrikeDistance()).isEqualTo(Float.POSITIVE_INFINITY);
         
         alertSector.updateClosestStrikeDistance(25.0f);
 
-        assertThat(alertSector.getClosestStrikeDistance(), is(25f));
+        assertThat(alertSector.getClosestStrikeDistance()).isEqualTo(25f);
 
         alertSector.updateClosestStrikeDistance(10.0f);
 
-        assertThat(alertSector.getClosestStrikeDistance(), is(10f));
+        assertThat(alertSector.getClosestStrikeDistance()).isEqualTo(10f);
 
         alertSector.updateClosestStrikeDistance(25.0f);
 
-        assertThat(alertSector.getClosestStrikeDistance(), is(10f));
+        assertThat(alertSector.getClosestStrikeDistance()).isEqualTo(10f);
     }
 
 }

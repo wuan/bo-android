@@ -10,8 +10,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
@@ -49,10 +48,10 @@ public class MapBuilderFactoryTest {
 
         StrikeAbstract strike = strikeMapBuilder.buildFromLine("<line>");
 
-        assertThat(strike.getTimestamp(), is(1375957803644L));
-        assertThat(strike.getLatitude(), is(44.162701f));
-        assertThat(strike.getLongitude(), is(8.931001f));
-        assertThat(strike.getMultiplicity(), is(1));
+        assertThat(strike.getTimestamp()).isEqualTo(1375957803644L);
+        assertThat(strike.getLatitude()).isEqualTo(44.162701f);
+        assertThat(strike.getLongitude()).isEqualTo(8.931001f);
+        assertThat(strike.getMultiplicity()).isEqualTo(1);
     }
 
     @Test
@@ -69,9 +68,9 @@ public class MapBuilderFactoryTest {
 
         Station station = stationMapBuilder.buildFromLine("<line>");
 
-        assertThat(station.getName(), is("Egaldorf"));
-        assertThat(station.getLatitude(), is(43.345542f));
-        assertThat(station.getLongitude(), is(11.465365f));
-        assertThat(station.getOfflineSince(), is(1381068955000L));
+        assertThat(station.getName()).isEqualTo("Egaldorf");
+        assertThat(station.getLatitude()).isEqualTo(43.345542f);
+        assertThat(station.getLongitude()).isEqualTo(11.465365f);
+        assertThat(station.getOfflineSince()).isEqualTo(1381068955000L);
     }
 }

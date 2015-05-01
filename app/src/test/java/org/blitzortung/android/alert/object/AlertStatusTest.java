@@ -11,12 +11,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.util.Collection;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
@@ -65,9 +60,10 @@ public class AlertStatusTest {
     public void testGetRanges() {
         final Collection<AlertSector> sectors = alertStatus.getSectors();
 
-        assertThat(sectors, is(not(nullValue())));
-        assertThat(sectors, hasSize(2));
-        assertThat(sectors, contains(alertSector1, alertSector2));
+        assertThat(sectors).isNotNull();
+
+        assertThat(sectors).hasSize(2);
+        assertThat(sectors).contains(alertSector1, alertSector2);
     }
 
 }

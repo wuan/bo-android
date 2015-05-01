@@ -12,8 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
@@ -43,10 +42,10 @@ public class StationBuilderTest {
 
         Station station = builder.fromJson(jsonArray);
 
-        assertThat(station.getName(), is("name"));
-        assertThat(station.getLongitude(), is(11.0f));
-        assertThat(station.getLatitude(), is(49.0f));
-        assertThat(station.getState(), is(Station.State.ON));
+        assertThat(station.getName()).isEqualTo("name");
+        assertThat(station.getLongitude()).isEqualTo(11.0f);
+        assertThat(station.getLatitude()).isEqualTo(49.0f);
+        assertThat(station.getState()).isEqualTo(Station.State.ON);
     }
 
     @Test
@@ -56,10 +55,10 @@ public class StationBuilderTest {
 
         Station station = builder.fromJson(jsonArray);
 
-        assertThat(station.getName(), is("name"));
-        assertThat(station.getLongitude(), is(11.0f));
-        assertThat(station.getLatitude(), is(49.0f));
-        assertThat(station.getState(), is(Station.State.ON));
+        assertThat(station.getName()).isEqualTo("name");
+        assertThat(station.getLongitude()).isEqualTo(11.0f);
+        assertThat(station.getLatitude()).isEqualTo(49.0f);
+        assertThat(station.getState()).isEqualTo(Station.State.ON);
     }
 
     @Test
@@ -69,10 +68,10 @@ public class StationBuilderTest {
 
         Station station = builder.fromJson(jsonArray);
 
-        assertThat(station.getName(), is("name"));
-        assertThat(station.getLongitude(), is(11.0f));
-        assertThat(station.getLatitude(), is(49.0f));
-        assertThat(station.getState(), is(Station.State.OFF));
+        assertThat(station.getName()).isEqualTo("name");
+        assertThat(station.getLongitude()).isEqualTo(11.0f);
+        assertThat(station.getLatitude()).isEqualTo(49.0f);
+        assertThat(station.getState()).isEqualTo(Station.State.OFF);
     }
 
     @Test

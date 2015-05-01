@@ -31,12 +31,7 @@ import org.robolectric.annotation.Implements;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -84,7 +79,7 @@ public class StrikesOverlayTest {
 
     @Test
     public void testConstruct() {
-        assertThat(strikesOverlay.size(), is(0));
+        assertThat(strikesOverlay.size()).isEqualTo(0);
     }
 
     @Test
@@ -94,18 +89,18 @@ public class StrikesOverlayTest {
         strikesOverlay.setIntervalDuration(1);
         strikesOverlay.addStrikes(strikes);
 
-        assertThat(strikesOverlay.size(), is(0));
+        assertThat(strikesOverlay.size()).isEqualTo(0);
 
         strikes.add(mock(StrikeAbstract.class));
         strikes.add(mock(StrikeAbstract.class));
 
         strikesOverlay.addStrikes(strikes);
 
-        assertThat(strikesOverlay.size(), is(2));
+        assertThat(strikesOverlay.size()).isEqualTo(2);
 
         strikesOverlay.addStrikes(strikes);
 
-        assertThat(strikesOverlay.size(), is(4));
+        assertThat(strikesOverlay.size()).isEqualTo(4);
     }
 
     @Test
@@ -116,7 +111,7 @@ public class StrikesOverlayTest {
 
         strikesOverlay.clear();
 
-        assertThat(strikesOverlay.size(), is(0));
+        assertThat(strikesOverlay.size()).isEqualTo(0);
     }
 
     @Test
@@ -155,7 +150,7 @@ public class StrikesOverlayTest {
 
         Shape drawable = strikesOverlay.updateAndReturnDrawable(strikeOverlayItem, section, colorHandler);
 
-        assertThat(drawable, is(not(nullValue())));
+        assertThat(drawable).isNotNull();
     }
 
     @Test
@@ -193,7 +188,7 @@ public class StrikesOverlayTest {
         verify(projection, times(1)).toPixels(eq(center), any(Point.class));
         verify(projection, times(3)).toPixels(any(GeoPoint.class), any(Point.class));
 
-        assertThat(drawable, is(instanceOf(ShapeDrawable.class)));
+        assertThat(drawable).isInstanceOf(ShapeDrawable.class);
     }
 
 
@@ -202,8 +197,8 @@ public class StrikesOverlayTest {
         strikesOverlay.setIntervalDuration(100);
         strikesOverlay.addStrikes(Lists.newArrayList(mock(StrikeAbstract.class)));
 
-        assertThat(strikesOverlay.size(), is(1));
-        assertThat(strikesOverlay.createItem(0), is(notNullValue()));
+        assertThat(strikesOverlay.size()).isEqualTo(1);
+        assertThat(strikesOverlay.createItem(0)).isNotNull();
     }
 
     @Test

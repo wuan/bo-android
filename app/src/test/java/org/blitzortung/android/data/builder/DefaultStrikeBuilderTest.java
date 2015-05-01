@@ -12,9 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
@@ -50,13 +48,13 @@ public class DefaultStrikeBuilderTest {
 
         DefaultStrike strike = builder.fromJson(referenceTimestamp, jsonArray);
 
-        assertThat(strike.getTimestamp(), is(referenceTimestamp - 10 * 1000));
-        assertThat(strike.getLongitude(), is(11.0f));
-        assertThat(strike.getLatitude(), is(49.0f));
-        assertThat(strike.getLateralError(), is(12.3f));
-        assertThat(strike.getAltitude(), is(0));
-        assertThat(strike.getAmplitude(), is(54.3f));
-        assertThat(strike.getStationCount(), is((short)6));
+        assertThat(strike.getTimestamp()).isEqualTo(referenceTimestamp - 10 * 1000);
+        assertThat(strike.getLongitude()).isEqualTo(11.0f);
+        assertThat(strike.getLatitude()).isEqualTo(49.0f);
+        assertThat(strike.getLateralError()).isEqualTo(12.3f);
+        assertThat(strike.getAltitude()).isEqualTo(0);
+        assertThat(strike.getAmplitude()).isEqualTo(54.3f);
+        assertThat(strike.getStationCount()).isEqualTo((short)6);
 
     }
 

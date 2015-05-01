@@ -1,6 +1,7 @@
 package org.blitzortung.android.alert;
 
 import android.content.res.Resources;
+
 import org.blitzortung.android.alert.handler.AlertStatusHandler;
 import org.blitzortung.android.alert.object.AlertStatus;
 import org.junit.Before;
@@ -8,14 +9,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(manifest = "app/src/main/AndroidManifest.xml", emulateSdk = 19)
 public class AlertLabelHandlerTest {
 
     private AlertLabelHandler alertLabelHandler;
@@ -39,7 +42,7 @@ public class AlertLabelHandlerTest {
     {
         MockitoAnnotations.initMocks(this);
 
-        resources = Robolectric.application.getResources();
+        resources = RuntimeEnvironment.application.getResources();
 
         alertLabelHandler = new AlertLabelHandler(alertLabel, resources);
     }

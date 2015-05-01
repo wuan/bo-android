@@ -5,18 +5,20 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.location.Location;
 import android.os.Vibrator;
+
 import com.google.common.collect.Lists;
+
 import org.blitzortung.android.alert.event.AlertEvent;
 import org.blitzortung.android.alert.event.AlertResultEvent;
 import org.blitzortung.android.alert.factory.AlertObjectFactory;
 import org.blitzortung.android.alert.handler.AlertStatusHandler;
 import org.blitzortung.android.alert.object.AlertSector;
 import org.blitzortung.android.alert.object.AlertStatus;
+import org.blitzortung.android.app.controller.NotificationHandler;
+import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.Strike;
 import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.location.LocationHandler;
-import org.blitzortung.android.app.controller.NotificationHandler;
-import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.protocol.Consumer;
 import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
@@ -24,8 +26,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.Collection;
 
@@ -35,7 +37,10 @@ import static org.hamcrest.core.IsSame.sameInstance;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class AlertHandlerTest {
@@ -87,7 +92,7 @@ public class AlertHandlerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        resources = Robolectric.application.getResources();
+        resources = RuntimeEnvironment.application.getResources();
 
         long alarmInterval = 600000;
         when(alertParameters.getAlarmInterval()).thenReturn(alarmInterval);
