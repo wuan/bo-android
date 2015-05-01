@@ -16,9 +16,9 @@
     <string name="info">Information</string>
     <string name="info_text">Projektseite:\n\thttps://github.com/wuan/bo-android\n\nDiese Software visualisiert
         Blitzdaten des Gemeinschaftsprojekts <b>blitzortung.org</b>.\n\nWeitere Informationen über das Projekt, oder wie Sie
-        daran teilnehmen können, finden Sie unter:\n\thttp://blitzortung.org\n\nCzech translation by: Jakub Mareček (jakubmarecek715@gmail.com)
+        daran teilnehmen können, finden Sie unter:\n\thttp://blitzortung.org\n\nCzech translation by: Jakub Mareček (jakubmarecek715@gmail.com)\n
     </string>
-    <string name="copyright">© 2011–2014, Andreas Würl\nblitzortung@tryb.de</string>
+    <string name="copyright">© 2011–2015, Andreas Würl\nblitzortung@tryb.de</string>
     <string name="legend">Legende</string>
     <string name="total_time">Gesamtzeit</string>
     <string name="activity">Aktivität</string>
