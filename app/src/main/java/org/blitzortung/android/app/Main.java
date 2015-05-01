@@ -519,14 +519,6 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
                     dialog = new AlertDialog(this, appService, new AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)));
                 }
                 break;
-
-            case R.id.layer_dialog:
-                dialog = new LayerDialog(this, getMapView());
-                break;
-
-            case R.id.settings_dialog:
-                dialog = new SettingsDialog(this);
-                break;
         }
         return dialog;
     }

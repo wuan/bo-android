@@ -2,6 +2,14 @@
 
 ## English
 
+Version 1.3.5:
+ - port to gradle build
+ - czech translation
+
+Version 1.3.4:
+ - fixed various errors
+ - accelerated backend service
+
 Version 1.3.2 (Android 4.0+):
  - fixed NPE
 
@@ -72,6 +80,14 @@ Version 1.1.3 & 1.3.0 (Android 4.0+):
  
 ## German
 
+Version 1.3.5 (Android 4.0+):
+ - Umstellung auf Gradle-Build
+ - Tschechische Übersetzung
+
+Version 1.3.4 (Android 4.0+):
+ - verschiedenen Fehlerbehebungen
+ - beschleunigter Datendienst
+  
 Version 1.3.2 (Android 4.0+):
  - Nullpointer-Exception beseitigt
 

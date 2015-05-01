@@ -271,7 +271,6 @@
     <string name="do_not_sleep_summary">nicht in den Ruhezustand gehen, solange die App aktiv ist</string>
     <string name="participants_layer">Teilnehmende Stationen</string>
     <string name="own_location_layer">Eigener Ort</string>
-    <string name="visible">sichtbar</string>
     <string name="strikes_layer">Blitze</string>
     <string name="data_settings_summary">Einstellung Zeitparameter und Datenquelle</string>
     <string name="map_settings_summary">Kartenmodus und -aussehen</string>

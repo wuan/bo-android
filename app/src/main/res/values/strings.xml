@@ -272,8 +272,6 @@
     <string name="do_not_sleep_summary">do not go to sleep while application is open</string>
     <string name="participants_layer">Participants location</string>
     <string name="own_location_layer">Own location</string>
-    <string name="layer_name">Layer name</string>
-    <string name="visible">visible</string>
     <string name="strikes_layer">Strikes</string>
     <string name="data_settings_summary">detailed settings to control data transmission and source</string>
     <string name="map_settings_summary">Map mode and appearance related settings</string>

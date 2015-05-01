@@ -268,8 +268,6 @@
     <string name="do_not_sleep_summary">Nepřecházet do režimu spánku pokud je aplikace otevřená</string>
     <string name="participants_layer">Polohy účastníků</string>
     <string name="own_location_layer">Vlastní poloha</string>
-    <string name="layer_name">Název vrstvy</string>
-    <string name="visible">viditelné</string>
     <string name="strikes_layer">Blesky</string>
     <string name="data_settings_summary">Podrobné nastavení pro kontrolu přenosu dat a zdrojů</string>
     <string name="map_settings_summary">Nastavení módu mapy a vzhledu</string>
