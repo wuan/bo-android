@@ -89,7 +89,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
             super.onCreate(savedInstanceState);
         } catch (NoClassDefFoundError e) {
             Log.e(Main.LOG_TAG, e.toString());
-            Toast toast = Toast.makeText(getBaseContext(), "bad android version", 1000);
+            Toast toast = Toast.makeText(getBaseContext(), "bad android version", Toast.LENGTH_LONG);
             toast.show();
         }
         Log.v(LOG_TAG, "Main.onCreate()");
@@ -201,8 +201,6 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
             ImageButton rasterToggle = (ImageButton) findViewById(R.id.toggleExtendedMode);
             rasterToggle.setEnabled(true);
             rasterToggle.setVisibility(View.VISIBLE);
-            rasterToggle.getDrawable().setAlpha(40);
-            rasterToggle.getBackground().setAlpha(40);
 
             rasterToggle.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {

@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Blitzortung Lightning Monitor</string>
+
+    <plurals name="strike">
+        <item quantity="zero">žádné blesky</item>
+        <item quantity="one">1 blesk</item>
+        <item quantity="other">%d blesků</item>
+    </plurals>
+    <plurals name="minute">
+        <item quantity="one">1 minuta</item>
+        <item quantity="other">%d minut</item>
+    </plurals>
+
+    <string name="info">Informace</string>
+    <string name="info_text">Stránky projektu:\n\thttps://github.com/wuan/bo-android\n\nZobrazená data\njsou poskytována
+        \n<b>Blitzortung.org</b>\nrealtime lighning community project. Podívejte se prosím
+        na\n\thttp://blitzortung.org/\npro další informace nebo jak\nse stát účastníkem.\n\nTranslated by:\nJakub Mareček (jakubmarecek715@gmail.com)
+    </string>
+    <string name="copyright">© 2011-2014, Andreas Würl\nblitzortung@tryb.de</string>
+    <string name="legend">Legenda</string>
+    <string name="total_time">celkový čas</string>
+    <string name="activity">aktivita</string>
+    <string name="during">během posledních</string>
+    <string name="minute">minut</string>
+    <string name="alarms">Alarmy</string>
+    <string name="alarms_not_available">Alarmy vypnuty\nnebo\nChybějící informace o pozici</string>
+    <string name="layers">Vrstvy</string>
+    <string name="preferences">Možnosti</string>
+    <string name="user_settings">Uživ. nastavení</string>
+    <string name="username">Uživatelské jméno</string>
+    <string name="username_summary">Uživatelské jméno účastníka blitzortung.org</string>
+    <string name="password">Heslo</string>
+    <string name="password_summary">Heslo účastníka blitzortung.org</string>
+    <string name="map_settings">Nastavení mapy</string>
+    <string name="map_mode">Mód mapy</string>
+    <string name="map_mode_summary">Vyber satelitní nebo základní zobrazení</string>
+    <string name="map_fade">Světlost mapy</string>
+    <string name="map_fade_summary">Zesvětlení mapy pro lepší viditelnost dat</string>
+
+    <string-array name="color_schemes">
+        <item>Blitzortung.org</item>
+        <item>Duha</item>
+        <item>Teplota</item>
+    </string-array>
+    <string-array name="color_scheme_values">
+        <item>BLITZORTUNG</item>
+        <item>RAINBOW</item>
+        <item>TEMPERATURE</item>
+    </string-array>
+
+    <string name="color_scheme">Barevné schéma</string>
+    <string name="color_scheme_summary">Barevné schéma zobrazených dat</string>
+
+    <string-array name="map_modes">
+        <item>Satelitní</item>
+        <item>Základní</item>
+    </string-array>
+    <string-array name="map_mode_values">
+        <item>SATELLITE</item>
+        <item>STREETMAP</item>
+    </string-array>
+
+    <string name="show_participants">Zobrazit pozice účastníků</string>
+    <string name="show_participants_summary">Zobrazit místa všech stanic (pouze data z Blitzortung.org)
+    </string>
+    <string name="show_location">Zobrazit vlastní polohu</string>
+    <string name="show_location_summary">Zahrnout symbol vlastní polohy na mapě</string>
+    <string name="data_settings">Přenos dat</string>
+    <string name="region">Region</string>
+    <string name="region_summary">Vyber Evropu, Severní Ameriku nebo Oceánii</string>
+
+    <string-array name="regions">
+        <item>Evropa</item>
+        <item>Sev. Amerika</item>
+        <item>Oceánie</item>
+    </string-array>
+    <string-array name="regions_values">
+        <item>1</item>
+        <item>3</item>
+        <item>2</item>
+    </string-array>
+
+    <string name="interval_duration">Časový interval</string>
+    <string name="interval_duration_summary">Doba, po jakou je zobrazena aktivita blesků</string>
+
+    <string-array name="interval_durations">
+        <item>30 minut</item>
+        <item>60 minut</item>
+        <item>90 minut</item>
+        <item>120 minut</item>
+        <item>240 minut</item>
+    </string-array>
+    <string-array name="interval_duration_values">
+        <item>30</item>
+        <item>60</item>
+        <item>90</item>
+        <item>120</item>
+        <item>240</item>
+    </string-array>
+
+    <string name="historic_timestep_limit_reached">24 hodinový limit dosažen</string>
+    <string name="historic_timestep">Historický čas. krok</string>
+    <string name="historic_timestep_summary">Časový krok zobrazených historických dat</string>
+
+    <string-array name="historic_timesteps">
+        <item>15 minut</item>
+        <item>30 minut</item>
+        <item>60 minut</item>
+    </string-array>
+    <string-array name="historic_timestep_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+    </string-array>
+
+    <string name="query_period">Obnova dat</string>
+    <string name="query_period_summary">Frekvence obnovování dat</string>
+
+    <string-array name="query_periods">
+        <item>20 vteřin</item>
+        <item>30 vteřin</item>
+        <item>1 minut</item>
+        <item>2 minut</item>
+        <item>5 minut</item>
+        <item>10 minut</item>
+    </string-array>
+    <string-array name="query_period_values">
+        <item>20</item>
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+        <item>300</item>
+        <item>600</item>
+    </string-array>
+
+    <string name="raster_size">Velikost rastru</string>
+    <string name="raster_size_summary">Velikost čtverečků na mapě</string>
+
+    <string-array name="raster_sizes">
+        <item>5 km</item>
+        <item>10 km</item>
+        <item>25 km</item>
+        <item>50 km</item>
+        <item>100 km</item>
+    </string-array>
+    <string-array name="raster_size_values">
+        <item>5000</item>
+        <item>10000</item>
+        <item>25000</item>
+        <item>50000</item>
+        <item>100000</item>
+    </string-array>
+
+    <string name="data_source">Zdroj dat</string>
+    <string name="data_source_summary">Integrovaný zdroj dat nebo přístup k blitzortung.org (pouze pro stanice)
+    </string>
+
+    <string-array name="data_sources">
+        <item>Blitzortung.org</item>
+        <item>Původní</item>
+    </string-array>
+    <string-array name="data_source_values">
+        <item>HTTP</item>
+        <item>RPC</item>
+    </string-array>
+
+    <string name="location_settings">Nastavení polohy</string>
+    <string-array name="location_modes">
+        <item>Pasivní</item>
+        <item>Po síti</item>
+        <item>Pomocí GPS</item>
+        <item>Manuálně</item>
+    </string-array>
+    <string-array name="location_mode_values">
+        <item>passive</item>
+        <item>network</item>
+        <item>gps</item>
+        <item>manual</item>
+    </string-array>
+    <string name="location_mode">Poloha</string>
+    <string name="location_mode_summary">Vyber způsob, jakým se bude zjišťovat poloha</string>
+    <string name="longitude">Zeměpisná délka</string>
+    <string name="location_longitude_summary">Manuálně nastavit zeměpisnou délku</string>
+    <string name="latitude">Zeměpisná šířka</string>
+    <string name="location_latitude_summary">Manuálně nastavit zeměpisnou šířku</string>
+    <string name="alarm_settings">Nastavení alarmu</string>
+    <string name="alarm_enabled">Alarm povolen</string>
+    <string name="alarm_enabled_summary">Zkontrolovat aktivitu blesků kolem zadané polohy</string>
+    <string name="background_query_period">Frekvence obnovy na pozadí</string>
+    <string name="background_query_period_summary">Pokud je povoleno: frekvence zkontrolování alarmů, pokud je aplikace neaktivní
+    </string>
+
+    <string-array name="background_query_periods">
+        <item>Vypnuto</item>
+        <item>1 minuta</item>
+        <item>2 minuty</item>
+        <item>5 minut</item>
+        <item>10 minut</item>
+        <item>15 minut</item>
+        <item>30 minut</item>
+    </string-array>
+    <string-array name="background_query_period_values">
+        <item>0</item>
+        <item>60</item>
+        <item>120</item>
+        <item>300</item>
+        <item>600</item>
+        <item>900</item>
+        <item>1800</item>
+    </string-array>
+
+    <item name="alarm_notification_id" type="id" />
+
+    <string name="notification_distance_limit">Limit vzdálenosti pro oznámení</string>
+    <string name="notification_distance_limit_summary">Pokud je povoleno: zobrazí oznámení, pokud je detekována blesková aktivita v určené vzdálenosti
+    </string>
+    <string name="signaling_distance_limit">Limit vzdálenosti pro signalizaci</string>
+    <string name="signaling_distance_limit_summary">Pokud je povoleno: spustí alarm, pokud je detekována blesková aktivita v určené vzdálenosti
+    </string>
+
+    <string-array name="direction_names">
+        <item>J</item>
+        <item>JZ</item>
+        <item>Z</item>
+        <item>SZ</item>
+        <item>S</item>
+        <item>SV</item>
+        <item>V</item>
+        <item>JV</item>
+    </string-array>
+    <string-array name="distance_limits">
+        <item>Vypnuto</item>
+        <item>10 km/mil</item>
+        <item>25 km/mil</item>
+        <item>50 km/mil</item>
+        <item>100 km/mil</item>
+        <item>150 km/mil</item>
+        <item>200 km/mil</item>
+        <item>250 km/mil</item>
+        <item>500 km/mil</item>
+    </string-array>
+    <string-array name="distance_limit_values">
+        <item>0</item>
+        <item>10</item>
+        <item>25</item>
+        <item>50</item>
+        <item>100</item>
+        <item>150</item>
+        <item>200</item>
+        <item>250</item>
+        <item>500</item>
+    </string-array>
+
+    <string name="generic_settings">Různá nastavení</string>
+    <string name="measurement_unit">Systém jednotek</string>
+    <string name="measurement_unit_summary">Vyber mezi kilometry nebo mílemi</string>
+    <string-array name="measurement_units">
+        <item>Metrické</item>
+        <item>Britské</item>
+    </string-array>
+    <string-array name="measurement_unit_values">
+        <item>METRIC</item>
+        <item>IMPERIAL</item>
+    </string-array>
+    <string name="do_not_sleep">Režim spánku</string>
+    <string name="do_not_sleep_summary">Nepřecházet do režimu spánku pokud je aplikace otevřená</string>
+    <string name="participants_layer">Polohy účastníků</string>
+    <string name="own_location_layer">Vlastní poloha</string>
+    <string name="layer_name">Název vrstvy</string>
+    <string name="visible">viditelné</string>
+    <string name="strikes_layer">Blesky</string>
+    <string name="data_settings_summary">Podrobné nastavení pro kontrolu přenosu dat a zdrojů</string>
+    <string name="map_settings_summary">Nastavení módu mapy a vzhledu</string>
+    <string name="location_settings_summary">Způsob zjišťování polohy</string>
+    <string name="alarm_settings_summary">Alarmy, služby a vzdálenosti</string>
+    <string name="alarm_signal_settings">Nastavení signalizace alarmu</string>
+    <string name="alarm_audio_signal">Nastavení zvuku alarmu</string>
+    <string name="alarm_vibration_signal">Trvání vibrací alarmu</string>
+    <string name="alarm_audio_signal_summary">Vyber zvuk pro signalizaci alarmu</string>
+    <string name="alarm_vibration_signal_summary">Vyber délku vibrací signalizace alarmu</string>
+    <string name="location_provider_not_available">Poskytovatel polohy \'%s\' není dostupný</string>
+</resources>

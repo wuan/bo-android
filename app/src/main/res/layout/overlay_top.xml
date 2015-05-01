@@ -14,6 +14,7 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
             android:text=""
             android:textSize="14sp"
             android:textColor="@color/text_foreground" />
