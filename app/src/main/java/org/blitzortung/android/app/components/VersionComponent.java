@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.util.Log;
+
+import org.blitzortung.android.app.Main;
 
 public class VersionComponent {
 
@@ -25,8 +28,11 @@ public class VersionComponent {
     }
 
     private void updateVersionStatus(Context context) {
-        final SharedPreferences preferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
+        final String packageName = context.getPackageName();
+        final SharedPreferences preferences = context.getSharedPreferences(packageName, Context.MODE_PRIVATE);
         configuredVersionCode = preferences.getInt(CONFIGURED_VERSION_CODE, -1);
+
+        preferences.edit().putInt(CONFIGURED_VERSION_CODE, currentVersionCode).apply();
 
         if (configuredVersionCode == -1) {
             state = State.FIRST_RUN;
@@ -37,6 +43,8 @@ public class VersionComponent {
                 state = State.NO_UPDATE;
             }
         }
+        Log.d(Main.LOG_TAG, "updateVersionStatus() name=" + packageName + ", state=" + state +
+        ", configuredVersion=" + configuredVersionCode + ", currentVersion=" + currentVersionCode);
     }
 
     private void updatePackageInfo(final Context context) {

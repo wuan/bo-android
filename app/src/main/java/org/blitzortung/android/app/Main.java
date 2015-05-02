@@ -468,6 +468,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
                         alertView.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.getIntervalDuration());
 
                         strikesOverlay.refresh();
+                        legendView.requestLayout();
                     }
 
                     if (!result.containsRealtimeData()) {
