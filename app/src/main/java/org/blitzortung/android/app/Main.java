@@ -2,6 +2,7 @@ package org.blitzortung.android.app;
 
 import android.app.ActionBar;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -220,7 +221,8 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         legendView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDialog(R.layout.settings_dialog);
+                DialogFragment dialog = new QuickSettingsDialog();
+                dialog.show(getFragmentManager(), "QuickSettingsDialog");
                 Log.v(LOG_TAG, "LegendView.onClick()");
             }
         });

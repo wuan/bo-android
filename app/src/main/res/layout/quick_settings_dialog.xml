@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/quick_settings_dialog"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/region" />
+
+    <ListView
+        android:id="@+id/selected_area"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:background="?android:attr/listDivider"/>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/raster_size" />
+
+    <Spinner
+        android:id="@+id/selected_raster_size"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/raster_sizes"
+        android:padding="15dp"
+        android:prompt="@string/raster_size" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:background="?android:attr/listDivider"/>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/query_period" />
+
+    <Spinner
+        android:id="@+id/selected_query_period"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/query_periods"
+        android:padding="15dp"
+        android:prompt="@string/query_period" />
+</LinearLayout>

@@ -31,7 +31,7 @@ public enum PreferenceKey {
     
     private final String key;
     
-    private PreferenceKey(String key) {
+    PreferenceKey(String key) {
         this.key = key;
     }
 

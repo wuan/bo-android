@@ -2,6 +2,8 @@
 <resources>
 
     <string name="app_name">Blitzortung Gewitter-Monitor</string>
+    <string name="ok">Übernehmen</string>
+    <string name="cancel">Abbrechen</string>
 
     <plurals name="strike">
         <item quantity="zero">kein Blitz</item>
