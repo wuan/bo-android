@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Spinner;
 
 import org.blitzortung.android.app.Main;
@@ -40,7 +41,7 @@ public class QuickSettingsDialog extends DialogFragment {
         final String currentIntervalDurationValue = preferences.getString(PreferenceKey.INTERVAL_DURATION.toString(), queryPeriodValues[0]);
         int selectedIntervalDuration = getSelectedIndex(intervalDurationValues, currentIntervalDurationValue);
 
-        final View view = layoutInflater.inflate(R.layout.quick_settings_dialog, null);
+        final View view = layoutInflater.inflate(R.layout.quick_settings_dialog, (ViewGroup)getActivity().getWindow().getDecorView().getRootView());
 
         final Spinner selectedRegionList = (Spinner) view.findViewById(R.id.selected_region);
         selectedRegionList.setSelection(selectedRegion);
