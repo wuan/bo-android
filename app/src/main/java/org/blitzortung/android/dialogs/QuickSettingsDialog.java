@@ -9,8 +9,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Spinner;
 
 import org.blitzortung.android.app.Main;
@@ -38,17 +36,20 @@ public class QuickSettingsDialog extends DialogFragment {
         final String currentQueryPeriodValue = preferences.getString(PreferenceKey.QUERY_PERIOD.toString(), queryPeriodValues[0]);
         int selectedQueryPeriod = getSelectedIndex(queryPeriodValues, currentQueryPeriodValue);
 
-        final View view = layoutInflater.inflate(R.layout.quick_settings_dialog, null);
-        final ListView selectedAreaList = (ListView) view.findViewById(R.id.selected_area);
-        final String[] regions = getResources().getStringArray(R.array.regions);
-        ArrayAdapter<String> ad=new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_single_choice, regions);
+        final String[] intervalDurationValues = getResources().getStringArray(R.array.interval_duration_values);
+        final String currentIntervalDurationValue = preferences.getString(PreferenceKey.INTERVAL_DURATION.toString(), queryPeriodValues[0]);
+        int selectedIntervalDuration = getSelectedIndex(intervalDurationValues, currentIntervalDurationValue);
 
-        selectedAreaList.setAdapter(ad);
-        selectedAreaList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        selectedAreaList.setItemChecked(selectedRegion, true);
+        final View view = layoutInflater.inflate(R.layout.quick_settings_dialog, null);
+
+        final Spinner selectedRegionList = (Spinner) view.findViewById(R.id.selected_region);
+        selectedRegionList.setSelection(selectedRegion);
 
         final Spinner rasterSizeSpinner = (Spinner) view.findViewById(R.id.selected_raster_size);
         rasterSizeSpinner.setSelection(selectedRasterSize);
+
+        final Spinner intervalDurationSpinner = (Spinner) view.findViewById(R.id.selected_interval_duration);
+        intervalDurationSpinner.setSelection(selectedIntervalDuration);
 
         final Spinner queryPeriodSpinner = (Spinner) view.findViewById(R.id.selected_query_period);
         queryPeriodSpinner.setSelection(selectedQueryPeriod);
@@ -57,14 +58,16 @@ public class QuickSettingsDialog extends DialogFragment {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        final String regionValue = regionValues[selectedAreaList.getCheckedItemPosition()];
+                        final String regionValue = regionValues[selectedRegionList.getSelectedItemPosition()];
                         final String rasterSizeValue = rasterSizeValues[rasterSizeSpinner.getSelectedItemPosition()];
+                        final String intervalDurationValue = intervalDurationValues[intervalDurationSpinner.getSelectedItemPosition()];
                         final String queryPeriodValue = queryPeriodValues[queryPeriodSpinner.getSelectedItemPosition()];
 
                         Log.i(Main.LOG_TAG, "region: " + regionValue);
                         preferences.edit()
                                 .putString(PreferenceKey.REGION.toString(), regionValue)
                                 .putString(PreferenceKey.RASTER_SIZE.toString(), rasterSizeValue)
+                                .putString(PreferenceKey.INTERVAL_DURATION.toString(), intervalDurationValue)
                                 .putString(PreferenceKey.QUERY_PERIOD.toString(), queryPeriodValue)
                                 .apply();
                     }

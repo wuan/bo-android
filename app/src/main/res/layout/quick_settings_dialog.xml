@@ -1,55 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/quick_settings_dialog"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:padding="10dp">
+    android:layout_height="wrap_content">
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/quick_settings_dialog"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/region" />
+        android:orientation="vertical"
+        android:padding="5dp">
 
-    <ListView
-        android:id="@+id/selected_area"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/region" />
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="2dp"
-        android:background="?android:attr/listDivider"/>
+        <Spinner
+            android:id="@+id/selected_region"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/regions"
+            android:padding="10dp"
+            android:prompt="@string/region"/>
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/raster_size" />
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider" />
 
-    <Spinner
-        android:id="@+id/selected_raster_size"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/raster_sizes"
-        android:padding="15dp"
-        android:prompt="@string/raster_size" />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/raster_size" />
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="2dp"
-        android:background="?android:attr/listDivider"/>
+        <Spinner
+            android:id="@+id/selected_raster_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/raster_sizes"
+            android:padding="10dp"
+            android:prompt="@string/raster_size" />
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/query_period" />
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider" />
 
-    <Spinner
-        android:id="@+id/selected_query_period"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/query_periods"
-        android:padding="15dp"
-        android:prompt="@string/query_period" />
-</LinearLayout>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/interval_duration" />
+
+        <Spinner
+            android:id="@+id/selected_interval_duration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/interval_durations"
+            android:padding="10dp"
+            android:prompt="@string/interval_duration" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/query_period" />
+
+        <Spinner
+            android:id="@+id/selected_query_period"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/query_periods"
+            android:padding="10dp"
+            android:prompt="@string/query_period" />
+    </LinearLayout>
+</ScrollView>

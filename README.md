@@ -3,6 +3,9 @@
 ## English
 
 Version 1.3.5:
+ - added new regions South America, Asia and Africa
+ - added quick settings menu (tap on legend)
+ - fixed missing legend updates
  - port to gradle build
  - czech translation
 
@@ -81,6 +84,9 @@ Version 1.1.3 & 1.3.0 (Android 4.0+):
 ## German
 
 Version 1.3.5 (Android 4.0+):
+ - neue Regionen Südamerika, Asien und Afrika
+ - Schnelleinstellungs-Dialog beim Tippen auf die Legende
+ - Fehlende Legenden-Updates behoben
  - Umstellung auf Gradle-Build
  - Tschechische Übersetzung
 
