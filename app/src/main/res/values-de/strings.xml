@@ -77,12 +77,18 @@
     <string-array name="regions">
         <item>Europa</item>
         <item>Nordamerika</item>
+        <item>Südamerika</item>
         <item>Ozeanien</item>
+        <item>Asien</item>
+        <item>Afrika</item>
     </string-array>
     <string-array name="regions_values">
         <item>1</item>
         <item>3</item>
+        <item>5</item>
         <item>2</item>
+        <item>4</item>
+        <item>6</item>
     </string-array>
 
     <string name="interval_duration">Daten-Zeitintervall</string>

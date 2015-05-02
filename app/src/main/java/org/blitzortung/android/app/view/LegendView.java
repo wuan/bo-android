@@ -6,7 +6,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+
+import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.data.beans.RasterParameters;
@@ -108,6 +111,7 @@ public class LegendView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
+        Log.d(Main.LOG_TAG, "LegendView.onDraw() strikesOverlay=" + strikesOverlay);
         if (strikesOverlay != null) {
             ColorHandler colorHandler = strikesOverlay.getColorHandler();
             int minutesPerColor = strikesOverlay.getIntervalDuration() / colorHandler.getNumberOfColors();

@@ -23,10 +23,13 @@ import android.util.Log;
 import android.view.*;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
+
 import org.blitzortung.android.alert.AlertHandler;
 import org.blitzortung.android.alert.AlertResult;
+import org.blitzortung.android.app.components.VersionComponent;
 import org.blitzortung.android.app.controller.ButtonColumnHandler;
 import org.blitzortung.android.app.controller.HistoryController;
 import org.blitzortung.android.app.view.AlertView;
@@ -71,8 +74,6 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
 
     private final Set<String> androidIdsForExtendedFunctionality = new HashSet<String>(Arrays.asList("e72d101ce1bcdee3", "6d1b9a3da993af2d"));
 
-    private PackageInfo pInfo;
-
     private ButtonColumnHandler<ImageButton> buttonColumnHandler;
 
     private HistoryController historyController;
@@ -83,6 +84,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
 
     private Optional<ResultEvent> currentResult;
     private HistogramView histogramView;
+    private VersionComponent versionComponent;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,7 +97,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         }
         Log.v(LOG_TAG, "Main.onCreate()");
 
-        updatePackageInfo();
+        versionComponent = new VersionComponent(this.getApplicationContext());
 
         currentResult = Optional.absent();
 
@@ -154,6 +156,10 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
                 PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS);
 
         createAndBindToDataService();
+
+        if (versionComponent.getState() == VersionComponent.State.FIRST_RUN) {
+            openQuickSettingsDialog();
+        }
     }
 
     private void createAndBindToDataService() {
@@ -221,8 +227,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         legendView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogFragment dialog = new QuickSettingsDialog();
-                dialog.show(getFragmentManager(), "QuickSettingsDialog");
+                openQuickSettingsDialog();
                 Log.v(LOG_TAG, "LegendView.onClick()");
             }
         });
@@ -269,6 +274,11 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
                 }
             }
         });
+    }
+
+    private void openQuickSettingsDialog() {
+        DialogFragment dialog = new QuickSettingsDialog();
+        dialog.show(getFragmentManager(), "QuickSettingsDialog");
     }
 
     private void animateToLocationAndVisibleSize(double longitude, double latitude, float diameter) {
@@ -513,7 +523,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         Dialog dialog = null;
         switch (id) {
             case R.id.info_dialog:
-                dialog = new InfoDialog(this, pInfo);
+                dialog = new InfoDialog(this, versionComponent);
                 break;
 
             case R.id.alarm_dialog:
@@ -595,14 +605,6 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         statusText += " " + runStatus;
 
         statusComponent.setText(statusText);
-    }
-
-    private void updatePackageInfo() {
-        try {
-            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            throw new IllegalStateException(e);
-        }
     }
 
     private void configureMenuAccess() {
