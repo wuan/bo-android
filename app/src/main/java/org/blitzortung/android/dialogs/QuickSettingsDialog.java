@@ -42,7 +42,7 @@ public class QuickSettingsDialog extends DialogFragment {
         final String currentIntervalDurationValue = preferences.getString(PreferenceKey.INTERVAL_DURATION.toString(), queryPeriodValues[0]);
         int selectedIntervalDuration = getSelectedIndex(intervalDurationValues, currentIntervalDurationValue);
 
-        @SuppressLint("InflateParams") final View view = layoutInflater.inflate(R.layout.quick_settings_dialog, null, true);
+        @SuppressLint("InflateParams") final View view = layoutInflater.inflate(R.layout.quick_settings_dialog, null, false);
 
         final Spinner selectedRegionList = (Spinner) view.findViewById(R.id.selected_region);
         selectedRegionList.setSelection(selectedRegion);

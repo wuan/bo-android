@@ -17,7 +17,7 @@ public class InfoDialog extends AlertDialog {
         setTitle(context.getResources().getText(R.string.app_name) +
                 " V" + versionComponent.getVersionName() +
                 " (" + versionComponent.getVersionCode() + ")");
-        @SuppressLint("InflateParams") View infoDialogView = getLayoutInflater().inflate(R.layout.info_dialog, null, true);
+        @SuppressLint("InflateParams") View infoDialogView = getLayoutInflater().inflate(R.layout.info_dialog, null, false);
         setView(infoDialogView);
     }
 
