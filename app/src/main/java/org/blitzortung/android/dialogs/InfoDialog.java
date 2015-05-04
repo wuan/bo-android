@@ -1,5 +1,6 @@
 package org.blitzortung.android.dialogs;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.view.KeyEvent;
@@ -16,7 +17,7 @@ public class InfoDialog extends AlertDialog {
         setTitle(context.getResources().getText(R.string.app_name) +
                 " V" + versionComponent.getVersionName() +
                 " (" + versionComponent.getVersionCode() + ")");
-        View infoDialogView = getLayoutInflater().inflate(R.layout.info_dialog, null);
+        @SuppressLint("InflateParams") View infoDialogView = getLayoutInflater().inflate(R.layout.info_dialog, null, true);
         setView(infoDialogView);
     }
 

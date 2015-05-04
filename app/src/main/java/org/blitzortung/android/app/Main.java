@@ -228,7 +228,6 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
             @Override
             public void onClick(View v) {
                 openQuickSettingsDialog();
-                Log.v(LOG_TAG, "LegendView.onClick()");
             }
         });
 
@@ -348,16 +347,11 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
                 showDialog(R.id.alarm_dialog);
                 break;
 
-            /*case R.id.menu_layers:
-                showDialog(R.id.layer_dialog);
-                break;*/
-
             case R.id.menu_preferences:
                 startActivity(new Intent(this, Preferences.class));
                 break;
         }
         return super.onOptionsItemSelected(item);
-
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.blitzortung.android.dialogs;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
@@ -41,7 +42,7 @@ public class QuickSettingsDialog extends DialogFragment {
         final String currentIntervalDurationValue = preferences.getString(PreferenceKey.INTERVAL_DURATION.toString(), queryPeriodValues[0]);
         int selectedIntervalDuration = getSelectedIndex(intervalDurationValues, currentIntervalDurationValue);
 
-        final View view = layoutInflater.inflate(R.layout.quick_settings_dialog, (ViewGroup)getActivity().getWindow().getDecorView().getRootView());
+        @SuppressLint("InflateParams") final View view = layoutInflater.inflate(R.layout.quick_settings_dialog, null, true);
 
         final Spinner selectedRegionList = (Spinner) view.findViewById(R.id.selected_region);
         selectedRegionList.setSelection(selectedRegion);
