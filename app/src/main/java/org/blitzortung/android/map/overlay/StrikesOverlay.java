@@ -11,6 +11,7 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Projection;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
+import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.TimeIntervalWithOffset;
 import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.RasterParameters;
@@ -39,12 +40,6 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements T
 
     static private final Drawable DefaultDrawable;
 
-    private int intervalDuration;
-
-    private int intervalOffset;
-
-    private int region;
-
     private long referenceTime;
 
     static {
@@ -53,13 +48,15 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements T
         DefaultDrawable = new ShapeDrawable(shape);
     }
 
+    private Parameters parameters = new Parameters();
+
     public StrikesOverlay(OwnMapActivity mapActivity, StrikeColorHandler colorHandler) {
         super(mapActivity, boundCenter(DefaultDrawable));
 
         layerOverlayComponent = new LayerOverlayComponent(mapActivity.getResources().getString(R.string.strikes_layer));
         this.colorHandler = colorHandler;
 
-        strikes = new ArrayList<StrikeOverlayItem>();
+        strikes = new ArrayList<>();
 
         populate();
     }
@@ -91,7 +88,7 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements T
         paint.setStyle(Style.STROKE);
 
         Rect clipBounds = canvas.getClipBounds();
-        RectF rect = rasterParameters.getRect(mapView.getProjection());
+        RectF rect = getRasterParameters().getRect(mapView.getProjection());
 
         if (rect.left >= clipBounds.left && rect.left <= clipBounds.right) {
             canvas.drawLine(rect.left, Math.max(rect.top, clipBounds.top), rect.left, Math.min(rect.bottom, clipBounds.bottom), paint);
@@ -117,7 +114,7 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements T
     }
 
     public void expireStrikes() {
-        long expireTime = referenceTime - (intervalDuration - intervalOffset) * 60 * 1000;
+        long expireTime = referenceTime - (getIntervalDuration() - getIntervalOffset()) * 60 * 1000;
         List<StrikeOverlayItem> toRemove = new ArrayList<StrikeOverlayItem>();
 
         for (StrikeOverlayItem item : strikes) {
@@ -182,12 +179,12 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements T
         return item.getShape();
     }
 
-    public void setRasterParameters(RasterParameters rasterParameters) {
-        this.rasterParameters = rasterParameters;
-    }
-
     public boolean hasRasterParameters() {
         return rasterParameters != null;
+    }
+
+    public void setRasterParameters(RasterParameters rasterParameters) {
+        this.rasterParameters = rasterParameters;
     }
 
     public RasterParameters getRasterParameters() {
@@ -195,7 +192,7 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements T
     }
 
     public boolean hasRealtimeData() {
-        return intervalOffset == 0;
+        return getIntervalOffset() == 0;
     }
 
     @Override
@@ -214,7 +211,6 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements T
     }
 
     public int getTotalNumberOfStrikes() {
-
         int totalNumberOfStrikes = 0;
 
         for (StrikeOverlayItem item : strikes) {
@@ -229,27 +225,15 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements T
     }
 
     public int getIntervalDuration() {
-        return intervalDuration;
-    }
-
-    public void setIntervalDuration(int intervalDuration) {
-        this.intervalDuration = intervalDuration;
+        return parameters.getIntervalDuration();
     }
 
     public int getIntervalOffset() {
-        return intervalOffset;
-    }
-
-    public void setIntervalOffset(int intervalOffset) {
-        this.intervalOffset = intervalOffset;
+        return parameters.getIntervalOffset();
     }
 
     public int getRegion() {
-        return region;
-    }
-
-    public void setRegion(int region) {
-        this.region = region;
+        return parameters.getRegion();
     }
 
     public void setReferenceTime(long referenceTime) {
@@ -283,5 +267,17 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements T
     @Override
     public void setVisibility(boolean visible) {
         layerOverlayComponent.setVisibility(visible);
+    }
+
+    public int getCountThreshold() {
+       return parameters.getCountThreshold();
+    }
+
+    public void setParameters(Parameters parameters) {
+        this.parameters = parameters;
+    }
+
+    public Parameters getParameters() {
+        return parameters;
     }
 }

@@ -19,6 +19,7 @@ public class LegendView extends View {
 
     public static final float REGION_HEIGHT = 1.1f;
     public static final float RASTER_HEIGHT = 0.8f;
+    public static final float COUNT_THRESHOLD_HEIGHT = 0.8f;
     private float width;
     private float height;
 
@@ -29,6 +30,7 @@ public class LegendView extends View {
     final private Paint textPaint;
     final private Paint rasterTextPaint;
     final private Paint regionTextPaint;
+    final private Paint countThresholdTextPaint;
     final private Paint backgroundPaint;
     final private Paint foregroundPaint;
 
@@ -75,6 +77,11 @@ public class LegendView extends View {
         regionTextPaint.setTextSize(colorFieldSize * REGION_HEIGHT);
         regionTextPaint.setTextAlign(Paint.Align.CENTER);
 
+        countThresholdTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        countThresholdTextPaint.setColor(0xffffffff);
+        countThresholdTextPaint.setTextSize(colorFieldSize * COUNT_THRESHOLD_HEIGHT);
+        countThresholdTextPaint.setTextAlign(Paint.Align.CENTER);
+
         updateTextWidth(0);
 
         setBackgroundColor(Color.TRANSPARENT);
@@ -102,6 +109,10 @@ public class LegendView extends View {
 
         if (hasRaster()) {
             height += colorFieldSize * RASTER_HEIGHT + padding;
+
+            if (hasCountThreshold()) {
+                height += colorFieldSize * COUNT_THRESHOLD_HEIGHT + padding;
+            }
         }
 
         super.onMeasure(MeasureSpec.makeMeasureSpec((int) width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec((int) height, MeasureSpec.EXACTLY));
@@ -141,6 +152,12 @@ public class LegendView extends View {
             if (hasRaster()) {
                 canvas.drawText("Raster: " + getRasterString(), width / 2.0f, topCoordinate + colorFieldSize * RASTER_HEIGHT / 1.1f, rasterTextPaint);
                 topCoordinate += colorFieldSize * RASTER_HEIGHT + padding;
+
+                if (hasCountThreshold()) {
+                    final int countThreshold = strikesOverlay.getCountThreshold();
+                    canvas.drawText("# > " + countThreshold, width / 2.0f, topCoordinate + colorFieldSize * COUNT_THRESHOLD_HEIGHT / 1.1f, countThresholdTextPaint);
+                    topCoordinate += colorFieldSize * COUNT_THRESHOLD_HEIGHT + padding;
+                }
             }
         }
     }
@@ -179,5 +196,9 @@ public class LegendView extends View {
     public String getRasterString() {
         RasterParameters rasterParameters = strikesOverlay.getRasterParameters();
         return rasterParameters.getInfo();
+    }
+
+    private boolean hasCountThreshold() {
+        return strikesOverlay.getCountThreshold() > 0;
     }
 }

@@ -162,6 +162,26 @@
         <item>100000</item>
     </string-array>
 
+    <string name="count_threshold">Strike count threshold</string>
+    <string name="count_threshold_summary">minimum strike count per raster area</string>
+
+    <string-array name="count_thresholds">
+        <item>disabled</item>
+        <item>1</item>
+        <item>5</item>
+        <item>10</item>
+        <item>25</item>
+        <item>50</item>
+    </string-array>
+    <string-array name="count_threshold_values">
+        <item>0</item>
+        <item>1</item>
+        <item>5</item>
+        <item>10</item>
+        <item>25</item>
+        <item>50</item>
+    </string-array>
+
     <string name="data_source">Data source</string>
     <string name="data_source_summary">integrated data source or access to blitzortung.org (only for stations)
     </string>

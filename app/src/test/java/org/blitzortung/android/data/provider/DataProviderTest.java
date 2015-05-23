@@ -36,7 +36,7 @@ public class DataProviderTest {
         }
 
         @Override
-        public List<StrikeAbstract> getStrikesRaster(int intervalDuration, int intervalOffset, int params, int region) {
+        public List<StrikeAbstract> getStrikesGrid(int intervalDuration, int intervalOffset, int rasterSize, int countThreshold, int region) {
             return null;
         }
 

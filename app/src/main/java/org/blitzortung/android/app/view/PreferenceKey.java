@@ -7,6 +7,7 @@ public enum PreferenceKey {
     USERNAME("username"),
     PASSWORD("password"),
     RASTER_SIZE("raster_size"),
+    COUNT_THRESHOLD("count_threshold"),
     MAP_TYPE("map_mode"),
     MAP_FADE("map_fade"),
     COLOR_SCHEME("color_scheme"),

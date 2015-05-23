@@ -197,8 +197,6 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
             appService.addAlertConsumer(alertView.getAlertEventConsumer());
 
             appService.addAlertConsumer(statusComponent.getAlertEventConsumer());
-
-            strikesOverlay.setIntervalDuration(appService.getDataHandler().getIntervalDuration());
         }
     }
 
@@ -446,11 +444,9 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
                     clearDataIfRequested();
 
                     if (result.containsStrikes()) {
+                        strikesOverlay.setParameters(resultParameters);
                         strikesOverlay.setRasterParameters(result.getRasterParameters());
-                        strikesOverlay.setRegion(resultParameters.getRegion());
                         strikesOverlay.setReferenceTime(result.getReferenceTime());
-                        strikesOverlay.setIntervalDuration(resultParameters.getIntervalDuration());
-                        strikesOverlay.setIntervalOffset(resultParameters.getIntervalOffset());
 
                         if (result.containsIncrementalData()) {
                             strikesOverlay.expireStrikes();

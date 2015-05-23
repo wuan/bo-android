@@ -23,7 +23,7 @@ public abstract class DataProvider {
     
     public abstract boolean returnsIncrementalData();
 	
-	public abstract List<StrikeAbstract> getStrikesRaster(int intervalDuration, int intervalOffset, int params, int region);
+	public abstract List<StrikeAbstract> getStrikesGrid(int intervalDuration, int intervalOffset, int rasterSize, int countThreshold, int region);
 	
 	public abstract RasterParameters getRasterParameters();
 

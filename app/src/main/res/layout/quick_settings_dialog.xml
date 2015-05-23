@@ -50,6 +50,24 @@
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:text="@string/count_threshold" />
+
+        <Spinner
+            android:id="@+id/selected_count_threshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/count_thresholds"
+            android:padding="10dp"
+            android:prompt="@string/count_threshold" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:text="@string/interval_duration" />
 
         <Spinner

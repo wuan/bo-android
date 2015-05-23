@@ -79,14 +79,14 @@ public class JsonRpcDataProvider extends DataProvider {
         return incrementalResult;
     }
 
-    public List<StrikeAbstract> getStrikesRaster(int intervalDuration, int intervalOffset, int rasterSize, int region) {
+    public List<StrikeAbstract> getStrikesGrid(int intervalDuration, int intervalOffset, int rasterSize, int countThreshold, int region) {
         List<StrikeAbstract> strikes = new ArrayList<StrikeAbstract>();
 
         nextId = 0;
         incrementalResult = false;
 
         try {
-            JSONObject response = client.call("get_strikes_raster", intervalDuration, rasterSize, intervalOffset, region);
+            JSONObject response = client.call("get_strikes_grid", intervalDuration, rasterSize, intervalOffset, region, countThreshold);
 
             readRasterData(response, strikes);
             rasterParameters.setInfo(String.format("%.0f km", rasterSize / 1000f));

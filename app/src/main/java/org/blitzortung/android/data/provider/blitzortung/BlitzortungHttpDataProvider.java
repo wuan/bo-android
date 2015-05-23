@@ -206,7 +206,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
     }
 
     @Override
-    public List<StrikeAbstract> getStrikesRaster(int intervalDuration, int intervalOffset, int rasterSize, int region) {
+    public List<StrikeAbstract> getStrikesGrid(int intervalDuration, int intervalOffset, int rasterSize, int countThreshold, int region) {
         return null;
     }
 

@@ -71,6 +71,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.USERNAME);
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.PASSWORD);
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.RASTER_SIZE);
+        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.COUNT_THRESHOLD);
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.REGION);
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.INTERVAL_DURATION);
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.HISTORIC_TIMESTEP);
@@ -97,6 +98,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             int rasterBaselength = params[2];
             int region = params[3];
             boolean updateParticipants = params[4] != 0;
+            int countThreshold = params[5];
 
             ResultEvent result = null;
 
@@ -110,13 +112,14 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                     if (rasterBaselength == 0) {
                         strikes = dataProvider.getStrikes(intervalDuration, intervalOffset, region);
                     } else {
-                        strikes = dataProvider.getStrikesRaster(intervalDuration, intervalOffset, rasterBaselength, region);
+                        strikes = dataProvider.getStrikesGrid(intervalDuration, intervalOffset, rasterBaselength, countThreshold, region);
                     }
                     Parameters parameters = new Parameters();
                     parameters.setIntervalDuration(intervalDuration);
                     parameters.setIntervalOffset(intervalOffset);
                     parameters.setRegion(region);
                     parameters.setRasterBaselength(rasterBaselength);
+                    parameters.setCountThreshold(countThreshold);
 
                     if (dataProvider.returnsIncrementalData()) {
                         result.setContainsIncrementalData();
@@ -194,7 +197,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             }
         }
 
-        new FetchDataTask().execute(parameters.getIntervalDuration(), parameters.getIntervalOffset(), dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), updateParticipants ? 1 : 0, 0);
+        new FetchDataTask().execute(parameters.getIntervalDuration(), parameters.getIntervalOffset(), dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), updateParticipants ? 1 : 0, parameters.getCountThreshold());
     }
 
     private void sendEvent(DataEvent dataEvent) {
@@ -232,6 +235,12 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             case RASTER_SIZE:
                 preferencesRasterBaselength = Integer.parseInt(sharedPreferences.getString(key.toString(), "10000"));
                 parameters.setRasterBaselength(preferencesRasterBaselength);
+                notifyDataReset();
+                break;
+
+            case COUNT_THRESHOLD:
+                int countThreshold = Integer.parseInt(sharedPreferences.getString(key.toString(), "0"));
+                parameters.setCountThreshold(countThreshold);
                 notifyDataReset();
                 break;
 

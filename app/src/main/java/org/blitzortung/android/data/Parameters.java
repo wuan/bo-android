@@ -2,7 +2,7 @@ package org.blitzortung.android.data;
 
 public class Parameters {
 
-    private int region;
+    private int region = -1;
 
     private int rasterBaselength;
 
@@ -13,6 +13,7 @@ public class Parameters {
     private int offsetIncrement;
 
     private final int maxRange;
+    private int countThreshold;
 
     public Parameters() {
         maxRange = 24 * 60;
@@ -121,5 +122,13 @@ public class Parameters {
         sb.append("offset ").append(intervalOffset).append(")");
         
         return sb.toString();
+    }
+
+    public void setCountThreshold(int countThreshold) {
+        this.countThreshold = countThreshold;
+    }
+
+    public int getCountThreshold() {
+        return countThreshold;
     }
 }
