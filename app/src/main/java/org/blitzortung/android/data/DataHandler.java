@@ -239,7 +239,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                 break;
 
             case COUNT_THRESHOLD:
-                int countThreshold = Integer.parseInt(sharedPreferences.getString(key.toString(), "0"));
+                int countThreshold = Integer.parseInt(sharedPreferences.getString(key.toString(), "1"));
                 parameters.setCountThreshold(countThreshold);
                 notifyDataReset();
                 break;
