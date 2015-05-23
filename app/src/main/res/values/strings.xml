@@ -2,8 +2,8 @@
 <resources>
 
     <string name="app_name">Blitzortung Lightning Monitor</string>
-    <string name="ok">Ok</string>
-    <string name="cancel">Cancel</string>
+    <string name="ok">@android:string/ok</string>
+    <string name="cancel">@android:string/cancel</string>
 
     <plurals name="strike">
         <item quantity="zero">no strike</item>
