@@ -179,7 +179,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     }
 
     public void updateDatainBackground() {
-        new FetchBackgroundDataTask(wakeLock).execute(10, 0, dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), 0);
+        new FetchBackgroundDataTask(wakeLock).execute(10, 0, dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), 0, parameters.getCountThreshold());
     }
 
     public void updateData() {
