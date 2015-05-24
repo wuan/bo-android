@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Spinner;
 
 import org.blitzortung.android.app.R;
@@ -33,7 +32,7 @@ public class QuickSettingsDialog extends DialogFragment {
         int selectedRasterSize = getSelectedIndex(rasterSizeValues, currentRasterSizeValue);
 
         final String[] countThresholdValues = getResources().getStringArray(R.array.count_threshold_values);
-        final String currentCountThresholdValue = preferences.getString(PreferenceKey.COUNT_THRESHOLD.toString(), rasterSizeValues[0]);
+        final String currentCountThresholdValue = preferences.getString(PreferenceKey.COUNT_THRESHOLD.toString(), rasterSizeValues[1]);
         int selectedCountThreshold = getSelectedIndex(countThresholdValues, currentCountThresholdValue);
 
         final String[] queryPeriodValues = getResources().getStringArray(R.array.query_period_values);
