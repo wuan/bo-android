@@ -32,7 +32,7 @@ public class QuickSettingsDialog extends DialogFragment {
         int selectedRasterSize = getSelectedIndex(rasterSizeValues, currentRasterSizeValue);
 
         final String[] countThresholdValues = getResources().getStringArray(R.array.count_threshold_values);
-        final String currentCountThresholdValue = preferences.getString(PreferenceKey.COUNT_THRESHOLD.toString(), rasterSizeValues[1]);
+        final String currentCountThresholdValue = preferences.getString(PreferenceKey.COUNT_THRESHOLD.toString(), rasterSizeValues[0]);
         int selectedCountThreshold = getSelectedIndex(countThresholdValues, currentCountThresholdValue);
 
         final String[] queryPeriodValues = getResources().getStringArray(R.array.query_period_values);
