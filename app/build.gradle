@@ -7,13 +7,13 @@ android {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 14
         targetSdkVersion 19
-        versionCode 135
+        versionCode 136
         versionName "1.3.6"
         multiDexEnabled true
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
