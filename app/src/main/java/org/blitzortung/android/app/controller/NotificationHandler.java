@@ -31,7 +31,8 @@ public class NotificationHandler {
                             .setSmallIcon(R.drawable.icon)
                             .setContentTitle(context.getResources().getText(R.string.app_name))
                             .setContentText(notificationText)
-                            .setContentIntent(contentIntent);
+                            .setContentIntent(contentIntent)
+                            .setAutoCancel(true);
 
             notificationService.notify(R.id.alarm_notification_id, notificationBuilder.getNotification());
         }
