@@ -102,6 +102,16 @@
             android:selectable="true"
             android:title="@string/query_period"
             android:summary="@string/query_period_summary" />
+        <ListPreference
+            android:defaultValue="RPC"
+            android:enabled="true"
+            android:entries="@array/data_sources"
+            android:entryValues="@array/data_source_values"
+            android:key="data_source"
+            android:persistent="true"
+            android:selectable="true"
+            android:title="@string/data_source"
+            android:summary="@string/data_source_summary" />
         <EditTextPreference
             android:defaultValue=""
             android:key="username"
@@ -114,16 +124,6 @@
             android:persistent="true"
             android:title="@string/password"
             android:summary="@string/password_summary" />
-        <ListPreference
-            android:defaultValue="RPC"
-            android:enabled="true"
-            android:entries="@array/data_sources"
-            android:entryValues="@array/data_source_values"
-            android:key="data_source"
-            android:persistent="true"
-            android:selectable="true"
-            android:title="@string/data_source"
-            android:summary="@string/data_source_summary" />
     </PreferenceScreen>
     <PreferenceScreen
         android:title="@string/location_settings"
