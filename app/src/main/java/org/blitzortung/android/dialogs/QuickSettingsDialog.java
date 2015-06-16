@@ -28,11 +28,11 @@ public class QuickSettingsDialog extends DialogFragment {
         int selectedRegion = getSelectedIndex(regionValues, currentRegionValue);
 
         final String[] rasterSizeValues = getResources().getStringArray(R.array.raster_size_values);
-        final String currentRasterSizeValue = preferences.getString(PreferenceKey.RASTER_SIZE.toString(), rasterSizeValues[0]);
+        final String currentRasterSizeValue = preferences.getString(PreferenceKey.RASTER_SIZE.toString(), rasterSizeValues[1]);
         int selectedRasterSize = getSelectedIndex(rasterSizeValues, currentRasterSizeValue);
 
         final String[] countThresholdValues = getResources().getStringArray(R.array.count_threshold_values);
-        final String currentCountThresholdValue = preferences.getString(PreferenceKey.COUNT_THRESHOLD.toString(), rasterSizeValues[0]);
+        final String currentCountThresholdValue = preferences.getString(PreferenceKey.COUNT_THRESHOLD.toString(), countThresholdValues[1]);
         int selectedCountThreshold = getSelectedIndex(countThresholdValues, currentCountThresholdValue);
 
         final String[] queryPeriodValues = getResources().getStringArray(R.array.query_period_values);
@@ -40,7 +40,7 @@ public class QuickSettingsDialog extends DialogFragment {
         int selectedQueryPeriod = getSelectedIndex(queryPeriodValues, currentQueryPeriodValue);
 
         final String[] intervalDurationValues = getResources().getStringArray(R.array.interval_duration_values);
-        final String currentIntervalDurationValue = preferences.getString(PreferenceKey.INTERVAL_DURATION.toString(), queryPeriodValues[0]);
+        final String currentIntervalDurationValue = preferences.getString(PreferenceKey.INTERVAL_DURATION.toString(), intervalDurationValues[1]);
         int selectedIntervalDuration = getSelectedIndex(intervalDurationValues, currentIntervalDurationValue);
 
         @SuppressLint("InflateParams") final View view = layoutInflater.inflate(R.layout.quick_settings_dialog, null, false);

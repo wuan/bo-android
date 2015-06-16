@@ -21,7 +21,7 @@
         android:title="@string/raster_size"
         android:summary="@string/raster_size_summary" />
     <ListPreference
-        android:defaultValue="120"
+        android:defaultValue="60"
         android:enabled="true"
         android:entries="@array/interval_durations"
         android:entryValues="@array/interval_duration_values"
