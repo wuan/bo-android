@@ -186,6 +186,13 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
                 toast.show();
                 return;
             }
+
+            if(!locationManager.isProviderEnabled(newProvider.getType())) {
+                Toast toast = Toast.makeText(context, String.format(context.getResources().getText(R.string.location_provider_disabled).toString(), newProvider.toString()), 5000);
+                toast.show();
+                return;
+            }
+
             final int minTime = backgroundMode
                     ? 120000
                     : (
