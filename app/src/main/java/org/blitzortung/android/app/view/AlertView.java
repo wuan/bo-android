@@ -24,6 +24,7 @@ import java.util.List;
 public class AlertView extends View {
 
     private static final int TEXT_MINIMUM_SIZE = 300;
+    private static final int DEFAULT_FONT_SIZE = 20;
     private static final PorterDuffXfermode XFERMODE_CLEAR = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
     private static final PorterDuffXfermode XFERMODE_SRC = new PorterDuffXfermode(PorterDuff.Mode.SRC);
 
@@ -167,7 +168,18 @@ public class AlertView extends View {
 
             warnText.setColor(0xffa00000);
             warnText.setTextAlign(Align.CENTER);
-            warnText.setTextSize(20);
+            warnText.setTextSize(DEFAULT_FONT_SIZE);
+
+            //Find the smallest possible scale
+            float scale = 1;
+            for (int line = 0; line < alarmNotAvailableTextLines.length; line++) {
+                //Use margin of 20
+                //Because text is centered, margin left and right will be 10
+                scale = Math.min(scale, getWidth() - 20) / warnText.measureText(alarmNotAvailableTextLines[line]);
+            }
+
+            //Now scale the text so we can use the whole width of the canvas
+            warnText.setTextSize(scale * DEFAULT_FONT_SIZE);
 
             for (int line = 0; line < alarmNotAvailableTextLines.length; line++) {
                 temporaryCanvas.drawText(alarmNotAvailableTextLines[line], center, center + (line - 1) * warnText.getFontMetrics(null), warnText);
