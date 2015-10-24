@@ -22,7 +22,7 @@ public class JsonRpcClient extends HttpServiceClient {
 	}
 
     // VisibleForTesting
-	protected JsonRequestEntity buildRequest(String methodName, Object[] parameters) {
+	protected String buildRequest(String methodName, Object[] parameters) {
 		JSONObject requestObject = new JSONObject();
 		try {
 			requestObject.put("id", id);
@@ -32,13 +32,7 @@ public class JsonRpcClient extends HttpServiceClient {
 			throw new JsonRpcException("invalid JSON request", e);
 		}
 
-		JsonRequestEntity jsonRequestEntity;
-		try {
-			jsonRequestEntity = new JsonRequestEntity(requestObject);
-		} catch (UnsupportedEncodingException e) {
-			throw new JsonRpcException("unable to create entity", e);
-		}
-		return jsonRequestEntity;
+		return requestObject.toString();
 	}
 
 	public JsonRpcClient(String uri, String agentSuffix) {

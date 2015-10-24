@@ -1,81 +1,98 @@
 package org.blitzortung.android.jsonrpc;
 
-import android.util.Log;
-import org.apache.http.HttpResponse;
-import org.apache.http.ProtocolVersion;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.*;
-import org.apache.http.util.EntityUtils;
-import org.blitzortung.android.app.Main;
-
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 public class HttpServiceClient {
 
-	private int socketTimeout = 0;
-	
-	private int connectionTimeout = 0;
-	
-	private final static ProtocolVersion PROTOCOL_VERSION = new ProtocolVersion("HTTP", 1, 1);
+    private int socketTimeout = 0;
 
-	private final String serviceUri;
-	
-	private final HttpClient httpClient;
-	
-	HttpServiceClient(String uri, String agentSuffix) {
-        httpClient = new DefaultHttpClient();
-        httpClient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "bo-android" + agentSuffix);
+    private int connectionTimeout = 0;
 
-        serviceUri = uri;
-	}
+    private final URL url;
+
+    private final String userAgentString;
+
+    HttpServiceClient(String uriString, String agentSuffix) {
+        try {
+            url = new URI(uriString).toURL();
+        } catch (URISyntaxException | MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        userAgentString = "bo-android" + agentSuffix;
+    }
 
     public void shutdown() {
-        httpClient.getConnectionManager().shutdown();
     }
-	
-	public int getSocketTimeout() {
-		return socketTimeout;
-	}
 
-	public void setSocketTimeout(int socketTimeout) {
-		this.socketTimeout = socketTimeout;
-	}
+    public int getSocketTimeout() {
+        return socketTimeout;
+    }
 
-	public int getConnectionTimeout() {
-		return connectionTimeout;
-	}
+    public void setSocketTimeout(int socketTimeout) {
+        this.socketTimeout = socketTimeout;
+    }
 
-	public void setConnectionTimeout(int connectionTimeout) {
-		this.connectionTimeout = connectionTimeout;
-	}
-	
-	protected String doRequest(AbstractHttpEntity data) {
-        // Create HTTP/POST request with a JSON entity containing the request
-        HttpPost request = new HttpPost(serviceUri);
-        HttpParams params = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(params, getConnectionTimeout());
-        HttpConnectionParams.setSoTimeout(params, getSocketTimeout());
-        HttpProtocolParams.setVersion(params, PROTOCOL_VERSION);
-        request.setParams(params);
-        request.setEntity(data);
-        
-        String responseString = "";
-        
-		try {
-	        long startTime = System.currentTimeMillis();
-	        HttpResponse response = httpClient.execute(request);
-	        responseString = EntityUtils.toString(response.getEntity());
-	        Log.d(Main.LOG_TAG, String.format("HttpServiceClient: request time %d ms (%d bytes received)", System.currentTimeMillis() - startTime, responseString.length()));
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+    public int getConnectionTimeout() {
+        return connectionTimeout;
+    }
 
-        return responseString.trim();
-	}	
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+    }
+
+    protected String doRequest(String data) {
+        try {
+            return doRequestChecked(data);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected String doRequestChecked(String data) throws IOException {
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+        urlConnection.setRequestMethod("POST");
+
+        byte[] postDataBytes = data.getBytes("UTF-8");
+
+        urlConnection.setRequestProperty("Content-Type", "text/json");
+        urlConnection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+        urlConnection.setRequestProperty("User-Agent", userAgentString);
+
+        urlConnection.setDoOutput(true);
+        urlConnection.getOutputStream().write(postDataBytes);
+        urlConnection.setConnectTimeout(getConnectionTimeout());
+        urlConnection.setReadTimeout(getSocketTimeout());
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
+
+        String response = getResponse(reader);
+
+        reader.close();
+
+        return response;
+    }
+
+    private String getResponse(BufferedReader reader) throws IOException {
+        StringBuilder sb = new StringBuilder();
+
+        while (true) {
+            final String line = reader.readLine();
+
+            if (line != null) {
+                sb.append(line).append('\n');
+            } else {
+                break;
+            }
+        }
+
+        return sb.toString().trim();
+    }
 }
