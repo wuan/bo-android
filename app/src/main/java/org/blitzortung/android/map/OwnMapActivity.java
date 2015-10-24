@@ -14,7 +14,7 @@ public abstract class OwnMapActivity extends MapActivity {
 
     private OwnMapView mapView;
 
-    List<Overlay> overlays = new ArrayList<Overlay>();
+    List<Overlay> overlays = new ArrayList<>();
 
     public void setMapView(OwnMapView mapView) {
         this.mapView = mapView;

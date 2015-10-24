@@ -1,4 +1,6 @@
-package org.blitzortung.android.alert.object;
+package org.blitzortung.android.alert.data;
+
+import com.annimon.stream.Stream;
 
 import org.blitzortung.android.alert.AlertParameters;
 import org.blitzortung.android.alert.factory.AlertObjectFactory;
@@ -25,7 +27,7 @@ public class AlertSector {
         this.closestStrikeDistance = Float.POSITIVE_INFINITY;
 
         final float[] rangeSteps = alertParameters.getRangeSteps();
-        ranges = new ArrayList<AlertSectorRange>();
+        ranges = new ArrayList<>();
         float rangeMinimum = 0.0f;
         for (float rangeMaximum : rangeSteps) {
             AlertSectorRange alertSectorRange = alertObjectFactory.createAlarmSectorRange(rangeMinimum, rangeMaximum);
@@ -36,10 +38,8 @@ public class AlertSector {
 
     public void clearResults() {
         closestStrikeDistance = Float.POSITIVE_INFINITY;
-        
-        for (AlertSectorRange range : ranges) {
-            range.clearResults();
-        }
+
+        Stream.of(ranges).forEach(AlertSectorRange::clearResults);
     }
 
     public List<AlertSectorRange> getRanges() {

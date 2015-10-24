@@ -6,13 +6,15 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
+
+import com.annimon.stream.function.Consumer;
+
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.blitzortung.android.map.overlay.StrikesOverlay;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
-import org.blitzortung.android.protocol.Consumer;
 
 public class HistogramView extends View {
 
@@ -124,12 +126,9 @@ public class HistogramView extends View {
         this.strikesOverlay = strikesOverlay;
     }
 
-    private final Consumer<DataEvent> dataEventConsumer = new Consumer<DataEvent>() {
-        @Override
-        public void consume(DataEvent event) {
-            if (event instanceof ResultEvent) {
-                updateHistogram((ResultEvent) event);
-            }
+    private final Consumer<DataEvent> dataEventConsumer = event -> {
+        if (event instanceof ResultEvent) {
+            updateHistogram((ResultEvent) event);
         }
     };
 

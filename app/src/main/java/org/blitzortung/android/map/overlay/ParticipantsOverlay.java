@@ -1,6 +1,5 @@
 package org.blitzortung.android.map.overlay;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
@@ -36,12 +35,11 @@ public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> im
 
     // VisibleForTesting
     private int zoomLevel;
-    private ParticipantOverlayItem item;
 
     public ParticipantsOverlay(OwnMapActivity mapActivity, ParticipantColorHandler colorHandler) {
         super(mapActivity, boundCenter(DefaultDrawable));
 
-        shapes = new EnumMap<State, ShapeDrawable>(State.class);
+        shapes = new EnumMap<>(State.class);
         shapes.put(State.ON, new ShapeDrawable(new ParticipantShape()));
         shapes.put(State.DELAYED, new ShapeDrawable(new ParticipantShape()));
         shapes.put(State.OFF, new ShapeDrawable(new ParticipantShape()));
@@ -49,7 +47,7 @@ public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> im
         layerOverlayComponent = new LayerOverlayComponent(mapActivity.getResources().getString(R.string.participants_layer));
         this.colorHandler = colorHandler;
 
-        participants = new ArrayList<ParticipantOverlayItem>();
+        participants = new ArrayList<>();
         populate();
     }
 
@@ -80,11 +78,11 @@ public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> im
             item.setMarker(shapes.get(item.getParticipantState()));
             participants.add(item);
         }
-        Log.v(Main.LOG_TAG, String.format("ParticipantsOverlay.setStations() set"));
+        Log.v(Main.LOG_TAG, "ParticipantsOverlay.setStations() set");
         setLastFocusedIndex(-1);
 
         populate();
-        Log.v(Main.LOG_TAG, String.format("ParticipantsOverlay.setStations() finished"));
+        Log.v(Main.LOG_TAG, "ParticipantsOverlay.setStations() finished");
     }
 
     public void clear() {

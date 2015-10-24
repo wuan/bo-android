@@ -3,9 +3,9 @@ package org.blitzortung.android.alert.factory;
 import org.blitzortung.android.alert.AlertParameters;
 import org.blitzortung.android.alert.handler.AlertSectorHandler;
 import org.blitzortung.android.alert.handler.AlertStatusHandler;
-import org.blitzortung.android.alert.object.AlertSector;
-import org.blitzortung.android.alert.object.AlertSectorRange;
-import org.blitzortung.android.alert.object.AlertStatus;
+import org.blitzortung.android.alert.data.AlertSector;
+import org.blitzortung.android.alert.data.AlertSectorRange;
+import org.blitzortung.android.alert.data.AlertStatus;
 
 public class AlertObjectFactory {
     

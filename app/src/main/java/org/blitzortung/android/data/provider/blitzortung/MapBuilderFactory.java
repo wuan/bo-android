@@ -90,25 +90,14 @@ public class MapBuilderFactory {
 
             @Override
             protected void setBuilderMap(Map<String, Consumer> keyValueBuilderMap) {
-                keyValueBuilderMap.put("city", new Consumer() {
-                    @Override
-                    public void apply(String[] values) {
-                        stationBuilder.setName(values[0].replace("\"", ""));
-                    }
+                keyValueBuilderMap.put("city", values -> stationBuilder.setName(values[0].replace("\"", "")));
+                keyValueBuilderMap.put("pos", values -> {
+                    stationBuilder.setLongitude(Float.parseFloat(values[1]));
+                    stationBuilder.setLatitude(Float.parseFloat(values[0]));
                 });
-                keyValueBuilderMap.put("pos", new Consumer() {
-                    @Override
-                    public void apply(String[] values) {
-                        stationBuilder.setLongitude(Float.parseFloat(values[1]));
-                        stationBuilder.setLatitude(Float.parseFloat(values[0]));
-                    }
-                });
-                keyValueBuilderMap.put("last_signal", new Consumer() {
-                    @Override
-                    public void apply(String[] values) {
-                        String dateString = values[0].replace("\"", "").replace("-", "").replace(" ", "T");
-                        stationBuilder.setOfflineSince(TimeFormat.parseTime(dateString));
-                    }
+                keyValueBuilderMap.put("last_signal", values -> {
+                    String dateString = values[0].replace("\"", "").replace("-", "").replace(" ", "T");
+                    stationBuilder.setOfflineSince(TimeFormat.parseTime(dateString));
                 });
             }
 

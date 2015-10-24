@@ -1,7 +1,7 @@
 package org.blitzortung.android.alert.event;
 
 import org.blitzortung.android.alert.AlertResult;
-import org.blitzortung.android.alert.object.AlertStatus;
+import org.blitzortung.android.alert.data.AlertStatus;
 
 public class AlertResultEvent implements AlertEvent {
 

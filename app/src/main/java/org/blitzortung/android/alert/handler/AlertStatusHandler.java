@@ -4,8 +4,8 @@ import android.location.Location;
 import android.util.Log;
 import org.blitzortung.android.alert.AlertParameters;
 import org.blitzortung.android.alert.AlertResult;
-import org.blitzortung.android.alert.object.AlertSector;
-import org.blitzortung.android.alert.object.AlertStatus;
+import org.blitzortung.android.alert.data.AlertSector;
+import org.blitzortung.android.alert.data.AlertStatus;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.data.beans.Strike;
 

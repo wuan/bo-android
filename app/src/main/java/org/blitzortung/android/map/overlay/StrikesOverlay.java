@@ -115,7 +115,7 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements T
 
     public void expireStrikes() {
         long expireTime = referenceTime - (getIntervalDuration() - getIntervalOffset()) * 60 * 1000;
-        List<StrikeOverlayItem> toRemove = new ArrayList<StrikeOverlayItem>();
+        List<StrikeOverlayItem> toRemove = new ArrayList<>();
 
         for (StrikeOverlayItem item : strikes) {
             if (item.getTimestamp() < expireTime) {

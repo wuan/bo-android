@@ -1,6 +1,6 @@
 package org.blitzortung.android.alert;
 
-import org.blitzortung.android.alert.object.AlertSector;
+import org.blitzortung.android.alert.data.AlertSector;
 
 public class AlertResult {
 	

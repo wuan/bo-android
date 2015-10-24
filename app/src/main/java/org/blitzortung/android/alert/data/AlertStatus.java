@@ -1,4 +1,6 @@
-package org.blitzortung.android.alert.object;
+package org.blitzortung.android.alert.data;
+
+import com.annimon.stream.Stream;
 
 import org.blitzortung.android.alert.AlertParameters;
 import org.blitzortung.android.alert.factory.AlertObjectFactory;
@@ -15,8 +17,8 @@ public class AlertStatus {
         this.alertParameters = alertParameters;
         final String[] sectorLabels = alertParameters.getSectorLabels();
         float sectorWidth = 360f / sectorLabels.length;
-        
-        sectors = new ArrayList<AlertSector>();
+
+        sectors = new ArrayList<>();
 
         float bearing = -180;
         for (String sectorLabel : sectorLabels) {
@@ -30,9 +32,7 @@ public class AlertStatus {
     }
 
     public void clearResults() {
-        for (AlertSector sector : sectors) {
-            sector.clearResults();
-        }
+        Stream.of(sectors).forEach(AlertSector::clearResults);
     }
 
     public Collection<AlertSector> getSectors() {

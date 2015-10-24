@@ -2,8 +2,8 @@ package org.blitzortung.android.alert.handler;
 
 import android.location.Location;
 import org.blitzortung.android.alert.AlertParameters;
-import org.blitzortung.android.alert.object.AlertSector;
-import org.blitzortung.android.alert.object.AlertSectorRange;
+import org.blitzortung.android.alert.data.AlertSector;
+import org.blitzortung.android.alert.data.AlertSectorRange;
 import org.blitzortung.android.data.beans.Strike;
 
 public class AlertSectorHandler {

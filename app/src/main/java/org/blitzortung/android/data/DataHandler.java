@@ -6,6 +6,9 @@ import android.content.pm.PackageInfo;
 import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.util.Log;
+
+import com.annimon.stream.function.Consumer;
+
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.StrikeAbstract;
@@ -16,7 +19,6 @@ import org.blitzortung.android.data.provider.result.ClearDataEvent;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.RequestStartedEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
-import org.blitzortung.android.protocol.Consumer;
 import org.blitzortung.android.util.optional.Optional;
 
 import java.util.HashSet;
@@ -48,7 +50,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     private PowerManager.WakeLock wakeLock;
 
-    public static final Set<DataChannel> DEFAULT_DATA_CHANNELS = new HashSet<DataChannel>();
+    public static final Set<DataChannel> DEFAULT_DATA_CHANNELS = new HashSet<>();
 
     static {
         DEFAULT_DATA_CHANNELS.add(DataChannel.STRIKES);
@@ -202,7 +204,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     private void sendEvent(DataEvent dataEvent) {
         if (dataEventConsumer != null) {
-            dataEventConsumer.consume(dataEvent);
+            dataEventConsumer.accept(dataEvent);
         }
     }
 
@@ -295,7 +297,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             parameters.setRegion(preferencesRegion);
         }
         if (!isRealtime()) {
-            Set<DataChannel> dataChannels = new HashSet<DataChannel>();
+            Set<DataChannel> dataChannels = new HashSet<>();
             dataChannels.add(DataChannel.STRIKES);
             updateData(dataChannels);
         }

@@ -1,4 +1,4 @@
-package org.blitzortung.android.alert.object;
+package org.blitzortung.android.alert.data;
 
 import org.blitzortung.android.data.beans.Strike;
 import org.junit.Before;

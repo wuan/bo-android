@@ -10,7 +10,6 @@ import com.google.common.collect.Lists;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.location.LocationHandler;
-import org.blitzortung.android.protocol.Consumer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -4,13 +4,15 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import com.annimon.stream.function.Consumer;
+
 import org.blitzortung.android.app.AppService;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
-import org.blitzortung.android.protocol.Consumer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,7 +32,7 @@ public class HistoryController {
     private DataHandler dataHandler;
 
     public HistoryController(final Activity activity) {
-        buttons = new ArrayList<ImageButton>();
+        buttons = new ArrayList<>();
 
         setupHistoryRewindButton(activity);
         setupHistoryForwardButton(activity);
@@ -60,18 +62,16 @@ public class HistoryController {
     private void setupHistoryRewindButton(final Activity activity) {
         historyRewind = (ImageButton) activity.findViewById(R.id.historyRew);
         buttons.add(historyRewind);
-        historyRewind.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (dataHandler.rewInterval()) {
-                    disableButtonColumn();
-                    historyForward.setVisibility(View.VISIBLE);
-                    goRealtime.setVisibility(View.VISIBLE);
-                    updateButtonColumn();
-                    updateData();
-                } else {
-                    Toast toast = Toast.makeText(activity.getBaseContext(), activity.getResources().getText(R.string.historic_timestep_limit_reached), 1000);
-                    toast.show();
-                }
+        historyRewind.setOnClickListener(v -> {
+            if (dataHandler.rewInterval()) {
+                disableButtonColumn();
+                historyForward.setVisibility(View.VISIBLE);
+                goRealtime.setVisibility(View.VISIBLE);
+                updateButtonColumn();
+                updateData();
+            } else {
+                Toast toast = Toast.makeText(activity.getBaseContext(), activity.getResources().getText(R.string.historic_timestep_limit_reached), Toast.LENGTH_SHORT);
+                toast.show();
             }
         });
     }
@@ -80,14 +80,12 @@ public class HistoryController {
         historyForward = (ImageButton) activity.findViewById(R.id.historyFfwd);
         buttons.add(historyForward);
         historyForward.setVisibility(View.INVISIBLE);
-        historyForward.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (dataHandler.ffwdInterval()) {
-                    if (dataHandler.isRealtime()) {
-                        configureForRealtimeOperation();
-                    } else {
-                        dataHandler.updateData();
-                    }
+        historyForward.setOnClickListener(v -> {
+            if (dataHandler.ffwdInterval()) {
+                if (dataHandler.isRealtime()) {
+                    configureForRealtimeOperation();
+                } else {
+                    dataHandler.updateData();
                 }
             }
         });
@@ -97,11 +95,9 @@ public class HistoryController {
         goRealtime = (ImageButton) activity.findViewById(R.id.goRealtime);
         buttons.add(goRealtime);
         goRealtime.setVisibility(View.INVISIBLE);
-        goRealtime.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (dataHandler.goRealtime()) {
-                    configureForRealtimeOperation();
-                }
+        goRealtime.setOnClickListener(v -> {
+            if (dataHandler.goRealtime()) {
+                configureForRealtimeOperation();
             }
         });
     }
@@ -129,7 +125,7 @@ public class HistoryController {
     }
 
     private void updateData() {
-        Set<DataChannel> dataChannels = new HashSet<DataChannel>();
+        Set<DataChannel> dataChannels = new HashSet<>();
         dataChannels.add(DataChannel.STRIKES);
         dataHandler.updateData(dataChannels);
     }
@@ -139,14 +135,11 @@ public class HistoryController {
         dataHandler = appService != null ? appService.getDataHandler() : null;
     }
 
-    private Consumer<DataEvent> dataEventConsumer = new Consumer<DataEvent>() {
-        @Override
-        public void consume(DataEvent event) {
-            if (event instanceof ResultEvent) {
-                ResultEvent resultEvent = (ResultEvent) event;
-                if (!resultEvent.hasFailed()) {
-                    setRealtimeData(resultEvent.containsRealtimeData());
-                }
+    private Consumer<DataEvent> dataEventConsumer = event -> {
+        if (event instanceof ResultEvent) {
+            ResultEvent resultEvent = (ResultEvent) event;
+            if (!resultEvent.hasFailed()) {
+                setRealtimeData(resultEvent.containsRealtimeData());
             }
         }
     };

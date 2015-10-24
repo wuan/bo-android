@@ -15,7 +15,7 @@ public abstract class MapBuilder<T> {
     MapBuilder(LineSplitter lineSplitter) {
         this.lineSplitter = lineSplitter;
 
-        keyValueBuilderMap = new HashMap<String, Consumer>();
+        keyValueBuilderMap = new HashMap<>();
 
         setBuilderMap(keyValueBuilderMap);
     }

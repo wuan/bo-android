@@ -7,17 +7,19 @@ import android.graphics.Paint.Style;
 import android.location.Location;
 import android.util.AttributeSet;
 import android.view.View;
+
+import com.annimon.stream.function.Consumer;
+
 import org.blitzortung.android.alert.AlertParameters;
 import org.blitzortung.android.alert.event.AlertEvent;
 import org.blitzortung.android.alert.event.AlertResultEvent;
-import org.blitzortung.android.alert.object.AlertSector;
-import org.blitzortung.android.alert.object.AlertSectorRange;
-import org.blitzortung.android.alert.object.AlertStatus;
+import org.blitzortung.android.alert.data.AlertSector;
+import org.blitzortung.android.alert.data.AlertSectorRange;
+import org.blitzortung.android.alert.data.AlertStatus;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
-import org.blitzortung.android.protocol.Consumer;
 
 import java.util.List;
 
@@ -82,10 +84,12 @@ public class AlertView extends View {
 
     @Override
     protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
     }
 
     @Override
     protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
     }
 
     @Override
@@ -172,10 +176,10 @@ public class AlertView extends View {
 
             //Find the smallest possible scale
             float scale = 1;
-            for (int line = 0; line < alarmNotAvailableTextLines.length; line++) {
+            for (String alarmNotAvailableTextLine : alarmNotAvailableTextLines) {
                 //Use margin of 20
                 //Because text is centered, margin left and right will be 10
-                scale = Math.min(scale, getWidth() - 20) / warnText.measureText(alarmNotAvailableTextLines[line]);
+                scale = Math.min(scale, getWidth() - 20) / warnText.measureText(alarmNotAvailableTextLine);
             }
 
             //Now scale the text so we can use the whole width of the canvas
@@ -212,7 +216,7 @@ public class AlertView extends View {
 
     private Consumer<AlertEvent> alertEventConsumer = new Consumer<AlertEvent>() {
         @Override
-        public void consume(AlertEvent event) {
+        public void accept(AlertEvent event) {
             if (event instanceof AlertResultEvent) {
                 AlertResultEvent alertResultEvent = (AlertResultEvent) event;
 
@@ -228,14 +232,11 @@ public class AlertView extends View {
         return alertEventConsumer;
     }
 
-    private Consumer<LocationEvent> locationEventConsumer = new Consumer<LocationEvent>() {
-        @Override
-        public void consume(LocationEvent locationEvent) {
-            final Location location = locationEvent.getLocation();
-            final int visibility = location != null ? View.VISIBLE : View.INVISIBLE;
-            setVisibility(visibility);
-            invalidate();
-        }
+    private Consumer<LocationEvent> locationEventConsumer = locationEvent -> {
+        final Location location = locationEvent.getLocation();
+        final int visibility = location != null ? View.VISIBLE : View.INVISIBLE;
+        setVisibility(visibility);
+        invalidate();
     };
 
     public Consumer<LocationEvent> getLocationEventConsumer() {

@@ -8,10 +8,12 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.annimon.stream.function.Consumer;
+
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.view.PreferenceKey;
-import org.blitzortung.android.protocol.Consumer;
 import org.blitzortung.android.protocol.ConsumerContainer;
 
 import java.util.HashMap;
@@ -23,7 +25,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
     private boolean backgroundMode = true;
     private int backgroundPeriod;
 
-    public static enum Provider {
+    public enum Provider {
         NETWORK(LocationManager.NETWORK_PROVIDER),
         GPS(LocationManager.GPS_PROVIDER),
         PASSIVE(LocationManager.PASSIVE_PROVIDER),
@@ -31,7 +33,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
 
         private String type;
 
-        private Provider(String type) {
+        Provider(String type) {
             this.type = type;
         }
 

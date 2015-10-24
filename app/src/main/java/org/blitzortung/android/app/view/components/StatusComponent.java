@@ -5,12 +5,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.annimon.stream.function.Consumer;
+
 import org.blitzortung.android.alert.AlertLabelHandler;
 import org.blitzortung.android.alert.event.AlertResultEvent;
 import org.blitzortung.android.alert.AlertLabel;
 import org.blitzortung.android.alert.event.AlertEvent;
 import org.blitzortung.android.app.R;
-import org.blitzortung.android.protocol.Consumer;
 
 public class StatusComponent implements AlertLabel {
 
@@ -68,7 +70,7 @@ public class StatusComponent implements AlertLabel {
 
     private final Consumer<AlertEvent> alertEventConsumer = new Consumer<AlertEvent>() {
         @Override
-        public void consume(AlertEvent event) {
+        public void accept(AlertEvent event) {
             alertLabelHandler.apply(
                     event instanceof AlertResultEvent
                             ? ((AlertResultEvent) event).getAlertResult()

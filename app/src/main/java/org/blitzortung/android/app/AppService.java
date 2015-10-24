@@ -11,6 +11,9 @@ import android.content.pm.PackageManager;
 import android.os.*;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import com.annimon.stream.function.Consumer;
+
 import org.blitzortung.android.alert.AlertParameters;
 import org.blitzortung.android.alert.event.AlertEvent;
 import org.blitzortung.android.alert.AlertHandler;
@@ -26,7 +29,6 @@ import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.StatusEvent;
-import org.blitzortung.android.protocol.Consumer;
 import org.blitzortung.android.protocol.ConsumerContainer;
 import org.blitzortung.android.util.Period;
 
@@ -135,13 +137,13 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
     private final Consumer<DataEvent> dataEventConsumer = new Consumer<DataEvent>() {
         @Override
-        public void consume(DataEvent event) {
+        public void accept(DataEvent event) {
             if (!dataConsumerContainer.isEmpty()) {
                 dataConsumerContainer.storeAndBroadcast(event);
             }
 
             if (alertEnabled) {
-                alertHandler.getDataEventConsumer().consume(event);
+                alertHandler.getDataEventConsumer().accept(event);
             }
 
             if (event instanceof ClearDataEvent) {
@@ -158,7 +160,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
     private final Consumer<AlertEvent> alertEventConsumer = new Consumer<AlertEvent>() {
         @Override
-        public void consume(AlertEvent event) {
+        public void accept(AlertEvent event) {
             alertConsumerContainer.storeAndBroadcast(event);
         }
     };

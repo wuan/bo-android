@@ -3,10 +3,8 @@ package org.blitzortung.android.dialogs;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.View;
-import android.view.ViewGroup;
+
 import org.blitzortung.android.app.AppService;
-import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.view.AlertView;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
@@ -45,7 +43,7 @@ public class AlertDialog extends android.app.AlertDialog {
 
         if (service != null) {
             alertView.setColorHandler(colorHandler, service.getDataHandler().getIntervalDuration());
-            alertView.getAlertEventConsumer().consume(service.getAlertEvent());
+            alertView.getAlertEventConsumer().accept(service.getAlertEvent());
             service.addAlertConsumer(alertView.getAlertEventConsumer());
         }
         colorHandler.updateTarget();

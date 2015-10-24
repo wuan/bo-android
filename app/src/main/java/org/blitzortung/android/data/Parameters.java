@@ -60,7 +60,7 @@ public class Parameters {
 
         intervalOffset += offsetIncrement;
 
-        if (intervalOffset >0) {
+        if (intervalOffset > 0) {
             intervalOffset = 0;
             return false;
         } else {
@@ -81,7 +81,7 @@ public class Parameters {
     }
 
     private void alignIntervalOffsetWithIncrement() {
-        intervalOffset = (intervalOffset / offsetIncrement ) * offsetIncrement;
+        intervalOffset = (intervalOffset / offsetIncrement) * offsetIncrement;
     }
 
     public int getRegion() {
@@ -115,13 +115,7 @@ public class Parameters {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Parameter(");
-        sb.append("region ").append(region).append(", ");
-        sb.append("duration ").append(intervalDuration).append(", ");
-        sb.append("offset ").append(intervalOffset).append(")");
-        
-        return sb.toString();
+        return "Parameter(" + "region " + region + ", " + "duration " + intervalDuration + ", " + "offset " + intervalOffset + ")";
     }
 
     public void setCountThreshold(int countThreshold) {

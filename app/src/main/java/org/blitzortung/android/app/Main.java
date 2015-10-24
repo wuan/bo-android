@@ -24,6 +24,7 @@ import android.view.*;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.annimon.stream.function.Consumer;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 
@@ -49,7 +50,6 @@ import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrikesOverlay;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler;
-import org.blitzortung.android.protocol.Consumer;
 import org.blitzortung.android.util.optional.Optional;
 
 import java.util.Arrays;
@@ -72,7 +72,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
 
     private boolean clearData;
 
-    private final Set<String> androidIdsForExtendedFunctionality = new HashSet<String>(Arrays.asList("e72d101ce1bcdee3", "6d1b9a3da993af2d"));
+    private final Set<String> androidIdsForExtendedFunctionality = new HashSet<>(Arrays.asList("e72d101ce1bcdee3", "6d1b9a3da993af2d"));
 
     private ButtonColumnHandler<ImageButton> buttonColumnHandler;
 
@@ -92,8 +92,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
             super.onCreate(savedInstanceState);
         } catch (NoClassDefFoundError e) {
             Log.e(Main.LOG_TAG, e.toString());
-            Toast toast = Toast.makeText(getBaseContext(), "bad android version", Toast.LENGTH_LONG);
-            toast.show();
+            Toast.makeText(getBaseContext(), "bad android version", Toast.LENGTH_LONG).show();
         }
         Log.v(LOG_TAG, "Main.onCreate()");
 
@@ -114,14 +113,9 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         strikesOverlay = new StrikesOverlay(this, new StrikeColorHandler(preferences));
         participantsOverlay = new ParticipantsOverlay(this, new ParticipantColorHandler(preferences));
 
-        mapView.addZoomListener(new OwnMapView.ZoomListener() {
-
-            @Override
-            public void onZoom(int zoomLevel) {
-                strikesOverlay.updateZoomLevel(zoomLevel);
-                participantsOverlay.updateZoomLevel(zoomLevel);
-            }
-
+        mapView.addZoomListener(zoomLevel -> {
+            strikesOverlay.updateZoomLevel(zoomLevel);
+            participantsOverlay.updateZoomLevel(zoomLevel);
         });
 
         fadeOverlay = new FadeOverlay(strikesOverlay.getColorHandler());
@@ -138,7 +132,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
 
         hideActionBar();
 
-        buttonColumnHandler = new ButtonColumnHandler<ImageButton>();
+        buttonColumnHandler = new ButtonColumnHandler<>();
         configureMenuAccess();
         historyController = new HistoryController(this);
         historyController.setButtonHandler(buttonColumnHandler);
@@ -207,12 +201,10 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
             rasterToggle.setEnabled(true);
             rasterToggle.setVisibility(View.VISIBLE);
 
-            rasterToggle.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    buttonColumnHandler.lockButtonColumn();
-                    appService.getDataHandler().toggleExtendedMode();
-                    reloadData();
-                }
+            rasterToggle.setOnClickListener(v -> {
+                buttonColumnHandler.lockButtonColumn();
+                appService.getDataHandler().toggleExtendedMode();
+                reloadData();
             });
             buttonColumnHandler.addElement(rasterToggle);
         }
@@ -222,52 +214,41 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         legendView = (LegendView) findViewById(R.id.legend_view);
         legendView.setStrikesOverlay(strikesOverlay);
         legendView.setAlpha(150);
-        legendView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openQuickSettingsDialog();
-            }
-        });
+        legendView.setOnClickListener(v -> openQuickSettingsDialog());
 
         alertView = (AlertView) findViewById(R.id.alert_view);
         alertView.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.getIntervalDuration());
         alertView.setBackgroundColor(Color.TRANSPARENT);
         alertView.setAlpha(200);
-        alertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final AlertHandler alertHandler = appService.getAlertHandler();
-                if (alertHandler != null && alertHandler.isAlertEnabled()) {
-                    final Location currentLocation = alertHandler.getCurrentLocation();
-                    if (currentLocation != null) {
-                        float radius = alertHandler.getMaxDistance();
+        alertView.setOnClickListener(view -> {
+            final AlertHandler alertHandler = appService.getAlertHandler();
+            if (alertHandler != null && alertHandler.isAlertEnabled()) {
+                final Location currentLocation = alertHandler.getCurrentLocation();
+                if (currentLocation != null) {
+                    float radius = alertHandler.getMaxDistance();
 
-                        final AlertResult alertResult = alertHandler.getAlarmResult();
-                        if (alertResult != null) {
-                            radius = Math.max(Math.min(alertResult.getClosestStrikeDistance() * 1.2f, radius), 50f);
-                        }
-
-                        float diameter = 1.5f * 2f * radius;
-                        animateToLocationAndVisibleSize(currentLocation.getLongitude(), currentLocation.getLatitude(), diameter);
+                    final AlertResult alertResult = alertHandler.getAlarmResult();
+                    if (alertResult != null) {
+                        radius = Math.max(Math.min(alertResult.getClosestStrikeDistance() * 1.2f, radius), 50f);
                     }
 
+                    float diameter = 1.5f * 2f * radius;
+                    animateToLocationAndVisibleSize(currentLocation.getLongitude(), currentLocation.getLatitude(), diameter);
                 }
+
             }
         });
 
         histogramView = (HistogramView) findViewById(R.id.histogram_view);
         histogramView.setStrikesOverlay(strikesOverlay);
-        histogramView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (currentResult.isPresent()) {
-                    final ResultEvent result = currentResult.get();
-                    if (result.hasRasterParameters()) {
-                        final RasterParameters rasterParameters = result.getRasterParameters();
-                        animateToLocationAndVisibleSize(rasterParameters.getRectCenterLongitude(), rasterParameters.getRectCenterLatitude(), 5000f);
-                    } else {
-                        animateToLocationAndVisibleSize(0, 0, 20000f);
-                    }
+        histogramView.setOnClickListener(view -> {
+            if (currentResult.isPresent()) {
+                final ResultEvent result = currentResult.get();
+                if (result.hasRasterParameters()) {
+                    final RasterParameters rasterParameters = result.getRasterParameters();
+                    animateToLocationAndVisibleSize(rasterParameters.getRectCenterLongitude(), rasterParameters.getRectCenterLatitude(), 5000f);
+                } else {
+                    animateToLocationAndVisibleSize(0, 0, 20000f);
                 }
             }
         });
@@ -287,27 +268,21 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         final int startZoomLevel = mapView.getZoomLevel();
         final int targetZoomLevel = mapView.calculateTargetZoomLevel(diameter * 1000f);
 
-        controller.animateTo(new GeoPoint((int) (latitude * 1e6), (int) (longitude * 1e6)), new Runnable() {
-            @Override
-            public void run() {
-                if (startZoomLevel != targetZoomLevel) {
-                    final boolean zoomOut = targetZoomLevel - startZoomLevel < 0;
-                    final int zoomCount = Math.abs(targetZoomLevel - startZoomLevel);
-                    Handler handler = new Handler();
-                    long delay = 0;
-                    for (int i = 0; i < zoomCount; i++) {
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (zoomOut) {
-                                    controller.zoomOut();
-                                } else {
-                                    controller.zoomIn();
-                                }
-                            }
-                        }, delay);
-                        delay += 150;
-                    }
+        controller.animateTo(new GeoPoint((int) (latitude * 1e6), (int) (longitude * 1e6)), () -> {
+            if (startZoomLevel != targetZoomLevel) {
+                final boolean zoomOut = targetZoomLevel - startZoomLevel < 0;
+                final int zoomCount = Math.abs(targetZoomLevel - startZoomLevel);
+                Handler handler = new Handler();
+                long delay = 0;
+                for (int i = 0; i < zoomCount; i++) {
+                    handler.postDelayed(() -> {
+                        if (zoomOut) {
+                            controller.zoomOut();
+                        } else {
+                            controller.zoomIn();
+                        }
+                    }, delay);
+                    delay += 150;
                 }
             }
         });
@@ -419,7 +394,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
 
     private Consumer<DataEvent> dataEventConsumer = new Consumer<DataEvent>() {
         @Override
-        public void consume(DataEvent event) {
+        public void accept(DataEvent event) {
             if (event instanceof RequestStartedEvent) {
                 buttonColumnHandler.lockButtonColumn();
                 statusComponent.startProgress();
@@ -604,11 +579,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         if (!config.hasPermanentMenuKey()) {
             ImageButton menuButton = (ImageButton) findViewById(R.id.menu);
             menuButton.setVisibility(View.VISIBLE);
-            menuButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    openOptionsMenu();
-                }
-            });
+            menuButton.setOnClickListener(v -> openOptionsMenu());
             buttonColumnHandler.addElement(menuButton);
         }
     }

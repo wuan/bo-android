@@ -10,8 +10,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 
-public class SlidePreferences extends DialogPreference implements SeekBar.OnSeekBarChangeListener
-{
+public class SlidePreferences extends DialogPreference implements SeekBar.OnSeekBarChangeListener {
     private static final String ATTRIBUTE_NAMESPACE = "http://schemas.android.com/apk/res/android";
 
     private final Context context;
@@ -32,26 +31,25 @@ public class SlidePreferences extends DialogPreference implements SeekBar.OnSeek
         unitSuffix = " " + attrs.getAttributeValue(ATTRIBUTE_NAMESPACE, "text");
         defaultValue = attrs.getAttributeIntValue(ATTRIBUTE_NAMESPACE, "defaultValue", 30);
         maximumValue = attrs.getAttributeIntValue(ATTRIBUTE_NAMESPACE, "max", 80);
-
     }
 
     @Override
     protected View onCreateDialogView() {
         LinearLayout layout = new LinearLayout(context);
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(5,5,5,5);
+        layout.setPadding(5, 5, 5, 5);
 
         valueText = new TextView(context);
         valueText.setGravity(Gravity.CENTER_HORIZONTAL);
         valueText.setTextSize(32);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.FILL_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
         layout.addView(valueText, params);
 
         slider = new SeekBar(context);
         slider.setOnSeekBarChangeListener(this);
-        layout.addView(slider, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        layout.addView(slider, params);
 
         if (shouldPersist()) {
             currentValue = getPersistedInt(defaultValue);
@@ -72,24 +70,22 @@ public class SlidePreferences extends DialogPreference implements SeekBar.OnSeek
     }
 
     @Override
-    protected void onSetInitialValue(boolean should_restore, Object defaultValue)
-    {
+    protected void onSetInitialValue(boolean should_restore, Object defaultValue) {
         super.onSetInitialValue(should_restore, defaultValue);
 
         if (should_restore) {
             currentValue = shouldPersist() ? getPersistedInt(this.defaultValue) : this.defaultValue;
         } else {
-            currentValue = (Integer)defaultValue;
+            currentValue = (Integer) defaultValue;
         }
     }
 
-    public void onProgressChanged(SeekBar seekBar, int currentValue, boolean fromTouch)
-    {
+    public void onProgressChanged(SeekBar seekBar, int currentValue, boolean fromTouch) {
         String t = String.valueOf(currentValue);
 
         valueText.setText(unitSuffix == null ? t : t.concat(unitSuffix));
 
-        if (shouldPersist())  {
+        if (shouldPersist()) {
             persistInt(currentValue);
         }
 

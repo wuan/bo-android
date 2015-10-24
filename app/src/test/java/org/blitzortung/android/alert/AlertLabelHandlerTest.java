@@ -3,7 +3,7 @@ package org.blitzortung.android.alert;
 import android.content.res.Resources;
 
 import org.blitzortung.android.alert.handler.AlertStatusHandler;
-import org.blitzortung.android.alert.object.AlertStatus;
+import org.blitzortung.android.alert.data.AlertStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

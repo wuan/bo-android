@@ -1,5 +1,7 @@
 package org.blitzortung.android.protocol;
 
+import com.annimon.stream.function.Consumer;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,7 +12,7 @@ public abstract class ConsumerContainer<P> {
     private P currentPayload;
 
     public ConsumerContainer() {
-        consumers = new HashSet<Consumer<P>>();
+        consumers = new HashSet<>();
     }
 
     public void addConsumer(Consumer<P> consumer) {
@@ -30,7 +32,7 @@ public abstract class ConsumerContainer<P> {
 
     protected void sendCurrentPayloadTo(Consumer<P> consumer) {
         if (currentPayload != null) {
-            consumer.consume(currentPayload);
+            consumer.accept(currentPayload);
         }
     }
 
@@ -54,7 +56,7 @@ public abstract class ConsumerContainer<P> {
 
     public void broadcast(P payload) {
         for (Consumer<P> consumer : consumers) {
-            consumer.consume(payload);
+            consumer.accept(payload);
         }
     }
 
