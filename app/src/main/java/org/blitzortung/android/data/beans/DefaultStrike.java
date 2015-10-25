@@ -3,9 +3,11 @@ package org.blitzortung.android.data.beans;
 import java.io.Serializable;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 @Value
+@EqualsAndHashCode(callSuper=true)
 public class DefaultStrike extends StrikeAbstract implements Serializable {
 
     private static final long serialVersionUID = 4201042078597105622L;

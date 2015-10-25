@@ -2,11 +2,13 @@ package org.blitzortung.android.data.beans;
 
 import android.location.Location;
 
-import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public abstract class StrikeAbstract implements Strike {
 
     protected final long timestamp;

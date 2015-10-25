@@ -16,9 +16,7 @@ public class StrikeAbstractTest {
     {
         public StrikeAbstractForTest()
         {
-            setTimestamp(1234l);
-            setLongitude(11.0f);
-            setLatitude(49.0f);
+            super(1234l, 11.0f, 49.0f);
         }
     }
 
