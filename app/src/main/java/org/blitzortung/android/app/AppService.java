@@ -8,27 +8,31 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.*;
+import android.os.Binder;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.PowerManager;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.annimon.stream.function.Consumer;
 
+import org.blitzortung.android.alert.AlertHandler;
 import org.blitzortung.android.alert.AlertParameters;
 import org.blitzortung.android.alert.event.AlertEvent;
-import org.blitzortung.android.alert.AlertHandler;
 import org.blitzortung.android.alert.factory.AlertObjectFactory;
-import org.blitzortung.android.data.Parameters;
-import org.blitzortung.android.data.provider.result.ClearDataEvent;
-import org.blitzortung.android.data.provider.result.ResultEvent;
-import org.blitzortung.android.location.LocationEvent;
-import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.DataChannel;
 import org.blitzortung.android.data.DataHandler;
+import org.blitzortung.android.data.Parameters;
+import org.blitzortung.android.data.provider.result.ClearDataEvent;
 import org.blitzortung.android.data.provider.result.DataEvent;
+import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.blitzortung.android.data.provider.result.StatusEvent;
+import org.blitzortung.android.location.LocationEvent;
+import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.protocol.ConsumerContainer;
 import org.blitzortung.android.util.Period;
 
@@ -385,12 +389,10 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
                 }
             } else {
                 Log.v(Main.LOG_TAG, "AppService.configureServiceMode() historic data");
-                if (enabled) {
-                    enabled = false;
-                    handler.removeCallbacks(this);
-                    if (lastParameters != null && !lastParameters.equals(dataHandler.getParameters())) {
-                        dataHandler.updateData();
-                    }
+                enabled = false;
+                handler.removeCallbacks(this);
+                if (lastParameters != null && !lastParameters.equals(dataHandler.getParameters())) {
+                    dataHandler.updateData();
                 }
             }
             locationHandler.disableBackgroundMode();
