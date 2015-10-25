@@ -2,43 +2,28 @@ package org.blitzortung.android.data.beans;
 
 import java.io.Serializable;
 
+import lombok.Builder;
+import lombok.Value;
+
+@Value
 public class DefaultStrike extends StrikeAbstract implements Serializable {
-	
-	private static final long serialVersionUID = 4201042078597105622L;
 
-    private int altitude;
+    private static final long serialVersionUID = 4201042078597105622L;
 
-	private float amplitude;
-	
-	private short stationCount;
-	
-	private float lateralError;
+    private final int altitude;
 
-    public DefaultStrike(long timestamp, float xCoord, float yCoord, int altitude, float amplitude, short stationCount, float lateralError)
-    {
-        setTimestamp(timestamp);
-        setLongitude(xCoord);
-        setLatitude(yCoord);
-        this.lateralError = lateralError;
+    private final float amplitude;
+
+    private final short stationCount;
+
+    private final float lateralError;
+
+    @Builder
+    public DefaultStrike(long timestamp, float longitude, float latitude, int altitude, float amplitude, short stationCount, float lateralError) {
+        super(timestamp, longitude, latitude);
         this.altitude = altitude;
         this.amplitude = amplitude;
         this.stationCount = stationCount;
+        this.lateralError = lateralError;
     }
-
-    public int getAltitude() {
-        return altitude;
-    }
-
-	public float getAmplitude() {
-		return amplitude;
-	}
-
-	public short getStationCount() {
-		return stationCount;
-	}
-
-	public float getLateralError() {
-		return lateralError;
-	}
-	
 }

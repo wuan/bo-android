@@ -11,12 +11,12 @@ import java.util.Locale;
 
 public class RasterParameters {
 
-	private float lon_start;
-	private float lat_start;
-	private float lon_delta;
-	private float lat_delta;
-	private int lon_count;
-	private int lat_count;
+	private final float lon_start;
+	private final float lat_start;
+	private final float lon_delta;
+	private final float lat_delta;
+	private final int lon_count;
+	private final int lat_count;
 
     private String info;
 

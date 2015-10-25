@@ -1,30 +1,25 @@
 package org.blitzortung.android.data.beans;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import java.io.Serializable;
 
+import lombok.Builder;
+import lombok.Value;
+
+@Value
 public class RasterElement extends StrikeAbstract implements Serializable {
 
-	private static final long serialVersionUID = 6765788323616893614L;
-	
-	private int multiplicity;
-	
-	public  RasterElement(RasterParameters rasterParameters, long referenceTimestamp, JSONArray jsonArray) {
-		try {
-			setLongitude(rasterParameters.getCenterLongitude(jsonArray.getInt(0)));
-			setLatitude(rasterParameters.getCenterLatitude(jsonArray.getInt(1)));
-			multiplicity = jsonArray.getInt(2);
-			
-			setTimestamp(referenceTimestamp + 1000 * jsonArray.getInt(3));
-		} catch (JSONException e) {
-			throw new RuntimeException("error with json format while parsing strike data", e);
-		}
-	}
-	
-	@Override
-	public int getMultiplicity() {
-		return multiplicity;
-	}
+    private static final long serialVersionUID = 6765788323616893614L;
+
+    private final int multiplicity;
+
+    @Builder
+    public RasterElement(long timestamp, float longitude, float latitude, int multiplicity) {
+        super(timestamp, longitude, latitude);
+        this.multiplicity = multiplicity;
+    }
+
+    @Override
+    public int getMultiplicity() {
+        return multiplicity;
+    }
 }

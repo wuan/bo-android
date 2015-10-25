@@ -2,43 +2,23 @@ package org.blitzortung.android.data.beans;
 
 import android.location.Location;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public abstract class StrikeAbstract implements Strike {
 
-	private long timestamp;
+    protected final long timestamp;
 
-	private float longitude;
-	
-	private float latitude;
-	
-	public float getLongitude() {
-		return longitude;
-	}
-	
-	protected void setLongitude(float longitude) {
-		this.longitude = longitude;
-	}
+    protected final float longitude;
 
-	public float getLatitude() {
-		return latitude;
-	}
-	
-	protected void setLatitude(float latitude) {
-		this.latitude = latitude;
-	}
+    protected final float latitude;
 
     @Override
-	public long getTimestamp() {
-		return timestamp;
-	}
-	
-	protected void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
-	}
-	
-    @Override
-	public int getMultiplicity() {
-		return 1;
-	}
+    public int getMultiplicity() {
+        return 1;
+    }
 
     @Override
     public Location getLocation(Location location) {

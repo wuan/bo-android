@@ -1,8 +1,12 @@
 package org.blitzortung.android.data.provider.standard;
 
 import android.util.Log;
+
 import org.blitzortung.android.app.Main;
-import org.blitzortung.android.data.beans.*;
+import org.blitzortung.android.data.beans.RasterElement;
+import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.data.beans.Station;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.builder.DefaultStrikeBuilder;
 import org.blitzortung.android.data.builder.StationBuilder;
 import org.blitzortung.android.data.provider.DataProvider;
@@ -44,8 +48,7 @@ public class JsonRpcDataProvider extends DataProvider {
 
     private boolean incrementalResult;
 
-    public JsonRpcDataProvider()
-    {
+    public JsonRpcDataProvider() {
         defaultStrikeBuilder = new DefaultStrikeBuilder();
         stationBuilder = new StationBuilder();
     }
@@ -73,9 +76,8 @@ public class JsonRpcDataProvider extends DataProvider {
                 String.format("JsonRpcDataProvider: read %d bytes (%d new strikes, region %d)", client.getLastNumberOfTransferredBytes(), strikes.size(), region));
         return strikes;
     }
-    
-    public boolean returnsIncrementalData()
-    {
+
+    public boolean returnsIncrementalData() {
         return incrementalResult;
     }
 
@@ -173,8 +175,18 @@ public class JsonRpcDataProvider extends DataProvider {
         long referenceTimestamp = getReferenceTimestamp(response);
         JSONArray strikes_array = (JSONArray) response.get("r");
         for (int i = 0; i < strikes_array.length(); i++) {
-            strikes.add(new RasterElement(rasterParameters, referenceTimestamp, strikes_array.getJSONArray(i)));
+            strikes.add(createRasterElement(referenceTimestamp, strikes_array.getJSONArray(i)));
         }
+    }
+
+    private RasterElement createRasterElement(long referenceTimestamp, JSONArray jsonArray) throws JSONException {
+        return RasterElement
+                .builder()
+                .timestamp(referenceTimestamp + 1000 * jsonArray.getInt(3))
+                .longitude(rasterParameters.getCenterLongitude(jsonArray.getInt(0)))
+                .latitude(rasterParameters.getCenterLatitude(jsonArray.getInt(1)))
+                .multiplicity(jsonArray.getInt(2))
+                .build();
     }
 
     private long getReferenceTimestamp(JSONObject response) throws JSONException {
@@ -195,13 +207,11 @@ public class JsonRpcDataProvider extends DataProvider {
         }
     }
 
-    private static String getServer()
-    {
+    private static String getServer() {
         return SERVERS[CURRENT_SERVER];
     }
 
-    private void skipServer()
-    {
+    private void skipServer() {
         CURRENT_SERVER = (CURRENT_SERVER + 1) % SERVERS.length;
     }
 }
