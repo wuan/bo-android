@@ -8,6 +8,8 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.annimon.stream.Stream;
+
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.data.beans.RasterParameters;
@@ -168,8 +170,7 @@ public class LegendView extends View {
         int index = 0;
         for (String region_number : getResources().getStringArray(R.array.regions_values)) {
             if (regionNumber == Integer.parseInt(region_number)) {
-                String region = getResources().getStringArray(R.array.regions)[index];
-                return region;
+                return getResources().getStringArray(R.array.regions)[index];
             }
             index++;
         }
