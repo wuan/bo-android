@@ -24,6 +24,7 @@ import android.view.*;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.annimon.stream.Optional;
 import com.annimon.stream.function.Consumer;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
@@ -50,7 +51,6 @@ import org.blitzortung.android.map.overlay.ParticipantsOverlay;
 import org.blitzortung.android.map.overlay.StrikesOverlay;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler;
-import org.blitzortung.android.util.optional.Optional;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -98,7 +98,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
 
         versionComponent = new VersionComponent(this.getApplicationContext());
 
-        currentResult = Optional.absent();
+        currentResult = Optional.empty();
 
         setContentView(isDebugBuild() ? R.layout.main_debug : R.layout.main);
 

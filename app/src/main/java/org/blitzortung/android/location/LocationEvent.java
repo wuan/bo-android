@@ -7,6 +7,5 @@ import lombok.Value;
 
 @Value
 public class LocationEvent implements Event {
-
     private final Location location;
 }

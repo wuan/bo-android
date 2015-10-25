@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.util.Log;
 
+import com.annimon.stream.Optional;
 import com.annimon.stream.function.Consumer;
 
 import org.blitzortung.android.app.Main;
@@ -19,7 +20,6 @@ import org.blitzortung.android.data.provider.result.ClearDataEvent;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.RequestStartedEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
-import org.blitzortung.android.util.optional.Optional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -140,11 +140,13 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                     dataProvider.shutDown();
                 } catch (RuntimeException e) {
                     e.printStackTrace();
+                    return Optional.empty();
                 } finally {
                     lock.unlock();
                 }
+                return Optional.of(result);
             }
-            return Optional.fromNullable(result);
+            return Optional.empty();
         }
     }
 
