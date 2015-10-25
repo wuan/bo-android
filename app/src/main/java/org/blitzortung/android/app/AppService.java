@@ -288,7 +288,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
             long currentTime = Period.getCurrentTime();
             if (dataHandler != null) {
-                Set<DataChannel> updateTargets = new HashSet<DataChannel>();
+                Set<DataChannel> updateTargets = new HashSet<>();
 
                 if (updatePeriod.shouldUpdate(currentTime, period)) {
                     updatePeriod.setLastUpdateTime(currentTime);
@@ -385,16 +385,17 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
                 }
             } else {
                 Log.v(Main.LOG_TAG, "AppService.configureServiceMode() historic data");
-                enabled = false;
-                handler.removeCallbacks(this);
-                if (lastParameters != null && !lastParameters.equals(dataHandler.getParameters())) {
-                    dataHandler.updateData();
+                if (enabled) {
+                    enabled = false;
+                    handler.removeCallbacks(this);
+                    if (lastParameters != null && !lastParameters.equals(dataHandler.getParameters())) {
+                        dataHandler.updateData();
+                    }
                 }
             }
             locationHandler.disableBackgroundMode();
             Log.v(Main.LOG_TAG, "AppService.configureServiceMode() set alert event consumer");
             alertHandler.setAlertEventConsumer(alertEventConsumer);
-            alertHandler.reconfigureLocationHandler();
         }
         Log.v(Main.LOG_TAG, "AppService.configureServiceMode() done");
     }
