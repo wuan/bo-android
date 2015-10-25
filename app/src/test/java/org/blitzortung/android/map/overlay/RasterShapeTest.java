@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.*;
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
 public class RasterShapeTest {
 
     @Mock

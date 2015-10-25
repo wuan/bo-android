@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.hasItems;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
 public class JsonRpcClientTest {
 
     private JsonRpcClient jsonRpcClient;
@@ -56,10 +58,8 @@ public class JsonRpcClientTest {
 
         String methodName = "<methodName>";
 
-        JsonRequestEntity result = jsonRpcClient.buildRequest(methodName, parameters);
+        String result = jsonRpcClient.buildRequest(methodName, parameters);
 
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(result.getContent()));
-
-        assertThat(bufferedReader.readLine(), is("{\"id\":0,\"method\":\"<methodName>\",\"params\":[\"foo\",\"bar\"]}"));
+        assertThat(result, is("{\"id\":0,\"method\":\"<methodName>\",\"params\":[\"foo\",\"bar\"]}"));
     }
 }

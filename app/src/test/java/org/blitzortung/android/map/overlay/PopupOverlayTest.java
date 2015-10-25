@@ -6,6 +6,8 @@ import android.widget.TextView;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
+
+import org.blitzortung.android.app.BuildConfig;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
@@ -14,13 +16,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(manifest = "src/main/AndroidManifest.xml", sdk = 19, constants=BuildConfig.class)
 public class PopupOverlayTest {
 
     class PopupOverlayItemForTest extends OverlayItem

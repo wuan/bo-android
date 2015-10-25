@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
 
+import com.annimon.stream.function.Consumer;
 import com.google.common.collect.Lists;
 
 import org.blitzortung.android.app.view.PreferenceKey;

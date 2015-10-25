@@ -1,9 +1,12 @@
 package org.blitzortung.android.app;
 
+import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.DataChannel;
@@ -17,9 +20,17 @@ import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.fakes.RoboSharedPreferences;
+import org.robolectric.shadows.ShadowContextImpl;
+import org.robolectric.shadows.ShadowPreferenceManager;
+import org.robolectric.shadows.util.PreferenceBuilder;
 
+import java.util.Collections;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +44,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(manifest = "app/src/main/AndroidManifest.xml", emulateSdk = 19)
+@Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
 public class AppServiceTest {
 
     @Mock
@@ -44,6 +55,9 @@ public class AppServiceTest {
 
     @Mock
     private DataHandler dataHandler;
+
+    @Mock
+    private PowerManager powerManager;
 
     @Captor
     ArgumentCaptor<Set<DataChannel>> dataChannelsCaptor;
@@ -56,6 +70,8 @@ public class AppServiceTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        sharedPreferences = ShadowPreferenceManager.getDefaultSharedPreferences(RuntimeEnvironment.application);
+
         sharedPreferences.edit()
                 .putString(PreferenceKey.QUERY_PERIOD.toString(), "60")
                 .putString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), "0")
@@ -64,6 +80,10 @@ public class AppServiceTest {
                 .commit();
 
         when(dataHandler.getIntervalDuration()).thenReturn(60);
+
+        Application application = RuntimeEnvironment.application;
+        ShadowContextImpl shadowContext = (ShadowContextImpl) Shadows.shadowOf(application.getBaseContext());
+        shadowContext.setSystemService(Context.POWER_SERVICE, powerManager);
 
         appService = new AppService(handler, period);
         appService.setDataHandler(dataHandler);

@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
@@ -30,6 +31,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
 public class ParticipantsOverlayTest {
 
     @Implements(PreferenceManager.class)

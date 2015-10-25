@@ -13,6 +13,9 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Projection;
 import com.google.common.collect.Lists;
+
+import org.blitzortung.android.app.BuildConfig;
+import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.TimeIntervalWithOffset;
 import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.RasterParameters;
@@ -25,7 +28,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
@@ -35,7 +40,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(manifest = "src/main/AndroidManifest.xml", sdk = 19, constants = BuildConfig.class)
 public class StrikesOverlayTest {
 
     @Implements(PreferenceManager.class)
@@ -86,7 +92,9 @@ public class StrikesOverlayTest {
     public void testAddAndExpireStrikes() {
         List<StrikeAbstract> strikes = Lists.newArrayList();
 
-        strikesOverlay.setIntervalDuration(1);
+        Parameters parameters = new Parameters();
+        parameters.setIntervalDuration(1);
+        strikesOverlay.setParameters(parameters);
         strikesOverlay.addStrikes(strikes);
 
         assertThat(strikesOverlay.size()).isEqualTo(0);
@@ -194,7 +202,9 @@ public class StrikesOverlayTest {
 
     @Test
     public void testCreateItem() {
-        strikesOverlay.setIntervalDuration(100);
+        final Parameters parameters = new Parameters();
+        parameters.setIntervalDuration(100);
+        strikesOverlay.setParameters(parameters);
         strikesOverlay.addStrikes(Lists.newArrayList(mock(StrikeAbstract.class)));
 
         assertThat(strikesOverlay.size()).isEqualTo(1);

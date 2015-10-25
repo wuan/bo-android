@@ -1,6 +1,5 @@
 package org.blitzortung.android.map.overlay;
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -22,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowPreferenceManager;
@@ -29,10 +29,7 @@ import org.robolectric.util.Strings;
 
 import java.util.List;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.hasItem;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
@@ -42,6 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
 public class OwnLocationOverlayTest {
 
     @SuppressWarnings({"UnusedDeclaration"})
@@ -98,7 +96,6 @@ public class OwnLocationOverlayTest {
         }
     }
 
-
     private OwnLocationOverlay ownLocationOverlay;
 
     @Mock
@@ -139,36 +136,36 @@ public class OwnLocationOverlayTest {
         verify(mapView, times(1)).addZoomListener(any(OwnMapView.ZoomListener.class));
         verify(mapView, times(1)).getZoomLevel();
 
-        assertThat(overlays.size(), is(1));
-        assertThat(overlays, hasItem((Overlay)ownLocationOverlay));
+        assertThat(overlays).hasSize(1);
+        assertThat(overlays).contains(ownLocationOverlay);
     }
 
     @Test
     public void testSize()
     {
-        assertThat(ownLocationOverlay.size(), is(0));
+        assertThat(ownLocationOverlay.size()).isEqualTo(0);
 
         enableOwnLocation();
 
-        assertThat(ownLocationOverlay.size(), is(0));
+        assertThat(ownLocationOverlay.size()).isEqualTo(0);
 
         updateLocation();
 
-        assertThat(ownLocationOverlay.size(), is(1));
+        assertThat(ownLocationOverlay.size()).isEqualTo(1);
     }
 
     @Test
     public void testCreateItem()
     {
-        assertThat(ownLocationOverlay.createItem(0), is(nullValue()));
+        assertThat(ownLocationOverlay.createItem(0)).isNull();
 
         enableOwnLocation();
 
-        assertThat(ownLocationOverlay.createItem(0), is(nullValue()));
+        assertThat(ownLocationOverlay.createItem(0)).isNull();
 
         updateLocation();
 
-        assertThat(ownLocationOverlay.createItem(0), is(OwnLocationOverlayItem.class));
+        assertThat(ownLocationOverlay.createItem(0)).isEqualTo(OwnLocationOverlayItem.class);
     }
 
     @Test
@@ -176,7 +173,7 @@ public class OwnLocationOverlayTest {
     {
         ownLocationOverlay.getLocationEventConsumer().accept(new LocationEvent(mock(Location.class)));
         
-        assertThat(ownLocationOverlay.size(), is(1));
+        assertThat(ownLocationOverlay.size()).isEqualTo(0);
     }
     
     @Test
@@ -184,7 +181,7 @@ public class OwnLocationOverlayTest {
     {
         ownLocationOverlay.getLocationEventConsumer().accept(new LocationEvent(null));
 
-        assertThat(ownLocationOverlay.size(), is(0));
+        assertThat(ownLocationOverlay.size()).isEqualTo(0);
     }
 
     @Test
@@ -194,7 +191,7 @@ public class OwnLocationOverlayTest {
 
         ownLocationOverlay.disableOwnLocation();
 
-        assertThat(ownLocationOverlay.size(), is(0));
+        assertThat(ownLocationOverlay.size()).isEqualTo(0);
     }
     
     private void enableOwnLocation() {

@@ -13,12 +13,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowCanvas;
 
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
 public class OwnMapViewTest {
 
     private OwnMapView ownMapView;

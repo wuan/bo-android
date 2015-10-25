@@ -4,6 +4,7 @@ import org.blitzortung.android.util.MeasurementSystem;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
@@ -14,7 +15,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(manifest = "app/src/main/AndroidManifest.xml", emulateSdk = 19)
+@Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
 public class AlertParametersTest {
     
     private AlertParameters alertParameters;
