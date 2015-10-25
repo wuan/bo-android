@@ -1,8 +1,8 @@
 package org.blitzortung.android.data.provider.blitzortung;
 
+import org.blitzortung.android.data.beans.DefaultStrike;
 import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.Station;
-import org.blitzortung.android.data.builder.DefaultStrikeBuilder;
 import org.blitzortung.android.data.builder.StationBuilder;
 import org.blitzortung.android.data.provider.blitzortung.generic.Consumer;
 import org.blitzortung.android.data.provider.blitzortung.generic.LineSplitter;
@@ -16,12 +16,7 @@ public class MapBuilderFactory {
     private final LineSplitter stationLineSplitter;
 
     public MapBuilderFactory() {
-        this(new LineSplitter() {
-            @Override
-            public String[] split(String text) {
-                return text.split(" ");
-            }
-        }, new StationLineSplitter());
+        this(text -> text.split(" "), new StationLineSplitter());
     }
 
     public MapBuilderFactory(LineSplitter strikeLineSplitter, LineSplitter stationLineSplitter) {
@@ -32,43 +27,23 @@ public class MapBuilderFactory {
     public MapBuilder<StrikeAbstract> createAbstractStrikeMapBuilder() {
         return new MapBuilder<StrikeAbstract>(strikeLineSplitter) {
 
-            private final DefaultStrikeBuilder strikeBuilder = new DefaultStrikeBuilder();
+            DefaultStrike.DefaultStrikeBuilder strikeBuilder = DefaultStrike.builder();
 
             @Override
             protected void prepare(String[] fields) {
-                strikeBuilder.init();
-
-                strikeBuilder.setTimestamp(TimeFormat.parseTimestampWithMillisecondsFromFields(fields));
+                strikeBuilder.timestamp(TimeFormat.parseTimestampWithMillisecondsFromFields(fields));
             }
 
             @Override
             protected void setBuilderMap(Map<String, Consumer> keyValueBuilderMap) {
-                keyValueBuilderMap.put("pos", new Consumer() {
-                    @Override
-                    public void apply(String[] values) {
-                        strikeBuilder.setLongitude(Float.parseFloat(values[1]));
-                        strikeBuilder.setLatitude(Float.parseFloat(values[0]));
-                        strikeBuilder.setAltitude(Integer.parseInt(values[2]));
-                    }
+                keyValueBuilderMap.put("pos", values -> {
+                    strikeBuilder.longitude(Float.parseFloat(values[1]));
+                    strikeBuilder.latitude(Float.parseFloat(values[0]));
+                    strikeBuilder.altitude(Integer.parseInt(values[2]));
                 });
-                keyValueBuilderMap.put("str", new Consumer() {
-                    @Override
-                    public void apply(String[] values) {
-                        strikeBuilder.setAmplitude(Float.parseFloat(values[0]));
-                    }
-                });
-                keyValueBuilderMap.put("dev", new Consumer() {
-                    @Override
-                    public void apply(String[] values) {
-                        strikeBuilder.setLateralError(Integer.parseInt(values[0]));
-                    }
-                });
-                keyValueBuilderMap.put("sta", new Consumer() {
-                    @Override
-                    public void apply(String[] values) {
-                        strikeBuilder.setStationCount((short) values.length);
-                    }
-                });
+                keyValueBuilderMap.put("str", values -> strikeBuilder.amplitude(Float.parseFloat(values[0])));
+                keyValueBuilderMap.put("dev", values -> strikeBuilder.lateralError(Integer.parseInt(values[0])));
+                keyValueBuilderMap.put("sta", values -> strikeBuilder.stationCount((short) values.length));
             }
 
             @Override

@@ -51,7 +51,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
     @Override
     public List<StrikeAbstract> getStrikes(int timeInterval, int intervalOffset, int region) {
 
-        List<StrikeAbstract> strikes = new ArrayList<StrikeAbstract>();
+        List<StrikeAbstract> strikes = new ArrayList<>();
 
         TimeZone tz = TimeZone.getTimeZone("UTC");
         Calendar intervalTime = new GregorianCalendar(tz);
@@ -149,7 +149,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 
     @Override
     public List<Station> getStations(int region) {
-        List<Station> stations = new ArrayList<Station>();
+        List<Station> stations = new ArrayList<>();
 
         if (username != null && username.length() != 0 && password != null && password.length() != 0) {
 

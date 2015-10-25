@@ -24,8 +24,8 @@ public abstract class StrikeAbstract implements Strike {
 
     @Override
     public Location getLocation(Location location) {
-        location.setLongitude(getLongitude());
-        location.setLatitude(getLatitude());
+        location.setLongitude(longitude);
+        location.setLatitude(latitude);
         return location;
     }
 }

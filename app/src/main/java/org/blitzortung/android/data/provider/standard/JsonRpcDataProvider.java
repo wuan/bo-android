@@ -3,12 +3,10 @@ package org.blitzortung.android.data.provider.standard;
 import android.util.Log;
 
 import org.blitzortung.android.app.Main;
-import org.blitzortung.android.data.beans.RasterElement;
 import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.StrikeAbstract;
-import org.blitzortung.android.data.builder.DefaultStrikeBuilder;
-import org.blitzortung.android.data.builder.StationBuilder;
+import org.blitzortung.android.data.provider.DataBuilder;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataProviderType;
 import org.blitzortung.android.jsonrpc.JsonRpcClient;
@@ -31,12 +29,10 @@ public class JsonRpcDataProvider extends DataProvider {
         DATE_TIME_FORMATTER.setTimeZone(tz);
     }
 
-    static private final String[] SERVERS = new String[]{"http://bo1.tryb.de:7080/", "http://bo2.tryb.de/"};
+    static private final String[] SERVERS = new String[]{"http://bo-service.tryb.de:7080/", "http://bo-service.tryb.de/"};
 
     static private int CURRENT_SERVER = 0;
 
-    private final DefaultStrikeBuilder defaultStrikeBuilder;
-    private final StationBuilder stationBuilder;
 
     private JsonRpcClient client;
 
@@ -48,13 +44,14 @@ public class JsonRpcDataProvider extends DataProvider {
 
     private boolean incrementalResult;
 
+    private final DataBuilder dataBuilder;
+
     public JsonRpcDataProvider() {
-        defaultStrikeBuilder = new DefaultStrikeBuilder();
-        stationBuilder = new StationBuilder();
+        dataBuilder = new DataBuilder();
     }
 
     public List<StrikeAbstract> getStrikes(int timeInterval, int intervalOffset, int region) {
-        List<StrikeAbstract> strikes = new ArrayList<StrikeAbstract>();
+        List<StrikeAbstract> strikes = new ArrayList<>();
         rasterParameters = null;
 
         if (intervalOffset < 0) {
@@ -82,7 +79,7 @@ public class JsonRpcDataProvider extends DataProvider {
     }
 
     public List<StrikeAbstract> getStrikesGrid(int intervalDuration, int intervalOffset, int rasterSize, int countThreshold, int region) {
-        List<StrikeAbstract> strikes = new ArrayList<StrikeAbstract>();
+        List<StrikeAbstract> strikes = new ArrayList<>();
 
         nextId = 0;
         incrementalResult = false;
@@ -114,14 +111,14 @@ public class JsonRpcDataProvider extends DataProvider {
 
     @Override
     public List<Station> getStations(int region) {
-        List<Station> stations = new ArrayList<Station>();
+        List<Station> stations = new ArrayList<>();
 
         try {
             JSONObject response = client.call("get_stations");
             JSONArray stations_array = (JSONArray) response.get("stations");
 
             for (int i = 0; i < stations_array.length(); i++) {
-                stations.add(stationBuilder.fromJson(stations_array.getJSONArray(i)));
+                stations.add(dataBuilder.createStation(stations_array.getJSONArray(i)));
             }
         } catch (Exception e) {
             skipServer();
@@ -163,7 +160,7 @@ public class JsonRpcDataProvider extends DataProvider {
         long referenceTimestamp = getReferenceTimestamp(response);
         JSONArray strikes_array = (JSONArray) response.get("s");
         for (int i = 0; i < strikes_array.length(); i++) {
-            strikes.add(defaultStrikeBuilder.fromJson(referenceTimestamp, strikes_array.getJSONArray(i)));
+            strikes.add(dataBuilder.createDefaultStrike(referenceTimestamp, strikes_array.getJSONArray(i)));
         }
         if (response.has("next")) {
             nextId = (Integer) response.get("next");
@@ -171,34 +168,12 @@ public class JsonRpcDataProvider extends DataProvider {
     }
 
     private void readRasterData(JSONObject response, List<StrikeAbstract> strikes, String info) throws JSONException {
-        rasterParameters = createRasterParameters(response, info);
+        rasterParameters = dataBuilder.createRasterParameters(response, info);
         long referenceTimestamp = getReferenceTimestamp(response);
         JSONArray strikes_array = (JSONArray) response.get("r");
         for (int i = 0; i < strikes_array.length(); i++) {
-            strikes.add(createRasterElement(referenceTimestamp, strikes_array.getJSONArray(i)));
+            strikes.add(dataBuilder.createRasterElement(rasterParameters, referenceTimestamp, strikes_array.getJSONArray(i)));
         }
-    }
-
-    private RasterParameters createRasterParameters(JSONObject response, String info) throws JSONException {
-        return RasterParameters.builder()
-                .longitudeStart((float) response.getDouble("x0"))
-                .latitudeStart((float) response.getDouble("y1"))
-                .longitudeDelta((float) response.getDouble("xd"))
-                .latitudeDelta((float) response.getDouble("yd"))
-                .longitudeBins(response.getInt("xc"))
-                .latitudeBins(response.getInt("yc"))
-                .info(info)
-                .build();
-    }
-
-    private RasterElement createRasterElement(long referenceTimestamp, JSONArray jsonArray) throws JSONException {
-        return RasterElement
-                .builder()
-                .timestamp(referenceTimestamp + 1000 * jsonArray.getInt(3))
-                .longitude(rasterParameters.getCenterLongitude(jsonArray.getInt(0)))
-                .latitude(rasterParameters.getCenterLatitude(jsonArray.getInt(1)))
-                .multiplicity(jsonArray.getInt(2))
-                .build();
     }
 
     private long getReferenceTimestamp(JSONObject response) throws JSONException {

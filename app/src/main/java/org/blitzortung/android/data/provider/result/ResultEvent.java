@@ -1,86 +1,86 @@
 package org.blitzortung.android.data.provider.result;
 
 import org.blitzortung.android.data.Parameters;
-import org.blitzortung.android.data.beans.StrikeAbstract;
-import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.data.beans.Station;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ResultEvent implements DataEvent {
 
-	private final List<List<StrikeAbstract>> strikes;
-  
-	private List<Station> stations;
-  
-	private RasterParameters rasterParameters = null;
-  
+    private final List<List<StrikeAbstract>> strikes;
+
+    private List<Station> stations;
+
+    private RasterParameters rasterParameters = null;
+
     private int[] histogram;
 
     private boolean fail;
-	
-	private boolean incrementalData;
-    
+
+    private boolean incrementalData;
+
     private long referenceTime;
 
     private Parameters parameters;
 
     public ResultEvent() {
-        strikes = new ArrayList<List<StrikeAbstract>>();
-		fail = true;
-		incrementalData = false;
-	}
-	
-	public void setStrikes(List<StrikeAbstract> strikes) {
-        this.strikes.clear();
-		this.strikes.add(strikes);
-		fail = false;
-	}
-	
-	public boolean containsStrikes() {
-		return ! strikes.isEmpty();
-	}
-	
-	public List<StrikeAbstract> getStrikes() {
-		return strikes.get(0);
-	}
-	
-	public void setStations(List<Station> stations) {
-		this.stations = stations;
-	}
-	
-	public boolean containsParticipants() {
-		return stations != null;
-	}
-	
-	public List<Station> getStations() {
-		return stations;
-	}
-	
-	public boolean hasFailed() {
-		return fail;
-	}
-	
-	public boolean hasRasterParameters() {
-		return rasterParameters != null;
-	}
-	
-	public RasterParameters getRasterParameters() {
-		return rasterParameters;
-	}
-	
-	public void setRasterParameters(RasterParameters rasterParameters) {
-		this.rasterParameters = rasterParameters;
-	}
+        strikes = new ArrayList<>();
+        fail = true;
+        incrementalData = false;
+    }
 
-	public boolean containsIncrementalData() {
-		return incrementalData;
-	}
-	
-	public void setContainsIncrementalData() {
-		incrementalData = true;
-	}
+    public void setStrikes(List<StrikeAbstract> strikes) {
+        this.strikes.clear();
+        this.strikes.add(strikes);
+        fail = false;
+    }
+
+    public boolean containsStrikes() {
+        return !strikes.isEmpty();
+    }
+
+    public List<StrikeAbstract> getStrikes() {
+        return strikes.get(0);
+    }
+
+    public void setStations(List<Station> stations) {
+        this.stations = stations;
+    }
+
+    public boolean containsParticipants() {
+        return stations != null;
+    }
+
+    public List<Station> getStations() {
+        return stations;
+    }
+
+    public boolean hasFailed() {
+        return fail;
+    }
+
+    public boolean hasRasterParameters() {
+        return rasterParameters != null;
+    }
+
+    public RasterParameters getRasterParameters() {
+        return rasterParameters;
+    }
+
+    public void setRasterParameters(RasterParameters rasterParameters) {
+        this.rasterParameters = rasterParameters;
+    }
+
+    public boolean containsIncrementalData() {
+        return incrementalData;
+    }
+
+    public void setContainsIncrementalData() {
+        incrementalData = true;
+    }
 
     public void setHistogram(int[] histogram) {
         this.histogram = histogram;
@@ -109,7 +109,7 @@ public class ResultEvent implements DataEvent {
     public Parameters getParameters() {
         return parameters;
     }
-    
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if (fail) {
