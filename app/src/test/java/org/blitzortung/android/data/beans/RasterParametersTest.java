@@ -4,6 +4,7 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import com.google.android.maps.Projection;
 import org.blitzortung.android.data.Coordsys;
+import org.blitzortung.android.data.provider.DataBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -33,19 +34,21 @@ public class RasterParametersTest {
     private final float lat_start = 60;
     private final float lat_delta = 1.5f;
     private final int lat_count = 30;
+    private final String info = "<info>";
 
     @Before
     public void setUp() throws JSONException {
         MockitoAnnotations.initMocks(this);
 
-        when(jsonObject.getDouble("x0")).thenReturn((double)lon_start);
-        when(jsonObject.getDouble("y1")).thenReturn((double)lat_start);
+        when(jsonObject.getDouble("x0")).thenReturn((double) lon_start);
+        when(jsonObject.getDouble("y1")).thenReturn((double) lat_start);
         when(jsonObject.getDouble("xd")).thenReturn((double)lon_delta);
         when(jsonObject.getDouble("yd")).thenReturn((double)lat_delta);
         when(jsonObject.getInt("xc")).thenReturn(lon_count);
         when(jsonObject.getInt("yc")).thenReturn(lat_count);
 
-        rasterParameters = new RasterParameters(jsonObject);
+        DataBuilder dataBuilder = new DataBuilder();
+        rasterParameters = dataBuilder.createRasterParameters(jsonObject, info);
     }
 
     @Test

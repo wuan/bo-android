@@ -29,7 +29,8 @@ public class JsonRpcDataProvider extends DataProvider {
         DATE_TIME_FORMATTER.setTimeZone(tz);
     }
 
-    static private final String[] SERVERS = new String[]{"http://bo-service.tryb.de:7080/", "http://bo-service.tryb.de/"};
+    //static private final String[] SERVERS = new String[]{"http://bo-service.tryb.de:7080/", "http://bo-service.tryb.de/"};
+    static private final String[] SERVERS = new String[]{"http://bo-test.tryb.de/"};
 
     static private int CURRENT_SERVER = 0;
 

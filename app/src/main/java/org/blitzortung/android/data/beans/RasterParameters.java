@@ -18,16 +18,16 @@ public class RasterParameters {
     private final float latitudeStart;
     private final float longitudeDelta;
     private final float latitudeDelta;
-    private final int latitudeBins;
     private final int longitudeBins;
+    private final int latitudeBins;
     private final String info;
 
     public float getRectCenterLongitude() {
-        return longitudeStart + longitudeDelta * latitudeBins / 2f;
+        return longitudeStart + longitudeDelta * longitudeBins / 2f;
     }
 
     public float getRectCenterLatitude() {
-        return latitudeStart - latitudeDelta * longitudeBins / 2f;
+        return latitudeStart - latitudeDelta * latitudeBins / 2f;
     }
 
     public float getCenterLongitude(int offset) {
@@ -39,18 +39,21 @@ public class RasterParameters {
     }
 
     public float getRectLongitudeDelta() {
-        return longitudeDelta * latitudeBins;
+        return longitudeDelta * longitudeBins;
     }
 
     public float getRectLatitudeDelta() {
-        return latitudeDelta * longitudeBins;
+        return latitudeDelta * latitudeBins;
     }
 
     public RectF getRect(Projection projection) {
         Point leftTop = new Point();
-        leftTop = projection.toPixels(Coordsys.toMapCoords(longitudeStart, latitudeStart), leftTop);
+        leftTop = projection.toPixels(
+                Coordsys.toMapCoords(longitudeStart, latitudeStart), leftTop);
         Point bottomRight = new Point();
-        bottomRight = projection.toPixels(Coordsys.toMapCoords(longitudeStart + latitudeBins * longitudeDelta, latitudeStart - longitudeBins * latitudeDelta), bottomRight);
+        bottomRight = projection.toPixels(
+                Coordsys.toMapCoords(longitudeStart + longitudeBins * longitudeDelta,
+                        latitudeStart - latitudeBins * latitudeDelta), bottomRight);
         return new RectF(leftTop.x, leftTop.y, bottomRight.x, bottomRight.y);
     }
 
