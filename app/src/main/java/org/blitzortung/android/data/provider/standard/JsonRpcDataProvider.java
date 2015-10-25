@@ -90,8 +90,8 @@ public class JsonRpcDataProvider extends DataProvider {
         try {
             JSONObject response = client.call("get_strikes_grid", intervalDuration, rasterSize, intervalOffset, region, countThreshold);
 
-            readRasterData(response, strikes);
-            rasterParameters.setInfo(String.format("%.0f km", rasterSize / 1000f));
+            String info = String.format("%.0f km", rasterSize / 1000f);
+            readRasterData(response, strikes, info);
             readHistogramData(response);
         } catch (Exception e) {
             skipServer();
@@ -170,13 +170,25 @@ public class JsonRpcDataProvider extends DataProvider {
         }
     }
 
-    private void readRasterData(JSONObject response, List<StrikeAbstract> strikes) throws JSONException {
-        rasterParameters = new RasterParameters(response);
+    private void readRasterData(JSONObject response, List<StrikeAbstract> strikes, String info) throws JSONException {
+        rasterParameters = createRasterParameters(response, info);
         long referenceTimestamp = getReferenceTimestamp(response);
         JSONArray strikes_array = (JSONArray) response.get("r");
         for (int i = 0; i < strikes_array.length(); i++) {
             strikes.add(createRasterElement(referenceTimestamp, strikes_array.getJSONArray(i)));
         }
+    }
+
+    private RasterParameters createRasterParameters(JSONObject response, String info) throws JSONException {
+        return RasterParameters.builder()
+                .longitudeStart((float) response.getDouble("x0"))
+                .latitudeStart((float) response.getDouble("y1"))
+                .longitudeDelta((float) response.getDouble("xd"))
+                .latitudeDelta((float) response.getDouble("yd"))
+                .longitudeBins(response.getInt("xc"))
+                .latitudeBins(response.getInt("yc"))
+                .info(info)
+                .build();
     }
 
     private RasterElement createRasterElement(long referenceTimestamp, JSONArray jsonArray) throws JSONException {

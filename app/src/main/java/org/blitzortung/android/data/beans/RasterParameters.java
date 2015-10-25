@@ -2,91 +2,63 @@ package org.blitzortung.android.data.beans;
 
 import android.graphics.Point;
 import android.graphics.RectF;
+
 import com.google.android.maps.Projection;
+
 import org.blitzortung.android.data.Coordsys;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.util.Locale;
+import lombok.Builder;
+import lombok.Value;
 
+@Value
+@Builder
 public class RasterParameters {
 
-	private final float lon_start;
-	private final float lat_start;
-	private final float lon_delta;
-	private final float lat_delta;
-	private final int lon_count;
-	private final int lat_count;
-
-    private String info;
-
-	public RasterParameters(JSONObject jsonObject) throws JSONException {
-		lon_start = (float) jsonObject.getDouble("x0");
-		lat_start = (float) jsonObject.getDouble("y1");
-		lon_delta = (float) jsonObject.getDouble("xd");
-		lat_delta = (float) jsonObject.getDouble("yd");
-		lon_count = jsonObject.getInt("xc");
-		lat_count = jsonObject.getInt("yc");
-	}
+    private final float longitudeStart;
+    private final float latitudeStart;
+    private final float longitudeDelta;
+    private final float latitudeDelta;
+    private final int latitudeBins;
+    private final int longitudeBins;
+    private final String info;
 
     public float getRectCenterLongitude() {
-        return lon_start + lon_delta * lon_count / 2f;
+        return longitudeStart + longitudeDelta * latitudeBins / 2f;
     }
 
     public float getRectCenterLatitude() {
-        return lat_start - lat_delta * lat_count / 2f;
+        return latitudeStart - latitudeDelta * longitudeBins / 2f;
     }
 
-	public float getCenterLongitude(int offset) {
-		return lon_start + lon_delta * (offset + 0.5f);
-	}
+    public float getCenterLongitude(int offset) {
+        return longitudeStart + longitudeDelta * (offset + 0.5f);
+    }
 
-	public float getCenterLatitude(int offset) {
-		return lat_start - lat_delta * (offset + 0.5f);
-	}
-
-	public float getLongitudeDelta() {
-		return lon_delta;
-	}
-
-	public float getLatitudeDelta() {
-		return lat_delta;
-	}
+    public float getCenterLatitude(int offset) {
+        return latitudeStart - latitudeDelta * (offset + 0.5f);
+    }
 
     public float getRectLongitudeDelta() {
-        return lon_delta * lon_count;
+        return longitudeDelta * latitudeBins;
     }
 
     public float getRectLatitudeDelta() {
-        return lat_delta * lat_count;
+        return latitudeDelta * longitudeBins;
     }
 
-	public RectF getRect(Projection projection) {
-		Point leftTop = new Point();
-		leftTop = projection.toPixels(Coordsys.toMapCoords(lon_start, lat_start), leftTop);
-		Point bottomRight = new Point();
-		bottomRight = projection.toPixels(Coordsys.toMapCoords(lon_start + lon_count * lon_delta, lat_start - lat_count * lat_delta), bottomRight);
+    public RectF getRect(Projection projection) {
+        Point leftTop = new Point();
+        leftTop = projection.toPixels(Coordsys.toMapCoords(longitudeStart, latitudeStart), leftTop);
+        Point bottomRight = new Point();
+        bottomRight = projection.toPixels(Coordsys.toMapCoords(longitudeStart + latitudeBins * longitudeDelta, latitudeStart - longitudeBins * latitudeDelta), bottomRight);
         return new RectF(leftTop.x, leftTop.y, bottomRight.x, bottomRight.y);
-	}
-	
-	@Override
-	public String toString() {
-		return String.format(Locale.US, "RasterParameters(%.4f, %.4f; %.4f, %.4f)", lon_start, lon_delta, lat_start, lat_delta);
-	}
-
-	public int getLongitudeIndex(double longitude) {
-		return (int)((longitude - lon_start) / lon_delta + 0.5);
-	}
-	
-	public int getLatitudeIndex(double latitude) {
-		return (int)((lat_start - latitude) / lat_delta + 0.5);
-	}
-
-    public String getInfo() {
-        return info;
     }
 
-    public void setInfo(String info) {
-        this.info = info;
+    public int getLongitudeIndex(double longitude) {
+        return (int) ((longitude - longitudeStart) / longitudeDelta + 0.5);
+    }
+
+    public int getLatitudeIndex(double latitude) {
+        return (int) ((latitudeStart - latitude) / latitudeDelta + 0.5);
     }
 }
