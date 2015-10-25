@@ -1,0 +1,16 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/alarm_widget"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical"
+              android:padding="10dp"
+              android:background="@drawable/rounded_box"
+        >
+
+    <ImageView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/alarm_diagram"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"/>
+
+</LinearLayout>

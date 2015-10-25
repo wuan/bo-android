@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/quick_settings_dialog"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/region" />
+
+        <Spinner
+            android:id="@+id/selected_region"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/regions"
+            android:padding="10dp"
+            android:prompt="@string/region"/>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/raster_size" />
+
+        <Spinner
+            android:id="@+id/selected_raster_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/raster_sizes"
+            android:padding="10dp"
+            android:prompt="@string/raster_size" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/count_threshold" />
+
+        <Spinner
+            android:id="@+id/selected_count_threshold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/count_thresholds"
+            android:padding="10dp"
+            android:prompt="@string/count_threshold" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/interval_duration" />
+
+        <Spinner
+            android:id="@+id/selected_interval_duration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/interval_durations"
+            android:padding="10dp"
+            android:prompt="@string/interval_duration" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/query_period" />
+
+        <Spinner
+            android:id="@+id/selected_query_period"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/query_periods"
+            android:padding="10dp"
+            android:prompt="@string/query_period" />
+    </LinearLayout>
+</ScrollView>
