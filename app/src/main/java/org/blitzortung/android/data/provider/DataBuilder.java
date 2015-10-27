@@ -5,7 +5,7 @@ import org.blitzortung.android.data.beans.RasterElement;
 import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.StrikeAbstract;
-import org.blitzortung.android.data.builder.StationBuilder;
+import org.blitzortung.android.util.TimeFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,13 +13,13 @@ import org.json.JSONObject;
 public class DataBuilder {
 
     private final DefaultStrike.DefaultStrikeBuilder defaultStrikeBuilder;
-    private final StationBuilder stationBuilder;
+    private final Station.StationBuilder stationBuilder;
     private final RasterParameters.RasterParametersBuilder rasterParametersBuilder;
     private final RasterElement.RasterElementBuilder rasterElementBuilder;
 
     public DataBuilder() {
         defaultStrikeBuilder = DefaultStrike.builder();
-        stationBuilder = new StationBuilder();
+        stationBuilder = Station.builder();
         rasterParametersBuilder = RasterParameters.builder();
         rasterElementBuilder = RasterElement.builder();
     }
@@ -62,6 +62,22 @@ public class DataBuilder {
     }
 
     public Station createStation(JSONArray jsonArray) {
-        return stationBuilder.fromJson(jsonArray);
+        try {
+            stationBuilder.name(jsonArray.getString(1));
+            stationBuilder.longitude((float) jsonArray.getDouble(3));
+            stationBuilder.latitude((float) jsonArray.getDouble(4));
+            if (jsonArray.length() >= 6) {
+
+                String offlineSinceString = jsonArray.getString(5);
+                stationBuilder.offlineSince( offlineSinceString.length() > 0
+                        ? TimeFormat.parseTimeWithMilliseconds(offlineSinceString)
+                        : Station.OFFLINE_SINCE_NOT_SET);
+            } else {
+                stationBuilder.offlineSince(Station.OFFLINE_SINCE_NOT_SET);
+            }
+        } catch (JSONException e) {
+            throw new IllegalStateException("error with JSON format while parsing participants data");
+        }
+        return stationBuilder.build();
     }
 }

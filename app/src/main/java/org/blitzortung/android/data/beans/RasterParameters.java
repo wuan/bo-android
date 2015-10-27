@@ -8,10 +8,12 @@ import com.google.android.maps.Projection;
 import org.blitzortung.android.data.Coordsys;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 @Value
 @Builder
+@EqualsAndHashCode
 public class RasterParameters {
 
     private final float longitudeStart;

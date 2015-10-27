@@ -1,5 +1,12 @@
 package org.blitzortung.android.data.beans;
 
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
+
+@Value
+@Builder
+@EqualsAndHashCode
 public class Station {
 
     public enum State {
@@ -8,42 +15,18 @@ public class Station {
 
     public static final long OFFLINE_SINCE_NOT_SET = -1;
 
-    private String name;
+    private final String name;
 
-    private float longitude;
+    private final float longitude;
 
-    private float latitude;
+    private final float latitude;
 
-    private long offlineSince;
-
-    public Station(String name, float longitude, float latitude, long offlineSince) {
-        this.name = name;
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.offlineSince = offlineSince;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public float getLongitude() {
-        return longitude;
-    }
-
-    public float getLatitude() {
-        return latitude;
-    }
-
-    public long getOfflineSince() {
-        return offlineSince;
-    }
+    private final long offlineSince;
 
     public State getState() {
         if (offlineSince == OFFLINE_SINCE_NOT_SET) {
             return State.ON;
         } else {
-
             long now = System.currentTimeMillis();
 
             long minutesAgo = (now - offlineSince) / 1000 / 60;

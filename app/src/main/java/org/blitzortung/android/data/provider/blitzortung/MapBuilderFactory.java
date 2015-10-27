@@ -3,7 +3,6 @@ package org.blitzortung.android.data.provider.blitzortung;
 import org.blitzortung.android.data.beans.DefaultStrike;
 import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.Station;
-import org.blitzortung.android.data.builder.StationBuilder;
 import org.blitzortung.android.data.provider.blitzortung.generic.Consumer;
 import org.blitzortung.android.data.provider.blitzortung.generic.LineSplitter;
 import org.blitzortung.android.util.TimeFormat;
@@ -56,23 +55,23 @@ public class MapBuilderFactory {
     public MapBuilder<Station> createStationMapBuilder() {
         return new MapBuilder<Station>(stationLineSplitter) {
 
-            private final StationBuilder stationBuilder = new StationBuilder();
+            private final Station.StationBuilder stationBuilder = Station.builder();
 
             @Override
             protected void prepare(String[] fields) {
-                stationBuilder.init();
+                stationBuilder.name("");
             }
 
             @Override
             protected void setBuilderMap(Map<String, Consumer> keyValueBuilderMap) {
-                keyValueBuilderMap.put("city", values -> stationBuilder.setName(values[0].replace("\"", "")));
+                keyValueBuilderMap.put("city", values -> stationBuilder.name(values[0].replace("\"", "")));
                 keyValueBuilderMap.put("pos", values -> {
-                    stationBuilder.setLongitude(Float.parseFloat(values[1]));
-                    stationBuilder.setLatitude(Float.parseFloat(values[0]));
+                    stationBuilder.longitude(Float.parseFloat(values[1]));
+                    stationBuilder.latitude(Float.parseFloat(values[0]));
                 });
                 keyValueBuilderMap.put("last_signal", values -> {
                     String dateString = values[0].replace("\"", "").replace("-", "").replace(" ", "T");
-                    stationBuilder.setOfflineSince(TimeFormat.parseTime(dateString));
+                    stationBuilder.offlineSince(TimeFormat.parseTime(dateString));
                 });
             }
 
