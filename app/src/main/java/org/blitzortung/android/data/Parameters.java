@@ -27,6 +27,10 @@ public class Parameters implements TimeIntervalWithOffset {
         return intervalOffset == 0;
     }
 
+    public boolean isRaster() {
+        return rasterBaselength != 0;
+    }
+
     ParametersBuilder createBuilder() {
         return builder()
                 .region(getRegion())

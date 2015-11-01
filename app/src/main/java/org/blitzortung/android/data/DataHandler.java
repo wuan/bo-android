@@ -45,7 +45,9 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     private Consumer<DataEvent> dataEventConsumer;
 
     private int preferencesRasterBaselength;
+
     private int preferencesRegion;
+
     private DataProviderFactory dataProviderFactory;
 
     public static final RequestStartedEvent REQUEST_STARTED_EVENT = new RequestStartedEvent();
@@ -83,7 +85,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         updateProviderSpecifics();
     }
 
-    private class FetchDataTask extends AsyncTask<Integer, Integer, Optional<ResultEvent>> {
+    private class FetchDataTask extends AsyncTask<TaskParameters, Integer, Optional<ResultEvent>> {
 
         protected void onProgressUpdate(Integer... progress) {
         }
@@ -96,13 +98,9 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         }
 
         @Override
-        protected Optional<ResultEvent> doInBackground(Integer... params) {
-            int intervalDuration = params[0];
-            int intervalOffset = params[1];
-            int rasterBaselength = params[2];
-            int region = params[3];
-            boolean updateParticipants = params[4] != 0;
-            int countThreshold = params[5];
+        protected Optional<ResultEvent> doInBackground(TaskParameters... taskParametersArray) {
+            val taskParameters = taskParametersArray[0];
+            val parameters = taskParameters.getParameters();
 
             if (lock.tryLock()) {
                 try {
@@ -111,25 +109,17 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                     dataProvider.setUp();
                     dataProvider.setCredentials(username, password);
 
-                    Parameters parameters = Parameters.builder()
-                            .intervalDuration(intervalDuration)
-                            .intervalOffset(intervalOffset)
-                            .region(region)
-                            .rasterBaselength(rasterBaselength)
-                            .countThreshold(countThreshold)
-                            .build();
-
-                    if (rasterBaselength == 0) {
-                        dataProvider.getStrikes(parameters, result);
-                    } else {
+                    if (parameters.isRaster()) {
                         dataProvider.getStrikesGrid(parameters, result);
+                    } else {
+                        dataProvider.getStrikes(parameters, result);
                     }
 
                     result.parameters(parameters)
                             .referenceTime(System.currentTimeMillis());
 
-                    if (updateParticipants) {
-                        result.stations(dataProvider.getStations(region));
+                    if (taskParameters.isUpdateParticipants()) {
+                        result.stations(dataProvider.getStations(parameters.getRegion()));
                     }
 
                     dataProvider.shutDown();
@@ -137,6 +127,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                     return Optional.of(result.build());
                 } catch (RuntimeException e) {
                     e.printStackTrace();
+                    return Optional.of(ResultEvent.builder().fail(true).build());
                 } finally {
                     lock.unlock();
                 }
@@ -170,7 +161,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         }
 
         @Override
-        protected Optional<ResultEvent> doInBackground(Integer... params) {
+        protected Optional<ResultEvent> doInBackground(TaskParameters... params) {
             wakeLock.acquire();
             Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquire wakelock " + wakeLock);
             return super.doInBackground(params);
@@ -178,7 +169,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     }
 
     public void updateDatainBackground() {
-        new FetchBackgroundDataTask(wakeLock).execute(10, 0, dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), 0, parameters.getCountThreshold());
+        new FetchBackgroundDataTask(wakeLock).execute(TaskParameters.builder().parameters(parameters).updateParticipants(false).build());
     }
 
     public void updateData() {
@@ -196,7 +187,10 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             }
         }
 
-        new FetchDataTask().execute(parameters.getIntervalDuration(), parameters.getIntervalOffset(), dataProvider.getType() == DataProviderType.HTTP ? 0 : parameters.getRasterBaselength(), parameters.getRegion(), updateParticipants ? 1 : 0, parameters.getCountThreshold());
+        new FetchDataTask().execute(TaskParameters.builder()
+                .parameters(parameters)
+                .updateParticipants(updateParticipants)
+                .build());
     }
 
     private void sendEvent(DataEvent dataEvent) {
