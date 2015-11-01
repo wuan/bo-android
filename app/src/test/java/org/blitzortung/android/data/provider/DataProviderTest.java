@@ -1,8 +1,10 @@
 package org.blitzortung.android.data.provider;
 
+import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -26,8 +28,7 @@ public class DataProviderTest {
         }
 
         @Override
-        public List<StrikeAbstract> getStrikes(int intervalDuration, int intervalOffset, int region) {
-            return null;
+        public void getStrikes(Parameters parameters, ResultEvent.ResultEventBuilder result) {
         }
 
         @Override
@@ -36,18 +37,7 @@ public class DataProviderTest {
         }
 
         @Override
-        public List<StrikeAbstract> getStrikesGrid(int intervalDuration, int intervalOffset, int rasterSize, int countThreshold, int region) {
-            return null;
-        }
-
-        @Override
-        public RasterParameters getRasterParameters() {
-            return null;
-        }
-
-        @Override
-        public int[] getHistogram() {
-            return new int[0];  //To change body of implemented methods use File | Settings | File Templates.
+        public void getStrikesGrid(Parameters parameters, ResultEvent.ResultEventBuilder result) {
         }
 
         @Override

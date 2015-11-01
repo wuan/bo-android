@@ -63,9 +63,9 @@ public class DataBuilder {
 
     public Station createStation(JSONArray jsonArray) {
         try {
-            stationBuilder.name(jsonArray.getString(1));
-            stationBuilder.longitude((float) jsonArray.getDouble(3));
-            stationBuilder.latitude((float) jsonArray.getDouble(4));
+            stationBuilder.name(jsonArray.getString(1))
+                    .longitude((float) jsonArray.getDouble(3))
+                    .latitude((float) jsonArray.getDouble(4));
             if (jsonArray.length() >= 6) {
 
                 String offlineSinceString = jsonArray.getString(5);

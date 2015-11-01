@@ -81,7 +81,7 @@ public class HistogramView extends View {
 
         if (strikesOverlay != null && histogram != null && histogram.length > 0) {
             ColorHandler colorHandler = strikesOverlay.getColorHandler();
-            int minutesPerColor = strikesOverlay.getIntervalDuration() / colorHandler.getNumberOfColors();
+            int minutesPerColor = strikesOverlay.getParameters().getIntervalDuration() / colorHandler.getNumberOfColors();
             int minutesPerBin = 5;
             int ratio = minutesPerColor / minutesPerBin;
             if (ratio == 0) {

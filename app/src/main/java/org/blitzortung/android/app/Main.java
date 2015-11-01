@@ -20,7 +20,12 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.format.DateFormat;
 import android.util.Log;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -41,8 +46,15 @@ import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.app.view.components.StatusComponent;
 import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.RasterParameters;
-import org.blitzortung.android.data.provider.result.*;
-import org.blitzortung.android.dialogs.*;
+import org.blitzortung.android.data.provider.result.ClearDataEvent;
+import org.blitzortung.android.data.provider.result.DataEvent;
+import org.blitzortung.android.data.provider.result.RequestStartedEvent;
+import org.blitzortung.android.data.provider.result.ResultEvent;
+import org.blitzortung.android.data.provider.result.StatusEvent;
+import org.blitzortung.android.dialogs.AlertDialog;
+import org.blitzortung.android.dialogs.AlertDialogColorHandler;
+import org.blitzortung.android.dialogs.InfoDialog;
+import org.blitzortung.android.dialogs.QuickSettingsDialog;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.overlay.FadeOverlay;
@@ -217,7 +229,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         legendView.setOnClickListener(v -> openQuickSettingsDialog());
 
         alertView = (AlertView) findViewById(R.id.alert_view);
-        alertView.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.getIntervalDuration());
+        alertView.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.getParameters().getIntervalDuration());
         alertView.setBackgroundColor(Color.TRANSPARENT);
         alertView.setAlpha(200);
         alertView.setOnClickListener(view -> {
@@ -423,14 +435,14 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
                         strikesOverlay.setRasterParameters(result.getRasterParameters());
                         strikesOverlay.setReferenceTime(result.getReferenceTime());
 
-                        if (result.containsIncrementalData()) {
+                        if (result.isIncrementalData()) {
                             strikesOverlay.expireStrikes();
                         } else {
                             strikesOverlay.clear();
                         }
                         strikesOverlay.addStrikes(result.getStrikes());
 
-                        alertView.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.getIntervalDuration());
+                        alertView.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.getParameters().getIntervalDuration());
 
                         strikesOverlay.refresh();
                         legendView.requestLayout();
@@ -556,7 +568,8 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
 
     protected void setHistoricStatusString() {
         if (!strikesOverlay.hasRealtimeData()) {
-            long referenceTime = strikesOverlay.getReferenceTime() + strikesOverlay.getIntervalOffset() * 60 * 1000;
+            long referenceTime = strikesOverlay.getReferenceTime()
+                    + strikesOverlay.getParameters().getIntervalOffset() * 60 * 1000;
             String timeString = (String) DateFormat.format("@ kk:mm", referenceTime);
             setStatusString(timeString);
         }
@@ -566,7 +579,7 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
         int numberOfStrikes = strikesOverlay.getTotalNumberOfStrikes();
         String statusText = getResources().getQuantityString(R.plurals.strike, numberOfStrikes, numberOfStrikes);
         statusText += "/";
-        int intervalDuration = strikesOverlay.getIntervalDuration();
+        int intervalDuration = strikesOverlay.getParameters().getIntervalDuration();
         statusText += getResources().getQuantityString(R.plurals.minute, intervalDuration, intervalDuration);
         statusText += " " + runStatus;
 

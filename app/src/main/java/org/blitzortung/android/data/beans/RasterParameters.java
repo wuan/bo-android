@@ -9,11 +9,13 @@ import org.blitzortung.android.data.Coordsys;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.Value;
 
 @Value
 @Builder
 @EqualsAndHashCode
+@ToString
 public class RasterParameters {
 
     private final float longitudeStart;

@@ -8,16 +8,16 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.annimon.stream.Stream;
+import com.annimon.stream.Optional;
 
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
+import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.map.overlay.StrikesOverlay;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
 
 public class LegendView extends View {
-
 
     public static final float REGION_HEIGHT = 1.1f;
     public static final float RASTER_HEIGHT = 0.8f;
@@ -98,7 +98,7 @@ public class LegendView extends View {
         int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
         int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
 
-        updateTextWidth(strikesOverlay.getIntervalDuration());
+        updateTextWidth(strikesOverlay.getParameters().getIntervalDuration());
         width = Math.min(3 * padding + colorFieldSize + textWidth, parentWidth);
 
         ColorHandler colorHandler = strikesOverlay.getColorHandler();
@@ -124,7 +124,7 @@ public class LegendView extends View {
     public void onDraw(Canvas canvas) {
         if (strikesOverlay != null) {
             ColorHandler colorHandler = strikesOverlay.getColorHandler();
-            int minutesPerColor = strikesOverlay.getIntervalDuration() / colorHandler.getNumberOfColors();
+            int minutesPerColor = strikesOverlay.getParameters().getIntervalDuration() / colorHandler.getNumberOfColors();
 
             backgroundRect.set(0, 0, width, height);
             canvas.drawRect(backgroundRect, backgroundPaint);
@@ -146,6 +146,7 @@ public class LegendView extends View {
                 topCoordinate += colorFieldSize + padding;
             }
 
+
             if (hasRegion()) {
                 canvas.drawText(getRegionName(), width / 2.0f, topCoordinate + colorFieldSize * REGION_HEIGHT / 1.1f, regionTextPaint);
                 topCoordinate += colorFieldSize * REGION_HEIGHT + padding;
@@ -156,7 +157,7 @@ public class LegendView extends View {
                 topCoordinate += colorFieldSize * RASTER_HEIGHT + padding;
 
                 if (hasCountThreshold()) {
-                    final int countThreshold = strikesOverlay.getCountThreshold();
+                    final int countThreshold = strikesOverlay.getParameters().getCountThreshold();
                     canvas.drawText("# > " + countThreshold, width / 2.0f, topCoordinate + colorFieldSize * COUNT_THRESHOLD_HEIGHT / 1.1f, countThresholdTextPaint);
                     topCoordinate += colorFieldSize * COUNT_THRESHOLD_HEIGHT + padding;
                 }
@@ -165,7 +166,7 @@ public class LegendView extends View {
     }
 
     private String getRegionName() {
-        int regionNumber = strikesOverlay.getRegion();
+        int regionNumber = strikesOverlay.getParameters().getRegion();
 
         int index = 0;
         for (String region_number : getResources().getStringArray(R.array.regions_values)) {
@@ -191,7 +192,7 @@ public class LegendView extends View {
     }
 
     private boolean hasRegion() {
-        return strikesOverlay.getRegion() != 0;
+        return strikesOverlay.getParameters().getRegion() != 0;
     }
 
     public String getRasterString() {
@@ -200,6 +201,6 @@ public class LegendView extends View {
     }
 
     private boolean hasCountThreshold() {
-        return strikesOverlay.getCountThreshold() > 0;
+        return strikesOverlay.getParameters().getCountThreshold() > 0;
     }
 }

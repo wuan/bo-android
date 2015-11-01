@@ -9,10 +9,10 @@ import android.util.Log;
 
 import com.annimon.stream.Optional;
 import com.annimon.stream.function.Consumer;
+import com.annimon.stream.function.Function;
 
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.view.PreferenceKey;
-import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataProviderFactory;
 import org.blitzortung.android.data.provider.DataProviderType;
@@ -22,10 +22,11 @@ import org.blitzortung.android.data.provider.result.RequestStartedEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import lombok.val;
 
 public class DataHandler implements OnSharedPreferenceChangeListener {
 
@@ -37,7 +38,9 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     private String username;
     private String password;
 
-    private final Parameters parameters;
+    private Parameters parameters = Parameters.DEFAULT;
+
+    private ParametersController parametersController;
 
     private Consumer<DataEvent> dataEventConsumer;
 
@@ -64,7 +67,6 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                        DataProviderFactory dataProviderFactory) {
         this.wakeLock = wakeLock;
         this.dataProviderFactory = dataProviderFactory;
-        parameters = new Parameters();
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         this.pInfo = pInfo;
@@ -102,49 +104,42 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
             boolean updateParticipants = params[4] != 0;
             int countThreshold = params[5];
 
-            ResultEvent result = null;
-
             if (lock.tryLock()) {
-                result = new ResultEvent();
                 try {
+                    val result = ResultEvent.builder();
+
                     dataProvider.setUp();
                     dataProvider.setCredentials(username, password);
 
-                    List<StrikeAbstract> strikes;
+                    Parameters parameters = Parameters.builder()
+                            .intervalDuration(intervalDuration)
+                            .intervalOffset(intervalOffset)
+                            .region(region)
+                            .rasterBaselength(rasterBaselength)
+                            .countThreshold(countThreshold)
+                            .build();
+
                     if (rasterBaselength == 0) {
-                        strikes = dataProvider.getStrikes(intervalDuration, intervalOffset, region);
+                        dataProvider.getStrikes(parameters, result);
                     } else {
-                        strikes = dataProvider.getStrikesGrid(intervalDuration, intervalOffset, rasterBaselength, countThreshold, region);
+                        dataProvider.getStrikesGrid(parameters, result);
                     }
-                    Parameters parameters = new Parameters();
-                    parameters.setIntervalDuration(intervalDuration);
-                    parameters.setIntervalOffset(intervalOffset);
-                    parameters.setRegion(region);
-                    parameters.setRasterBaselength(rasterBaselength);
-                    parameters.setCountThreshold(countThreshold);
 
-                    if (dataProvider.returnsIncrementalData()) {
-                        result.setContainsIncrementalData();
-                    }
-                    result.setParameters(parameters);
-
-                    result.setReferenceTime(System.currentTimeMillis());
-                    result.setStrikes(strikes);
-                    result.setRasterParameters(dataProvider.getRasterParameters());
-                    result.setHistogram(dataProvider.getHistogram());
+                    result.parameters(parameters)
+                            .referenceTime(System.currentTimeMillis());
 
                     if (updateParticipants) {
-                        result.setStations(dataProvider.getStations(region));
+                        result.stations(dataProvider.getStations(region));
                     }
 
                     dataProvider.shutDown();
+
+                    return Optional.of(result.build());
                 } catch (RuntimeException e) {
                     e.printStackTrace();
-                    return Optional.empty();
                 } finally {
                     lock.unlock();
                 }
-                return Optional.of(result);
             }
             return Optional.empty();
         }
@@ -238,29 +233,30 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
             case RASTER_SIZE:
                 preferencesRasterBaselength = Integer.parseInt(sharedPreferences.getString(key.toString(), "10000"));
-                parameters.setRasterBaselength(preferencesRasterBaselength);
+                parameters = parameters.createBuilder().rasterBaselength(preferencesRasterBaselength).build();
                 notifyDataReset();
                 break;
 
             case COUNT_THRESHOLD:
                 int countThreshold = Integer.parseInt(sharedPreferences.getString(key.toString(), "1"));
-                parameters.setCountThreshold(countThreshold);
+                parameters = parameters.createBuilder().countThreshold(countThreshold).build();
                 notifyDataReset();
                 break;
 
             case INTERVAL_DURATION:
-                parameters.setIntervalDuration(Integer.parseInt(sharedPreferences.getString(key.toString(), "60")));
+                parameters = parameters.createBuilder().intervalDuration(Integer.parseInt(sharedPreferences.getString(key.toString(), "60"))).build();
                 dataProvider.reset();
                 notifyDataReset();
                 break;
 
             case HISTORIC_TIMESTEP:
-                parameters.setOffsetIncrement(Integer.parseInt(sharedPreferences.getString(key.toString(), "30")));
+                parametersController = new ParametersController(
+                        Integer.parseInt(sharedPreferences.getString(key.toString(), "30")));
                 break;
 
             case REGION:
                 preferencesRegion = Integer.parseInt(sharedPreferences.getString(key.toString(), "1"));
-                parameters.setRegion(preferencesRegion);
+                parameters = parameters.createBuilder().region(preferencesRegion).build();
                 dataProvider.reset();
                 notifyDataReset();
                 break;
@@ -293,10 +289,8 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     public void toggleExtendedMode() {
         if (parameters.getRasterBaselength() > 0) {
             disableRasterMode();
-            parameters.setRegion(0);
         } else {
             enableRasterMode();
-            parameters.setRegion(preferencesRegion);
         }
         if (!isRealtime()) {
             Set<DataChannel> dataChannels = new HashSet<>();
@@ -306,11 +300,12 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     }
 
     public void disableRasterMode() {
-        parameters.setRasterBaselength(0);
+        parameters = parameters.createBuilder().region(0).rasterBaselength(0).build();
     }
 
     public void enableRasterMode() {
-        parameters.setRasterBaselength(preferencesRasterBaselength);
+        parameters = parameters.createBuilder().rasterBaselength(preferencesRasterBaselength)
+                .region(preferencesRegion).build();
     }
 
     public void setDataConsumer(Consumer<DataEvent> consumer) {
@@ -322,15 +317,21 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
     }
 
     public boolean ffwdInterval() {
-        return parameters.ffwdInterval();
+        return updateParameters(parametersController::ffwdInterval);
     }
 
     public boolean rewInterval() {
-        return parameters.revInterval();
+        return updateParameters(parametersController::rewInterval);
     }
 
     public boolean goRealtime() {
-        return parameters.goRealtime();
+        return updateParameters(parametersController::goRealtime);
+    }
+
+    public boolean updateParameters(Function<Parameters, Parameters> updater) {
+        final Parameters oldParameters = parameters;
+        parameters = updater.apply(parameters);
+        return !parameters.equals(oldParameters);
     }
 
     public boolean isRealtime() {

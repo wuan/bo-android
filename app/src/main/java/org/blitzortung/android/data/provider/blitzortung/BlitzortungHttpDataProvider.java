@@ -2,11 +2,13 @@ package org.blitzortung.android.data.provider.blitzortung;
 
 import android.util.Log;
 import org.blitzortung.android.app.Main;
+import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataProviderType;
+import org.blitzortung.android.data.provider.result.ResultEvent;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -49,9 +51,9 @@ public class BlitzortungHttpDataProvider extends DataProvider {
     }
 
     @Override
-    public List<StrikeAbstract> getStrikes(int timeInterval, int intervalOffset, int region) {
-
-        List<StrikeAbstract> strikes = new ArrayList<>();
+    public void getStrikes(Parameters parameters, ResultEvent.ResultEventBuilder result) {
+        final int intervalDuration = parameters.getIntervalDuration();
+        final int region = parameters.getRegion();
 
         TimeZone tz = TimeZone.getTimeZone("UTC");
         Calendar intervalTime = new GregorianCalendar(tz);
@@ -59,8 +61,9 @@ public class BlitzortungHttpDataProvider extends DataProvider {
         if (username != null && username.length() != 0 && password != null && password.length() != 0) {
 
             try {
+                List<StrikeAbstract> strikes = new ArrayList<>();
                 IntervalTimer intervalTimer = new IntervalTimer(10 * 60 * 1000l);
-                long startTime = System.currentTimeMillis() - timeInterval * 60 * 1000;
+                long startTime = System.currentTimeMillis() - intervalDuration * 60 * 1000;
 
                 intervalTimer.startInterval(Math.max(latestTime, startTime));
 
@@ -93,6 +96,7 @@ public class BlitzortungHttpDataProvider extends DataProvider {
                 if (strikes.size() > 0) {
                     latestTime = strikes.get(strikes.size() - 1).getTimestamp();
                 }
+                result.strikes(strikes);
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -101,12 +105,14 @@ public class BlitzortungHttpDataProvider extends DataProvider {
         } else {
             throw new RuntimeException("no credentials provided");
         }
-
-        return strikes;
     }
 
     public boolean returnsIncrementalData() {
         return latestTime != 0;
+    }
+
+    @Override
+    public void getStrikesGrid(Parameters parameters, ResultEvent.ResultEventBuilder result) {
     }
 
     private BufferedReader readFromUrl(Type type, int region) {
@@ -193,21 +199,6 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 
     @Override
     public void shutDown() {
-    }
-
-    @Override
-    public int[] getHistogram() {
-        return null;
-    }
-
-    @Override
-    public RasterParameters getRasterParameters() {
-        return null;
-    }
-
-    @Override
-    public List<StrikeAbstract> getStrikesGrid(int intervalDuration, int intervalOffset, int rasterSize, int countThreshold, int region) {
-        return null;
     }
 
     @Override

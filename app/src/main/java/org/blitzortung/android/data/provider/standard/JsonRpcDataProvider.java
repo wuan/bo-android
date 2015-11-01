@@ -3,12 +3,14 @@ package org.blitzortung.android.data.provider.standard;
 import android.util.Log;
 
 import org.blitzortung.android.app.Main;
+import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.provider.DataBuilder;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataProviderType;
+import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.blitzortung.android.jsonrpc.JsonRpcClient;
 import org.blitzortung.android.util.TimeFormat;
 import org.json.JSONArray;
@@ -38,10 +40,6 @@ public class JsonRpcDataProvider extends DataProvider {
 
     private int nextId = 0;
 
-    private int[] histogram;
-
-    private RasterParameters rasterParameters = null;
-
     private boolean incrementalResult;
 
     private final DataBuilder dataBuilder;
@@ -50,63 +48,59 @@ public class JsonRpcDataProvider extends DataProvider {
         dataBuilder = new DataBuilder();
     }
 
-    public List<StrikeAbstract> getStrikes(int timeInterval, int intervalOffset, int region) {
-        List<StrikeAbstract> strikes = new ArrayList<>();
-        rasterParameters = null;
-
+    @Override
+    public void getStrikes(Parameters parameters, ResultEvent.ResultEventBuilder result) {
+        final int intervalDuration = parameters.getIntervalDuration();
+        final int intervalOffset = parameters.getIntervalOffset();
         if (intervalOffset < 0) {
             nextId = 0;
         }
-        incrementalResult = nextId != 0;
+        result.incrementalData(nextId != 0);
 
+        final int newStrikeCount;
         try {
-            JSONObject response = client.call("get_strikes", timeInterval, intervalOffset < 0 ? intervalOffset : nextId);
+            JSONObject response = client.call("get_strikes", intervalDuration, intervalOffset < 0 ? intervalOffset : nextId);
 
-            readStrikes(response, strikes);
-            readHistogramData(response);
+            newStrikeCount = addStrikes(response, result);
+            addStrikesHistogram(response, result);
         } catch (Exception e) {
             skipServer();
             throw new RuntimeException(e);
         }
 
         Log.v(Main.LOG_TAG,
-                String.format("JsonRpcDataProvider: read %d bytes (%d new strikes, region %d)", client.getLastNumberOfTransferredBytes(), strikes.size(), region));
-        return strikes;
+                String.format("JsonRpcDataProvider: read %d bytes (%d new strikes)", client.getLastNumberOfTransferredBytes(), newStrikeCount));
     }
 
     public boolean returnsIncrementalData() {
         return incrementalResult;
     }
 
-    public List<StrikeAbstract> getStrikesGrid(int intervalDuration, int intervalOffset, int rasterSize, int countThreshold, int region) {
-        List<StrikeAbstract> strikes = new ArrayList<>();
-
+    @Override
+    public void getStrikesGrid(Parameters parameters, ResultEvent.ResultEventBuilder result) {
         nextId = 0;
         incrementalResult = false;
 
-        try {
-            JSONObject response = client.call("get_strikes_grid", intervalDuration, rasterSize, intervalOffset, region, countThreshold);
+        final int intervalDuration = parameters.getIntervalDuration();
+        final int intervalOffset = parameters.getIntervalOffset();
+        final int rasterBaselength = parameters.getRasterBaselength();
+        final int countThreshold = parameters.getCountThreshold();
+        final int region = parameters.getRegion();
 
-            String info = String.format("%.0f km", rasterSize / 1000f);
-            readRasterData(response, strikes, info);
-            readHistogramData(response);
+        final int elementCount;
+        try {
+            JSONObject response = client.call("get_strikes_grid", intervalDuration, rasterBaselength, intervalOffset, region, countThreshold);
+
+            String info = String.format("%.0f km", rasterBaselength / 1000f);
+            elementCount = addRasterData(response, result, info);
+            addStrikesHistogram(response, result);
         } catch (Exception e) {
             skipServer();
             throw new RuntimeException(e);
         }
 
         Log.v(Main.LOG_TAG,
-                String.format("JsonRpcDataProvider: read %d bytes (%d raster positions, region %d)", client.getLastNumberOfTransferredBytes(), strikes.size(), region));
-
-        return strikes;
-    }
-
-    public int[] getHistogram() {
-        return histogram;
-    }
-
-    public RasterParameters getRasterParameters() {
-        return rasterParameters;
+                String.format("JsonRpcDataProvider: read %d bytes (%d raster positions, region %d)", client.getLastNumberOfTransferredBytes(), elementCount, region));
     }
 
     @Override
@@ -146,6 +140,7 @@ public class JsonRpcDataProvider extends DataProvider {
         client = null;
     }
 
+
     @Override
     public void reset() {
         nextId = 0;
@@ -156,7 +151,8 @@ public class JsonRpcDataProvider extends DataProvider {
         return true;
     }
 
-    private void readStrikes(JSONObject response, List<StrikeAbstract> strikes) throws JSONException {
+    private int addStrikes(JSONObject response, ResultEvent.ResultEventBuilder result) throws JSONException {
+        final List<StrikeAbstract> strikes = new ArrayList<>();
         long referenceTimestamp = getReferenceTimestamp(response);
         JSONArray strikes_array = (JSONArray) response.get("s");
         for (int i = 0; i < strikes_array.length(); i++) {
@@ -165,32 +161,40 @@ public class JsonRpcDataProvider extends DataProvider {
         if (response.has("next")) {
             nextId = (Integer) response.get("next");
         }
+        result.strikes(strikes);
+        return strikes.size();
     }
 
-    private void readRasterData(JSONObject response, List<StrikeAbstract> strikes, String info) throws JSONException {
-        rasterParameters = dataBuilder.createRasterParameters(response, info);
+    private int addRasterData(JSONObject response, ResultEvent.ResultEventBuilder result, String info) throws JSONException {
+        final RasterParameters rasterParameters = dataBuilder.createRasterParameters(response, info);
         long referenceTimestamp = getReferenceTimestamp(response);
+
         JSONArray strikes_array = (JSONArray) response.get("r");
+        final List<StrikeAbstract> strikes = new ArrayList<>();
         for (int i = 0; i < strikes_array.length(); i++) {
             strikes.add(dataBuilder.createRasterElement(rasterParameters, referenceTimestamp, strikes_array.getJSONArray(i)));
         }
+
+        result.rasterParameters(rasterParameters);
+        result.strikes(strikes);
+
+        return strikes.size();
     }
 
     private long getReferenceTimestamp(JSONObject response) throws JSONException {
         return TimeFormat.parseTime(response.getString("t"));
     }
 
-    private void readHistogramData(JSONObject response) throws JSONException {
+    private void addStrikesHistogram(JSONObject response, ResultEvent.ResultEventBuilder result) throws JSONException {
         if (response.has("h")) {
             JSONArray histogram_array = (JSONArray) response.get("h");
 
-            if (histogram == null || histogram.length != histogram_array.length()) {
-                histogram = new int[histogram_array.length()];
-            }
+            final int[] histogram = new int[histogram_array.length()];
 
             for (int i = 0; i < histogram_array.length(); i++) {
                 histogram[i] = histogram_array.getInt(i);
             }
+            result.histogram(histogram);
         }
     }
 
