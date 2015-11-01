@@ -6,8 +6,12 @@ public class ParametersController {
 
     private final int offsetIncrement;
 
-    public ParametersController(final int offsetIncrement) {
+    private ParametersController(final int offsetIncrement) {
         this.offsetIncrement = offsetIncrement;
+    }
+
+    public static ParametersController withOffsetIncrement(final int offsetIncrement) {
+        return new ParametersController(offsetIncrement);
     }
 
     public Parameters rewInterval(Parameters parameters) {

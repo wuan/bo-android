@@ -20,19 +20,13 @@ import static org.mockito.Mockito.mock;
 @RunWith(RobolectricTestRunner.class)
 public class ResultEventTest {
 
-    private ResultEvent resultEvent;
-
-    @Before
-    public void setUp() {
-        resultEvent = new ResultEvent();
-    }
-
     @Test
     public void testConstruction() {
+        final ResultEvent resultEvent = ResultEvent.builder().build();
         assertTrue(resultEvent.hasFailed());
         assertFalse(resultEvent.containsStrikes());
         assertFalse(resultEvent.containsParticipants());
-        assertFalse(resultEvent.containsIncrementalData());
+        assertFalse(resultEvent.isIncrementalData());
     }
 
     @Test
@@ -40,13 +34,13 @@ public class ResultEventTest {
         List<StrikeAbstract> strikes = Lists.newArrayList();
         strikes.add(mock(DefaultStrike.class));
 
-        resultEvent.setStrikes(strikes);
+        final ResultEvent resultEvent = ResultEvent.builder().strikes(strikes).build();
 
         assertThat(resultEvent.getStrikes(), is(strikes));
         assertFalse(resultEvent.hasFailed());
         assertTrue(resultEvent.containsStrikes());
         assertFalse(resultEvent.containsParticipants());
-        assertFalse(resultEvent.containsIncrementalData());
+        assertFalse(resultEvent.isIncrementalData());
     }
 
     @Test
@@ -54,22 +48,23 @@ public class ResultEventTest {
         List<Station> stations = Lists.newArrayList();
         stations.add(mock(Station.class));
 
-        resultEvent.setStations(stations);
+        final ResultEvent resultEvent = ResultEvent.builder().stations(stations).build();
 
         assertThat(resultEvent.getStations(), is(stations));
         assertTrue(resultEvent.hasFailed());
         assertFalse(resultEvent.containsStrikes());
         assertTrue(resultEvent.containsParticipants());
-        assertFalse(resultEvent.containsIncrementalData());
+        assertFalse(resultEvent.isIncrementalData());
     }
 
     @Test
     public void testSetGetHasRaster() {
+        ResultEvent resultEvent = ResultEvent.builder().build();
         assertFalse(resultEvent.hasRasterParameters());
         assertThat(resultEvent.getRasterParameters(), is(nullValue()));
 
         RasterParameters rasterParameters = mock(RasterParameters.class);
-        resultEvent.setRasterParameters(rasterParameters);
+        resultEvent = ResultEvent.builder().rasterParameters(rasterParameters).build();
 
         assertTrue(resultEvent.hasRasterParameters());
         assertThat(resultEvent.getRasterParameters(), is(rasterParameters));

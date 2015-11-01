@@ -244,7 +244,7 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
                 break;
 
             case HISTORIC_TIMESTEP:
-                parametersController = new ParametersController(
+                parametersController = ParametersController.withOffsetIncrement(
                         Integer.parseInt(sharedPreferences.getString(key.toString(), "30")));
                 break;
 

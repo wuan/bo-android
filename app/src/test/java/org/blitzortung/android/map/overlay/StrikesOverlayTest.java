@@ -92,8 +92,8 @@ public class StrikesOverlayTest {
     public void testAddAndExpireStrikes() {
         List<StrikeAbstract> strikes = Lists.newArrayList();
 
-        Parameters parameters = new Parameters();
-        parameters.setIntervalDuration(1);
+        Parameters parameters = Parameters.builder().intervalDuration(1).build();
+
         strikesOverlay.setParameters(parameters);
         strikesOverlay.addStrikes(strikes);
 
@@ -202,8 +202,7 @@ public class StrikesOverlayTest {
 
     @Test
     public void testCreateItem() {
-        final Parameters parameters = new Parameters();
-        parameters.setIntervalDuration(100);
+        final Parameters parameters = Parameters.builder().intervalDuration(100).build();
         strikesOverlay.setParameters(parameters);
         strikesOverlay.addStrikes(Lists.newArrayList(mock(StrikeAbstract.class)));
 
