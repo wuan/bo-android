@@ -1,6 +1,17 @@
+# About
+
+This Android App visualized lightning data provided by the blitzortung.org network.
+
 # Changelogs
 
 ## English
+
+Version 1.3.6:
+ - preliminary fix for Android 6 permissions
+ - migrated code to retrolambda, stream and lombok
+ - removed unnecessary location manager reconfigurations
+ - threshold for stroke count per area
+ - optimized default values
 
 Version 1.3.5:
  - added new regions South America, Asia and Africa
@@ -82,6 +93,13 @@ Version 1.1.3 & 1.3.0 (Android 4.0+):
  * notification and vibration alarm with preference integration
  
 ## German
+
+Version 1.3.6:
+ - Vorläufiger Fix für Permissions unter Android 6
+ - Umbau auf Retrolambda, Streams und Lombok
+ - Rekonfiguration des Location-Managers nur bei Bedarf
+ - Schwellwert für die Blitzzahl pro Rasterfläche
+ - Optimierte Standardwerte
 
 Version 1.3.5 (Android 4.0+):
  - neue Regionen Südamerika, Asien und Afrika
