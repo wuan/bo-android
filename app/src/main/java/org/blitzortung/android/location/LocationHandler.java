@@ -1,17 +1,23 @@
 package org.blitzortung.android.location;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.annimon.stream.function.Consumer;
 
 import org.blitzortung.android.app.Main;
+import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.protocol.ConsumerContainer;
@@ -19,6 +25,8 @@ import org.blitzortung.android.protocol.ConsumerContainer;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.support.v4.app.ActivityCompat.requestPermissions;
+import static android.support.v4.content.PermissionChecker.checkSelfPermission;
 
 public class LocationHandler implements SharedPreferences.OnSharedPreferenceChangeListener, android.location.LocationListener, GpsStatus.Listener {
 
@@ -207,6 +215,7 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
                     : 50;
             Log.v(Main.LOG_TAG, "LocationHandler.enableProvider() " + newProvider + ", minTime: " + minTime + ", minDist: " + minDistance);
             if (newProvider == Provider.GPS) {
+                // TODO check for enabled service here
                 locationManager.addGpsStatusListener(this);
             }
 
