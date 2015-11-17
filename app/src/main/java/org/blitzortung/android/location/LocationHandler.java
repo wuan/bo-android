@@ -1,23 +1,19 @@
 package org.blitzortung.android.location;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.annimon.stream.function.Consumer;
 
 import org.blitzortung.android.app.Main;
-import org.blitzortung.android.app.Preferences;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.protocol.ConsumerContainer;
@@ -25,14 +21,12 @@ import org.blitzortung.android.protocol.ConsumerContainer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static android.support.v4.app.ActivityCompat.requestPermissions;
 import static android.support.v4.content.PermissionChecker.checkSelfPermission;
 
 public class LocationHandler implements SharedPreferences.OnSharedPreferenceChangeListener, android.location.LocationListener, GpsStatus.Listener {
 
     private final Context context;
     private boolean backgroundMode = true;
-    private int backgroundPeriod;
 
     public enum Provider {
         NETWORK(LocationManager.NETWORK_PROVIDER),
@@ -127,6 +121,16 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
         switch (key) {
             case LOCATION_MODE:
                 Provider newProvider = Provider.fromString(sharedPreferences.getString(key.toString(), Provider.PASSIVE.getType()));
+                if (newProvider == Provider.PASSIVE || newProvider == Provider.GPS) {
+                    if (checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        newProvider = Provider.MANUAL;
+                    }
+                }
+                if (newProvider == Provider.NETWORK) {
+                    if (checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        newProvider = Provider.MANUAL;
+                    }
+                }
                 if (newProvider != provider) {
                     updateProvider(newProvider, sharedPreferences);
                 }
@@ -139,12 +143,6 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
             case LOCATION_LATITUDE:
                 updateManualLatitude(sharedPreferences);
                 break;
-
-            case BACKGROUND_QUERY_PERIOD:
-                backgroundPeriod = Integer.parseInt(sharedPreferences.getString(key.toString(), "0"));
-                break;
-
-
         }
     }
 
@@ -279,6 +277,10 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
 
     public void updateProvider() {
         enableProvider(provider);
+    }
+
+    public void update(SharedPreferences preferences) {
+        onSharedPreferenceChanged(preferences, PreferenceKey.LOCATION_MODE);
     }
 
 }

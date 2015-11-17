@@ -1,5 +1,7 @@
 package org.blitzortung.android.app;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -13,6 +15,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -55,6 +58,7 @@ import org.blitzortung.android.dialogs.AlertDialog;
 import org.blitzortung.android.dialogs.AlertDialogColorHandler;
 import org.blitzortung.android.dialogs.InfoDialog;
 import org.blitzortung.android.dialogs.QuickSettingsDialog;
+import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.overlay.FadeOverlay;
@@ -71,6 +75,8 @@ import java.util.Set;
 public class Main extends OwnMapActivity implements OnSharedPreferenceChangeListener {
 
     public static final String LOG_TAG = "BO_ANDROID";
+
+    public static final int REQUEST_GPS = 1;
 
     protected StatusComponent statusComponent;
 
@@ -160,6 +166,10 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
 
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
                 PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS);
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(preferences);
+        }
 
         createAndBindToDataService();
 
@@ -511,6 +521,50 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
                 break;
         }
         return dialog;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        Log.v(LOG_TAG, "Main.onRequestPermissionsResult() " + requestCode + " - " + permissions + " - " + grantResults);
+        if (requestCode == REQUEST_GPS) {
+            // BEGIN_INCLUDE(permission_result)
+            // Received permission result for camera permission.
+            Log.i(LOG_TAG, "Received response for Camera permission request.");
+
+            // Check if the only required permission has been granted
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Camera permission has been granted, preview can be displayed
+                Log.i(LOG_TAG, "CAMERA permission has now been granted. Showing preview.");
+            } else {
+                Log.i(LOG_TAG, "CAMERA permission was NOT granted.");
+
+            }
+            // END_INCLUDE(permission_result)
+
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        if (appService != null) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            appService.updateLocationHandler(preferences);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private void requestPermissions(SharedPreferences sharedPreferences) {
+
+        LocationHandler.Provider newProvider = LocationHandler.Provider.fromString(sharedPreferences.getString(PreferenceKey.LOCATION_MODE.toString(), LocationHandler.Provider.PASSIVE.getType()));
+        if (newProvider == LocationHandler.Provider.PASSIVE || newProvider == LocationHandler.Provider.GPS) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Main.REQUEST_GPS);
+            }
+        }
+        if (newProvider == LocationHandler.Provider.NETWORK) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Main.REQUEST_GPS);
+            }
+        }
     }
 
     @Override

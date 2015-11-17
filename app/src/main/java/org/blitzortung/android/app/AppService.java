@@ -197,6 +197,10 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         return alertHandler.getAlertEvent();
     }
 
+    public void updateLocationHandler(SharedPreferences preferences) {
+        locationHandler.update(preferences);
+    }
+
     public class DataServiceBinder extends Binder {
         AppService getService() {
             Log.d(Main.LOG_TAG, "DataServiceBinder.getService() " + AppService.this);
