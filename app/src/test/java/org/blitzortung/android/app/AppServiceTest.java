@@ -20,17 +20,13 @@ import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.fakes.RoboSharedPreferences;
 import org.robolectric.shadows.ShadowContextImpl;
 import org.robolectric.shadows.ShadowPreferenceManager;
-import org.robolectric.shadows.util.PreferenceBuilder;
 
-import java.util.Collections;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,21 +43,16 @@ import static org.mockito.Mockito.when;
 @Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
 public class AppServiceTest {
 
-    @Mock
-    private Handler handler;
-
-    @Mock
-    private Period period;
-
-    @Mock
-    private DataHandler dataHandler;
-
-    @Mock
-    private PowerManager powerManager;
-
     @Captor
     ArgumentCaptor<Set<DataChannel>> dataChannelsCaptor;
-
+    @Mock
+    private Handler handler;
+    @Mock
+    private Period period;
+    @Mock
+    private DataHandler dataHandler;
+    @Mock
+    private PowerManager powerManager;
     private SharedPreferences sharedPreferences;
 
     private AppService appService;

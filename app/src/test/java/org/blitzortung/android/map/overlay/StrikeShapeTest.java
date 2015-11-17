@@ -2,6 +2,7 @@ package org.blitzortung.android.map.overlay;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,17 +20,13 @@ import static org.mockito.Mockito.verify;
 @Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
 public class StrikeShapeTest {
 
+    private final int color = 0x102030;
+    private final int width = 12;
     @Mock
     private Canvas canvas;
-
     @Mock
     private Paint paint;
-
     private StrikeShape strikeShape;
-
-    private final int color = 0x102030;
-
-    private final int width = 12;
 
     @Before
     public void setUp() {
@@ -40,12 +37,11 @@ public class StrikeShapeTest {
     }
 
     @Test
-    public void testDraw()
-    {
+    public void testDraw() {
         strikeShape.draw(canvas, paint);
 
         verify(paint, times(1)).setColor(color);
-        verify(paint, times(1)).setStrokeWidth(width/4);
+        verify(paint, times(1)).setStrokeWidth(width / 4);
         verify(canvas, times(2)).drawLine(anyFloat(), anyFloat(), anyFloat(), anyFloat(), eq(paint));
     }
 

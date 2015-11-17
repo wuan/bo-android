@@ -10,18 +10,11 @@ import org.blitzortung.android.app.Main;
 
 public class VersionComponent {
 
+    private static final String CONFIGURED_VERSION_CODE = "configured_version_code";
     private State state;
     private String versionName;
-
-    public enum State {
-        FIRST_RUN, FIRST_RUN_AFTER_UPDATE, NO_UPDATE
-    }
-
-    private static final String CONFIGURED_VERSION_CODE = "configured_version_code";
-
     private int configuredVersionCode;
     private int currentVersionCode;
-
     public VersionComponent(final Context context) {
         updatePackageInfo(context);
         updateVersionStatus(context);
@@ -44,7 +37,7 @@ public class VersionComponent {
             }
         }
         Log.d(Main.LOG_TAG, "updateVersionStatus() name=" + packageName + ", state=" + state +
-        ", configuredVersion=" + configuredVersionCode + ", currentVersion=" + currentVersionCode);
+                ", configuredVersion=" + configuredVersionCode + ", currentVersion=" + currentVersionCode);
     }
 
     private void updatePackageInfo(final Context context) {
@@ -73,5 +66,9 @@ public class VersionComponent {
 
     public String getVersionName() {
         return versionName;
+    }
+
+    public enum State {
+        FIRST_RUN, FIRST_RUN_AFTER_UPDATE, NO_UPDATE
     }
 }

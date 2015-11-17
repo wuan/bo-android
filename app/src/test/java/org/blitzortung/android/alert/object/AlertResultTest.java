@@ -17,7 +17,7 @@ public class AlertResultTest {
 
     @Mock
     private AlertSector alertSector;
-    
+
     private String distanceUnitName = "km";
 
     private AlertResult alertResult;
@@ -41,10 +41,9 @@ public class AlertResultTest {
     public void testGetDistance() throws Exception {
         assertThat(alertResult.getClosestStrikeDistance(), is(4567f));
     }
-    
+
     @Test
-    public void testGetDistanceUnit()
-    {
+    public void testGetDistanceUnit() {
         assertThat(alertResult.getDistanceUnitName(), is("km"));
     }
 }

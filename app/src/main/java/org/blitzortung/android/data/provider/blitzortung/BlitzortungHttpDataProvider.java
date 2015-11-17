@@ -1,11 +1,11 @@
 package org.blitzortung.android.data.provider.blitzortung;
 
 import android.util.Log;
+
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.data.Parameters;
-import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.Station;
-import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.provider.DataProvider;
 import org.blitzortung.android.data.provider.DataProviderType;
 import org.blitzortung.android.data.provider.result.ResultEvent;
@@ -18,7 +18,11 @@ import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 
 public class BlitzortungHttpDataProvider extends DataProvider {
@@ -27,16 +31,6 @@ public class BlitzortungHttpDataProvider extends DataProvider {
 
     private MapBuilder<StrikeAbstract> strikeMapBuilder;
     private MapBuilder<Station> stationMapBuilder;
-
-    public enum Type {STRIKES, STATIONS}
-
-    private class MyAuthenticator extends Authenticator {
-
-        public PasswordAuthentication getPasswordAuthentication() {
-            return new PasswordAuthentication(username, password.toCharArray());
-        }
-    }
-
     private long latestTime = 0;
 
     public BlitzortungHttpDataProvider() {
@@ -209,6 +203,15 @@ public class BlitzortungHttpDataProvider extends DataProvider {
     @Override
     public boolean isCapableOfHistoricalData() {
         return false;
+    }
+
+    public enum Type {STRIKES, STATIONS}
+
+    private class MyAuthenticator extends Authenticator {
+
+        public PasswordAuthentication getPasswordAuthentication() {
+            return new PasswordAuthentication(username, password.toCharArray());
+        }
     }
 
 }

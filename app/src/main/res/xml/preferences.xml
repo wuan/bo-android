@@ -8,8 +8,8 @@
         android:key="region"
         android:persistent="true"
         android:selectable="true"
-        android:title="@string/region"
-        android:summary="@string/region_summary" />
+        android:summary="@string/region_summary"
+        android:title="@string/region" />
     <ListPreference
         android:defaultValue="10000"
         android:enabled="true"
@@ -18,8 +18,8 @@
         android:key="raster_size"
         android:persistent="true"
         android:selectable="true"
-        android:title="@string/raster_size"
-        android:summary="@string/raster_size_summary" />
+        android:summary="@string/raster_size_summary"
+        android:title="@string/raster_size" />
     <ListPreference
         android:defaultValue="60"
         android:enabled="true"
@@ -28,12 +28,12 @@
         android:key="interval_duration"
         android:persistent="true"
         android:selectable="true"
-        android:title="@string/interval_duration"
-        android:summary="@string/interval_duration_summary" />
+        android:summary="@string/interval_duration_summary"
+        android:title="@string/interval_duration" />
 
     <PreferenceScreen
-        android:title="@string/map_settings"
-        android:summary="@string/map_settings_summary">
+        android:summary="@string/map_settings_summary"
+        android:title="@string/map_settings">
         <ListPreference
             android:defaultValue="SATELLITE"
             android:enabled="true"
@@ -42,17 +42,17 @@
             android:key="map_mode"
             android:persistent="true"
             android:selectable="true"
-            android:title="@string/map_mode"
-            android:summary="@string/map_mode_summary" />
+            android:summary="@string/map_mode_summary"
+            android:title="@string/map_mode" />
         <org.blitzortung.android.preferences.SlidePreferences
-            android:text="%"
             android:defaultValue="30"
-            android:max="60"
             android:key="map_fade"
+            android:max="60"
             android:persistent="true"
             android:selectable="true"
-            android:title="@string/map_fade"
-            android:summary="@string/map_fade_summary" />
+            android:summary="@string/map_fade_summary"
+            android:text="%"
+            android:title="@string/map_fade" />
         <ListPreference
             android:defaultValue="BLITZORTUNG"
             android:enabled="true"
@@ -61,27 +61,27 @@
             android:key="color_scheme"
             android:persistent="true"
             android:selectable="true"
-            android:title="@string/color_scheme"
-            android:summary="@string/color_scheme_summary" />
+            android:summary="@string/color_scheme_summary"
+            android:title="@string/color_scheme" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:enabled="true"
             android:key="show_participants"
             android:selectable="true"
-            android:title="@string/show_participants"
-            android:summary="@string/show_participants_summary" />
+            android:summary="@string/show_participants_summary"
+            android:title="@string/show_participants" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:enabled="true"
             android:key="location"
             android:selectable="true"
-            android:title="@string/show_location"
-            android:summary="@string/show_location_summary" />
+            android:summary="@string/show_location_summary"
+            android:title="@string/show_location" />
     </PreferenceScreen>
     <PreferenceScreen
         android:key="data_settings"
-        android:title="@string/data_settings"
-        android:summary="@string/data_settings_summary">
+        android:summary="@string/data_settings_summary"
+        android:title="@string/data_settings">
         <ListPreference
             android:defaultValue="30"
             android:enabled="true"
@@ -90,8 +90,8 @@
             android:key="historic_timestep"
             android:persistent="true"
             android:selectable="true"
-            android:title="@string/historic_timestep"
-            android:summary="@string/historic_timestep_summary" />
+            android:summary="@string/historic_timestep_summary"
+            android:title="@string/historic_timestep" />
         <ListPreference
             android:defaultValue="60"
             android:enabled="true"
@@ -100,8 +100,8 @@
             android:key="query_period"
             android:persistent="true"
             android:selectable="true"
-            android:title="@string/query_period"
-            android:summary="@string/query_period_summary" />
+            android:summary="@string/query_period_summary"
+            android:title="@string/query_period" />
         <ListPreference
             android:defaultValue="RPC"
             android:enabled="true"
@@ -110,24 +110,24 @@
             android:key="data_source"
             android:persistent="true"
             android:selectable="true"
-            android:title="@string/data_source"
-            android:summary="@string/data_source_summary" />
+            android:summary="@string/data_source_summary"
+            android:title="@string/data_source" />
         <EditTextPreference
             android:defaultValue=""
             android:key="username"
             android:persistent="true"
-            android:title="@string/username"
-            android:summary="@string/username_summary" />
+            android:summary="@string/username_summary"
+            android:title="@string/username" />
         <EditTextPreference
             android:inputType="textPassword"
             android:key="password"
             android:persistent="true"
-            android:title="@string/password"
-            android:summary="@string/password_summary" />
+            android:summary="@string/password_summary"
+            android:title="@string/password" />
     </PreferenceScreen>
     <PreferenceScreen
-        android:title="@string/location_settings"
-        android:summary="@string/location_settings_summary">
+        android:summary="@string/location_settings_summary"
+        android:title="@string/location_settings">
         <ListPreference
             android:defaultValue="network"
             android:enabled="true"
@@ -136,34 +136,34 @@
             android:key="location_mode"
             android:persistent="true"
             android:selectable="true"
-            android:title="@string/location_mode"
-            android:summary="@string/location_mode_summary" />
+            android:summary="@string/location_mode_summary"
+            android:title="@string/location_mode" />
         <EditTextPreference
             android:defaultValue="11.0"
             android:inputType="numberDecimal|numberSigned"
             android:key="location_longitude"
             android:persistent="true"
-            android:title="@string/longitude"
-            android:summary="@string/location_longitude_summary" />
+            android:summary="@string/location_longitude_summary"
+            android:title="@string/longitude" />
         <EditTextPreference
             android:defaultValue="49.0"
             android:inputType="numberDecimal|numberSigned"
             android:key="location_latitude"
             android:persistent="true"
-            android:title="@string/latitude"
-            android:summary="@string/location_latitude_summary" />
+            android:summary="@string/location_latitude_summary"
+            android:title="@string/latitude" />
 
     </PreferenceScreen>
     <PreferenceScreen
-        android:title="@string/alarm_settings"
-        android:summary="@string/alarm_settings_summary">
+        android:summary="@string/alarm_settings_summary"
+        android:title="@string/alarm_settings">
         <CheckBoxPreference
             android:defaultValue="true"
             android:enabled="true"
             android:key="alarm_enabled"
             android:selectable="true"
-            android:title="@string/alarm_enabled"
-            android:summary="@string/alarm_enabled_summary" />
+            android:summary="@string/alarm_enabled_summary"
+            android:title="@string/alarm_enabled" />
 
         <ListPreference
             android:defaultValue="0"
@@ -173,8 +173,8 @@
             android:key="background_query_period"
             android:persistent="true"
             android:selectable="true"
-            android:title="@string/background_query_period"
-            android:summary="@string/background_query_period_summary" />
+            android:summary="@string/background_query_period_summary"
+            android:title="@string/background_query_period" />
         <ListPreference
             android:defaultValue="50"
             android:enabled="true"
@@ -183,8 +183,8 @@
             android:key="notification_distance_limit"
             android:persistent="true"
             android:selectable="true"
-            android:title="@string/notification_distance_limit"
-            android:summary="@string/notification_distance_limit_summary" />
+            android:summary="@string/notification_distance_limit_summary"
+            android:title="@string/notification_distance_limit" />
 
         <ListPreference
             android:defaultValue="25"
@@ -194,29 +194,29 @@
             android:key="signaling_distance_limit"
             android:persistent="true"
             android:selectable="true"
-            android:title="@string/signaling_distance_limit"
-            android:summary="@string/signaling_distance_limit_summary" />
+            android:summary="@string/signaling_distance_limit_summary"
+            android:title="@string/signaling_distance_limit" />
         <PreferenceScreen android:title="@string/alarm_signal_settings">
             <RingtonePreference
                 android:defaultValue=""
                 android:enabled="true"
-                android:showDefault="true"
                 android:key="alarm_sound_signal"
+                android:persistent="true"
                 android:ringtoneType="notification"
-                android:persistent="true"
                 android:selectable="true"
-                android:title="@string/alarm_audio_signal"
-                android:summary="@string/alarm_audio_signal_summary" />
+                android:showDefault="true"
+                android:summary="@string/alarm_audio_signal_summary"
+                android:title="@string/alarm_audio_signal" />
             <org.blitzortung.android.preferences.SlidePreferences
-                android:enabled="true"
-                android:text=""
                 android:defaultValue="3"
-                android:max="30"
+                android:enabled="true"
                 android:key="alarm_vibration_signal"
+                android:max="30"
                 android:persistent="true"
                 android:selectable="true"
-                android:title="@string/alarm_vibration_signal"
-                android:summary="@string/alarm_vibration_signal_summary" />
+                android:summary="@string/alarm_vibration_signal_summary"
+                android:text=""
+                android:title="@string/alarm_vibration_signal" />
         </PreferenceScreen>
     </PreferenceScreen>
     <PreferenceScreen android:title="@string/generic_settings">
@@ -228,15 +228,15 @@
             android:key="measurement_unit"
             android:persistent="true"
             android:selectable="true"
-            android:title="@string/measurement_unit"
-            android:summary="@string/measurement_unit_summary" />
+            android:summary="@string/measurement_unit_summary"
+            android:title="@string/measurement_unit" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:enabled="true"
             android:key="do_not_sleep"
             android:selectable="true"
-            android:title="@string/do_not_sleep"
-            android:summary="@string/do_not_sleep_summary" />
+            android:summary="@string/do_not_sleep_summary"
+            android:title="@string/do_not_sleep" />
     </PreferenceScreen>
 
 </PreferenceScreen>

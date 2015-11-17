@@ -42,6 +42,105 @@ import static org.mockito.Mockito.when;
 @Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
 public class OwnLocationOverlayTest {
 
+    private final List<Overlay> overlays = Lists.newArrayList();
+    private OwnLocationOverlay ownLocationOverlay;
+
+    @Mock
+    private Context context;
+
+    @Mock
+    private Resources resources;
+
+    @Mock
+    private OwnMapView mapView;
+
+    @Mock
+    private LocationHandler locationHandler;
+
+    private SharedPreferences sharedPreferences;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+
+        sharedPreferences = ShadowPreferenceManager.getDefaultSharedPreferences(RuntimeEnvironment.application);
+
+        when(context.getSystemService(Context.LOCATION_SERVICE)).thenReturn(locationHandler);
+        when(context.getSharedPreferences(anyString(), anyInt())).thenReturn(sharedPreferences);
+        when(context.getResources()).thenReturn(resources);
+        when(context.getApplicationContext()).thenReturn(RuntimeEnvironment.application);
+        when(mapView.getOverlays()).thenReturn(overlays);
+
+        ownLocationOverlay = new OwnLocationOverlay(context, mapView);
+    }
+
+    @Test
+    public void testConstruct() {
+        verify(mapView, times(1)).addZoomListener(any(OwnMapView.ZoomListener.class));
+        verify(mapView, times(1)).getZoomLevel();
+
+        assertThat(overlays).hasSize(1);
+        assertThat(overlays).contains(ownLocationOverlay);
+    }
+
+    @Test
+    public void testSize() {
+        assertThat(ownLocationOverlay.size()).isEqualTo(0);
+
+        enableOwnLocation();
+
+        assertThat(ownLocationOverlay.size()).isEqualTo(0);
+
+        updateLocation();
+
+        assertThat(ownLocationOverlay.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void testCreateItem() {
+        assertThat(ownLocationOverlay.createItem(0)).isNull();
+
+        enableOwnLocation();
+
+        assertThat(ownLocationOverlay.createItem(0)).isNull();
+
+        updateLocation();
+
+        assertThat(ownLocationOverlay.createItem(0)).isEqualTo(OwnLocationOverlayItem.class);
+    }
+
+    @Test
+    public void testOnLocationChanged() {
+        ownLocationOverlay.getLocationEventConsumer().accept(new LocationEvent(mock(Location.class)));
+
+        assertThat(ownLocationOverlay.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void testOnLocationChangedWithNullLocation() {
+        ownLocationOverlay.getLocationEventConsumer().accept(new LocationEvent(null));
+
+        assertThat(ownLocationOverlay.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void testDisableOwnLocation() {
+        ownLocationOverlay.getLocationEventConsumer().accept(new LocationEvent(mock(Location.class)));
+
+        ownLocationOverlay.disableOwnLocation();
+
+        assertThat(ownLocationOverlay.size()).isEqualTo(0);
+    }
+
+    private void enableOwnLocation() {
+        sharedPreferences.edit().putBoolean(PreferenceKey.SHOW_LOCATION.toString(), true).commit();
+        ownLocationOverlay.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.SHOW_LOCATION.toString());
+    }
+
+    private void updateLocation() {
+        ownLocationOverlay.getLocationEventConsumer().accept(new LocationEvent(mock(Location.class)));
+    }
+
     @SuppressWarnings({"UnusedDeclaration"})
     @Implements(OverlayItem.class)
     public class ShadowOverlayItem {
@@ -70,7 +169,8 @@ public class OwnLocationOverlayTest {
             return snippet;
         }
 
-        @Override @Implementation
+        @Override
+        @Implementation
         public boolean equals(Object o) {
             if (o == null) return false;
             //o = shadowOf(o);
@@ -86,7 +186,8 @@ public class OwnLocationOverlayTest {
                     geoPoint.equals(that.geoPoint);
         }
 
-        @Override @Implementation
+        @Override
+        @Implementation
         public int hashCode() {
             int result = 13;
             result = title == null ? result : 19 * result + title.hashCode();
@@ -94,113 +195,5 @@ public class OwnLocationOverlayTest {
             result = geoPoint == null ? result : 19 * result + geoPoint.hashCode();
             return result;
         }
-    }
-
-    private OwnLocationOverlay ownLocationOverlay;
-
-    @Mock
-    private Context context;
-
-    @Mock
-    private Resources resources;
-
-    @Mock
-    private OwnMapView mapView;
-
-    @Mock
-    private LocationHandler locationHandler;
-
-    private SharedPreferences sharedPreferences;
-
-    private final List<Overlay> overlays = Lists.newArrayList();
-
-    @Before
-    public void setUp()
-    {
-        MockitoAnnotations.initMocks(this);
-
-        sharedPreferences = ShadowPreferenceManager.getDefaultSharedPreferences(RuntimeEnvironment.application);
-
-        when(context.getSystemService(Context.LOCATION_SERVICE)).thenReturn(locationHandler);
-        when(context.getSharedPreferences(anyString(), anyInt())).thenReturn(sharedPreferences);
-        when(context.getResources()).thenReturn(resources);
-        when(context.getApplicationContext()).thenReturn(RuntimeEnvironment.application);
-        when(mapView.getOverlays()).thenReturn(overlays);
-
-        ownLocationOverlay = new OwnLocationOverlay(context, mapView);
-    }
-
-    @Test
-    public void testConstruct()
-    {
-        verify(mapView, times(1)).addZoomListener(any(OwnMapView.ZoomListener.class));
-        verify(mapView, times(1)).getZoomLevel();
-
-        assertThat(overlays).hasSize(1);
-        assertThat(overlays).contains(ownLocationOverlay);
-    }
-
-    @Test
-    public void testSize()
-    {
-        assertThat(ownLocationOverlay.size()).isEqualTo(0);
-
-        enableOwnLocation();
-
-        assertThat(ownLocationOverlay.size()).isEqualTo(0);
-
-        updateLocation();
-
-        assertThat(ownLocationOverlay.size()).isEqualTo(1);
-    }
-
-    @Test
-    public void testCreateItem()
-    {
-        assertThat(ownLocationOverlay.createItem(0)).isNull();
-
-        enableOwnLocation();
-
-        assertThat(ownLocationOverlay.createItem(0)).isNull();
-
-        updateLocation();
-
-        assertThat(ownLocationOverlay.createItem(0)).isEqualTo(OwnLocationOverlayItem.class);
-    }
-
-    @Test
-    public void testOnLocationChanged()
-    {
-        ownLocationOverlay.getLocationEventConsumer().accept(new LocationEvent(mock(Location.class)));
-        
-        assertThat(ownLocationOverlay.size()).isEqualTo(0);
-    }
-    
-    @Test
-    public void testOnLocationChangedWithNullLocation()
-    {
-        ownLocationOverlay.getLocationEventConsumer().accept(new LocationEvent(null));
-
-        assertThat(ownLocationOverlay.size()).isEqualTo(0);
-    }
-
-    @Test
-    public void testDisableOwnLocation()
-    {
-        ownLocationOverlay.getLocationEventConsumer().accept(new LocationEvent(mock(Location.class)));
-
-        ownLocationOverlay.disableOwnLocation();
-
-        assertThat(ownLocationOverlay.size()).isEqualTo(0);
-    }
-    
-    private void enableOwnLocation() {
-        sharedPreferences.edit().putBoolean(PreferenceKey.SHOW_LOCATION.toString(), true).commit();
-        ownLocationOverlay.onSharedPreferenceChanged(sharedPreferences, PreferenceKey.SHOW_LOCATION.toString());
-    }
-
-    private void updateLocation()
-    {
-        ownLocationOverlay.getLocationEventConsumer().accept(new LocationEvent(mock(Location.class)));
     }
 }

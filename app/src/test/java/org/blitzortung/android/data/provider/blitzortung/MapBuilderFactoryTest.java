@@ -1,7 +1,7 @@
 package org.blitzortung.android.data.provider.blitzortung;
 
-import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.Station;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.provider.blitzortung.generic.LineSplitter;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,8 +25,7 @@ public class MapBuilderFactoryTest {
     private MapBuilderFactory mapBuilderFactory;
 
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         mapBuilderFactory = new MapBuilderFactory(strikeLineSplitter, stationLineSplitter);
@@ -59,10 +58,10 @@ public class MapBuilderFactoryTest {
         MapBuilder<Station> stationMapBuilder = mapBuilderFactory.createStationMapBuilder();
 
         when(stationLineSplitter.split("<line>")).thenReturn(
-                new String[] {
-                   "city;\"Egaldorf\"",
-                   "pos;43.345542;11.465365;239",
-                   "last_signal;\"2013-10-06 14:15:55\""
+                new String[]{
+                        "city;\"Egaldorf\"",
+                        "pos;43.345542;11.465365;239",
+                        "last_signal;\"2013-10-06 14:15:55\""
                 }
         );
 

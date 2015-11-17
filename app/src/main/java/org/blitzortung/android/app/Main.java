@@ -77,21 +77,13 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
     public static final String LOG_TAG = "BO_ANDROID";
 
     public static final int REQUEST_GPS = 1;
-
-    protected StatusComponent statusComponent;
-
-    private FadeOverlay fadeOverlay;
-
-    protected StrikesOverlay strikesOverlay;
-
-    private ParticipantsOverlay participantsOverlay;
-
-    private OwnLocationOverlay ownLocationOverlay;
-
-    private boolean clearData;
-
     private final Set<String> androidIdsForExtendedFunctionality = new HashSet<>(Arrays.asList("e72d101ce1bcdee3", "6d1b9a3da993af2d"));
-
+    protected StatusComponent statusComponent;
+    protected StrikesOverlay strikesOverlay;
+    private FadeOverlay fadeOverlay;
+    private ParticipantsOverlay participantsOverlay;
+    private OwnLocationOverlay ownLocationOverlay;
+    private boolean clearData;
     private ButtonColumnHandler<ImageButton> buttonColumnHandler;
 
     private HistoryController historyController;
@@ -103,6 +95,74 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
     private Optional<ResultEvent> currentResult;
     private HistogramView histogramView;
     private VersionComponent versionComponent;
+    private Consumer<DataEvent> dataEventConsumer = new Consumer<DataEvent>() {
+        @Override
+        public void accept(DataEvent event) {
+            if (event instanceof RequestStartedEvent) {
+                buttonColumnHandler.lockButtonColumn();
+                statusComponent.startProgress();
+            } else if (event instanceof ResultEvent) {
+                ResultEvent result = (ResultEvent) event;
+
+                if (result.hasFailed()) {
+                    statusComponent.indicateError(true);
+                } else {
+                    statusComponent.indicateError(false);
+
+                    if (result.getParameters().getIntervalDuration() != appService.getDataHandler().getIntervalDuration()) {
+                        reloadData();
+                    }
+
+                    currentResult = Optional.of(result);
+
+                    Log.d(Main.LOG_TAG, "Main.onDataUpdate() " + result);
+
+                    Parameters resultParameters = result.getParameters();
+
+                    clearDataIfRequested();
+
+                    if (result.containsStrikes()) {
+                        strikesOverlay.setParameters(resultParameters);
+                        strikesOverlay.setRasterParameters(result.getRasterParameters());
+                        strikesOverlay.setReferenceTime(result.getReferenceTime());
+
+                        if (result.isIncrementalData()) {
+                            strikesOverlay.expireStrikes();
+                        } else {
+                            strikesOverlay.clear();
+                        }
+                        strikesOverlay.addStrikes(result.getStrikes());
+
+                        alertView.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.getParameters().getIntervalDuration());
+
+                        strikesOverlay.refresh();
+                        legendView.requestLayout();
+                    }
+
+                    if (!result.containsRealtimeData()) {
+                        setHistoricStatusString();
+                    }
+
+                    if (participantsOverlay != null && result.containsParticipants()) {
+                        participantsOverlay.setParticipants(result.getStations());
+                        participantsOverlay.refresh();
+                    }
+                }
+
+                statusComponent.stopProgress();
+
+                buttonColumnHandler.unlockButtonColumn();
+
+                getMapView().invalidate();
+                legendView.invalidate();
+            } else if (event instanceof ClearDataEvent) {
+                clearData();
+            } else if (event instanceof StatusEvent) {
+                StatusEvent statusEvent = (StatusEvent) event;
+                setStatusString(statusEvent.getStatus());
+            }
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -413,75 +473,6 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
     protected boolean isRouteDisplayed() {
         return false;
     }
-
-    private Consumer<DataEvent> dataEventConsumer = new Consumer<DataEvent>() {
-        @Override
-        public void accept(DataEvent event) {
-            if (event instanceof RequestStartedEvent) {
-                buttonColumnHandler.lockButtonColumn();
-                statusComponent.startProgress();
-            } else if (event instanceof ResultEvent) {
-                ResultEvent result = (ResultEvent) event;
-
-                if (result.hasFailed()) {
-                    statusComponent.indicateError(true);
-                } else {
-                    statusComponent.indicateError(false);
-
-                    if (result.getParameters().getIntervalDuration() != appService.getDataHandler().getIntervalDuration()) {
-                        reloadData();
-                    }
-
-                    currentResult = Optional.of(result);
-
-                    Log.d(Main.LOG_TAG, "Main.onDataUpdate() " + result);
-
-                    Parameters resultParameters = result.getParameters();
-
-                    clearDataIfRequested();
-
-                    if (result.containsStrikes()) {
-                        strikesOverlay.setParameters(resultParameters);
-                        strikesOverlay.setRasterParameters(result.getRasterParameters());
-                        strikesOverlay.setReferenceTime(result.getReferenceTime());
-
-                        if (result.isIncrementalData()) {
-                            strikesOverlay.expireStrikes();
-                        } else {
-                            strikesOverlay.clear();
-                        }
-                        strikesOverlay.addStrikes(result.getStrikes());
-
-                        alertView.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.getParameters().getIntervalDuration());
-
-                        strikesOverlay.refresh();
-                        legendView.requestLayout();
-                    }
-
-                    if (!result.containsRealtimeData()) {
-                        setHistoricStatusString();
-                    }
-
-                    if (participantsOverlay != null && result.containsParticipants()) {
-                        participantsOverlay.setParticipants(result.getStations());
-                        participantsOverlay.refresh();
-                    }
-                }
-
-                statusComponent.stopProgress();
-
-                buttonColumnHandler.unlockButtonColumn();
-
-                getMapView().invalidate();
-                legendView.invalidate();
-            } else if (event instanceof ClearDataEvent) {
-                clearData();
-            } else if (event instanceof StatusEvent) {
-                StatusEvent statusEvent = (StatusEvent) event;
-                setStatusString(statusEvent.getStatus());
-            }
-        }
-    };
 
     public Consumer<DataEvent> getDataEventConsumer() {
         return dataEventConsumer;

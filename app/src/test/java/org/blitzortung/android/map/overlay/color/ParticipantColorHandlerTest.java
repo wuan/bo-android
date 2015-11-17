@@ -1,7 +1,7 @@
 package org.blitzortung.android.map.overlay.color;
 
 import android.content.SharedPreferences;
-import org.blitzortung.android.app.Preferences;
+
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,8 +19,7 @@ public class ParticipantColorHandlerTest {
     private ParticipantColorHandler participantColorHandler;
 
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         when(sharedPreferences.getString(PreferenceKey.MAP_TYPE.toString(), ColorTarget.SATELLITE.toString())).thenReturn(ColorTarget.SATELLITE.toString());
@@ -30,8 +29,7 @@ public class ParticipantColorHandlerTest {
     }
 
     @Test
-    public void testSatelliteColors()
-    {
+    public void testSatelliteColors() {
         int[] colors = participantColorHandler.getColors(ColorTarget.SATELLITE);
 
         assertThat(colors.length, is(3));
@@ -39,8 +37,7 @@ public class ParticipantColorHandlerTest {
     }
 
     @Test
-    public void testMapColors()
-    {
+    public void testMapColors() {
         int[] colors = participantColorHandler.getColors(ColorTarget.STREETMAP);
 
         assertThat(colors.length, is(3));

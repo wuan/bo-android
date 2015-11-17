@@ -9,18 +9,10 @@ import lombok.Value;
 @EqualsAndHashCode
 public class Station {
 
-    public enum State {
-        ON, DELAYED, OFF
-    }
-
     public static final long OFFLINE_SINCE_NOT_SET = -1;
-
     private final String name;
-
     private final float longitude;
-
     private final float latitude;
-
     private final long offlineSince;
 
     public State getState() {
@@ -39,5 +31,9 @@ public class Station {
                 return State.ON;
             }
         }
+    }
+
+    public enum State {
+        ON, DELAYED, OFF
     }
 }

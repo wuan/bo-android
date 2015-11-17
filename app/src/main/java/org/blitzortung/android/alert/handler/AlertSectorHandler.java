@@ -2,7 +2,6 @@ package org.blitzortung.android.alert.handler;
 
 import android.location.Location;
 
-import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 
 import org.blitzortung.android.alert.AlertParameters;

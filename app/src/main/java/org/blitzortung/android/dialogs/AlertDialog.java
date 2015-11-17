@@ -12,9 +12,9 @@ import org.blitzortung.android.map.overlay.color.ColorHandler;
 public class AlertDialog extends android.app.AlertDialog {
 
     private final ColorHandler colorHandler;
-    private AlertView alertView;
     private final AppService service;
     int intervalDuration;
+    private AlertView alertView;
 
     public AlertDialog(Context context, AppService service, ColorHandler colorHandler) {
         super(context);

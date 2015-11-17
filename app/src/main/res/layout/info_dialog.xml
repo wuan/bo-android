@@ -1,22 +1,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/info_dialog"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:orientation="vertical"
-              android:padding="10dp">
+    android:id="@+id/info_dialog"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="10dp">
 
     <TextView
-            android:id="@+id/info_text"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:text="@string/info_text"
-            android:textColor="#FFF"/>
+        android:id="@+id/info_text"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:text="@string/info_text"
+        android:textColor="#FFF" />
 
     <TextView
-            android:id="@+id/copyright_text"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:text="@string/copyright"
-            android:textColor="#FFF"/>
+        android:id="@+id/copyright_text"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:text="@string/copyright"
+        android:textColor="#FFF" />
 
 </LinearLayout>

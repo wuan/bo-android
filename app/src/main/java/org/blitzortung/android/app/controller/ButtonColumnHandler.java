@@ -1,9 +1,8 @@
 package org.blitzortung.android.app.controller;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
-import org.blitzortung.android.app.Main;
+
 import org.blitzortung.android.app.helper.ViewHelper;
 
 import java.util.ArrayList;

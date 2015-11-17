@@ -2,15 +2,14 @@ package org.blitzortung.android.alert;
 
 import android.content.res.Resources;
 
-import org.blitzortung.android.alert.handler.AlertStatusHandler;
 import org.blitzortung.android.alert.data.AlertStatus;
+import org.blitzortung.android.alert.handler.AlertStatusHandler;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -29,7 +28,7 @@ public class AlertLabelHandlerTest {
 
     @Mock
     private AlertStatus alertStatus;
-    
+
     @Mock
     private AlertResult alertResult;
 
@@ -39,8 +38,7 @@ public class AlertLabelHandlerTest {
     private Resources resources;
 
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         resources = RuntimeEnvironment.application.getResources();
@@ -49,8 +47,7 @@ public class AlertLabelHandlerTest {
     }
 
     @Test
-    public void testApplyWithNoAlarm()
-    {
+    public void testApplyWithNoAlarm() {
         alertLabelHandler.apply(null);
 
         verify(alertLabel, times(1)).setAlarmTextColor(0xff00ff00);
@@ -58,8 +55,7 @@ public class AlertLabelHandlerTest {
     }
 
     @Test
-    public void testApplyWithAlarmInHighDistance()
-    {
+    public void testApplyWithAlarmInHighDistance() {
         mockAlarmInRange(50.1f, "SO");
 
         alertLabelHandler.apply(alertResult);
@@ -69,8 +65,7 @@ public class AlertLabelHandlerTest {
     }
 
     @Test
-    public void testApplyWithAlarmInIntermediateDistance()
-    {
+    public void testApplyWithAlarmInIntermediateDistance() {
         mockAlarmInRange(20.1f, "NW");
 
         alertLabelHandler.apply(alertResult);
@@ -80,8 +75,7 @@ public class AlertLabelHandlerTest {
     }
 
     @Test
-    public void testApplyWithAlarmInMinimumRange()
-    {
+    public void testApplyWithAlarmInMinimumRange() {
         mockAlarmInRange(20f, "S");
 
         alertLabelHandler.apply(alertResult);
@@ -90,8 +84,7 @@ public class AlertLabelHandlerTest {
         verify(alertLabel, times(1)).setAlarmText("20km S");
     }
 
-    private void mockAlarmInRange(float distance, String sectorLabel)
-    {
+    private void mockAlarmInRange(float distance, String sectorLabel) {
         when(alertResult.getClosestStrikeDistance()).thenReturn(distance);
         when(alertResult.getDistanceUnitName()).thenReturn("km");
         when(alertResult.getBearingName()).thenReturn(sectorLabel);

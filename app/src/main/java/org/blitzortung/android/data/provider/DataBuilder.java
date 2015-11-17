@@ -69,7 +69,7 @@ public class DataBuilder {
             if (jsonArray.length() >= 6) {
 
                 String offlineSinceString = jsonArray.getString(5);
-                stationBuilder.offlineSince( offlineSinceString.length() > 0
+                stationBuilder.offlineSince(offlineSinceString.length() > 0
                         ? TimeFormat.parseTimeWithMilliseconds(offlineSinceString)
                         : Station.OFFLINE_SINCE_NOT_SET);
             } else {

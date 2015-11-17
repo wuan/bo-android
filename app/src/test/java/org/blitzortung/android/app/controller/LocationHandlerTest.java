@@ -28,19 +28,19 @@ import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class LocationHandlerTest {
-    
+
     @Mock
     private Context context;
-    
+
     @Mock
     private SharedPreferences sharedPreferences;
-    
+
     @Mock
     private LocationManager locationManager;
 
     @Mock
     private Consumer<LocationEvent> locationListener;
-    
+
     private LocationHandler locationHandler;
 
     @Before
@@ -52,17 +52,17 @@ public class LocationHandlerTest {
         when(context.getResources()).thenReturn(application.getResources());
         when(locationManager.getAllProviders()).thenReturn(Lists.newArrayList("network", "gps"));
         setLocationProviderPrefs(LocationManager.NETWORK_PROVIDER);
-        
+
         locationHandler = new LocationHandler(context, sharedPreferences);
     }
-    
+
     @Test
     public void testInitialization() {
         verify(sharedPreferences, times(1)).getString(PreferenceKey.LOCATION_MODE.toString(), LocationHandler.Provider.NETWORK.getType());
         verify(sharedPreferences, times(1)).registerOnSharedPreferenceChangeListener(locationHandler);
         verify(locationManager, times(1)).addGpsStatusListener(locationHandler);
         verify(locationManager, times(1)).removeUpdates(locationHandler);
-        verify(locationManager, times(1)).requestLocationUpdates(LocationHandler.Provider.NETWORK.getType(), 10000, 10, locationHandler);       
+        verify(locationManager, times(1)).requestLocationUpdates(LocationHandler.Provider.NETWORK.getType(), 10000, 10, locationHandler);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class LocationHandlerTest {
         verify(locationManager, times(2)).removeUpdates(locationHandler);
         verify(locationManager, times(1)).requestLocationUpdates(anyString(), anyInt(), anyInt(), eq(locationHandler));
     }
-    
+
     private void setLocationProviderPrefs(String provider) {
         when(sharedPreferences.getString(PreferenceKey.LOCATION_MODE.toString(), LocationHandler.Provider.NETWORK.getType())).thenReturn(provider);
     }

@@ -13,7 +13,9 @@ import org.robolectric.annotation.Config;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
@@ -50,8 +52,7 @@ public class MainTest {
 
 
     @Test
-    public void testCreateStatusTextWithStrikeNumberSet()
-    {
+    public void testCreateStatusTextWithStrikeNumberSet() {
         when(strikesOverlay.getTotalNumberOfStrikes()).thenReturn(1234);
 
         main.setStatusString("foo");
@@ -63,8 +64,7 @@ public class MainTest {
     }
 
     @Test
-    public void testRunWithRasterAndListenerSet()
-    {
+    public void testRunWithRasterAndListenerSet() {
         when(strikesOverlay.hasRasterParameters()).thenReturn(true);
 
         main.setStatusString("foo");

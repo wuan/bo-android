@@ -25,27 +25,25 @@ import java.util.TimeZone;
 public class JsonRpcDataProvider extends DataProvider {
 
     private static final SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
+    static private final String[] SERVERS = new String[]{"http://bo-service.tryb.de:7080/", "http://bo-service.tryb.de/"};
+    static private int CURRENT_SERVER = 0;
 
     static {
         TimeZone tz = TimeZone.getTimeZone("UTC");
         DATE_TIME_FORMATTER.setTimeZone(tz);
     }
 
-    static private final String[] SERVERS = new String[]{"http://bo-service.tryb.de:7080/", "http://bo-service.tryb.de/"};
-
-    static private int CURRENT_SERVER = 0;
-
-
-    private JsonRpcClient client;
-
-    private int nextId = 0;
-
-    private boolean incrementalResult;
-
     private final DataBuilder dataBuilder;
+    private JsonRpcClient client;
+    private int nextId = 0;
+    private boolean incrementalResult;
 
     public JsonRpcDataProvider() {
         dataBuilder = new DataBuilder();
+    }
+
+    private static String getServer() {
+        return SERVERS[CURRENT_SERVER];
     }
 
     @Override
@@ -140,7 +138,6 @@ public class JsonRpcDataProvider extends DataProvider {
         client = null;
     }
 
-
     @Override
     public void reset() {
         nextId = 0;
@@ -196,10 +193,6 @@ public class JsonRpcDataProvider extends DataProvider {
             }
             result.histogram(histogram);
         }
-    }
-
-    private static String getServer() {
-        return SERVERS[CURRENT_SERVER];
     }
 
     private void skipServer() {

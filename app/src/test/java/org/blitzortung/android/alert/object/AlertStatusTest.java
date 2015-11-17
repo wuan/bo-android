@@ -12,7 +12,9 @@ import org.robolectric.RobolectricTestRunner;
 import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class AlertStatusTest {
@@ -41,7 +43,7 @@ public class AlertStatusTest {
 
         alertStatus = new AlertStatus(alertObjectFactory, alertParameters);
     }
-    
+
     @Test
     public void testConstruct() {
         verify(alertObjectFactory, times(1)).createAlarmSector(alertParameters, "foo", 90f, -90f);

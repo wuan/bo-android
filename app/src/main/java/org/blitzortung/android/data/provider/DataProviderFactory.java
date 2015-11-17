@@ -1,11 +1,11 @@
 package org.blitzortung.android.data.provider;
 
-import org.blitzortung.android.data.provider.standard.JsonRpcDataProvider;
 import org.blitzortung.android.data.provider.blitzortung.BlitzortungHttpDataProvider;
+import org.blitzortung.android.data.provider.standard.JsonRpcDataProvider;
 
 public class DataProviderFactory {
     public DataProvider getDataProviderForType(DataProviderType providerType) {
-        switch(providerType) {
+        switch (providerType) {
             case RPC:
                 return new JsonRpcDataProvider();
 

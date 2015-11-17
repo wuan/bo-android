@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.Resources;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,36 +17,23 @@ import org.robolectric.annotation.RealObject;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class NotificationHandlerTest {
 
-    @Implements(Notification.class)
-    public class ShadowNotification {
-        @RealObject
-        private Notification realNotification;
-
-        public void __constructor__(int icon, CharSequence tickerText, long when) {
-            realNotification.icon = icon;
-            realNotification.tickerText = tickerText;
-            realNotification.when = when;
-        }
-    }
-
     @Mock
     private Activity activity;
-
     @Mock
     private Resources resources;
-
     @Mock
     private NotificationManager notificationManager;
-
     private NotificationHandler notificationHandler;
+
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         when(activity.getSystemService(Context.NOTIFICATION_SERVICE)).thenReturn(notificationManager);
@@ -82,6 +70,18 @@ public class NotificationHandlerTest {
         notificationHandler = new NotificationHandler(activity);
 
         notificationHandler.clearNotification();
+    }
+
+    @Implements(Notification.class)
+    public class ShadowNotification {
+        @RealObject
+        private Notification realNotification;
+
+        public void __constructor__(int icon, CharSequence tickerText, long when) {
+            realNotification.icon = icon;
+            realNotification.tickerText = tickerText;
+            realNotification.when = when;
+        }
     }
 
 }

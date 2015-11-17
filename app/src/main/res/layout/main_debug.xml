@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
-    <org.blitzortung.android.map.OwnMapView
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/mapview"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:apiKey="0H7fqZDUCcfqoCLj_0_5q9_2M6bq_L0G1CxtVBQ"
-            android:clickable="true"/>
+    <org.blitzortung.android.map.OwnMapView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/mapview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:apiKey="0H7fqZDUCcfqoCLj_0_5q9_2M6bq_L0G1CxtVBQ"
+        android:clickable="true" />
 
     <include
-            android:id="@+id/cell2"
-            layout="@layout/map_overlay"/>
+        android:id="@+id/cell2"
+        layout="@layout/map_overlay" />
 
 </RelativeLayout>

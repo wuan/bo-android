@@ -18,22 +18,22 @@ import org.blitzortung.android.map.overlay.color.ColorHandler;
 
 public class HistogramView extends View {
 
-    private float width;
-    private float height;
-
     final private float padding;
     final private float textSize;
-
     final private Paint backgroundPaint;
     final private Paint foregroundPaint;
     final private Paint textPaint;
-
-    private StrikesOverlay strikesOverlay;
-
-    private int[] histogram;
-
     private final int defaultForegroundColor;
     private final RectF backgroundRect;
+    private float width;
+    private float height;
+    private StrikesOverlay strikesOverlay;
+    private int[] histogram;
+    private final Consumer<DataEvent> dataEventConsumer = event -> {
+        if (event instanceof ResultEvent) {
+            updateHistogram((ResultEvent) event);
+        }
+    };
 
     @SuppressWarnings("unused")
     public HistogramView(Context context, AttributeSet attrs) {
@@ -125,12 +125,6 @@ public class HistogramView extends View {
     public void setStrikesOverlay(StrikesOverlay strikesOverlay) {
         this.strikesOverlay = strikesOverlay;
     }
-
-    private final Consumer<DataEvent> dataEventConsumer = event -> {
-        if (event instanceof ResultEvent) {
-            updateHistogram((ResultEvent) event);
-        }
-    };
 
     public Consumer<DataEvent> getDataConsumer() {
         return dataEventConsumer;

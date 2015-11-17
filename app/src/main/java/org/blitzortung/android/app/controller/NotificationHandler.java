@@ -4,9 +4,9 @@ package org.blitzortung.android.app.controller;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 

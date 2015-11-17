@@ -18,7 +18,7 @@ public class RasterShape extends Shape {
     private int textColor;
 
     public RasterShape() {
-         rect = new RectF();
+        rect = new RectF();
     }
 
     @Override

@@ -2,7 +2,9 @@ package org.blitzortung.android.data.beans;
 
 import android.graphics.Point;
 import android.graphics.RectF;
+
 import com.google.android.maps.Projection;
+
 import org.blitzortung.android.data.Coordsys;
 import org.blitzortung.android.data.provider.DataBuilder;
 import org.json.JSONException;
@@ -17,16 +19,16 @@ import org.robolectric.annotation.Config;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
 public class RasterParametersTest {
-
-    private RasterParameters rasterParameters;
-
-    @Mock
-    private JSONObject jsonObject;
 
     private final float lon_start = -10;
     private final float lon_delta = 1;
@@ -35,6 +37,9 @@ public class RasterParametersTest {
     private final float lat_delta = 1.5f;
     private final int lat_count = 30;
     private final String info = "<info>";
+    private RasterParameters rasterParameters;
+    @Mock
+    private JSONObject jsonObject;
 
     @Before
     public void setUp() throws JSONException {
@@ -42,8 +47,8 @@ public class RasterParametersTest {
 
         when(jsonObject.getDouble("x0")).thenReturn((double) lon_start);
         when(jsonObject.getDouble("y1")).thenReturn((double) lat_start);
-        when(jsonObject.getDouble("xd")).thenReturn((double)lon_delta);
-        when(jsonObject.getDouble("yd")).thenReturn((double)lat_delta);
+        when(jsonObject.getDouble("xd")).thenReturn((double) lon_delta);
+        when(jsonObject.getDouble("yd")).thenReturn((double) lat_delta);
         when(jsonObject.getInt("xc")).thenReturn(lon_count);
         when(jsonObject.getInt("yc")).thenReturn(lat_count);
 
@@ -52,36 +57,31 @@ public class RasterParametersTest {
     }
 
     @Test
-    public void testGetCenterLongitude()
-    {
+    public void testGetCenterLongitude() {
         assertThat(rasterParameters.getCenterLongitude(0), is(lon_start + 0.5f * lon_delta));
 
         assertThat(rasterParameters.getCenterLongitude(lon_count - 1), is(lon_start + (0.5f + lon_count - 1) * lon_delta));
     }
 
     @Test
-    public void testGetCenterLatitude()
-    {
+    public void testGetCenterLatitude() {
         assertThat(rasterParameters.getCenterLatitude(0), is(lat_start - 0.5f * lat_delta));
 
         assertThat(rasterParameters.getCenterLatitude(lat_count - 1), is(lat_start - (0.5f + lat_count - 1) * lat_delta));
     }
 
     @Test
-    public void testGetLongitudeDelta()
-    {
+    public void testGetLongitudeDelta() {
         assertThat(rasterParameters.getLongitudeDelta(), is(lon_delta));
     }
 
     @Test
-    public void testGetLatitudeDelta()
-    {
+    public void testGetLatitudeDelta() {
         assertThat(rasterParameters.getLatitudeDelta(), is(lat_delta));
     }
 
     @Test
-    public void testGetRect()
-    {
+    public void testGetRect() {
         Projection projection = mock(Projection.class);
 
         when(projection.toPixels(eq(Coordsys.toMapCoords(lon_start, lat_start)), any(Point.class))).thenReturn(new Point(-5, 5));
@@ -97,21 +97,18 @@ public class RasterParametersTest {
     }
 
     @Test
-    public void testToString()
-    {
+    public void testToString() {
         assertThat(rasterParameters.toString(), is("RasterParameters(-10.0000, 1.0000; 60.0000, 1.5000)"));
     }
 
     @Test
-    public void testGetLongitudeIndex()
-    {
+    public void testGetLongitudeIndex() {
         assertThat(rasterParameters.getLongitudeIndex(lon_start), is(0));
         assertThat(rasterParameters.getLongitudeIndex(lon_start + lon_delta * lon_count), is(lon_count));
     }
 
     @Test
-    public void testGetLatitudeIndex()
-    {
+    public void testGetLatitudeIndex() {
         assertThat(rasterParameters.getLatitudeIndex(lat_start), is(0));
         assertThat(rasterParameters.getLatitudeIndex(lat_start - lat_delta * lat_count), is(lat_count));
     }

@@ -8,23 +8,28 @@ import android.widget.TextView;
 
 import com.annimon.stream.function.Consumer;
 
-import org.blitzortung.android.alert.AlertLabelHandler;
-import org.blitzortung.android.alert.event.AlertResultEvent;
 import org.blitzortung.android.alert.AlertLabel;
+import org.blitzortung.android.alert.AlertLabelHandler;
 import org.blitzortung.android.alert.event.AlertEvent;
+import org.blitzortung.android.alert.event.AlertResultEvent;
 import org.blitzortung.android.app.R;
 
 public class StatusComponent implements AlertLabel {
 
-    private TextView status;
-
-    private TextView warning;
-
-    private ProgressBar progressBar;
-
-    private ImageView errorIndicator;
-
     private final AlertLabelHandler alertLabelHandler;
+    private final Consumer<AlertEvent> alertEventConsumer = new Consumer<AlertEvent>() {
+        @Override
+        public void accept(AlertEvent event) {
+            alertLabelHandler.apply(
+                    event instanceof AlertResultEvent
+                            ? ((AlertResultEvent) event).getAlertResult()
+                            : null);
+        }
+    };
+    private TextView status;
+    private TextView warning;
+    private ProgressBar progressBar;
+    private ImageView errorIndicator;
 
     public StatusComponent(Activity activity) {
         status = (TextView) activity.findViewById(R.id.status);
@@ -67,16 +72,6 @@ public class StatusComponent implements AlertLabel {
     public void setAlarmText(String alarmText) {
         warning.setText(alarmText);
     }
-
-    private final Consumer<AlertEvent> alertEventConsumer = new Consumer<AlertEvent>() {
-        @Override
-        public void accept(AlertEvent event) {
-            alertLabelHandler.apply(
-                    event instanceof AlertResultEvent
-                            ? ((AlertResultEvent) event).getAlertResult()
-                            : null);
-        }
-    };
 
     public Consumer<AlertEvent> getAlertEventConsumer() {
         return alertEventConsumer;

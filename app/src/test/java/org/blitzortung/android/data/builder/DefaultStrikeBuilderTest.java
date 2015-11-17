@@ -54,7 +54,7 @@ public class DefaultStrikeBuilderTest {
         assertThat(strike.getLateralError()).isEqualTo(12.3f);
         assertThat(strike.getAltitude()).isEqualTo(0);
         assertThat(strike.getAmplitude()).isEqualTo(54.3f);
-        assertThat(strike.getStationCount()).isEqualTo((short)6);
+        assertThat(strike.getStationCount()).isEqualTo((short) 6);
 
     }
 

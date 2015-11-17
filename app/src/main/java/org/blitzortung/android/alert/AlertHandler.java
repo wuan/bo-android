@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.location.Location;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -14,23 +13,23 @@ import android.util.Log;
 
 import com.annimon.stream.function.Consumer;
 
-import org.blitzortung.android.alert.event.AlertResultEvent;
-import org.blitzortung.android.alert.event.AlertCancelEvent;
-import org.blitzortung.android.alert.event.AlertEvent;
-import org.blitzortung.android.alert.factory.AlertObjectFactory;
-import org.blitzortung.android.alert.handler.AlertStatusHandler;
 import org.blitzortung.android.alert.data.AlertSector;
 import org.blitzortung.android.alert.data.AlertStatus;
+import org.blitzortung.android.alert.event.AlertCancelEvent;
+import org.blitzortung.android.alert.event.AlertEvent;
+import org.blitzortung.android.alert.event.AlertResultEvent;
+import org.blitzortung.android.alert.factory.AlertObjectFactory;
+import org.blitzortung.android.alert.handler.AlertStatusHandler;
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
+import org.blitzortung.android.app.controller.NotificationHandler;
+import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.Strike;
 import org.blitzortung.android.data.provider.result.ClearDataEvent;
 import org.blitzortung.android.data.provider.result.DataEvent;
 import org.blitzortung.android.data.provider.result.ResultEvent;
 import org.blitzortung.android.location.LocationEvent;
 import org.blitzortung.android.location.LocationHandler;
-import org.blitzortung.android.app.controller.NotificationHandler;
-import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.util.MeasurementSystem;
 
 import java.util.Collection;
@@ -40,27 +39,18 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
     public static final AlertCancelEvent ALERT_CANCEL_EVENT = new AlertCancelEvent();
     private final Vibrator vibrator;
     private final NotificationHandler notificationHandler;
+    private final AlertParameters alertParameters;
+    private final AlertStatus alertStatus;
+    private final AlertStatusHandler alertStatusHandler;
+    private final LocationHandler locationHandler;
+    protected Consumer<AlertEvent> alertEventConsumer;
     private Context context;
     private Collection<? extends Strike> lastStrikes;
     private int vibrationSignalDuration;
     private Uri alarmSoundNotificationSignal;
-
-    private final AlertParameters alertParameters;
-
     private Location location;
-
     private boolean alertEnabled;
-
     private boolean alarmValid;
-
-    protected Consumer<AlertEvent> alertEventConsumer;
-
-    private final AlertStatus alertStatus;
-
-    private final AlertStatusHandler alertStatusHandler;
-
-    private final LocationHandler locationHandler;
-
     private float notificationDistanceLimit;
 
     private long notificationLastTimestamp;
@@ -68,6 +58,26 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
     private float signalingDistanceLimit;
 
     private long signalingLastTimestamp;
+    private final Consumer<LocationEvent> locationEventConsumer = new Consumer<LocationEvent>() {
+        @Override
+        public void accept(LocationEvent event) {
+            Log.v(Main.LOG_TAG, "AlertHandler received location " + location);
+            location = event.getLocation();
+            checkStrikes(lastStrikes);
+        }
+    };
+    private final Consumer<DataEvent> dataEventConsumer = event -> {
+        if (event instanceof ResultEvent) {
+            ResultEvent resultEvent = (ResultEvent) event;
+            if (!resultEvent.hasFailed() && resultEvent.containsRealtimeData()) {
+                checkStrikes(resultEvent.getStrikes());
+            } else {
+                invalidateAlert();
+            }
+        } else if (event instanceof ClearDataEvent) {
+            invalidateAlert();
+        }
+    };
 
     public AlertHandler(LocationHandler locationHandler, SharedPreferences preferences, Context context, Vibrator vibrator, NotificationHandler notificationHandler, AlertObjectFactory alertObjectFactory, AlertParameters alertParameters) {
         this.locationHandler = locationHandler;
@@ -135,31 +145,9 @@ public class AlertHandler implements OnSharedPreferenceChangeListener {
         }
     }
 
-    private final Consumer<LocationEvent> locationEventConsumer = new Consumer<LocationEvent>() {
-        @Override
-        public void accept(LocationEvent event) {
-            Log.v(Main.LOG_TAG, "AlertHandler received location " + location);
-            location = event.getLocation();
-            checkStrikes(lastStrikes);
-        }
-    };
-
     public Consumer<LocationEvent> getLocationEventConsumer() {
         return locationEventConsumer;
     }
-
-    private final Consumer<DataEvent> dataEventConsumer = event -> {
-        if (event instanceof ResultEvent) {
-            ResultEvent resultEvent = (ResultEvent) event;
-            if (!resultEvent.hasFailed() && resultEvent.containsRealtimeData()) {
-                checkStrikes(resultEvent.getStrikes());
-            } else {
-                invalidateAlert();
-            }
-        } else if (event instanceof ClearDataEvent) {
-            invalidateAlert();
-        }
-    };
 
     public Consumer<DataEvent> getDataEventConsumer() {
         return dataEventConsumer;

@@ -1,7 +1,9 @@
 package org.blitzortung.android.alert.handler;
 
 import android.location.Location;
+
 import com.google.common.collect.Lists;
+
 import org.blitzortung.android.alert.AlertParameters;
 import org.blitzortung.android.alert.AlertResult;
 import org.blitzortung.android.alert.data.AlertSector;
@@ -19,14 +21,20 @@ import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class AlertStatusHandlerTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
-    
+
     @Mock
     private AlertSectorHandler alertSectorHandler;
 
@@ -46,7 +54,7 @@ public class AlertStatusHandlerTest {
     private Location location;
 
     private MeasurementSystem measurementSystem = MeasurementSystem.METRIC;
-    
+
     private AlertStatusHandler alertStatusHandler;
 
     @Before
@@ -176,7 +184,7 @@ public class AlertStatusHandlerTest {
         final AlertSector sectorWithClosestStrike = alertStatusHandler.getSectorWithClosestStrike(alertStatus);
         assertThat(sectorWithClosestStrike, is(alertSector3));
     }
-    
+
     @Test
     public void testGetCurrentActivity() {
         AlertSector alertSector1 = mockAlarmSector("foo", 50f);
@@ -184,7 +192,7 @@ public class AlertStatusHandlerTest {
         when(alertStatus.getSectors()).thenReturn(Lists.newArrayList(alertSector1));
 
         final AlertResult currentActivity = alertStatusHandler.getCurrentActivity(alertStatus);
-        
+
         assertThat(currentActivity.getBearingName(), is("foo"));
         assertThat(currentActivity.getClosestStrikeDistance(), is(50f));
         assertThat(currentActivity.getDistanceUnitName(), is("km"));

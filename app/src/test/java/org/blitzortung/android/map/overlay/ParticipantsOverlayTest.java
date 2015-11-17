@@ -6,9 +6,11 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
+
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.common.collect.Lists;
+
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler;
@@ -28,21 +30,19 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
 public class ParticipantsOverlayTest {
 
-    @Implements(PreferenceManager.class)
-    private static class ShadowPreferenceManager {
-
-        @Implementation
-        public static SharedPreferences getDefaultSharedPreferences(Context context) {
-            return context.getSharedPreferences("", 0);
-        }
-
-    }
+    private final int[] colors = new int[]{1, 2, 3};
     private ParticipantsOverlay participantsOverlay;
 
     @Mock
@@ -54,11 +54,8 @@ public class ParticipantsOverlayTest {
     @Mock
     private ParticipantColorHandler colorHandler;
 
-    private final int[] colors = new int[]{1,2,3};
-
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         when(colorHandler.getColors()).thenReturn(colors);
@@ -68,14 +65,12 @@ public class ParticipantsOverlayTest {
     }
 
     @Test
-    public void testConstruct()
-    {
+    public void testConstruct() {
         assertThat(participantsOverlay.size(), is(0));
     }
 
     @Test
-    public void testSetParticipants()
-    {
+    public void testSetParticipants() {
         List<Station> stations = Lists.newArrayList();
 
         participantsOverlay.setParticipants(stations);
@@ -95,8 +90,7 @@ public class ParticipantsOverlayTest {
     }
 
     @Test
-    public void testClear()
-    {
+    public void testClear() {
         participantsOverlay.setParticipants(Lists.newArrayList(mock(Station.class)));
 
         participantsOverlay.clear();
@@ -105,8 +99,7 @@ public class ParticipantsOverlayTest {
     }
 
     @Test
-    public void testUpdateZoomLevel()
-    {
+    public void testUpdateZoomLevel() {
         participantsOverlay.updateZoomLevel(-10);
         //assertThat(participantsOverlay.shapeSize, is(1));
         verify(participantsOverlay, times(1)).refresh();
@@ -122,8 +115,7 @@ public class ParticipantsOverlayTest {
     }
 
     @Test
-    public void testRefresh()
-    {
+    public void testRefresh() {
         ParticipantOverlayItem participantOverlayItem = mock(ParticipantOverlayItem.class);
 
         participantsOverlay.participants.add(participantOverlayItem);
@@ -150,10 +142,9 @@ public class ParticipantsOverlayTest {
     }
 
     @Test
-    public void testOnTapItem()
-    {
+    public void testOnTapItem() {
         ParticipantOverlayItem participantOverlayItem = mock(ParticipantOverlayItem.class);
-        GeoPoint point = new GeoPoint(11000000,49000000);
+        GeoPoint point = new GeoPoint(11000000, 49000000);
         when(participantOverlayItem.getPoint()).thenReturn(point);
         when(participantOverlayItem.getTitle()).thenReturn("<title>");
 
@@ -166,12 +157,21 @@ public class ParticipantsOverlayTest {
     }
 
     @Test
-    public void testOnTapMap()
-    {
+    public void testOnTapMap() {
         doReturn(false).when(participantsOverlay).clearPopup();
 
         participantsOverlay.onTap(mock(GeoPoint.class), mock(MapView.class));
 
         verify(participantsOverlay, times(1)).clearPopup();
+    }
+
+    @Implements(PreferenceManager.class)
+    private static class ShadowPreferenceManager {
+
+        @Implementation
+        public static SharedPreferences getDefaultSharedPreferences(Context context) {
+            return context.getSharedPreferences("", 0);
+        }
+
     }
 }

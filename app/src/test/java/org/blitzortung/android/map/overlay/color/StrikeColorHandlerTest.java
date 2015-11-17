@@ -1,6 +1,7 @@
 package org.blitzortung.android.map.overlay.color;
 
 import android.content.SharedPreferences;
+
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +12,12 @@ import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyFloat;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class StrikeColorHandlerTest {
@@ -21,8 +27,7 @@ public class StrikeColorHandlerTest {
     private StrikeColorHandler strikeColorHandler;
 
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         when(sharedPreferences.getString(PreferenceKey.MAP_TYPE.toString(), ColorTarget.SATELLITE.toString())).thenReturn(ColorTarget.SATELLITE.toString());
@@ -32,8 +37,7 @@ public class StrikeColorHandlerTest {
     }
 
     @Test
-    public void testSatelliteColors()
-    {
+    public void testSatelliteColors() {
         int[] colors = strikeColorHandler.getColors(ColorTarget.SATELLITE);
 
         assertThat(colors.length, is(6));
@@ -41,8 +45,7 @@ public class StrikeColorHandlerTest {
     }
 
     @Test
-    public void testMapColors()
-    {
+    public void testMapColors() {
         int[] colors = strikeColorHandler.getColors(ColorTarget.STREETMAP);
 
         assertThat(colors.length, is(6));

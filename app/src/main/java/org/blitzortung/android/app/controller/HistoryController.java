@@ -22,14 +22,22 @@ import java.util.Set;
 
 public class HistoryController {
 
+    private final Collection<ImageButton> buttons;
     private ImageButton historyRewind;
     private ImageButton historyForward;
     private ImageButton goRealtime;
-    private final Collection<ImageButton> buttons;
     private AppService appService;
 
     private ButtonColumnHandler buttonHandler;
     private DataHandler dataHandler;
+    private Consumer<DataEvent> dataEventConsumer = event -> {
+        if (event instanceof ResultEvent) {
+            ResultEvent resultEvent = (ResultEvent) event;
+            if (!resultEvent.hasFailed()) {
+                setRealtimeData(resultEvent.containsRealtimeData());
+            }
+        }
+    };
 
     public HistoryController(final Activity activity) {
         buttons = new ArrayList<>();
@@ -134,15 +142,6 @@ public class HistoryController {
         this.appService = appService;
         dataHandler = appService != null ? appService.getDataHandler() : null;
     }
-
-    private Consumer<DataEvent> dataEventConsumer = event -> {
-        if (event instanceof ResultEvent) {
-            ResultEvent resultEvent = (ResultEvent) event;
-            if (!resultEvent.hasFailed()) {
-                setRealtimeData(resultEvent.containsRealtimeData());
-            }
-        }
-    };
 
     public Consumer<DataEvent> getDataConsumer() {
         return dataEventConsumer;

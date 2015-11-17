@@ -25,8 +25,7 @@ public class IntervalTimerTest {
     }
 
     @Test
-    public void testMultipleIntervals()
-    {
+    public void testMultipleIntervals() {
         intervalTimer.startInterval(currentTime - 3 * intervalLength);
 
         assertTrue(intervalTimer.hasNext());
@@ -39,7 +38,6 @@ public class IntervalTimerTest {
         intervalTimer.next();
         assertFalse(intervalTimer.hasNext());
     }
-
 
 
 }

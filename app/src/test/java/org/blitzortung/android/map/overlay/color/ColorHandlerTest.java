@@ -1,6 +1,7 @@
 package org.blitzortung.android.map.overlay.color;
 
 import android.content.SharedPreferences;
+
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.TimeIntervalWithOffset;
 import org.junit.Before;
@@ -12,31 +13,19 @@ import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class ColorHandlerTest {
 
-    static class ColorHandlerForTest extends ColorHandler {
-
-        public ColorHandlerForTest(SharedPreferences sharedPreferences)
-        {
-            super(sharedPreferences);
-        }
-
-        @Override
-        protected int[] getColors(ColorTarget target) {
-            return new int[0];
-        }
-    }
-
-    private ColorHandler colorHandler;
-
     @Mock
     SharedPreferences sharedPreferences;
-
     @Mock
     TimeIntervalWithOffset timeIntervalWithOffset;
+    private ColorHandler colorHandler;
 
     @Before
     public void setUp() {
@@ -49,8 +38,7 @@ public class ColorHandlerTest {
     }
 
     @Test
-    public void testGetColors()
-    {
+    public void testGetColors() {
         int[] colors = new int[]{1, 2, 3, 4, 5};
         when(colorHandler.getColors()).thenReturn(colors);
 
@@ -60,8 +48,7 @@ public class ColorHandlerTest {
     }
 
     @Test
-    public void testGetColorsForAlternativeMap()
-    {
+    public void testGetColorsForAlternativeMap() {
         when(sharedPreferences.getString("map_mode", ColorTarget.SATELLITE.toString())).thenReturn(ColorTarget.STREETMAP.toString());
         colorHandler = spy(new ColorHandlerForTest(sharedPreferences));
 
@@ -74,8 +61,7 @@ public class ColorHandlerTest {
     }
 
     @Test
-    public void testGetColor()
-    {
+    public void testGetColor() {
         when(colorHandler.getColors()).thenReturn(new int[]{1, 2, 3, 4, 5});
 
         long now = System.currentTimeMillis();
@@ -103,21 +89,31 @@ public class ColorHandlerTest {
     }
 
     @Test
-    public void testGetTextColor()
-    {
+    public void testGetTextColor() {
         assertThat(colorHandler.getTextColor(), is(0xffffffff));
 
         verify(colorHandler, times(1)).getTextColor(ColorTarget.SATELLITE);
     }
 
     @Test
-    public void testGetTextColorForAlternativeMap()
-    {
+    public void testGetTextColorForAlternativeMap() {
         when(sharedPreferences.getString("map_mode", ColorTarget.SATELLITE.toString())).thenReturn(ColorTarget.STREETMAP.toString());
         colorHandler = spy(new ColorHandlerForTest(sharedPreferences));
 
         assertThat(colorHandler.getTextColor(), is(0xff000000));
 
         verify(colorHandler, times(1)).getTextColor(ColorTarget.STREETMAP);
+    }
+
+    static class ColorHandlerForTest extends ColorHandler {
+
+        public ColorHandlerForTest(SharedPreferences sharedPreferences) {
+            super(sharedPreferences);
+        }
+
+        @Override
+        protected int[] getColors(ColorTarget target) {
+            return new int[0];
+        }
     }
 }

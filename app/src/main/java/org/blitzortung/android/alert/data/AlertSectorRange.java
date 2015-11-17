@@ -5,20 +5,19 @@ import org.blitzortung.android.data.beans.Strike;
 public class AlertSectorRange {
 
     private final float rangeMinimum;
-    
+
     private final float rangeMaximum;
-    
+
     private int strikeCount;
-    
+
     private long latestStrikeTimestamp;
 
     public AlertSectorRange(float rangeMinimum, float rangeMaximum) {
         this.rangeMinimum = rangeMinimum;
         this.rangeMaximum = rangeMaximum;
     }
-    
-    public void clearResults()
-    {
+
+    public void clearResults() {
         strikeCount = 0;
         latestStrikeTimestamp = 0;
     }

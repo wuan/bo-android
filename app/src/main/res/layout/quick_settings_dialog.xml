@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:entries="@array/regions"
             android:padding="10dp"
-            android:prompt="@string/region"/>
+            android:prompt="@string/region" />
 
         <View
             android:layout_width="fill_parent"

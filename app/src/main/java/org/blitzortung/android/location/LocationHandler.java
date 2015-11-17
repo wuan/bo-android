@@ -26,41 +26,10 @@ import static android.support.v4.content.PermissionChecker.checkSelfPermission;
 public class LocationHandler implements SharedPreferences.OnSharedPreferenceChangeListener, android.location.LocationListener, GpsStatus.Listener {
 
     private final Context context;
+    private final LocationManager locationManager;
+    private final Location location;
     private boolean backgroundMode = true;
-
-    public enum Provider {
-        NETWORK(LocationManager.NETWORK_PROVIDER),
-        GPS(LocationManager.GPS_PROVIDER),
-        PASSIVE(LocationManager.PASSIVE_PROVIDER),
-        MANUAL("manual");
-
-        private String type;
-
-        Provider(String type) {
-            this.type = type;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        private static Map<String, Provider> stringToValueMap = new HashMap<String, Provider>();
-
-        static {
-            for (Provider key : Provider.values()) {
-                String keyString = key.getType();
-                if (stringToValueMap.containsKey(keyString)) {
-                    throw new IllegalStateException(String.format("key value '%s' already defined", keyString));
-                }
-                stringToValueMap.put(keyString, key);
-            }
-        }
-
-        public static Provider fromString(String string) {
-            return stringToValueMap.get(string);
-        }
-    }
-
+    private Provider provider;
     private ConsumerContainer<LocationEvent> consumerContainer = new ConsumerContainer<LocationEvent>() {
         @Override
         public void addedFirstConsumer() {
@@ -74,12 +43,6 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
             Log.d(Main.LOG_TAG, "LocationHandler disable provider");
         }
     };
-
-    private final LocationManager locationManager;
-
-    private Provider provider;
-
-    private final Location location;
 
     public LocationHandler(Context context, SharedPreferences sharedPreferences) {
         this.context = context;
@@ -281,6 +244,39 @@ public class LocationHandler implements SharedPreferences.OnSharedPreferenceChan
 
     public void update(SharedPreferences preferences) {
         onSharedPreferenceChanged(preferences, PreferenceKey.LOCATION_MODE);
+    }
+
+    public enum Provider {
+        NETWORK(LocationManager.NETWORK_PROVIDER),
+        GPS(LocationManager.GPS_PROVIDER),
+        PASSIVE(LocationManager.PASSIVE_PROVIDER),
+        MANUAL("manual");
+
+        private static Map<String, Provider> stringToValueMap = new HashMap<String, Provider>();
+
+        static {
+            for (Provider key : Provider.values()) {
+                String keyString = key.getType();
+                if (stringToValueMap.containsKey(keyString)) {
+                    throw new IllegalStateException(String.format("key value '%s' already defined", keyString));
+                }
+                stringToValueMap.put(keyString, key);
+            }
+        }
+
+        private String type;
+
+        Provider(String type) {
+            this.type = type;
+        }
+
+        public static Provider fromString(String string) {
+            return stringToValueMap.get(string);
+        }
+
+        public String getType() {
+            return type;
+        }
     }
 
 }

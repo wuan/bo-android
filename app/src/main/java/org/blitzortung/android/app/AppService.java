@@ -45,32 +45,36 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
     public static final String WAKE_LOCK_TAG = "boAndroidWakeLock";
 
     private final Handler handler;
-
-    private int period;
-
-    private int backgroundPeriod;
-
     private final Period updatePeriod;
+    private final IBinder binder = new DataServiceBinder();
+    ConsumerContainer<AlertEvent> alertConsumerContainer = new ConsumerContainer<AlertEvent>() {
+        @Override
+        public void addedFirstConsumer() {
+            Log.d(Main.LOG_TAG, "added first alert consumer");
+        }
 
+        @Override
+        public void removedLastConsumer() {
+            Log.d(Main.LOG_TAG, "removed last alert consumer");
+        }
+    };
+    private final Consumer<AlertEvent> alertEventConsumer = new Consumer<AlertEvent>() {
+        @Override
+        public void accept(AlertEvent event) {
+            alertConsumerContainer.storeAndBroadcast(event);
+        }
+    };
+    private int period;
+    private int backgroundPeriod;
     private Parameters lastParameters;
-
     private boolean updateParticipants;
-
     private boolean enabled;
-
     private DataHandler dataHandler;
     private AlertHandler alertHandler;
     private boolean alertEnabled;
     private LocationHandler locationHandler;
-
-    private final IBinder binder = new DataServiceBinder();
-
     private AlarmManager alarmManager;
-
     private PendingIntent pendingIntent;
-
-    private PowerManager.WakeLock wakeLock;
-
     ConsumerContainer<DataEvent> dataConsumerContainer = new ConsumerContainer<DataEvent>() {
         @Override
         public void addedFirstConsumer() {
@@ -84,16 +88,27 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
             configureServiceMode();
         }
     };
-
-    ConsumerContainer<AlertEvent> alertConsumerContainer = new ConsumerContainer<AlertEvent>() {
+    private PowerManager.WakeLock wakeLock;
+    private final Consumer<DataEvent> dataEventConsumer = new Consumer<DataEvent>() {
         @Override
-        public void addedFirstConsumer() {
-            Log.d(Main.LOG_TAG, "added first alert consumer");
-        }
+        public void accept(DataEvent event) {
+            if (!dataConsumerContainer.isEmpty()) {
+                dataConsumerContainer.storeAndBroadcast(event);
+            }
 
-        @Override
-        public void removedLastConsumer() {
-            Log.d(Main.LOG_TAG, "removed last alert consumer");
+            if (alertEnabled) {
+                alertHandler.getDataEventConsumer().accept(event);
+            }
+
+            if (event instanceof ClearDataEvent) {
+                restart();
+            } else if (event instanceof ResultEvent) {
+                ResultEvent resultEvent = (ResultEvent) event;
+                lastParameters = resultEvent.getParameters();
+                configureServiceMode();
+            }
+
+            releaseWakeLock();
         }
     };
 
@@ -135,39 +150,13 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         return dataHandler;
     }
 
+    public void setDataHandler(DataHandler dataHandler) {
+        this.dataHandler = dataHandler;
+    }
+
     public AlertHandler getAlertHandler() {
         return alertHandler;
     }
-
-    private final Consumer<DataEvent> dataEventConsumer = new Consumer<DataEvent>() {
-        @Override
-        public void accept(DataEvent event) {
-            if (!dataConsumerContainer.isEmpty()) {
-                dataConsumerContainer.storeAndBroadcast(event);
-            }
-
-            if (alertEnabled) {
-                alertHandler.getDataEventConsumer().accept(event);
-            }
-
-            if (event instanceof ClearDataEvent) {
-                restart();
-            } else if (event instanceof ResultEvent) {
-                ResultEvent resultEvent = (ResultEvent) event;
-                lastParameters = resultEvent.getParameters();
-                configureServiceMode();
-            }
-
-            releaseWakeLock();
-        }
-    };
-
-    private final Consumer<AlertEvent> alertEventConsumer = new Consumer<AlertEvent>() {
-        @Override
-        public void accept(AlertEvent event) {
-            alertConsumerContainer.storeAndBroadcast(event);
-        }
-    };
 
     public void addDataConsumer(Consumer<DataEvent> dataConsumer) {
         dataConsumerContainer.addConsumer(dataConsumer);
@@ -199,13 +188,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
 
     public void updateLocationHandler(SharedPreferences preferences) {
         locationHandler.update(preferences);
-    }
-
-    public class DataServiceBinder extends Binder {
-        AppService getService() {
-            Log.d(Main.LOG_TAG, "DataServiceBinder.getService() " + AppService.this);
-            return AppService.this;
-        }
     }
 
     @Override
@@ -334,10 +316,6 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         return enabled;
     }
 
-    public void setDataHandler(DataHandler dataHandler) {
-        this.dataHandler = dataHandler;
-    }
-
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String keyString) {
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString));
@@ -437,6 +415,13 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
             return getPackageManager().getPackageInfo(getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
             throw new IllegalStateException(e);
+        }
+    }
+
+    public class DataServiceBinder extends Binder {
+        AppService getService() {
+            Log.d(Main.LOG_TAG, "DataServiceBinder.getService() " + AppService.this);
+            return AppService.this;
         }
     }
 }

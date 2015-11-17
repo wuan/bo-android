@@ -10,6 +10,10 @@ public class JsonRpcClient extends HttpServiceClient {
 
     private int lastNumberOfTransferredBytes;
 
+    public JsonRpcClient(String uri, String agentSuffix) {
+        super(uri, agentSuffix);
+    }
+
     // VisibleForTesting
     protected JSONArray buildParameters(Object[] parameters) {
         JSONArray parameterArray = new JSONArray();
@@ -31,10 +35,6 @@ public class JsonRpcClient extends HttpServiceClient {
         }
 
         return requestObject.toString();
-    }
-
-    public JsonRpcClient(String uri, String agentSuffix) {
-        super(uri, agentSuffix);
     }
 
     public JSONObject call(String methodName, Object... parameters) {

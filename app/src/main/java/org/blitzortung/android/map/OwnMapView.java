@@ -3,14 +3,14 @@ package org.blitzortung.android.map;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+
 import com.google.android.maps.MapView;
 import com.google.android.maps.Projection;
-import org.blitzortung.android.app.Main;
+
 import org.blitzortung.android.app.R;
 
 import java.util.HashSet;
@@ -23,10 +23,7 @@ public class OwnMapView extends MapView {
     private View popUp = null;
 
     private GestureDetector gestureDetector;
-
-    public interface ZoomListener {
-        void onZoom(int zoomLevel);
-    }
+    private float oldPixelSize = -1;
 
     public OwnMapView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -57,8 +54,6 @@ public class OwnMapView extends MapView {
             }
         });
     }
-
-    private float oldPixelSize = -1;
 
     @Override
     public void dispatchDraw(Canvas canvas) {
@@ -114,5 +109,9 @@ public class OwnMapView extends MapView {
             popUp = LayoutInflater.from(getContext()).inflate(R.layout.popup, this, false);
         }
         return popUp;
+    }
+
+    public interface ZoomListener {
+        void onZoom(int zoomLevel);
     }
 }

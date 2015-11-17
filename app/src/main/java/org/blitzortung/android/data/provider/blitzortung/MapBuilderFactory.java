@@ -1,8 +1,8 @@
 package org.blitzortung.android.data.provider.blitzortung;
 
 import org.blitzortung.android.data.beans.DefaultStrike;
-import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.Station;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.provider.blitzortung.generic.Consumer;
 import org.blitzortung.android.data.provider.blitzortung.generic.LineSplitter;
 import org.blitzortung.android.util.TimeFormat;

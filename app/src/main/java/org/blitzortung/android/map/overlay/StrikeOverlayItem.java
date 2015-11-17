@@ -5,38 +5,36 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.location.Location;
+
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.OverlayItem;
 import com.google.android.maps.Projection;
+
 import org.blitzortung.android.data.Coordsys;
-import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.beans.Strike;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 
 public class StrikeOverlayItem extends OverlayItem implements Strike {
 
-	private final long timestamp;
-	
-	private final int multiplicity;
-
     private static final Point center = new Point();
-
     private static final Point topLeft = new Point();
-
     private static final Point bottomRight = new Point();
+    private final long timestamp;
+    private final int multiplicity;
 
-	public StrikeOverlayItem(StrikeAbstract strike) {
-		super(Coordsys.toMapCoords(strike.getLongitude(), strike.getLatitude()), "", "");
+    public StrikeOverlayItem(StrikeAbstract strike) {
+        super(Coordsys.toMapCoords(strike.getLongitude(), strike.getLatitude()), "", "");
         super.setMarker(new ShapeDrawable());
 
-		timestamp = strike.getTimestamp();
-		multiplicity = strike.getMultiplicity();
-	}
-	
+        timestamp = strike.getTimestamp();
+        multiplicity = strike.getMultiplicity();
+    }
+
     @Override
-	public long getTimestamp() {
-		return timestamp;
-	}
+    public long getTimestamp() {
+        return timestamp;
+    }
 
     @Override
     public Location getLocation(Location location) {
@@ -48,8 +46,8 @@ public class StrikeOverlayItem extends OverlayItem implements Strike {
 
     @Override
     public int getMultiplicity() {
-		return multiplicity;
-	}
+        return multiplicity;
+    }
 
     @Override
     public void setMarker(Drawable drawable) {
@@ -57,13 +55,13 @@ public class StrikeOverlayItem extends OverlayItem implements Strike {
     }
 
     private ShapeDrawable getDrawable() {
-        return (ShapeDrawable)getMarker(0);
+        return (ShapeDrawable) getMarker(0);
     }
-    
+
     public Shape getShape() {
         return getDrawable().getShape();
     }
-    
+
     public void setShape(Shape shape) {
         getDrawable().setShape(shape);
     }
@@ -74,7 +72,7 @@ public class StrikeOverlayItem extends OverlayItem implements Strike {
             if (shape == null) {
                 shape = new RasterShape();
             }
-            RasterShape rasterShape = (RasterShape)shape;
+            RasterShape rasterShape = (RasterShape) shape;
 
             float lon_delta = rasterParameters.getLongitudeDelta() / 2.0f * 1e6f;
             float lat_delta = rasterParameters.getLatitudeDelta() / 2.0f * 1e6f;

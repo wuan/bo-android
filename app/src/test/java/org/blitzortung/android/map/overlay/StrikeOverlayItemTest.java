@@ -1,6 +1,7 @@
 package org.blitzortung.android.map.overlay;
 
 import com.google.android.maps.GeoPoint;
+
 import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,9 +25,9 @@ public class StrikeOverlayItemTest {
     private StrikeAbstract strike;
 
     private long time;
+
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         time = System.currentTimeMillis();
@@ -40,8 +41,7 @@ public class StrikeOverlayItemTest {
     }
 
     @Test
-    public void testConstruction()
-    {
+    public void testConstruction() {
         GeoPoint point = strikeOverlayItem.getPoint();
 
         assertThat(point.getLongitudeE6(), is(11000000));
@@ -49,17 +49,14 @@ public class StrikeOverlayItemTest {
     }
 
     @Test
-    public void testGetTimestamp()
-    {
+    public void testGetTimestamp() {
         assertThat(strikeOverlayItem.getTimestamp(), is(time));
     }
 
     @Test
-    public void testGetMultiplicity()
-    {
+    public void testGetMultiplicity() {
         assertThat(strikeOverlayItem.getMultiplicity(), is(3));
     }
-
 
 
 }

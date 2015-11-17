@@ -1,6 +1,7 @@
 package org.blitzortung.android.jsonrpc;
 
 import com.google.common.collect.Lists;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Before;
@@ -9,9 +10,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
@@ -22,11 +21,9 @@ import static org.junit.matchers.JUnitMatchers.hasItems;
 @Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
 public class JsonRpcClientTest {
 
-    private JsonRpcClient jsonRpcClient;
-
     private final String uriString = "foo";
-
     private final String agentSuffix = "_VERSION";
+    private JsonRpcClient jsonRpcClient;
 
     @Before
     public void setUp() {
@@ -44,7 +41,7 @@ public class JsonRpcClientTest {
         assertThat(result.length(), is(2));
 
         List<Object> resultObjects = Lists.newArrayList();
-        for (int i=0; i<result.length(); i++) {
+        for (int i = 0; i < result.length(); i++) {
             resultObjects.add(result.get(i));
         }
         assertThat(resultObjects, hasItems(obj1, obj2));

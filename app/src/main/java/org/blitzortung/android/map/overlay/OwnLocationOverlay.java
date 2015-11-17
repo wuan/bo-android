@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 
 import com.annimon.stream.function.Consumer;
 import com.google.android.maps.ItemizedOverlay;
+
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.location.LocationEvent;
@@ -31,6 +32,17 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
     private OwnLocationOverlayItem item;
 
     private int zoomLevel;
+    private Consumer<LocationEvent> locationEventConsumer = new Consumer<LocationEvent>() {
+        @Override
+        public void accept(LocationEvent event) {
+            Location location = event.getLocation();
+
+            item = location != null ? new OwnLocationOverlayItem(location, 25000) : item;
+
+            populate();
+            refresh();
+        }
+    };
 
     public OwnLocationOverlay(Context context, OwnMapView mapView) {
         super(DEFAULT_DRAWABLE);
@@ -81,18 +93,6 @@ public class OwnLocationOverlay extends ItemizedOverlay<OwnLocationOverlayItem> 
     public int size() {
         return item == null ? 0 : 1;
     }
-
-    private Consumer<LocationEvent> locationEventConsumer = new Consumer<LocationEvent>() {
-        @Override
-        public void accept(LocationEvent event) {
-            Location location = event.getLocation();
-
-            item = location != null ? new OwnLocationOverlayItem(location, 25000) : item;
-
-            populate();
-            refresh();
-        }
-    };
 
     public Consumer<LocationEvent> getLocationEventConsumer() {
         return locationEventConsumer;

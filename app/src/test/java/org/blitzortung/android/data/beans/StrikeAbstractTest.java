@@ -1,6 +1,7 @@
 package org.blitzortung.android.data.beans;
 
 import android.location.Location;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,20 +13,11 @@ import static org.junit.Assert.assertThat;
 @RunWith(RobolectricTestRunner.class)
 public class StrikeAbstractTest {
 
-    static class StrikeAbstractForTest extends StrikeAbstract
-    {
-        public StrikeAbstractForTest()
-        {
-            super(1234l, 11.0f, 49.0f);
-        }
-    }
-
     private StrikeAbstractForTest abstractStrike;
 
     @Before
-    public void setUp()
-    {
-         abstractStrike = new StrikeAbstractForTest();
+    public void setUp() {
+        abstractStrike = new StrikeAbstractForTest();
     }
 
     @Test
@@ -55,5 +47,11 @@ public class StrikeAbstractTest {
         assertThat(location.getLongitude(), is(11.0));
         assertThat(location.getLatitude(), is(49.0));
         assertThat(location.getAltitude(), is(0.0));
+    }
+
+    static class StrikeAbstractForTest extends StrikeAbstract {
+        public StrikeAbstractForTest() {
+            super(1234l, 11.0f, 49.0f);
+        }
     }
 }

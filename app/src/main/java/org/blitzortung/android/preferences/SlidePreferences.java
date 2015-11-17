@@ -14,13 +14,11 @@ public class SlidePreferences extends DialogPreference implements SeekBar.OnSeek
     private static final String ATTRIBUTE_NAMESPACE = "http://schemas.android.com/apk/res/android";
 
     private final Context context;
-    private TextView valueText;
-    private SeekBar slider;
-
     private final String unitSuffix;
-
     private final int defaultValue;
     private final int maximumValue;
+    private TextView valueText;
+    private SeekBar slider;
     private int currentValue;
 
     public SlidePreferences(Context context, AttributeSet attrs) {

@@ -11,13 +11,10 @@ import java.net.URL;
 
 public class HttpServiceClient {
 
-    private int socketTimeout = 0;
-
-    private int connectionTimeout = 0;
-
     private final URL url;
-
     private final String userAgentString;
+    private int socketTimeout = 0;
+    private int connectionTimeout = 0;
 
     HttpServiceClient(String uriString, String agentSuffix) {
         try {

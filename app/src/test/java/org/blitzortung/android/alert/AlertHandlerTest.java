@@ -9,12 +9,12 @@ import android.os.Vibrator;
 import com.annimon.stream.function.Consumer;
 import com.google.common.collect.Lists;
 
+import org.blitzortung.android.alert.data.AlertSector;
+import org.blitzortung.android.alert.data.AlertStatus;
 import org.blitzortung.android.alert.event.AlertEvent;
 import org.blitzortung.android.alert.event.AlertResultEvent;
 import org.blitzortung.android.alert.factory.AlertObjectFactory;
 import org.blitzortung.android.alert.handler.AlertStatusHandler;
-import org.blitzortung.android.alert.data.AlertSector;
-import org.blitzortung.android.alert.data.AlertStatus;
 import org.blitzortung.android.app.controller.NotificationHandler;
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.beans.Strike;
@@ -67,13 +67,13 @@ public class AlertHandlerTest {
 
     @Mock
     private SharedPreferences sharedPreferences;
-    
+
     @Mock
     private Context context;
-    
-    @Mock 
+
+    @Mock
     private Vibrator vibrator;
-    
+
     @Mock
     private NotificationHandler notificationHandler;
 
@@ -87,7 +87,7 @@ public class AlertHandlerTest {
     private Consumer<AlertEvent> alertEventConsumer;
 
     private AlertHandler alertHandler;
-    
+
     private Resources resources;
 
     @Before
@@ -108,7 +108,7 @@ public class AlertHandlerTest {
         when(sharedPreferences.getString(PreferenceKey.ALERT_SOUND_SIGNAL.toString(), "")).thenReturn("");
         when(alertStatusHandler.getCurrentActivity(alertStatus)).thenReturn(alertResult);
         when(context.getResources()).thenReturn(resources);
-        
+
         alertHandler = new AlertHandler(locationManager, sharedPreferences, context, vibrator, notificationHandler, alertObjectFactory, alertParameters);
         alertHandler.setAlertEventConsumer(alertEventConsumer);
     }
@@ -178,14 +178,14 @@ public class AlertHandlerTest {
     @Test
     public void testGetAlarmResult() {
         AlertResult returnedAlertResult = alertHandler.getAlarmResult();
-        
+
         assertThat(returnedAlertResult, is(nullValue()));
         verify(alertStatusHandler, times(0)).getCurrentActivity(alertStatus);
 
         makeAlarmsValid();
 
         returnedAlertResult = alertHandler.getAlarmResult();
-        
+
         assertThat(returnedAlertResult, is(sameInstance(alertResult)));
         verify(alertStatusHandler, times(2)).getCurrentActivity(alertStatus);
     }
@@ -230,17 +230,17 @@ public class AlertHandlerTest {
         when(alertStatus.getSectors()).thenReturn(alertSectors);
 
         final Collection<AlertSector> returnedAlertSectors = alertHandler.getAlarmSectors();
-        
+
         assertThat(returnedAlertSectors, is(sameInstance(alertSectors)));
         verify(alertStatus, times(1)).getSectors();
     }
-    
+
     @Test
     public void testGetAlarmParameters() {
         final AlertParameters returnedAlertParameters = alertHandler.getAlertParameters();
-        
+
         assertThat(returnedAlertParameters, is(sameInstance(alertParameters)));
     }
-    
-    
+
+
 }

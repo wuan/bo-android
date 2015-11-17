@@ -1,6 +1,7 @@
 package org.blitzortung.android.data.provider.blitzortung;
 
 import android.text.Html;
+
 import org.blitzortung.android.data.provider.blitzortung.generic.Consumer;
 import org.blitzortung.android.data.provider.blitzortung.generic.LineSplitter;
 

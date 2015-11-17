@@ -1,7 +1,9 @@
 package org.blitzortung.android.map.overlay;
 
 import android.location.Location;
+
 import com.google.android.maps.GeoPoint;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,8 +28,7 @@ public class OwnLocationOverlayItemTest {
     private float radius;
 
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         when(location.getLongitude()).thenReturn(11.0);
@@ -39,8 +40,7 @@ public class OwnLocationOverlayItemTest {
     }
 
     @Test
-    public void testConstruction()
-    {
+    public void testConstruction() {
 
         GeoPoint point = ownLocationOverlayItem.getPoint();
 
@@ -49,11 +49,9 @@ public class OwnLocationOverlayItemTest {
     }
 
     @Test
-    public void testGetRadius()
-    {
+    public void testGetRadius() {
         assertThat(ownLocationOverlayItem.getRadius(), is(2.5f));
     }
-
 
 
 }

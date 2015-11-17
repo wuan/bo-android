@@ -1,19 +1,12 @@
 package org.blitzortung.android.data.beans;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class StationTest {
@@ -28,8 +21,7 @@ public class StationTest {
     }
 
     @Test
-    public void testConstructAndReadValues()
-    {
+    public void testConstructAndReadValues() {
         station = new Station("name", 11.0f, 49.0f, 1336826723123l);
 
         assertThat(station.getName(), is("name"));
@@ -40,8 +32,7 @@ public class StationTest {
     }
 
     @Test
-    public void testCreateOnlineStation()
-    {
+    public void testCreateOnlineStation() {
         station = new Station("name", 11.0f, 49.0f, currentTime);
 
         assertThat(station.getState(), is(Station.State.ON));

@@ -33,20 +33,7 @@ import java.util.List;
 
 public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements LayerOverlay {
 
-    // VisibleForTesting
-    protected final ArrayList<StrikeOverlayItem> strikes;
-
-    private final StrikeColorHandler colorHandler;
-
-    private final LayerOverlayComponent layerOverlayComponent;
-
-    private int zoomLevel;
-
-    private RasterParameters rasterParameters = null;
-
     static private final Drawable DefaultDrawable;
-
-    private long referenceTime;
 
     static {
         StrikeShape shape = new StrikeShape();
@@ -54,6 +41,13 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements L
         DefaultDrawable = new ShapeDrawable(shape);
     }
 
+    // VisibleForTesting
+    protected final ArrayList<StrikeOverlayItem> strikes;
+    private final StrikeColorHandler colorHandler;
+    private final LayerOverlayComponent layerOverlayComponent;
+    private int zoomLevel;
+    private RasterParameters rasterParameters = null;
+    private long referenceTime;
     private Parameters parameters = Parameters.DEFAULT;
 
     public StrikesOverlay(OwnMapActivity mapActivity, StrikeColorHandler colorHandler) {
@@ -184,12 +178,12 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements L
         return rasterParameters != null;
     }
 
-    public void setRasterParameters(RasterParameters rasterParameters) {
-        this.rasterParameters = rasterParameters;
-    }
-
     public RasterParameters getRasterParameters() {
         return rasterParameters;
+    }
+
+    public void setRasterParameters(RasterParameters rasterParameters) {
+        this.rasterParameters = rasterParameters;
     }
 
     public boolean hasRealtimeData() {
@@ -225,12 +219,12 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements L
         return strikes;
     }
 
-    public void setReferenceTime(long referenceTime) {
-        this.referenceTime = referenceTime;
-    }
-
     public long getReferenceTime() {
         return referenceTime;
+    }
+
+    public void setReferenceTime(long referenceTime) {
+        this.referenceTime = referenceTime;
     }
 
     @Override
@@ -258,11 +252,11 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements L
         layerOverlayComponent.setVisibility(visible);
     }
 
-    public void setParameters(Parameters parameters) {
-        this.parameters = parameters;
-    }
-
     public Parameters getParameters() {
         return parameters;
+    }
+
+    public void setParameters(Parameters parameters) {
+        this.parameters = parameters;
     }
 }

@@ -1,7 +1,7 @@
 package org.blitzortung.android.data.provider.blitzortung;
 
-import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.Station;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,8 +15,7 @@ public class MapBuilderFactoryIntegrationTest {
     private MapBuilderFactory mapBuilderFactory;
 
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         mapBuilderFactory = new MapBuilderFactory();
     }
 

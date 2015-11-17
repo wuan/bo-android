@@ -5,12 +5,10 @@ import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.beans.Station;
 import org.blitzortung.android.data.beans.StrikeAbstract;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.Value;
 
 @Value

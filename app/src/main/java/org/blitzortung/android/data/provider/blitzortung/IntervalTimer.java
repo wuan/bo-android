@@ -6,24 +6,20 @@ public class IntervalTimer {
     private long currentTime;
     private long endTime;
 
-    public IntervalTimer(long intervalLength)
-    {
+    public IntervalTimer(long intervalLength) {
         this.intervalLength = intervalLength;
     }
 
-    public long roundTime(long time)
-    {
+    public long roundTime(long time) {
         return time / intervalLength * intervalLength;
     }
 
-    public void startInterval(long startTime)
-    {
+    public void startInterval(long startTime) {
         currentTime = roundTime(startTime);
         endTime = roundTime(System.currentTimeMillis());
     }
 
-    public boolean hasNext()
-    {
+    public boolean hasNext() {
         return currentTime <= endTime;
     }
 

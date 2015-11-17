@@ -1,4 +1,4 @@
 package org.blitzortung.android.data.provider.result;
 
-public class RequestStartedEvent implements  DataEvent {
+public class RequestStartedEvent implements DataEvent {
 }

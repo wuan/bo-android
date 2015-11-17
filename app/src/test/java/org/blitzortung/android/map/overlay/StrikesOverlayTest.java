@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.Shape;
 import android.preference.PreferenceManager;
+
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Projection;
@@ -17,8 +18,8 @@ import com.google.common.collect.Lists;
 import org.blitzortung.android.app.BuildConfig;
 import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.TimeIntervalWithOffset;
-import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
@@ -29,7 +30,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -38,22 +38,22 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(manifest = "src/main/AndroidManifest.xml", sdk = 19, constants = BuildConfig.class)
 public class StrikesOverlayTest {
 
-    @Implements(PreferenceManager.class)
-    private static class ShadowPreferenceManager {
-
-        @Implementation
-        public static SharedPreferences getDefaultSharedPreferences(Context context) {
-            return context.getSharedPreferences("", 0);
-        }
-
-    }
-
+    private final int[] colors = new int[]{1, 2, 3};
     private StrikesOverlay strikesOverlay;
 
     @Mock
@@ -67,8 +67,6 @@ public class StrikesOverlayTest {
 
     @Mock
     private OwnMapView ownMapView;
-
-    private final int[] colors = new int[]{1, 2, 3};
 
     @Before
     public void setUp() {
@@ -199,7 +197,6 @@ public class StrikesOverlayTest {
         assertThat(drawable).isInstanceOf(ShapeDrawable.class);
     }
 
-
     @Test
     public void testCreateItem() {
         final Parameters parameters = Parameters.builder().intervalDuration(100).build();
@@ -238,5 +235,15 @@ public class StrikesOverlayTest {
         strikesOverlay.onTap(mock(GeoPoint.class), mock(MapView.class));
 
         verify(strikesOverlay, times(1)).clearPopup();
+    }
+
+    @Implements(PreferenceManager.class)
+    private static class ShadowPreferenceManager {
+
+        @Implementation
+        public static SharedPreferences getDefaultSharedPreferences(Context context) {
+            return context.getSharedPreferences("", 0);
+        }
+
     }
 }

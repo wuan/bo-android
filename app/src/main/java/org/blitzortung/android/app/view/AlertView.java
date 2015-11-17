@@ -1,9 +1,14 @@
 package org.blitzortung.android.app.view;
 
 import android.content.Context;
-import android.graphics.*;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.location.Location;
 import android.util.AttributeSet;
 import android.view.View;
@@ -11,11 +16,11 @@ import android.view.View;
 import com.annimon.stream.function.Consumer;
 
 import org.blitzortung.android.alert.AlertParameters;
-import org.blitzortung.android.alert.event.AlertEvent;
-import org.blitzortung.android.alert.event.AlertResultEvent;
 import org.blitzortung.android.alert.data.AlertSector;
 import org.blitzortung.android.alert.data.AlertSectorRange;
 import org.blitzortung.android.alert.data.AlertStatus;
+import org.blitzortung.android.alert.event.AlertEvent;
+import org.blitzortung.android.alert.event.AlertResultEvent;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
 import org.blitzortung.android.location.LocationEvent;
@@ -29,11 +34,6 @@ public class AlertView extends View {
     private static final int DEFAULT_FONT_SIZE = 20;
     private static final PorterDuffXfermode XFERMODE_CLEAR = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
     private static final PorterDuffXfermode XFERMODE_SRC = new PorterDuffXfermode(PorterDuff.Mode.SRC);
-
-    private ColorHandler colorHandler;
-
-    private int intervalDuration;
-
     private final RectF arcArea = new RectF();
     private final Paint background = new Paint();
     private final Paint sectorPaint = new Paint();
@@ -41,12 +41,31 @@ public class AlertView extends View {
     private final Paint textStyle = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint warnText = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint transfer = new Paint();
-
     private final String[] alarmNotAvailableTextLines;
-
+    private ColorHandler colorHandler;
+    private int intervalDuration;
     private Bitmap temporaryBitmap;
     private Canvas temporaryCanvas;
     private AlertStatus alertStatus;
+    private Consumer<AlertEvent> alertEventConsumer = new Consumer<AlertEvent>() {
+        @Override
+        public void accept(AlertEvent event) {
+            if (event instanceof AlertResultEvent) {
+                AlertResultEvent alertResultEvent = (AlertResultEvent) event;
+
+                alertStatus = alertResultEvent.getAlertStatus();
+            } else {
+                alertStatus = null;
+            }
+            invalidate();
+        }
+    };
+    private Consumer<LocationEvent> locationEventConsumer = locationEvent -> {
+        final Location location = locationEvent.getLocation();
+        final int visibility = location != null ? View.VISIBLE : View.INVISIBLE;
+        setVisibility(visibility);
+        invalidate();
+    };
 
     @SuppressWarnings("unused")
     public AlertView(Context context, AttributeSet attrs) {
@@ -214,30 +233,9 @@ public class AlertView extends View {
         background.setXfermode(XFERMODE_SRC);
     }
 
-    private Consumer<AlertEvent> alertEventConsumer = new Consumer<AlertEvent>() {
-        @Override
-        public void accept(AlertEvent event) {
-            if (event instanceof AlertResultEvent) {
-                AlertResultEvent alertResultEvent = (AlertResultEvent) event;
-
-                alertStatus = alertResultEvent.getAlertStatus();
-            } else {
-                alertStatus = null;
-            }
-            invalidate();
-        }
-    };
-
     public Consumer<AlertEvent> getAlertEventConsumer() {
         return alertEventConsumer;
     }
-
-    private Consumer<LocationEvent> locationEventConsumer = locationEvent -> {
-        final Location location = locationEvent.getLocation();
-        final int visibility = location != null ? View.VISIBLE : View.INVISIBLE;
-        setVisibility(visibility);
-        invalidate();
-    };
 
     public Consumer<LocationEvent> getLocationEventConsumer() {
         return locationEventConsumer;

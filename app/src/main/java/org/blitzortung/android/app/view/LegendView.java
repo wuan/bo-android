@@ -8,11 +8,8 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.annimon.stream.Optional;
-
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.app.helper.ViewHelper;
-import org.blitzortung.android.data.Parameters;
 import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.map.overlay.StrikesOverlay;
 import org.blitzortung.android.map.overlay.color.ColorHandler;
@@ -22,24 +19,20 @@ public class LegendView extends View {
     public static final float REGION_HEIGHT = 1.1f;
     public static final float RASTER_HEIGHT = 0.8f;
     public static final float COUNT_THRESHOLD_HEIGHT = 0.8f;
-    private float width;
-    private float height;
-
     final private float padding;
     final private float colorFieldSize;
-    private float textWidth;
-
     final private Paint textPaint;
     final private Paint rasterTextPaint;
     final private Paint regionTextPaint;
     final private Paint countThresholdTextPaint;
     final private Paint backgroundPaint;
     final private Paint foregroundPaint;
-
-    private StrikesOverlay strikesOverlay;
-
     private final RectF backgroundRect;
     private final RectF legendColorRect;
+    private float width;
+    private float height;
+    private float textWidth;
+    private StrikesOverlay strikesOverlay;
 
     @SuppressWarnings("unused")
     public LegendView(Context context, AttributeSet attrs) {

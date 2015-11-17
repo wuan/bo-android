@@ -12,12 +12,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_weight="1"
             android:layout_marginLeft="4dp"
             android:layout_marginStart="4dp"
+            android:layout_weight="1"
             android:text=""
-            android:textSize="14sp"
-            android:textColor="@color/text_foreground" />
+            android:textColor="@color/text_foreground"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/warning"
@@ -25,8 +25,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text=""
-            android:textSize="14sp"
-            android:textColor="@color/text_foreground" />
+            android:textColor="@color/text_foreground"
+            android:textSize="14sp" />
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -35,10 +35,10 @@
 
             <ImageView
                 android:id="@+id/error_indicator"
-                android:src="@android:drawable/stat_notify_error"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
+                android:layout_centerInParent="true"
+                android:src="@android:drawable/stat_notify_error" />
 
             <ProgressBar
                 android:id="@+id/progress"

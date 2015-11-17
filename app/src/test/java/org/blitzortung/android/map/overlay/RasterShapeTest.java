@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -14,7 +15,10 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyFloat;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -22,23 +26,16 @@ import static org.mockito.Mockito.verify;
 @Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
 public class RasterShapeTest {
 
+    private final int color = 0x102030;
+    private final int multiplicity = 5;
+    private final int textColor = 0xa0b0c0;
     @Mock
     private Canvas canvas;
-
     @Mock
     private Paint paint;
-
     private Point topLeft = new Point(-3, -3);
-
     private Point bottomRight = new Point(3, 3);
-
     private RasterShape rasterShape;
-
-    private final int color = 0x102030;
-
-    private final int multiplicity = 5;
-
-    private final int textColor = 0xa0b0c0;
 
     @Before
     public void setUp() {
@@ -49,8 +46,7 @@ public class RasterShapeTest {
     }
 
     @Test
-    public void testDraw()
-    {
+    public void testDraw() {
         rasterShape.draw(canvas, paint);
 
         verify(paint, times(1)).setColor(color);
@@ -64,10 +60,9 @@ public class RasterShapeTest {
     }
 
     @Ignore
-    public void testDrawWithMultiplicityText()
-    {
-        topLeft = new Point(-4,-4);
-        bottomRight = new Point(4,4);
+    public void testDrawWithMultiplicityText() {
+        topLeft = new Point(-4, -4);
+        bottomRight = new Point(4, 4);
 
         rasterShape = new RasterShape();
         rasterShape.update(topLeft, bottomRight, color, multiplicity, textColor);

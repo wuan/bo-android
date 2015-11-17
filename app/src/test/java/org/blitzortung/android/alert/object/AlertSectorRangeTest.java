@@ -13,14 +13,14 @@ import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class AlertSectorRangeTest {
-    
+
     private AlertSectorRange alertSectorRange;
-    
+
     @Before
     public void setUp() {
         alertSectorRange = new AlertSectorRange(5.0f, 10.0f);
     }
-    
+
     @Test
     public void testGetRangeMinimum() {
         assertThat(alertSectorRange.getRangeMinimum(), is(5.0f));
@@ -35,12 +35,12 @@ public class AlertSectorRangeTest {
     public void testGetStrikeCountInitialValue() {
         assertThat(alertSectorRange.getStrikeCount(), is(0));
     }
-    
+
     @Test
     public void testSetGetStrikeCount() {
         Strike strike = mock(Strike.class);
         when(strike.getMultiplicity()).thenReturn(1).thenReturn(2);
-        
+
         alertSectorRange.addStrike(strike);
         assertThat(alertSectorRange.getStrikeCount(), is(1));
 
@@ -52,27 +52,27 @@ public class AlertSectorRangeTest {
     public void testGetLatestStrikeTimestampInitialValue() {
         assertThat(alertSectorRange.getLatestStrikeTimestamp(), is(0l));
     }
-    
+
     @Test
     public void testGetLatestStrikeTimestamp() {
         Strike strike = mock(Strike.class);
         when(strike.getTimestamp()).thenReturn(1000l).thenReturn(5000l);
-        
+
         alertSectorRange.addStrike(strike);
         assertThat(alertSectorRange.getLatestStrikeTimestamp(), is(1000l));
 
         alertSectorRange.addStrike(strike);
         assertThat(alertSectorRange.getLatestStrikeTimestamp(), is(5000l));
     }
-    
+
     @Test
     public void testReset() {
         Strike strike = mock(Strike.class);
         when(strike.getTimestamp()).thenReturn(5000l);
         when(strike.getMultiplicity()).thenReturn(2);
-        
+
         alertSectorRange.clearResults();
-        
+
         assertThat(alertSectorRange.getStrikeCount(), is(0));
         assertThat(alertSectorRange.getLatestStrikeTimestamp(), is(0l));
     }

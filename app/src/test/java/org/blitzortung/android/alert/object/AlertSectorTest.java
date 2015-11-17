@@ -19,14 +19,11 @@ import static org.mockito.Mockito.when;
 @RunWith(RobolectricTestRunner.class)
 public class AlertSectorTest {
 
+    private final String sectorLabel = "foo";
     @Mock
     private AlertObjectFactory alertObjectFactory;
-
     @Mock
     private AlertParameters alertParameters;
-
-    private final String sectorLabel = "foo";
-
     @Mock
     private AlertSectorRange alertSectorRange1;
 
@@ -54,7 +51,7 @@ public class AlertSectorTest {
     @Test
     public void testClearResults() {
         alertSector.updateClosestStrikeDistance(10.0f);
-        
+
         alertSector.clearResults();
 
         //assertThat(alertSector.getClosestStrikeDistance()).isEqualTo(Float.POSITIVE_INFINITY);
@@ -79,17 +76,16 @@ public class AlertSectorTest {
     public void testGetMaximumSectorBearing() {
         assertThat(alertSector.getMaximumSectorBearing()).isEqualTo(maximumBearing);
     }
-    
+
     @Test
     public void testGetLabel() {
         assertThat(alertSector.getLabel()).isEqualTo(sectorLabel);
     }
-    
+
     @Test
-    public void testGetClosestStrikeDistanceAndUpdateClosestStrikeDistance()
-    {
+    public void testGetClosestStrikeDistanceAndUpdateClosestStrikeDistance() {
         assertThat(alertSector.getClosestStrikeDistance()).isEqualTo(Float.POSITIVE_INFINITY);
-        
+
         alertSector.updateClosestStrikeDistance(25.0f);
 
         assertThat(alertSector.getClosestStrikeDistance()).isEqualTo(25f);

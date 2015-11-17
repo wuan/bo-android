@@ -29,20 +29,9 @@ public enum PreferenceKey {
     LOCATION_MODE("location_mode"),
     LOCATION_LONGITUDE("location_longitude"),
     LOCATION_LATITUDE("location_latitude");
-    
-    private final String key;
-    
-    PreferenceKey(String key) {
-        this.key = key;
-    }
-
-    @Override
-    public String toString()
-    {
-        return key;
-    }
 
     private static Map<String, PreferenceKey> stringToValueMap = new HashMap<String, PreferenceKey>();
+
     static {
         for (PreferenceKey key : PreferenceKey.values()) {
             String keyString = key.toString();
@@ -53,7 +42,18 @@ public enum PreferenceKey {
         }
     }
 
+    private final String key;
+
+    PreferenceKey(String key) {
+        this.key = key;
+    }
+
     public static PreferenceKey fromString(String string) {
         return stringToValueMap.get(string);
+    }
+
+    @Override
+    public String toString() {
+        return key;
     }
 }

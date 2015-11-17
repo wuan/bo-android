@@ -22,19 +22,9 @@ import static org.mockito.Mockito.spy;
 @Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
 public class OwnMapActivityTest {
 
-    private static class OwnMapActivityForTest extends OwnMapActivity
-    {
-        @Override
-        protected boolean isRouteDisplayed() {
-            return false;
-        }
-    }
-
     private OwnMapActivityForTest ownMapActivity;
-
     @Mock
     private OwnMapView ownMapView;
-
     private LayoutInflater layoutInflater = new LayoutInflater(RuntimeEnvironment.application.getApplicationContext()) {
         @Override
         public LayoutInflater cloneInContext(Context context) {
@@ -43,8 +33,7 @@ public class OwnMapActivityTest {
     };
 
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         ownMapActivity = spy(new OwnMapActivityForTest());
@@ -53,17 +42,22 @@ public class OwnMapActivityTest {
     }
 
     @Test
-    public void testGetPopupInflatesLayoutOnlyOnce()
-    {
+    public void testGetPopupInflatesLayoutOnlyOnce() {
         View popUp = ownMapView.getPopup();
 
         assertThat(ownMapView.getPopup(), is(sameInstance(popUp)));
     }
 
     @Test
-    public void testGetMapView()
-    {
+    public void testGetMapView() {
         assertThat(ownMapActivity.getMapView(), is(sameInstance(ownMapView)));
+    }
+
+    private static class OwnMapActivityForTest extends OwnMapActivity {
+        @Override
+        protected boolean isRouteDisplayed() {
+            return false;
+        }
     }
 
 }

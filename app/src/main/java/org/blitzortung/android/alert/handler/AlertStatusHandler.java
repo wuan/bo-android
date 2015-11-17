@@ -2,6 +2,7 @@ package org.blitzortung.android.alert.handler;
 
 import android.location.Location;
 import android.util.Log;
+
 import org.blitzortung.android.alert.AlertParameters;
 import org.blitzortung.android.alert.AlertResult;
 import org.blitzortung.android.alert.data.AlertSector;
@@ -46,14 +47,14 @@ public class AlertStatusHandler {
 
     public long getLatestTimstampWithin(float distanceLimit, AlertStatus alertStatus) {
         long latestTimestamp = 0;
-        
+
         for (AlertSector sector : alertStatus.getSectors()) {
             latestTimestamp = Math.max(latestTimestamp, alertSectorHandler.getLatestTimestampWithin(distanceLimit, sector));
         }
-        
+
         return latestTimestamp;
     }
-    
+
     public AlertSector getSectorWithClosestStrike(AlertStatus alertStatus) {
         float minDistance = Float.POSITIVE_INFINITY;
 

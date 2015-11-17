@@ -4,10 +4,12 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
+
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.map.OwnMapActivity;
 import org.blitzortung.android.map.OwnMapView;
@@ -15,14 +17,13 @@ import org.blitzortung.android.map.OwnMapView;
 public abstract class PopupOverlay<Item extends OverlayItem> extends ItemizedOverlay<Item> {
 
     private final OwnMapActivity activity;
+    boolean popupShown;
 
     public PopupOverlay(OwnMapActivity activity, Drawable defaultMarker) {
         super(defaultMarker);
         this.activity = activity;
         popupShown = false;
     }
-
-    boolean popupShown;
 
     protected void showPopup(GeoPoint location, String text) {
 

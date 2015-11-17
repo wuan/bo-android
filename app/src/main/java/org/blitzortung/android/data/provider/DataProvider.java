@@ -3,9 +3,7 @@ package org.blitzortung.android.data.provider;
 import android.content.pm.PackageInfo;
 
 import org.blitzortung.android.data.Parameters;
-import org.blitzortung.android.data.beans.RasterParameters;
 import org.blitzortung.android.data.beans.Station;
-import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.provider.result.ResultEvent;
 
 import java.util.List;

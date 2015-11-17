@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.util.Log;
+
 import org.blitzortung.android.app.Main;
 import org.blitzortung.android.app.R;
 import org.blitzortung.android.data.beans.Station;
@@ -18,17 +19,15 @@ import java.util.List;
 
 public class ParticipantsOverlay extends PopupOverlay<ParticipantOverlayItem> implements LayerOverlay {
 
-    // VisibleForTesting
-    protected final ArrayList<ParticipantOverlayItem> participants;
-
-    private final ParticipantColorHandler colorHandler;
-
     static private final Drawable DefaultDrawable;
 
     static {
         DefaultDrawable = new ShapeDrawable(new ParticipantShape());
     }
 
+    // VisibleForTesting
+    protected final ArrayList<ParticipantOverlayItem> participants;
+    private final ParticipantColorHandler colorHandler;
     private final EnumMap<State, ShapeDrawable> shapes;
 
     private final LayerOverlayComponent layerOverlayComponent;

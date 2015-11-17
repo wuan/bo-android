@@ -181,7 +181,7 @@
         <item>25</item>
         <item>50</item>
     </string-array>
-    
+
     <string name="data_source">Datenquelle</string>
     <string name="data_source_summary">integrierte Datenquelle oder Zugriff auf blitzortung.org (Nur für Teilnehmer)
     </string>

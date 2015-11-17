@@ -30,36 +30,26 @@ import lombok.val;
 
 public class DataHandler implements OnSharedPreferenceChangeListener {
 
-    private final Lock lock = new ReentrantLock();
-
-    private final PackageInfo pInfo;
-    private DataProvider dataProvider;
-
-    private String username;
-    private String password;
-
-    private Parameters parameters = Parameters.DEFAULT;
-
-    private ParametersController parametersController;
-
-    private Consumer<DataEvent> dataEventConsumer;
-
-    private int preferencesRasterBaselength;
-
-    private int preferencesRegion;
-
-    private DataProviderFactory dataProviderFactory;
-
     public static final RequestStartedEvent REQUEST_STARTED_EVENT = new RequestStartedEvent();
     public static final ClearDataEvent CLEAR_DATA_EVENT = new ClearDataEvent();
-
-    private PowerManager.WakeLock wakeLock;
-
     public static final Set<DataChannel> DEFAULT_DATA_CHANNELS = new HashSet<>();
 
     static {
         DEFAULT_DATA_CHANNELS.add(DataChannel.STRIKES);
     }
+
+    private final Lock lock = new ReentrantLock();
+    private final PackageInfo pInfo;
+    private DataProvider dataProvider;
+    private String username;
+    private String password;
+    private Parameters parameters = Parameters.DEFAULT;
+    private ParametersController parametersController;
+    private Consumer<DataEvent> dataEventConsumer;
+    private int preferencesRasterBaselength;
+    private int preferencesRegion;
+    private DataProviderFactory dataProviderFactory;
+    private PowerManager.WakeLock wakeLock;
 
     public DataHandler(PowerManager.WakeLock wakeLock, SharedPreferences sharedPreferences, PackageInfo pInfo) {
         this(wakeLock, sharedPreferences, pInfo, new DataProviderFactory());
@@ -83,89 +73,6 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.HISTORIC_TIMESTEP);
 
         updateProviderSpecifics();
-    }
-
-    private class FetchDataTask extends AsyncTask<TaskParameters, Integer, Optional<ResultEvent>> {
-
-        protected void onProgressUpdate(Integer... progress) {
-        }
-
-        protected void onPostExecute(Optional<ResultEvent> result) {
-            if (result.isPresent()) {
-                final ResultEvent payload = result.get();
-                sendEvent(payload);
-            }
-        }
-
-        @Override
-        protected Optional<ResultEvent> doInBackground(TaskParameters... taskParametersArray) {
-            val taskParameters = taskParametersArray[0];
-            val parameters = taskParameters.getParameters();
-
-            if (lock.tryLock()) {
-                try {
-                    val result = ResultEvent.builder();
-
-                    dataProvider.setUp();
-                    dataProvider.setCredentials(username, password);
-
-                    if (parameters.isRaster()) {
-                        dataProvider.getStrikesGrid(parameters, result);
-                    } else {
-                        dataProvider.getStrikes(parameters, result);
-                    }
-
-                    result.parameters(parameters)
-                            .referenceTime(System.currentTimeMillis());
-
-                    if (taskParameters.isUpdateParticipants()) {
-                        result.stations(dataProvider.getStations(parameters.getRegion()));
-                    }
-
-                    dataProvider.shutDown();
-
-                    return Optional.of(result.build());
-                } catch (RuntimeException e) {
-                    e.printStackTrace();
-                    return Optional.of(ResultEvent.builder().fail(true).build());
-                } finally {
-                    lock.unlock();
-                }
-            }
-            return Optional.empty();
-        }
-    }
-
-    private class FetchBackgroundDataTask extends FetchDataTask {
-
-        private PowerManager.WakeLock wakeLock;
-
-        public FetchBackgroundDataTask(PowerManager.WakeLock wakeLock) {
-            super();
-            this.wakeLock = wakeLock;
-        }
-
-        @Override
-        protected void onPostExecute(Optional<ResultEvent> result) {
-            super.onPostExecute(result);
-            if (wakeLock.isHeld()) {
-                try {
-                    wakeLock.release();
-                    Log.v(Main.LOG_TAG, "FetchBackgroundDataTask released wakelock " + wakeLock);
-                } catch (RuntimeException e) {
-                    Log.e(Main.LOG_TAG, "FetchBackgroundDataTask release wakelock failed ", e);
-                }
-            } else {
-                Log.e(Main.LOG_TAG, "FetchBackgroundDataTask release wakelock not held ");
-            }
-        }
-
-        @Override
-        protected Optional<ResultEvent> doInBackground(TaskParameters... params) {
-            wakeLock.acquire();
-            Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquire wakelock " + wakeLock);
-            return super.doInBackground(params);
-        }
     }
 
     public void updateDatainBackground() {
@@ -338,6 +245,89 @@ public class DataHandler implements OnSharedPreferenceChangeListener {
 
     public Parameters getParameters() {
         return parameters;
+    }
+
+    private class FetchDataTask extends AsyncTask<TaskParameters, Integer, Optional<ResultEvent>> {
+
+        protected void onProgressUpdate(Integer... progress) {
+        }
+
+        protected void onPostExecute(Optional<ResultEvent> result) {
+            if (result.isPresent()) {
+                final ResultEvent payload = result.get();
+                sendEvent(payload);
+            }
+        }
+
+        @Override
+        protected Optional<ResultEvent> doInBackground(TaskParameters... taskParametersArray) {
+            val taskParameters = taskParametersArray[0];
+            val parameters = taskParameters.getParameters();
+
+            if (lock.tryLock()) {
+                try {
+                    val result = ResultEvent.builder();
+
+                    dataProvider.setUp();
+                    dataProvider.setCredentials(username, password);
+
+                    if (parameters.isRaster()) {
+                        dataProvider.getStrikesGrid(parameters, result);
+                    } else {
+                        dataProvider.getStrikes(parameters, result);
+                    }
+
+                    result.parameters(parameters)
+                            .referenceTime(System.currentTimeMillis());
+
+                    if (taskParameters.isUpdateParticipants()) {
+                        result.stations(dataProvider.getStations(parameters.getRegion()));
+                    }
+
+                    dataProvider.shutDown();
+
+                    return Optional.of(result.build());
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                    return Optional.of(ResultEvent.builder().fail(true).build());
+                } finally {
+                    lock.unlock();
+                }
+            }
+            return Optional.empty();
+        }
+    }
+
+    private class FetchBackgroundDataTask extends FetchDataTask {
+
+        private PowerManager.WakeLock wakeLock;
+
+        public FetchBackgroundDataTask(PowerManager.WakeLock wakeLock) {
+            super();
+            this.wakeLock = wakeLock;
+        }
+
+        @Override
+        protected void onPostExecute(Optional<ResultEvent> result) {
+            super.onPostExecute(result);
+            if (wakeLock.isHeld()) {
+                try {
+                    wakeLock.release();
+                    Log.v(Main.LOG_TAG, "FetchBackgroundDataTask released wakelock " + wakeLock);
+                } catch (RuntimeException e) {
+                    Log.e(Main.LOG_TAG, "FetchBackgroundDataTask release wakelock failed ", e);
+                }
+            } else {
+                Log.e(Main.LOG_TAG, "FetchBackgroundDataTask release wakelock not held ");
+            }
+        }
+
+        @Override
+        protected Optional<ResultEvent> doInBackground(TaskParameters... params) {
+            wakeLock.acquire();
+            Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquire wakelock " + wakeLock);
+            return super.doInBackground(params);
+        }
     }
 
 }

@@ -1,11 +1,12 @@
 package org.blitzortung.android.data.provider;
 
 import com.google.common.collect.Lists;
-import org.blitzortung.android.data.beans.*;
-import org.blitzortung.android.data.beans.StrikeAbstract;
+
 import org.blitzortung.android.data.beans.DefaultStrike;
+import org.blitzortung.android.data.beans.RasterParameters;
+import org.blitzortung.android.data.beans.Station;
+import org.blitzortung.android.data.beans.StrikeAbstract;
 import org.blitzortung.android.data.provider.result.ResultEvent;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -14,7 +15,9 @@ import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricTestRunner.class)

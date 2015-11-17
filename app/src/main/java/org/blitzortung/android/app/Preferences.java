@@ -5,9 +5,10 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import org.blitzortung.android.location.LocationHandler;
+
 import org.blitzortung.android.app.view.PreferenceKey;
 import org.blitzortung.android.data.provider.DataProviderType;
+import org.blitzortung.android.location.LocationHandler;
 
 public class Preferences extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 

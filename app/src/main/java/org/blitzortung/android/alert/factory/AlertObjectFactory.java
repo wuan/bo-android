@@ -1,17 +1,17 @@
 package org.blitzortung.android.alert.factory;
 
 import org.blitzortung.android.alert.AlertParameters;
-import org.blitzortung.android.alert.handler.AlertSectorHandler;
-import org.blitzortung.android.alert.handler.AlertStatusHandler;
 import org.blitzortung.android.alert.data.AlertSector;
 import org.blitzortung.android.alert.data.AlertSectorRange;
 import org.blitzortung.android.alert.data.AlertStatus;
+import org.blitzortung.android.alert.handler.AlertSectorHandler;
+import org.blitzortung.android.alert.handler.AlertStatusHandler;
 
 public class AlertObjectFactory {
-    
+
     public AlertObjectFactory() {
     }
-    
+
     public AlertStatus createAlarmStatus(AlertParameters alertParameters) {
         return new AlertStatus(this, alertParameters);
     }
