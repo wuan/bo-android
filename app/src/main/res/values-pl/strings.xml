@@ -77,6 +77,7 @@
     <string-array name="regions">
         <item>Europe</item>
         <item>N. America</item>
+        <item>C. America</item>
         <item>S. America</item>
         <item>Oceania</item>
         <item>Asia</item>
@@ -85,6 +86,7 @@
     <string-array name="regions_values">
         <item>1</item>
         <item>3</item>
+        <item>7</item>
         <item>5</item>
         <item>2</item>
         <item>4</item>

@@ -76,6 +76,7 @@
     <string-array name="regions">
         <item>Evropa</item>
         <item>Sev. Amerika</item>
+        <item>C. Amerika</item>
         <item>Jižní Amerika</item>
         <item>Oceánie</item>
         <item>Asie</item>
@@ -84,6 +85,7 @@
     <string-array name="regions_values">
         <item>1</item>
         <item>3</item>
+        <item>7</item>
         <item>5</item>
         <item>2</item>
         <item>4</item>

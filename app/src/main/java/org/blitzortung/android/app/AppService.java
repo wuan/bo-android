@@ -36,6 +36,7 @@ import org.blitzortung.android.location.LocationHandler;
 import org.blitzortung.android.protocol.ConsumerContainer;
 import org.blitzortung.android.util.Period;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -140,9 +141,7 @@ public class AppService extends Service implements Runnable, SharedPreferences.O
         if (isEnabled()) {
             restart();
         } else {
-            Set<DataChannel> updateTargets = new HashSet<DataChannel>();
-            updateTargets.add(DataChannel.STRIKES);
-            dataHandler.updateData(updateTargets);
+            dataHandler.updateData(Collections.singleton(DataChannel.STRIKES));
         }
     }
 

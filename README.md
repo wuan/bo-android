@@ -94,6 +94,9 @@ Version 1.1.3 & 1.3.0 (Android 4.0+):
  
 ## German
 
+Version 1.3.7:
+ - neue Region Mittelamerika
+
 Version 1.3.6:
  - Vorläufiger Fix für Permissions unter Android 6
  - Umbau auf Retrolambda, Streams und Lombok

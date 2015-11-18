@@ -18,19 +18,19 @@ public class ResultEvent implements DataEvent {
 
     private final List<StrikeAbstract> strikes;
 
-    private List<Station> stations;
+    private final List<Station> stations;
 
-    private RasterParameters rasterParameters;
+    private final RasterParameters rasterParameters;
 
-    private int[] histogram;
+    private final int[] histogram;
 
-    private boolean fail;
+    private final boolean fail;
 
-    private boolean incrementalData;
+    private final boolean incrementalData;
 
-    private long referenceTime;
+    private final long referenceTime;
 
-    private Parameters parameters;
+    private final Parameters parameters;
 
     public boolean containsStrikes() {
         return !strikes.isEmpty();
