@@ -1,6 +1,7 @@
 package org.blitzortung.android.app.controller;
 
 import android.app.Activity;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -16,8 +17,11 @@ import org.blitzortung.android.data.provider.result.ResultEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import lombok.val;
 
 
 public class HistoryController {
@@ -133,9 +137,7 @@ public class HistoryController {
     }
 
     private void updateData() {
-        Set<DataChannel> dataChannels = new HashSet<>();
-        dataChannels.add(DataChannel.STRIKES);
-        dataHandler.updateData(dataChannels);
+        dataHandler.updateData(Collections.singleton(DataChannel.STRIKES));
     }
 
     public void setAppService(AppService appService) {

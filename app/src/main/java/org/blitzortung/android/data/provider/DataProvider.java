@@ -22,8 +22,6 @@ public abstract class DataProvider {
 
     public abstract void getStrikes(Parameters parameters, ResultEvent.ResultEventBuilder result);
 
-    public abstract boolean returnsIncrementalData();
-
     public abstract void getStrikesGrid(Parameters parameters, ResultEvent.ResultEventBuilder result);
 
     public abstract List<Station> getStations(int region);

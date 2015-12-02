@@ -70,10 +70,6 @@ public class JsonRpcDataProvider extends DataProvider {
                 String.format("JsonRpcDataProvider: read %d bytes (%d new strikes)", client.getLastNumberOfTransferredBytes(), newStrikeCount));
     }
 
-    public boolean returnsIncrementalData() {
-        return incrementalResult;
-    }
-
     @Override
     public void getStrikesGrid(Parameters parameters, ResultEvent.ResultEventBuilder result) {
         nextId = 0;

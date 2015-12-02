@@ -40,11 +40,6 @@ public class DataProviderTest {
         }
 
         @Override
-        public boolean returnsIncrementalData() {
-            return false;
-        }
-
-        @Override
         public void getStrikesGrid(Parameters parameters, ResultEvent.ResultEventBuilder result) {
         }
 

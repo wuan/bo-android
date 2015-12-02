@@ -101,10 +101,6 @@ public class BlitzortungHttpDataProvider extends DataProvider {
         }
     }
 
-    public boolean returnsIncrementalData() {
-        return latestTime != 0;
-    }
-
     @Override
     public void getStrikesGrid(Parameters parameters, ResultEvent.ResultEventBuilder result) {
     }

@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(manifest = "src/main/AndroidManifest.xml", sdk = 19)
+@Config(manifest = "src/main/AndroidManifest.xml", sdk = 19, constants = Void.class)
 public class AlertLabelHandlerTest {
 
     private AlertLabelHandler alertLabelHandler;
