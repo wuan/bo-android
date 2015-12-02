@@ -121,23 +121,21 @@ public class Main extends OwnMapActivity implements OnSharedPreferenceChangeList
 
                     clearDataIfRequested();
 
-                    if (result.containsStrikes()) {
-                        strikesOverlay.setParameters(resultParameters);
-                        strikesOverlay.setRasterParameters(result.getRasterParameters());
-                        strikesOverlay.setReferenceTime(result.getReferenceTime());
+                    strikesOverlay.setParameters(resultParameters);
+                    strikesOverlay.setRasterParameters(result.getRasterParameters());
+                    strikesOverlay.setReferenceTime(result.getReferenceTime());
 
-                        if (result.isIncrementalData()) {
-                            strikesOverlay.expireStrikes();
-                        } else {
-                            strikesOverlay.clear();
-                        }
-                        strikesOverlay.addStrikes(result.getStrikes());
-
-                        alertView.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.getParameters().getIntervalDuration());
-
-                        strikesOverlay.refresh();
-                        legendView.requestLayout();
+                    if (result.isIncrementalData()) {
+                        strikesOverlay.expireStrikes();
+                    } else {
+                        strikesOverlay.clear();
                     }
+                    strikesOverlay.addStrikes(result.getStrikes());
+
+                    alertView.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.getParameters().getIntervalDuration());
+
+                    strikesOverlay.refresh();
+                    legendView.requestLayout();
 
                     if (!result.containsRealtimeData()) {
                         setHistoricStatusString();
