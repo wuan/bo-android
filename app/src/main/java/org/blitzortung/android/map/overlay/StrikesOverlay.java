@@ -33,12 +33,12 @@ import java.util.List;
 
 public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements LayerOverlay {
 
-    static private final Drawable DefaultDrawable;
+    static private final Drawable DEFAULT_DRAWABLE;
 
     static {
         StrikeShape shape = new StrikeShape();
         shape.update(1, 0);
-        DefaultDrawable = new ShapeDrawable(shape);
+        DEFAULT_DRAWABLE = new ShapeDrawable(shape);
     }
 
     // VisibleForTesting
@@ -51,7 +51,7 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements L
     private Parameters parameters = Parameters.DEFAULT;
 
     public StrikesOverlay(OwnMapActivity mapActivity, StrikeColorHandler colorHandler) {
-        super(mapActivity, boundCenter(DefaultDrawable));
+        super(mapActivity, boundCenter(DEFAULT_DRAWABLE));
 
         layerOverlayComponent = new LayerOverlayComponent(mapActivity.getResources().getString(R.string.strikes_layer));
         this.colorHandler = colorHandler;
@@ -106,9 +106,10 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements L
 
     public void addStrikes(List<StrikeAbstract> strikes) {
         Log.v(Main.LOG_TAG, "StrikesOverlay.addStrikes() #" + strikes.size());
-        for (StrikeAbstract strike : strikes) {
-            this.strikes.add(new StrikeOverlayItem(strike));
-        }
+        this.strikes.addAll(
+                Stream.of(strikes)
+                        .map(StrikeOverlayItem::new)
+                        .collect(Collectors.toList()));
         setLastFocusedIndex(-1);
         populate();
     }
@@ -144,7 +145,6 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements L
     }
 
     public void refresh() {
-        long now = System.currentTimeMillis();
 
         int current_section = -1;
 
@@ -153,7 +153,11 @@ public class StrikesOverlay extends PopupOverlay<StrikeOverlayItem> implements L
         Shape drawable = null;
 
         for (StrikeOverlayItem item : strikes) {
-            int section = colorHandler.getColorSection(now, item.getTimestamp(), parameters);
+            int section = colorHandler.getColorSection(
+                    hasRealtimeData()
+                            ? System.currentTimeMillis()
+                            : referenceTime,
+                    item.getTimestamp(), parameters);
 
             if (hasRasterParameters() || current_section != section) {
                 drawable = updateAndReturnDrawable(item, section, colorHandler);
