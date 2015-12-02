@@ -73,7 +73,7 @@ public class AlertSectorHandlerTest {
     @Test
     public void testCheckWithinThresholdTimeAndRange1() {
         when(strike.getTimestamp()).thenReturn(thresholdTime);
-        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(strike.updateLocation(any(Location.class))).thenReturn(strikeLocation);
         when(location.distanceTo(strikeLocation)).thenReturn(2500f);
 
         alertSectorHandler.checkStrike(alertSector, strike);
@@ -87,7 +87,7 @@ public class AlertSectorHandlerTest {
     @Test
     public void testCheckWithinThresholdTimeAndOutOfAllRanges() {
         when(strike.getTimestamp()).thenReturn(thresholdTime);
-        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(strike.updateLocation(any(Location.class))).thenReturn(strikeLocation);
         when(location.distanceTo(strikeLocation)).thenReturn(5000.1f);
 
         alertSectorHandler.checkStrike(alertSector, strike);
@@ -102,7 +102,7 @@ public class AlertSectorHandlerTest {
     @Test
     public void testCheckOutOfThresholdTimeAndWithinRange2() {
         when(strike.getTimestamp()).thenReturn(beforeThresholdTime);
-        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(strike.updateLocation(any(Location.class))).thenReturn(strikeLocation);
         when(location.distanceTo(strikeLocation)).thenReturn(2500.1f);
 
         alertSectorHandler.checkStrike(alertSector, strike);
@@ -117,7 +117,7 @@ public class AlertSectorHandlerTest {
     @Test
     public void testCheckOutOfThresholdTimeAndAllRanges() {
         when(strike.getTimestamp()).thenReturn(beforeThresholdTime);
-        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(strike.updateLocation(any(Location.class))).thenReturn(strikeLocation);
         when(location.distanceTo(strikeLocation)).thenReturn(5000.1f);
 
         alertSectorHandler.checkStrike(alertSector, strike);

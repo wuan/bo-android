@@ -44,7 +44,7 @@ public class HttpServiceClient {
         this.connectionTimeout = connectionTimeout;
     }
 
-    protected String doRequest(String data) {
+    public String doRequest(String data) {
         try {
             return doRequestChecked(data);
         } catch (IOException e) {
@@ -52,7 +52,7 @@ public class HttpServiceClient {
         }
     }
 
-    protected String doRequestChecked(String data) throws IOException {
+    private String doRequestChecked(String data) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
         urlConnection.setRequestMethod("POST");

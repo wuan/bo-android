@@ -4,14 +4,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class JsonRpcClient extends HttpServiceClient {
+import lombok.experimental.Delegate;
+
+
+public class JsonRpcClient {
+
+    @Delegate(types = HttpServiceClient.class)
+    private final HttpServiceClient client;
 
     private final int id = 0;
 
     private int lastNumberOfTransferredBytes;
 
     public JsonRpcClient(String uri, String agentSuffix) {
-        super(uri, agentSuffix);
+        client = new HttpServiceClient(uri, agentSuffix);
     }
 
     // VisibleForTesting

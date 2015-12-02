@@ -6,7 +6,7 @@ public interface Strike {
 
     long getTimestamp();
 
-    Location getLocation(Location location);
+    Location updateLocation(Location location);
 
     int getMultiplicity();
 }

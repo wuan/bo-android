@@ -23,7 +23,7 @@ public abstract class StrikeAbstract implements Strike {
     }
 
     @Override
-    public Location getLocation(Location location) {
+    public Location updateLocation(Location location) {
         location.setLongitude(longitude);
         location.setLatitude(latitude);
         return location;

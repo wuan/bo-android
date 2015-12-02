@@ -37,7 +37,7 @@ public class StrikeOverlayItem extends OverlayItem implements Strike {
     }
 
     @Override
-    public Location getLocation(Location location) {
+    public Location updateLocation(Location location) {
         final GeoPoint point = getPoint();
         location.setLongitude(point.getLongitudeE6() / 1e6);
         location.setLatitude(point.getLatitudeE6() / 1e6);

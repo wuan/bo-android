@@ -71,7 +71,7 @@ public class AlertStatusHandlerTest {
     public void testCheckStrikesWhenBearingIsMinimumBearingOfSector() {
 
         Location strikeLocation = mock(Location.class);
-        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(strike.updateLocation(any(Location.class))).thenReturn(strikeLocation);
         when(location.bearingTo(strikeLocation)).thenReturn(10.0f);
         when(alertStatus.getSectors()).thenReturn(Lists.newArrayList(alertSector));
         when(alertSector.getMinimumSectorBearing()).thenReturn(10.0f);
@@ -90,7 +90,7 @@ public class AlertStatusHandlerTest {
     public void testCheckStrikesWhenBearingIsNearMaximumBearingOfSector() {
 
         Location strikeLocation = mock(Location.class);
-        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(strike.updateLocation(any(Location.class))).thenReturn(strikeLocation);
         when(location.bearingTo(strikeLocation)).thenReturn(14.999999f);
         when(alertStatus.getSectors()).thenReturn(Lists.newArrayList(alertSector));
         when(alertSector.getMinimumSectorBearing()).thenReturn(10.0f);
@@ -109,7 +109,7 @@ public class AlertStatusHandlerTest {
     public void testCheckStrikesThrowsExceptionWhenNoSectorIfFoundForBearing() {
 
         Location strikeLocation = mock(Location.class);
-        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(strike.updateLocation(any(Location.class))).thenReturn(strikeLocation);
         when(location.bearingTo(strikeLocation)).thenReturn(15f);
         when(alertStatus.getSectors()).thenReturn(Lists.newArrayList(alertSector));
         when(alertSector.getMinimumSectorBearing()).thenReturn(10.0f);
@@ -124,7 +124,7 @@ public class AlertStatusHandlerTest {
     public void testCheckStrikesWhenBearingIsMinimumBearingOfSpecialSector() {
 
         Location strikeLocation = mock(Location.class);
-        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(strike.updateLocation(any(Location.class))).thenReturn(strikeLocation);
         when(location.bearingTo(strikeLocation)).thenReturn(170f);
         when(alertStatus.getSectors()).thenReturn(Lists.newArrayList(alertSector));
         when(alertSector.getMinimumSectorBearing()).thenReturn(170f);
@@ -143,7 +143,7 @@ public class AlertStatusHandlerTest {
     public void testCheckStrikesWhenBearingIsNearMaximumBearingOfSpecialSector() {
 
         Location strikeLocation = mock(Location.class);
-        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(strike.updateLocation(any(Location.class))).thenReturn(strikeLocation);
         when(location.bearingTo(strikeLocation)).thenReturn(-170.00001f);
         when(alertStatus.getSectors()).thenReturn(Lists.newArrayList(alertSector));
         when(alertSector.getMinimumSectorBearing()).thenReturn(170f);
@@ -162,7 +162,7 @@ public class AlertStatusHandlerTest {
     public void testCheckStrikesThrowsExceptionWhenNoSectorIfFoundForBearingInCaseOfSpecialSector() {
 
         Location strikeLocation = mock(Location.class);
-        when(strike.getLocation(any(Location.class))).thenReturn(strikeLocation);
+        when(strike.updateLocation(any(Location.class))).thenReturn(strikeLocation);
         when(location.bearingTo(strikeLocation)).thenReturn(-170f);
         when(alertStatus.getSectors()).thenReturn(Lists.newArrayList(alertSector));
         when(alertSector.getMinimumSectorBearing()).thenReturn(170f);

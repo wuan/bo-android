@@ -47,7 +47,7 @@ public class AlertSectorHandler {
     }
 
     private float calculateDistanceTo(Strike strike) {
-        float distanceInMeters = location.distanceTo(strike.getLocation(strikeLocation));
+        float distanceInMeters = location.distanceTo(strike.updateLocation(strikeLocation));
         return alertParameters.getMeasurementSystem().calculateDistance(distanceInMeters);
     }
 

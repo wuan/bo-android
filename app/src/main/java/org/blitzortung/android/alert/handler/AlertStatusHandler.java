@@ -36,7 +36,7 @@ public class AlertStatusHandler {
         Location strikeLocation = new Location("");
 
         for (Strike strike : strikes) {
-            float bearingToStrike = location.bearingTo(strike.getLocation(strikeLocation));
+            float bearingToStrike = location.bearingTo(strike.updateLocation(strikeLocation));
 
             AlertSector alertSector = getSectorForBearing(alertStatus, bearingToStrike);
             alertSectorHandler.checkStrike(alertSector, strike);
