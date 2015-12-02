@@ -1,4 +1,4 @@
-# About
+# About [![Stories in Ready](https://badge.waffle.io/wuan/bo-android.svg?label=ready&title=Ready)](http://waffle.io/wuan/bo-android) 
 
 This Android App visualized lightning data provided by the blitzortung.org network.
 
