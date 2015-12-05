@@ -3,3 +3,5 @@
 /build
 /app/build
 /app/*.apk
+/.gradle
+/gradle
