@@ -27,17 +27,11 @@ class RasterShape : Shape() {
         val textSize = rect.height() / 2.5f
         if (textSize >= 8f) {
             paint.color = textColor
-            paint.alpha = 255
+            paint.alpha = calculateAlphaValue(textSize, 20, 80, 255, 60)
             paint.textAlign = Align.CENTER
             paint.textSize = textSize
             canvas.drawText(multiplicity.toString(), 0.0f, 0.4f * textSize, paint)
         }
-    }
-
-    private fun setAlphaValue() {
-        var value = (rect.width() - 10) / 30
-        value = Math.min(Math.max(value, 0.0f), 1.0f)
-        alpha = 100 + (155 * (1.0 - value)).toInt()
     }
 
     override fun hasAlpha(): Boolean {
@@ -56,11 +50,19 @@ class RasterShape : Shape() {
         this.color = color
         this.textColor = textColor
 
-        setAlphaValue()
+        alpha = calculateAlphaValue(rect.width(), 10, 40, 255, 100)
+    }
+
+    private fun calculateAlphaValue(value: Float, minValue: Int, maxValue: Int, maxAlpha: Int, minAlpha: Int): Int {
+        val targetValue = coerceToRange((value - minValue) / (maxValue - minValue), 0.0f, 1.0f)
+        return minAlpha + ((maxAlpha - minAlpha) * (1.0 - targetValue)).toInt()
+    }
+
+    private fun coerceToRange(value: Float, lowerBound: Float, upperBound: Float): Float {
+        return Math.min(Math.max(value, lowerBound), upperBound)
     }
 
     companion object {
-
         private val MIN_SIZE = 1.5f
     }
 }
