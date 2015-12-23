@@ -29,6 +29,7 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(co
     private var temporaryBitmap: Bitmap? = null
     private var temporaryCanvas: Canvas? = null
     private var alertContext: AlertContext? = null
+
     val alertEventConsumer: (AlertEvent?) -> Unit = { event ->
         if (event is AlertResultEvent) {
             alertContext = event.alertContext
@@ -37,6 +38,7 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(co
         }
         invalidate()
     }
+
     val locationEventConsumer: (LocationEvent) -> Unit = { locationEvent ->
         val location = locationEvent.location
         val visibility = if (location != null) View.VISIBLE else View.INVISIBLE
@@ -53,16 +55,16 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(co
     }
 
     init {
+        alarmNotAvailableTextLines = context.getString(R.string.alarms_not_available)
+                .split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
-        alarmNotAvailableTextLines = context.getString(R.string.alarms_not_available).split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-
-        lines.color = -12566464
+        lines.color = 0xff404040.toInt()
         lines.style = Style.STROKE
 
-        textStyle.color = -12566464
+        textStyle.color = 0xff404040.toInt()
         textStyle.textSize = ViewHelper.pxFromSp(this, 10f)
 
-        background.color = -5197648
+        background.color = 0xffb0b0b0.toInt()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -91,6 +93,7 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(co
 
         prepareTemporaryBitmap(size)
 
+        val alertContext = alertContext
         if (alertContext != null && intervalDuration != 0) {
             val alertParameters = alertContext!!.alertParameters
             val rangeSteps = alertParameters.rangeSteps
@@ -106,7 +109,7 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(co
 
             val actualTime = System.currentTimeMillis()
 
-            for (alertSector in alertContext!!.sectors) {
+            for (alertSector in alertContext.sectors) {
 
                 val startAngle = alertSector.minimumSectorBearing + 90f + 180f
 
@@ -128,7 +131,7 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(co
                 }
             }
 
-            for (alertSector in alertContext!!.sectors) {
+            for (alertSector in alertContext.sectors) {
                 val bearing = alertSector.minimumSectorBearing.toDouble()
                 temporaryCanvas!!.drawLine(center, center, center + (radius * Math.sin(bearing / 180.0f * Math.PI)).toFloat(), center + (radius * -Math.cos(bearing / 180.0f * Math.PI)).toFloat(), lines)
 
@@ -155,18 +158,13 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(co
             }
 
         } else if (size > TEXT_MINIMUM_SIZE) {
-
-            warnText.color = -6291456
+            warnText.color = 0xffa00000.toInt()
             warnText.textAlign = Align.CENTER
             warnText.textSize = DEFAULT_FONT_SIZE.toFloat()
 
-            //Find the smallest possible scale
-            var scale = 1f
-            for (alarmNotAvailableTextLine in alarmNotAvailableTextLines) {
-                //Use margin of 20
-                //Because text is centered, margin left and right will be 10
-                scale = Math.min(scale, (width - 20).toFloat()) / warnText.measureText(alarmNotAvailableTextLine)
-            }
+            val maxWidth = alarmNotAvailableTextLines.map { warnText.measureText(it) }.max()
+                    ?: width.toFloat() - 20
+            val scale = (width - 20).toFloat() / maxWidth
 
             //Now scale the text so we can use the whole width of the canvas
             warnText.textSize = scale * DEFAULT_FONT_SIZE
@@ -212,7 +210,6 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(co
     }
 
     companion object {
-
         private val TEXT_MINIMUM_SIZE = 300
         private val DEFAULT_FONT_SIZE = 20
         private val XFERMODE_CLEAR = PorterDuffXfermode(PorterDuff.Mode.CLEAR)

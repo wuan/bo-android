@@ -446,12 +446,13 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         participantsOverlay.clear()
     }
 
-    override fun onCreateDialog(id: Int): Dialog {
+    override fun onCreateDialog(id: Int): Dialog? {
         return when (id) {
             R.id.info_dialog -> InfoDialog(this, versionComponent)
 
             R.id.alarm_dialog ->
-                AlertDialog(this, appService!!, AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)))
+                appService?.let {appService ->
+                    AlertDialog(this, appService, AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)))}
 
             else -> throw RuntimeException("unhandled dialog with id $id")
         }
@@ -470,7 +471,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 Log.i(LOG_TAG, "CAMERA permission has now been granted. Showing preview.")
             } else {
                 Log.i(LOG_TAG, "CAMERA permission was NOT granted.")
-
             }
             // END_INCLUDE(permission_result)
 
@@ -478,9 +478,9 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
 
-        if (appService != null) {
+        appService?.let {
             val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-            appService!!.updateLocationHandler(preferences)
+            it.updateLocationHandler(preferences)
         }
     }
 
@@ -505,9 +505,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, vararg keys: PreferenceKey) {
-        for (key in keys) {
-            onSharedPreferenceChanged(sharedPreferences, key)
-        }
+        keys.forEach { onSharedPreferenceChanged(sharedPreferences, it) }
     }
 
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {

@@ -8,6 +8,7 @@ import android.widget.TextView
 import org.blitzortung.android.alert.AlertLabel
 import org.blitzortung.android.alert.AlertLabelHandler
 import org.blitzortung.android.alert.event.AlertEvent
+import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.app.R
 
 class StatusComponent(activity: Activity) : AlertLabel {
@@ -17,13 +18,15 @@ class StatusComponent(activity: Activity) : AlertLabel {
     val alertEventConsumer: (AlertEvent) -> Unit
 
     private val status: TextView
+
     private val warning: TextView
+
     private val progressBar: ProgressBar
+
     private val errorIndicator: ImageView
 
     init {
         status = activity.findViewById(R.id.status) as TextView
-
         warning = activity.findViewById(R.id.warning) as TextView
 
         progressBar = activity.findViewById(R.id.progress) as ProgressBar
@@ -36,7 +39,7 @@ class StatusComponent(activity: Activity) : AlertLabel {
 
         alertEventConsumer = { event ->
             alertLabelHandler.apply(
-                    if (event is org.blitzortung.android.alert.event.AlertResultEvent)
+                    if (event is AlertResultEvent)
                         event.alertResult
                     else
                         null)
