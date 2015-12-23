@@ -13,7 +13,8 @@ import java.util.ArrayList
 
 abstract class OwnMapActivity : MapActivity() {
 
-    internal var overlays: MutableList<Overlay> = ArrayList()
+    private var overlays: MutableList<Overlay> = arrayListOf();
+
     lateinit var mapView: OwnMapView
 
     fun addOverlay(overlay: Overlay) {
@@ -21,23 +22,13 @@ abstract class OwnMapActivity : MapActivity() {
     }
 
     fun updateOverlays() {
-        val mapOverlays = mapView!!.overlays
+        val mapOverlays = mapView.overlays
 
         mapOverlays.clear()
+        overlays.filter{it !is LayerOverlay || it.enabled}
+                .forEach { mapOverlays.add(it)}
 
-        for (overlay in overlays) {
-            var enabled = true
-
-            if (overlay is LayerOverlay) {
-                enabled = overlay.enabled
-            }
-
-            if (enabled) {
-                mapOverlays.add(overlay)
-            }
-        }
-
-        mapView!!.invalidate()
+        mapView.invalidate()
     }
 
     override fun onDestroy() {
@@ -48,7 +39,7 @@ abstract class OwnMapActivity : MapActivity() {
             mConfigField.isAccessible = true
 
             val mConfig = mConfigField.get(this)
-            if (null != mConfig) {
+            if (mConfig != null) {
                 val mConfigContextField = mConfig.javaClass.getDeclaredField("context")
                 mConfigContextField.isAccessible = true
                 mConfigContextField.set(mConfig, null)

@@ -19,23 +19,21 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
 
     private var dataHandler: DataHandler? = null
 
-    private val buttons: MutableCollection<ImageButton>
+    private val buttons: MutableCollection<ImageButton> = arrayListOf()
+
     private lateinit var historyRewind: ImageButton
+
     private lateinit var historyForward: ImageButton
+
     private lateinit var goRealtime: ImageButton
 
-
     val dataConsumer = { event: Event ->
-        if (event is ResultEvent) {
-            if (!event.failed) {
-                setRealtimeData(event.containsRealtimeData())
-            }
+        if (event is ResultEvent && !event.failed) {
+            setRealtimeData(event.containsRealtimeData())
         }
     }
 
     init {
-        buttons = ArrayList<ImageButton>()
-
         setupHistoryRewindButton(activity)
         setupHistoryForwardButton(activity)
         setupGoRealtimeButton(activity)
@@ -58,9 +56,7 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
     }
 
     private fun setupHistoryRewindButton(activity: Activity) {
-        val historyRewind = activity.findViewById(R.id.historyRew) as ImageButton
-        buttons.add(historyRewind)
-        historyRewind.setOnClickListener { v ->
+        historyRewind = addButtonWithAction(activity, R.id.historyRew, { v ->
             if (dataHandler?.rewInterval() ?: false) {
                 disableButtonColumn()
                 historyForward.visibility = View.VISIBLE
@@ -71,15 +67,11 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
                 val toast = Toast.makeText(activity.baseContext, activity.resources.getText(R.string.historic_timestep_limit_reached), Toast.LENGTH_SHORT)
                 toast.show()
             }
-        }
-        this.historyRewind = historyRewind
+        })
     }
 
     private fun setupHistoryForwardButton(activity: Activity) {
-        val historyForward = activity.findViewById(R.id.historyFfwd) as ImageButton
-        buttons.add(historyForward)
-        historyForward.visibility = View.INVISIBLE
-        historyForward.setOnClickListener { v ->
+        historyForward = addButtonWithAction(activity, R.id.historyFfwd, { v ->
             if (dataHandler?.ffwdInterval() ?: false) {
                 if (dataHandler?.isRealtime ?: false) {
                     configureForRealtimeOperation()
@@ -87,20 +79,24 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
                     dataHandler?.updateData()
                 }
             }
-        }
-        this.historyForward = historyForward
+        })
     }
 
     private fun setupGoRealtimeButton(activity: Activity) {
-        val goRealtime = activity.findViewById(R.id.goRealtime) as ImageButton
-        buttons.add(goRealtime)
-        goRealtime.visibility = View.INVISIBLE
-        goRealtime.setOnClickListener { v ->
+        goRealtime = addButtonWithAction(activity, R.id.goRealtime, { v ->
             if (dataHandler?.goRealtime() ?: false) {
                 configureForRealtimeOperation()
             }
-        }
-        this.goRealtime = goRealtime
+        })
+    }
+
+    private fun addButtonWithAction(activity: Activity, id: Int, action: (View) -> Unit ): ImageButton {
+        val button = activity.findViewById(id) as ImageButton
+        buttons.add(button)
+        button.visibility = View.INVISIBLE
+        button.setOnClickListener(action)
+
+        return button
     }
 
     private fun configureForRealtimeOperation() {

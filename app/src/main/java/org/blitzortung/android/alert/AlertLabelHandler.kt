@@ -4,8 +4,10 @@ import android.content.res.Resources
 
 import org.blitzortung.android.app.R
 
-class AlertLabelHandler(private val alertLabel: AlertLabel, private val resources: Resources) {
-
+class AlertLabelHandler(
+        private val alertLabel: AlertLabel,
+        private val resources: Resources
+) {
     fun apply(alertResult: AlertResult?) {
         var warningText = ""
 
@@ -26,5 +28,4 @@ class AlertLabelHandler(private val alertLabel: AlertLabel, private val resource
         alertLabel.setAlarmTextColor(color)
         alertLabel.setAlarmText(warningText)
     }
-
 }

@@ -9,15 +9,11 @@ import org.blitzortung.android.util.MeasurementSystem
 
 class AlertSectorHandler {
 
-    private val strikeLocation: Location
+    private val strikeLocation: Location = Location("")
 
     private var location: Location? = null
 
     private var thresholdTime: Long = 0
-
-    init {
-        strikeLocation = Location("")
-    }
 
     fun setCheckStrikeParameters(location: Location, thresholdTime: Long) {
         this.location = location
@@ -25,21 +21,23 @@ class AlertSectorHandler {
     }
 
     fun checkStrike(sector: AlertSector, strike: Strike, alertContext: AlertContext) {
-        val distance = calculateDistanceTo(strike, alertContext.alertParameters.measurementSystem)
+        location?.let { location ->
+            val distance = calculateDistanceTo(location, strike, alertContext.alertParameters.measurementSystem)
 
-        sector.ranges.find { r -> distance <= r.rangeMaximum }?.let {
-            it.addStrike(strike);
+            sector.ranges.find { r -> distance <= r.rangeMaximum }?.let {
+                it.addStrike(strike);
 
-            if (strike.timestamp >= thresholdTime) {
-                sector.updateClosestStrikeDistance(distance)
+                if (strike.timestamp >= thresholdTime) {
+                    sector.updateClosestStrikeDistance(distance)
+                }
             }
         }
     }
 
-    private fun calculateDistanceTo(strike: Strike, measurementSystem: MeasurementSystem): Float {
+    private fun calculateDistanceTo(location: Location, strike: Strike, measurementSystem: MeasurementSystem): Float {
         strikeLocation.longitude = strike.longitude.toDouble()
         strikeLocation.latitude = strike.latitude.toDouble()
-        val distanceInMeters = location!!.distanceTo(strikeLocation)
+        val distanceInMeters = location.distanceTo(strikeLocation)
         return measurementSystem.calculateDistance(distanceInMeters)
     }
 

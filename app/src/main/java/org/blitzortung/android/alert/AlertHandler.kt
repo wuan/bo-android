@@ -276,13 +276,12 @@ class AlertHandler(
 
     private fun playSoundIfEnabled() {
         alertSignal.soundSignal?.let { signal ->
-            val r = RingtoneManager.getRingtone(context, signal)
-            if (r != null) {
-                if (!r.isPlaying) {
-                    r.audioAttributes = AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_NOTIFICATION).build()
-                    r.play()
+            RingtoneManager.getRingtone(context, signal)?.let { ringtone ->
+                if (!ringtone.isPlaying) {
+                    ringtone.audioAttributes = AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_NOTIFICATION).build()
+                    ringtone.play()
                 }
-                Log.v(Main.LOG_TAG, "playing " + r.getTitle(context))
+                Log.v(Main.LOG_TAG, "playing " + ringtone.getTitle(context))
             }
         }
     }
