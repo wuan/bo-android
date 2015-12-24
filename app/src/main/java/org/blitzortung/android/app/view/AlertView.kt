@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.Paint.Align
 import android.graphics.Paint.Style
+import android.location.Location
 import android.util.AttributeSet
 import android.view.View
 import org.blitzortung.android.alert.data.AlertContext
@@ -29,6 +30,7 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(co
     private var temporaryBitmap: Bitmap? = null
     private var temporaryCanvas: Canvas? = null
     private var alertContext: AlertContext? = null
+    private var location: Location? = null
 
     val alertEventConsumer: (AlertEvent?) -> Unit = { event ->
         if (event is AlertResultEvent) {
@@ -40,7 +42,7 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(co
     }
 
     val locationEventConsumer: (LocationEvent) -> Unit = { locationEvent ->
-        val location = locationEvent.location
+        location = locationEvent.location
         val visibility = if (location != null) View.VISIBLE else View.INVISIBLE
         setVisibility(visibility)
         invalidate()
@@ -94,86 +96,114 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(co
         prepareTemporaryBitmap(size)
 
         val alertContext = alertContext
-        if (alertContext != null && intervalDuration != 0) {
-            val alertParameters = alertContext!!.alertParameters
-            val rangeSteps = alertParameters.rangeSteps
-            val rangeStepCount = rangeSteps.size
-            val radiusIncrement = radius / rangeStepCount
-            val sectorWidth = (360 / alertParameters.sectorLabels.size).toFloat()
+        val temporaryCanvas = temporaryCanvas
+        if (temporaryCanvas != null) {
+            if (alertContext != null && intervalDuration != 0) {
+                val alertParameters = alertContext.alertParameters
+                val rangeSteps = alertParameters.rangeSteps
+                val rangeStepCount = rangeSteps.size
+                val radiusIncrement = radius / rangeStepCount
+                val sectorWidth = (360 / alertParameters.sectorLabels.size).toFloat()
 
-            lines.color = colorHandler!!.lineColor
-            lines.strokeWidth = (size / 150).toFloat()
+                lines.color = colorHandler!!.lineColor
+                lines.strokeWidth = (size / 150).toFloat()
 
-            textStyle.textAlign = Align.CENTER
-            textStyle.color = colorHandler!!.textColor
+                textStyle.textAlign = Align.CENTER
+                textStyle.color = colorHandler!!.textColor
 
-            val actualTime = System.currentTimeMillis()
+                val actualTime = System.currentTimeMillis()
 
-            for (alertSector in alertContext.sectors) {
+                for (alertSector in alertContext.sectors) {
 
-                val startAngle = alertSector.minimumSectorBearing + 90f + 180f
+                    val startAngle = alertSector.minimumSectorBearing + 90f + 180f
 
-                val ranges = alertSector.ranges
-                for (rangeIndex in ranges.indices.reversed()) {
-                    val alertSectorRange = ranges[rangeIndex]
+                    val ranges = alertSector.ranges
+                    for (rangeIndex in ranges.indices.reversed()) {
+                        val alertSectorRange = ranges[rangeIndex]
 
-                    val sectorRadius = (rangeIndex + 1) * radiusIncrement
-                    val leftTop = center - sectorRadius
-                    val bottomRight = center + sectorRadius
+                        val sectorRadius = (rangeIndex + 1) * radiusIncrement
+                        val leftTop = center - sectorRadius
+                        val bottomRight = center + sectorRadius
 
-                    val drawColor = alertSectorRange.strikeCount > 0
-                    if (drawColor) {
-                        val color = colorHandler!!.getColor(actualTime, alertSectorRange.latestStrikeTimestamp, intervalDuration)
-                        sectorPaint.color = color
+                        val drawColor = alertSectorRange.strikeCount > 0
+                        if (drawColor) {
+                            val color = colorHandler!!.getColor(actualTime, alertSectorRange.latestStrikeTimestamp, intervalDuration)
+                            sectorPaint.color = color
+                        }
+                        arcArea.set(leftTop, leftTop, bottomRight, bottomRight)
+                        temporaryCanvas!!.drawArc(arcArea, startAngle, sectorWidth, true, if (drawColor) sectorPaint else background)
                     }
+                }
+
+                for (alertSector in alertContext.sectors) {
+                    val bearing = alertSector.minimumSectorBearing.toDouble()
+                    temporaryCanvas.drawLine(center, center, center + (radius * Math.sin(bearing / 180.0f * Math.PI)).toFloat(), center + (radius * -Math.cos(bearing / 180.0f * Math.PI)).toFloat(), lines)
+
+                    if (size > TEXT_MINIMUM_SIZE) {
+                        drawSectorLabel(center, radiusIncrement, alertSector, bearing + sectorWidth / 2.0)
+                    }
+                }
+
+                textStyle.textAlign = Align.RIGHT
+                val textHeight = textStyle.getFontMetrics(null)
+                for (radiusIndex in 0..rangeStepCount - 1) {
+                    val leftTop = center - (radiusIndex + 1) * radiusIncrement
+                    val bottomRight = center + (radiusIndex + 1) * radiusIncrement
                     arcArea.set(leftTop, leftTop, bottomRight, bottomRight)
-                    temporaryCanvas!!.drawArc(arcArea, startAngle, sectorWidth, true, if (drawColor) sectorPaint else background)
-                }
-            }
+                    temporaryCanvas.drawArc(arcArea, 0f, 360f, false, lines)
 
-            for (alertSector in alertContext.sectors) {
-                val bearing = alertSector.minimumSectorBearing.toDouble()
-                temporaryCanvas!!.drawLine(center, center, center + (radius * Math.sin(bearing / 180.0f * Math.PI)).toFloat(), center + (radius * -Math.cos(bearing / 180.0f * Math.PI)).toFloat(), lines)
-
-                if (size > TEXT_MINIMUM_SIZE) {
-                    drawSectorLabel(center, radiusIncrement, alertSector, bearing + sectorWidth / 2.0)
-                }
-            }
-
-            textStyle.textAlign = Align.RIGHT
-            val textHeight = textStyle.getFontMetrics(null)
-            for (radiusIndex in 0..rangeStepCount - 1) {
-                val leftTop = center - (radiusIndex + 1) * radiusIncrement
-                val bottomRight = center + (radiusIndex + 1) * radiusIncrement
-                arcArea.set(leftTop, leftTop, bottomRight, bottomRight)
-                temporaryCanvas!!.drawArc(arcArea, 0f, 360f, false, lines)
-
-                if (size > TEXT_MINIMUM_SIZE) {
-                    val text = "%.0f".format(rangeSteps[radiusIndex])
-                    temporaryCanvas!!.drawText(text, center + (radiusIndex + 0.85f) * radiusIncrement, center + textHeight / 3f, textStyle)
-                    if (radiusIndex == rangeStepCount - 1) {
-                        temporaryCanvas!!.drawText(alertParameters.measurementSystem.unitName, center + (radiusIndex + 0.85f) * radiusIncrement, center + textHeight * 1.33f, textStyle)
+                    if (size > TEXT_MINIMUM_SIZE) {
+                        val text = "%.0f".format(rangeSteps[radiusIndex])
+                        temporaryCanvas.drawText(text, center + (radiusIndex + 0.85f) * radiusIncrement, center + textHeight / 3f, textStyle)
+                        if (radiusIndex == rangeStepCount - 1) {
+                            temporaryCanvas.drawText(alertParameters.measurementSystem.unitName, center + (radiusIndex + 0.85f) * radiusIncrement, center + textHeight * 1.33f, textStyle)
+                        }
                     }
                 }
-            }
 
-        } else if (size > TEXT_MINIMUM_SIZE) {
-            warnText.color = 0xffa00000.toInt()
-            warnText.textAlign = Align.CENTER
-            warnText.textSize = DEFAULT_FONT_SIZE.toFloat()
-
-            val maxWidth = alarmNotAvailableTextLines.map { warnText.measureText(it) }.max()
-                    ?: width.toFloat() - 20
-            val scale = (width - 20).toFloat() / maxWidth
-
-            //Now scale the text so we can use the whole width of the canvas
-            warnText.textSize = scale * DEFAULT_FONT_SIZE
-
-            for (line in alarmNotAvailableTextLines.indices) {
-                temporaryCanvas!!.drawText(alarmNotAvailableTextLines[line], center, center + (line - 1) * warnText.getFontMetrics(null), warnText)
+            } else {
+                if (size > TEXT_MINIMUM_SIZE) {
+                    drawAlertOrLocationMissingMessage(center, temporaryCanvas)
+                } else {
+                    if (location != null) {
+                        drawOwnLocationSymbol(center, radius, size, temporaryCanvas)
+                    }
+                }
             }
         }
         canvas.drawBitmap(temporaryBitmap, 0f, 0f, transfer)
+    }
+
+    private fun drawAlertOrLocationMissingMessage(center: Float, canvas: Canvas) {
+        warnText.color = 0xffa00000.toInt()
+        warnText.textAlign = Align.CENTER
+        warnText.textSize = DEFAULT_FONT_SIZE.toFloat()
+
+        val maxWidth = alarmNotAvailableTextLines.map { warnText.measureText(it) }.max()
+                ?: width.toFloat() - 20
+        val scale = (width - 20).toFloat() / maxWidth
+
+        //Now scale the text so we can use the whole width of the canvas
+        warnText.textSize = scale * DEFAULT_FONT_SIZE
+
+        for (line in alarmNotAvailableTextLines.indices) {
+            canvas.drawText(alarmNotAvailableTextLines[line], center, center + (line - 1) * warnText.getFontMetrics(null), warnText)
+        }
+    }
+
+    private fun drawOwnLocationSymbol(center: Float, radius: Float, size: Int, temporaryCanvas: Canvas) {
+        lines.color = colorHandler!!.lineColor
+        lines.strokeWidth = (size / 80).toFloat()
+
+        val largeRadius = radius * 0.8f
+        val leftTop = center - largeRadius
+        val bottomRight = center + largeRadius
+        arcArea.set(leftTop, leftTop, bottomRight, bottomRight)
+        temporaryCanvas.drawArc(arcArea, 0f, 360f, false, lines)
+
+        val smallRadius = radius * 0.6f
+        temporaryCanvas.drawLine(center - smallRadius, center, center + smallRadius, center, lines)
+        temporaryCanvas.drawLine(center, center - smallRadius, center, center + smallRadius, lines)
     }
 
     private fun drawSectorLabel(center: Float, radiusIncrement: Float, sector: AlertSector, bearing: Double) {
