@@ -18,7 +18,7 @@ class OwnMapView : MapView {
 
     private val zoomListeners = HashSet<(Int) -> Unit>()
 
-    private val gestureDetector: GestureDetector
+    private val gestureDetector: GestureDetector = GestureDetector(GestureListener())
 
     private var oldPixelSize = -1f
 
@@ -31,22 +31,18 @@ class OwnMapView : MapView {
     constructor(context: Context, apiKey: String) : super(context, apiKey) {
     }
 
-    init {
+    inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
+        override fun onDoubleTap(event: MotionEvent): Boolean {
 
-        gestureDetector = GestureDetector(object : GestureDetector.SimpleOnGestureListener() {
+            this@OwnMapView.removeView(popup)
 
-            override fun onDoubleTap(event: MotionEvent): Boolean {
-
-                /*removeView(popup)
-
-                val x = event.x.toInt()
-                val y = event.y.toInt()
-                val p = projection
-                controller.animateTo(p.fromPixels(x, y))
-                controller.zoomIn()*/
-                return true
-            }
-        })
+            val x = event.x.toInt()
+            val y = event.y.toInt()
+            val p = projection
+            controller.animateTo(p.fromPixels(x, y))
+            controller.zoomIn()
+            return true
+        }
     }
 
     public override fun dispatchDraw(canvas: Canvas) {
