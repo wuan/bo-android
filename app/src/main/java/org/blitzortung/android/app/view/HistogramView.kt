@@ -5,12 +5,15 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
+import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.map.overlay.StrikesOverlay
 import org.blitzortung.android.protocol.Event
+import org.blitzortung.android.util.UI
 
 class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(context, attrs, defStyle) {
 
@@ -21,8 +24,6 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Vie
     private val textPaint: Paint
     private val defaultForegroundColor: Int
     private val backgroundRect: RectF
-    private var width: Float = 0.toFloat()
-    private var height: Float = 0.toFloat()
     private var strikesOverlay: StrikesOverlay? = null
     private var histogram: IntArray? = null
     val dataConsumer = { event: Event ->
@@ -40,8 +41,8 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Vie
     }
 
     init {
-        padding = ViewHelper.pxFromDp(this, 5f)
-        textSize = ViewHelper.pxFromSp(this, 12f)
+        padding = ViewHelper.pxFromDp(this, UI.padding(context))
+        textSize = ViewHelper.pxFromSp(this, UI.textSize(context))
 
         foregroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
@@ -55,38 +56,35 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Vie
         textPaint.textAlign = Paint.Align.RIGHT
 
         backgroundRect = RectF()
+        Log.v(Main.LOG_TAG, "HistogramView init")
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val parentWidth = View.MeasureSpec.getSize(widthMeasureSpec)
-        val parentHeight = View.MeasureSpec.getSize(heightMeasureSpec)
+        Log.v(Main.LOG_TAG, "HistogramView.onMeasure()")
+        val sizeFactor = UI.sizeFactor(context)
+        val parentWidth = View.MeasureSpec.getSize(widthMeasureSpec) * sizeFactor
+        val parentHeight = View.MeasureSpec.getSize(heightMeasureSpec) * sizeFactor
 
-        width = parentWidth.toFloat()
-        height = parentHeight.toFloat()
-
-        super.onMeasure(View.MeasureSpec.makeMeasureSpec(parentWidth, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(parentHeight, View.MeasureSpec.EXACTLY))
+        super.onMeasure(View.MeasureSpec.makeMeasureSpec(parentWidth.toInt(), View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(parentHeight.toInt(), View.MeasureSpec.EXACTLY))
     }
 
     public override fun onDraw(canvas: Canvas) {
-
-        if (strikesOverlay != null && histogram != null && histogram!!.size > 0) {
-            val colorHandler = strikesOverlay!!.getColorHandler()
-            val minutesPerColor = strikesOverlay!!.parameters.intervalDuration / colorHandler.numberOfColors
+        val strikesOverlay = strikesOverlay
+        val histogram = histogram
+        if (strikesOverlay != null && histogram != null && histogram.size > 0) {
+            val colorHandler = strikesOverlay.getColorHandler()
+            val minutesPerColor = strikesOverlay.parameters.intervalDuration / colorHandler.numberOfColors
             val minutesPerBin = 5
             val ratio = minutesPerColor / minutesPerBin
             if (ratio == 0) {
                 return
             }
 
-            backgroundRect.set(0f, 0f, width, height)
+            backgroundRect.set(0f, 0f, width.toFloat(), height.toFloat())
             canvas.drawRect(backgroundRect, backgroundPaint)
 
-            var maximumCount = 0
-            for (count in histogram!!) {
-                if (count > maximumCount) {
-                    maximumCount = count
-                }
-            }
+            val maximumCount = histogram.max() ?: 0
 
             canvas.drawText("%.1f/min _".format(maximumCount.toFloat() / minutesPerBin), width - 2 * padding, padding + textSize / 1.2f, textPaint)
 
@@ -99,9 +97,9 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Vie
             val yd = (height - 2 * padding - textSize) / ymax
 
             foregroundPaint.strokeWidth = 2f
-            for (i in 0..histogram!!.size - 1 - 1) {
-                foregroundPaint.color = colorHandler.getColor((histogram!!.size - 1 - i) / ratio)
-                canvas.drawLine(x0 + xd * i, y0 - yd * histogram!![i], x0 + xd * (i + 1), y0 - yd * histogram!![i + 1], foregroundPaint)
+            for (i in 0..histogram.size - 1 - 1) {
+                foregroundPaint.color = colorHandler.getColor((histogram.size - 1 - i) / ratio)
+                canvas.drawLine(x0 + xd * i, y0 - yd * histogram[i], x0 + xd * (i + 1), y0 - yd * histogram[i + 1], foregroundPaint)
             }
 
             foregroundPaint.strokeWidth = 1f

@@ -15,6 +15,7 @@ import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.overlay.color.ColorHandler
+import org.blitzortung.android.util.UI
 
 class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(context, attrs, defStyle) {
     private val arcArea = RectF()
@@ -70,10 +71,12 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(co
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val parentWidth = View.MeasureSpec.getSize(widthMeasureSpec)
-        val parentHeight = View.MeasureSpec.getSize(heightMeasureSpec)
+        val sizeFactor = UI.sizeFactor(context)
 
-        val size = Math.min(parentWidth, parentHeight)
+        val parentWidth = View.MeasureSpec.getSize(widthMeasureSpec) * sizeFactor
+        val parentHeight = View.MeasureSpec.getSize(heightMeasureSpec) * sizeFactor
+
+        val size = Math.min(parentWidth.toInt(), parentHeight.toInt())
 
         super.onMeasure(View.MeasureSpec.makeMeasureSpec(size, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(size, View.MeasureSpec.EXACTLY))
     }

@@ -19,40 +19,40 @@
 
         <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/menu"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="45sp"
+            android:layout_height="45sp"
             android:background="@color/translucent_background"
             android:src="@android:drawable/ic_menu_more"
             android:visibility="gone" />
 
         <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/historyRew"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="45sp"
+            android:layout_height="45sp"
             android:background="@color/translucent_background"
             android:src="@android:drawable/ic_media_rew"
             android:visibility="gone" />
 
         <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/historyFfwd"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="45sp"
+            android:layout_height="45sp"
             android:background="@color/translucent_background"
             android:src="@android:drawable/ic_media_ff"
             android:visibility="gone" />
 
         <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/goRealtime"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="45sp"
+            android:layout_height="45sp"
             android:background="@color/translucent_background"
             android:src="@android:drawable/ic_media_next"
             android:visibility="gone" />
 
         <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/toggleExtendedMode"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="45sp"
+            android:layout_height="45sp"
             android:background="@color/translucent_background"
             android:enabled="false"
             android:src="@android:drawable/ic_menu_view"
