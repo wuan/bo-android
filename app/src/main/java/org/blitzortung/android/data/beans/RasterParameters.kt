@@ -47,9 +47,11 @@ data class RasterParameters(
                 Coordsys.toMapCoords(longitudeEnd,
                         latitudeEnd), bottomRight)
 
-        Log.d(Main.LOG_TAG, "RasterParameters.getRect() " +
-                "$longitudeStart - $longitudeEnd ($longitudeDelta, #$longitudeBins) " +
-                "$latitudeEnd - $latitudeStart ($latitudeDelta, #$latitudeBins)")
+        if (false) {
+            Log.d(Main.LOG_TAG, "RasterParameters.getRect() " +
+                    "$longitudeStart - $longitudeEnd ($longitudeDelta, #$longitudeBins) " +
+                    "$latitudeEnd - $latitudeStart ($latitudeDelta, #$latitudeBins)")
+        }
         return RectF(leftTop.x.toFloat(), leftTop.y.toFloat(), bottomRight.x.toFloat(), bottomRight.y.toFloat())
     }
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:local="http://schemas.android.com/apk/res-auto">
 
     <include
         android:id="@+id/cell1"
@@ -15,7 +16,8 @@
             android:id="@+id/legend_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true" />
+            android:layout_alignParentTop="true"
+            local:tablet_scaleable="true"/>
 
         <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/menu"
@@ -63,14 +65,16 @@
             android:layout_width="80sp"
             android:layout_height="80sp"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true" />
+            android:layout_alignParentStart="true"
+            local:tablet_scaleable="true"/>
 
         <org.blitzortung.android.app.view.HistogramView xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/histogram_view"
             android:layout_width="90sp"
             android:layout_height="60sp"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true" />
+            android:layout_alignParentEnd="true"
+            local:tablet_scaleable="true"/>
 
     </RelativeLayout>
 

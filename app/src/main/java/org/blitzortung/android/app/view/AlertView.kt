@@ -15,9 +15,9 @@ import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.overlay.color.ColorHandler
-import org.blitzortung.android.util.UI
+import org.blitzortung.android.util.TabletAwareView
 
-class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(context, attrs, defStyle) {
+class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletAwareView(context, attrs, defStyle) {
     private val arcArea = RectF()
     private val background = Paint()
     private val sectorPaint = Paint()
@@ -65,14 +65,12 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(co
         lines.style = Style.STROKE
 
         textStyle.color = 0xff404040.toInt()
-        textStyle.textSize = ViewHelper.pxFromSp(this, 10f)
+        textStyle.textSize = ViewHelper.pxFromSp(this, 0.8f * textSize)
 
         background.color = 0xffb0b0b0.toInt()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val sizeFactor = UI.sizeFactor(context)
-
         val parentWidth = View.MeasureSpec.getSize(widthMeasureSpec) * sizeFactor
         val parentHeight = View.MeasureSpec.getSize(heightMeasureSpec) * sizeFactor
 

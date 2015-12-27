@@ -7,17 +7,11 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
-import org.blitzortung.android.app.BuildConfig
-
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.helper.ViewHelper
-import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.map.overlay.StrikesOverlay
-import org.blitzortung.android.map.overlay.color.ColorHandler
-import org.blitzortung.android.util.UI
+import org.blitzortung.android.util.TabletAwareView
 
-class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(context, attrs, defStyle) {
-    private val padding: Float
+class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletAwareView(context, attrs, defStyle) {
     private val colorFieldSize: Float
     private val textPaint: Paint
     private val rasterTextPaint: Paint
@@ -27,8 +21,6 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(c
     private val foregroundPaint: Paint
     private val backgroundRect: RectF
     private val legendColorRect: RectF
-    private var width: Float = 0.toFloat()
-    private var height: Float = 0.toFloat()
     private var textWidth: Float = 0.toFloat()
     private var strikesOverlay: StrikesOverlay? = null
 
@@ -41,8 +33,7 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(c
     }
 
     init {
-        padding = ViewHelper.pxFromSp(this, UI.padding(context))
-        colorFieldSize = ViewHelper.pxFromSp(this, UI.textSize(context))
+        colorFieldSize = textSize
 
         foregroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
@@ -54,21 +45,21 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(c
 
         textPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         textPaint.color = -1
-        textPaint.textSize = colorFieldSize
+        textPaint.textSize = textSize
 
         rasterTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         rasterTextPaint.color = -1
-        rasterTextPaint.textSize = colorFieldSize * RASTER_HEIGHT
+        rasterTextPaint.textSize = textSize * RASTER_HEIGHT
         rasterTextPaint.textAlign = Paint.Align.CENTER
 
         regionTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         regionTextPaint.color = -1
-        regionTextPaint.textSize = colorFieldSize * REGION_HEIGHT
+        regionTextPaint.textSize = textSize * REGION_HEIGHT
         regionTextPaint.textAlign = Paint.Align.CENTER
 
         countThresholdTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         countThresholdTextPaint.color = -1
-        countThresholdTextPaint.textSize = colorFieldSize * COUNT_THRESHOLD_HEIGHT
+        countThresholdTextPaint.textSize = textSize * COUNT_THRESHOLD_HEIGHT
         countThresholdTextPaint.textAlign = Paint.Align.CENTER
 
         updateTextWidth(0)
@@ -85,11 +76,11 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(c
         val parentHeight = View.MeasureSpec.getSize(heightMeasureSpec)
 
         updateTextWidth(strikesOverlay!!.parameters.intervalDuration)
-        width = Math.min(3 * padding + colorFieldSize + textWidth, parentWidth.toFloat())
+        var width = Math.min(3 * padding + colorFieldSize + textWidth, parentWidth.toFloat())
 
         val colorHandler = strikesOverlay!!.getColorHandler()
 
-        height = Math.min((colorFieldSize + padding) * colorHandler.colors.size + padding, parentHeight.toFloat())
+        var height = Math.min((colorFieldSize + padding) * colorHandler.colors.size + padding, parentHeight.toFloat())
 
         if (hasRegion()) {
             height += colorFieldSize * REGION_HEIGHT + padding
@@ -111,7 +102,7 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(c
             val colorHandler = strikesOverlay!!.getColorHandler()
             val minutesPerColor = strikesOverlay!!.parameters.intervalDuration / colorHandler.numberOfColors
 
-            backgroundRect.set(0f, 0f, width, height)
+            backgroundRect.set(0f, 0f, width.toFloat(), height.toFloat())
             canvas.drawRect(backgroundRect, backgroundPaint)
 
             val numberOfColors = colorHandler.numberOfColors
@@ -130,7 +121,6 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(c
 
                 topCoordinate += colorFieldSize + padding
             }
-
 
             if (hasRegion()) {
                 canvas.drawText(regionName, width / 2.0f, topCoordinate + colorFieldSize * REGION_HEIGHT / 1.1f, regionTextPaint)

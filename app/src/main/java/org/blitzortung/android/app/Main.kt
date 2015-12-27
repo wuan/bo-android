@@ -45,7 +45,7 @@ import org.blitzortung.android.map.overlay.ParticipantsOverlay
 import org.blitzortung.android.map.overlay.StrikesOverlay
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
-import org.blitzortung.android.util.UI
+import org.blitzortung.android.util.TabletAwareView
 
 class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private val androidIdsForExtendedFunctionality = setOf("e72d101ce1bcdee3", "6d1b9a3da993af2d")
@@ -179,7 +179,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         hideActionBar()
 
-        buttonColumnHandler = ButtonColumnHandler<ImageButton>(if (UI.isTablet(this)) 75f else 55f)
+        buttonColumnHandler = ButtonColumnHandler<ImageButton>(if (TabletAwareView.isTablet(this)) 75f else 55f)
         configureMenuAccess()
         historyController = HistoryController(this, buttonColumnHandler)
 

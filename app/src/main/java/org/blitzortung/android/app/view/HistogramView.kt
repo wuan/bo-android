@@ -9,16 +9,13 @@ import android.util.Log
 import android.view.View
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.map.overlay.StrikesOverlay
 import org.blitzortung.android.protocol.Event
-import org.blitzortung.android.util.UI
+import org.blitzortung.android.util.TabletAwareView
 
-class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(context, attrs, defStyle) {
+class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletAwareView(context, attrs, defStyle) {
 
-    private val padding: Float
-    private val textSize: Float
     private val backgroundPaint: Paint
     private val foregroundPaint: Paint
     private val textPaint: Paint
@@ -41,9 +38,6 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Vie
     }
 
     init {
-        padding = ViewHelper.pxFromDp(this, UI.padding(context))
-        textSize = ViewHelper.pxFromSp(this, UI.textSize(context))
-
         foregroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
         backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -61,7 +55,6 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Vie
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         Log.v(Main.LOG_TAG, "HistogramView.onMeasure()")
-        val sizeFactor = UI.sizeFactor(context)
         val parentWidth = View.MeasureSpec.getSize(widthMeasureSpec) * sizeFactor
         val parentHeight = View.MeasureSpec.getSize(heightMeasureSpec) * sizeFactor
 
