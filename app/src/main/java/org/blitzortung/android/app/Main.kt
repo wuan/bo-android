@@ -45,6 +45,7 @@ import org.blitzortung.android.map.overlay.ParticipantsOverlay
 import org.blitzortung.android.map.overlay.StrikesOverlay
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
+import org.blitzortung.android.util.UI
 
 class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private val androidIdsForExtendedFunctionality = setOf("e72d101ce1bcdee3", "6d1b9a3da993af2d")
@@ -178,7 +179,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         hideActionBar()
 
-        buttonColumnHandler = ButtonColumnHandler<ImageButton>()
+        buttonColumnHandler = ButtonColumnHandler<ImageButton>(if (UI.isTablet(this)) 75f else 55f)
         configureMenuAccess()
         historyController = HistoryController(this, buttonColumnHandler)
 
@@ -271,7 +272,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         alertView.setAlpha(200)
         alertView.setOnClickListener { view ->
             val alertHandler = appService!!.alertHandler
-            if (alertHandler != null && alertHandler.isAlertEnabled) {
+            if (alertHandler.isAlertEnabled) {
                 val currentLocation = alertHandler.currentLocation
                 if (currentLocation != null) {
                     var radius = alertHandler.maxDistance

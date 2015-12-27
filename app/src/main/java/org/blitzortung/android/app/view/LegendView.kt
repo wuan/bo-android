@@ -7,12 +7,14 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
+import org.blitzortung.android.app.BuildConfig
 
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.map.overlay.StrikesOverlay
 import org.blitzortung.android.map.overlay.color.ColorHandler
+import org.blitzortung.android.util.UI
 
 class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(context, attrs, defStyle) {
     private val padding: Float
@@ -39,9 +41,8 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(c
     }
 
     init {
-
-        padding = ViewHelper.pxFromSp(this, 5f)
-        colorFieldSize = ViewHelper.pxFromSp(this, 12f)
+        padding = ViewHelper.pxFromSp(this, UI.padding(context))
+        colorFieldSize = ViewHelper.pxFromSp(this, UI.textSize(context))
 
         foregroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 

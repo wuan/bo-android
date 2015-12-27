@@ -2,7 +2,9 @@ package org.blitzortung.android.data.beans
 
 import android.graphics.Point
 import android.graphics.RectF
+import android.util.Log
 import com.google.android.maps.Projection
+import org.blitzortung.android.app.Main
 import org.blitzortung.android.data.Coordsys
 
 data class RasterParameters(
@@ -39,9 +41,15 @@ data class RasterParameters(
         leftTop = projection.toPixels(
                 Coordsys.toMapCoords(longitudeStart, latitudeStart), leftTop)
         var bottomRight = Point()
+        val longitudeEnd = longitudeStart + rectLongitudeDelta
+        val latitudeEnd = latitudeStart - rectLatitudeDelta
         bottomRight = projection.toPixels(
-                Coordsys.toMapCoords(longitudeStart + longitudeBins * longitudeDelta,
-                        latitudeStart - latitudeBins * latitudeDelta), bottomRight)
+                Coordsys.toMapCoords(longitudeEnd,
+                        latitudeEnd), bottomRight)
+
+        Log.d(Main.LOG_TAG, "RasterParameters.getRect() " +
+                "$longitudeStart - $longitudeEnd ($longitudeDelta, #$longitudeBins) " +
+                "$latitudeEnd - $latitudeStart ($latitudeDelta, #$latitudeBins)")
         return RectF(leftTop.x.toFloat(), leftTop.y.toFloat(), bottomRight.x.toFloat(), bottomRight.y.toFloat())
     }
 

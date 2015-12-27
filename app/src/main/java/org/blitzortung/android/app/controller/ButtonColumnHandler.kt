@@ -2,12 +2,13 @@ package org.blitzortung.android.app.controller
 
 import android.view.View
 import android.widget.RelativeLayout
+import org.blitzortung.android.app.BuildConfig
 
 import org.blitzortung.android.app.helper.ViewHelper
 
 import java.util.ArrayList
 
-class ButtonColumnHandler<V : View> {
+class ButtonColumnHandler<V : View>(private val buttonSize: Float) {
 
     private val elements: MutableList<V>
 
@@ -44,8 +45,8 @@ class ButtonColumnHandler<V : View> {
             if (element.visibility == View.VISIBLE) {
                 val lp = RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
-                lp.width = ViewHelper.pxFromSp(element, 55f).toInt()
-                lp.height = ViewHelper.pxFromSp(element, 55f).toInt()
+                lp.width = ViewHelper.pxFromSp(element, buttonSize).toInt()
+                lp.height = ViewHelper.pxFromSp(element, buttonSize).toInt()
                 lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 1)
                 if (previousIndex < 0) {
                     lp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 1)
