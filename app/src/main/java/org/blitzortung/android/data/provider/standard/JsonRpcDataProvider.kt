@@ -1,10 +1,8 @@
 package org.blitzortung.android.data.provider.standard
 
 import android.util.Log
-
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.data.Parameters
-import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.data.provider.DataBuilder
@@ -16,12 +14,12 @@ import org.blitzortung.android.util.TimeFormat
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-
 import java.text.SimpleDateFormat
-import java.util.ArrayList
-import java.util.TimeZone
+import java.util.*
 
 class JsonRpcDataProvider : DataProvider() {
+
+    private val server = "http://bo-service.tryb.de/"
 
     private val dataBuilder: DataBuilder
     private var client: JsonRpcClient? = null
@@ -46,7 +44,6 @@ class JsonRpcDataProvider : DataProvider() {
             result = addStrikes(response, result)
             result = addStrikesHistogram(response, result)
         } catch (e: Exception) {
-            skipServer()
             throw RuntimeException(e)
         }
 
@@ -73,7 +70,6 @@ class JsonRpcDataProvider : DataProvider() {
             result = addRasterData(response, result, info)
             result = addStrikesHistogram(response, result)
         } catch (e: Exception) {
-            skipServer()
             throw RuntimeException(e)
         }
 
@@ -93,7 +89,6 @@ class JsonRpcDataProvider : DataProvider() {
                 stations.add(dataBuilder.createStation(stations_array.getJSONArray(i)))
             }
         } catch (e: Exception) {
-            skipServer()
             throw RuntimeException(e)
         }
 
@@ -173,22 +168,12 @@ class JsonRpcDataProvider : DataProvider() {
         return result
     }
 
-    private fun skipServer() {
-        CURRENT_SERVER = (CURRENT_SERVER + 1) % SERVERS.size
-    }
-
     companion object {
-
         private val DATE_TIME_FORMATTER = SimpleDateFormat("yyyyMMdd'T'HH:mm:ss")
-        private val SERVERS = arrayOf("http://bo-service.tryb.de:7080/", "http://bo-service.tryb.de/")
-        private var CURRENT_SERVER = 0
 
         init {
             val tz = TimeZone.getTimeZone("UTC")
             DATE_TIME_FORMATTER.timeZone = tz
         }
-
-        private val server: String
-            get() = SERVERS[CURRENT_SERVER]
     }
 }

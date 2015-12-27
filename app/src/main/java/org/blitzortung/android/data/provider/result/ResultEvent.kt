@@ -32,6 +32,7 @@ data class ResultEvent(
             if (rasterParameters != null) {
                 sb.append(", ").append(rasterParameters)
             }
+            sb.append(", incrementalData=$incrementalData")
             sb.append(")")
         }
 

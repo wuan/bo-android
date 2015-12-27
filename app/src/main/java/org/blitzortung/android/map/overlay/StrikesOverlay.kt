@@ -81,7 +81,7 @@ class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: Stri
 
     fun addStrikes(strikes: List<Strike>) {
         Log.v(Main.LOG_TAG, "StrikesOverlay.addStrikes() #" + strikes.size)
-        this.strikes = strikes.map { StrikeOverlayItem(it) }
+        this.strikes += strikes.map { StrikeOverlayItem(it) }
         lastFocusedIndex = -1
         populate()
     }
@@ -89,7 +89,9 @@ class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: Stri
     fun expireStrikes() {
         val expireTime = referenceTime - (parameters.intervalDuration - parameters.intervalOffset) * 60 * 1000
 
+        val sizeBefore = strikes.size
         strikes = strikes.filter { it.timestamp > expireTime }
+        Log.v(Main.LOG_TAG, "StrikesOverlay.expireStrikes() expired ${sizeBefore - strikes.size}")
     }
 
     fun clear() {
@@ -111,7 +113,6 @@ class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: Stri
     }
 
     fun refresh() {
-
         val current_section = -1
 
         colorHandler.updateTarget()
@@ -160,9 +161,12 @@ class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: Stri
         if (item.point != null && item.timestamp > 0) {
             var result = DateFormat.format("kk:mm:ss", item.timestamp) as String
 
-            if (item.multiplicity > 1) {
+            if (item.shape is RasterShape) {
                 result += ", #%d".format(item.multiplicity)
+            } else if (item.shape is StrikeShape) {
+                result += " (%.4f %.4f)".format(item.longitude, item.latitude)
             }
+
             showPopup(item.point, result)
             return true
         }

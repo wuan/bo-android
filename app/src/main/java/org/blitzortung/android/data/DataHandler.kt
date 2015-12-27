@@ -6,7 +6,6 @@ import android.content.pm.PackageInfo
 import android.os.AsyncTask
 import android.os.PowerManager
 import android.util.Log
-
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.data.provider.DataProvider
@@ -16,12 +15,11 @@ import org.blitzortung.android.data.provider.result.ClearDataEvent
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.RequestStartedEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
-
-import java.util.HashSet
+import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 
 class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.WakeLock, sharedPreferences: SharedPreferences, private val pInfo: PackageInfo,
-                                            private val dataProviderFactory: DataProviderFactory = DataProviderFactory()) : OnSharedPreferenceChangeListener {
+        private val dataProviderFactory: DataProviderFactory = DataProviderFactory()) : OnSharedPreferenceChangeListener {
 
     private val lock = ReentrantLock()
     private var dataProvider: DataProvider? = null
@@ -156,11 +154,11 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
     }
 
     fun disableRasterMode() {
-        //parameters = parameters.createBuilder().region(0).rasterBaselength(0).build();
+        parameters = parameters.copy(region = 0, rasterBaselength = 0)
     }
 
     fun enableRasterMode() {
-        //parameters = parameters.createBuilder().rasterBaselength(preferencesRasterBaselength).region(preferencesRegion).build();
+        parameters = parameters.copy(region = preferencesRegion, rasterBaselength = preferencesRasterBaselength)
     }
 
     fun setDataConsumer(consumer: (DataEvent) -> Unit) {

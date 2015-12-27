@@ -5,9 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
-import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.map.overlay.StrikesOverlay
@@ -50,11 +48,9 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tab
         textPaint.textAlign = Paint.Align.RIGHT
 
         backgroundRect = RectF()
-        Log.v(Main.LOG_TAG, "HistogramView init")
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        Log.v(Main.LOG_TAG, "HistogramView.onMeasure()")
         val parentWidth = View.MeasureSpec.getSize(widthMeasureSpec) * sizeFactor
         val parentHeight = View.MeasureSpec.getSize(heightMeasureSpec) * sizeFactor
 
