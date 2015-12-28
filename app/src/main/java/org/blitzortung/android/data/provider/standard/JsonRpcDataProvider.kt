@@ -39,7 +39,7 @@ class JsonRpcDataProvider(serviceUrl : String? = null) : DataProvider() {
         if (intervalOffset < 0) {
             nextId = 0
         }
-        result = result.copy(parameters = parameters.copy(region = 0), incrementalData = (nextId != 0))
+        result = result.copy(incrementalData = (nextId != 0))
 
         try {
             val response = client!!.call("get_strikes", intervalDuration, if (intervalOffset < 0) intervalOffset else nextId)

@@ -308,7 +308,7 @@ class AppService protected constructor(private val handler: Handler, private val
                 Log.v(Main.LOG_TAG, "AppService.configureServiceMode() historic data")
                 isEnabled = false
                 handler.removeCallbacks(this)
-                if (lastParameters != null && lastParameters != dataHandler.parameters) {
+                if (lastParameters != null && lastParameters != dataHandler.activeParameters) {
                     dataHandler.updateData()
                 }
             }

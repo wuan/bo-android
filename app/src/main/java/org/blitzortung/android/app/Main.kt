@@ -48,7 +48,7 @@ import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.blitzortung.android.util.TabletAwareView
 
 class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
-    private val androidIdsForExtendedFunctionality = setOf("e72d101ce1bcdee3", "6d1b9a3da993af2d")
+    private val androidIdsForExtendedFunctionality = setOf("44095eb4f9f1a6a6", "f2be4516e5843964")
 
     private lateinit var statusComponent: StatusComponent
     private lateinit var versionComponent: VersionComponent
@@ -246,6 +246,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     private fun setupDebugModeButton() {
         val androidId = Settings.Secure.getString(baseContext.contentResolver, Settings.Secure.ANDROID_ID)
+        Log.v(Main.LOG_TAG, "AndroidId: $androidId")
         if (isDebugBuild || (androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
             val rasterToggle = findViewById(R.id.toggleExtendedMode) as ImageButton
             rasterToggle.isEnabled = true
@@ -441,6 +442,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun clearData() {
+        Log.v(Main.LOG_TAG, "Main.clearData()")
         clearData = false
 
         strikesOverlay.clear()

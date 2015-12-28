@@ -27,10 +27,13 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
     private var password: String? = null
     var parameters = Parameters()
         private set
+
     private var parametersController: ParametersController? = null
     private var dataEventConsumer: ((DataEvent) -> Unit)? = null
     private var preferencesRasterBaselength: Int = 0
     private var preferencesRegion: Int = 0
+
+    private var dataMode = DataMode()
 
     init {
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
@@ -57,13 +60,26 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
 
         var updateParticipants = false
         if (updateTargets.contains(DataChannel.PARTICIPANTS)) {
-            if (dataProvider!!.type == DataProviderType.HTTP || parameters.rasterBaselength == 0) {
+            if (dataProvider!!.type == DataProviderType.HTTP || !dataMode.raster) {
                 updateParticipants = true
             }
         }
 
-        FetchDataTask().execute(TaskParameters(parameters = parameters, updateParticipants = updateParticipants))
+        FetchDataTask().execute(TaskParameters(parameters = activeParameters, updateParticipants = updateParticipants))
     }
+
+    val activeParameters: Parameters
+        get() {
+            if (dataMode.raster) {
+                return parameters
+            } else {
+                var parameters = parameters
+                if (!dataMode.region) {
+                    parameters = parameters.copy(region = 0)
+                }
+                return parameters.copy(rasterBaselength = 0, countThreshold = 0)
+            }
+        }
 
     private fun sendEvent(dataEvent: DataEvent) {
         dataEventConsumer?.let { it.invoke(dataEvent) }
@@ -92,8 +108,8 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
             PreferenceKey.PASSWORD -> password = sharedPreferences.getString(key.toString(), "")
 
             PreferenceKey.RASTER_SIZE -> {
-                preferencesRasterBaselength = Integer.parseInt(sharedPreferences.getString(key.toString(), "10000"))
-                parameters = parameters.copy(rasterBaselength = preferencesRasterBaselength);
+                val rasterBaselength = Integer.parseInt(sharedPreferences.getString(key.toString(), "10000"))
+                parameters = parameters.copy(rasterBaselength = rasterBaselength);
                 notifyDataReset()
             }
 
@@ -113,15 +129,11 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
                     Integer.parseInt(sharedPreferences.getString(key.toString(), "30")))
 
             PreferenceKey.REGION -> {
-                preferencesRegion = Integer.parseInt(sharedPreferences.getString(key.toString(), "1"))
-                parameters = parameters.copy(region = preferencesRegion);
+                val region = Integer.parseInt(sharedPreferences.getString(key.toString(), "1"))
+                parameters = parameters.copy(region = region);
                 dataProvider!!.reset()
                 notifyDataReset()
             }
-        }
-
-        if (dataProvider != null) {
-            //dataProvider!!.setCredentials(username!!, password!!)
         }
     }
 
@@ -129,10 +141,10 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
 
         val providerType = dataProvider!!.type
 
-        when (providerType) {
-            DataProviderType.RPC -> enableRasterMode()
+        dataMode = when (providerType) {
+            DataProviderType.RPC -> DataMode(raster = true, region = false)
 
-            DataProviderType.HTTP -> disableRasterMode()
+            DataProviderType.HTTP -> DataMode(raster = false, region = true)
         }
     }
 
@@ -141,24 +153,13 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
     }
 
     fun toggleExtendedMode() {
-        if (parameters.rasterBaselength > 0) {
-            disableRasterMode()
-        } else {
-            enableRasterMode()
-        }
+        dataMode = dataMode.copy(raster = dataMode.raster.xor(true))
+
         if (!isRealtime) {
             val dataChannels = HashSet<DataChannel>()
             dataChannels.add(DataChannel.STRIKES)
             updateData(dataChannels)
         }
-    }
-
-    fun disableRasterMode() {
-        parameters = parameters.copy(rasterBaselength = 0)
-    }
-
-    fun enableRasterMode() {
-        parameters = parameters.copy(region = preferencesRegion, rasterBaselength = preferencesRasterBaselength)
     }
 
     fun setDataConsumer(consumer: (DataEvent) -> Unit) {
