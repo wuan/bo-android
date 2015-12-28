@@ -55,12 +55,14 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
 
     private fun enableAppServiceMode() {
         findPreference("raster_size").isEnabled = true
+        findPreference("service_url").isEnabled = true
         findPreference("username").isEnabled = false
         findPreference("password").isEnabled = false
     }
 
     private fun enableBlitzortungHttpMode() {
         findPreference("raster_size").isEnabled = false
+        findPreference("service_url").isEnabled = false
         findPreference("username").isEnabled = true
         findPreference("password").isEnabled = true
     }

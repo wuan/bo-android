@@ -1,8 +1,7 @@
 package org.blitzortung.android.data.provider.blitzortung
 
 import android.text.Html
-
-import java.util.HashMap
+import java.util.*
 
 abstract class MapBuilder<T> internal constructor(private val lineSplitter: (String) -> Array<String>) {
 
@@ -10,6 +9,7 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
 
     init {
         keyValueBuilderMap = HashMap<String, (Array<String>) -> Unit>()
+        setBuilderMap(keyValueBuilderMap)
     }
 
     fun buildFromLine(line: String): T {

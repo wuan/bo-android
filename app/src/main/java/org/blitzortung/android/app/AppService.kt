@@ -279,8 +279,6 @@ class AppService protected constructor(private val handler: Handler, private val
             }
 
             PreferenceKey.SHOW_PARTICIPANTS -> updateParticipants = sharedPreferences.getBoolean(key.toString(), true)
-
-            else -> Log.w(Main.LOG_TAG, "unhandled preferences key '$key'")
         }
     }
 

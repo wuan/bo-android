@@ -313,4 +313,6 @@
     <string name="alarm_vibration_signal_summary">Auswahl der Vibrationsdauer für den Alarm</string>
     <string name="location_provider_not_available">Location-Provider \'%s\' nicht verfügbar</string>
     <string name="location_provider_disabled">Location-Provider \'%s\' ist deaktiviert</string>
+    <string name="service_url">Service-URL</string>
+    <string name="service_url_summary">Benutzerdefinierte Service-URL, falls gesetzt</string>
 </resources>

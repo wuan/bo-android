@@ -26,7 +26,6 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
     init {
         strikeMapBuilder = mapBuilderFactory.createAbstractStrikeMapBuilder()
         stationMapBuilder = mapBuilderFactory.createStationMapBuilder()
-
     }
 
     override fun getStrikes(parameters: Parameters, result: ResultEvent): ResultEvent {
@@ -39,7 +38,7 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
 
         val username = username
         val password = password
-        if (username != null && username.length != 0 && password != null && password.length != 0) {
+        if (username != null && password != null) {
 
             val strikes = ArrayList<Strike>()
             val intervalTimer = IntervalTimer(10 * 60 * 1000L)
@@ -53,29 +52,32 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
                 val reader = readFromUrl(Type.STRIKES, region, intervalTime) ?: continue
 
                 var size = 0
-                reader.use {
-                    val line = it.readLine()
-                    size += line.length
+                reader.use { reader ->
+                    reader.forEachLine { line ->
+                        size += line.length
 
-                    val strike = strikeMapBuilder.buildFromLine(line)
-                    val timestamp = strike.timestamp
+                        val strike = strikeMapBuilder.buildFromLine(line)
+                        val timestamp = strike.timestamp
 
-                    if (timestamp > latestTime && timestamp >= startTime) {
-                        strikes.add(strike)
+                        if (timestamp > latestTime && timestamp >= startTime) {
+                            strikes.add(strike)
+                        }
                     }
                 }
                 Log.v(Main.LOG_TAG,
-                        "BliztortungHttpDataProvider: read %d bytes (%d new strikes) from region %d".format(size, strikes.size, region))
+                        "BlitzortungHttpDataProvider: read %d bytes (%d new strikes) from region %d".format(size, strikes.size, region))
 
                 reader.close()
+            }
+
+            if (latestTime > 0L) {
+                result = result.copy(incrementalData = true)
             }
 
             if (strikes.size > 0) {
                 latestTime = strikes[strikes.size - 1].timestamp
             }
             result = result.copy(strikes = strikes)
-
-
         } else {
             throw RuntimeException("no credentials provided")
         }
@@ -120,19 +122,20 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
 
         val username = username
         val password = password
-        if (username != null && username.length != 0 && password != null && password.length != 0) {
+        if (username != null && password != null) {
 
             val reader = readFromUrl(Type.STATIONS, region)
 
             var size = 0
-            reader?.use {
-                val line = it.readLine()
-                size += line.length
-                try {
-                    val station = stationMapBuilder.buildFromLine(line)
-                    stations.add(station)
-                } catch (e: NumberFormatException) {
-                    Log.w(Main.LOG_TAG, "BlitzortungHttpProvider: error parsing '%s'".format(line))
+            reader?.use { reader ->
+                reader.forEachLine { line ->
+                    size += line.length
+                    try {
+                        val station = stationMapBuilder.buildFromLine(line)
+                        stations.add(station)
+                    } catch (e: NumberFormatException) {
+                        Log.w(Main.LOG_TAG, "BlitzortungHttpProvider: error parsing '%s'".format(line))
+                    }
                 }
             }
             Log.v(Main.LOG_TAG,

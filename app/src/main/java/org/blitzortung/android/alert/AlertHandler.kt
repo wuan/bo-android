@@ -30,10 +30,6 @@ import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.MeasurementSystem
-import kotlin.collections.arrayListOf
-import kotlin.collections.toList
-import kotlin.text.format
-import kotlin.text.isEmpty
 
 
 class AlertHandler(
@@ -130,8 +126,6 @@ class AlertHandler(
                 val signalUri = sharedPreferences.getString(key.toString(), "")
                 alertSignal = alertSignal.copy(soundSignal = if (!signalUri.isEmpty()) Uri.parse(signalUri) else null)
             }
-
-            else -> Log.w(Main.LOG_TAG, "unhandled preferences key '$key'")
         }
     }
 

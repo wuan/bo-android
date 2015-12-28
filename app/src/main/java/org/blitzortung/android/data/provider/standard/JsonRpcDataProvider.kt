@@ -17,16 +17,19 @@ import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
-class JsonRpcDataProvider : DataProvider() {
+class JsonRpcDataProvider(serviceUrl : String? = null) : DataProvider() {
 
-    private val server = "http://bo-service.tryb.de/"
-
+    private val serviceUrl: String
     private val dataBuilder: DataBuilder
     private var client: JsonRpcClient? = null
     private var nextId = 0
 
     init {
         dataBuilder = DataBuilder()
+        this.serviceUrl =
+                if (serviceUrl != null && !serviceUrl.isEmpty()) serviceUrl
+                else "http://bo-service.tryb.de/"
+        Log.v(Main.LOG_TAG, "JsonRpcDataProvider(${this.serviceUrl})")
     }
 
     override fun getStrikes(parameters: Parameters, result: ResultEvent): ResultEvent {
@@ -36,7 +39,7 @@ class JsonRpcDataProvider : DataProvider() {
         if (intervalOffset < 0) {
             nextId = 0
         }
-        result = result.copy(incrementalData = (nextId != 0))
+        result = result.copy(parameters = parameters.copy(region = 0), incrementalData = (nextId != 0))
 
         try {
             val response = client!!.call("get_strikes", intervalDuration, if (intervalOffset < 0) intervalOffset else nextId)
@@ -101,7 +104,7 @@ class JsonRpcDataProvider : DataProvider() {
     override fun setUp() {
         val pInfo = pInfo
         val agentSuffix = if (pInfo != null) "-" + Integer.toString(pInfo.versionCode) else ""
-        client = JsonRpcClient(server, agentSuffix)
+        client = JsonRpcClient(serviceUrl, agentSuffix)
         client!!.connectionTimeout = 40000
         client!!.socketTimeout = 40000
     }

@@ -1,10 +1,11 @@
 package org.blitzortung.android.app.view
 
-import java.util.HashMap
+import java.util.*
 
 enum class PreferenceKey internal constructor(private val key: String) {
     USERNAME("username"),
     PASSWORD("password"),
+    SERVICE_URL("service_url"),
     RASTER_SIZE("raster_size"),
     COUNT_THRESHOLD("count_threshold"),
     MAP_TYPE("map_mode"),

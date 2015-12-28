@@ -114,6 +114,12 @@
             android:title="@string/data_source" />
         <EditTextPreference
             android:defaultValue=""
+            android:key="service_url"
+            android:persistent="true"
+            android:summary="@string/service_url_summary"
+            android:title="@string/service_url" />
+        <EditTextPreference
+            android:defaultValue=""
             android:key="username"
             android:persistent="true"
             android:summary="@string/username_summary"

@@ -75,10 +75,10 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
 
     fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         when (key) {
-            PreferenceKey.DATA_SOURCE -> {
-                val providerTypeString = sharedPreferences.getString(key.toString(), DataProviderType.RPC.toString())
+            PreferenceKey.DATA_SOURCE, PreferenceKey.SERVICE_URL -> {
+                val providerTypeString = sharedPreferences.getString(PreferenceKey.DATA_SOURCE.toString(), DataProviderType.RPC.toString())
                 val providerType = DataProviderType.valueOf(providerTypeString.toUpperCase())
-                val dataProvider = dataProviderFactory.getDataProviderForType(providerType)
+                val dataProvider = dataProviderFactory.getDataProviderForType(providerType, sharedPreferences)
                 dataProvider.setPackageInfo(pInfo)
                 this.dataProvider = dataProvider
 
@@ -121,7 +121,7 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
         }
 
         if (dataProvider != null) {
-            //dataProvider!!.setCredentials(username?, password?)
+            //dataProvider!!.setCredentials(username!!, password!!)
         }
     }
 
@@ -154,7 +154,7 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
     }
 
     fun disableRasterMode() {
-        parameters = parameters.copy(region = 0, rasterBaselength = 0)
+        parameters = parameters.copy(rasterBaselength = 0)
     }
 
     fun enableRasterMode() {
@@ -221,9 +221,9 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
                         result = dataProvider!!.getStrikes(parameters, result)
                     }
 
-                    if (taskParameters.updateParticipants) {
+                    /*if (taskParameters.updateParticipants) {
                         result.copy(stations = dataProvider!!.getStations(parameters.region))
-                    }
+                    }*/
 
                     dataProvider!!.shutDown()
 
@@ -264,7 +264,6 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
     }
 
     companion object {
-
         val REQUEST_STARTED_EVENT = RequestStartedEvent()
         val CLEAR_DATA_EVENT = ClearDataEvent()
         val DEFAULT_DATA_CHANNELS: MutableSet<DataChannel> = HashSet()
