@@ -25,10 +25,8 @@ class AlertStatusHandler(private val alertSectorHandler: AlertSectorHandler) {
         for (strike in strikes) {
             val bearingToStrike = calculateBearingToStrike(location, strikeLocation, strike)
 
-            val alertSector = getSectorForBearing(alertContext, bearingToStrike.toDouble())
-            if (alertSector != null) {
-                alertSectorHandler.checkStrike(alertSector, strike, alertContext)
-            }
+            val alertSector = getRelevantSector(bearingToStrike.toDouble(), alertContext)
+            alertSector?.let { alertSectorHandler.checkStrike(alertSector, strike, alertContext) }
         }
         return alertContext
     }
@@ -41,27 +39,14 @@ class AlertStatusHandler(private val alertSectorHandler: AlertSectorHandler) {
 
 
     fun getLatestTimstampWithin(distanceLimit: Float, alertContext: AlertContext): Long {
-        var latestTimestamp: Long = 0
-
-        for (sector in alertContext.sectors) {
-            latestTimestamp = Math.max(latestTimestamp, alertSectorHandler.getLatestTimestampWithin(distanceLimit, sector))
-        }
-
-        return latestTimestamp
+        return alertContext.sectors.fold(0L, {
+            latestTimestamp, sector ->
+            Math.max(latestTimestamp, alertSectorHandler.getLatestTimestampWithin(distanceLimit, sector))
+        })
     }
 
     fun getSectorWithClosestStrike(alertContext: AlertContext): AlertSector? {
-        var minDistance = Float.POSITIVE_INFINITY
-
-        var sectorWithClosestStrike: AlertSector? = null
-        alertContext.sectors.forEach { sector ->
-            if (sector.closestStrikeDistance < minDistance) {
-                minDistance = sector.closestStrikeDistance
-                sectorWithClosestStrike = sector
-            }
-        }
-
-        return sectorWithClosestStrike
+        return alertContext.sectors.sortedBy { it.closestStrikeDistance }.first()
     }
 
     fun getCurrentActivity(alertContext: AlertContext?): AlertResult? {
@@ -91,25 +76,12 @@ class AlertStatusHandler(private val alertSectorHandler: AlertSectorHandler) {
         return sb.toString()
     }
 
-    private fun getSectorsSortedByClosestStrikeDistance(alertContext: AlertContext, notificationDistanceLimit: Float): SortedMap<Float, AlertSector> {
-        val distanceSectors = TreeMap<Float, AlertSector>()
-
-        for (sector in alertContext.sectors) {
-            if (sector.closestStrikeDistance <= notificationDistanceLimit) {
-                distanceSectors.put(sector.closestStrikeDistance, sector)
-            }
-        }
-        return distanceSectors
+    private fun getSectorsSortedByClosestStrikeDistance(alertContext: AlertContext, notificationDistanceLimit: Float): Map<Float, AlertSector> {
+        return alertContext.sectors.sortedBy { it.closestStrikeDistance }.toMapBy { it.closestStrikeDistance }
     }
 
-    private fun getSectorForBearing(alertContext: AlertContext, bearing: Double): AlertSector? {
-        for (sector in alertContext.sectors) {
-            if (sectorContainsBearing(sector, bearing)) {
-                return sector
-            }
-        }
-        Log.w(Main.LOG_TAG, "AlarmStatusHandler.getSectorForBearing(): no sector for bearing %.2f found".format(Locale.ENGLISH, bearing))
-        return null
+    private fun getRelevantSector(bearing: Double, alertContext: AlertContext): AlertSector? {
+        return alertContext.sectors.filter { sectorContainsBearing(it, bearing) }.first()
     }
 
     private fun sectorContainsBearing(sector: AlertSector, bearing: Double): Boolean {
