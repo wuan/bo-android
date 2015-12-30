@@ -14,9 +14,11 @@ import java.util.TreeMap
 
 class AlertStatusHandler(private val alertSectorHandler: AlertSectorHandler) {
 
-    fun checkStrikes(alertContext: AlertContext, strikes: Collection<Strike>, location: Location): AlertContext {
+    fun checkStrikes(alertContext: AlertContext, strikes: Collection<Strike>): AlertContext {
+        val alertParameters = alertContext.alertParameters
+        val location = alertContext.location
 
-        val thresholdTime = System.currentTimeMillis() - alertContext.alertParameters.alarmInterval
+        val thresholdTime = System.currentTimeMillis() - alertParameters.alarmInterval
 
         alertSectorHandler.setCheckStrikeParameters(location, thresholdTime)
 
@@ -26,7 +28,7 @@ class AlertStatusHandler(private val alertSectorHandler: AlertSectorHandler) {
             val bearingToStrike = calculateBearingToStrike(location, strikeLocation, strike)
 
             val alertSector = getRelevantSector(bearingToStrike.toDouble(), alertContext)
-            alertSector?.let { alertSectorHandler.checkStrike(alertSector, strike, alertContext) }
+            alertSector?.let { alertSectorHandler.checkStrike(alertSector, strike, alertParameters.measurementSystem) }
         }
         return alertContext
     }

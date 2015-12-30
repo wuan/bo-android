@@ -16,20 +16,19 @@ import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
-import java.util.*
+import org.assertj.core.api.Assertions.assertThat
+import org.blitzortung.android.data.beans.DefaultStrike
 
 @RunWith(RobolectricTestRunner::class)
 class AlertSectorHandlerTest {
 
     private val measurementSystem = MeasurementSystem.METRIC
 
-    @Mock
-    private lateinit var strike: Strike
+    private lateinit var strike: DefaultStrike
 
     @Mock
     private lateinit var location: Location
 
-    @Mock
     private lateinit var strikeLocation: Location
 
     private var now: Long = 0
@@ -55,6 +54,12 @@ class AlertSectorHandlerTest {
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
+
+        strike = DefaultStrike(timestamp = now - 200, longitude = 12.0f, latitude = 41.0f, altitude = 0, amplitude = 20.0f)
+
+        strikeLocation = Location("")
+        strikeLocation.longitude = strike.longitude.toDouble()
+        strikeLocation.latitude = strike.latitude.toDouble()
 
         alertSectorRange1 = AlertSectorRange(rangeMinimum = 0.0f, rangeMaximum = 2.5f)
         alertSectorRange2 = AlertSectorRange(rangeMinimum = 2.5f, rangeMaximum = 5.0f)
@@ -87,50 +92,42 @@ class AlertSectorHandlerTest {
 
     @Test
     fun testCheckWithinThresholdTimeAndRange1() {
-        `when`(strike.timestamp).thenReturn(thresholdTime)
+        strike = strike.copy(timestamp = thresholdTime)
+
         `when`(location.distanceTo(strikeLocation)).thenReturn(2500f)
 
-        alertSectorHandler.checkStrike(alertSector, strike, alertContext)
+        alertSectorHandler.checkStrike(alertSector, strike, measurementSystem)
 
-        verify<AlertSector>(alertSector, times(1)).updateClosestStrikeDistance(2.5f)
-        verify<AlertSectorRange>(alertSectorRange1, times(1)).rangeMaximum
-        verify<AlertSectorRange>(alertSectorRange1, times(1)).addStrike(strike)
-        verify<AlertSectorRange>(alertSectorRange2, times(0)).rangeMaximum
+        assertThat(alertSector.closestStrikeDistance).isEqualTo(2.5f)
     }
 
     @Test
     fun testCheckWithinThresholdTimeAndOutOfAllRanges() {
-        `when`(strike.timestamp).thenReturn(thresholdTime)
+        strike = strike.copy(timestamp = thresholdTime)
         `when`(location.distanceTo(strikeLocation)).thenReturn(5000.1f)
 
-        alertSectorHandler.checkStrike(alertSector, strike, alertContext)
+        alertSectorHandler.checkStrike(alertSector, strike, measurementSystem)
 
-        verify<AlertSector>(alertSector, times(0)).updateClosestStrikeDistance(anyFloat())
-        verify<AlertSectorRange>(alertSectorRange1, times(1)).rangeMaximum
-        verify<AlertSectorRange>(alertSectorRange1, times(0)).addStrike(any(Strike::class.java))
-        verify<AlertSectorRange>(alertSectorRange2, times(1)).rangeMaximum
-        verify<AlertSectorRange>(alertSectorRange2, times(0)).addStrike(any(Strike::class.java))
+        assertThat(alertSector.closestStrikeDistance).isEqualTo(Float.POSITIVE_INFINITY)
     }
 
     @Test
     fun testCheckOutOfThresholdTimeAndWithinRange2() {
-        `when`(strike.timestamp).thenReturn(beforeThresholdTime)
+        strike = strike.copy(timestamp = beforeThresholdTime)
         `when`(location.distanceTo(strikeLocation)).thenReturn(2500.1f)
 
-        alertSectorHandler.checkStrike(alertSector, strike, alertContext)
+        alertSectorHandler.checkStrike(alertSector, strike, measurementSystem)
 
-        verify<AlertSector>(alertSector, times(0)).updateClosestStrikeDistance(anyFloat())
-        verify<AlertSectorRange>(alertSectorRange1, times(1)).rangeMaximum
-        verify<AlertSectorRange>(alertSectorRange1, times(0)).addStrike(any(Strike::class.java))
-        verify<AlertSectorRange>(alertSectorRange2, times(1)).rangeMaximum
-        verify<AlertSectorRange>(alertSectorRange2, times(1)).addStrike(strike)
+        assertThat(alertSector.closestStrikeDistance).isEqualTo(Float.POSITIVE_INFINITY)
     }
 
     @Test
     fun testCheckOutOfThresholdTimeAndAllRanges() {
-        `when`(strike.timestamp).thenReturn(beforeThresholdTime)
+        strike = strike.copy(timestamp = beforeThresholdTime)
         `when`(location.distanceTo(strikeLocation)).thenReturn(5000.1f)
 
-        alertSectorHandler.checkStrike(alertSector, strike, alertContext)
+        alertSectorHandler.checkStrike(alertSector, strike, measurementSystem)
+
+        assertThat(alertSector.closestStrikeDistance).isEqualTo(Float.POSITIVE_INFINITY)
     }
 }

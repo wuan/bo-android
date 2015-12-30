@@ -150,7 +150,7 @@ class AlertHandler(
         if (isAlertEnabled && location != null && strikes != null) {
             val alertContext = AlertContext(location, alertParameters, createSectors())
             alarmValid = true
-            alertStatusHandler.checkStrikes(alertContext, strikes, location)
+            alertStatusHandler.checkStrikes(alertContext, strikes)
             alertResult = alertStatusHandler.getCurrentActivity(alertContext);
             processResult(alertContext, alertResult)
         } else {

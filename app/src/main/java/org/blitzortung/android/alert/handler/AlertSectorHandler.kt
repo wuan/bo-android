@@ -20,9 +20,9 @@ class AlertSectorHandler {
         this.thresholdTime = thresholdTime
     }
 
-    fun checkStrike(sector: AlertSector, strike: Strike, alertContext: AlertContext) {
+    fun checkStrike(sector: AlertSector, strike: Strike, measurementSystem: MeasurementSystem) {
         location?.let { location ->
-            val distance = calculateDistanceTo(location, strike, alertContext.alertParameters.measurementSystem)
+            val distance = calculateDistanceTo(location, strike, measurementSystem)
 
             sector.ranges.find { r -> distance <= r.rangeMaximum }?.let {
                 it.addStrike(strike);
