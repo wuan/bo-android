@@ -1,42 +1,30 @@
 package org.blitzortung.android.util
 
-import org.junit.Rule
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
-import org.junit.rules.ExpectedException
 
-import org.hamcrest.core.Is.`is`
-import org.junit.Assert.assertThat
-
-class TimeFormatTest {
-
-    @Rule
-    var expectedException = ExpectedException.none()
+public class TimeFormatTest {
 
     @Test
     fun testParseTimeWithMilliseconds() {
-
         val result = TimeFormat.parseTimeWithMilliseconds("20120901T20:10:05.123")
 
-        assertThat(result, `is`(1346530205123L))
+        assertThat(result).isEqualTo(1346530205123L)
     }
 
     @Test
     fun testParseTimeWithMillisecondsWithoutMillisecondsInString() {
-
-        expectedException.expect(IllegalArgumentException::class.java)
-        expectedException.expectMessage("Unable to parse millisecond time string '20120901T20:10:05'")
-
-        val result = TimeFormat.parseTimeWithMilliseconds("20120901T20:10:05")
-
-        assertThat(result, `is`(0L))
+        assertThatThrownBy { TimeFormat.parseTimeWithMilliseconds("20120901T20:10:05") }
+                .isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessage("Unable to parse millisecond time string '20120901T20:10:05'")
     }
 
     @Test
     fun testParseTime() {
-
         val result = TimeFormat.parseTime("20120901T20:10:05")
 
-        assertThat(result, `is`(1346530205000L))
+        assertThat(result).isEqualTo(1346530205000L)
     }
 
     @Test
@@ -44,17 +32,13 @@ class TimeFormatTest {
 
         val result = TimeFormat.parseTime("20120901T20:10:05.123")
 
-        assertThat(result, `is`(1346530205000L))
+        assertThat(result).isEqualTo(1346530205000L)
     }
 
     @Test
     fun testParseTimeWithBadString() {
-
-        expectedException.expect(IllegalArgumentException::class.java)
-        expectedException.expectMessage("Unable to parse time string '20120901T20:10'")
-
-        val result = TimeFormat.parseTime("20120901T20:10")
-
-        assertThat(result, `is`(0L))
+        assertThatThrownBy { TimeFormat.parseTime("20120901T20:10") }
+                .isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessage("Unable to parse time string '20120901T20:10'")
     }
 }
