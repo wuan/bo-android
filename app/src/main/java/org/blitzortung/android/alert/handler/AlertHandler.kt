@@ -1,4 +1,4 @@
-package org.blitzortung.android.alert
+package org.blitzortung.android.alert.handler
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -10,9 +10,10 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Vibrator
 import android.util.Log
-import org.blitzortung.android.alert.data.AlertContext
-import org.blitzortung.android.alert.data.AlertSector
-import org.blitzortung.android.alert.data.AlertSectorRange
+import org.blitzortung.android.alert.AlertParameters
+import org.blitzortung.android.alert.AlertResult
+import org.blitzortung.android.alert.handler.ProcessingAlertSector
+import org.blitzortung.android.alert.handler.ProcessingAlertSectorRange
 import org.blitzortung.android.alert.data.AlertSignal
 import org.blitzortung.android.alert.event.AlertCancelEvent
 import org.blitzortung.android.alert.event.AlertEvent
@@ -36,9 +37,10 @@ class AlertHandler(
         private val locationHandler: LocationHandler,
         preferences: SharedPreferences,
         private val context: Context,
-        private val vibrator: Vibrator,
-        private val notificationHandler: NotificationHandler,
-        private val alertStatusHandler: AlertStatusHandler = AlertStatusHandler(AlertSectorHandler())
+        private val vibrator: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator,
+        private val notificationHandler: NotificationHandler = NotificationHandler(context),
+        private val alertDataHandler: AlertDataHandler = AlertDataHandler()
+
 ) : OnSharedPreferenceChangeListener {
     var alertParameters: AlertParameters
 
@@ -58,7 +60,7 @@ class AlertHandler(
         private set
     var isAlertEnabled: Boolean = false
         private set
-    private var alarmValid: Boolean = false
+
     private var notificationDistanceLimit: Float = 0.toFloat()
 
     private var notificationLastTimestamp: Long = 0
@@ -78,10 +80,10 @@ class AlertHandler(
             if (!event.failed && event.containsRealtimeData()) {
                 checkStrikes(event.strikes)
             } else {
-                invalidateAlert()
+                invalidateAndBroadcastAlert()
             }
         } else if (event is ClearDataEvent) {
-            invalidateAlert()
+            invalidateAndBroadcastAlert()
         }
     }
 
@@ -98,8 +100,6 @@ class AlertHandler(
         onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT)
         onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_VIBRATION_SIGNAL)
         onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_SOUND_SIGNAL)
-
-        alarmValid = false
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
@@ -144,53 +144,18 @@ class AlertHandler(
     var alertResult: AlertResult? = null
 
     fun checkStrikes(strikes: Collection<Strike>?) {
+        val alertResult = checkStrikes(strikes, currentLocation)
+        processResult(alertResult)
+        this.alertResult = alertResult
+    }
+
+    fun checkStrikes(strikes: Collection<Strike>?, location: Location?): AlertResult? {
         lastStrikes = strikes
-
-        val location = currentLocation
-        if (isAlertEnabled && location != null && strikes != null) {
-            val alertContext = AlertContext(location, alertParameters, createSectors())
-            alarmValid = true
-            alertStatusHandler.checkStrikes(alertContext, strikes)
-            alertResult = alertStatusHandler.getCurrentActivity(alertContext);
-            processResult(alertContext, alertResult)
+        return if (isAlertEnabled && location != null && strikes != null) {
+            alertDataHandler.checkStrikes(strikes, location, alertParameters)
         } else {
-            invalidateAlert()
+            null
         }
-    }
-
-    private fun createSectors(): List<AlertSector> {
-        val sectorLabels = alertParameters.sectorLabels
-        val sectorWidth = 360f / sectorLabels.size
-
-        val sectors: MutableList<AlertSector> = arrayListOf()
-
-        var bearing = -180f
-        for (sectorLabel in sectorLabels) {
-            var minimumSectorBearing = bearing - sectorWidth / 2.0f
-            minimumSectorBearing += (if (minimumSectorBearing < -180f) 360f else 0f)
-            val maximumSectorBearing = bearing + sectorWidth / 2.0f
-            val alertSector = AlertSector(sectorLabel, minimumSectorBearing, maximumSectorBearing, createRanges())
-            sectors.add(alertSector)
-            bearing += sectorWidth
-        }
-        return sectors.toList()
-    }
-
-    private fun createRanges(): List<AlertSectorRange> {
-        val rangeSteps = alertParameters.rangeSteps
-
-        val ranges: MutableList<AlertSectorRange> = arrayListOf()
-        var rangeMinimum = 0.0f
-        for (rangeMaximum in rangeSteps) {
-            val alertSectorRange = AlertSectorRange(rangeMinimum, rangeMaximum)
-            ranges.add(alertSectorRange)
-            rangeMinimum = rangeMaximum
-        }
-        return ranges.toList()
-    }
-
-    fun getTextMessage(alertContext: AlertContext, notificationDistanceLimit: Float): String {
-        return alertStatusHandler.getTextMessage(alertContext, notificationDistanceLimit)
     }
 
     fun unsetAlertListener() {
@@ -204,11 +169,11 @@ class AlertHandler(
             return ranges[ranges.size - 1]
         }
 
-    fun invalidateAlert() {
-        val previousAlarmValidState = alarmValid
-        alarmValid = false
+    fun invalidateAndBroadcastAlert() {
+        val previousAlertEvent = alertEvent
+        alertEvent = null
 
-        if (previousAlarmValidState) {
+        if (previousAlertEvent != null) {
             broadcastClear()
         }
     }
@@ -220,19 +185,18 @@ class AlertHandler(
         }
     }
 
-    private fun broadcastResult(alertContext: AlertContext, alertResult: AlertResult?) {
+    private fun broadcastResult(alertResult: AlertResult?) {
         alertEventConsumer?.let { consumer ->
-            val alertEvent = AlertResultEvent(alertContext, alertResult)
-            consumer(alertEvent)
-            this.alertEvent = alertEvent
+            val alertResultEvent = AlertResultEvent(alertResult)
+            consumer(alertResultEvent)
+            this.alertEvent = alertResultEvent
         }
     }
 
-    private fun processResult(alertContext: AlertContext, alertResult: AlertResult?) {
+    private fun processResult(alertResult: AlertResult?) {
         if (alertResult != null) {
-
             if (alertResult.closestStrikeDistance <= signalingDistanceLimit) {
-                val signalingLatestTimestamp = alertStatusHandler.getLatestTimstampWithin(signalingDistanceLimit, alertContext)
+                val signalingLatestTimestamp = alertDataHandler.getLatestTimstampWithin(signalingDistanceLimit, alertResult)
                 if (signalingLatestTimestamp > signalingLastTimestamp) {
                     Log.v(Main.LOG_TAG, "AlertHandler.processResult() perform alarm")
                     vibrateIfEnabled()
@@ -244,10 +208,10 @@ class AlertHandler(
             }
 
             if (alertResult.closestStrikeDistance <= notificationDistanceLimit) {
-                val notificationLatestTimestamp = alertStatusHandler.getLatestTimstampWithin(notificationDistanceLimit, alertContext)
+                val notificationLatestTimestamp = alertDataHandler.getLatestTimstampWithin(notificationDistanceLimit, alertResult)
                 if (notificationLatestTimestamp > notificationLastTimestamp) {
                     Log.v(Main.LOG_TAG, "AlertHandler.processResult() perform notification")
-                    notificationHandler.sendNotification(context.resources.getString(R.string.activity) + ": " + getTextMessage(alertContext, notificationDistanceLimit))
+                    notificationHandler.sendNotification(context.resources.getString(R.string.activity) + ": " + alertDataHandler.getTextMessage(alertResult, notificationDistanceLimit))
                     notificationLastTimestamp = notificationLatestTimestamp
                 } else {
                     Log.d(Main.LOG_TAG, "AlertHandler.processResult() previous signaling event: %d vs %d".format(notificationLatestTimestamp, signalingLastTimestamp))
@@ -255,13 +219,15 @@ class AlertHandler(
             } else {
                 notificationHandler.clearNotification()
             }
+
+            Log.v(Main.LOG_TAG, "AlertHandler.processResult() broadcast result %s".format(alertResult))
+            broadcastResult(alertResult)
         } else {
+            Log.v(Main.LOG_TAG, "AlertHandler.processResult() no result")
             notificationHandler.clearNotification()
+            invalidateAndBroadcastAlert()
         }
 
-        Log.v(Main.LOG_TAG, "AlertHandler.processResult() broadcast result %s".format(alertResult))
-
-        broadcastResult(alertContext, alertResult)
     }
 
     private fun vibrateIfEnabled() {

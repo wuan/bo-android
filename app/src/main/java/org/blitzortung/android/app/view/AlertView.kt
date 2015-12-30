@@ -6,11 +6,13 @@ import android.graphics.Paint.Align
 import android.graphics.Paint.Style
 import android.location.Location
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
-import org.blitzortung.android.alert.data.AlertContext
+import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.data.AlertSector
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.event.AlertResultEvent
+import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.location.LocationEvent
@@ -30,14 +32,15 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletA
     private var intervalDuration: Int = 0
     private var temporaryBitmap: Bitmap? = null
     private var temporaryCanvas: Canvas? = null
-    private var alertContext: AlertContext? = null
+    private var alertResult: AlertResult? = null
     private var location: Location? = null
 
     val alertEventConsumer: (AlertEvent?) -> Unit = { event ->
+        Log.v(Main.LOG_TAG, "AlertView alertEventConsumer received $event")
         if (event is AlertResultEvent) {
-            alertContext = event.alertContext
+            alertResult = event.alertResult
         } else {
-            alertContext = null
+            alertResult = null
         }
         invalidate()
     }
@@ -96,11 +99,11 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletA
 
         prepareTemporaryBitmap(size)
 
-        val alertContext = alertContext
+        val alertResult = alertResult
         val temporaryCanvas = temporaryCanvas
         if (temporaryCanvas != null) {
-            if (alertContext != null && intervalDuration != 0) {
-                val alertParameters = alertContext.alertParameters
+            if (alertResult != null && intervalDuration != 0) {
+                val alertParameters = alertResult.parameters
                 val rangeSteps = alertParameters.rangeSteps
                 val rangeStepCount = rangeSteps.size
                 val radiusIncrement = radius / rangeStepCount
@@ -114,7 +117,7 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletA
 
                 val actualTime = System.currentTimeMillis()
 
-                for (alertSector in alertContext.sectors) {
+                for (alertSector in alertResult.sectors) {
 
                     val startAngle = alertSector.minimumSectorBearing + 90f + 180f
 
@@ -132,11 +135,11 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletA
                             sectorPaint.color = color
                         }
                         arcArea.set(leftTop, leftTop, bottomRight, bottomRight)
-                        temporaryCanvas!!.drawArc(arcArea, startAngle, sectorWidth, true, if (drawColor) sectorPaint else background)
+                        temporaryCanvas.drawArc(arcArea, startAngle, sectorWidth, true, if (drawColor) sectorPaint else background)
                     }
                 }
 
-                for (alertSector in alertContext.sectors) {
+                for (alertSector in alertResult.sectors) {
                     val bearing = alertSector.minimumSectorBearing.toDouble()
                     temporaryCanvas.drawLine(center, center, center + (radius * Math.sin(bearing / 180.0f * Math.PI)).toFloat(), center + (radius * -Math.cos(bearing / 180.0f * Math.PI)).toFloat(), lines)
 

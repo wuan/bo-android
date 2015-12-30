@@ -124,7 +124,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
             statusComponent.stopProgress()
 
-            buttonColumnHandler!!.unlockButtonColumn()
+            buttonColumnHandler.unlockButtonColumn()
 
             mapView.invalidate()
             legendView.invalidate()
@@ -201,7 +201,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         createAndBindToDataService()
 
-        if (versionComponent!!.state == VersionComponent.State.FIRST_RUN) {
+        if (versionComponent.state == VersionComponent.State.FIRST_RUN) {
             openQuickSettingsDialog()
         }
     }
@@ -253,11 +253,11 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             rasterToggle.visibility = View.VISIBLE
 
             rasterToggle.setOnClickListener { v ->
-                buttonColumnHandler!!.lockButtonColumn()
+                buttonColumnHandler.lockButtonColumn()
                 appService!!.dataHandler().toggleExtendedMode()
                 reloadData()
             }
-            buttonColumnHandler!!.addElement(rasterToggle)
+            buttonColumnHandler.addElement(rasterToggle)
         }
     }
 
@@ -404,15 +404,15 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         if (appService != null) {
             Log.v(Main.LOG_TAG, "Main.onStop() remove listeners")
 
-            historyController!!.setAppService(null)
-            appService.removeDataConsumer(historyController!!.dataConsumer)
+            historyController.setAppService(null)
+            appService.removeDataConsumer(historyController.dataConsumer)
             appService.removeDataConsumer(dataEventConsumer)
 
             appService.removeLocationConsumer(ownLocationOverlay.locationEventConsumer)
-            appService.removeDataConsumer(histogramView!!.dataConsumer)
+            appService.removeDataConsumer(histogramView.dataConsumer)
 
-            appService.removeLocationConsumer(alertView!!.locationEventConsumer)
-            appService.removeAlertListener(alertView!!.alertEventConsumer)
+            appService.removeLocationConsumer(alertView.locationEventConsumer)
+            appService.removeAlertListener(alertView.alertEventConsumer)
 
             appService.removeAlertListener(statusComponent.alertEventConsumer)
         } else {
@@ -533,7 +533,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
             PreferenceKey.MAP_FADE -> {
                 val alphaValue = Math.round(255.0f / 100.0f * sharedPreferences.getInt(key.toString(), 40))
-                fadeOverlay!!.setAlpha(alphaValue)
+                fadeOverlay.setAlpha(alphaValue)
             }
 
             PreferenceKey.DO_NOT_SLEEP -> {
@@ -575,7 +575,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             val menuButton = findViewById(R.id.menu) as ImageButton
             menuButton.visibility = View.VISIBLE
             menuButton.setOnClickListener { v -> openOptionsMenu() }
-            buttonColumnHandler!!.addElement(menuButton)
+            buttonColumnHandler.addElement(menuButton)
         }
     }
 

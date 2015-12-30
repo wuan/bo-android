@@ -2,8 +2,7 @@ package org.blitzortung.android.alert.handler
 
 
 import android.location.Location
-import org.blitzortung.android.alert.data.AlertContext
-import org.blitzortung.android.alert.data.AlertSector
+import org.blitzortung.android.alert.handler.ProcessingAlertSector
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.util.MeasurementSystem
 
@@ -20,14 +19,13 @@ class AlertSectorHandler {
         this.thresholdTime = thresholdTime
     }
 
-    fun checkStrike(sector: AlertSector, strike: Strike, measurementSystem: MeasurementSystem) {
+    internal fun checkStrike(sector: ProcessingAlertSector, strike: Strike, measurementSystem: MeasurementSystem) {
         location?.let { location ->
             val distance = calculateDistanceTo(location, strike, measurementSystem)
 
-            sector.ranges.find { r -> distance <= r.rangeMaximum }?.let {
-                it.addStrike(strike);
-
-                if (strike.timestamp >= thresholdTime) {
+            if (strike.timestamp >= thresholdTime) {
+                sector.ranges.find { r -> distance <= r.rangeMaximum }?.let {
+                    it.addStrike(strike);
                     sector.updateClosestStrikeDistance(distance)
                 }
             }
@@ -41,10 +39,4 @@ class AlertSectorHandler {
         return measurementSystem.calculateDistance(distanceInMeters)
     }
 
-    fun getLatestTimestampWithin(distanceLimit: Float, sector: AlertSector): Long {
-        return sector.ranges
-                .filter { distanceLimit <= it.rangeMaximum }
-                .map { it.latestStrikeTimestamp }
-                .max() ?: 0L
-    }
 }

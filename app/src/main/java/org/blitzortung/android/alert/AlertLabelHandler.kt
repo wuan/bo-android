@@ -8,20 +8,23 @@ class AlertLabelHandler(
         private val alertLabel: AlertLabel,
         private val resources: Resources
 ) {
-    fun apply(alertResult: AlertResult?) {
+    fun apply(result: AlertResult?) {
         var warningText = ""
 
         var textColorResource = R.color.Green
 
-        if (alertResult != null) {
-            if (alertResult.closestStrikeDistance > 50) {
+        if (result != null && result.closestStrikeDistance < Float.POSITIVE_INFINITY) {
+            if (result.closestStrikeDistance > 50) {
                 textColorResource = R.color.Green
-            } else if (alertResult.closestStrikeDistance > 20) {
+            } else if (result.closestStrikeDistance > 20) {
                 textColorResource = R.color.Yellow
             } else {
                 textColorResource = R.color.Red
             }
-            warningText = "%.0f%s %s".format(alertResult.closestStrikeDistance, alertResult.distanceUnitName, alertResult.bearingName)
+            warningText = "%.0f%s %s".format(
+                    result.closestStrikeDistance,
+                    result.parameters.measurementSystem.unitName,
+                    result.bearingName)
         }
 
         val color = resources.getColor(textColorResource)

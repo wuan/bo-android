@@ -11,7 +11,7 @@ import android.content.pm.PackageManager
 import android.os.*
 import android.preference.PreferenceManager
 import android.util.Log
-import org.blitzortung.android.alert.AlertHandler
+import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.app.controller.NotificationHandler
 import org.blitzortung.android.app.view.PreferenceKey
@@ -162,9 +162,7 @@ class AppService protected constructor(private val handler: Handler, private val
         dataHandler.setDataConsumer(dataEventConsumer)
 
         locationHandler = LocationHandler(this, preferences)
-        alertHandler = AlertHandler(locationHandler, preferences, this,
-                this.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator,
-                NotificationHandler(this))
+        alertHandler = AlertHandler(locationHandler, preferences, this)
 
         onSharedPreferenceChanged(preferences, PreferenceKey.QUERY_PERIOD)
         onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED)
