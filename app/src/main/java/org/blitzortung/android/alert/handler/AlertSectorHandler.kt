@@ -38,5 +38,4 @@ class AlertSectorHandler {
         val distanceInMeters = location.distanceTo(strikeLocation)
         return measurementSystem.calculateDistance(distanceInMeters)
     }
-
 }

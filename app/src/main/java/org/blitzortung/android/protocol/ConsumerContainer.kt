@@ -50,7 +50,6 @@ abstract class ConsumerContainer<P> {
     abstract fun removedLastConsumer()
 
     fun storeAndBroadcast(payload: P) {
-        Log.v(Main.LOG_TAG, "ConsumerContainer.storeAndBroadcast $payload vs $currentPayload")
         currentPayload = payload
         broadcast(payload)
     }
