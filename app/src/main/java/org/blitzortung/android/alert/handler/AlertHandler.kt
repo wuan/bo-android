@@ -12,8 +12,6 @@ import android.os.Vibrator
 import android.util.Log
 import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
-import org.blitzortung.android.alert.handler.AggregatingAlertSector
-import org.blitzortung.android.alert.handler.AggregatingAlertSectorRange
 import org.blitzortung.android.alert.data.AlertSignal
 import org.blitzortung.android.alert.event.AlertCancelEvent
 import org.blitzortung.android.alert.event.AlertEvent
@@ -42,21 +40,23 @@ class AlertHandler(
 ) : OnSharedPreferenceChangeListener {
     var alertParameters: AlertParameters
 
+    var alertEvent: AlertEvent = ALERT_CANCEL_EVENT
+        private set
+
     var alertEventConsumer: ((AlertEvent) -> Unit)? = null
         set (alertEventConsumer: ((AlertEvent) -> Unit)?) {
             field = alertEventConsumer
             updateLocationHandler()
-            broadcastResult(alertResult)
+            broadcastEvent()
         }
 
     private var lastStrikes: Collection<Strike>? = null
 
     private var alertSignal: AlertSignal = AlertSignal()
 
-    private var alertEvent: AlertEvent? = null
-
     var currentLocation: Location? = null
         private set
+
     var isAlertEnabled: Boolean = false
         private set
 
@@ -79,10 +79,10 @@ class AlertHandler(
             if (!event.failed && event.containsRealtimeData()) {
                 checkStrikes(event.strikes)
             } else {
-                invalidateAndBroadcastAlert()
+                broadcastResult(null)
             }
         } else if (event is ClearDataEvent) {
-            invalidateAndBroadcastAlert()
+            broadcastResult(null)
         }
     }
 
@@ -136,16 +136,13 @@ class AlertHandler(
         } else {
             locationHandler.removeUpdates(locationEventConsumer)
             currentLocation = null
-            broadcastClear()
+            broadcastResult(null)
         }
     }
-
-    var alertResult: AlertResult? = null
 
     fun checkStrikes(strikes: Collection<Strike>?) {
         val alertResult = checkStrikes(strikes, currentLocation)
         processResult(alertResult)
-        this.alertResult = alertResult
     }
 
     fun checkStrikes(strikes: Collection<Strike>?, location: Location?): AlertResult? {
@@ -163,33 +160,17 @@ class AlertHandler(
     }
 
     val maxDistance: Float
-        get() {
-            val ranges = alertParameters.rangeSteps
-            return ranges[ranges.size - 1]
-        }
-
-    fun invalidateAndBroadcastAlert() {
-        val previousAlertEvent = alertEvent
-        alertEvent = null
-
-        if (previousAlertEvent != null) {
-            broadcastClear()
-        }
-    }
-
-    private fun broadcastClear() {
-        alertEventConsumer?.let { consumer ->
-            consumer(ALERT_CANCEL_EVENT)
-            this.alertEvent = ALERT_CANCEL_EVENT
-        }
-    }
+        get() = alertParameters.rangeSteps.last()
 
     private fun broadcastResult(alertResult: AlertResult?) {
+        alertEvent = if (alertResult != null) AlertResultEvent(alertResult) else ALERT_CANCEL_EVENT
+        broadcastEvent()
+    }
+
+    private fun broadcastEvent() {
         alertEventConsumer?.let { consumer ->
-            val alertResultEvent = AlertResultEvent(alertResult)
-            Log.v(Main.LOG_TAG, "AlertHandler.broadcastResult() $alertResultEvent -> $consumer")
-            consumer(alertResultEvent)
-            this.alertEvent = alertResultEvent
+            Log.v(Main.LOG_TAG, "AlertHandler.broadcastResult() $alertEvent")
+            consumer(alertEvent)
         }
     }
 
@@ -225,7 +206,7 @@ class AlertHandler(
         } else {
             Log.v(Main.LOG_TAG, "AlertHandler.processResult() no result")
             notificationHandler.clearNotification()
-            invalidateAndBroadcastAlert()
+            broadcastResult(null)
         }
 
     }
@@ -252,9 +233,5 @@ class AlertHandler(
 
     companion object {
         val ALERT_CANCEL_EVENT = AlertCancelEvent()
-    }
-
-    fun alertEvent(): AlertEvent? {
-        return alertEvent
     }
 }

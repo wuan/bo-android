@@ -23,7 +23,9 @@ class AlertDataHandler {
             val bearingToStrike = calculateBearingToStrike(location, strikeLocation, strike)
 
             val alertSector = getRelevantSector(bearingToStrike.toDouble(), sectors)
-            alertSector?.let { checkStrike(alertSector, strike, parameters.measurementSystem, location, thresholdTime) }
+            alertSector?.let {
+                checkStrike(alertSector, strike, parameters.measurementSystem, location, thresholdTime)
+            }
         }
 
         return AlertResult(sectors.map { it.toAlertSector() }, parameters, referenceTime)

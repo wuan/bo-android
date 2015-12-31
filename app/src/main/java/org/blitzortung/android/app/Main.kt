@@ -23,6 +23,8 @@ import android.view.*
 import android.widget.ImageButton
 import android.widget.Toast
 import com.google.android.maps.GeoPoint
+import org.blitzortung.android.alert.event.AlertResultEvent
+import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
@@ -276,12 +278,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             if (alertHandler.isAlertEnabled) {
                 val currentLocation = alertHandler.currentLocation
                 if (currentLocation != null) {
-                    var radius = alertHandler.maxDistance
-
-                    val alertResult = alertHandler.alertResult
-                    if (alertResult != null) {
-                        radius = Math.max(Math.min(alertResult.closestStrikeDistance * 1.2f, radius), 50f)
-                    }
+                    var radius = determineTargetZoomRadius(alertHandler)
 
                     val diameter = 1.5f * 2f * radius
                     animateToLocationAndVisibleSize(currentLocation.longitude, currentLocation.latitude, diameter)
@@ -303,6 +300,19 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 }
             }
         }
+    }
+
+    private fun determineTargetZoomRadius(alertHandler: AlertHandler): Float {
+        var radius = alertHandler.maxDistance
+
+        val alertEvent = alertHandler.alertEvent
+        if (alertEvent is AlertResultEvent) {
+            val alertResult = alertEvent.alertResult
+            if (alertResult != null) {
+                radius = Math.max(Math.min(alertResult.closestStrikeDistance * 1.2f, radius), 50f)
+            }
+        }
+        return radius
     }
 
     private fun openQuickSettingsDialog() {

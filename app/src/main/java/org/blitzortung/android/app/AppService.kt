@@ -346,8 +346,8 @@ class AppService protected constructor(private val handler: Handler, private val
         }
     }
 
-    public fun alertEvent(): AlertEvent? {
-        return alertHandler.alertEvent()
+    public fun alertEvent(): AlertEvent {
+        return alertHandler.alertEvent
     }
 
     private val packageInfo: PackageInfo
