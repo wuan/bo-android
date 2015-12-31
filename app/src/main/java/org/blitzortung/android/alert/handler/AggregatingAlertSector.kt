@@ -2,11 +2,11 @@ package org.blitzortung.android.alert.handler
 
 import org.blitzortung.android.alert.data.AlertSector
 
-internal class ProcessingAlertSector(
+internal class AggregatingAlertSector(
         val label: String,
         val minimumSectorBearing: Float,
         val maximumSectorBearing: Float,
-        val ranges: List<ProcessingAlertSectorRange>
+        val ranges: List<AggregatingAlertSectorRange>
 ) {
 
     var closestStrikeDistance: Float = Float.POSITIVE_INFINITY

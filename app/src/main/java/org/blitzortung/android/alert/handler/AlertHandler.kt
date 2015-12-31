@@ -12,14 +12,12 @@ import android.os.Vibrator
 import android.util.Log
 import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
-import org.blitzortung.android.alert.handler.ProcessingAlertSector
-import org.blitzortung.android.alert.handler.ProcessingAlertSectorRange
+import org.blitzortung.android.alert.handler.AggregatingAlertSector
+import org.blitzortung.android.alert.handler.AggregatingAlertSectorRange
 import org.blitzortung.android.alert.data.AlertSignal
 import org.blitzortung.android.alert.event.AlertCancelEvent
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.event.AlertResultEvent
-import org.blitzortung.android.alert.handler.AlertSectorHandler
-import org.blitzortung.android.alert.handler.AlertStatusHandler
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.controller.NotificationHandler

@@ -5,13 +5,47 @@ import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.data.AlertSector
 import org.blitzortung.android.data.beans.Strike
+import org.blitzortung.android.util.MeasurementSystem
 
-class AlertDataHandler(
-        private val alertStatusHandler: AlertStatusHandler = AlertStatusHandler()
-) {
+class AlertDataHandler {
+
+    private val strikeLocation: Location = Location("")
+
     fun checkStrikes(strikes: Collection<Strike>, location: Location, parameters: AlertParameters,
                      referenceTime: Long = System.currentTimeMillis()): AlertResult {
-        return alertStatusHandler.checkStrikes(strikes, location, parameters, referenceTime)
+        val sectors = createSectors(parameters)
+
+        val thresholdTime = referenceTime - parameters.alarmInterval
+
+        val strikeLocation = Location("")
+
+        strikes.forEach { strike ->
+            val bearingToStrike = calculateBearingToStrike(location, strikeLocation, strike)
+
+            val alertSector = getRelevantSector(bearingToStrike.toDouble(), sectors)
+            alertSector?.let { checkStrike(alertSector, strike, parameters.measurementSystem, location, thresholdTime) }
+        }
+
+        return AlertResult(sectors.map { it.toAlertSector() }, parameters, referenceTime)
+    }
+
+    internal fun checkStrike(sector: AggregatingAlertSector, strike: Strike, measurementSystem: MeasurementSystem,
+                             location: Location, thresholdTime: Long) {
+        val distance = calculateDistanceTo(location, strike, measurementSystem)
+
+        if (strike.timestamp >= thresholdTime) {
+            sector.ranges.find { r -> distance <= r.rangeMaximum }?.let {
+                it.addStrike(strike);
+                sector.updateClosestStrikeDistance(distance)
+            }
+        }
+    }
+
+    private fun calculateDistanceTo(location: Location, strike: Strike, measurementSystem: MeasurementSystem): Float {
+        strikeLocation.longitude = strike.longitude.toDouble()
+        strikeLocation.latitude = strike.latitude.toDouble()
+        val distanceInMeters = location.distanceTo(strikeLocation)
+        return measurementSystem.calculateDistance(distanceInMeters)
     }
 
     fun getLatestTimstampWithin(distanceLimit: Float, alertResult: AlertResult): Long {
@@ -21,6 +55,14 @@ class AlertDataHandler(
         })
     }
 
+    fun getTextMessage(alertResult: AlertResult, notificationDistanceLimit: Float): String {
+        return alertResult.sectorsByDistance
+                .filter { it.key <= notificationDistanceLimit }
+                .map {
+                    "%s %.0f%s".format(it.value.label, it.key, alertResult.parameters.measurementSystem.unitName)
+                }.joinToString()
+    }
+
     internal fun getLatestTimestampWithin(distanceLimit: Float, sector: AlertSector): Long {
         return sector.ranges
                 .filter { distanceLimit <= it.rangeMaximum }
@@ -28,11 +70,58 @@ class AlertDataHandler(
                 .max() ?: 0L
     }
 
-    fun getTextMessage(alertResult: AlertResult, notificationDistanceLimit: Float): String {
-        return alertResult.sectorsByDistance
-                .filter { it.key <= notificationDistanceLimit }
-                .map {
-                    "%s %.0f%s".format(it.value.label, it.key, alertResult.parameters.measurementSystem.unitName)
-                }.joinToString()
+    private fun createSectors(alertParameters: AlertParameters): List<AggregatingAlertSector> {
+        val sectorLabels = alertParameters.sectorLabels
+        val sectorWidth = 360f / sectorLabels.size
+
+        val sectors: MutableList<AggregatingAlertSector> = arrayListOf()
+
+        var bearing = -180f
+        for (sectorLabel in sectorLabels) {
+            var minimumSectorBearing = bearing - sectorWidth / 2.0f
+            minimumSectorBearing += (if (minimumSectorBearing < -180f) 360f else 0f)
+            val maximumSectorBearing = bearing + sectorWidth / 2.0f
+            val alertSector = AggregatingAlertSector(sectorLabel, minimumSectorBearing, maximumSectorBearing, createRanges(alertParameters))
+            sectors.add(alertSector)
+            bearing += sectorWidth
+        }
+        return sectors.toList()
+    }
+
+    private fun createRanges(alertParameters: AlertParameters): List<AggregatingAlertSectorRange> {
+        val rangeSteps = alertParameters.rangeSteps
+
+        val ranges: MutableList<AggregatingAlertSectorRange> = arrayListOf()
+        var rangeMinimum = 0.0f
+        for (rangeMaximum in rangeSteps) {
+            val alertSectorRange = AggregatingAlertSectorRange(rangeMinimum, rangeMaximum)
+            ranges.add(alertSectorRange)
+            rangeMinimum = rangeMaximum
+        }
+        return ranges.toList()
+    }
+
+    private fun calculateBearingToStrike(location: Location, strikeLocation: Location, strike: Strike): Float {
+        strikeLocation.longitude = strike.longitude.toDouble()
+        strikeLocation.latitude = strike.latitude.toDouble()
+        return location.bearingTo(strikeLocation)
+    }
+
+    private fun getRelevantSector(bearing: Double, sectors: Collection<AggregatingAlertSector>): AggregatingAlertSector? {
+        return sectors.firstOrNull { sectorContainsBearing(it, bearing) }
+    }
+
+    private fun sectorContainsBearing(sector: AggregatingAlertSector, bearing: Double): Boolean {
+        val minimumSectorBearing = sector.minimumSectorBearing
+        val maximumSectorBearing = sector.maximumSectorBearing
+
+        if (maximumSectorBearing > minimumSectorBearing) {
+            return bearing < maximumSectorBearing && bearing >= minimumSectorBearing
+        } else if (maximumSectorBearing < minimumSectorBearing) {
+            return bearing >= minimumSectorBearing || bearing < maximumSectorBearing
+        } else {
+            // maximumSectorBearing == minimumSectorBearing -> only one sector
+            return true;
+        }
     }
 }

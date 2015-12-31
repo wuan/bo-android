@@ -3,7 +3,7 @@ package org.blitzortung.android.alert.handler
 import org.blitzortung.android.alert.data.AlertSectorRange
 import org.blitzortung.android.data.beans.Strike
 
-internal class ProcessingAlertSectorRange(
+internal class AggregatingAlertSectorRange(
         val rangeMinimum: Float,
         val rangeMaximum: Float
 ) {
