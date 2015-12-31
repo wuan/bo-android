@@ -315,4 +315,5 @@
     <string name="location_provider_disabled">Location-Provider \'%s\' ist deaktiviert</string>
     <string name="service_url">Service-URL</string>
     <string name="service_url_summary">Benutzerdefinierte Service-URL, falls gesetzt</string>
+    <string name="set_manual_location">Benutzerdefinierter Ort</string>
 </resources>

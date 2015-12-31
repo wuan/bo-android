@@ -2,15 +2,21 @@ package org.blitzortung.android.map
 
 import android.content.Context
 import android.graphics.Canvas
+import android.preference.PreferenceManager
 import android.util.AttributeSet
+import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Toast
 
 import com.google.android.maps.MapView
+import org.blitzortung.android.app.Main
 
 import org.blitzortung.android.app.R
+import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.location.LocationHandler
 
 import java.util.HashSet
 
@@ -36,12 +42,28 @@ class OwnMapView : MapView {
 
             this@OwnMapView.removeView(popup)
 
-            val x = event.x.toInt()
-            val y = event.y.toInt()
-            val p = projection
-            controller.animateTo(p.fromPixels(x, y))
+            controller.animateTo(getPoint(event))
             controller.zoomIn()
             return true
+        }
+
+        private fun getPoint(event: MotionEvent) = projection.fromPixels(event.x.toInt(), event.y.toInt())
+
+        override fun onLongPress(event: MotionEvent) {
+            val point = getPoint(event)
+            val longitude = point.longitudeE6 / 1e6
+            val latitude = point.latitudeE6 / 1e6
+            Log.v(Main.LOG_TAG, "GestureListener.onLongPress() $point")
+            val context = this@OwnMapView.context
+            val locationText = context.resources.getString(R.string.set_manual_location)
+            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+            val editor = preferences.edit()
+            editor.putString(PreferenceKey.LOCATION_LONGITUDE.toString(), longitude.toString())
+            editor.putString(PreferenceKey.LOCATION_LATITUDE.toString(), latitude.toString())
+            editor.putString(PreferenceKey.LOCATION_MODE.toString(), LocationHandler.Provider.MANUAL.type)
+            editor.apply()
+            Toast.makeText(context, "%s: %.4f %.4f".format(locationText, longitude, latitude),
+                    Toast.LENGTH_LONG).show()
         }
     }
 

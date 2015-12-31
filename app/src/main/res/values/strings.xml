@@ -316,4 +316,5 @@
     <string name="location_provider_disabled">location provider \'%s\' is disabled</string>
     <string name="service_url">Non-default service URL</string>
     <string name="service_url_summary">Overrides the default service URL if set</string>
+    <string name="set_manual_location">set manual location</string>
 </resources>
