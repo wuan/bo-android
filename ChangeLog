@@ -1,0 +1,193 @@
+# Changelog
+
+## English
+
+### Version 1.4.0:
+ - migrated project language to Kotlin
+ - zoom to location button when alerts are not available
+ - improved tablet support
+
+### Version 1.3.7:
+ - new region central america
+ - fix behaviour for no lightning activity
+
+### Version 1.3.6:
+ - preliminary fix for Android 6 permissions
+ - migrated code to retrolambda, stream and lombok
+ - removed unnecessary location manager reconfigurations
+ - threshold for stroke count per area
+ - optimized default values
+
+### Version 1.3.5:
+ - added new regions South America, Asia and Africa
+ - added quick settings menu (tap on legend)
+ - fixed missing legend updates
+ - port to gradle build
+ - czech translation
+
+### Version 1.3.4:
+ - fixed various errors
+ - accelerated backend service
+
+### Version 1.3.2 (Android 4.0+):
+ - fixed NPE
+
+### Version 1.3.1 (Android 4.0+):
+ - do not require location manager, when not active
+
+### Version 1.1.3 & 1.3.0 (Android 4.0+):
+ - workaround for Android wakelock timeout bug
+ - fixed Android 2.2 incompatibility
+ - fixed sound notifications
+ - use AlarmManager and WakeLocks to ensure background service operation
+ - reduce amount of transferred data, when running in background
+ - alarm signal only at situation changes
+ - enabled Hardware acceleration (1.3 only)
+ - background operation starting with boot
+ - reworked structure with separate app service
+
+### Version 1.2 (Android 4.0+)
+ * enabled Hardware acceleration
+
+### Version 1.1
+ * use AlarmManager and WakeLocks to ensure background service operation
+ * reduce amount of transferred data, when running in background
+ * alarm signal only at situation changes
+ * updated Blitzortung.org data access
+
+### Version 1.0
+ * tap on histogram zooms to full data area
+ * tap on alarm radar zooms to current location
+ * improved UI scaling
+ * added alarm signal settings to configure vibration and/or sounds
+ * refactored alarm logic
+ * fixed data updates on parameter change
+ * fixed background task behaviour
+ * fixed GPS signal detection
+
+### Version 0.9
+ * added GPS based and manual location
+ * added support for devices without menu button
+ * reorganized menu
+ * added ability to disable stations layer in Blitzortung.org mode
+ * optimized alarm handling
+ * manual location entry: enabled negative numbers in input fields
+ * GPS signal loss detection
+
+### Version 0.8
+ * access to historical lightning data
+ * configurable time-length of data display
+
+### Version 0.7
+ * transparent infobar
+ * added legend overlay
+ * added histogram overlay
+ * added local alarm overlay
+ * package cleanup
+ * raster display fix
+ * metric/imperia systems of measurement
+ * alternative data service running on port 80
+ * option to disable sleep mode of device
+ * added summary texts to preferences
+ * fading of map
+ * selectable color schemes
+
+### Version 0.6
+ * display of strike counts for higher zoom levels
+ * display of raster data area extent
+ * notification and vibration alarm with preference integration
+
+## German
+
+### Version 1.4.0:
+ - Projekt nach Kotlin portiert
+ - Zoom zum aktuellen Ort immer aktiv
+ - Verbesserte Unterstützung für Tablets
+
+### Version 1.3.7:
+ - Neue Region Zentralamerika
+ - Anzeigefehler bei nicht vorhandener Blitzaktivität behoben
+
+### Version 1.3.6:
+ - Vorläufiger Fix für Permissions unter Android 6
+ - Umbau auf Retrolambda, Streams und Lombok
+ - Rekonfiguration des Location-Managers nur bei Bedarf
+ - Schwellwert für die Blitzzahl pro Rasterfläche
+ - Optimierte Standardwerte
+
+### Version 1.3.5 (Android 4.0+):
+ - neue Regionen Südamerika, Asien und Afrika
+ - Schnelleinstellungs-Dialog beim Tippen auf die Legende
+ - Fehlende Legenden-Updates behoben
+ - Umstellung auf Gradle-Build
+ - Tschechische Übersetzung
+
+### Version 1.3.4 (Android 4.0+):
+ - verschiedenen Fehlerbehebungen
+ - beschleunigter Datendienst
+
+### Version 1.3.2 (Android 4.0+):
+ - Nullpointer-Exception beseitigt
+
+### Version 1.3.1 (Android 4.0+):
+ - deaktiviere Ortsbestimmung, falls nicht benötigt
+
+### Version 1.1.3 & 1.3.0 (Android 4.0+):
+ - Vermeidung des Android wakelock timeout Fehlers
+ - Android 2.2 Inkompatibilität beseitigt
+ - Probleme mit Warntönen auf einigen Geräten beseitigt
+ - verwendet AlarmManager und WakeLocks um den Betrieb des Hintergrunddienstes sicherzustellen
+ - Hintergrunddaten: reduzierte Übertragungsmenge
+ - Alarmsignal nur bei Änderung der Situation
+ - Zugriff auf Blitzortung.org Daten angepasst
+ - Hardwarebeschleunigung aktiv (nur 1.3.0)
+ - Hintergrundabfrage ab Neustart
+ - Überarbeitete Struktur mit Datenservice
+
+### Version 1.2 (Android 4.0+)
+ - Hardwarebeschleunigung aktiviert
+
+### Version 1.1
+ - verwendet AlarmManager und WakeLocks um den Betrieb des Hintergrunddienstes sicherzustellen
+ - die Größe der im Hintergrund übertragenen Daten wurde stark reduziert.
+ - Alarmsignal nur bei Änderung der Situation
+ - Zugriff auf Blitzortung.org Daten angepasst
+
+### Version 1.0
+ * Zoom auf vollen Datenbereich bei Tippen auf Histogram
+ * Zoom auf aktuelle Position bei Tippen auf Alarm-Radar
+ * Verbesserte Skalierung der Oberfläche
+ * neue Alarm-Signal Einstellungen konfigurieren Vibration und/oder Tonsignal
+ * Überarbeitung der Alarm-Logik
+ * Verbesserte Behandlung von Parameteränderungen
+ * Verbessertes Verhalten des Hintergrundtasks
+ * Verbesesrte Erkennung des GPS-Signals
+
+### Version 0.9
+ * GPS-basierte und manuelle Ortung hinzugefügt
+ * Unterstützung für Geräte ohne Menüknopf
+ * Reorganisation des Menüs
+ * Stationsanzeige im Blitzortung.org Modus ist abschaltbar
+ * Alarmverarbeitung optimiert und überarbeitet
+ * negative Koordinaten bei der manuellen Ortsangabe ermöglicht
+
+### Version 0.8
+ * Zugriff auf Blitzdaten der letzten 24 Stunden
+ * Konfigurierbare Länge des Datenzeitraums
+
+### Version 0.7
+ * Transparente Infoleiste
+ * Anzeige von Legende, Zeit-Histogramm und Alarmübersicht
+ * Aufräumarbeiten
+ * Fix für Rasteranzeige
+ * Metrisches/imperiales Einheitensystem
+ * alternativer Datenservice über Port 80 erreichbar
+ * Voreinstellung zur Unterdrückung des Ruhezustands bei aktiver App
+ * Beschreibungstexte für Voreinstellungen
+ * Verblassen der Karte
+ * wählbare Farbschemata
+
+### Version 0.6
+ * Darstellung der Blitzzahlen
+ * Darstellung der Gesamtfläche der Rasterdaten
+ * Benachrichtigungen und Vibrationsalarm
