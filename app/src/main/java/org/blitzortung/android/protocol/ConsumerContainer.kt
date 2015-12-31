@@ -1,5 +1,7 @@
 package org.blitzortung.android.protocol
 
+import android.util.Log
+import org.blitzortung.android.app.Main
 import java.util.*
 
 abstract class ConsumerContainer<P> {
@@ -48,6 +50,7 @@ abstract class ConsumerContainer<P> {
     abstract fun removedLastConsumer()
 
     fun storeAndBroadcast(payload: P) {
+        Log.v(Main.LOG_TAG, "ConsumerContainer.storeAndBroadcast $payload vs $currentPayload")
         currentPayload = payload
         broadcast(payload)
     }

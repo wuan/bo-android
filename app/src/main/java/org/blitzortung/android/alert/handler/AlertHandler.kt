@@ -48,6 +48,7 @@ class AlertHandler(
         set (alertEventConsumer: ((AlertEvent) -> Unit)?) {
             field = alertEventConsumer
             updateLocationHandler()
+            broadcastResult(alertResult)
         }
 
     private var lastStrikes: Collection<Strike>? = null
@@ -188,6 +189,7 @@ class AlertHandler(
     private fun broadcastResult(alertResult: AlertResult?) {
         alertEventConsumer?.let { consumer ->
             val alertResultEvent = AlertResultEvent(alertResult)
+            Log.v(Main.LOG_TAG, "AlertHandler.broadcastResult() $alertResultEvent -> $consumer")
             consumer(alertResultEvent)
             this.alertEvent = alertResultEvent
         }
