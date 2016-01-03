@@ -3,6 +3,7 @@ package org.blitzortung.android.alert.handler
 import android.location.Location
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.alert.AlertParameters
+import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.data.beans.DefaultStrike
 import org.blitzortung.android.util.MeasurementSystem
 import org.junit.Before
@@ -98,6 +99,13 @@ class AlertDataHandlerTest {
         assertThat(sector).isNotNull()
 
         assertThat(sector?.label).isEqualTo("S")
+
+        val rangeWithStrikes = getRangesWithStrikes(result).firstOrNull()
+        assertThat(rangeWithStrikes).isNotNull()
+        if (rangeWithStrikes != null) {
+            assertThat(rangeWithStrikes.strikeCount).isEqualTo(1)
+            assertThat(rangeWithStrikes.latestStrikeTimestamp).isEqualTo(thresholdTime)
+        }
     }
 
     @Test
@@ -108,6 +116,7 @@ class AlertDataHandlerTest {
         val result = alertDataHandler.checkStrikes(arrayListOf(strike), location, parameters, now)
 
         assertThat(result.sectorWithClosestStrike).isNull()
+        assertThat(getRangesWithStrikes(result).isEmpty()).isTrue()
     }
 
     @Test
@@ -118,7 +127,16 @@ class AlertDataHandlerTest {
         val result = alertDataHandler.checkStrikes(listOf(strike), location, parameters, now)
 
         assertThat(result.sectorWithClosestStrike).isNull()
+
+        val rangeWithStrikes = getRangesWithStrikes(result).firstOrNull()
+        assertThat(rangeWithStrikes).isNotNull()
+        if (rangeWithStrikes != null) {
+            assertThat(rangeWithStrikes.strikeCount).isEqualTo(1)
+            assertThat(rangeWithStrikes.latestStrikeTimestamp).isEqualTo(beforeThresholdTime)
+        }
     }
+
+    private fun getRangesWithStrikes(result: AlertResult) = result.sectors.flatMap { it.ranges }.filter { it.strikeCount > 0 }
 
     @Test
     fun testCheckOutOfThresholdTimeAndAllRanges() {
