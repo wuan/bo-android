@@ -69,22 +69,24 @@ class AlertDataHandlerTest {
 
         val sector = result.sectorWithClosestStrike
         assertThat(sector).isNotNull()
+        assertThat(sector).isEqualTo(sectorWithStrike(result))
 
-        assertThat(sector?.label).isEqualTo("foo")
+        assertSectorAndRange(result, "foo", 2.5f, thresholdTime)
     }
 
     @Test
     fun testCheckWithinThresholdTimeFirstSectorAndRange1() {
         strike = strike.copy(timestamp = thresholdTime)
         `when`(location.distanceTo(any(Location::class.java))).thenReturn(2500f)
-        `when`(location.bearingTo(any(Location::class.java))).thenReturn(0f)
+        `when`(location.bearingTo(any(Location::class.java))).thenReturn(90f)
 
         val result = alertDataHandler.checkStrikes(arrayListOf(strike), location, parameters, now)
 
         val sector = result.sectorWithClosestStrike
         assertThat(sector).isNotNull()
+        assertThat(sector).isEqualTo(sectorWithStrike(result))
 
-        assertThat(sector?.label).isEqualTo("N")
+        assertSectorAndRange(result, "S", 2.5f, thresholdTime)
     }
 
     @Test
@@ -97,15 +99,9 @@ class AlertDataHandlerTest {
 
         val sector = result.sectorWithClosestStrike
         assertThat(sector).isNotNull()
+        assertThat(sector).isEqualTo(sectorWithStrike(result))
 
-        assertThat(sector?.label).isEqualTo("S")
-
-        val rangeWithStrikes = getRangesWithStrikes(result).firstOrNull()
-        assertThat(rangeWithStrikes).isNotNull()
-        if (rangeWithStrikes != null) {
-            assertThat(rangeWithStrikes.strikeCount).isEqualTo(1)
-            assertThat(rangeWithStrikes.latestStrikeTimestamp).isEqualTo(thresholdTime)
-        }
+        assertSectorAndRange(result, "S", 2.5f, thresholdTime)
     }
 
     @Test
@@ -116,27 +112,20 @@ class AlertDataHandlerTest {
         val result = alertDataHandler.checkStrikes(arrayListOf(strike), location, parameters, now)
 
         assertThat(result.sectorWithClosestStrike).isNull()
-        assertThat(getRangesWithStrikes(result).isEmpty()).isTrue()
+        assertThat(rangeWithStrike(result)).isNull()
     }
 
     @Test
     fun testCheckOutOfThresholdTimeAndWithinRange2() {
         strike = strike.copy(timestamp = beforeThresholdTime)
         `when`(location.distanceTo(any(Location::class.java))).thenReturn(2500.1f)
+        `when`(location.bearingTo(any(Location::class.java))).thenReturn(-90f)
 
         val result = alertDataHandler.checkStrikes(listOf(strike), location, parameters, now)
 
         assertThat(result.sectorWithClosestStrike).isNull()
-
-        val rangeWithStrikes = getRangesWithStrikes(result).firstOrNull()
-        assertThat(rangeWithStrikes).isNotNull()
-        if (rangeWithStrikes != null) {
-            assertThat(rangeWithStrikes.strikeCount).isEqualTo(1)
-            assertThat(rangeWithStrikes.latestStrikeTimestamp).isEqualTo(beforeThresholdTime)
-        }
+        assertSectorAndRange(result, "N", 5f, beforeThresholdTime)
     }
-
-    private fun getRangesWithStrikes(result: AlertResult) = result.sectors.flatMap { it.ranges }.filter { it.strikeCount > 0 }
 
     @Test
     fun testCheckOutOfThresholdTimeAndAllRanges() {
@@ -146,5 +135,26 @@ class AlertDataHandlerTest {
         val result = alertDataHandler.checkStrikes(listOf(strike), location, parameters, now)
 
         assertThat(result.sectorWithClosestStrike).isNull()
+        assertThat(rangeWithStrike(result)).isNull()
     }
+
+    private fun assertSectorAndRange(result: AlertResult, expectedSectorLabel: String, expectedRange: Float, expectedTime: Long) {
+        val sectorWithStrike = sectorWithStrike(result)
+        assertThat(sectorWithStrike).isNotNull()
+        if (sectorWithStrike != null) {
+            assertThat(sectorWithStrike.label).isEqualTo(expectedSectorLabel)
+            val rangeWithStrike = sectorWithStrike.ranges.filter { it.strikeCount > 0 }.firstOrNull()
+            assertThat(rangeWithStrike).isNotNull()
+            if (rangeWithStrike != null) {
+                assertThat(rangeWithStrike.strikeCount).isEqualTo(1)
+                assertThat(rangeWithStrike.rangeMaximum).isEqualTo(expectedRange)
+                assertThat(rangeWithStrike.latestStrikeTimestamp).isEqualTo(expectedTime)
+            }
+        }
+    }
+
+    private fun sectorWithStrike(result: AlertResult) = result.sectors.filter { !it.ranges.filter { it.strikeCount > 0 }.isEmpty() }.firstOrNull()
+
+    private fun rangeWithStrike(result: AlertResult) = result.sectors.flatMap { it.ranges }.filter { it.strikeCount > 0 }.firstOrNull()
+
 }
