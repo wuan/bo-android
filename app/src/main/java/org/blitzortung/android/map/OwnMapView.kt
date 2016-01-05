@@ -24,7 +24,7 @@ class OwnMapView : MapView {
 
     private val zoomListeners = HashSet<(Int) -> Unit>()
 
-    private val gestureDetector: GestureDetector = GestureDetector(GestureListener())
+    private val gestureDetector: GestureDetector = GestureDetector(context, GestureListener())
 
     private var oldPixelSize = -1f
 
