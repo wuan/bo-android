@@ -41,7 +41,7 @@ public class OwnMapView extends MapView {
     }
 
     private void init() {
-        gestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
+        gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onDoubleTap(MotionEvent event) {
                 removeView(getPopup());
