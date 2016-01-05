@@ -35,7 +35,7 @@ class MapBuilderFactory constructor(private val strikeLineSplitter: (String) -> 
                 keyValueBuilderMap.put("sta", { values -> stationCount = values.size.toShort() })
             }
 
-            public override fun build(): Strike {
+            override fun build(): Strike {
                 return DefaultStrike(timestamp, longitude, latitude, altitude, amplitude, stationCount, lateralError.toFloat())
             }
         }

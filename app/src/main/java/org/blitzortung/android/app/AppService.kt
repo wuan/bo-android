@@ -55,7 +55,7 @@ class AppService protected constructor(private val handler: Handler, private val
 
     private lateinit var dataHandler: DataHandler
     private lateinit var locationHandler: LocationHandler
-    public lateinit var alertHandler: AlertHandler
+    lateinit var alertHandler: AlertHandler
 
     private var alertEnabled: Boolean = false
     private var alarmManager: AlarmManager? = null
@@ -346,7 +346,7 @@ class AppService protected constructor(private val handler: Handler, private val
         }
     }
 
-    public fun alertEvent(): AlertEvent {
+    fun alertEvent(): AlertEvent {
         return alertHandler.alertEvent
     }
 

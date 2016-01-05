@@ -137,7 +137,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         }
     }
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         try {
             super.onCreate(savedInstanceState)
         } catch (e: NoClassDefFoundError) {
@@ -382,7 +382,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         return super.onOptionsItemSelected(item)
     }
 
-    public override fun onStart() {
+    override fun onStart() {
         super.onStart()
 
         setupService()
@@ -390,24 +390,24 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
     }
 
-    public override fun onRestart() {
+    override fun onRestart() {
         super.onRestart()
 
         Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
     }
 
-    public override fun onResume() {
+    override fun onResume() {
         super.onResume()
 
         Log.d(Main.LOG_TAG, "Main.onResume() service: " + appService)
     }
 
-    public override fun onPause() {
+    override fun onPause() {
         super.onPause()
         Log.v(Main.LOG_TAG, "Main.onPause()")
     }
 
-    public override fun onStop() {
+    override fun onStop() {
         super.onStop()
 
         val appService = appService
@@ -430,7 +430,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         }
     }
 
-    public override fun onDestroy() {
+    override fun onDestroy() {
         super.onDestroy()
         Log.i(LOG_TAG, "Main: onDestroy() unbind service")
 

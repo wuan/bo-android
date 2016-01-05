@@ -15,8 +15,8 @@ import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Strike
 
 class StrikeOverlayItem(strike: Strike) : OverlayItem(Coordsys.toMapCoords(strike.longitude, strike.latitude), "", ""), Strike {
-    public override val timestamp: Long
-    public override val multiplicity: Int
+    override val timestamp: Long
+    override val multiplicity: Int
 
     init {
         super.setMarker(ShapeDrawable())
@@ -25,7 +25,7 @@ class StrikeOverlayItem(strike: Strike) : OverlayItem(Coordsys.toMapCoords(strik
         multiplicity = strike.multiplicity
     }
 
-    public override fun setMarker(drawable: Drawable?) {
+    override fun setMarker(drawable: Drawable?) {
         throw IllegalStateException("cannot overwrite marker of strike overlay item")
     }
 
@@ -75,12 +75,12 @@ class StrikeOverlayItem(strike: Strike) : OverlayItem(Coordsys.toMapCoords(strik
         this.shape = shape
     }
 
-    public override val longitude: Float
+    override val longitude: Float
         get() {
             return point.longitudeE6 / 1e6f
         }
 
-    public override val latitude: Float
+    override val latitude: Float
         get() {
             return point.latitudeE6 / 1e6f
         }

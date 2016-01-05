@@ -71,7 +71,7 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tablet
         textWidth = Math.ceil(textPaint.measureText(if (intervalDuration > 100) "< 100min" else "< 10min").toDouble()).toFloat()
     }
 
-    public override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val parentWidth = View.MeasureSpec.getSize(widthMeasureSpec)
         val parentHeight = View.MeasureSpec.getSize(heightMeasureSpec)
 
@@ -97,7 +97,7 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tablet
         super.onMeasure(View.MeasureSpec.makeMeasureSpec(width.toInt(), View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(height.toInt(), View.MeasureSpec.EXACTLY))
     }
 
-    public override fun onDraw(canvas: Canvas) {
+    override fun onDraw(canvas: Canvas) {
         if (strikesOverlay != null) {
             val colorHandler = strikesOverlay!!.getColorHandler()
             val minutesPerColor = strikesOverlay!!.parameters.intervalDuration / colorHandler.numberOfColors

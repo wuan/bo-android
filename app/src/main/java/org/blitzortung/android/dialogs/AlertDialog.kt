@@ -23,7 +23,7 @@ class AlertDialog(context: Context, private val service: AppService?, private va
         this.intervalDuration = intervalDuration
     }
 
-    public override fun onStart() {
+    override fun onStart() {
         super.onStart()
 
         alertView = findViewById(R.id.alarm_diagram) as AlertView

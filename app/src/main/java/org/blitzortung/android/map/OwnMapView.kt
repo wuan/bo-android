@@ -67,7 +67,7 @@ class OwnMapView : MapView {
         }
     }
 
-    public override fun dispatchDraw(canvas: Canvas) {
+    override fun dispatchDraw(canvas: Canvas) {
         super.dispatchDraw(canvas)
 
         detectAndHandleZoomAction()
@@ -115,9 +115,5 @@ class OwnMapView : MapView {
     }
 
     val popup: View by lazy { LayoutInflater.from(context).inflate(R.layout.popup, this, false) }
-
-    interface ZoomListener {
-        fun onZoom(zoomLevel: Int)
-    }
 
 }

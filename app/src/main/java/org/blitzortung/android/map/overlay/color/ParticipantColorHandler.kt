@@ -8,7 +8,7 @@ class ParticipantColorHandler(preferences: SharedPreferences) : ColorHandler(pre
 
     private val mapColors = intArrayOf(0xff448811.toInt(), 0xff884400.toInt(), 0xff880000.toInt())
 
-    public override fun getColors(target: ColorTarget): IntArray {
+    override fun getColors(target: ColorTarget): IntArray {
         return when (target) {
             ColorTarget.SATELLITE -> satelliteViewColors
             ColorTarget.STREETMAP -> mapColors

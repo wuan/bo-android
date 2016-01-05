@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 
 open class StrikeColorHandler(preferences: SharedPreferences) : ColorHandler(preferences) {
 
-    public override fun getColors(target: ColorTarget): IntArray {
+    override fun getColors(target: ColorTarget): IntArray {
         return when (target) {
             ColorTarget.SATELLITE -> colorScheme!!.strikeColors
             ColorTarget.STREETMAP -> modifyBrightness(colorScheme!!.strikeColors, 0.8f)

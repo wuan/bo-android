@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 
-public class TimeFormatTest {
+class TimeFormatTest {
 
     @Test
     fun testParseTimeWithMilliseconds() {

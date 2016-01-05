@@ -58,7 +58,7 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tab
                 View.MeasureSpec.makeMeasureSpec(parentHeight.toInt(), View.MeasureSpec.EXACTLY))
     }
 
-    public override fun onDraw(canvas: Canvas) {
+    override fun onDraw(canvas: Canvas) {
         val strikesOverlay = strikesOverlay
         val histogram = histogram
         if (strikesOverlay != null && histogram != null && histogram.size > 0) {

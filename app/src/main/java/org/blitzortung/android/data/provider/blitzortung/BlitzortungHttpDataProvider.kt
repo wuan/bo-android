@@ -169,8 +169,7 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
     }
 
     private inner class MyAuthenticator : Authenticator() {
-
-        public override fun getPasswordAuthentication(): PasswordAuthentication {
+        override fun getPasswordAuthentication(): PasswordAuthentication {
             return PasswordAuthentication(username, password?.toCharArray())
         }
     }
