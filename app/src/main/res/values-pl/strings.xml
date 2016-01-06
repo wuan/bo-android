@@ -200,7 +200,7 @@
 
     <string name="location_settings">Ustawienia lokalizacji</string>
     <string-array name="location_modes">
-        <item>Pasywnief</item>
+        <item>Pasywnie</item>
         <item>Na podstawie sieci</item>
         <item>Na podstawie GPS</item>
         <item>Ręcznie</item>
@@ -308,7 +308,7 @@
     <string name="alarm_audio_signal_summary">wybierz dźwięk alarmu</string>
     <string name="alarm_vibration_signal_summary">ustaw długość trwania wibracji alarmu</string>
     <string name="location_provider_not_available">lokalizacja \'%s\' jest niedostępna</string>
-	<string name="location_provider_disabled">lokalizacja \'%s\' jest wyłączona</string>
+    <string name="location_provider_disabled">lokalizacja \'%s\' jest wyłączona</string>
     <string name="service_url">Alternatywny adres URL </string>
     <string name="service_url_summary">Zmienia domyślny adres URL bazy danych</string>
     <string name="set_manual_location">Ustawiono ręczną pozycję</string>
