@@ -12,14 +12,13 @@
     </plurals>
     <plurals name="minute">
         <item quantity="one">1 minuta</item>
-        <item quantity="other">%d minut(y)</item>
+        <item quantity="other">%d minut</item>
     </plurals>
 
     <string name="info">Informacje</string>
     <string name="info_text">Strona projektu:\n\thttps://github.com/wuan/bo-android\n\nDane dostarczane
         są przez\n<b>Blitzortung.org</b>\nrealtime lighning community project.\nSprawdź na
-        stronie\n\thttp://blitzortung.org/\nwięcej informacji oraz dowiedz się jak zostać uczestnikiem.\n\n
-        Czech translation by: Jakub Mareček (jakubmarecek715@gmail.com)\n
+        stronie\n\thttp://blitzortung.org/\nwięcej informacji oraz dowiedz się jak zostać uczestnikiem.\n\nCzech translation by: Jakub Mareček (jakubmarecek715@gmail.com)\n
 		Polish translation by: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
     </string>
     <string name="copyright">© 2011–2016, Andreas Würl\nblitzortung@tryb.de</string>
@@ -200,7 +199,7 @@
 
     <string name="location_settings">Ustawienia lokalizacji</string>
     <string-array name="location_modes">
-        <item>Pasywnie</item>
+        <item>Pasywnief</item>
         <item>Na podstawie sieci</item>
         <item>Na podstawie GPS</item>
         <item>Ręcznie</item>
@@ -213,14 +212,14 @@
     </string-array>
     <string name="location_mode">tryb lokalizacji</string>
     <string name="location_mode_summary">Wybierz sposób określania Twojej lokalizacji</string>
-    <string name="longitude">długośc</string>
+    <string name="longitude">długość</string>
     <string name="location_longitude_summary">ręcznie ustawienie dla długości geograficznej</string>
     <string name="latitude">szerokość</string>
     <string name="location_latitude_summary">ręcznie ustawienie dla szerokości geograficznej</string>
     <string name="alarm_settings">Ustawienia alarmu</string>
     <string name="alarm_enabled">Alarm włączony</string>
     <string name="alarm_enabled_summary">sprawdzaj aktywność wyładowań w Twojej okolicy</string>
-    <string name="background_query_period">Częśtotliwośc w tle</string>
+    <string name="background_query_period">Częśtotliwość w tle</string>
     <string name="background_query_period_summary">jeżeli wybrane: częstotliwość aktualizowania danych w tle dla alarmu gdy aplikacja nie jest aktywna</string>
 
     <string-array name="background_query_periods">
@@ -306,6 +305,10 @@
     <string name="alarm_audio_signal">dźwięk alarmu</string>
     <string name="alarm_vibration_signal">czas wibracji alarmu</string>
     <string name="alarm_audio_signal_summary">wybierz dźwięk alarmu</string>
-    <string name="alarm_vibration_signal_summary">ustaw długośc trwania wibracji alarmu</string>
+    <string name="alarm_vibration_signal_summary">ustaw długość trwania wibracji alarmu</string>
     <string name="location_provider_not_available">lokalizacja \'%s\' jest niedostępna</string>
+	<string name="location_provider_disabled">lokalizacja \'%s\' jest wyłączona</string>
+    <string name="service_url">Alternatywny adres URL </string>
+    <string name="service_url_summary">Zmienia domyślny adres URL bazy danych</string>
+    <string name="set_manual_location">Ustawiono ręczną pozycję</string>
 </resources>
