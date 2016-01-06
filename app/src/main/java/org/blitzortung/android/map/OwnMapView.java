@@ -22,37 +22,31 @@ public class OwnMapView extends MapView {
 
     private View popUp = null;
 
-    private GestureDetector gestureDetector;
+    private GestureDetector gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+        @Override
+        public boolean onDoubleTap(MotionEvent event) {
+            removeView(getPopup());
+
+            int x = (int) event.getX(), y = (int) event.getY();
+            Projection p = getProjection();
+            getController().animateTo(p.fromPixels(x, y));
+            getController().zoomIn();
+            return true;
+        }
+    });
+
     private float oldPixelSize = -1;
 
     public OwnMapView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
     }
 
     public OwnMapView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init();
     }
 
     public OwnMapView(Context context, String apiKey) {
         super(context, apiKey);
-        init();
-    }
-
-    private void init() {
-        gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onDoubleTap(MotionEvent event) {
-                removeView(getPopup());
-
-                int x = (int) event.getX(), y = (int) event.getY();
-                Projection p = getProjection();
-                getController().animateTo(p.fromPixels(x, y));
-                getController().zoomIn();
-                return true;
-            }
-        });
     }
 
     @Override
