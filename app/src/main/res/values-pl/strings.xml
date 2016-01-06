@@ -6,45 +6,46 @@
     <string name="cancel">@android:string/cancel</string>
 
     <plurals name="strike">
-        <item quantity="zero">no strike</item>
-        <item quantity="one">1 strike</item>
-        <item quantity="other">%d strikes</item>
+        <item quantity="zero">brak wyładowań</item>
+        <item quantity="one">1 wyładowanie</item>
+        <item quantity="other">%d wyładowań</item>
     </plurals>
     <plurals name="minute">
-        <item quantity="one">1 minutes</item>
-        <item quantity="other">%d minutes</item>
+        <item quantity="one">1 minuta</item>
+        <item quantity="other">%d minut(y)</item>
     </plurals>
 
-    <string name="info">Information</string>
-    <string name="info_text">Project home:\n\thttps://github.com/wuan/bo-android\n\nVisualized lightning data
-        is\nprovided by the\n<b>Blitzortung.org</b>\nrealtime lighning community project. Please refer
-        to\n\thttp://blitzortung.org/\nfor further information or how\nto participate.\n\nCzech translation by: Jakub Mareček (jakubmarecek715@gmail.com)\n
+    <string name="info">Informacje</string>
+    <string name="info_text">Strona projektu:\n\thttps://github.com/wuan/bo-android\n\nDane dostarczane
+        są przez\n<b>Blitzortung.org</b>\nrealtime lighning community project.\nSprawdź na
+        stronie\n\thttp://blitzortung.org/\nwięcej informacji oraz dowiedz się jak zostać uczestnikiem.\n\nCzech translation by: Jakub Mareček (jakubmarecek715@gmail.com)\n
+		Polish translation by: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
     </string>
     <string name="copyright">© 2011–2015, Andreas Würl\nblitzortung@tryb.de</string>
-    <string name="legend">Legend</string>
-    <string name="total_time">total time</string>
-    <string name="activity">activity</string>
-    <string name="during">during the past</string>
-    <string name="minute">minute</string>
-    <string name="alarms">Alarms</string>
-    <string name="alarms_not_available">Alarms disabled\nor\nLocation information missing</string>
-    <string name="layers">Layers</string>
-    <string name="preferences">Preferences</string>
-    <string name="user_settings">User settings</string>
-    <string name="username">Username</string>
-    <string name="username_summary">blitzortung.org participant user name</string>
-    <string name="password">Password</string>
-    <string name="password_summary">blitzortung.org participant password</string>
-    <string name="map_settings">Map settings</string>
-    <string name="map_mode">Map mode</string>
-    <string name="map_mode_summary">select satellite view or streetmap</string>
-    <string name="map_fade">Fade out map</string>
-    <string name="map_fade_summary">Fade map background to enhance visibility of data</string>
+    <string name="legend">Legenda</string>
+    <string name="total_time">łączny czas</string>
+    <string name="activity">aktywność</string>
+    <string name="during">w ciągu ostatnich</string>
+    <string name="minute">minut</string>
+    <string name="alarms">Alarmy</string>
+    <string name="alarms_not_available">Alarmy wyłączone\nlub\nbrak informacji o pozycji</string>
+    <string name="layers">Warstwy</string>
+    <string name="preferences">Preferencje</string>
+    <string name="user_settings">Ustawienia użytkownika</string>
+    <string name="username">Nazwa</string>
+    <string name="username_summary">nazwa użytkownika blitzortung.org</string>
+    <string name="password">Hasło</string>
+    <string name="password_summary">hasło użytkownika blitzortung.org</string>
+    <string name="map_settings">Ustawienia map</string>
+    <string name="map_mode">Tryb mapy</string>
+    <string name="map_mode_summary">mapa satelitarna lub drogowa</string>
+    <string name="map_fade">Przeźroczystość</string>
+    <string name="map_fade_summary">Dostosuj dla lepszego widoku danych</string>
 
     <string-array name="color_schemes">
         <item>Blitzortung.org</item>
-        <item>Rainbow</item>
-        <item>Temperature</item>
+        <item>Tęcza</item>
+        <item>Temperatura</item>
     </string-array>
     <string-array name="color_scheme_values">
         <item>BLITZORTUNG</item>
@@ -52,36 +53,35 @@
         <item>TEMPERATURE</item>
     </string-array>
 
-    <string name="color_scheme">Color scheme</string>
-    <string name="color_scheme_summary">Color scheme of data display</string>
+    <string name="color_scheme">Schemat kolorów</string>
+    <string name="color_scheme_summary">Schematy kolorów danych</string>
 
     <string-array name="map_modes">
-        <item>Satellite</item>
-        <item>Streetmap</item>
+        <item>Satelitarna</item>
+        <item>Drogowa</item>
     </string-array>
     <string-array name="map_mode_values">
         <item>SATELLITE</item>
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Show participant locations</string>
-    <string name="show_participants_summary">show location of all stations in map (only with Blitzortung.org data
-        source)
+    <string name="show_participants">Pokaż położenia użytkowników</string>
+    <string name="show_participants_summary">pokazuje położenia innych użytkowników (tylko przy wyborze Blitzortung.org jako źródła danych)
     </string>
-    <string name="show_location">Show own location</string>
-    <string name="show_location_summary">include symbol for own location in map</string>
-    <string name="data_settings">Data transmission</string>
+    <string name="show_location">Pokaż własną lokalizację</string>
+    <string name="show_location_summary">zaznacza Twoje położenie na mapie</string>
+    <string name="data_settings">Transmisja danych</string>
     <string name="region">Region</string>
-    <string name="region_summary">select Europe, North America or Oceania</string>
+    <string name="region_summary">wybierz region</string>
 
     <string-array name="regions">
-        <item>Europe</item>
-        <item>N. America</item>
-        <item>C. America</item>
-        <item>S. America</item>
+        <item>Europa</item>
+        <item>Ameryka północna</item>
+        <item>Ameryka środkowa</item>
+        <item>Ameryka południowa</item>
         <item>Oceania</item>
-        <item>Asia</item>
-        <item>Africa</item>
+        <item>Azja</item>
+        <item>Afryka</item>
     </string-array>
     <string-array name="regions_values">
         <item>1</item>
@@ -93,15 +93,15 @@
         <item>6</item>
     </string-array>
 
-    <string name="interval_duration">Time interval</string>
-    <string name="interval_duration_summary">Time interval in which lightning activity is shown</string>
+    <string name="interval_duration">Zakres danych</string>
+    <string name="interval_duration_summary">Wybierz czas z jakiego będą wyświetlane wyładowania</string>
 
     <string-array name="interval_durations">
-        <item>30 min</item>
-        <item>60 min</item>
-        <item>90 min</item>
-        <item>120 min</item>
-        <item>240 min</item>
+        <item>30 minut</item>
+        <item>60 minut</item>
+        <item>90 minut</item>
+        <item>120 minut</item>
+        <item>240 minut</item>
     </string-array>
     <string-array name="interval_duration_values">
         <item>30</item>
@@ -111,14 +111,14 @@
         <item>240</item>
     </string-array>
 
-    <string name="historic_timestep_limit_reached">24 hours limit reached</string>
-    <string name="historic_timestep">Historic timestep</string>
-    <string name="historic_timestep_summary">Time step size when exploring historical data</string>
+    <string name="historic_timestep_limit_reached">Osiągnięo 24 godzinny limit</string>
+    <string name="historic_timestep">Skok historii</string>
+    <string name="historic_timestep_summary">Skok czasu przy przeglądaniu poprzednich danych</string>
 
     <string-array name="historic_timesteps">
-        <item>15 min</item>
-        <item>30 min</item>
-        <item>60 min</item>
+        <item>15 minut</item>
+        <item>30 minut</item>
+        <item>60 minut</item>
     </string-array>
     <string-array name="historic_timestep_values">
         <item>15</item>
@@ -126,16 +126,16 @@
         <item>60</item>
     </string-array>
 
-    <string name="query_period">Query period</string>
-    <string name="query_period_summary">frequency of data refresh</string>
+    <string name="query_period">Częstotliwość</string>
+    <string name="query_period_summary">częstotliwość aktualizowania danych</string>
 
     <string-array name="query_periods">
-        <item>20 s</item>
-        <item>30 s</item>
-        <item>1 min</item>
-        <item>2 min</item>
-        <item>5 min</item>
-        <item>10 min</item>
+        <item>20 sekund</item>
+        <item>30 sekund</item>
+        <item>1 minut</item>
+        <item>2 minut</item>
+        <item>5 minut</item>
+        <item>10 minut</item>
     </string-array>
     <string-array name="query_period_values">
         <item>20</item>
@@ -146,8 +146,8 @@
         <item>600</item>
     </string-array>
 
-    <string name="raster_size">Raster size</string>
-    <string name="raster_size_summary">size of data rasterParameters squares</string>
+    <string name="raster_size">Rozmiar rastra</string>
+    <string name="raster_size_summary">rozmiar siatki danych</string>
 
     <string-array name="raster_sizes">
         <item>5 km</item>
@@ -164,16 +164,16 @@
         <item>100000</item>
     </string-array>
 
-    <string name="count_threshold">Strike count threshold</string>
-    <string name="count_threshold_summary">minimum strike count per raster area</string>
+    <string name="count_threshold">Wyświetlaj od:</string>
+    <string name="count_threshold_summary">minimalna liczba wyładowań na kwadrat</string>
 
     <string-array name="count_thresholds">
-        <item>disabled</item>
-        <item>1</item>
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
-        <item>50</item>
+        <item>wyłączone</item>
+        <item>1 wyładowania</item>
+        <item>5 wyładowań</item>
+        <item>10 wyładowań</item>
+        <item>25 wyładowań</item>
+        <item>50 wyładowań</item>
     </string-array>
     <string-array name="count_threshold_values">
         <item>0</item>
@@ -184,25 +184,25 @@
         <item>50</item>
     </string-array>
 
-    <string name="data_source">Data source</string>
-    <string name="data_source_summary">integrated data source or access to blitzortung.org (only for stations)
+    <string name="data_source">Źródło danych</string>
+    <string name="data_source_summary">zintegrowane źródło lub dostęp do blitzortung.org (tylko dla stacji)
     </string>
 
     <string-array name="data_sources">
         <item>Blitzortung.org</item>
-        <item>Default</item>
+        <item>Domyślne</item>
     </string-array>
     <string-array name="data_source_values">
         <item>HTTP</item>
         <item>RPC</item>
     </string-array>
 
-    <string name="location_settings">Location settings</string>
+    <string name="location_settings">Ustawienia lokalizacji</string>
     <string-array name="location_modes">
-        <item>Passive</item>
-        <item>Network based</item>
-        <item>GPS based</item>
-        <item>Manual entry</item>
+        <item>Pasywnie</item>
+        <item>Na podstawie sieci</item>
+        <item>Na podstawie GPS</item>
+        <item>Ręcznie</item>
     </string-array>
     <string-array name="location_mode_values">
         <item>passive</item>
@@ -210,28 +210,26 @@
         <item>gps</item>
         <item>manual</item>
     </string-array>
-    <string name="location_mode">location mode</string>
-    <string name="location_mode_summary">Select method which is used to determine the current location</string>
-    <string name="longitude">longitude</string>
-    <string name="location_longitude_summary">manual entry of longitude</string>
-    <string name="latitude">latitude</string>
-    <string name="location_latitude_summary">manual entry of latitude</string>
-    <string name="alarm_settings">Alarm settings</string>
-    <string name="alarm_enabled">Alarm enabled</string>
-    <string name="alarm_enabled_summary">check lightning activity around the current location</string>
-    <string name="background_query_period">Background query period</string>
-    <string name="background_query_period_summary">if selected: background query frequency to check for alarms if app is
-        not active
-    </string>
+    <string name="location_mode">tryb lokalizacji</string>
+    <string name="location_mode_summary">Wybierz sposób określania Twojej lokalizacji</string>
+    <string name="longitude">długośc</string>
+    <string name="location_longitude_summary">ręcznie ustawienie dla długości geograficznej</string>
+    <string name="latitude">szerokość</string>
+    <string name="location_latitude_summary">ręcznie ustawienie dla szerokości geograficznej</string>
+    <string name="alarm_settings">Ustawienia alarmu</string>
+    <string name="alarm_enabled">Alarm włączony</string>
+    <string name="alarm_enabled_summary">sprawdzaj aktywność wyładowań w Twojej okolicy</string>
+    <string name="background_query_period">Częśtotliwośc w tle</string>
+    <string name="background_query_period_summary">jeżeli wybrane: częstotliwość aktualizowania danych w tle dla alarmu gdy aplikacja nie jest aktywna</string>
 
     <string-array name="background_query_periods">
-        <item>off</item>
-        <item>1 min</item>
-        <item>2 min</item>
-        <item>5 min</item>
-        <item>10 min</item>
-        <item>15 min</item>
-        <item>30 min</item>
+        <item>wyłączone</item>
+        <item>1 minuta</item>
+        <item>2 minuty</item>
+        <item>5 minut</item>
+        <item>10 minut</item>
+        <item>15 minut</item>
+        <item>30 minut</item>
     </string-array>
     <string-array name="background_query_period_values">
         <item>0</item>
@@ -245,14 +243,10 @@
 
     <item name="alarm_notification_id" type="id" />
 
-    <string name="notification_distance_limit">Notification distance limit</string>
-    <string name="notification_distance_limit_summary">if selected: show notification when lightning activity is
-        detected within the selected range
-    </string>
-    <string name="signaling_distance_limit">Signaling distance limit</string>
-    <string name="signaling_distance_limit_summary">if selected: alarm signal when lightning activity is detected within the
-        selected range
-    </string>
+    <string name="notification_distance_limit">Dystans powiadomień</string>
+    <string name="notification_distance_limit_summary">pokazuje powiadomienie jeżeli wykryto wyładowanie w określonym promieniu</string>
+    <string name="signaling_distance_limit">Dystans alarmu</string>
+    <string name="signaling_distance_limit_summary">uruchamia alarm jeżeli wykryto wyładowanie w określonym promieniu</string>
 
     <string-array name="direction_names">
         <item>S</item>
@@ -265,7 +259,7 @@
         <item>SE</item>
     </string-array>
     <string-array name="distance_limits">
-        <item>off</item>
+        <item>wyłączone</item>
         <item>10 km/mi.</item>
         <item>25 km/mi.</item>
         <item>50 km/mi.</item>
@@ -287,30 +281,30 @@
         <item>500</item>
     </string-array>
 
-    <string name="generic_settings">Generic settings</string>
-    <string name="measurement_unit">Systems of measurement</string>
-    <string name="measurement_unit_summary">choose between km and mi. for distances</string>
+    <string name="generic_settings">Ogólne ustawienia</string>
+    <string name="measurement_unit">Jednostki miary</string>
+    <string name="measurement_unit_summary">wybierz km lub mile dla jednostek odległości</string>
     <string-array name="measurement_units">
-        <item>metric</item>
-        <item>imperial</item>
+        <item>metryczny</item>
+        <item>imperialny</item>
     </string-array>
     <string-array name="measurement_unit_values">
         <item>METRIC</item>
         <item>IMPERIAL</item>
     </string-array>
-    <string name="do_not_sleep">Do not sleep</string>
-    <string name="do_not_sleep_summary">do not go to sleep while application is open</string>
-    <string name="participants_layer">Participants location</string>
-    <string name="own_location_layer">Own location</string>
-    <string name="strikes_layer">Strikes</string>
-    <string name="data_settings_summary">detailed settings to control data transmission and source</string>
-    <string name="map_settings_summary">Map mode and appearance related settings</string>
-    <string name="location_settings_summary">Location determination mode</string>
-    <string name="alarm_settings_summary">Alarm activation, background service and radiuses</string>
-    <string name="alarm_signal_settings">alarm signal settings</string>
-    <string name="alarm_audio_signal">alarm audio signal</string>
-    <string name="alarm_vibration_signal">alarm vibration duration</string>
-    <string name="alarm_audio_signal_summary">choose an audio notfication for alarm signalig</string>
-    <string name="alarm_vibration_signal_summary">choose the duration of vibration signaling in alarm case</string>
-    <string name="location_provider_not_available">location provider \'%s\' not available</string>
+    <string name="do_not_sleep">Nie usypiaj</string>
+    <string name="do_not_sleep_summary">nie usypiaj gdy aplikacja jest otwarta</string>
+    <string name="participants_layer">Lokalizacje użytkowników</string>
+    <string name="own_location_layer">Własna lokalizacja</string>
+    <string name="strikes_layer">Wyładowania</string>
+    <string name="data_settings_summary">ustawienia kontroli transmisji danych i źródła</string>
+    <string name="map_settings_summary">Typ mapy i jej ustawienia</string>
+    <string name="location_settings_summary">Tryb określania lokalizacji</string>
+    <string name="alarm_settings_summary">Aktywacja alarmu, działania w tle i promieni</string>
+    <string name="alarm_signal_settings">Ustawienia alarmu</string>
+    <string name="alarm_audio_signal">dźwięk alarmu</string>
+    <string name="alarm_vibration_signal">czas wibracji alarmu</string>
+    <string name="alarm_audio_signal_summary">wybierz dźwięk alarmu</string>
+    <string name="alarm_vibration_signal_summary">ustaw długośc trwania wibracji alarmu</string>
+    <string name="location_provider_not_available">lokalizacja \'%s\' jest niedostępna</string>
 </resources>
