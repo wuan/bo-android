@@ -18,10 +18,11 @@
     <string name="info">Informacje</string>
     <string name="info_text">Strona projektu:\n\thttps://github.com/wuan/bo-android\n\nDane dostarczane
         są przez\n<b>Blitzortung.org</b>\nrealtime lighning community project.\nSprawdź na
-        stronie\n\thttp://blitzortung.org/\nwięcej informacji oraz dowiedz się jak zostać uczestnikiem.\n\nCzech translation by: Jakub Mareček (jakubmarecek715@gmail.com)\n
+        stronie\n\thttp://blitzortung.org/\nwięcej informacji oraz dowiedz się jak zostać uczestnikiem.\n\n
+        Czech translation by: Jakub Mareček (jakubmarecek715@gmail.com)\n
 		Polish translation by: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
     </string>
-    <string name="copyright">© 2011–2015, Andreas Würl\nblitzortung@tryb.de</string>
+    <string name="copyright">© 2011–2016, Andreas Würl\nblitzortung@tryb.de</string>
     <string name="legend">Legenda</string>
     <string name="total_time">łączny czas</string>
     <string name="activity">aktywność</string>
