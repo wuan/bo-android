@@ -76,7 +76,7 @@ class OwnMapView : MapView {
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         val result = super.onTouchEvent(event)
 
-        gestureDetector!!.onTouchEvent(event)
+        gestureDetector.onTouchEvent(event)
 
         return result
     }
