@@ -265,7 +265,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     private fun setupCustomViews() {
         legendView = findViewById(R.id.legend_view) as LegendView
-        legendView.setStrikesOverlay(strikesOverlay)
+        legendView.strikesOverlay = strikesOverlay
         legendView.setAlpha(150)
         legendView.setOnClickListener { v -> openQuickSettingsDialog() }
 

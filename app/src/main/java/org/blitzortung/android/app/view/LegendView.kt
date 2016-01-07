@@ -22,7 +22,7 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tablet
     private val backgroundRect: RectF
     private val legendColorRect: RectF
     private var textWidth: Float = 0.toFloat()
-    private var strikesOverlay: StrikesOverlay? = null
+    var strikesOverlay: StrikesOverlay? = null
 
     @SuppressWarnings("unused")
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0) {
@@ -62,21 +62,24 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tablet
         countThresholdTextPaint.textSize = textSize * COUNT_THRESHOLD_HEIGHT
         countThresholdTextPaint.textAlign = Paint.Align.CENTER
 
-        updateTextWidth(0)
-
         setBackgroundColor(Color.TRANSPARENT)
     }
 
-    private fun updateTextWidth(intervalDuration: Int) {
-        textWidth = Math.ceil(textPaint.measureText(if (intervalDuration > 100) "< 100min" else "< 10min").toDouble()).toFloat()
+    private fun determineWidth(intervalDuration: Int): Float {
+        var innerWidth = colorFieldSize + padding + textPaint.measureText(if (intervalDuration > 100) "< 100min" else "< 10min").toFloat()
+
+        if (hasRegion()) {
+            innerWidth = Math.max(innerWidth, regionTextPaint.measureText(regionName).toFloat())
+        }
+
+        return padding + innerWidth + padding
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val parentWidth = View.MeasureSpec.getSize(widthMeasureSpec)
         val parentHeight = View.MeasureSpec.getSize(heightMeasureSpec)
 
-        updateTextWidth(strikesOverlay!!.parameters.intervalDuration)
-        var width = Math.min(3 * padding + colorFieldSize + textWidth, parentWidth.toFloat())
+        val width = Math.min(determineWidth(strikesOverlay?.parameters?.intervalDuration ?: 0), parentWidth.toFloat())
 
         val colorHandler = strikesOverlay!!.getColorHandler()
 
@@ -98,9 +101,9 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tablet
     }
 
     override fun onDraw(canvas: Canvas) {
-        if (strikesOverlay != null) {
-            val colorHandler = strikesOverlay!!.getColorHandler()
-            val minutesPerColor = strikesOverlay!!.parameters.intervalDuration / colorHandler.numberOfColors
+        strikesOverlay?.let { strikesOverlay ->
+            val colorHandler = strikesOverlay.getColorHandler()
+            val minutesPerColor = strikesOverlay.parameters.intervalDuration / colorHandler.numberOfColors
 
             backgroundRect.set(0f, 0f, width.toFloat(), height.toFloat())
             canvas.drawRect(backgroundRect, backgroundPaint)
@@ -132,7 +135,7 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tablet
                 topCoordinate += colorFieldSize * RASTER_HEIGHT + padding
 
                 if (hasCountThreshold()) {
-                    val countThreshold = strikesOverlay!!.parameters.countThreshold
+                    val countThreshold = strikesOverlay.parameters.countThreshold
                     canvas.drawText("# > " + countThreshold, width / 2.0f, topCoordinate + colorFieldSize * COUNT_THRESHOLD_HEIGHT / 1.1f, countThresholdTextPaint)
                     topCoordinate += colorFieldSize * COUNT_THRESHOLD_HEIGHT + padding
                 }
@@ -155,27 +158,23 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tablet
             return "n/a"
         }
 
-    fun setStrikesOverlay(strikesOverlay: StrikesOverlay) {
-        this.strikesOverlay = strikesOverlay
-    }
-
     fun setAlpha(alpha: Int) {
         foregroundPaint.alpha = alpha
     }
 
     private fun hasRaster(): Boolean {
-        return strikesOverlay!!.hasRasterParameters()
+        return strikesOverlay?.hasRasterParameters() ?: false
     }
 
     private fun hasRegion(): Boolean {
-        return strikesOverlay!!.parameters.region != 0
+        return strikesOverlay?.parameters?.region ?: 0 != 0
     }
 
     val rasterString: String
         get() = strikesOverlay?.rasterParameters?.info ?: "n/a"
 
     private fun hasCountThreshold(): Boolean {
-        return strikesOverlay!!.parameters.countThreshold > 0
+        return strikesOverlay?.parameters?.countThreshold ?: 0 > 0
     }
 
     companion object {
