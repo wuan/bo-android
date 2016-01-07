@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
 import org.blitzortung.android.app.AppService
+import org.blitzortung.android.app.ButtonGroup
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.DataChannel
 import org.blitzortung.android.data.DataHandler
@@ -12,8 +13,7 @@ import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.Event
 import java.util.*
 
-
-class HistoryController(activity: Activity, private val buttonHandler: ButtonColumnHandler<ImageButton>) {
+class HistoryController(activity: Activity, private val buttonHandler: ButtonColumnHandler<ImageButton, ButtonGroup>) {
 
     private var appService: AppService? = null
 
@@ -90,7 +90,7 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
         })
     }
 
-    private fun addButtonWithAction(activity: Activity, id: Int, action: (View) -> Unit ): ImageButton {
+    private fun addButtonWithAction(activity: Activity, id: Int, action: (View) -> Unit): ImageButton {
         val button = activity.findViewById(id) as ImageButton
         buttons.add(button)
         button.visibility = View.INVISIBLE
@@ -116,7 +116,7 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
     }
 
     private fun disableButtonColumn() {
-        buttonHandler.lockButtonColumn()
+        buttonHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
     }
 
     private fun updateData() {

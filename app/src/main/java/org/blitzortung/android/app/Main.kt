@@ -61,7 +61,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private lateinit var fadeOverlay: FadeOverlay
 
     private var clearData: Boolean = false
-    private lateinit var buttonColumnHandler: ButtonColumnHandler<ImageButton>
+    private lateinit var buttonColumnHandler: ButtonColumnHandler<ImageButton, ButtonGroup>
 
     private lateinit var historyController: HistoryController
     private var appService: AppService? = null
@@ -74,7 +74,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     val dataEventConsumer: (DataEvent) -> Unit = { event ->
         if (event is RequestStartedEvent) {
-            buttonColumnHandler.lockButtonColumn()
+            buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
             statusComponent.startProgress()
         } else if (event is ResultEvent) {
 
@@ -126,7 +126,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
             statusComponent.stopProgress()
 
-            buttonColumnHandler.unlockButtonColumn()
+            buttonColumnHandler.unlockButtonColumn(ButtonGroup.DATA_UPDATING)
 
             mapView.invalidate()
             legendView.invalidate()
@@ -181,15 +181,15 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         hideActionBar()
 
-        buttonColumnHandler = ButtonColumnHandler<ImageButton>(if (TabletAwareView.isTablet(this)) 75f else 55f)
+        buttonColumnHandler = ButtonColumnHandler<ImageButton, ButtonGroup>(if (TabletAwareView.isTablet(this)) 75f else 55f)
         configureMenuAccess()
         historyController = HistoryController(this, buttonColumnHandler)
 
-        buttonColumnHandler.addAllElements(historyController.getButtons())
+        buttonColumnHandler.addAllElements(historyController.getButtons(), ButtonGroup.DATA_UPDATING)
 
         setupDebugModeButton()
 
-        buttonColumnHandler.lockButtonColumn()
+        buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
         buttonColumnHandler.updateButtonColumn()
 
         setupCustomViews()
@@ -255,11 +255,11 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             rasterToggle.visibility = View.VISIBLE
 
             rasterToggle.setOnClickListener { v ->
-                buttonColumnHandler.lockButtonColumn()
+                buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
                 appService!!.dataHandler().toggleExtendedMode()
                 reloadData()
             }
-            buttonColumnHandler.addElement(rasterToggle)
+            buttonColumnHandler.addElement(rasterToggle, ButtonGroup.DATA_UPDATING)
         }
     }
 
