@@ -8,7 +8,7 @@ import org.blitzortung.android.data.TimeIntervalWithOffset
 
 abstract class ColorHandler(private val preferences: SharedPreferences) {
 
-    var colorScheme: ColorScheme? = null
+    var colorScheme: ColorScheme = ColorScheme.BLITZORTUNG
         private set
 
     private lateinit var target: ColorTarget
@@ -34,26 +34,19 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
     private fun getColorSection(now: Long, eventTime: Long, intervalDuration: Int, intervalOffset: Int): Int {
         val minutesPerColor = intervalDuration / colors.size
         var section = (now + intervalOffset * 60 * 1000 - eventTime).toInt() / 1000 / 60 / minutesPerColor
-        section = limitIndexToValidRange(section)
-
-        return section
+        return limitToValidRange(section)
     }
 
     fun getColor(now: Long, eventTime: Long, intervalDuration: Int): Int {
         return getColor(getColorSection(now, eventTime, intervalDuration, 0))
     }
 
-    fun getColor(section: Int): Int {
-        var section_ = section
-        section_ = limitIndexToValidRange(section_)
-        return colors[section_]
+    fun getColor(index: Int): Int {
+        return colors[limitToValidRange(index)]
     }
 
-    private fun limitIndexToValidRange(section_: Int): Int {
-        var section_ = section_
-        section_ = Math.min(section_, colors.size - 1)
-        section_ = Math.max(section_, 0)
-        return section_
+    private fun limitToValidRange(index: Int): Int {
+        return Math.max(Math.min(index, colors.size - 1), 0)
     }
 
     val textColor: Int
@@ -61,8 +54,8 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
 
     open fun getTextColor(target: ColorTarget): Int {
         return when (target) {
-            ColorTarget.SATELLITE -> -1
-            ColorTarget.STREETMAP -> -16777216
+            ColorTarget.SATELLITE -> 0xffffffff.toInt()
+            ColorTarget.STREETMAP -> 0xff000000.toInt()
         }
     }
 
@@ -71,8 +64,8 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
 
     open fun getLineColor(target: ColorTarget): Int {
         return when (target) {
-            ColorTarget.SATELLITE -> -1
-            ColorTarget.STREETMAP -> -16777216
+            ColorTarget.SATELLITE -> 0xffffffff.toInt()
+            ColorTarget.STREETMAP -> 0xff000000.toInt()
         }
     }
 
@@ -81,8 +74,8 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
 
     open fun getBackgroundColor(target: ColorTarget): Int {
         return when (target) {
-            ColorTarget.SATELLITE -> 0
-            ColorTarget.STREETMAP -> 16777215
+            ColorTarget.SATELLITE -> 0x00000000.toInt()
+            ColorTarget.STREETMAP -> 0x00ffffff.toInt()
         }
     }
 
@@ -90,17 +83,13 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
         get() = colors.size
 
     fun modifyBrightness(colors: IntArray, factor: Float): IntArray {
-        val result = IntArray(colors.size)
-
         val HSVValues = FloatArray(3)
 
-        for (index in colors.indices) {
-            Color.colorToHSV(colors[index], HSVValues)
+        return colors.map {
+            Color.colorToHSV(it, HSVValues)
             HSVValues[2] *= factor
-            result[index] = Color.HSVToColor(HSVValues)
-        }
-
-        return result
+            Color.HSVToColor(HSVValues)
+        }.toIntArray()
     }
 
 }
