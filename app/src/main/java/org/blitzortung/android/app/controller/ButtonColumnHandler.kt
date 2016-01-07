@@ -2,11 +2,7 @@ package org.blitzortung.android.app.controller
 
 import android.view.View
 import android.widget.RelativeLayout
-import org.blitzortung.android.app.BuildConfig
-
 import org.blitzortung.android.app.helper.ViewHelper
-
-import java.util.ArrayList
 
 class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) {
 
