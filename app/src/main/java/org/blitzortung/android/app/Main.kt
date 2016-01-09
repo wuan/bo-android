@@ -316,8 +316,10 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun openQuickSettingsDialog() {
-        val dialog = QuickSettingsDialog()
-        dialog.show(fragmentManager, "QuickSettingsDialog")
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            val dialog = QuickSettingsDialog()
+            dialog.show(fragmentManager, "QuickSettingsDialog")
+        }
     }
 
     private fun animateToLocationAndVisibleSize(longitude: Double, latitude: Double, diameter: Float) {
@@ -464,8 +466,9 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             R.id.info_dialog -> InfoDialog(this, versionComponent)
 
             R.id.alarm_dialog ->
-                appService?.let {appService ->
-                    AlertDialog(this, appService, AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)))}
+                appService?.let { appService ->
+                    AlertDialog(this, appService, AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)))
+                }
 
             else -> throw RuntimeException("unhandled dialog with id $id")
         }
@@ -581,7 +584,8 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private fun configureMenuAccess() {
         val config = ViewConfiguration.get(this)
 
-        if (!config.hasPermanentMenuKey()) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
+                !config.hasPermanentMenuKey()) {
             val menuButton = findViewById(R.id.menu) as ImageButton
             menuButton.visibility = View.VISIBLE
             menuButton.setOnClickListener { v -> openOptionsMenu() }
@@ -590,8 +594,9 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun hideActionBar() {
-        val actionBar = actionBar
-        actionBar?.hide()
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            actionBar?.hide()
+        }
     }
 
     companion object {

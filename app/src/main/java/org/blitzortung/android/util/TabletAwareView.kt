@@ -1,6 +1,7 @@
 package org.blitzortung.android.util
 
 import android.content.Context
+import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import org.blitzortung.android.app.R
@@ -34,7 +35,12 @@ open class TabletAwareView(context: Context, attrs: AttributeSet?, defStyle: Int
 
     companion object {
         fun isTablet(context: Context): Boolean {
-            return context.resources.configuration.smallestScreenWidthDp >= 600;
+
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                return context.resources.configuration.smallestScreenWidthDp >= 600
+            } else {
+                return false
+            }
         }
 
         fun padding(context: Context) :Float {

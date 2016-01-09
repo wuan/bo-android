@@ -16,8 +16,9 @@ android {
     buildToolsVersion "23.0.2"
     defaultConfig {
         applicationId "org.blitzortung.android.app"
+        minSdkVersion 8
         targetSdkVersion 23
-        versionCode 153
+        versionCode 154
         versionName "1.4.0"
         multiDexEnabled true
     }
@@ -36,22 +37,6 @@ android {
     }
     lintOptions {
         abortOnError false
-    }
-    productFlavors {
-        dev {
-            // dev utilizes minSDKVersion = 21 to allow the Android gradle plugin
-            // to pre-dex each module and produce an APK that can be tested on
-            // Android Lollipop without time consuming dex merging processes.
-            minSdkVersion 21
-        }
-        prod {
-            // The actual minSdkVersion for the application.
-            minSdkVersion 14
-        }
-        fdroid {
-            minSdkVersion 14
-            applicationId "org.blitzortung.android.app"
-        }
     }
 }
 

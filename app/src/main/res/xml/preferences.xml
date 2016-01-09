@@ -30,6 +30,16 @@
         android:selectable="true"
         android:summary="@string/interval_duration_summary"
         android:title="@string/interval_duration" />
+    <ListPreference
+        android:defaultValue="1"
+        android:enabled="true"
+        android:entries="@array/count_thresholds"
+        android:entryValues="@array/count_threshold_values"
+        android:key="count_threshold"
+        android:persistent="true"
+        android:selectable="true"
+        android:summary="@string/count_threshold_summary"
+        android:title="@string/count_threshold" />
 
     <PreferenceScreen
         android:summary="@string/map_settings_summary"
