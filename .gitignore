@@ -1,6 +1,7 @@
 /bin
-.idea
+/.idea
+/.gradle
 target
-app.iml
+/*.iml
 /gen
 /tmp
