@@ -8,6 +8,7 @@ import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.RingtoneManager
 import android.net.Uri
+import android.os.Build
 import android.os.Vibrator
 import android.util.Log
 import org.blitzortung.android.alert.AlertParameters
@@ -27,6 +28,7 @@ import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.MeasurementSystem
+import org.blitzortung.android.util.isAtLeast
 
 
 class AlertHandler(
@@ -219,7 +221,11 @@ class AlertHandler(
         alertSignal.soundSignal?.let { signal ->
             RingtoneManager.getRingtone(context, signal)?.let { ringtone ->
                 if (!ringtone.isPlaying) {
-                    ringtone.audioAttributes = AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_NOTIFICATION).build()
+                    if (isAtLeast(Build.VERSION_CODES.LOLLIPOP)) {
+                        ringtone.audioAttributes = AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_NOTIFICATION).build()
+                    } else {
+                        ringtone.streamType = AudioManager.STREAM_NOTIFICATION
+                    }
                     ringtone.play()
                 }
                 Log.v(Main.LOG_TAG, "playing " + ringtone.getTitle(context))

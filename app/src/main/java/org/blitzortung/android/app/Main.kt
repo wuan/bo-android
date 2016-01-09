@@ -48,6 +48,7 @@ import org.blitzortung.android.map.overlay.StrikesOverlay
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.blitzortung.android.util.TabletAwareView
+import org.blitzortung.android.util.isAtLeast
 
 class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private val androidIdsForExtendedFunctionality = setOf("44095eb4f9f1a6a6", "f2be4516e5843964")
@@ -316,7 +317,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun openQuickSettingsDialog() {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (isAtLeast(Build.VERSION_CODES.HONEYCOMB)) {
             val dialog = QuickSettingsDialog()
             dialog.show(fragmentManager, "QuickSettingsDialog")
         }
@@ -584,7 +585,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private fun configureMenuAccess() {
         val config = ViewConfiguration.get(this)
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
+        if (isAtLeast(Build.VERSION_CODES.ICE_CREAM_SANDWICH) &&
                 !config.hasPermanentMenuKey()) {
             val menuButton = findViewById(R.id.menu) as ImageButton
             menuButton.visibility = View.VISIBLE
@@ -594,7 +595,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun hideActionBar() {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (isAtLeast(Build.VERSION_CODES.HONEYCOMB)) {
             actionBar?.hide()
         }
     }
@@ -604,5 +605,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         val LOG_TAG = "BO_ANDROID"
 
         val REQUEST_GPS = 1
+
+
     }
 }

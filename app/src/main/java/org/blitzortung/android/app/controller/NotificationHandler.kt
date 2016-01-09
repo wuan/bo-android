@@ -6,9 +6,11 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
+import org.blitzortung.android.util.isAtLeast
 
 class NotificationHandler(private val context: Context) {
 
@@ -24,10 +26,30 @@ class NotificationHandler(private val context: Context) {
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
 
-            val notificationBuilder = Notification.Builder(context).setSmallIcon(R.drawable.icon).setContentTitle(context.resources.getText(R.string.app_name)).setContentText(notificationText).setContentIntent(contentIntent).setAutoCancel(true)
+            val notification = if (isAtLeast(Build.VERSION_CODES.HONEYCOMB)) {
+                createNotification(contentIntent, notificationText)
+            } else {
+                createLegacyNotification(contentIntent, notificationText)
+            }
 
-            notificationService.notify(R.id.alarm_notification_id, notificationBuilder.notification)
+            notificationService.notify(R.id.alarm_notification_id, notification)
         }
+    }
+
+    private fun createNotification(contentIntent: PendingIntent?, notificationText: String): Notification? {
+        return Notification.Builder(context)
+                .setSmallIcon(R.drawable.icon)
+                .setContentTitle(context.resources.getText(R.string.app_name))
+                .setContentText(notificationText)
+                .setContentIntent(contentIntent)
+                .setAutoCancel(true).build()
+    }
+
+    private fun createLegacyNotification(contentIntent: PendingIntent?, notificationText: String): Notification {
+        val notification = Notification(R.drawable.icon, notificationText, System.currentTimeMillis())
+        val setLatestEventInfo = Notification::class.java.getDeclaredMethod("setLatestEventInfo", Context::class.java, CharSequence::class.java, CharSequence::class.java, PendingIntent::class.java)
+        setLatestEventInfo.invoke(notification, context, context.resources.getText(R.string.app_name), notificationText, contentIntent)
+        return notification
     }
 
     fun clearNotification() {
