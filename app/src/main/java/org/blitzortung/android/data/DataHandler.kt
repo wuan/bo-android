@@ -260,7 +260,12 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
         override fun doInBackground(vararg params: TaskParameters): ResultEvent? {
             wakeLock.acquire()
             Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquire wakelock " + wakeLock)
-            return super.doInBackground(*params)
+
+            val taskParameters = params[0]
+            val updatedParameters = taskParameters.parameters.copy(intervalDuration = 10)
+            val updatedParams = arrayOf(taskParameters.copy(parameters = updatedParameters))
+
+            return super.doInBackground(*updatedParams)
         }
     }
 

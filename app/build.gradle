@@ -17,7 +17,7 @@ android {
     defaultConfig {
         applicationId "org.blitzortung.android.app"
         targetSdkVersion 23
-        versionCode 152
+        versionCode 153
         versionName "1.4.0"
         multiDexEnabled true
     }
@@ -47,6 +47,10 @@ android {
         prod {
             // The actual minSdkVersion for the application.
             minSdkVersion 14
+        }
+        fdroid {
+            minSdkVersion 14
+            applicationId "org.blitzortung.android.app"
         }
     }
 }
