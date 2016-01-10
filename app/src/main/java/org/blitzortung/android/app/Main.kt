@@ -268,7 +268,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private fun setupDebugModeButton() {
         val androidId = Settings.Secure.getString(baseContext.contentResolver, Settings.Secure.ANDROID_ID)
         Log.v(Main.LOG_TAG, "AndroidId: $androidId")
-        if (isDebugBuild || (androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
+        if ((androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
             val rasterToggle = findViewById(R.id.toggleExtendedMode) as ImageButton
             rasterToggle.isEnabled = true
             rasterToggle.visibility = View.VISIBLE
