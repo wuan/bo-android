@@ -110,13 +110,23 @@ class LocationHandler(
     }
 
     private fun updateManualLatitude(sharedPreferences: SharedPreferences) {
-        location.latitude = java.lang.Double.valueOf(sharedPreferences.getString(PreferenceKey.LOCATION_LATITUDE.toString(), "49.0"))
-        sendLocationUpdate()
+        val latitudeString = sharedPreferences.getString(PreferenceKey.LOCATION_LATITUDE.toString(), "49.0")
+        try {
+            location.latitude = java.lang.Double.valueOf(latitudeString)
+            sendLocationUpdate()
+        } catch (e: NumberFormatException) {
+            Log.e(Main.LOG_TAG, "bad latitude number format '$latitudeString'")
+        }
     }
 
     private fun updateManualLongitude(sharedPreferences: SharedPreferences) {
-        location.longitude = java.lang.Double.valueOf(sharedPreferences.getString(PreferenceKey.LOCATION_LONGITUDE.toString(), "11.0"))
-        sendLocationUpdate()
+        val longitudeString = sharedPreferences.getString(PreferenceKey.LOCATION_LONGITUDE.toString(), "11.0")
+        try {
+            location.longitude = java.lang.Double.valueOf(longitudeString)
+            sendLocationUpdate()
+        } catch (e: NumberFormatException) {
+            Log.e(Main.LOG_TAG, "bad longitude number format '$longitudeString'")
+        }
     }
 
     private fun updateProvider(newProvider: Provider, sharedPreferences: SharedPreferences) {

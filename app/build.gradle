@@ -12,7 +12,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion "Google Inc.:Google APIs:23"
     buildToolsVersion "23.0.2"
     defaultConfig {
         applicationId "org.blitzortung.android.app"
@@ -38,6 +37,14 @@ android {
     lintOptions {
         abortOnError false
         checkReleaseBuilds false
+    }
+    productFlavors {
+        google {
+            compileSdkVersion "Google Inc.:Google APIs:23"
+        }
+        fdroid {
+            compileSdkVersion 23
+        }
     }
 }
 
