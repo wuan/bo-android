@@ -133,7 +133,7 @@ class AlertDataHandler {
         return when {
             maximumSectorBearing > minimumSectorBearing ->
                 bearing < maximumSectorBearing && bearing >= minimumSectorBearing
-            bearing >= minimumSectorBearing ->
+            maximumSectorBearing < minimumSectorBearing ->
                 bearing >= minimumSectorBearing || bearing < maximumSectorBearing
             else -> true
         }
