@@ -30,7 +30,7 @@ class AlertDataHandler {
     private val strikeLocation: Location = Location("")
 
     fun checkStrikes(strikes: Collection<Strike>, location: Location, parameters: AlertParameters,
-                     referenceTime: Long = System.currentTimeMillis()): AlertResult {
+            referenceTime: Long = System.currentTimeMillis()): AlertResult {
         val sectors = createSectors(parameters)
 
         val thresholdTime = referenceTime - parameters.alarmInterval
@@ -50,10 +50,10 @@ class AlertDataHandler {
     }
 
     internal fun checkStrike(sector: AggregatingAlertSector, strike: Strike, measurementSystem: MeasurementSystem,
-                             location: Location, thresholdTime: Long) {
+            location: Location, thresholdTime: Long) {
         val distance = calculateDistanceTo(location, strike, measurementSystem)
 
-        sector.ranges.find { r -> distance <= r.rangeMaximum }?.let {
+        sector.ranges.find { distance <= it.rangeMaximum }?.let {
             it.addStrike(strike);
             if (strike.timestamp >= thresholdTime) {
                 sector.updateClosestStrikeDistance(distance)
@@ -94,31 +94,26 @@ class AlertDataHandler {
         val sectorLabels = alertParameters.sectorLabels
         val sectorWidth = 360f / sectorLabels.size
 
-        val sectors: MutableList<AggregatingAlertSector> = arrayListOf()
-
         var bearing = -180f
-        for (sectorLabel in sectorLabels) {
+        return sectorLabels.map { sectorLabel ->
             var minimumSectorBearing = bearing - sectorWidth / 2.0f
             minimumSectorBearing += (if (minimumSectorBearing < -180f) 360f else 0f)
             val maximumSectorBearing = bearing + sectorWidth / 2.0f
             val alertSector = AggregatingAlertSector(sectorLabel, minimumSectorBearing, maximumSectorBearing, createRanges(alertParameters))
-            sectors.add(alertSector)
             bearing += sectorWidth
+            alertSector
         }
-        return sectors.toList()
     }
 
     private fun createRanges(alertParameters: AlertParameters): List<AggregatingAlertSectorRange> {
         val rangeSteps = alertParameters.rangeSteps
 
-        val ranges: MutableList<AggregatingAlertSectorRange> = arrayListOf()
         var rangeMinimum = 0.0f
-        for (rangeMaximum in rangeSteps) {
+        return rangeSteps.map { rangeMaximum ->
             val alertSectorRange = AggregatingAlertSectorRange(rangeMinimum, rangeMaximum)
-            ranges.add(alertSectorRange)
             rangeMinimum = rangeMaximum
+            alertSectorRange
         }
-        return ranges.toList()
     }
 
     private fun calculateBearingToStrike(location: Location, strikeLocation: Location, strike: Strike): Float {
@@ -135,13 +130,12 @@ class AlertDataHandler {
         val minimumSectorBearing = sector.minimumSectorBearing
         val maximumSectorBearing = sector.maximumSectorBearing
 
-        if (maximumSectorBearing > minimumSectorBearing) {
-            return bearing < maximumSectorBearing && bearing >= minimumSectorBearing
-        } else if (maximumSectorBearing < minimumSectorBearing) {
-            return bearing >= minimumSectorBearing || bearing < maximumSectorBearing
-        } else {
-            // maximumSectorBearing == minimumSectorBearing -> only one sector
-            return true;
+        return when {
+            maximumSectorBearing > minimumSectorBearing ->
+                bearing < maximumSectorBearing && bearing >= minimumSectorBearing
+            bearing >= minimumSectorBearing ->
+                bearing >= minimumSectorBearing || bearing < maximumSectorBearing
+            else -> true
         }
     }
 }
