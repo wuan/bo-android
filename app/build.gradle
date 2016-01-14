@@ -19,7 +19,7 @@ android {
         minSdkVersion 8
         targetSdkVersion 23
         versionCode 156
-        versionName "1.4.0"
+        versionName "1.4.1"
         multiDexEnabled true
     }
     buildTypes {
