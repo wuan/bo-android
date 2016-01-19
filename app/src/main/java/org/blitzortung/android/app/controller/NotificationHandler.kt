@@ -44,7 +44,7 @@ class NotificationHandler(private val context: Context) {
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
 
-            val notification = if (isAtLeast(Build.VERSION_CODES.HONEYCOMB)) {
+            val notification = if (isAtLeast(Build.VERSION_CODES.JELLY_BEAN)) {
                 createNotification(contentIntent, notificationText)
             } else {
                 createLegacyNotification(contentIntent, notificationText)
