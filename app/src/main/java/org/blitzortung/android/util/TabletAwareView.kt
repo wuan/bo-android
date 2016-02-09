@@ -37,7 +37,7 @@ open class TabletAwareView(context: Context, attrs: AttributeSet?, defStyle: Int
         val scaleForTablet = a.getBoolean(R.styleable.View_tablet_scaleable, false) && isTablet(context)
 
         padding = ViewHelper.pxFromDp(this, padding(scaleForTablet))
-        textSize = ViewHelper.pxFromDp(this, textSize(scaleForTablet))
+        textSize = ViewHelper.pxFromSp(this, textSize(scaleForTablet))
         sizeFactor = sizeFactor(scaleForTablet)
 
         a.recycle();
@@ -61,24 +61,32 @@ open class TabletAwareView(context: Context, attrs: AttributeSet?, defStyle: Int
             }
         }
 
-        fun padding(context: Context) :Float {
+        fun padding(context: Context): Float {
             return padding(isTablet(context))
         }
 
-        fun padding(scaleForTablet: Boolean) :Float {
+        fun padding(scaleForTablet: Boolean): Float {
             return if (scaleForTablet) 8f else 5f
         }
 
-        fun textSize(context: Context) :Float {
+        fun textSize(context: Context): Float {
             return textSize(isTablet(context))
         }
 
-        fun textSize(scaleForTablet: Boolean) :Float {
-            return if (scaleForTablet) 18f else 12f
+        fun textSize(scaleForTablet: Boolean): Float {
+            return 14f * textSizeFactor(scaleForTablet)
         }
 
-        fun sizeFactor(scaleForTablet: Boolean) : Float {
+        fun sizeFactor(scaleForTablet: Boolean): Float {
             return if (scaleForTablet) 1.8f else 1f
+        }
+
+        fun textSizeFactor(context: Context): Float {
+            return textSizeFactor(isTablet(context))
+        }
+
+        fun textSizeFactor(scaleForTablet: Boolean): Float {
+            return if (scaleForTablet) 1.4f else 1f
         }
     }
 

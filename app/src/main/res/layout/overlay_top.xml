@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto">
 
     <TableRow
         android:id="@+id/upperRow"
@@ -7,25 +8,28 @@
         android:layout_height="wrap_content"
         android:background="@color/translucent_background">
 
-        <TextView
+        <org.blitzortung.android.app.view.ScaledTextView
             android:id="@+id/status"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
             android:layout_weight="1"
             android:text=""
             android:textColor="@color/text_foreground"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            local:tablet_scaleable="true" />
 
-        <TextView
+        <org.blitzortung.android.app.view.ScaledTextView
             android:id="@+id/warning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text=""
             android:textColor="@color/text_foreground"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            local:tablet_scaleable="true" />
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -37,7 +41,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:src="@android:drawable/stat_notify_error" />
+                android:src="@android:drawable/stat_notify_error"
+                android:contentDescription="@string/error_indicator" />
 
             <ProgressBar
                 android:id="@+id/progress"

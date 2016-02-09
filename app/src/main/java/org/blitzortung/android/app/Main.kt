@@ -21,10 +21,7 @@ package org.blitzortung.android.app
 import android.Manifest
 import android.annotation.TargetApi
 import android.app.Dialog
-import android.content.ComponentName
-import android.content.Intent
-import android.content.ServiceConnection
-import android.content.SharedPreferences
+import android.content.*
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager

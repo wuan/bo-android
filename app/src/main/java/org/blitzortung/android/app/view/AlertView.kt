@@ -52,6 +52,7 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletA
     private var temporaryCanvas: Canvas? = null
     private var alertResult: AlertResult? = null
     private var location: Location? = null
+    private var enableDescriptionText = false
 
     val alertEventConsumer: (AlertEvent?) -> Unit = { event ->
         Log.v(Main.LOG_TAG, "AlertView alertEventConsumer received $event")
@@ -86,9 +87,13 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletA
         lines.style = Style.STROKE
 
         textStyle.color = 0xff404040.toInt()
-        textStyle.textSize = 0.8f * textSize
+        textStyle.textSize = 0.8f * textSize * TabletAwareView.textSizeFactor(context)
 
         background.color = 0xffb0b0b0.toInt()
+    }
+
+    fun enableDescriptionText() {
+        enableDescriptionText = true
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -161,7 +166,7 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletA
                     val bearing = alertSector.minimumSectorBearing.toDouble()
                     temporaryCanvas.drawLine(center, center, center + (radius * Math.sin(bearing / 180.0f * Math.PI)).toFloat(), center + (radius * -Math.cos(bearing / 180.0f * Math.PI)).toFloat(), lines)
 
-                    if (size > TEXT_MINIMUM_SIZE) {
+                    if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
                         drawSectorLabel(center, radiusIncrement, alertSector, bearing + sectorWidth / 2.0)
                     }
                 }
@@ -174,7 +179,7 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletA
                     arcArea.set(leftTop, leftTop, bottomRight, bottomRight)
                     temporaryCanvas.drawArc(arcArea, 0f, 360f, false, lines)
 
-                    if (size > TEXT_MINIMUM_SIZE) {
+                    if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
                         val text = "%.0f".format(rangeSteps[radiusIndex])
                         temporaryCanvas.drawText(text, center + (radiusIndex + 0.85f) * radiusIncrement, center + textHeight / 3f, textStyle)
                         if (radiusIndex == rangeStepCount - 1) {
@@ -184,7 +189,7 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletA
                 }
 
             } else {
-                if (size > TEXT_MINIMUM_SIZE) {
+                if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
                     drawAlertOrLocationMissingMessage(center, temporaryCanvas)
                 } else {
                     if (location != null) {

@@ -28,6 +28,7 @@ import org.blitzortung.android.alert.AlertLabelHandler
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.app.R
+import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.util.TabletAwareView
 
 class StatusComponent(activity: Activity) : AlertLabel {
@@ -45,13 +46,9 @@ class StatusComponent(activity: Activity) : AlertLabel {
     private val errorIndicator: ImageView
 
     init {
-        val textSize = TabletAwareView.textSize(activity)
-
         status = activity.findViewById(R.id.status) as TextView
-        status.textSize = textSize
 
         warning = activity.findViewById(R.id.warning) as TextView
-        warning.textSize = textSize
 
         progressBar = activity.findViewById(R.id.progress) as ProgressBar
         progressBar.visibility = View.INVISIBLE

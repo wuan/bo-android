@@ -45,6 +45,7 @@ class AlertDialog(context: Context, private val service: AppService?, private va
         super.onStart()
 
         alertView = findViewById(R.id.alarm_diagram) as AlertView
+        alertView.enableDescriptionText()
 
         setTitle(context.getString(R.string.alarms))
 
