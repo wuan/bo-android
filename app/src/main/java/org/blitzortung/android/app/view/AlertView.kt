@@ -86,7 +86,7 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletA
         lines.style = Style.STROKE
 
         textStyle.color = 0xff404040.toInt()
-        textStyle.textSize = ViewHelper.pxFromSp(this, 0.8f * textSize)
+        textStyle.textSize = 0.8f * textSize
 
         background.color = 0xffb0b0b0.toInt()
     }
