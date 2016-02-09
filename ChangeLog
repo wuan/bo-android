@@ -2,6 +2,13 @@
 
 ## English
 
+### Version 1.4.2:
+ - update of Kotlin version
+ - fixed text scaling in alert view
+
+### Version 1.4.1:
+ - bug fixes
+
 ### Version 1.4.0:
  - migrated project language to Kotlin
  - zoom to location button when alerts are not available
@@ -98,6 +105,13 @@
  * notification and vibration alarm with preference integration
 
 ## German
+
+### Version 1.4.2:
+ - Update Kotlin-Version
+ - Text-Skalierung im Alert-View korrigiert
+
+### Version 1.4.1:
+ - Fehlerbehebungen
 
 ### Version 1.4.0:
  - Projekt nach Kotlin portiert
