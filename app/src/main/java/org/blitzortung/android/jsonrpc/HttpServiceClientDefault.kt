@@ -22,6 +22,7 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URI
 import java.net.URL
+import java.nio.charset.Charset
 
 class HttpServiceClientDefault internal constructor(uriString: String, agentSuffix: String) : HttpServiceClient {
 
@@ -43,7 +44,7 @@ class HttpServiceClientDefault internal constructor(uriString: String, agentSuff
 
         connection.requestMethod = "POST"
 
-        val postDataBytes = data.toByteArray("UTF-8")
+        val postDataBytes = data.toByteArray(Charset.forName("UTF-8"))
 
         connection.setRequestProperty("Content-Type", "text/json")
         connection.setRequestProperty("Content-Length", postDataBytes.size.toString())
