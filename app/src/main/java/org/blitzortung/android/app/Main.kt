@@ -184,7 +184,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         }
 
         fadeOverlay = FadeOverlay(strikesOverlay.getColorHandler())
-        ownLocationOverlay = OwnLocationOverlay(baseContext, mapView)
+        ownLocationOverlay = OwnLocationOverlay(this, mapView)
 
         addOverlay(fadeOverlay)
         addOverlay(strikesOverlay)

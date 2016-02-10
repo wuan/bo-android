@@ -77,6 +77,10 @@ open class TabletAwareView(context: Context, attrs: AttributeSet?, defStyle: Int
             return 14f * textSizeFactor(scaleForTablet)
         }
 
+        fun sizeFactor(context: Context): Float {
+            return sizeFactor(isTablet(context))
+        }
+
         fun sizeFactor(scaleForTablet: Boolean): Float {
             return if (scaleForTablet) 1.8f else 1f
         }

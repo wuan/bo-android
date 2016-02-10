@@ -26,16 +26,20 @@ import android.graphics.drawable.ShapeDrawable
 import android.preference.PreferenceManager
 import com.google.android.maps.ItemizedOverlay
 import org.blitzortung.android.app.R
+import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.components.LayerOverlayComponent
+import org.blitzortung.android.util.TabletAwareView
 
 class OwnLocationOverlay(context: Context, mapView: OwnMapView) : ItemizedOverlay<OwnLocationOverlayItem>(OwnLocationOverlay.DEFAULT_DRAWABLE), SharedPreferences.OnSharedPreferenceChangeListener, LayerOverlay {
 
     private val layerOverlayComponent: LayerOverlayComponent
 
     private var item: OwnLocationOverlayItem? = null
+
+    private val sizeFactor: Float
 
     private var zoomLevel: Int = 0
     val locationEventConsumer: (LocationEvent) -> Unit = { event ->
@@ -66,6 +70,8 @@ class OwnLocationOverlay(context: Context, mapView: OwnMapView) : ItemizedOverla
 
         mapView.overlays.add(this)
 
+        sizeFactor = ViewHelper.pxFromDp(mapView, 0.5f) * TabletAwareView.sizeFactor(context)
+
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         preferences.registerOnSharedPreferenceChangeListener(this)
         onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_LOCATION.toString())
@@ -81,7 +87,7 @@ class OwnLocationOverlay(context: Context, mapView: OwnMapView) : ItemizedOverla
 
     private fun refresh() {
         if (item != null) {
-            item!!.setMarker(ShapeDrawable(OwnLocationShape((zoomLevel + 1).toFloat())))
+            item!!.setMarker(ShapeDrawable(OwnLocationShape(sizeFactor * zoomLevel)))
         }
     }
 
