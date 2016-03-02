@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = "1.0.0-rc-1036"
+    ext.kotlin_version = "1.0.0"
     repositories {
         mavenCentral()
     }
@@ -18,8 +18,8 @@ android {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 8
         targetSdkVersion 23
-        versionCode 159
-        versionName "1.4.2"
+        versionCode 160
+        versionName "1.4.3"
         multiDexEnabled true
     }
     buildTypes {
@@ -42,7 +42,7 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:appcompat-v7:23.2.0'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:2.3.0'
