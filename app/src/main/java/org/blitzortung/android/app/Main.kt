@@ -600,8 +600,9 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private fun configureMenuAccess() {
         val config = ViewConfiguration.get(this)
 
-        if (isAtLeast(Build.VERSION_CODES.ICE_CREAM_SANDWICH) ||
-                !config.hasPermanentMenuKey()) {
+        if (isAtLeast(Build.VERSION_CODES.LOLLIPOP) ||
+                isAtLeast(Build.VERSION_CODES.ICE_CREAM_SANDWICH) &&
+                        !config.hasPermanentMenuKey()) {
             val menuButton = findViewById(R.id.menu) as ImageButton
             menuButton.visibility = View.VISIBLE
             menuButton.setOnClickListener { v -> openOptionsMenu() }
