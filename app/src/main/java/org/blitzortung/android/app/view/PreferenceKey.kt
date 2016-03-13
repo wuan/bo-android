@@ -18,6 +18,7 @@
 
 package org.blitzortung.android.app.view
 
+import android.content.SharedPreferences
 import java.util.*
 
 enum class PreferenceKey internal constructor(private val key: String) {
@@ -70,4 +71,21 @@ enum class PreferenceKey internal constructor(private val key: String) {
             return stringToValueMap[string]!!
         }
     }
+}
+
+//Helper function to retrieve a preference value of a PreferenceKey
+internal inline fun <reified T> SharedPreferences.get(prefKey: PreferenceKey, default: T): T {
+    val key = prefKey.toString()
+
+    //Set<String> is not possible because of type erasure, so for Set<String> we still need to use the old way
+    val value: Any = when(default) {
+        is Long -> this.getLong(key, default)
+        is Int -> this.getInt(key, default)
+        is Boolean -> this.getBoolean(key, default)
+        is String -> this.getString(key, default)
+        is Float -> this.getFloat(key, default)
+        else -> throw IllegalArgumentException("Type ${T::class} cannot be retrieved from a SharedPreference")
+    }
+
+    return value as T
 }

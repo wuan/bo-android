@@ -32,6 +32,7 @@ import android.widget.Toast
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.get
 import org.blitzortung.android.protocol.ConsumerContainer
 import java.util.*
 
@@ -87,7 +88,7 @@ class LocationHandler(
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         when (key) {
             PreferenceKey.LOCATION_MODE -> {
-                var newProvider = Provider.fromString(sharedPreferences.getString(key.toString(), Provider.PASSIVE.type))!!
+                var newProvider = Provider.fromString(sharedPreferences.get(key, Provider.PASSIVE.type))!!
                 if (newProvider == Provider.PASSIVE || newProvider == Provider.GPS) {
                     if (checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         newProvider = Provider.MANUAL
@@ -110,7 +111,7 @@ class LocationHandler(
     }
 
     private fun updateManualLatitude(sharedPreferences: SharedPreferences) {
-        val latitudeString = sharedPreferences.getString(PreferenceKey.LOCATION_LATITUDE.toString(), "49.0")
+        val latitudeString = sharedPreferences.get(PreferenceKey.LOCATION_LATITUDE, "49.0")
         try {
             location.latitude = java.lang.Double.valueOf(latitudeString)
             sendLocationUpdate()
@@ -120,7 +121,7 @@ class LocationHandler(
     }
 
     private fun updateManualLongitude(sharedPreferences: SharedPreferences) {
-        val longitudeString = sharedPreferences.getString(PreferenceKey.LOCATION_LONGITUDE.toString(), "11.0")
+        val longitudeString = sharedPreferences.get(PreferenceKey.LOCATION_LONGITUDE, "11.0")
         try {
             location.longitude = java.lang.Double.valueOf(longitudeString)
             sendLocationUpdate()

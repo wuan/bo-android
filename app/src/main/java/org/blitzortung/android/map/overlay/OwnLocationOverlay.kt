@@ -28,6 +28,7 @@ import com.google.android.maps.ItemizedOverlay
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.get
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.components.LayerOverlayComponent
@@ -113,7 +114,7 @@ class OwnLocationOverlay(context: Context, mapView: OwnMapView) : ItemizedOverla
 
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         if (key == PreferenceKey.SHOW_LOCATION) {
-            val showLocation = sharedPreferences.getBoolean(key.toString(), false)
+            val showLocation = sharedPreferences.get(key, false)
 
             if (showLocation) {
                 enableOwnLocation()
