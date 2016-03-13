@@ -168,13 +168,12 @@ class LocationHandler(
                 return
             }
 
-            val minTime = if (backgroundMode)
-                120000
-            else
-                (if (provider == Provider.GPS)
-                    1000
-                else
-                    20000)
+            val minTime = when {
+                backgroundMode -> 120000
+                provider == Provider.GPS -> 1000
+                else -> 20000
+            }
+
             val minDistance = if (backgroundMode)
                 200
             else
