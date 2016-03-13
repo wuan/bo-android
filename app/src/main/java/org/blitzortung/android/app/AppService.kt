@@ -33,6 +33,7 @@ import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.app.controller.NotificationHandler
 import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.DataChannel
 import org.blitzortung.android.data.DataHandler
 import org.blitzortung.android.data.Parameters
@@ -279,22 +280,22 @@ class AppService protected constructor(private val handler: Handler, private val
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         when (key) {
             PreferenceKey.ALERT_ENABLED -> {
-                alertEnabled = sharedPreferences.getBoolean(key.toString(), false)
+                alertEnabled = sharedPreferences.get(key, false)
 
                 configureServiceMode()
             }
 
-            PreferenceKey.QUERY_PERIOD -> period = Integer.parseInt(sharedPreferences.getString(key.toString(), "60"))
+            PreferenceKey.QUERY_PERIOD -> period = Integer.parseInt(sharedPreferences.get(key, "60"))
 
             PreferenceKey.BACKGROUND_QUERY_PERIOD -> {
-                backgroundPeriod = Integer.parseInt(sharedPreferences.getString(key.toString(), "0"))
+                backgroundPeriod = Integer.parseInt(sharedPreferences.get(key, "0"))
 
                 Log.v(Main.LOG_TAG, "AppService.onSharedPreferenceChanged() backgroundPeriod=%d".format(backgroundPeriod))
                 discardAlarm()
                 configureServiceMode()
             }
 
-            PreferenceKey.SHOW_PARTICIPANTS -> updateParticipants = sharedPreferences.getBoolean(key.toString(), true)
+            PreferenceKey.SHOW_PARTICIPANTS -> updateParticipants = sharedPreferences.get(key, true)
         }
     }
 

@@ -22,6 +22,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 
 import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.TimeIntervalWithOffset
 
 abstract class ColorHandler(private val preferences: SharedPreferences) {
@@ -36,8 +37,8 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
     }
 
     fun updateTarget() {
-        target = ColorTarget.valueOf(preferences.getString(PreferenceKey.MAP_TYPE.toString(), "SATELLITE"))
-        colorScheme = ColorScheme.valueOf(preferences.getString(PreferenceKey.COLOR_SCHEME.toString(), ColorScheme.BLITZORTUNG.toString()))
+        target = ColorTarget.valueOf(preferences.get(PreferenceKey.MAP_TYPE, "SATELLITE"))
+        colorScheme = ColorScheme.valueOf(preferences.get(PreferenceKey.COLOR_SCHEME, ColorScheme.BLITZORTUNG.toString()))
     }
 
     val colors: IntArray

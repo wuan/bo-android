@@ -39,6 +39,7 @@ import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.controller.NotificationHandler
 import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.data.provider.result.ClearDataEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
@@ -127,22 +128,22 @@ class AlertHandler(
 
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         when (key) {
-            PreferenceKey.ALERT_ENABLED -> isAlertEnabled = sharedPreferences.getBoolean(key.toString(), false)
+            PreferenceKey.ALERT_ENABLED -> isAlertEnabled = sharedPreferences.get(key, false)
 
             PreferenceKey.MEASUREMENT_UNIT -> {
-                val measurementSystemName = sharedPreferences.getString(key.toString(), MeasurementSystem.METRIC.toString())
+                val measurementSystemName = sharedPreferences.get(key, MeasurementSystem.METRIC.toString())
 
                 alertParameters = alertParameters.copy(measurementSystem = MeasurementSystem.valueOf(measurementSystemName))
             }
 
-            PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT -> notificationDistanceLimit = java.lang.Float.parseFloat(sharedPreferences.getString(key.toString(), "50"))
+            PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT -> notificationDistanceLimit = java.lang.Float.parseFloat(sharedPreferences.get(key, "50"))
 
-            PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT -> signalingDistanceLimit = java.lang.Float.parseFloat(sharedPreferences.getString(key.toString(), "25"))
+            PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT -> signalingDistanceLimit = java.lang.Float.parseFloat(sharedPreferences.get(key, "25"))
 
-            PreferenceKey.ALERT_VIBRATION_SIGNAL -> alertSignal = alertSignal.copy(vibrationDuration = sharedPreferences.getInt(key.toString(), 3) * 10)
+            PreferenceKey.ALERT_VIBRATION_SIGNAL -> alertSignal = alertSignal.copy(vibrationDuration = sharedPreferences.get(key, 3) * 10)
 
             PreferenceKey.ALERT_SOUND_SIGNAL -> {
-                val signalUri = sharedPreferences.getString(key.toString(), "")
+                val signalUri = sharedPreferences.get(key, "")
                 alertSignal = alertSignal.copy(soundSignal = if (!signalUri.isEmpty()) Uri.parse(signalUri) else null)
             }
         }

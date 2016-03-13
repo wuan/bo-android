@@ -43,10 +43,7 @@ import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
-import org.blitzortung.android.app.view.AlertView
-import org.blitzortung.android.app.view.HistogramView
-import org.blitzortung.android.app.view.LegendView
-import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.*
 import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.data.provider.result.*
 import org.blitzortung.android.dialogs.AlertDialog
@@ -519,7 +516,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     @TargetApi(Build.VERSION_CODES.M)
     private fun requestPermissions(sharedPreferences: SharedPreferences) {
 
-        val newProvider = LocationHandler.Provider.fromString(sharedPreferences.getString(PreferenceKey.LOCATION_MODE.toString(), LocationHandler.Provider.PASSIVE.type))
+        val newProvider = LocationHandler.Provider.fromString(sharedPreferences.get(PreferenceKey.LOCATION_MODE, LocationHandler.Provider.PASSIVE.type))
         if (newProvider === LocationHandler.Provider.PASSIVE || newProvider === LocationHandler.Provider.GPS) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), Main.REQUEST_GPS)
@@ -543,14 +540,14 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         when (key) {
             PreferenceKey.MAP_TYPE -> {
-                val mapTypeString = sharedPreferences.getString(key.toString(), "SATELLITE")
+                val mapTypeString = sharedPreferences.get(key, "SATELLITE")
                 mapView.isSatellite = mapTypeString == "SATELLITE"
                 strikesOverlay.refresh()
                 participantsOverlay.refresh()
             }
 
             PreferenceKey.SHOW_PARTICIPANTS -> {
-                val showParticipants = sharedPreferences.getBoolean(key.toString(), true)
+                val showParticipants = sharedPreferences.get(key, true)
                 participantsOverlay.enabled = showParticipants
                 updateOverlays()
             }
@@ -561,12 +558,12 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             }
 
             PreferenceKey.MAP_FADE -> {
-                val alphaValue = Math.round(255.0f / 100.0f * sharedPreferences.getInt(key.toString(), 40))
+                val alphaValue = Math.round(255.0f / 100.0f * sharedPreferences.get(key, 40))
                 fadeOverlay.setAlpha(alphaValue)
             }
 
             PreferenceKey.DO_NOT_SLEEP -> {
-                val doNotSleep = sharedPreferences.getBoolean(key.toString(), false)
+                val doNotSleep = sharedPreferences.get(key, false)
                 val flag = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 
                 if (doNotSleep) {

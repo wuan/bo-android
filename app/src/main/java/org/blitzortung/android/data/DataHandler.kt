@@ -26,6 +26,7 @@ import android.os.PowerManager
 import android.util.Log
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProvider
 import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
@@ -110,7 +111,7 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
     fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         when (key) {
             PreferenceKey.DATA_SOURCE, PreferenceKey.SERVICE_URL -> {
-                val providerTypeString = sharedPreferences.getString(PreferenceKey.DATA_SOURCE.toString(), DataProviderType.RPC.toString())
+                val providerTypeString = sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.RPC.toString())
                 val providerType = DataProviderType.valueOf(providerTypeString.toUpperCase())
                 val dataProvider = dataProviderFactory.getDataProviderForType(providerType, sharedPreferences)
                 dataProvider.setPackageInfo(pInfo)
@@ -121,33 +122,33 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
                 notifyDataReset()
             }
 
-            PreferenceKey.USERNAME -> username = sharedPreferences.getString(key.toString(), "")
+            PreferenceKey.USERNAME -> username = sharedPreferences.get(key, "")
 
-            PreferenceKey.PASSWORD -> password = sharedPreferences.getString(key.toString(), "")
+            PreferenceKey.PASSWORD -> password = sharedPreferences.get(key, "")
 
             PreferenceKey.RASTER_SIZE -> {
-                val rasterBaselength = Integer.parseInt(sharedPreferences.getString(key.toString(), "10000"))
+                val rasterBaselength = Integer.parseInt(sharedPreferences.get(key, "10000"))
                 parameters = parameters.copy(rasterBaselength = rasterBaselength);
                 notifyDataReset()
             }
 
             PreferenceKey.COUNT_THRESHOLD -> {
-                val countThreshold = Integer.parseInt(sharedPreferences.getString(key.toString(), "1"))
+                val countThreshold = Integer.parseInt(sharedPreferences.get(key, "1"))
                 parameters = parameters.copy(countThreshold = countThreshold);
                 notifyDataReset()
             }
 
             PreferenceKey.INTERVAL_DURATION -> {
-                parameters = parameters.copy(intervalDuration = Integer.parseInt(sharedPreferences.getString(key.toString(), "60")));
+                parameters = parameters.copy(intervalDuration = Integer.parseInt(sharedPreferences.get(key, "60")));
                 dataProvider!!.reset()
                 notifyDataReset()
             }
 
             PreferenceKey.HISTORIC_TIMESTEP -> parametersController = ParametersController.withOffsetIncrement(
-                    Integer.parseInt(sharedPreferences.getString(key.toString(), "30")))
+                    Integer.parseInt(sharedPreferences.get(key, "30")))
 
             PreferenceKey.REGION -> {
-                val region = Integer.parseInt(sharedPreferences.getString(key.toString(), "1"))
+                val region = Integer.parseInt(sharedPreferences.get(key, "1"))
                 parameters = parameters.copy(region = region);
                 dataProvider!!.reset()
                 notifyDataReset()
