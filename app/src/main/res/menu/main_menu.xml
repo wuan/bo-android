@@ -17,6 +17,11 @@
             android:title="@string/layers"/>-->
 
     <item
+        android:id="@+id/menu_log"
+        android:icon="@android:drawable/ic_dialog_alert"
+        android:title="@string/app_log" />
+
+    <item
         android:id="@+id/menu_info"
         android:icon="@android:drawable/ic_menu_info_details"
         android:title="@string/info" />

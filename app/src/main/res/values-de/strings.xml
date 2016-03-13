@@ -22,7 +22,6 @@
         Czech translation by: Jakub Mareček (jakubmarecek715@gmail.com)\n
 		Polish translation by: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
     </string>
-    <string name="copyright">© 2011–2016, Andreas Würl\nblitzortung@tryb.de</string>
     <string name="legend">Legende</string>
     <string name="total_time">Gesamtzeit</string>
     <string name="activity">Aktivität</string>
@@ -318,4 +317,7 @@
     <string name="service_url">Service-URL</string>
     <string name="service_url_summary">Benutzerdefinierte Service-URL, falls gesetzt</string>
     <string name="set_manual_location">Benutzerdefinierter Ort</string>
+    <string name="app_log">App-Log</string>
+    <string name="share_log">E-Mail senden ...</string>
+    <string name="share_unavailable">E-Mail kann nicht versendet werden.</string>
 </resources>
