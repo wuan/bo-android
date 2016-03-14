@@ -28,7 +28,6 @@ import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.result.ResultEvent
 import java.io.BufferedReader
 import java.io.FileNotFoundException
-import java.io.InputStreamReader
 import java.net.Authenticator
 import java.net.PasswordAuthentication
 import java.net.URL
@@ -54,51 +53,27 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
         val tz = TimeZone.getTimeZone("UTC")
         val intervalTime = GregorianCalendar(tz)
 
-        val username = username
-        val password = password
-        if (username != null && password != null) {
+        val startTime = System.currentTimeMillis() - intervalDuration * 60 * 1000
+        val intervalSequence = createTimestampSequence(10 * 6 * 1000L, Math.max(latestTime, startTime))
 
-            val strikes = ArrayList<Strike>()
-            val intervalTimer = IntervalTimer(10 * 60 * 1000L)
-            val startTime = System.currentTimeMillis() - intervalDuration * 60 * 1000
+        val strikes = retrieveData("BlitzortungHttpDataProvider: read %d bytes (%d new strikes) from region $region",
+            intervalSequence.map {
+                intervalTime.timeInMillis = it
 
-            intervalTimer.startInterval(Math.max(latestTime, startTime))
+                return@map readFromUrl(Type.STRIKES, region, intervalTime)
+            }, { strikeMapBuilder.buildFromLine(it) })
 
-            while (intervalTimer.hasNext()) {
-                intervalTime.timeInMillis = intervalTimer.next()
-
-                val reader = readFromUrl(Type.STRIKES, region, intervalTime) ?: continue
-
-                var size = 0
-                reader.use { reader ->
-                    reader.forEachLine { line ->
-                        size += line.length
-
-                        val strike = strikeMapBuilder.buildFromLine(line)
-                        val timestamp = strike.timestamp
-
-                        if (timestamp > latestTime && timestamp >= startTime) {
-                            strikes.add(strike)
-                        }
-                    }
-                }
-                Log.v(Main.LOG_TAG,
-                        "BlitzortungHttpDataProvider: read %d bytes (%d new strikes) from region %d".format(size, strikes.size, region))
-
-                reader.close()
-            }
-
-            if (latestTime > 0L) {
-                result = result.copy(incrementalData = true)
-            }
-
-            if (strikes.size > 0) {
-                latestTime = strikes[strikes.size - 1].timestamp
-            }
-            result = result.copy(strikes = strikes)
-        } else {
-            throw RuntimeException("no credentials provided")
+        if (latestTime > 0L) {
+            result = result.copy(incrementalData = true)
         }
+
+        if (strikes.count() > 0) {
+            //TODO Maybe we should get the maximum timestamp from strikes instead of the last?
+            latestTime = strikes[strikes.lastIndex].timestamp
+        }
+
+        result = result.copy(strikes = strikes)
+
         return result
     }
 
@@ -108,7 +83,7 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
 
     private fun readFromUrl(type: Type, region: Int, intervalTime: Calendar? = null): BufferedReader? {
 
-        val useGzipCompression = if (type == Type.STATIONS) true else false
+        val useGzipCompression = type == Type.STATIONS
 
         Authenticator.setDefault(MyAuthenticator())
 
@@ -126,7 +101,8 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
             if (useGzipCompression) {
                 inputStream = GZIPInputStream(inputStream)
             }
-            reader = BufferedReader(InputStreamReader(inputStream))
+
+            reader = inputStream.bufferedReader()
         } catch (e: FileNotFoundException) {
             Log.w(Main.LOG_TAG, "URL '%s' not found".format(urlString))
             return null
@@ -135,35 +111,39 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
         return reader
     }
 
-    override fun getStations(region: Int): List<Station> {
-        val stations = ArrayList<Station>()
+    /**
+     * Used to retrieve Data from Blitzortung
+     * @param readerSeq A sequence of nullable BufferedReader, which the data is read from
+     * @param parse A Lambda which receives a sequence of lines from a buffered reader and transforms them into a sequence of T
+     * @return Returns a list of parsed T's
+     */
+    private fun <T: Any> retrieveData(logMessage: String, readerSeq: Sequence<BufferedReader?>, parse: (String) -> T?): List<T> {
+        var size = 0
 
         val username = username
         val password = password
-        if (username != null && password != null) {
-
-            val reader = readFromUrl(Type.STATIONS, region)
-
-            var size = 0
-            reader?.use { reader ->
-                reader.forEachLine { line ->
-                    size += line.length
-                    try {
-                        val station = stationMapBuilder.buildFromLine(line)
-                        stations.add(station)
-                    } catch (e: NumberFormatException) {
-                        Log.w(Main.LOG_TAG, "BlitzortungHttpProvider: error parsing '%s'".format(line))
-                    }
-                }
-            }
-            Log.v(Main.LOG_TAG,
-                    "BlitzortungHttpProvider: read %d bytes (%d stations) from region %d".format(size, stations.size, region))
-
-        } else {
+        if (username == null || password == null)
             throw RuntimeException("no credentials provided")
-        }
 
-        return stations
+        return readerSeq.filterNotNull().flatMap {
+            val tmpList = it.lineSequence().mapNotNull {
+                size += it.length
+
+                return@mapNotNull parse(it)
+            }
+
+            Log.v(Main.LOG_TAG,
+                    logMessage.format(size, tmpList.count()))
+
+            return@flatMap tmpList
+        }.toList()
+    }
+
+    override fun getStations(region: Int): List<Station> {
+        return retrieveData("BlitzortungHttpProvider: read %d bytes (%d stations) from region $region",
+                sequenceOf(readFromUrl(Type.STATIONS, region))) {
+                    stationMapBuilder.buildFromLine(it)
+                }
     }
 
     override val type: DataProviderType
