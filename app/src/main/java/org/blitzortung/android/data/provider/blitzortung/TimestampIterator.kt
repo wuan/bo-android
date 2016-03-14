@@ -18,26 +18,30 @@
 
 package org.blitzortung.android.data.provider.blitzortung
 
-class IntervalTimer(private val intervalLength: Long) {
-    private var currentTime: Long = 0
-    private var endTime: Long = 0
+class TimestampIterator(private val intervalLength: Long, private val startTime: Long): Iterator<Long> {
+    private var currentTime: Long = roundTime(startTime)
+    private val endTime: Long = roundTime(System.currentTimeMillis())
 
-    fun roundTime(time: Long): Long {
+    private fun roundTime(time: Long): Long {
         return time / intervalLength * intervalLength
     }
 
-    fun startInterval(startTime: Long) {
-        currentTime = roundTime(startTime)
-        endTime = roundTime(System.currentTimeMillis())
-    }
-
-    operator fun hasNext(): Boolean {
+    override fun hasNext(): Boolean {
         return currentTime <= endTime
     }
 
-    operator fun next(): Long {
+    override fun next(): Long {
         val currentTimeCopy = currentTime
         currentTime += intervalLength
         return currentTimeCopy
     }
+}
+
+/**
+ * Values of the Timestamp-Sequence are lazy generated, so we provide a Sequence for it
+ * @param length Interval length
+ * @param startTime Start time of the sequence
+ */
+internal fun createTimestampSequence(length: Long, startTime: Long): Sequence<Long> {
+    return Sequence { TimestampIterator(length, startTime) }
 }
