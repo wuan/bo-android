@@ -22,7 +22,8 @@
         Czech translation by: Jakub Mareček (jakubmarecek715@gmail.com)\n
 		Polish translation by: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
     </string>
-    <string name="copyright">© 2011–2016, Andreas Würl\nblitzortung@tryb.de</string>
+    <string name="copyright" translatable="false">© 2011–2016, Andreas Würl</string>
+    <string name="project_email" translatable="false">blitzortung@tryb.de</string>
     <string name="legend">Legend</string>
     <string name="total_time">total time</string>
     <string name="activity">activity</string>
@@ -320,4 +321,7 @@
     <string name="service_url_summary">Overrides the default service URL if set</string>
     <string name="set_manual_location">set manual location</string>
     <string name="error_indicator">error indicator</string>
+    <string name="app_log">Application log</string>
+    <string name="share_log">Send email …</string>
+    <string name="share_unavailable">E-mail sharing is not available.</string>
 </resources>

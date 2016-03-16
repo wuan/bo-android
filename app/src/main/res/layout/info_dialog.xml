@@ -19,4 +19,11 @@
         android:text="@string/copyright"
         android:textColor="#FFF" />
 
+    <TextView
+        android:id="@+id/email_text"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:text="@string/project_email"
+        android:textColor="#FFF" />
+
 </LinearLayout>

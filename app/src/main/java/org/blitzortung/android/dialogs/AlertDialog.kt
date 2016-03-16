@@ -28,17 +28,12 @@ import org.blitzortung.android.app.view.AlertView
 import org.blitzortung.android.map.overlay.color.ColorHandler
 
 class AlertDialog(context: Context, private val service: AppService?, private val colorHandler: ColorHandler) : android.app.AlertDialog(context) {
-    internal var intervalDuration: Int = 0
     private lateinit var alertView: AlertView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.alarm_dialog)
-    }
-
-    fun setIntervalDuration(intervalDuration: Int) {
-        this.intervalDuration = intervalDuration
     }
 
     override fun onStart() {

@@ -46,10 +46,7 @@ import org.blitzortung.android.app.controller.HistoryController
 import org.blitzortung.android.app.view.*
 import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.data.provider.result.*
-import org.blitzortung.android.dialogs.AlertDialog
-import org.blitzortung.android.dialogs.AlertDialogColorHandler
-import org.blitzortung.android.dialogs.InfoDialog
-import org.blitzortung.android.dialogs.QuickSettingsDialog
+import org.blitzortung.android.dialogs.*
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.map.OwnMapActivity
 import org.blitzortung.android.map.OwnMapView
@@ -392,6 +389,8 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
             R.id.menu_alarms -> showDialog(R.id.alarm_dialog)
 
+            R.id.menu_log -> showDialog(R.id.log_dialog)
+
             R.id.menu_preferences -> startActivity(Intent(this, Preferences::class.java))
         }
         return super.onOptionsItemSelected(item)
@@ -482,6 +481,8 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 appService?.let { appService ->
                     AlertDialog(this, appService, AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)))
                 }
+
+            R.id.log_dialog -> LogDialog(this)
 
             else -> throw RuntimeException("unhandled dialog with id $id")
         }
