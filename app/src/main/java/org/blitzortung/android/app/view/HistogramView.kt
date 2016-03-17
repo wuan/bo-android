@@ -23,12 +23,16 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
+import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
+import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.map.overlay.StrikesOverlay
 import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.TabletAwareView
+import java.util.*
 
 class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletAwareView(context, attrs, defStyle) {
 
@@ -39,6 +43,9 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tab
     private val backgroundRect: RectF
     private var strikesOverlay: StrikesOverlay? = null
     private var histogram: IntArray? = null
+    private var strikes: List<Strike> = emptyList()
+    private var parameters : Parameters? = null
+
     val dataConsumer = { event: Event ->
         if (event is ResultEvent) {
             updateHistogram(event)
@@ -98,7 +105,7 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tab
             val ymax = if (maximumCount == 0) 1 else maximumCount
 
             val x0 = padding
-            val xd = (width - 2 * padding) / (histogram!!.size - 1)
+            val xd = (width - 2 * padding) / (histogram.size - 1)
 
             val y0 = height - padding
             val yd = (height - 2 * padding - textSize) / ymax
@@ -124,10 +131,20 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tab
     private fun updateHistogram(dataEvent: ResultEvent) {
         if (dataEvent.failed) {
             visibility = View.INVISIBLE
+            histogram = null
         } else {
-            histogram = dataEvent.histogram
+            val histogram = dataEvent.histogram
 
-            val viewShouldBeVisible = histogram != null && histogram!!.size > 0
+            var viewShouldBeVisible = histogram != null && histogram.size > 0
+
+            this.histogram = histogram
+
+            if (!viewShouldBeVisible) {
+                viewShouldBeVisible = createHistogram(dataEvent)
+            } else {
+                this.strikes = emptyList()
+                this.parameters = null
+            }
 
             visibility = if (viewShouldBeVisible) View.VISIBLE else View.INVISIBLE
 
@@ -137,10 +154,39 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tab
         }
     }
 
+    private fun createHistogram(result: ResultEvent): Boolean {
+        result.parameters?.let { parameters ->
+            Log.v(Main.LOG_TAG, "HistogramView")
+            val referenceTime = result.referenceTime
+
+            val expireTime = referenceTime - (parameters.intervalDuration - parameters.intervalOffset) * 60 * 1000
+
+            if (parameters != this.parameters) {
+                strikes = emptyList()
+            }
+            strikes = strikes.filter { it.timestamp > expireTime }
+            strikes += result.strikes?.map { Strike(it.timestamp) } ?: emptyList()
+
+            val binInterval = 5
+            val binCount = parameters.intervalDuration / binInterval
+            val histogram = IntArray(binCount)
+
+            strikes.forEach { strike ->
+                val binIndex = (binCount - 1) - ((referenceTime - strike.timestamp) / 1000 / 60 / binInterval).toInt()
+                if (binIndex in 0 .. binCount - 1)
+                    histogram[binIndex]++
+            }
+            this.histogram = histogram
+            return true
+        }
+        return false
+    }
+
     fun clearHistogram() {
         histogram = IntArray(0)
 
         visibility = View.INVISIBLE
     }
-
 }
+
+data class Strike(val timestamp: Long)

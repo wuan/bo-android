@@ -73,8 +73,8 @@ class JsonRpcDataProvider(serviceUrl : String? = null) : DataProvider() {
         return result
     }
 
-    override fun getStrikesGrid(parameters: Parameters, result: ResultEvent): ResultEvent {
-        var result = result
+    override fun getStrikesGrid(parameters: Parameters, resultParam: ResultEvent): ResultEvent {
+        var result = resultParam
 
         nextId = 0
 

@@ -293,7 +293,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                     val diameter = 1.5f * 2f * radius
                     animateToLocationAndVisibleSize(currentLocation.longitude, currentLocation.latitude, diameter)
                 }
-
             }
         }
 
@@ -615,11 +614,8 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     }
 
     companion object {
-
         val LOG_TAG = "BO_ANDROID"
 
         val REQUEST_GPS = 1
-
-
     }
 }

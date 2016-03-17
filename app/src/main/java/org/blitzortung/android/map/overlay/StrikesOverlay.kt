@@ -40,8 +40,9 @@ import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 
 class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: StrikeColorHandler) : PopupOverlay<StrikeOverlayItem>(mapActivity, ItemizedOverlay.boundCenter(StrikesOverlay.DEFAULT_DRAWABLE)), LayerOverlay {
 
-    // VisibleForTesting
-    protected var strikes: List<StrikeOverlayItem>
+    var strikes: List<StrikeOverlayItem>
+        protected set
+
     private val layerOverlayComponent: LayerOverlayComponent
     private var zoomLevel: Int = 0
     var rasterParameters: RasterParameters? = null
@@ -109,7 +110,7 @@ class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: Stri
 
         val sizeBefore = strikes.size
         strikes = strikes.filter { it.timestamp > expireTime }
-        Log.v(Main.LOG_TAG, "StrikesOverlay.expireStrikes() expired ${sizeBefore - strikes.size}")
+        Log.v(Main.LOG_TAG, "StrikesOverlay.expireStrikes() expired ${sizeBefore - strikes.size} from $sizeBefore")
     }
 
     fun clear() {
