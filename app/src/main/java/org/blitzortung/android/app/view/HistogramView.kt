@@ -43,8 +43,6 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tab
     private val backgroundRect: RectF
     private var strikesOverlay: StrikesOverlay? = null
     private var histogram: IntArray? = null
-    private var strikes: List<Strike> = emptyList()
-    private var parameters : Parameters? = null
 
     val dataConsumer = { event: Event ->
         if (event is ResultEvent) {
@@ -141,9 +139,6 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tab
 
             if (!viewShouldBeVisible) {
                 viewShouldBeVisible = createHistogram(dataEvent)
-            } else {
-                this.strikes = emptyList()
-                this.parameters = null
             }
 
             visibility = if (viewShouldBeVisible) View.VISIBLE else View.INVISIBLE
@@ -156,22 +151,18 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tab
 
     private fun createHistogram(result: ResultEvent): Boolean {
         result.parameters?.let { parameters ->
-            Log.v(Main.LOG_TAG, "HistogramView")
-            val referenceTime = result.referenceTime
-
-            val expireTime = referenceTime - (parameters.intervalDuration - parameters.intervalOffset) * 60 * 1000
-
-            if (parameters != this.parameters) {
-                strikes = emptyList()
+            if (result.totalStrikes == null) {
+                return false
             }
-            strikes = strikes.filter { it.timestamp > expireTime }
-            strikes += result.strikes?.map { Strike(it.timestamp) } ?: emptyList()
+
+            Log.v(Main.LOG_TAG, "HistogramView create histogram from ${result.totalStrikes.size} total strikes")
+            val referenceTime = result.referenceTime
 
             val binInterval = 5
             val binCount = parameters.intervalDuration / binInterval
             val histogram = IntArray(binCount)
 
-            strikes.forEach { strike ->
+            result.totalStrikes.forEach { strike ->
                 val binIndex = (binCount - 1) - ((referenceTime - strike.timestamp) / 1000 / 60 / binInterval).toInt()
                 if (binIndex in 0 .. binCount - 1)
                     histogram[binIndex]++

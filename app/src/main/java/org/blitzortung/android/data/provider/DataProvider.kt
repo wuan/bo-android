@@ -36,7 +36,7 @@ abstract class DataProvider {
 
     abstract fun shutDown()
 
-    abstract fun getStrikes(parameters: Parameters, result: ResultEvent): ResultEvent
+    abstract fun getStrikes(parameters: Parameters, resultEvent: ResultEvent): ResultEvent
 
     abstract fun getStrikesGrid(parameters: Parameters, result: ResultEvent): ResultEvent
 

@@ -39,14 +39,21 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
     private val strikeMapBuilder: MapBuilder<Strike>
     private val stationMapBuilder: MapBuilder<Station>
     private var latestTime: Long = 0
+    private var strikes: List<Strike> = emptyList()
+    private var parameters: Parameters? = null
 
     init {
         strikeMapBuilder = mapBuilderFactory.createAbstractStrikeMapBuilder()
         stationMapBuilder = mapBuilderFactory.createStationMapBuilder()
     }
 
-    override fun getStrikes(parameters: Parameters, resultParam: ResultEvent): ResultEvent {
-        var result = resultParam
+    override fun getStrikes(parameters: Parameters, resultEvent: ResultEvent): ResultEvent {
+        var result = resultEvent
+        if (parameters != this.parameters) {
+            strikes = emptyList()
+            latestTime = 0L
+        }
+
         val intervalDuration = parameters.intervalDuration
         val region = parameters.region
 
@@ -65,6 +72,11 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
 
         if (latestTime > 0L) {
             result = result.copy(incrementalData = true)
+            val expireTime = result.referenceTime - (parameters.intervalDuration - parameters.intervalOffset) * 60 * 1000
+            this.strikes = this.strikes.filter { it.timestamp > expireTime }
+            this.strikes += strikes
+        } else {
+            this.strikes = strikes
         }
 
         if (strikes.count() > 0) {
@@ -72,8 +84,9 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
             latestTime = strikes.last().timestamp
         }
 
-        result = result.copy(strikes = strikes)
+        result = result.copy(strikes = strikes, totalStrikes =this.strikes)
 
+        this.parameters = parameters
         return result
     }
 

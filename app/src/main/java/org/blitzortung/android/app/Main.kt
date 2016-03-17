@@ -105,16 +105,20 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
                 clearDataIfRequested()
 
+                val initializeOverlay = strikesOverlay.parameters != resultParameters
                 strikesOverlay.parameters = resultParameters
                 strikesOverlay.rasterParameters = event.rasterParameters
                 strikesOverlay.referenceTime = event.referenceTime
 
-                if (event.incrementalData) {
+                if (event.incrementalData && !initializeOverlay) {
                     strikesOverlay.expireStrikes()
                 } else {
                     strikesOverlay.clear()
                 }
-                if (event.strikes != null) {
+
+                if (initializeOverlay && event.totalStrikes != null) {
+                    strikesOverlay.addStrikes(event.totalStrikes)
+                } else if (event.strikes != null) {
                     strikesOverlay.addStrikes(event.strikes)
                 }
 

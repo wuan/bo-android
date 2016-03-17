@@ -25,6 +25,7 @@ import org.blitzortung.android.data.beans.Strike
 
 data class ResultEvent(
         val strikes: List<Strike>? = null,
+        val totalStrikes: List<Strike>? = null,
         val stations: List<Station>? = null,
         val rasterParameters: RasterParameters? = null,
         val histogram: IntArray? = null,
