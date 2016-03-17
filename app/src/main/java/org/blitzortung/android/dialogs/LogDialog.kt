@@ -57,19 +57,6 @@ class LogDialog(
         logButton.setOnClickListener { view -> composeEmail(logText) }
     }
 
-    fun shareLog(logText: String) {
-        Toast.makeText(context, "clicked", Toast.LENGTH_LONG).show()
-
-        val intent = Intent(Intent.ACTION_SEND);
-        intent.type = "text/plain"
-        intent.data = Uri.parse("mailto:");
-        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(context.resources.getString(R.string.project_email)));
-        intent.putExtra(Intent.EXTRA_SUBJECT, context.resources.getString(R.string.app_log))
-        intent.putExtra(Intent.EXTRA_TEXT, logText)
-
-        context.startActivity(Intent.createChooser(intent, context.resources.getString(R.string.share_log)));
-    }
-
     fun composeEmail(logText: String) {
         val intent = Intent(Intent.ACTION_SENDTO);
         intent.data = Uri.parse("mailto:")
@@ -87,7 +74,6 @@ class LogDialog(
             }
         }
     }
-
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
