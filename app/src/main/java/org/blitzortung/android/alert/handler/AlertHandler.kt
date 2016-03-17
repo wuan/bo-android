@@ -200,19 +200,19 @@ class AlertHandler(
             if (alertResult.closestStrikeDistance <= signalingDistanceLimit) {
                 val signalingLatestTimestamp = alertDataHandler.getLatestTimstampWithin(signalingDistanceLimit, alertResult)
                 if (signalingLatestTimestamp > signalingLastTimestamp) {
-                    Log.v(Main.LOG_TAG, "AlertHandler.processResult() perform alarm")
+                    Log.v(Main.LOG_TAG, "AlertHandler.processResult() perform signaling alert")
                     vibrateIfEnabled()
                     playSoundIfEnabled()
                     signalingLastTimestamp = signalingLatestTimestamp
                 } else {
-                    Log.d(Main.LOG_TAG, "old signaling event: %d vs %d".format(signalingLatestTimestamp, signalingLastTimestamp))
+                    Log.d(Main.LOG_TAG, "previous signaling event: %d vs %d".format(signalingLatestTimestamp, signalingLastTimestamp))
                 }
             }
 
             if (alertResult.closestStrikeDistance <= notificationDistanceLimit) {
                 val notificationLatestTimestamp = alertDataHandler.getLatestTimstampWithin(notificationDistanceLimit, alertResult)
                 if (notificationLatestTimestamp > notificationLastTimestamp) {
-                    Log.v(Main.LOG_TAG, "AlertHandler.processResult() perform notification")
+                    Log.v(Main.LOG_TAG, "AlertHandler.processResult() perform notification alert")
                     notificationHandler.sendNotification(context.resources.getString(R.string.activity) + ": " + alertDataHandler.getTextMessage(alertResult, notificationDistanceLimit))
                     notificationLastTimestamp = notificationLatestTimestamp
                 } else {
