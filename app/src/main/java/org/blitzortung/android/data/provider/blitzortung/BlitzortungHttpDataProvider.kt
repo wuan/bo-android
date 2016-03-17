@@ -45,8 +45,8 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
         stationMapBuilder = mapBuilderFactory.createStationMapBuilder()
     }
 
-    override fun getStrikes(parameters: Parameters, result: ResultEvent): ResultEvent {
-        var result = result
+    override fun getStrikes(parameters: Parameters, resultParam: ResultEvent): ResultEvent {
+        var result = resultParam
         val intervalDuration = parameters.intervalDuration
         val region = parameters.region
 
@@ -54,14 +54,14 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
         val intervalTime = GregorianCalendar(tz)
 
         val startTime = System.currentTimeMillis() - intervalDuration * 60 * 1000
-        val intervalSequence = createTimestampSequence(10 * 6 * 1000L, Math.max(latestTime, startTime))
+        val intervalSequence = createTimestampSequence(10 * 60 * 1000L, Math.max(latestTime, startTime))
 
         val strikes = retrieveData("BlitzortungHttpDataProvider: read %d bytes (%d new strikes) from region $region",
-            intervalSequence.map {
-                intervalTime.timeInMillis = it
+                intervalSequence.map { startTime ->
+                    intervalTime.timeInMillis = startTime
 
-                return@map readFromUrl(Type.STRIKES, region, intervalTime)
-            }, { strikeMapBuilder.buildFromLine(it) })
+                    return@map readFromUrl(Type.STRIKES, region, intervalTime)
+                }, { strikeMapBuilder.buildFromLine(it) })
 
         if (latestTime > 0L) {
             result = result.copy(incrementalData = true)
@@ -69,7 +69,7 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
 
         if (strikes.count() > 0) {
             //TODO Maybe we should get the maximum timestamp from strikes instead of the last?
-            latestTime = strikes[strikes.lastIndex].timestamp
+            latestTime = strikes.last().timestamp
         }
 
         result = result.copy(strikes = strikes)
@@ -117,7 +117,7 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
      * @param parse A Lambda which receives a sequence of lines from a buffered reader and transforms them into a sequence of T
      * @return Returns a list of parsed T's
      */
-    private fun <T: Any> retrieveData(logMessage: String, readerSeq: Sequence<BufferedReader?>, parse: (String) -> T?): List<T> {
+    private fun <T : Any> retrieveData(logMessage: String, readerSeq: Sequence<BufferedReader?>, parse: (String) -> T?): List<T> {
         var size = 0
 
         val username = username
@@ -125,27 +125,25 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
         if (username == null || password == null)
             throw RuntimeException("no credentials provided")
 
-        return readerSeq.filterNotNull().flatMap {
-            val tmpList = it.useLines {
-                it.mapNotNull { line ->
+        val strokeList = readerSeq.filterNotNull().flatMap { reader ->
+            reader.useLines { lines ->
+                lines.mapNotNull { line ->
                     size += line.length
 
                     return@mapNotNull parse(line)
                 }
             }
-
-            Log.v(Main.LOG_TAG,
-                    logMessage.format(size, tmpList.count()))
-
-            return@flatMap tmpList
         }.toList()
+        Log.v(Main.LOG_TAG, logMessage.format(size, strokeList.count()))
+
+        return strokeList
     }
 
     override fun getStations(region: Int): List<Station> {
         return retrieveData("BlitzortungHttpProvider: read %d bytes (%d stations) from region $region",
                 sequenceOf(readFromUrl(Type.STATIONS, region))) {
-                    stationMapBuilder.buildFromLine(it)
-                }
+            stationMapBuilder.buildFromLine(it)
+        }
     }
 
     override val type: DataProviderType
