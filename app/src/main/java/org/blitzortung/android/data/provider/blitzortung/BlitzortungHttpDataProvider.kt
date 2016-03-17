@@ -126,10 +126,12 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
             throw RuntimeException("no credentials provided")
 
         return readerSeq.filterNotNull().flatMap {
-            val tmpList = it.lineSequence().mapNotNull {
-                size += it.length
+            val tmpList = it.useLines {
+                it.mapNotNull { line ->
+                    size += line.length
 
-                return@mapNotNull parse(it)
+                    return@mapNotNull parse(line)
+                }
             }
 
             Log.v(Main.LOG_TAG,
