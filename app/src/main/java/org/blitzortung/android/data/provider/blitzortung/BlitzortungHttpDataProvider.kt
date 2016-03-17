@@ -1,6 +1,6 @@
 /*
 
-   Copyright 2015 Andreas Würl
+   Copyright 2015-2016 Andreas Würl
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -125,15 +125,15 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
         if (username == null || password == null)
             throw RuntimeException("no credentials provided")
 
-        val strokeList = readerSeq.filterNotNull().flatMap { reader ->
-            reader.useLines { lines ->
-                lines.mapNotNull { line ->
-                    size += line.length
+        val strokeSequence: Sequence<T> = readerSeq.filterNotNull().flatMap { reader ->
+            reader.lineSequence().mapNotNull { line ->
+                size += line.length
 
-                    return@mapNotNull parse(line)
-                }
+                parse(line)
             }
-        }.toList()
+        }
+
+        val strokeList = strokeSequence.toList()
         Log.v(Main.LOG_TAG, logMessage.format(size, strokeList.count()))
 
         return strokeList
