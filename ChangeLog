@@ -2,6 +2,16 @@
 
 ## English
 
+### Version 1.4.5:
+ - fixed Blitzortung.org data transmission
+ - added histogram for  Blitzortung.org data
+
+### Version 1.4.4:
+ - enabled direct log export
+
+### Version 1.4.3:
+ - fixed missing menu button on some devices
+
 ### Version 1.4.2:
  - update of Kotlin version
  - fixed text scaling in alert view
@@ -105,6 +115,16 @@
  * notification and vibration alarm with preference integration
 
 ## German
+
+### Version 1.4.5:
+ - Fehler beim Abruf von Daten von Blitzortung.org behoben
+ - Histogramm für Blitzortung.org Daten
+
+### Version 1.4.4:
+ - Export des Applikationslogs
+
+### Version 1.4.3:
+ - Problem mit fehlendem Menü-Button auf manchen Geräten beseitigt
 
 ### Version 1.4.2:
  - Update Kotlin-Version
