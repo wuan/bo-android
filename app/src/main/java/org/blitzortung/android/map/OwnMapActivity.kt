@@ -19,15 +19,10 @@
 package org.blitzortung.android.map
 
 import android.util.Log
-
 import com.google.android.maps.MapActivity
 import com.google.android.maps.Overlay
-
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.map.overlay.LayerOverlay
-
-import java.lang.reflect.Field
-import java.util.ArrayList
 
 abstract class OwnMapActivity : MapActivity() {
 

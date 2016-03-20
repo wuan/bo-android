@@ -66,18 +66,8 @@ data class RasterParameters(
                         latitudeEnd), bottomRight)
 
         if (false) {
-            Log.d(Main.LOG_TAG, "RasterParameters.getRect() " +
-                    "$longitudeStart - $longitudeEnd ($longitudeDelta, #$longitudeBins) " +
-                    "$latitudeEnd - $latitudeStart ($latitudeDelta, #$latitudeBins)")
+            Log.d(Main.LOG_TAG, "RasterParameters.getRect() $longitudeStart - $longitudeEnd ($longitudeDelta, #$longitudeBins) $latitudeEnd - $latitudeStart ($latitudeDelta, #$latitudeBins)")
         }
         return RectF(leftTop.x.toFloat(), leftTop.y.toFloat(), bottomRight.x.toFloat(), bottomRight.y.toFloat())
-    }
-
-    fun getLongitudeIndex(longitude: Double): Int {
-        return ((longitude - longitudeStart) / longitudeDelta + 0.5).toInt()
-    }
-
-    fun getLatitudeIndex(latitude: Double): Int {
-        return ((latitudeStart - latitude) / latitudeDelta + 0.5).toInt()
     }
 }

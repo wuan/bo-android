@@ -39,7 +39,6 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tablet
     private val foregroundPaint: Paint
     private val backgroundRect: RectF
     private val legendColorRect: RectF
-    private var textWidth: Float = 0.toFloat()
     var strikesOverlay: StrikesOverlay? = null
 
     @SuppressWarnings("unused")

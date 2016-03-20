@@ -47,7 +47,7 @@ class AlertDialog(context: Context, private val service: AppService?, private va
         if (service != null) {
             alertView.setColorHandler(colorHandler, service.dataHandler().intervalDuration)
             alertView.alertEventConsumer.invoke(service.alertEvent())
-            service.addAlertConsumer(alertView!!.alertEventConsumer)
+            service.addAlertConsumer(alertView.alertEventConsumer)
         }
         colorHandler.updateTarget()
     }
@@ -55,7 +55,7 @@ class AlertDialog(context: Context, private val service: AppService?, private va
     override fun onStop() {
         super.onStop()
 
-        service?.removeAlertListener(alertView!!.alertEventConsumer)
+        service?.removeAlertListener(alertView.alertEventConsumer)
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {

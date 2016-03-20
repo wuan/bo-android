@@ -27,12 +27,10 @@ import android.util.Log
 import android.view.View
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
-import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.map.overlay.StrikesOverlay
 import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.TabletAwareView
-import java.util.*
 
 class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletAwareView(context, attrs, defStyle) {
 
@@ -171,12 +169,6 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tab
             return true
         }
         return false
-    }
-
-    fun clearHistogram() {
-        histogram = IntArray(0)
-
-        visibility = View.INVISIBLE
     }
 }
 

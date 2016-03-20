@@ -26,12 +26,14 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.os.*
+import android.os.Binder
+import android.os.Handler
+import android.os.IBinder
+import android.os.PowerManager
 import android.preference.PreferenceManager
 import android.util.Log
-import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.alert.event.AlertEvent
-import org.blitzortung.android.app.controller.NotificationHandler
+import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.DataChannel
@@ -120,9 +122,6 @@ class AppService protected constructor(private val handler: Handler, private val
     init {
         Log.d(Main.LOG_TAG, "AppService() create")
     }
-
-    val lastUpdate: Long
-        get() = updatePeriod.lastUpdateTime
 
     fun reloadData() {
         if (isEnabled) {
@@ -340,7 +339,7 @@ class AppService protected constructor(private val handler: Handler, private val
         if (alarmManager == null && dataConsumerContainer.isEmpty && backgroundPeriod > 0) {
             Log.v(Main.LOG_TAG, "AppService.createAlarm() with backgroundPeriod=%d".format(backgroundPeriod))
             val intent = Intent(this, AppService::class.java)
-            intent.setAction(RETRIEVE_DATA_ACTION)
+            intent.action = RETRIEVE_DATA_ACTION
             pendingIntent = PendingIntent.getService(this, 0, intent, 0)
 
             val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager?

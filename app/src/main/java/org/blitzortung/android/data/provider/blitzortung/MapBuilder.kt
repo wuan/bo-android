@@ -19,8 +19,6 @@
 package org.blitzortung.android.data.provider.blitzortung
 
 import android.text.Html
-import android.util.Log
-import org.blitzortung.android.app.Main
 import java.util.*
 
 abstract class MapBuilder<T> internal constructor(private val lineSplitter: (String) -> Array<String>) {

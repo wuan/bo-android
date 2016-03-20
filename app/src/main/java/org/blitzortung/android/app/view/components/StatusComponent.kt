@@ -28,8 +28,6 @@ import org.blitzortung.android.alert.AlertLabelHandler
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.helper.ViewHelper
-import org.blitzortung.android.util.TabletAwareView
 
 class StatusComponent(activity: Activity) : AlertLabel {
 

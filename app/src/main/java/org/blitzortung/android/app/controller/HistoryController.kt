@@ -29,7 +29,6 @@ import org.blitzortung.android.data.DataChannel
 import org.blitzortung.android.data.DataHandler
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.Event
-import java.util.*
 
 class HistoryController(activity: Activity, private val buttonHandler: ButtonColumnHandler<ImageButton, ButtonGroup>) {
 

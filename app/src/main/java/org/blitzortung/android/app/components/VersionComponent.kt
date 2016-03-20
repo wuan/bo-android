@@ -19,11 +19,7 @@
 package org.blitzortung.android.app.components
 
 import android.content.Context
-import android.content.SharedPreferences
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
 import android.util.Log
-
 import org.blitzortung.android.app.Main
 
 class VersionComponent(context: Context) {

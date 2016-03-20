@@ -22,12 +22,9 @@ import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.Shape
-import android.location.Location
-
 import com.google.android.maps.GeoPoint
 import com.google.android.maps.OverlayItem
 import com.google.android.maps.Projection
-
 import org.blitzortung.android.data.Coordsys
 import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Strike

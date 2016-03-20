@@ -476,7 +476,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         participantsOverlay.clear()
     }
 
-    override fun onCreateDialog(id: Int): Dialog? {
+    override fun onCreateDialog(id: Int, args: Bundle): Dialog? {
         return when (id) {
             R.id.info_dialog -> InfoDialog(this, versionComponent)
 

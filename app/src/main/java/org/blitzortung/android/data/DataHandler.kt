@@ -49,8 +49,6 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
 
     private var parametersController: ParametersController? = null
     private var dataEventConsumer: ((DataEvent) -> Unit)? = null
-    private var preferencesRasterBaselength: Int = 0
-    private var preferencesRegion: Int = 0
 
     private var dataMode = DataMode()
 

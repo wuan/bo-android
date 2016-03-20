@@ -46,7 +46,7 @@ class OwnLocationOverlay(context: Context, mapView: OwnMapView) : ItemizedOverla
     val locationEventConsumer: (LocationEvent) -> Unit = { event ->
         val location = event.location
 
-        item = if (location != null) OwnLocationOverlayItem(location, 25000f) else item
+        item = if (location != null) OwnLocationOverlayItem(location) else item
 
         populate()
         refresh()

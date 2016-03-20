@@ -32,7 +32,6 @@ import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.overlay.color.ColorHandler
 import org.blitzortung.android.util.TabletAwareView
@@ -247,10 +246,10 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletA
             temporaryCanvas = Canvas(temporaryBitmap)
         }
         background.color = colorHandler!!.backgroundColor
-        background.setXfermode(XFERMODE_CLEAR)
+        background.xfermode = XFERMODE_CLEAR
         temporaryCanvas!!.drawPaint(background)
 
-        background.setXfermode(XFERMODE_SRC)
+        background.xfermode = XFERMODE_SRC
     }
 
     fun setColorHandler(colorHandler: ColorHandler, intervalDuration: Int) {

@@ -24,4 +24,4 @@ import com.google.android.maps.OverlayItem
 
 import org.blitzortung.android.data.Coordsys
 
-class OwnLocationOverlayItem(location: Location, val radius: Float) : OverlayItem(Coordsys.toMapCoords(location.longitude.toFloat(), location.latitude.toFloat()), "", "")
+class OwnLocationOverlayItem(location: Location) : OverlayItem(Coordsys.toMapCoords(location.longitude.toFloat(), location.latitude.toFloat()), "", "")
