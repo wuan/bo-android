@@ -49,8 +49,7 @@ class JsonRpcDataProvider(serviceUrl : String? = null) : DataProvider() {
         Log.v(Main.LOG_TAG, "JsonRpcDataProvider(${this.serviceUrl})")
     }
 
-    override val type: DataProviderType
-        get() = DataProviderType.RPC
+    override val type: DataProviderType = DataProviderType.RPC
 
     private fun setUpClient(): JsonRpcClient {
         val pInfo = pInfo
@@ -67,8 +66,7 @@ class JsonRpcDataProvider(serviceUrl : String? = null) : DataProvider() {
         nextId = 0
     }
 
-    override val isCapableOfHistoricalData: Boolean
-        get() = true
+    override val isCapableOfHistoricalData: Boolean = true
 
     @Throws(JSONException::class)
     private fun addStrikes(response: JSONObject, result: ResultEvent): ResultEvent {

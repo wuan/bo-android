@@ -98,15 +98,13 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
         return strokeList
     }
 
-    override val type: DataProviderType
-        get() = DataProviderType.HTTP
+    override val type: DataProviderType = DataProviderType.HTTP
 
     override fun reset() {
         latestTime = 0
     }
 
-    override val isCapableOfHistoricalData: Boolean
-        get() = false
+    override val isCapableOfHistoricalData: Boolean = false
 
     enum class Type {
         STRIKES, STATIONS
