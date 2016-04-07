@@ -47,58 +47,9 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
         stationMapBuilder = mapBuilderFactory.createStationMapBuilder()
     }
 
-    override fun getStrikes(parameters: Parameters, resultEvent: ResultEvent): ResultEvent {
-        var result = resultEvent
-        if (parameters != this.parameters) {
-            strikes = emptyList()
-            latestTime = 0L
-        }
-
-        val intervalDuration = parameters.intervalDuration
-        val region = parameters.region
-
-        val tz = TimeZone.getTimeZone("UTC")
-        val intervalTime = GregorianCalendar(tz)
-
-        val startTime = System.currentTimeMillis() - intervalDuration * 60 * 1000
-        val intervalSequence = createTimestampSequence(10 * 60 * 1000L, Math.max(latestTime, startTime))
-
-        val strikes = retrieveData("BlitzortungHttpDataProvider: read %d bytes (%d new strikes) from region $region",
-                intervalSequence.map { startTime ->
-                    intervalTime.timeInMillis = startTime
-
-                    return@map readFromUrl(Type.STRIKES, region, intervalTime)
-                }, { strikeMapBuilder.buildFromLine(it) })
-
-        if (latestTime > 0L) {
-            result = result.copy(incrementalData = true)
-            val expireTime = result.referenceTime - (parameters.intervalDuration - parameters.intervalOffset) * 60 * 1000
-            this.strikes = this.strikes.filter { it.timestamp > expireTime }
-            this.strikes += strikes
-        } else {
-            this.strikes = strikes
-        }
-
-        if (strikes.count() > 0) {
-            //TODO Maybe we should get the maximum timestamp from strikes instead of the last?
-            latestTime = strikes.last().timestamp
-        }
-
-        result = result.copy(strikes = strikes, totalStrikes =this.strikes)
-
-        this.parameters = parameters
-        return result
-    }
-
-    override fun getStrikesGrid(parameters: Parameters, result: ResultEvent): ResultEvent {
-        return result
-    }
-
     private fun readFromUrl(type: Type, region: Int, intervalTime: Calendar? = null): BufferedReader? {
 
         val useGzipCompression = type == Type.STATIONS
-
-        Authenticator.setDefault(MyAuthenticator())
 
         val reader: BufferedReader
 
@@ -133,11 +84,6 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
     private fun <T : Any> retrieveData(logMessage: String, readerSeq: Sequence<BufferedReader?>, parse: (String) -> T?): List<T> {
         var size = 0
 
-        val username = username
-        val password = password
-        if (username == null || password == null)
-            throw RuntimeException("no credentials provided")
-
         val strokeSequence: Sequence<T> = readerSeq.filterNotNull().flatMap { reader ->
             reader.lineSequence().mapNotNull { line ->
                 size += line.length
@@ -152,37 +98,80 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
         return strokeList
     }
 
-    override fun getStations(region: Int): List<Station> {
-        return retrieveData("BlitzortungHttpProvider: read %d bytes (%d stations) from region $region",
-                sequenceOf(readFromUrl(Type.STATIONS, region))) {
-            stationMapBuilder.buildFromLine(it)
-        }
-    }
-
-    override val type: DataProviderType
-        get() = DataProviderType.HTTP
-
-    override fun setUp() {
-    }
-
-    override fun shutDown() {
-    }
+    override val type: DataProviderType = DataProviderType.HTTP
 
     override fun reset() {
         latestTime = 0
     }
 
-    override val isCapableOfHistoricalData: Boolean
-        get() = false
+    override val isCapableOfHistoricalData: Boolean = false
 
     enum class Type {
         STRIKES, STATIONS
     }
 
-    private inner class MyAuthenticator : Authenticator() {
-        override fun getPasswordAuthentication(): PasswordAuthentication {
-            return PasswordAuthentication(username, password?.toCharArray())
+    override fun <T> retrieveData(username: String?, password: String?, retrieve: DataRetriever.() -> T): T {
+        setCredentials(username, password)
+
+        return Retriever().retrieve()
+    }
+
+    private inner class Retriever: DataRetriever {
+        override fun getStrikes(parameters: Parameters, result: ResultEvent): ResultEvent {
+            var result = result
+            val intervalDuration = parameters.intervalDuration
+            val region = parameters.region
+
+            val tz = TimeZone.getTimeZone("UTC")
+            val intervalTime = GregorianCalendar(tz)
+
+            val startTime = System.currentTimeMillis() - intervalDuration * 60 * 1000
+            val intervalSequence = createTimestampSequence(10 * 6 * 1000L, Math.max(latestTime, startTime))
+
+            val strikes = retrieveData("BlitzortungHttpDataProvider: read %d bytes (%d new strikes) from region $region",
+                    intervalSequence.map {
+                        intervalTime.timeInMillis = it
+
+                        return@map readFromUrl(Type.STRIKES, region, intervalTime)
+                    }, { strikeMapBuilder.buildFromLine(it) })
+
+            if (latestTime > 0L) {
+                result = result.copy(incrementalData = true)
+            }
+
+            if (strikes.count() > 0) {
+                //TODO Maybe we should get the maximum timestamp from strikes instead of the last?
+                latestTime = strikes[strikes.lastIndex].timestamp
+            }
+
+            result = result.copy(strikes = strikes)
+
+            return result
+        }
+
+        override fun getStrikesGrid(parameters: Parameters, result: ResultEvent): ResultEvent {
+            return result
+        }
+
+        override fun getStations(region: Int): List<Station> {
+            return retrieveData("BlitzortungHttpProvider: read %d bytes (%d stations) from region $region",
+                    sequenceOf(readFromUrl(Type.STATIONS, region))) {
+                stationMapBuilder.buildFromLine(it)
+            }
         }
     }
 
+    private fun setCredentials(username: String?, password: String?) {
+        if (username == null || password == null)
+            throw RuntimeException("no credentials provided")
+
+        Authenticator.setDefault(MyAuthenticator(username, password.toCharArray()))
+    }
+
+
+    private class MyAuthenticator(val username: String, val password: CharArray) : Authenticator() {
+        override fun getPasswordAuthentication(): PasswordAuthentication {
+            return PasswordAuthentication(username, password)
+        }
+    }
 }

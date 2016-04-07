@@ -230,20 +230,21 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
                 try {
                     var result = ResultEvent(referenceTime = System.currentTimeMillis(), parameters = parameters)
 
-                    dataProvider!!.setUp()
-                    dataProvider!!.setCredentials(username!!, password!!)
+                    dataProvider!!.retrieveData(username, password) {
+                        if (parameters.isRaster()) {
+                            result = getStrikesGrid(parameters, result)
+                        } else {
+                            result = getStrikes(parameters, result)
+                        }
 
-                    if (parameters.isRaster()) {
-                        result = dataProvider!!.getStrikesGrid(parameters, result)
-                    } else {
-                        result = dataProvider!!.getStrikes(parameters, result)
+                        /*if (taskParameters.updateParticipants) {
+                            result.copy(stations = getStations(parameters.region))
+                        }*/
                     }
 
                     /*if (taskParameters.updateParticipants) {
                         result.copy(stations = dataProvider!!.getStations(parameters.region))
                     }*/
-
-                    dataProvider!!.shutDown()
 
                     return result
                 } catch (e: RuntimeException) {
