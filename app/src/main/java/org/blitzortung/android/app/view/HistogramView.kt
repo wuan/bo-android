@@ -32,7 +32,7 @@ import org.blitzortung.android.map.overlay.StrikesOverlay
 import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.TabletAwareView
 
-class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletAwareView(context, attrs, defStyle) {
+class HistogramView(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : TabletAwareView(context, attrs, defStyle) {
 
     private val backgroundPaint: Paint
     private val foregroundPaint: Paint
@@ -48,14 +48,6 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tab
         }
     }
 
-    @SuppressWarnings("unused")
-    constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0) {
-    }
-
-    @SuppressWarnings("unused")
-    constructor(context: Context) : this(context, null, 0) {
-    }
-
     init {
         foregroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
@@ -63,17 +55,20 @@ class HistogramView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tab
         backgroundPaint.color = context.resources.getColor(R.color.translucent_background)
 
         defaultForegroundColor = context.resources.getColor(R.color.text_foreground)
-        textPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-        textPaint.color = defaultForegroundColor
-        textPaint.textSize = textSize
-        textPaint.textAlign = Paint.Align.RIGHT
+        textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = defaultForegroundColor
+            textSize = textSize
+            textAlign = Paint.Align.RIGHT
+        }
 
         backgroundRect = RectF()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val parentWidth = View.MeasureSpec.getSize(widthMeasureSpec) * sizeFactor
-        val parentHeight = View.MeasureSpec.getSize(heightMeasureSpec) * sizeFactor
+        val getSize = fun(spec: Int) = View.MeasureSpec.getSize(spec)
+
+        val parentWidth = getSize(widthMeasureSpec) * sizeFactor
+        val parentHeight = getSize(heightMeasureSpec) * sizeFactor
 
         super.onMeasure(View.MeasureSpec.makeMeasureSpec(parentWidth.toInt(), View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(parentHeight.toInt(), View.MeasureSpec.EXACTLY))

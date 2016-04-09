@@ -36,7 +36,7 @@ import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.overlay.color.ColorHandler
 import org.blitzortung.android.util.TabletAwareView
 
-class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletAwareView(context, attrs, defStyle) {
+class AlertView(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : TabletAwareView(context, attrs, defStyle) {
     private val arcArea = RectF()
     private val background = Paint()
     private val sectorPaint = Paint()
@@ -70,23 +70,19 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletA
         invalidate()
     }
 
-    @SuppressWarnings("unused")
-    constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0) {
-    }
-
-    @SuppressWarnings("unused")
-    constructor(context: Context) : this(context, null, 0) {
-    }
-
     init {
         alarmNotAvailableTextLines = context.getString(R.string.alarms_not_available)
                 .split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
-        lines.color = 0xff404040.toInt()
-        lines.style = Style.STROKE
+        with(lines) {
+            color = 0xff404040.toInt()
+            style = Style.STROKE
+        }
 
-        textStyle.color = 0xff404040.toInt()
-        textStyle.textSize = 0.8f * textSize * TabletAwareView.textSizeFactor(context)
+        with(textStyle) {
+            color = 0xff404040.toInt()
+            textSize = 0.8f * textSize * TabletAwareView.textSizeFactor(context)
+        }
 
         background.color = 0xffb0b0b0.toInt()
     }
@@ -96,8 +92,10 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletA
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val parentWidth = View.MeasureSpec.getSize(widthMeasureSpec) * sizeFactor
-        val parentHeight = View.MeasureSpec.getSize(heightMeasureSpec) * sizeFactor
+        val getSize = fun(spec: Int) = View.MeasureSpec.getSize(spec)
+
+        val parentWidth = getSize(widthMeasureSpec) * sizeFactor
+        val parentHeight = getSize(heightMeasureSpec) * sizeFactor
 
         val size = Math.min(parentWidth.toInt(), parentHeight.toInt())
 
@@ -131,11 +129,15 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletA
                 val radiusIncrement = radius / rangeStepCount
                 val sectorWidth = (360 / alertParameters.sectorLabels.size).toFloat()
 
-                lines.color = colorHandler!!.lineColor
-                lines.strokeWidth = (size / 150).toFloat()
+                with(lines) {
+                    color = colorHandler!!.lineColor
+                    strokeWidth = (size / 150).toFloat()
+                }
 
-                textStyle.textAlign = Align.CENTER
-                textStyle.color = colorHandler!!.textColor
+                with(textStyle) {
+                    textAlign = Align.CENTER
+                    color = colorHandler!!.textColor
+                }
 
                 val actualTime = System.currentTimeMillis()
 
@@ -201,16 +203,19 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletA
     }
 
     private fun drawAlertOrLocationMissingMessage(center: Float, canvas: Canvas) {
-        warnText.color = 0xffa00000.toInt()
-        warnText.textAlign = Align.CENTER
-        warnText.textSize = DEFAULT_FONT_SIZE.toFloat()
+        with(warnText) {
+            color = 0xffa00000.toInt()
+            textAlign = Align.CENTER
+            textSize = DEFAULT_FONT_SIZE.toFloat()
 
-        val maxWidth = alarmNotAvailableTextLines.map { warnText.measureText(it) }.max()
-                ?: width.toFloat() - 20
-        val scale = (width - 20).toFloat() / maxWidth
+            val maxWidth = alarmNotAvailableTextLines.map { warnText.measureText(it) }.max()
+                    ?: width.toFloat() - 20
+            val scale = (width - 20).toFloat() / maxWidth
 
-        //Now scale the text so we can use the whole width of the canvas
-        warnText.textSize = scale * DEFAULT_FONT_SIZE
+            //Now scale the text so we can use the whole width of the canvas
+            textSize = scale * DEFAULT_FONT_SIZE
+        }
+
 
         for (line in alarmNotAvailableTextLines.indices) {
             canvas.drawText(alarmNotAvailableTextLines[line], center, center + (line - 1) * warnText.getFontMetrics(null), warnText)
@@ -218,8 +223,10 @@ class AlertView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletA
     }
 
     private fun drawOwnLocationSymbol(center: Float, radius: Float, size: Int, temporaryCanvas: Canvas) {
-        lines.color = colorHandler!!.lineColor
-        lines.strokeWidth = (size / 80).toFloat()
+        with(lines) {
+            color = colorHandler!!.lineColor
+            strokeWidth = (size / 80).toFloat()
+        }
 
         val largeRadius = radius * 0.8f
         val leftTop = center - largeRadius
