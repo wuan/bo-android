@@ -36,7 +36,11 @@ import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.overlay.color.ColorHandler
 import org.blitzortung.android.util.TabletAwareView
 
-class AlertView(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : TabletAwareView(context, attrs, defStyle) {
+class AlertView @JvmOverloads constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0
+) : TabletAwareView(context, attrs, defStyle) {
     private val arcArea = RectF()
     private val background = Paint()
     private val sectorPaint = Paint()
@@ -81,7 +85,7 @@ class AlertView(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0
 
         with(textStyle) {
             color = 0xff404040.toInt()
-            textSize = 0.8f * textSize * TabletAwareView.textSizeFactor(context)
+            textSize = 0.8f * this@AlertView.textSize * TabletAwareView.textSizeFactor(context)
         }
 
         background.color = 0xffb0b0b0.toInt()

@@ -32,7 +32,11 @@ import org.blitzortung.android.map.overlay.StrikesOverlay
 import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.TabletAwareView
 
-class HistogramView(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : TabletAwareView(context, attrs, defStyle) {
+class HistogramView @JvmOverloads constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0
+) : TabletAwareView(context, attrs, defStyle) {
 
     private val backgroundPaint: Paint
     private val foregroundPaint: Paint

@@ -21,7 +21,9 @@ package org.blitzortung.android.app
 import android.Manifest
 import android.annotation.TargetApi
 import android.app.Dialog
-import android.content.*
+import android.content.ComponentName
+import android.content.ServiceConnection
+import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -38,18 +40,21 @@ import android.view.*
 import android.widget.ImageButton
 import android.widget.Toast
 import com.google.android.maps.GeoPoint
+import kotlinx.android.synthetic.main.map_overlay.*
+import kotlinx.android.synthetic.main.main.mapview as prod_mapview
+import kotlinx.android.synthetic.main.main_debug.mapview as debug_mapview
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
-import org.blitzortung.android.app.view.*
+import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
+import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.result.*
 import org.blitzortung.android.dialogs.*
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.map.OwnMapActivity
-import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.overlay.FadeOverlay
 import org.blitzortung.android.map.overlay.OwnLocationOverlay
 import org.blitzortung.android.map.overlay.ParticipantsOverlay
@@ -60,7 +65,6 @@ import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startActivity
-import kotlinx.android.synthetic.main.map_overlay.*
 
 class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private val androidIdsForExtendedFunctionality = setOf("44095eb4f9f1a6a6", "f2be4516e5843964")
@@ -162,7 +166,8 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         versionComponent = VersionComponent(this.applicationContext)
 
-        setContentView(if (isDebugBuild) R.layout.main_debug else R.layout.main)
+        val mapView = if (isDebugBuild) debug_mapview else prod_mapview
+        setContentView(mapView.id)
 
         mapView.setBuiltInZoomControls(true)
         this.mapView = mapView
@@ -278,7 +283,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     private fun setupCustomViews() {
         with(legend_view) {
-            strikesOverlay = strikesOverlay
+            strikesOverlay = this@Main.strikesOverlay
             setAlpha(150)
             setOnClickListener { v -> openQuickSettingsDialog() }
         }

@@ -29,7 +29,11 @@ import org.blitzortung.android.app.R
 import org.blitzortung.android.map.overlay.StrikesOverlay
 import org.blitzortung.android.util.TabletAwareView
 
-class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : TabletAwareView(context, attrs, defStyle) {
+class LegendView @JvmOverloads constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0
+) : TabletAwareView(context, attrs, defStyle) {
     private val colorFieldSize: Float
     private val textPaint: Paint
     private val rasterTextPaint: Paint
@@ -40,14 +44,6 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tablet
     private val backgroundRect: RectF
     private val legendColorRect: RectF
     var strikesOverlay: StrikesOverlay? = null
-
-    @SuppressWarnings("unused")
-    constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0) {
-    }
-
-    @SuppressWarnings("unused")
-    constructor(context: Context) : this(context, null, 0) {
-    }
 
     init {
         colorFieldSize = textSize
@@ -63,24 +59,24 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tablet
 
         textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = -1
-            textSize = textSize
+            textSize = this@LegendView.textSize
         }
 
         rasterTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = -1
-            textSize = textSize * RASTER_HEIGHT
+            textSize = this@LegendView.textSize * RASTER_HEIGHT
             textAlign = Paint.Align.CENTER
         }
 
         regionTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = -1
-            textSize = textSize * REGION_HEIGHT
+            textSize = this@LegendView.textSize * REGION_HEIGHT
             textAlign = Paint.Align.CENTER
         }
 
         countThresholdTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = -1
-            textSize = textSize * COUNT_THRESHOLD_HEIGHT
+            textSize = this@LegendView.textSize * COUNT_THRESHOLD_HEIGHT
             textAlign = Paint.Align.CENTER
         }
 
@@ -105,19 +101,22 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tablet
 
         val width = Math.min(determineWidth(strikesOverlay?.parameters?.intervalDuration ?: 0), parentWidth.toFloat())
 
-        val colorHandler = strikesOverlay!!.getColorHandler()
+        val colorHandler = strikesOverlay?.getColorHandler()
 
-        var height = Math.min((colorFieldSize + padding) * colorHandler.colors.size + padding, parentHeight.toFloat())
+        var height = 0.0f;
+        if (colorHandler != null) {
+            height = Math.min((colorFieldSize + padding) * colorHandler.colors.size + padding, parentHeight.toFloat())
 
-        if (hasRegion()) {
-            height += colorFieldSize * REGION_HEIGHT + padding
-        }
+            if (hasRegion()) {
+                height += colorFieldSize * REGION_HEIGHT + padding
+            }
 
-        if (hasRaster()) {
-            height += colorFieldSize * RASTER_HEIGHT + padding
+            if (hasRaster()) {
+                height += colorFieldSize * RASTER_HEIGHT + padding
 
-            if (hasCountThreshold()) {
-                height += colorFieldSize * COUNT_THRESHOLD_HEIGHT + padding
+                if (hasCountThreshold()) {
+                    height += colorFieldSize * COUNT_THRESHOLD_HEIGHT + padding
+                }
             }
         }
 

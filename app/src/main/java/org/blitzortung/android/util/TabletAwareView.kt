@@ -25,7 +25,11 @@ import android.view.View
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
 
-open class TabletAwareView(context: Context, attrs: AttributeSet?, defStyle: Int) : View(context, attrs, defStyle) {
+open class TabletAwareView(
+        context: Context,
+        attrs: AttributeSet?,
+        defStyle: Int
+) : View(context, attrs, defStyle) {
 
     protected val padding: Float
     protected val textSize: Float
