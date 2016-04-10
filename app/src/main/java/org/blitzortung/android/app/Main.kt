@@ -58,6 +58,9 @@ import org.blitzortung.android.map.overlay.color.ParticipantColorHandler
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.startActivity
+import kotlinx.android.synthetic.main.map_overlay.*
 
 class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private val androidIdsForExtendedFunctionality = setOf("44095eb4f9f1a6a6", "f2be4516e5843964")
@@ -76,9 +79,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private lateinit var historyController: HistoryController
     private var appService: AppService? = null
     private var serviceConnection: ServiceConnection? = null
-    private lateinit var legendView: LegendView
-    private lateinit var histogramView: HistogramView
-    private lateinit var alertView: AlertView
 
     private var currentResult: ResultEvent? = null
 
@@ -88,11 +88,8 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             statusComponent.startProgress()
         } else if (event is ResultEvent) {
 
-            if (event.failed) {
-                statusComponent.indicateError(true)
-            } else {
-                statusComponent.indicateError(false)
-
+            statusComponent.indicateError(event.failed)
+            if (!event.failed) {
                 if (event.parameters!!.intervalDuration != appService!!.dataHandler().intervalDuration) {
                     reloadData()
                 }
@@ -106,9 +103,11 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 clearDataIfRequested()
 
                 val initializeOverlay = strikesOverlay.parameters != resultParameters
-                strikesOverlay.parameters = resultParameters
-                strikesOverlay.rasterParameters = event.rasterParameters
-                strikesOverlay.referenceTime = event.referenceTime
+                with(strikesOverlay) {
+                    parameters = resultParameters
+                    rasterParameters = event.rasterParameters
+                    referenceTime = event.referenceTime
+                }
 
                 if (event.incrementalData && !initializeOverlay) {
                     strikesOverlay.expireStrikes()
@@ -122,18 +121,18 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                     strikesOverlay.addStrikes(event.strikes)
                 }
 
-                alertView.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.parameters.intervalDuration)
+                alert_view.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.parameters.intervalDuration)
 
                 strikesOverlay.refresh()
-                legendView.requestLayout()
+
+                legend_view.requestLayout()
 
                 if (!event.containsRealtimeData()) {
                     setHistoricStatusString()
                 }
 
-                var stations = event.stations
-                if (stations != null) {
-                    participantsOverlay.setParticipants(stations)
+                event.stations?.run {
+                    participantsOverlay.setParticipants(this)
                     participantsOverlay.refresh()
                 }
             }
@@ -143,7 +142,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             buttonColumnHandler.unlockButtonColumn(ButtonGroup.DATA_UPDATING)
 
             mapView.invalidate()
-            legendView.invalidate()
+            legend_view.invalidate()
         } else if (event is ClearDataEvent) {
             clearData()
         } else if (event is StatusEvent) {
@@ -165,7 +164,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         setContentView(if (isDebugBuild) R.layout.main_debug else R.layout.main)
 
-        val mapView = findViewById(R.id.mapview) as OwnMapView
         mapView.setBuiltInZoomControls(true)
         this.mapView = mapView
 
@@ -223,7 +221,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun createAndBindToDataService() {
-        val serviceIntent = Intent(this, AppService::class.java)
+        val serviceIntent = intentFor<AppService>()
 
         startService(serviceIntent)
 
@@ -243,20 +241,19 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun setupService() {
-        val appService = this.appService
+        appService?.run {
+            historyController.setAppService(this)
 
-        if (appService != null) {
-            historyController.setAppService(appService)
-            appService.addDataConsumer(historyController.dataConsumer)
-            appService.addDataConsumer(dataEventConsumer)
+            addDataConsumer(historyController.dataConsumer)
+            addDataConsumer(dataEventConsumer)
 
-            appService.addLocationConsumer(ownLocationOverlay.locationEventConsumer)
-            appService.addDataConsumer(histogramView.dataConsumer)
+            addLocationConsumer(ownLocationOverlay.locationEventConsumer)
+            addDataConsumer(histogram_view.dataConsumer)
 
-            appService.addLocationConsumer(alertView.locationEventConsumer)
-            appService.addAlertConsumer(alertView.alertEventConsumer)
+            addLocationConsumer(alert_view.locationEventConsumer)
+            addAlertConsumer(alert_view.alertEventConsumer)
 
-            appService.addAlertConsumer(statusComponent.alertEventConsumer)
+            addAlertConsumer(statusComponent.alertEventConsumer)
         }
     }
 
@@ -264,52 +261,57 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         val androidId = Settings.Secure.getString(baseContext.contentResolver, Settings.Secure.ANDROID_ID)
         Log.v(Main.LOG_TAG, "AndroidId: $androidId")
         if ((androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
-            val rasterToggle = findViewById(R.id.toggleExtendedMode) as ImageButton
-            rasterToggle.isEnabled = true
-            rasterToggle.visibility = View.VISIBLE
+            with(toggleExtendedMode) {
+                isEnabled = true
+                visibility = View.VISIBLE
 
-            rasterToggle.setOnClickListener { v ->
-                buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
-                appService!!.dataHandler().toggleExtendedMode()
-                reloadData()
+                setOnClickListener { v ->
+                    buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
+                    appService!!.dataHandler().toggleExtendedMode()
+                    reloadData()
+                }
+
+                buttonColumnHandler.addElement(this, ButtonGroup.DATA_UPDATING)
             }
-            buttonColumnHandler.addElement(rasterToggle, ButtonGroup.DATA_UPDATING)
         }
     }
 
     private fun setupCustomViews() {
-        legendView = findViewById(R.id.legend_view) as LegendView
-        legendView.strikesOverlay = strikesOverlay
-        legendView.setAlpha(150)
-        legendView.setOnClickListener { v -> openQuickSettingsDialog() }
+        with(legend_view) {
+            strikesOverlay = strikesOverlay
+            setAlpha(150)
+            setOnClickListener { v -> openQuickSettingsDialog() }
+        }
 
-        alertView = findViewById(R.id.alert_view) as AlertView
-        alertView.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.parameters.intervalDuration)
-        alertView.setBackgroundColor(Color.TRANSPARENT)
-        alertView.setAlpha(200)
-        alertView.setOnClickListener { view ->
-            val alertHandler = appService!!.alertHandler
-            if (alertHandler.isAlertEnabled) {
-                val currentLocation = alertHandler.currentLocation
-                if (currentLocation != null) {
-                    var radius = determineTargetZoomRadius(alertHandler)
+        with(alert_view) {
+            setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.parameters.intervalDuration)
+            setBackgroundColor(Color.TRANSPARENT)
+            setAlpha(200)
+            setOnClickListener { view ->
+                val alertHandler = appService!!.alertHandler
+                if (alertHandler.isAlertEnabled) {
+                    val currentLocation = alertHandler.currentLocation
+                    if (currentLocation != null) {
+                        var radius = determineTargetZoomRadius(alertHandler)
 
-                    val diameter = 1.5f * 2f * radius
-                    animateToLocationAndVisibleSize(currentLocation.longitude, currentLocation.latitude, diameter)
+                        val diameter = 1.5f * 2f * radius
+                        animateToLocationAndVisibleSize(currentLocation.longitude, currentLocation.latitude, diameter)
+                    }
                 }
             }
         }
 
-        histogramView = findViewById(R.id.histogram_view) as HistogramView
-        histogramView.setStrikesOverlay(strikesOverlay)
-        histogramView.setOnClickListener { view ->
-            val currentResult = currentResult
-            if (currentResult != null) {
-                val rasterParameters = currentResult.rasterParameters
-                if (rasterParameters != null) {
-                    animateToLocationAndVisibleSize(rasterParameters.rectCenterLongitude.toDouble(), rasterParameters.rectCenterLatitude.toDouble(), 5000f)
-                } else {
-                    animateToLocationAndVisibleSize(0.0, 0.0, 20000f)
+        with(histogram_view) {
+            setStrikesOverlay(strikesOverlay)
+            setOnClickListener { view ->
+                val currentResult = currentResult
+                if (currentResult != null) {
+                    val rasterParameters = currentResult.rasterParameters
+                    if (rasterParameters != null) {
+                        animateToLocationAndVisibleSize(rasterParameters.rectCenterLongitude.toDouble(), rasterParameters.rectCenterLatitude.toDouble(), 5000f)
+                    } else {
+                        animateToLocationAndVisibleSize(0.0, 0.0, 20000f)
+                    }
                 }
             }
         }
@@ -394,7 +396,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
             R.id.menu_log -> showDialog(R.id.log_dialog)
 
-            R.id.menu_preferences -> startActivity(Intent(this, Preferences::class.java))
+            R.id.menu_preferences -> startActivity<Preferences>()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -427,24 +429,23 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onStop() {
         super.onStop()
 
-        val appService = appService
-        if (appService != null) {
+        appService?.apply {
             Log.v(Main.LOG_TAG, "Main.onStop() remove listeners")
 
             historyController.setAppService(null)
-            appService.removeDataConsumer(historyController.dataConsumer)
-            appService.removeDataConsumer(dataEventConsumer)
+            removeDataConsumer(historyController.dataConsumer)
+            removeDataConsumer(dataEventConsumer)
 
-            appService.removeLocationConsumer(ownLocationOverlay.locationEventConsumer)
-            appService.removeDataConsumer(histogramView.dataConsumer)
+            removeLocationConsumer(ownLocationOverlay.locationEventConsumer)
+            removeDataConsumer(histogram_view.dataConsumer)
 
-            appService.removeLocationConsumer(alertView.locationEventConsumer)
-            appService.removeAlertListener(alertView.alertEventConsumer)
+            with(alert_view) {
+                removeLocationConsumer(this.locationEventConsumer)
+                removeAlertListener(this.alertEventConsumer)
+            }
 
-            appService.removeAlertListener(statusComponent.alertEventConsumer)
-        } else {
-            Log.i(LOG_TAG, "Main.onStop()")
-        }
+            removeAlertListener(statusComponent.alertEventConsumer)
+        } ?: Log.i(LOG_TAG, "Main.onStop()")
     }
 
     override fun onDestroy() {
@@ -604,10 +605,9 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         if (isAtLeast(Build.VERSION_CODES.LOLLIPOP) ||
                 isAtLeast(Build.VERSION_CODES.ICE_CREAM_SANDWICH) &&
                         !config.hasPermanentMenuKey()) {
-            val menuButton = findViewById(R.id.menu) as ImageButton
-            menuButton.visibility = View.VISIBLE
-            menuButton.setOnClickListener { v -> openOptionsMenu() }
-            buttonColumnHandler.addElement(menuButton)
+            menu.visibility = View.VISIBLE
+            menu.setOnClickListener { v -> openOptionsMenu() }
+            buttonColumnHandler.addElement(menu)
         }
     }
 

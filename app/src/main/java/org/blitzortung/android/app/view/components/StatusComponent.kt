@@ -48,11 +48,13 @@ class StatusComponent(activity: Activity) : AlertLabel {
 
         warning = activity.findViewById(R.id.warning) as TextView
 
-        progressBar = activity.findViewById(R.id.progress) as ProgressBar
-        progressBar.visibility = View.INVISIBLE
+        progressBar = (activity.findViewById(R.id.progress) as ProgressBar).apply {
+            visibility = View.INVISIBLE
+        }
 
-        errorIndicator = activity.findViewById(R.id.error_indicator) as ImageView
-        errorIndicator.visibility = View.INVISIBLE
+        errorIndicator = (activity.findViewById(R.id.error_indicator) as ImageView).apply {
+            visibility = View.INVISIBLE
+        }
 
         alertLabelHandler = AlertLabelHandler(this, activity.resources)
 

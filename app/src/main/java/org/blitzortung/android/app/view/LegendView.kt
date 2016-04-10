@@ -54,30 +54,35 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tablet
 
         foregroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-        backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-        backgroundPaint.color = context.resources.getColor(R.color.translucent_background)
+        backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = context.resources.getColor(R.color.translucent_background)
+        }
 
         backgroundRect = RectF()
         legendColorRect = RectF()
 
-        textPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-        textPaint.color = -1
-        textPaint.textSize = textSize
+        textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = -1
+            textSize = textSize
+        }
 
-        rasterTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-        rasterTextPaint.color = -1
-        rasterTextPaint.textSize = textSize * RASTER_HEIGHT
-        rasterTextPaint.textAlign = Paint.Align.CENTER
+        rasterTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = -1
+            textSize = textSize * RASTER_HEIGHT
+            textAlign = Paint.Align.CENTER
+        }
 
-        regionTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-        regionTextPaint.color = -1
-        regionTextPaint.textSize = textSize * REGION_HEIGHT
-        regionTextPaint.textAlign = Paint.Align.CENTER
+        regionTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = -1
+            textSize = textSize * REGION_HEIGHT
+            textAlign = Paint.Align.CENTER
+        }
 
-        countThresholdTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-        countThresholdTextPaint.color = -1
-        countThresholdTextPaint.textSize = textSize * COUNT_THRESHOLD_HEIGHT
-        countThresholdTextPaint.textAlign = Paint.Align.CENTER
+        countThresholdTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = -1
+            textSize = textSize * COUNT_THRESHOLD_HEIGHT
+            textAlign = Paint.Align.CENTER
+        }
 
         setBackgroundColor(Color.TRANSPARENT)
     }
@@ -93,8 +98,10 @@ class LegendView(context: Context, attrs: AttributeSet?, defStyle: Int) : Tablet
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val parentWidth = View.MeasureSpec.getSize(widthMeasureSpec)
-        val parentHeight = View.MeasureSpec.getSize(heightMeasureSpec)
+        val getSize = fun (spec: Int) = View.MeasureSpec.getSize(spec)
+
+        val parentWidth = getSize(widthMeasureSpec)
+        val parentHeight = getSize(heightMeasureSpec)
 
         val width = Math.min(determineWidth(strikesOverlay?.parameters?.intervalDuration ?: 0), parentWidth.toFloat())
 

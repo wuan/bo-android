@@ -41,10 +41,11 @@ abstract class PopupOverlay<Item : OverlayItem>(val activity: OwnMapActivity, de
         val popUp = map.popup
         map.removeView(popUp)
 
-        val statusText = popUp.findViewById(R.id.popup_text) as TextView
-        statusText.setBackgroundColor(-2013265920)
-        statusText.setPadding(5, 5, 5, 5)
-        statusText.text = text
+        with(popUp.findViewById(R.id.popup_text) as TextView) {
+            setBackgroundColor(-2013265920)
+            setPadding(5, 5, 5, 5)
+            setText(text)
+        }
 
         val mapParams = MapView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
                 location, 0, 0, MapView.LayoutParams.BOTTOM_CENTER)

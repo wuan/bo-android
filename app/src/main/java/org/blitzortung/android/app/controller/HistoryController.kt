@@ -108,12 +108,11 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
     }
 
     private fun addButtonWithAction(activity: Activity, id: Int, action: (View) -> Unit): ImageButton {
-        val button = activity.findViewById(id) as ImageButton
-        buttons.add(button)
-        button.visibility = View.INVISIBLE
-        button.setOnClickListener(action)
-
-        return button
+        return (activity.findViewById(id) as ImageButton).apply {
+            buttons.add(this)
+            visibility = View.INVISIBLE
+            setOnClickListener(action)
+        }
     }
 
     private fun configureForRealtimeOperation() {

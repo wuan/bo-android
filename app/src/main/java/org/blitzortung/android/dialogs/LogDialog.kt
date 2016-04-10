@@ -45,16 +45,17 @@ class LogDialog(
 
         setTitle(context.resources.getText(R.string.app_log))
 
-        val logTextView = findViewById(R.id.log_text) as TextView
-        logTextView.setHorizontallyScrolling(true)
-
         val logLines = logProvider.getLogLines()
-
         val logText = logLines.joinToString("\n")
-        logTextView.text = logText
 
-        val logButton = findViewById(R.id.log_send_email) as Button
-        logButton.setOnClickListener { view -> composeEmail(logText) }
+        with(findViewById(R.id.log_text) as TextView) {
+            setHorizontallyScrolling(true)
+            text = logText
+        }
+
+        with(findViewById(R.id.log_send_email) as Button) {
+            setOnClickListener { view -> composeEmail(logText) }
+        }
     }
 
     fun composeEmail(logText: String) {
