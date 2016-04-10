@@ -41,8 +41,6 @@ import android.widget.ImageButton
 import android.widget.Toast
 import com.google.android.maps.GeoPoint
 import kotlinx.android.synthetic.main.map_overlay.*
-import kotlinx.android.synthetic.main.main.mapview as prod_mapview
-import kotlinx.android.synthetic.main.main_debug.mapview as debug_mapview
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.VersionComponent
@@ -55,6 +53,7 @@ import org.blitzortung.android.data.provider.result.*
 import org.blitzortung.android.dialogs.*
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.map.OwnMapActivity
+import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.overlay.FadeOverlay
 import org.blitzortung.android.map.overlay.OwnLocationOverlay
 import org.blitzortung.android.map.overlay.ParticipantsOverlay
@@ -166,9 +165,9 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         versionComponent = VersionComponent(this.applicationContext)
 
-        val mapView = if (isDebugBuild) debug_mapview else prod_mapview
-        setContentView(mapView.id)
+        setContentView(if (isDebugBuild) R.layout.main_debug else R.layout.main)
 
+        val mapView = findViewById(R.id.mapview) as OwnMapView
         mapView.setBuiltInZoomControls(true)
         this.mapView = mapView
 
