@@ -61,7 +61,7 @@ class HistogramView @JvmOverloads constructor(
         defaultForegroundColor = context.resources.getColor(R.color.text_foreground)
         textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = defaultForegroundColor
-            textSize = textSize
+            textSize = this@HistogramView.textSize
             textAlign = Paint.Align.RIGHT
         }
 
