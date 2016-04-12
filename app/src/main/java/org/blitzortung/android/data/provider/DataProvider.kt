@@ -18,30 +18,39 @@
 
 package org.blitzortung.android.data.provider
 
-import android.content.pm.PackageInfo
-
+import android.content.SharedPreferences
+import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
+import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.Parameters
-import org.blitzortung.android.data.beans.Station
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.blitzortung.BlitzortungHttpDataProvider
+import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.provider.standard.JsonRpcDataProvider
 
-abstract class DataProvider {
-    protected var pInfo: PackageInfo? = null
+interface DataProvider : OnSharedPreferenceChangeListener {
+    fun createResultEvent(parameters: Parameters)
+            = DataEvent(referenceTime = System.currentTimeMillis(), parameters = parameters)
 
-    abstract val type: DataProviderType
+    fun getStrikes(parameters: Parameters): DataEvent
 
-    abstract fun reset()
+    fun reset()
 
-    fun setPackageInfo(pInfo: PackageInfo) {
-        this.pInfo = pInfo
-    }
+    companion object {
 
-    abstract val isCapableOfHistoricalData: Boolean
+        fun createDataProvider(sharedPreferences: SharedPreferences, agentSuffix: String): DataProvider {
+            val providerType = sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.RPC.name).toUpperCase()
 
-    abstract fun <T> retrieveData(username: String?, password: String?, retrieve: DataRetriever.() -> T): T
+            return when (providerType) {
+                DataProviderType.RPC.name ->
+                    JsonRpcDataProvider(agentSuffix, sharedPreferences)
 
-    interface DataRetriever {
-        fun getStrikes(parameters: Parameters, result: ResultEvent): ResultEvent
-        fun getStrikesGrid(parameters: Parameters, result: ResultEvent): ResultEvent
-        fun getStations(region: Int): List<Station>
+                DataProviderType.HTTP.name ->
+                    BlitzortungHttpDataProvider(sharedPreferences)
+
+                else ->
+                    InvalidDataProvider()
+            }
+        }
+
     }
 }

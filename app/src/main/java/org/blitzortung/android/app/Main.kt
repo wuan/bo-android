@@ -1,6 +1,6 @@
 /*
 
-   Copyright 2015 Andreas Würl
+   Copyright 2015, 2016 Andreas Würl
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -21,10 +21,7 @@ package org.blitzortung.android.app
 import android.Manifest
 import android.annotation.TargetApi
 import android.app.Dialog
-import android.content.ComponentName
-import android.content.ServiceConnection
 import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -32,9 +29,7 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.os.IBinder
 import android.preference.PreferenceManager
-import android.provider.Settings
 import android.text.format.DateFormat
 import android.util.Log
 import android.view.*
@@ -47,12 +42,17 @@ import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
+import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.app.view.put
-import org.blitzortung.android.data.provider.result.*
+import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.beans.Strike
+import org.blitzortung.android.data.provider.event.status.*
+import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.dialogs.*
+import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.map.OwnMapActivity
 import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.overlay.FadeOverlay
@@ -63,14 +63,21 @@ import org.blitzortung.android.map.overlay.color.ParticipantColorHandler
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
-import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startActivity
+import rx.Observable
+import rx.Subscription
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
+import rx.subjects.PublishSubject
+import java.util.concurrent.TimeUnit
+import kotlinx.android.synthetic.main.main.mapview as prod_mapview
+import kotlinx.android.synthetic.main.main_debug.mapview as debug_mapview
 
 class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
-    private val androidIdsForExtendedFunctionality = setOf("44095eb4f9f1a6a6", "f2be4516e5843964")
 
     private lateinit var statusComponent: StatusComponent
     private lateinit var versionComponent: VersionComponent
+    private lateinit var parametersComponent: ParametersComponent
 
     private lateinit var strikesOverlay: StrikesOverlay
     private lateinit var participantsOverlay: ParticipantsOverlay
@@ -81,77 +88,89 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private lateinit var buttonColumnHandler: ButtonColumnHandler<ImageButton, ButtonGroup>
 
     private lateinit var historyController: HistoryController
-    private var appService: AppService? = null
-    private var serviceConnection: ServiceConnection? = null
 
-    private var currentResult: ResultEvent? = null
+    private lateinit var stateFragment: StateFragment
+
+    private var updateInterval = 30000L
+    private val errorUpdateInterval: Long = 10000L
+
+    private var timerSubscription: Subscription? = null
+    private var statusSubscription: Subscription? = null
+    private var resultSubscription: Subscription? = null
+    private var parametersSubscription: Subscription? = null
 
     val dataEventConsumer: (DataEvent) -> Unit = { event ->
-        if (event is RequestStartedEvent) {
-            buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
-            statusComponent.startProgress()
-        } else if (event is ResultEvent) {
+        when (event) {
+            is DataEvent -> {
+                statusComponent.indicateError(event.failed)
+                if (!event.failed) {
 
-            statusComponent.indicateError(event.failed)
-            if (!event.failed) {
-                if (event.parameters!!.intervalDuration != appService!!.dataHandler().intervalDuration) {
-                    reloadData()
+                    Log.d(Main.LOG_TAG, "Main.onDataUpdate() " + event)
+
+                    val resultParameters = event.parameters
+
+                    clearDataIfRequested()
+
+                    val countStrikes: (Int, Strike) -> Int = { count, strike -> count + strike.multiplicity }
+                    val numberOfStrikes = event.totalStrikes?.fold(0, countStrikes) ?: event.strikes?.fold(0, countStrikes) ?: 0
+                    val intervalDuration = event.parameters.intervalDuration
+                    var statusText = """${resources.getQuantityString(R.plurals.strike, numberOfStrikes, numberOfStrikes)}/${resources.getQuantityString(R.plurals.minute, intervalDuration, intervalDuration)}"""
+                    statusObservable.onNext(DataStatusUpdateEvent(statusText))
+                    if (!event.containsRealtimeData()) {
+                        val referenceTime = event.referenceTime + event.parameters.intervalOffset * 60 * 1000
+                        val timeString = DateFormat.format("@ kk:mm", referenceTime) as String
+                        statusObservable.onNext(TimeStatusUpdateEvent(timeString))
+                    }
+
+                    val initializeOverlay = strikesOverlay.parameters != resultParameters
+                    with(strikesOverlay) {
+                        parameters = resultParameters
+                        rasterParameters = event.rasterParameters
+                        referenceTime = event.referenceTime
+                    }
+
+                    if (event.incrementalData && !initializeOverlay) {
+                        Log.v(LOG_TAG, "expire strikes")
+                        strikesOverlay.expireStrikes()
+                    } else {
+                        Log.v(LOG_TAG, "clear strikes")
+                        strikesOverlay.clear()
+                    }
+
+                    if (initializeOverlay && event.totalStrikes != null) {
+                        Log.v(LOG_TAG, "add total strikes")
+                        strikesOverlay.addStrikes(event.totalStrikes)
+                    } else if (event.strikes != null) {
+                        Log.v(LOG_TAG, "add strikes")
+                        strikesOverlay.addStrikes(event.strikes)
+                    }
+
+                    alert_view.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.parameters.intervalDuration)
+
+                    strikesOverlay.refresh()
+
+                    legend_view.requestLayout()
+
+                    event.stations?.run {
+                        participantsOverlay.setParticipants(this)
+                        participantsOverlay.refresh()
+                    }
                 }
 
-                currentResult = event
-
-                Log.d(Main.LOG_TAG, "Main.onDataUpdate() " + event)
-
-                val resultParameters = event.parameters
-
-                clearDataIfRequested()
-
-                val initializeOverlay = strikesOverlay.parameters != resultParameters
-                with(strikesOverlay) {
-                    parameters = resultParameters
-                    rasterParameters = event.rasterParameters
-                    referenceTime = event.referenceTime
-                }
-
-                if (event.incrementalData && !initializeOverlay) {
-                    strikesOverlay.expireStrikes()
-                } else {
-                    strikesOverlay.clear()
-                }
-
-                if (initializeOverlay && event.totalStrikes != null) {
-                    strikesOverlay.addStrikes(event.totalStrikes)
-                } else if (event.strikes != null) {
-                    strikesOverlay.addStrikes(event.strikes)
-                }
-
-                alert_view.setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.parameters.intervalDuration)
-
-                strikesOverlay.refresh()
-
-                legend_view.requestLayout()
-
-                if (!event.containsRealtimeData()) {
-                    setHistoricStatusString()
-                }
-
-                event.stations?.run {
-                    participantsOverlay.setParticipants(this)
-                    participantsOverlay.refresh()
-                }
+                mapView.invalidate()
+                legend_view.invalidate()
+                statusObservable.onNext(StatusProgressUpdateEvent(running =false))
             }
-
-            statusComponent.stopProgress()
-
-            buttonColumnHandler.unlockButtonColumn(ButtonGroup.DATA_UPDATING)
-
-            mapView.invalidate()
-            legend_view.invalidate()
-        } else if (event is ClearDataEvent) {
-            clearData()
-        } else if (event is StatusEvent) {
-            setStatusString(event.status)
         }
+    }
+
+    private val statusObservable: PublishSubject<StatusEvent> by lazy {
+        PublishSubject.create<StatusEvent>()
+    }
+
+    private val timerObservable: Observable<Long> by lazy {
+        Observable.interval(0, 1, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -176,6 +195,11 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
         preferences.registerOnSharedPreferenceChangeListener(this)
 
+        initializeStateFragment(preferences)
+
+        val value: DataEvent? = stateFragment.dataObservable.value
+        parametersComponent = ParametersComponent(preferences, value?.parameters ?: Parameters())
+
         strikesOverlay = StrikesOverlay(this, StrikeColorHandler(preferences))
         participantsOverlay = ParticipantsOverlay(this, ParticipantColorHandler(preferences))
 
@@ -194,91 +218,51 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         updateOverlays()
 
         statusComponent = StatusComponent(this)
-        setHistoricStatusString()
 
         hideActionBar()
 
         buttonColumnHandler = ButtonColumnHandler<ImageButton, ButtonGroup>(if (TabletAwareView.isTablet(this)) 75f else 55f)
         configureMenuAccess()
-        historyController = HistoryController(this, buttonColumnHandler)
+        historyController = HistoryController(this, buttonColumnHandler, parametersComponent)
+
 
         buttonColumnHandler.addAllElements(historyController.getButtons(), ButtonGroup.DATA_UPDATING)
-
-        setupDebugModeButton()
 
         buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
         buttonColumnHandler.updateButtonColumn()
 
         setupCustomViews()
 
-        onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
-                PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS)
+        onSharedPreferencesChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
+                PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS, PreferenceKey.QUERY_PERIOD)
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(preferences)
         }
 
-        createAndBindToDataService()
-
         if (versionComponent.state == VersionComponent.State.FIRST_RUN) {
             openQuickSettingsDialog()
         }
+
     }
 
-    private fun createAndBindToDataService() {
-        val serviceIntent = intentFor<AppService>()
+    private fun initializeStateFragment(preferences: SharedPreferences) {
+        val persistedStateFragment = fragmentManager.findFragmentByTag(StateFragment.TAG)
+        stateFragment = if (persistedStateFragment != null && persistedStateFragment is StateFragment) persistedStateFragment else
+            createStateFragment(preferences)
 
-        startService(serviceIntent)
-
-        serviceConnection = object : ServiceConnection {
-            override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-                appService = (iBinder as AppService.DataServiceBinder).service
-                Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + appService!!)
-
-                setupService()
-            }
-
-            override fun onServiceDisconnected(componentName: ComponentName) {
-            }
-        }
-
-        bindService(serviceIntent, serviceConnection, 0)
+        Log.v(LOG_TAG, "state fragment: " + stateFragment + (if (persistedStateFragment == null) "CREATED" else ""))
     }
 
-    private fun setupService() {
-        appService?.run {
-            historyController.setAppService(this)
-
-            addDataConsumer(historyController.dataConsumer)
-            addDataConsumer(dataEventConsumer)
-
-            addLocationConsumer(ownLocationOverlay.locationEventConsumer)
-            addDataConsumer(histogram_view.dataConsumer)
-
-            addLocationConsumer(alert_view.locationEventConsumer)
-            addAlertConsumer(alert_view.alertEventConsumer)
-
-            addAlertConsumer(statusComponent.alertEventConsumer)
-        }
+    private fun getTimeUntilUpdate(currentUpdateInterval: Long, currentTime: Long): Long {
+        return stateFragment.data.referenceTime + currentUpdateInterval - currentTime
     }
 
-    private fun setupDebugModeButton() {
-        val androidId = Settings.Secure.getString(baseContext.contentResolver, Settings.Secure.ANDROID_ID)
-        Log.v(Main.LOG_TAG, "AndroidId: $androidId")
-        if ((androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
-            with(toggleExtendedMode) {
-                isEnabled = true
-                visibility = View.VISIBLE
-
-                setOnClickListener { v ->
-                    buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
-                    appService!!.dataHandler().toggleExtendedMode()
-                    reloadData()
-                }
-
-                buttonColumnHandler.addElement(this, ButtonGroup.DATA_UPDATING)
-            }
-        }
+    private fun createStateFragment(preferences: SharedPreferences): StateFragment {
+        val locationHandler = LocationHandler(this, preferences)
+        val stateFragment = StateFragment(locationHandler, AlertHandler(locationHandler, preferences, this))
+        fragmentManager.beginTransaction().add(stateFragment, StateFragment.TAG).commit()
+        return stateFragment
     }
 
     private fun setupCustomViews() {
@@ -293,9 +277,9 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             setBackgroundColor(Color.TRANSPARENT)
             setAlpha(200)
             setOnClickListener { view ->
-                val alertHandler = appService!!.alertHandler
-                if (alertHandler.isAlertEnabled) {
-                    val currentLocation = alertHandler.currentLocation
+                val alertHandler = stateFragment.alertHandler
+                if (alertHandler!!.isAlertEnabled) {
+                    val currentLocation = alertHandler!!.currentLocation
                     if (currentLocation != null) {
                         var radius = determineTargetZoomRadius(alertHandler)
 
@@ -309,7 +293,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         with(histogram_view) {
             setStrikesOverlay(strikesOverlay)
             setOnClickListener { view ->
-                val currentResult = currentResult
+                val currentResult = stateFragment.data
                 if (currentResult != null) {
                     val rasterParameters = currentResult.rasterParameters
                     if (rasterParameters != null) {
@@ -409,63 +393,138 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onStart() {
         super.onStart()
 
-        setupService()
-
-        Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
+        Log.d(Main.LOG_TAG, "Main.onStart()")
     }
 
     override fun onRestart() {
         super.onRestart()
 
-        Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
+        Log.d(Main.LOG_TAG, "Main.onStart()")
     }
 
     override fun onResume() {
         super.onResume()
 
-        Log.d(Main.LOG_TAG, "Main.onResume() service: " + appService)
+        //initializeStateFragment(PreferenceManager.getDefaultSharedPreferences(this))
+
+        Log.v(Main.LOG_TAG, "on resume with state fragment " + stateFragment)
+
+        val statusSubscriber = { event: StatusEvent ->
+            Log.v(LOG_TAG, "statusSubscriber($event)")
+            when (event) {
+                is TimeStatusUpdateEvent -> statusComponent.setTimeStatus(event.status)
+                is DataStatusUpdateEvent -> statusComponent.setDataStatus(event.status)
+                is StatusProgressUpdateEvent ->
+                    if (event.running) {
+                        statusComponent.startProgress()
+                        buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
+                    } else {
+                        statusComponent.stopProgress()
+                        buttonColumnHandler.unlockButtonColumn(ButtonGroup.DATA_UPDATING)
+                    }
+                is StatusFailureUpdateEvent -> statusComponent.indicateError(event.failed)
+            }
+        }
+
+        statusSubscription = statusObservable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(statusSubscriber)
+
+        val parameterSubject = PublishSubject.create<Parameters>()
+
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+
+        if (stateFragment.dataObservable.hasValue()) {
+            Log.v(LOG_TAG, "stored parameters: " + stateFragment.dataObservable.value)
+        }
+
+        resultSubscription = stateFragment.dataObservable.subscribe(dataEventConsumer)
+        stateFragment.dataObservable.subscribe(histogram_view.dataConsumer)
+
+        timerObservable.doOnUnsubscribe { Log.v(LOG_TAG, "timer observable unsubscribed") }
+
+        parametersSubscription = stateFragment.parametersObservable.subscribe(parameterSubject)
+
+        val timerSubscriber = { index: Long ->
+            Log.v(LOG_TAG, "timerSubscriber($index)")
+            val currentTime = System.currentTimeMillis()
+            val currentUpdateInterval = if (stateFragment.data.failed) errorUpdateInterval else updateInterval
+            val timeUntilUpdate = getTimeUntilUpdate(currentUpdateInterval, currentTime) + 500
+            statusObservable.onNext(TimeStatusUpdateEvent("${if (timeUntilUpdate < 0) "-" else timeUntilUpdate / 1000}/${currentUpdateInterval / 1000}s"))
+            if (timeUntilUpdate <= 0) {
+                statusObservable.onNext(StatusProgressUpdateEvent(true))
+                parametersComponent.trigger()
+            }
+        }
+
+        parameterSubject
+                .onBackpressureDrop()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .asObservable()
+                .doOnNext { parameters ->
+                    Log.v(LOG_TAG, "triggered with $parameters")
+                    val isRealtime = parameters.isRealtime()
+                    updateTimerState(isRealtime, timerSubscriber)
+                    statusObservable.onNext(StatusProgressUpdateEvent(running=true))
+                }
+                .map(DataMapper(preferences, "-" + versionComponent.versionCode))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(stateFragment.dataObservable)
+
+        parametersComponent.observable.subscribe(parameterSubject)
+        updateTimerState(parametersComponent.isRealtime, timerSubscriber)
+
+
+
+        Log.d(Main.LOG_TAG, "Main.onResume() ${parametersComponent.observable.value} ${parametersComponent.observable.hasValue()}")
+    }
+
+    private @Synchronized fun updateTimerState(isRealtime: Boolean, timerSubscriber: (Long) -> Unit) {
+        if (isRealtime) {
+            Log.v(LOG_TAG, "start timer $timerSubscription")
+            if (timerSubscription == null) {
+                timerSubscription = timerObservable.subscribe(timerSubscriber)
+            } else {
+                Log.v(LOG_TAG, "not started")
+            }
+        } else {
+            Log.v(LOG_TAG, "stop timer $timerSubscription")
+            timerSubscription?.unsubscribe()
+            timerSubscription = null
+        }
     }
 
     override fun onPause() {
         super.onPause()
+
+        timerSubscription?.unsubscribe()
+        timerSubscription = null
+
+        statusSubscription?.unsubscribe()
+        statusSubscription = null
+
+        parametersSubscription?.unsubscribe()
+        parametersSubscription = null
+
+        resultSubscription?.unsubscribe()
+        resultSubscription = null
+
         Log.v(Main.LOG_TAG, "Main.onPause()")
     }
 
     override fun onStop() {
         super.onStop()
 
-        appService?.apply {
-            Log.v(Main.LOG_TAG, "Main.onStop() remove listeners")
-
-            historyController.setAppService(null)
-            removeDataConsumer(historyController.dataConsumer)
-            removeDataConsumer(dataEventConsumer)
-
-            removeLocationConsumer(ownLocationOverlay.locationEventConsumer)
-            removeDataConsumer(histogram_view.dataConsumer)
-
-            with(alert_view) {
-                removeLocationConsumer(this.locationEventConsumer)
-                removeAlertListener(this.alertEventConsumer)
-            }
-
-            removeAlertListener(statusComponent.alertEventConsumer)
-        } ?: Log.i(LOG_TAG, "Main.onStop()")
+        Log.i(LOG_TAG, "Main.onStop()")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.i(LOG_TAG, "Main: onDestroy() unbind service")
 
-        unbindService(serviceConnection)
+        Log.i(LOG_TAG, "Main: onDestroy() unbind service")
     }
 
     override fun isRouteDisplayed(): Boolean {
         return false
-    }
-
-    private fun reloadData() {
-        appService!!.reloadData()
     }
 
     private fun clearDataIfRequested() {
@@ -487,9 +546,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             R.id.info_dialog -> InfoDialog(this, versionComponent)
 
             R.id.alarm_dialog ->
-                appService?.let { appService ->
-                    AlertDialog(this, appService, AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)))
-                }
+                AlertDialog(this, stateFragment.alertHandler, AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)))
 
             R.id.log_dialog -> LogDialog(this)
 
@@ -514,11 +571,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        }
-
-        appService?.let {
-            val preferences = sharedPreferences
-            it.updateLocationHandler(preferences)
         }
     }
 
@@ -545,15 +597,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         }
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString))
-    }
-
-    private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, vararg keys: PreferenceKey) {
-        keys.forEach { onSharedPreferenceChanged(sharedPreferences, it) }
-    }
-
-    private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         when (key) {
             PreferenceKey.MAP_TYPE -> {
                 val mapTypeString = sharedPreferences.get(key, "SATELLITE")
@@ -571,6 +615,10 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             PreferenceKey.COLOR_SCHEME -> {
                 strikesOverlay.refresh()
                 participantsOverlay.refresh()
+            }
+
+            PreferenceKey.QUERY_PERIOD -> {
+                updateInterval = sharedPreferences.get(key, "30").toLong() * 1000
             }
 
             PreferenceKey.MAP_FADE -> {
@@ -607,7 +655,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         statusText += resources.getQuantityString(R.plurals.minute, intervalDuration, intervalDuration)
         statusText += " " + runStatus
 
-        statusComponent.setText(statusText)
+        statusComponent.setDataStatus(statusText)
     }
 
     private fun configureMenuAccess() {
@@ -634,3 +682,4 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         val REQUEST_GPS = 1
     }
 }
+

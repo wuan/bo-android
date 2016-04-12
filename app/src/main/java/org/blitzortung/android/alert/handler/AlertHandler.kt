@@ -41,11 +41,10 @@ import org.blitzortung.android.app.controller.NotificationHandler
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.beans.Strike
-import org.blitzortung.android.data.provider.result.ClearDataEvent
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.location.LocationHandler
-import org.blitzortung.android.protocol.Event
+import org.blitzortung.android.protocol.ConsumerContainer
 import org.blitzortung.android.util.MeasurementSystem
 import org.blitzortung.android.util.isAtLeast
 
@@ -64,12 +63,26 @@ class AlertHandler(
     var alertEvent: AlertEvent = ALERT_CANCEL_EVENT
         private set
 
-    var alertEventConsumer: ((AlertEvent) -> Unit)? = null
-        set (alertEventConsumer: ((AlertEvent) -> Unit)?) {
-            field = alertEventConsumer
-            updateLocationHandler()
-            broadcastEvent()
+    private var alertEventConsumerContainer: ConsumerContainer<AlertEvent> = object : ConsumerContainer<AlertEvent>() {
+        override fun addedFirstConsumer() {
+            Log.d(Main.LOG_TAG, "added first alert consumer")
+            locationHandler.requestUpdates(locationEventConsumer)
         }
+
+        override fun removedLastConsumer() {
+            Log.d(Main.LOG_TAG, "removed last alert consumer")
+            locationHandler.removeUpdates(locationEventConsumer)
+            currentLocation = null
+        }
+    }
+
+    fun addConsumer(consumer: (AlertEvent) -> Unit) {
+        alertEventConsumerContainer.addConsumer(consumer)
+    }
+
+    fun removeConsumer(consumer: (AlertEvent) -> Unit) {
+        alertEventConsumerContainer.removeConsumer(consumer)
+    }
 
     private var lastStrikes: Collection<Strike>? = null
 
@@ -98,14 +111,10 @@ class AlertHandler(
         checkStrikes(lastStrikes)
     }
 
-    val dataEventConsumer: (Event) -> Unit = { event ->
-        if (event is ResultEvent) {
-            if (!event.failed && event.containsRealtimeData()) {
-                checkStrikes(event.strikes)
-            } else {
-                broadcastResult(null)
-            }
-        } else if (event is ClearDataEvent) {
+    val dataEventConsumer: (DataEvent) -> Unit = { event ->
+        if (!event.failed && event.containsRealtimeData()) {
+            checkStrikes(event.strikes)
+        } else {
             broadcastResult(null)
         }
     }
@@ -155,18 +164,6 @@ class AlertHandler(
         }
     }
 
-    private fun updateLocationHandler() {
-        if (isAlertEnabled) {
-            alertEventConsumer?.let {
-                locationHandler.requestUpdates(locationEventConsumer)
-            }
-        } else {
-            locationHandler.removeUpdates(locationEventConsumer)
-            currentLocation = null
-            broadcastResult(null)
-        }
-    }
-
     fun checkStrikes(strikes: Collection<Strike>?) {
         val alertResult = checkStrikes(strikes, currentLocation)
         processResult(alertResult)
@@ -181,11 +178,6 @@ class AlertHandler(
         }
     }
 
-    fun unsetAlertListener() {
-        alertEventConsumer = null
-        updateLocationHandler()
-    }
-
     val maxDistance: Float
         get() = alertParameters.rangeSteps.last()
 
@@ -195,10 +187,8 @@ class AlertHandler(
     }
 
     private fun broadcastEvent() {
-        alertEventConsumer?.let { consumer ->
-            Log.v(Main.LOG_TAG, "AlertHandler.broadcastResult() $alertEvent")
-            consumer(alertEvent)
-        }
+        Log.v(Main.LOG_TAG, "AlertHandler.broadcastResult() $alertEvent")
+        alertEventConsumerContainer.broadcast(alertEvent)
     }
 
     private fun processResult(alertResult: AlertResult?) {

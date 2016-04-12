@@ -18,14 +18,16 @@
 
 package org.blitzortung.android.data.provider.blitzortung
 
+import android.content.SharedPreferences
 import android.util.Log
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.data.provider.DataProvider
-import org.blitzortung.android.data.provider.DataProviderType
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.DataEvent
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.net.Authenticator
@@ -34,20 +36,74 @@ import java.net.URL
 import java.util.*
 import java.util.zip.GZIPInputStream
 
-class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlFormatter: UrlFormatter = UrlFormatter(), mapBuilderFactory: MapBuilderFactory = MapBuilderFactory()) : DataProvider() {
+class BlitzortungHttpDataProvider(
+        sharedPreferences: SharedPreferences,
+        private val urlFormatter: UrlFormatter = UrlFormatter(),
+        mapBuilderFactory: MapBuilderFactory = MapBuilderFactory()) : DataProvider {
 
     private val strikeMapBuilder: MapBuilder<Strike>
     private val stationMapBuilder: MapBuilder<Station>
     private var latestTime: Long = 0
 
+    private var username: String = ""
+    private var password : String = ""
+
+
     init {
         strikeMapBuilder = mapBuilderFactory.createAbstractStrikeMapBuilder()
         stationMapBuilder = mapBuilderFactory.createStationMapBuilder()
+
+        onSharedPreferencesChanged(sharedPreferences, PreferenceKey.USERNAME, PreferenceKey.PASSWORD)
+    }
+
+    override fun getStrikes(parameters: Parameters): DataEvent {
+        var result = createResultEvent(parameters)
+        if (parameters != this.parameters) {
+            strikes = emptyList()
+            latestTime = 0L
+        }
+
+        val intervalDuration = parameters.intervalDuration
+        val region = parameters.region
+
+        val tz = TimeZone.getTimeZone("UTC")
+        val intervalTime = GregorianCalendar(tz)
+
+        val startTime = System.currentTimeMillis() - intervalDuration * 60 * 1000
+        val intervalSequence = createTimestampSequence(10 * 60 * 1000L, Math.max(latestTime, startTime))
+
+        val strikes = retrieveData("BlitzortungHttpDataProvider: read %d bytes (%d new strikes) from region $region",
+                intervalSequence.map { startTime ->
+                    intervalTime.timeInMillis = startTime
+
+                    return@map readFromUrl(Type.STRIKES, region, intervalTime)
+                }, { strikeMapBuilder.buildFromLine(it) })
+
+        if (latestTime > 0L) {
+            result = result.copy(incrementalData = true)
+            val expireTime = result.referenceTime - (parameters.intervalDuration - parameters.intervalOffset) * 60 * 1000
+            this.strikes = this.strikes.filter { it.timestamp > expireTime }
+            this.strikes += strikes
+        } else {
+            this.strikes = strikes
+        }
+
+        if (strikes.count() > 0) {
+            //TODO Maybe we should get the maximum timestamp from strikes instead of the last?
+            latestTime = strikes.last().timestamp
+        }
+
+        result = result.copy(strikes = strikes, totalStrikes =this.strikes)
+
+        this.parameters = parameters
+        return result
     }
 
     private fun readFromUrl(type: Type, region: Int, intervalTime: Calendar? = null): BufferedReader? {
 
         val useGzipCompression = type == Type.STATIONS
+
+        Authenticator.setDefault(MyAuthenticator())
 
         val reader: BufferedReader
 
@@ -82,6 +138,9 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
     private fun <T : Any> retrieveData(logMessage: String, readerSeq: Sequence<BufferedReader?>, parse: (String) -> T?): List<T> {
         var size = 0
 
+        if (username.isEmpty() || password.isEmpty())
+            throw RuntimeException("no credentials provided")
+
         val strokeSequence: Sequence<T> = readerSeq.filterNotNull().flatMap { reader ->
             reader.lineSequence().mapNotNull { line ->
                 size += line.length
@@ -96,80 +155,39 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
         return strokeList
     }
 
-    override val type: DataProviderType = DataProviderType.HTTP
+    @Suppress("unused")
+    private fun getStations(region: Int): List<Station> {
+        return retrieveData("BlitzortungHttpProvider: read %d bytes (%d stations) from region $region",
+                sequenceOf(readFromUrl(Type.STATIONS, region))) {
+            stationMapBuilder.buildFromLine(it)
+        }
+    }
 
     override fun reset() {
         latestTime = 0
     }
 
-    override val isCapableOfHistoricalData: Boolean = false
-
     enum class Type {
         STRIKES, STATIONS
     }
 
-    override fun <T> retrieveData(username: String?, password: String?, retrieve: DataRetriever.() -> T): T {
-        setCredentials(username, password)
-
-        return Retriever().retrieve()
-    }
-
-    private inner class Retriever: DataRetriever {
-        override fun getStrikes(parameters: Parameters, result: ResultEvent): ResultEvent {
-            var resultVar = result
-            val intervalDuration = parameters.intervalDuration
-            val region = parameters.region
-
-            val tz = TimeZone.getTimeZone("UTC")
-            val intervalTime = GregorianCalendar(tz)
-
-            val startTime = System.currentTimeMillis() - intervalDuration * 60 * 1000
-            val intervalSequence = createTimestampSequence(10 * 6 * 1000L, Math.max(latestTime, startTime))
-
-            val strikes = retrieveData("BlitzortungHttpDataProvider: read %d bytes (%d new strikes) from region $region",
-                    intervalSequence.map {
-                        intervalTime.timeInMillis = it
-
-                        return@map readFromUrl(Type.STRIKES, region, intervalTime)
-                    }, { strikeMapBuilder.buildFromLine(it) })
-
-            if (latestTime > 0L) {
-                resultVar = resultVar.copy(incrementalData = true)
-            }
-
-            if (strikes.count() > 0) {
-                //TODO Maybe we should get the maximum timestamp from strikes instead of the last?
-                latestTime = strikes[strikes.lastIndex].timestamp
-            }
-
-            resultVar = resultVar.copy(strikes = strikes)
-
-            return resultVar
-        }
-
-        override fun getStrikesGrid(parameters: Parameters, result: ResultEvent): ResultEvent {
-            return result
-        }
-
-        override fun getStations(region: Int): List<Station> {
-            return retrieveData("BlitzortungHttpProvider: read %d bytes (%d stations) from region $region",
-                    sequenceOf(readFromUrl(Type.STATIONS, region))) {
-                stationMapBuilder.buildFromLine(it)
-            }
-        }
-    }
-
-    private fun setCredentials(username: String?, password: String?) {
-        if (username == null || password == null)
-            throw RuntimeException("no credentials provided")
-
-        Authenticator.setDefault(MyAuthenticator(username, password.toCharArray()))
-    }
-
-
-    private class MyAuthenticator(val username: String, val password: CharArray) : Authenticator() {
+    private inner class MyAuthenticator : Authenticator() {
         override fun getPasswordAuthentication(): PasswordAuthentication {
-            return PasswordAuthentication(username, password)
+            return PasswordAuthentication(username, password.toCharArray())
+        }
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+        when(key) {
+            PreferenceKey.USERNAME -> {
+                username = sharedPreferences.get(key, "")
+            }
+
+            PreferenceKey.PASSWORD -> {
+                password = sharedPreferences.get(key, "")
+            }
+
+            else -> {}
         }
     }
 }

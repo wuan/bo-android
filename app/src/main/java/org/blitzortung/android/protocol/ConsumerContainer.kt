@@ -20,11 +20,12 @@ package org.blitzortung.android.protocol
 
 import java.util.*
 
-abstract class ConsumerContainer<P> {
+open class ConsumerContainer<P> {
 
     private val consumers: MutableSet<(P) -> Unit>
 
-    private var currentPayload: P? = null
+    var payload: P? = null
+        private set
 
     init {
         consumers = HashSet<(P) -> Unit>()
@@ -46,7 +47,7 @@ abstract class ConsumerContainer<P> {
     }
 
     protected fun sendCurrentPayloadTo(consumer: (P) -> Unit) {
-        val currentPayload = currentPayload
+        val currentPayload = payload
         if (currentPayload != null) {
             consumer.invoke(currentPayload)
         }
@@ -61,13 +62,15 @@ abstract class ConsumerContainer<P> {
         }
     }
 
-    abstract fun addedFirstConsumer()
+    protected open fun addedFirstConsumer() {
+    }
 
-    abstract fun removedLastConsumer()
+    protected open fun removedLastConsumer() {
+    }
 
-    fun storeAndBroadcast(payload: P) {
-        currentPayload = payload
-        broadcast(payload)
+    fun storeAndBroadcast(updatedPayload: P) {
+        payload = updatedPayload
+        broadcast(updatedPayload)
     }
 
     fun broadcast(payload: P) {
