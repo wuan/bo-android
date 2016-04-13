@@ -64,10 +64,7 @@ class StatusComponent(activity: Activity) : AlertLabel {
 
         alertEventConsumer = { event ->
             alertLabelHandler.apply(
-                    if (event is AlertResultEvent)
-                        event.alertResult
-                    else
-                        null)
+                    if (event is AlertResultEvent) event.alertResult else null)
         }
     }
 

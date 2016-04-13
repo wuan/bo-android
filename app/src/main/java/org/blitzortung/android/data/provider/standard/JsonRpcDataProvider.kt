@@ -77,7 +77,7 @@ class JsonRpcDataProvider(private val agentSuffix: String, preferences: SharedPr
         result = result.copy(incrementalData = (nextId != 0))
 
         try {
-            val response = client!!.call("get_strikes", intervalDuration, if (intervalOffset < 0) intervalOffset else nextId)
+            val response = client.call("get_strikes", intervalDuration, if (intervalOffset < 0) intervalOffset else nextId)
 
             result = addStrikes(response, result)
             result = addStrikesHistogram(response, result)
@@ -85,8 +85,8 @@ class JsonRpcDataProvider(private val agentSuffix: String, preferences: SharedPr
             throw RuntimeException(e)
         }
 
-        Log.v(Main.LOG_TAG,
-                "JsonRpcDataProvider: read %d bytes (%d new strikes)".format(client!!.lastNumberOfTransferredBytes, result.strikes?.size))
+        Log.d(Main.LOG_TAG,
+                "JsonRpcDataProvider: read %d bytes (%d new strikes)".format(client.lastNumberOfTransferredBytes, result.strikes?.size))
         return result
     }
 
@@ -112,7 +112,7 @@ class JsonRpcDataProvider(private val agentSuffix: String, preferences: SharedPr
         }
 
         Log.v(Main.LOG_TAG,
-                "JsonRpcDataProvider: read %d bytes (%d raster positions, region %d)".format(client!!.lastNumberOfTransferredBytes, result.strikes?.size, region))
+                "JsonRpcDataProvider: read %d bytes (%d raster positions, region %d)".format(client.lastNumberOfTransferredBytes, result.strikes?.size, region))
         return result
     }
 

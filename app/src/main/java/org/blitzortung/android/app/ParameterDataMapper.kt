@@ -30,7 +30,7 @@ import org.blitzortung.android.data.provider.InvalidDataProvider
 import org.blitzortung.android.data.provider.result.DataEvent
 import rx.functions.Func1
 
-class DataMapper(
+class ParameterDataMapper(
         val preferences: SharedPreferences,
         val agentSuffix: String
 ) : Func1<Parameters, DataEvent>, OnSharedPreferenceChangeListener {
@@ -43,7 +43,7 @@ class DataMapper(
     }
 
     override fun call(parameters: Parameters): DataEvent {
-        Log.d(Main.LOG_TAG, "DataMapper.call($parameters)")
+        Log.v(Main.LOG_TAG, "ParameterDataMapper.call($parameters)")
 
         return try {
             dataProvider.getStrikes(parameters)

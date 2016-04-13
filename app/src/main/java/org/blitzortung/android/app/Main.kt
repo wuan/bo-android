@@ -42,6 +42,8 @@ import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
+import org.blitzortung.android.app.data.ParametersObserver
+import org.blitzortung.android.app.data.TimerObserver
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
@@ -65,10 +67,12 @@ import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
 import org.jetbrains.anko.startActivity
 import rx.Observable
+import rx.Observer
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
+import rx.subscriptions.CompositeSubscription
 import java.util.concurrent.TimeUnit
 import kotlinx.android.synthetic.main.main.mapview as prod_mapview
 import kotlinx.android.synthetic.main.main_debug.mapview as debug_mapview
@@ -91,21 +95,13 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     private lateinit var stateFragment: StateFragment
 
-    private var updateInterval = 30000L
-    private val errorUpdateInterval: Long = 10000L
-
-    private var timerSubscription: Subscription? = null
-    private var statusSubscription: Subscription? = null
-    private var resultSubscription: Subscription? = null
-    private var parametersSubscription: Subscription? = null
-
     val dataEventConsumer: (DataEvent) -> Unit = { event ->
         when (event) {
             is DataEvent -> {
                 statusComponent.indicateError(event.failed)
                 if (!event.failed) {
 
-                    Log.d(Main.LOG_TAG, "Main.onDataUpdate() " + event)
+                    Log.d(Main.LOG_TAG, "Main.onDataUpdate($event) $statusObservable")
 
                     val resultParameters = event.parameters
 
@@ -159,19 +155,16 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
                 mapView.invalidate()
                 legend_view.invalidate()
-                statusObservable.onNext(StatusProgressUpdateEvent(running =false))
+                statusObservable.onNext(StatusProgressUpdateEvent(running = false))
             }
         }
     }
 
-    private val statusObservable: PublishSubject<StatusEvent> by lazy {
-        PublishSubject.create<StatusEvent>()
-    }
+    private lateinit var statusObservable: PublishSubject<StatusEvent>
 
-    private val timerObservable: Observable<Long> by lazy {
-        Observable.interval(0, 1, TimeUnit.SECONDS)
-                .subscribeOn(Schedulers.io())
-    }
+    private lateinit var timerObservable: Observable<Long>
+
+    private lateinit var compositeSubscription: CompositeSubscription
 
     override fun onCreate(savedInstanceState: Bundle?) {
         try {
@@ -231,10 +224,12 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
         buttonColumnHandler.updateButtonColumn()
 
+        compositeSubscription = CompositeSubscription()
+
         setupCustomViews()
 
         onSharedPreferencesChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
-                PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS, PreferenceKey.QUERY_PERIOD)
+                PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS)
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(preferences)
@@ -252,10 +247,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             createStateFragment(preferences)
 
         Log.v(LOG_TAG, "state fragment: " + stateFragment + (if (persistedStateFragment == null) "CREATED" else ""))
-    }
-
-    private fun getTimeUntilUpdate(currentUpdateInterval: Long, currentTime: Long): Long {
-        return stateFragment.data.referenceTime + currentUpdateInterval - currentTime
     }
 
     private fun createStateFragment(preferences: SharedPreferences): StateFragment {
@@ -399,18 +390,15 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onRestart() {
         super.onRestart()
 
-        Log.d(Main.LOG_TAG, "Main.onStart()")
+        Log.d(Main.LOG_TAG, "Main.onRestart()")
     }
 
     override fun onResume() {
         super.onResume()
 
-        //initializeStateFragment(PreferenceManager.getDefaultSharedPreferences(this))
-
-        Log.v(Main.LOG_TAG, "on resume with state fragment " + stateFragment)
+        Log.v(Main.LOG_TAG, "Main.onResume() state: $stateFragment")
 
         val statusSubscriber = { event: StatusEvent ->
-            Log.v(LOG_TAG, "statusSubscriber($event)")
             when (event) {
                 is TimeStatusUpdateEvent -> statusComponent.setTimeStatus(event.status)
                 is DataStatusUpdateEvent -> statusComponent.setDataStatus(event.status)
@@ -426,87 +414,72 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             }
         }
 
-        statusSubscription = statusObservable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(statusSubscriber)
+        statusObservable = PublishSubject.create<StatusEvent>()
+
+        compositeSubscription.add(statusObservable
+                .onBackpressureBuffer()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(statusSubscriber))
 
         val parameterSubject = PublishSubject.create<Parameters>()
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
 
-        if (stateFragment.dataObservable.hasValue()) {
-            Log.v(LOG_TAG, "stored parameters: " + stateFragment.dataObservable.value)
-        }
+        val timerObserver = TimerObserver(preferences, statusObservable, stateFragment, parametersComponent)
 
-        resultSubscription = stateFragment.dataObservable.subscribe(dataEventConsumer)
-        stateFragment.dataObservable.subscribe(histogram_view.dataConsumer)
+        timerObservable = Observable.interval(0, 1, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
 
-        timerObservable.doOnUnsubscribe { Log.v(LOG_TAG, "timer observable unsubscribed") }
+        compositeSubscription.add(stateFragment.dataObservable.subscribe(dataEventConsumer))
+        compositeSubscription.add(stateFragment.dataObservable.subscribe(histogram_view.dataConsumer))
+        compositeSubscription.add(stateFragment.dataObservable.subscribe(stateFragment.alertHandler.dataEventConsumer))
 
-        parametersSubscription = stateFragment.parametersObservable.subscribe(parameterSubject)
+        val parametersObserver = ParametersObserver(statusObservable, { parameters ->
+            updateTimerState(parameters.isRealtime(), timerObserver)
+            stateFragment.updateReference()
+        })
 
-        val timerSubscriber = { index: Long ->
-            Log.v(LOG_TAG, "timerSubscriber($index)")
-            val currentTime = System.currentTimeMillis()
-            val currentUpdateInterval = if (stateFragment.data.failed) errorUpdateInterval else updateInterval
-            val timeUntilUpdate = getTimeUntilUpdate(currentUpdateInterval, currentTime) + 500
-            statusObservable.onNext(TimeStatusUpdateEvent("${if (timeUntilUpdate < 0) "-" else timeUntilUpdate / 1000}/${currentUpdateInterval / 1000}s"))
-            if (timeUntilUpdate <= 0) {
-                statusObservable.onNext(StatusProgressUpdateEvent(true))
-                parametersComponent.trigger()
-            }
-        }
-
-        parameterSubject
+        compositeSubscription.add(parameterSubject
                 .onBackpressureDrop()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .asObservable()
-                .doOnNext { parameters ->
-                    Log.v(LOG_TAG, "triggered with $parameters")
-                    val isRealtime = parameters.isRealtime()
-                    updateTimerState(isRealtime, timerSubscriber)
-                    statusObservable.onNext(StatusProgressUpdateEvent(running=true))
-                }
-                .map(DataMapper(preferences, "-" + versionComponent.versionCode))
+                .doOnEach(parametersObserver)
+                .map(ParameterDataMapper(preferences, "-" + versionComponent.versionCode))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(stateFragment.dataObservable)
+                .subscribe(stateFragment.dataObservable))
 
-        parametersComponent.observable.subscribe(parameterSubject)
-        updateTimerState(parametersComponent.isRealtime, timerSubscriber)
+        compositeSubscription.add(parametersComponent.observable.subscribe(parameterSubject))
 
-
-
-        Log.d(Main.LOG_TAG, "Main.onResume() ${parametersComponent.observable.value} ${parametersComponent.observable.hasValue()}")
+        updateTimerState(parametersComponent.isRealtime, timerObserver)
     }
 
-    private @Synchronized fun updateTimerState(isRealtime: Boolean, timerSubscriber: (Long) -> Unit) {
+    private var timerSubscription: Subscription? = null
+
+    private @Synchronized fun updateTimerState(isRealtime: Boolean, timerObserver: Observer<Long>) {
         if (isRealtime) {
-            Log.v(LOG_TAG, "start timer $timerSubscription")
             if (timerSubscription == null) {
-                timerSubscription = timerObservable.subscribe(timerSubscriber)
+                Log.v(LOG_TAG, "subscribe timer $timerObservable ${timerObserver}")
+                timerSubscription = timerObservable.subscribe(timerObserver)
+                compositeSubscription.add(timerSubscription)
             } else {
-                Log.v(LOG_TAG, "not started")
+                Log.v(LOG_TAG, "already subscribed to timer $timerObservable")
             }
         } else {
-            Log.v(LOG_TAG, "stop timer $timerSubscription")
-            timerSubscription?.unsubscribe()
-            timerSubscription = null
+            if (timerSubscription != null) {
+                Log.v(LOG_TAG, "unsubscribe timer $timerObservable ${timerObserver}")
+                compositeSubscription.remove(timerSubscription)
+                timerSubscription = null
+            }
         }
     }
 
     override fun onPause() {
         super.onPause()
 
-        timerSubscription?.unsubscribe()
+        compositeSubscription.clear()
         timerSubscription = null
-
-        statusSubscription?.unsubscribe()
-        statusSubscription = null
-
-        parametersSubscription?.unsubscribe()
-        parametersSubscription = null
-
-        resultSubscription?.unsubscribe()
-        resultSubscription = null
 
         Log.v(Main.LOG_TAG, "Main.onPause()")
     }
@@ -617,10 +590,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 participantsOverlay.refresh()
             }
 
-            PreferenceKey.QUERY_PERIOD -> {
-                updateInterval = sharedPreferences.get(key, "30").toLong() * 1000
-            }
-
             PreferenceKey.MAP_FADE -> {
                 val alphaValue = Math.round(255.0f / 100.0f * sharedPreferences.get(key, 40))
                 fadeOverlay.setAlpha(alphaValue)
@@ -680,6 +649,16 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         val LOG_TAG = "BO_ANDROID"
 
         val REQUEST_GPS = 1
+    }
+}
+
+class LifecycleState {
+
+    var finished = false
+        private set
+
+    fun finish() {
+        finished = true
     }
 }
 
