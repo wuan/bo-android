@@ -16,7 +16,7 @@ class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sh
     }
 
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
-        val doubleConverter: fun (x: String): Double? {
+        val doubleConverter = fun (x: String): Double? {
             try {
                 return x.toDouble()
             } catch (e: NumberFormatException) {
