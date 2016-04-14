@@ -28,6 +28,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -51,7 +52,6 @@ import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.result.*
 import org.blitzortung.android.dialogs.*
-import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.map.OwnMapActivity
 import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.overlay.FadeOverlay
@@ -525,16 +525,14 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     @TargetApi(Build.VERSION_CODES.M)
     private fun requestPermissions(sharedPreferences: SharedPreferences) {
 
-        val newProvider = LocationHandler.Provider.fromString(sharedPreferences.get(PreferenceKey.LOCATION_MODE, LocationHandler.Provider.PASSIVE.type))
-        if (newProvider === LocationHandler.Provider.PASSIVE || newProvider === LocationHandler.Provider.GPS) {
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), Main.REQUEST_GPS)
-            }
+        val permission = when(sharedPreferences.get(PreferenceKey.LOCATION_MODE, LocationManager.PASSIVE_PROVIDER)) {
+            LocationManager.PASSIVE_PROVIDER, LocationManager.GPS_PROVIDER -> Manifest.permission.ACCESS_FINE_LOCATION
+            LocationManager.NETWORK_PROVIDER -> Manifest.permission.ACCESS_COARSE_LOCATION
+            else -> null
         }
-        if (newProvider === LocationHandler.Provider.NETWORK) {
-            if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), Main.REQUEST_GPS)
-            }
+
+        if(permission is String && checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(permission), Main.REQUEST_GPS)
         }
     }
 

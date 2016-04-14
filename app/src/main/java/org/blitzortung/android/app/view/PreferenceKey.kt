@@ -21,7 +21,7 @@ package org.blitzortung.android.app.view
 import android.content.SharedPreferences
 import java.util.*
 
-enum class PreferenceKey internal constructor(private val key: String) {
+enum class PreferenceKey internal constructor(val key: String) {
     USERNAME("username"),
     PASSWORD("password"),
     SERVICE_URL("service_url"),
@@ -88,4 +88,29 @@ internal inline fun <reified T> SharedPreferences.get(prefKey: PreferenceKey, de
     }
 
     return value as T
+}
+
+internal inline fun <reified T, V> SharedPreferences.getAndConvert(prefKey: PreferenceKey, default: T, convert: (T) -> V): V {
+    val value = this.get(prefKey, default)
+    return convert(value)
+}
+
+/**
+ *  A generic extension function to set a SharedPreference-Value
+ */
+internal inline fun <reified T> SharedPreferences.Editor.put(key: String, value: T) {
+    when(value) {
+        is String -> this.putString(key, value)
+        is Int -> this.putInt(key, value)
+        is Boolean -> this.putBoolean(key, value)
+        is Float -> this.putFloat(key, value)
+        is Long -> this.putLong(key, value)
+        else -> throw IllegalArgumentException("Type ${T::class} cannoted be put inside a SharedPreference")
+    }
+}
+
+internal inline fun <reified T> SharedPreferences.Editor.put(key: PreferenceKey, value: T) {
+    val keyString = key.key
+
+    put(keyString, value)
 }
