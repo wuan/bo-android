@@ -263,14 +263,14 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             requestUpdates(statusComponent.alertEventConsumer)
         }
 
+        appService?.run {
+            historyController.setAppService(this)
+        }
+
         with(dataHandler) {
             requestUpdates(dataEventConsumer)
             requestUpdates(historyController.dataConsumer)
             requestUpdates(histogram_view.dataConsumer)
-        }
-
-        appService?.run {
-            historyController.setAppService(this)
         }
     }
 
@@ -420,15 +420,13 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onStart() {
         super.onStart()
 
-        setupService()
-
         Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
     }
 
     override fun onRestart() {
         super.onRestart()
 
-        Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
+        Log.d(Main.LOG_TAG, "Main.onRestart() service: " + appService)
     }
 
     override fun onResume() {
