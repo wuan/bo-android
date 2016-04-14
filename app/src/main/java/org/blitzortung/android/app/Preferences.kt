@@ -67,7 +67,7 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
             PreferenceKey.LOCATION_MODE -> {
                 val provider = configureLocationProviderPreferences(sharedPreferences)
 
-                if(!this.locationManager.isProviderEnabled(provider)) {
+                if(provider != LocationHandler.MANUAL_PROVIDER && !this.locationManager.isProviderEnabled(provider)) {
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                 }
             }
