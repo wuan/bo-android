@@ -274,4 +274,7 @@ class LocationHandler(
         }
     }
 
+    companion object {
+        val MANUAL_PROVIDER = "manual"
+    }
 }
