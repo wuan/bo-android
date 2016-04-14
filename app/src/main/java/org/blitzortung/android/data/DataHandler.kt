@@ -24,6 +24,8 @@ import android.content.pm.PackageInfo
 import android.os.AsyncTask
 import android.os.PowerManager
 import android.util.Log
+import org.blitzortung.android.app.BOApplication
+import org.blitzortung.android.app.AppService
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
@@ -34,11 +36,14 @@ import org.blitzortung.android.data.provider.result.ClearDataEvent
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.RequestStartedEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.protocol.ConsumerContainer
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 
-class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.WakeLock, sharedPreferences: SharedPreferences, private val pInfo: PackageInfo,
+class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.WakeLock, private val pInfo: PackageInfo,
         private val dataProviderFactory: DataProviderFactory = DataProviderFactory()) : OnSharedPreferenceChangeListener {
+
+    private val sharedPreferences = BOApplication.sharedPreferences
 
     private val lock = ReentrantLock()
     private var dataProvider: DataProvider? = null
@@ -48,7 +53,18 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
         private set
 
     private var parametersController: ParametersController? = null
-    private var dataEventConsumer: ((DataEvent) -> Unit)? = null
+
+    private val dataConsumerContainer: ConsumerContainer<DataEvent> = object : ConsumerContainer<DataEvent>() {
+        override fun addedFirstConsumer() {
+            Log.d(Main.LOG_TAG, "added first data consumer")
+            AppService.instance?.configureServiceMode()
+        }
+
+        override fun removedLastConsumer() {
+            Log.d(Main.LOG_TAG, "removed last data consumer")
+            AppService.instance?.configureServiceMode()
+        }
+    }
 
     private var dataMode = DataMode()
 
@@ -70,6 +86,17 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
     fun updateDatainBackground() {
         FetchBackgroundDataTask(wakeLock).execute(TaskParameters(parameters = parameters, updateParticipants = false))
     }
+
+    fun requestUpdates(dataConsumer: (DataEvent) -> Unit) {
+        dataConsumerContainer.addConsumer(dataConsumer)
+    }
+
+    fun removeUpdates(dataConsumer: (DataEvent) -> Unit) {
+        dataConsumerContainer.removeConsumer(dataConsumer)
+    }
+
+    val hasConsumers: Boolean
+        get() = dataConsumerContainer.isEmpty
 
     @JvmOverloads fun updateData(updateTargets: Set<DataChannel> = DEFAULT_DATA_CHANNELS) {
 
@@ -99,7 +126,7 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
         }
 
     private fun sendEvent(dataEvent: DataEvent) {
-        dataEventConsumer?.let { it.invoke(dataEvent) }
+        dataConsumerContainer.storeAndBroadcast(dataEvent)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
@@ -177,10 +204,6 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
             dataChannels.add(DataChannel.STRIKES)
             updateData(dataChannels)
         }
-    }
-
-    fun setDataConsumer(consumer: (DataEvent) -> Unit) {
-        this.dataEventConsumer = consumer
     }
 
     val intervalDuration: Int
@@ -287,6 +310,10 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
         }
     }
 
+    fun broadcastEvent(event: DataEvent) {
+        dataConsumerContainer.broadcast(event)
+    }
+
     companion object {
         val REQUEST_STARTED_EVENT = RequestStartedEvent()
         val CLEAR_DATA_EVENT = ClearDataEvent()
@@ -296,5 +323,4 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
             DEFAULT_DATA_CHANNELS.add(DataChannel.STRIKES)
         }
     }
-
 }

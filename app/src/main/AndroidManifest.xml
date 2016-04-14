@@ -15,7 +15,7 @@
         android:icon="@drawable/icon"
         android:installLocation="auto"
         android:label="@string/app_name"
-        android:name="org.blitzortung.android.BOApplication">
+        android:name=".BOApplication">
         <uses-library android:name="com.google.android.maps" />
 
         <activity

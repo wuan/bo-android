@@ -25,6 +25,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import android.preference.PreferenceManager
 import com.google.android.maps.ItemizedOverlay
+import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.app.view.PreferenceKey
@@ -73,7 +74,7 @@ class OwnLocationOverlay(context: Context, mapView: OwnMapView) : ItemizedOverla
 
         sizeFactor = ViewHelper.pxFromDp(mapView, 0.5f) * TabletAwareView.sizeFactor(context)
 
-        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+        val preferences = BOApplication.sharedPreferences
         preferences.registerOnSharedPreferenceChangeListener(this)
         onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_LOCATION.toString())
 
