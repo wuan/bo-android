@@ -43,6 +43,7 @@ class OwnLocationOverlay(context: Context, mapView: OwnMapView) : ItemizedOverla
     private val sizeFactor: Float
 
     private var zoomLevel: Int = 0
+
     val locationEventConsumer: (LocationEvent) -> Unit = { event ->
         val location = event.location
 
@@ -53,7 +54,6 @@ class OwnLocationOverlay(context: Context, mapView: OwnMapView) : ItemizedOverla
     }
 
     init {
-
         layerOverlayComponent = LayerOverlayComponent(context.resources.getString(R.string.own_location_layer))
 
         item = null
