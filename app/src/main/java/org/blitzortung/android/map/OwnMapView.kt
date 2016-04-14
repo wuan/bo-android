@@ -78,7 +78,7 @@ class OwnMapView : MapView {
             val editor = preferences.edit()
             editor.putString(PreferenceKey.LOCATION_LONGITUDE.toString(), longitude.toString())
             editor.putString(PreferenceKey.LOCATION_LATITUDE.toString(), latitude.toString())
-            editor.putString(PreferenceKey.LOCATION_MODE.toString(), LocationHandler.Provider.MANUAL.type)
+            editor.putString(PreferenceKey.LOCATION_MODE.toString(), LocationHandler.MANUAL_PROVIDER)
             editor.apply()
             Toast.makeText(context, "%s: %.4f %.4f".format(locationText, longitude, latitude),
                     Toast.LENGTH_LONG).show()
