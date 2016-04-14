@@ -19,12 +19,14 @@
 package org.blitzortung.android.app.controller
 
 import android.app.Activity
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
 import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.AppService
 import org.blitzortung.android.app.ButtonGroup
+import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.DataChannel
 import org.blitzortung.android.data.DataHandler
@@ -141,7 +143,7 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
     }
 
     fun setAppService(appService: AppService?) {
-        Log.i(Main.LOG_TAG, "HistoryController.setAppService($appService) ${appService?.dataHandler()}")
+        Log.i(Main.LOG_TAG, "HistoryController.setAppService($appService)")
         this.appService = appService
     }
 }
