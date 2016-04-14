@@ -18,16 +18,20 @@
 
 package org.blitzortung.android.app
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.location.LocationManager
 import android.os.Bundle
 import android.preference.PreferenceActivity
 import android.preference.PreferenceManager
+import android.provider.Settings
 
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.location.LocationHandler
+import org.jetbrains.anko.locationManager
 
 class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
 
@@ -40,7 +44,8 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         prefs.registerOnSharedPreferenceChangeListener(this)
 
-        onSharedPreferenceChanged(prefs, PreferenceKey.DATA_SOURCE, PreferenceKey.LOCATION_MODE)
+        configureDataSourcePreferences(prefs)
+        configureLocationProviderPreferences(prefs)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
@@ -56,21 +61,38 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         when (key) {
             PreferenceKey.DATA_SOURCE -> {
-                val providerTypeString = sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.HTTP.toString())
-                val providerType = DataProviderType.valueOf(providerTypeString.toUpperCase())
-
-                when (providerType) {
-                    DataProviderType.HTTP -> enableBlitzortungHttpMode()
-                    DataProviderType.RPC -> enableAppServiceMode()
-                }
+                configureDataSourcePreferences(sharedPreferences)
             }
 
             PreferenceKey.LOCATION_MODE -> {
-                val locationProvider = LocationHandler.Provider.fromString(sharedPreferences.get(key, "NETWORK"))
-                enableManualLocationMode(locationProvider === LocationHandler.Provider.MANUAL)
+                val provider = configureLocationProviderPreferences(sharedPreferences)
+
+                if(!this.locationManager.isProviderEnabled(provider)) {
+                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                }
             }
         }
     }
+
+    private fun configureDataSourcePreferences(sharedPreferences: SharedPreferences): DataProviderType {
+        val providerTypeString = sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.HTTP.toString())
+        val providerType = DataProviderType.valueOf(providerTypeString.toUpperCase())
+
+        when (providerType) {
+            DataProviderType.HTTP -> enableBlitzortungHttpMode()
+            DataProviderType.RPC -> enableAppServiceMode()
+        }
+
+        return providerType
+    }
+
+    private fun configureLocationProviderPreferences(sharedPreferences: SharedPreferences) : String {
+        val locationProvider = sharedPreferences.get(PreferenceKey.LOCATION_MODE, LocationManager.NETWORK_PROVIDER)
+        enableManualLocationMode(locationProvider === LocationHandler.MANUAL_PROVIDER)
+
+        return locationProvider
+    }
+
 
     private fun enableAppServiceMode() {
         findPreference("raster_size").isEnabled = true
