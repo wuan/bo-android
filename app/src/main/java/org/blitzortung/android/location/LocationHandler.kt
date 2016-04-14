@@ -21,7 +21,6 @@ package org.blitzortung.android.location
 import android.content.*
 import android.location.Location
 import android.location.LocationManager
-import android.provider.Settings
 import android.util.Log
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
@@ -45,7 +44,7 @@ class LocationHandler(
     private var provider: LocationProvider? = null
     private val consumerContainer = object : ConsumerContainer<LocationEvent>() {
         override fun addedFirstConsumer() {
-            provider?.run { start()  }
+            provider?.run { start() }
             Log.d(Main.LOG_TAG, "LocationHandler enable provider")
         }
 
@@ -56,12 +55,8 @@ class LocationHandler(
     }
 
     init {
-        val newProvider = createLocationProvider(context, backgroundMode,
-                { sendLocationUpdate(it)}, sharedPreferences.get(PreferenceKey.LOCATION_MODE, LocationManager.PASSIVE_PROVIDER))
-
-        enableProvider(newProvider)
-
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.LOCATION_MODE)
 
         //We need to know when a LocationProvider is enabled/disabled
         val iFilter = IntentFilter(android.location.LocationManager.PROVIDERS_CHANGED_ACTION)
@@ -79,10 +74,9 @@ class LocationHandler(
                     createLocationProvider(context, backgroundMode, { location -> sendLocationUpdate(location) }, type)
                 }
 
-
                 var newProvider = providerFactory(sharedPreferences.get(key, LocationManager.PASSIVE_PROVIDER))
-                if(newProvider is ManagerLocationProvider) {
-                    if(!newProvider.isPermissionGranted) {
+                if (newProvider is ManagerLocationProvider) {
+                    if (!newProvider.isPermissionGranted) {
                         newProvider = providerFactory(LocationHandler.MANUAL_PROVIDER)
 
                         //Set the location provider inside the preferences back to manual, because we have no permission
@@ -103,7 +97,7 @@ class LocationHandler(
     private fun enableProvider(newProvider: LocationProvider) {
         //If the current provider is not null and is Running, shut it down first
         provider?.let {
-            if(it.isRunning) {
+            if (it.isRunning) {
                 it.shutdown()
             }
         }
@@ -111,10 +105,9 @@ class LocationHandler(
         //TODO we need to tell the UI if the locationProvider is stopped/started
         //Now start the new provider if it is enabled
         this.provider = newProvider.apply {
-            if(!this.isEnabled) {
+            if (!this.isEnabled) {
                 context.longToast(context.resources.getText(R.string.location_provider_disabled).toString().format(newProvider.type))
-            }
-            else
+            } else
                 start()
         }
     }
@@ -150,7 +143,7 @@ class LocationHandler(
         provider?.run {
             shutdown()
 
-            if(this is ManagerLocationProvider)
+            if (this is ManagerLocationProvider)
                 this.backgroundMode = backgroundMode
 
             start()

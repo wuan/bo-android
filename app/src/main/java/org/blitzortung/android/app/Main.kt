@@ -50,6 +50,7 @@ import org.blitzortung.android.app.controller.HistoryController
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.app.view.put
 import org.blitzortung.android.data.provider.result.*
 import org.blitzortung.android.dialogs.*
 import org.blitzortung.android.map.OwnMapActivity
@@ -498,41 +499,49 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.v(LOG_TAG, "Main.onRequestPermissionsResult() $requestCode - $permissions - $grantResults")
-        if (requestCode == REQUEST_GPS) {
-            // BEGIN_INCLUDE(permission_result)
-            // Received permission result for camera permission.
-            Log.i(LOG_TAG, "Received response for Camera permission request.")
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
-            // Check if the only required permission has been granted
+        val providerRelation = LocationProviderRelation.byOrdinal[requestCode]
+        if (providerRelation != null) {
+            val providerName = providerRelation.providerName
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Camera permission has been granted, preview can be displayed
-                Log.i(LOG_TAG, "CAMERA permission has now been granted. Showing preview.")
+                Log.i(LOG_TAG, "$providerName permission has now been granted.")
+                val editor = sharedPreferences.edit()
+                editor.put(PreferenceKey.LOCATION_MODE, providerName)
+                editor.commit()
             } else {
-                Log.i(LOG_TAG, "CAMERA permission was NOT granted.")
+                Log.i(LOG_TAG, "$providerName permission was NOT granted.")
             }
-            // END_INCLUDE(permission_result)
-
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
 
         appService?.let {
-            val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+            val preferences = sharedPreferences
             it.updateLocationHandler(preferences)
         }
     }
 
     @TargetApi(Build.VERSION_CODES.M)
     private fun requestPermissions(sharedPreferences: SharedPreferences) {
-
-        val permission = when(sharedPreferences.get(PreferenceKey.LOCATION_MODE, LocationManager.PASSIVE_PROVIDER)) {
+        val locationProviderName = sharedPreferences.get(PreferenceKey.LOCATION_MODE, LocationManager.PASSIVE_PROVIDER)
+        val permission = when (locationProviderName) {
             LocationManager.PASSIVE_PROVIDER, LocationManager.GPS_PROVIDER -> Manifest.permission.ACCESS_FINE_LOCATION
             LocationManager.NETWORK_PROVIDER -> Manifest.permission.ACCESS_COARSE_LOCATION
             else -> null
         }
 
-        if(permission is String && checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(permission), Main.REQUEST_GPS)
+        if (permission is String && checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(permission), LocationProviderRelation.byProviderName[locationProviderName]?.ordinal ?: Int.MIN_VALUE)
+        }
+    }
+
+    private enum class LocationProviderRelation(val providerName : String) {
+        GPS(LocationManager.GPS_PROVIDER), PASSIVE(LocationManager.PASSIVE_PROVIDER), NETWORK(LocationManager.NETWORK_PROVIDER);
+
+        companion object {
+            val byProviderName: Map<String, LocationProviderRelation> = LocationProviderRelation.values().groupBy {it.providerName}.mapValues { it.value.first() }
+            val byOrdinal : Map<Int, LocationProviderRelation> = LocationProviderRelation.values().groupBy {it.ordinal}.mapValues { it.value.first() }
         }
     }
 

@@ -28,15 +28,12 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
-
 import com.google.android.maps.MapView
 import org.blitzortung.android.app.Main
-
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.location.LocationHandler
-
-import java.util.HashSet
+import java.util.*
 
 class OwnMapView : MapView {
 

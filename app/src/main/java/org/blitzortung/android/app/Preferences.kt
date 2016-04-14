@@ -26,7 +26,6 @@ import android.os.Bundle
 import android.preference.PreferenceActivity
 import android.preference.PreferenceManager
 import android.provider.Settings
-
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProviderType
@@ -67,7 +66,7 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
             PreferenceKey.LOCATION_MODE -> {
                 val provider = configureLocationProviderPreferences(sharedPreferences)
 
-                if(!this.locationManager.isProviderEnabled(provider)) {
+                if(!this.locationManager.isProviderEnabled(provider) && provider != LocationHandler.MANUAL_PROVIDER) {
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                 }
             }

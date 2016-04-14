@@ -16,23 +16,23 @@ class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sh
     }
 
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
-        val doubleConverter: (String) -> Double? = {x: String ->
+        val doubleConverter: fun (x: String): Double? {
             try {
-                java.lang.Double.valueOf(x)
+                return x.toDouble()
             } catch (e: NumberFormatException) {
                 Log.e(Main.LOG_TAG, "bad longitude/latitude number format '$x'")
             }
 
-            null
+            return null
         }
 
         when(key) {
             PreferenceKey.LOCATION_LONGITUDE -> {
-                location.longitude = sharedPreferences.getAndConvert(key, "49.0", doubleConverter) ?: 49.0
+                location.longitude = sharedPreferences.getAndConvert(key, "11.0", doubleConverter) ?: 11.0
                 sendLocationUpdate()
             }
             PreferenceKey.LOCATION_LATITUDE -> {
-                location.latitude = sharedPreferences.getAndConvert(key, "11.0", doubleConverter) ?: 11.0
+                location.latitude = sharedPreferences.getAndConvert(key, "49.0", doubleConverter) ?: 49.0
                 sendLocationUpdate()
             }
         }
