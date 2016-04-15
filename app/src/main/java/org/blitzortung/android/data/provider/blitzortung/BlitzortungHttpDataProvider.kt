@@ -39,8 +39,6 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
     private val strikeMapBuilder: MapBuilder<Strike>
     private val stationMapBuilder: MapBuilder<Station>
     private var latestTime: Long = 0
-    private var strikes: List<Strike> = emptyList()
-    private var parameters: Parameters? = null
 
     init {
         strikeMapBuilder = mapBuilderFactory.createAbstractStrikeMapBuilder()
@@ -118,7 +116,7 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
 
     private inner class Retriever: DataRetriever {
         override fun getStrikes(parameters: Parameters, result: ResultEvent): ResultEvent {
-            var result = result
+            var resultVar = result
             val intervalDuration = parameters.intervalDuration
             val region = parameters.region
 
@@ -136,7 +134,7 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
                     }, { strikeMapBuilder.buildFromLine(it) })
 
             if (latestTime > 0L) {
-                result = result.copy(incrementalData = true)
+                resultVar = resultVar.copy(incrementalData = true)
             }
 
             if (strikes.count() > 0) {
@@ -144,9 +142,9 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(private val urlForma
                 latestTime = strikes[strikes.lastIndex].timestamp
             }
 
-            result = result.copy(strikes = strikes)
+            resultVar = resultVar.copy(strikes = strikes)
 
-            return result
+            return resultVar
         }
 
         override fun getStrikesGrid(parameters: Parameters, result: ResultEvent): ResultEvent {

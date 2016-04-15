@@ -1,5 +1,6 @@
 package org.assertj.core.api
 
+@Suppress("unused")
 class KotlinAssertions {
     companion object {
         fun assertThat(str: String) : StringAssert {

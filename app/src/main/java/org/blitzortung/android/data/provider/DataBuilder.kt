@@ -65,9 +65,9 @@ class DataBuilder {
     }
 
     fun createStation(jsonArray: JSONArray): Station {
-        var name = "n/a"
-        var longitude = 0f
-        var latitude = 0f
+        var name : String
+        var longitude : Float
+        var latitude : Float
         var offlineSince = Station.OFFLINE_SINCE_NOT_SET
         try {
             name = jsonArray.getString(1)
