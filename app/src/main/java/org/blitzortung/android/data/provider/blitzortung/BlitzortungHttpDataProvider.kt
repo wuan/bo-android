@@ -45,6 +45,10 @@ class BlitzortungHttpDataProvider(
     private val stationMapBuilder: MapBuilder<Station>
     private var latestTime: Long = 0
 
+    private var strikes: List<Strike> = emptyList()
+    private var parameters: Parameters? = null
+
+
     private var username: String = ""
     private var password : String = ""
 

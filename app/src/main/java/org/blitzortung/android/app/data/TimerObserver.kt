@@ -12,11 +12,10 @@ import org.blitzortung.android.data.provider.event.status.StatusEvent
 import org.blitzortung.android.data.provider.event.status.StatusProgressUpdateEvent
 import org.blitzortung.android.data.provider.event.status.TimeStatusUpdateEvent
 import rx.Observer
-import rx.subjects.PublishSubject
 
 class TimerObserver(
         preferences: SharedPreferences,
-        private val statusObservable: PublishSubject<StatusEvent>,
+        private val statusObserver: Observer<StatusEvent>,
         private val stateFragment: StateFragment,
         private val parametersComponent: ParametersComponent
 ) : Observer<Long>, OnSharedPreferenceChangeListener {
@@ -34,10 +33,10 @@ class TimerObserver(
         val currentTime = System.currentTimeMillis()
         val currentUpdateInterval = if (stateFragment.data.failed) errorUpdateInterval else updateInterval
         val timeUntilUpdate = getTimeUntilUpdate(currentUpdateInterval, currentTime) + 500
-        statusObservable.onNext(TimeStatusUpdateEvent("${if (timeUntilUpdate < 0) "-" else "${timeUntilUpdate / 1000}"}/${currentUpdateInterval / 1000}s"))
+        statusObserver.onNext(TimeStatusUpdateEvent("${if (timeUntilUpdate < 0) "-" else "${timeUntilUpdate / 1000}"}/${currentUpdateInterval / 1000}s"))
         if (timeUntilUpdate <= 0) {
             Log.d(Main.LOG_TAG, "timerObserver() trigger update")
-            statusObservable.onNext(StatusProgressUpdateEvent(true))
+            statusObserver.onNext(StatusProgressUpdateEvent(true))
             parametersComponent.trigger()
         }
     }

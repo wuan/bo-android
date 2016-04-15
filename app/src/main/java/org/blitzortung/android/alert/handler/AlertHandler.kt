@@ -49,7 +49,7 @@ import org.blitzortung.android.util.MeasurementSystem
 import org.blitzortung.android.util.isAtLeast
 
 
-class AlertHandler(
+open class AlertHandler(
         private val locationHandler: LocationHandler,
         preferences: SharedPreferences,
         private val context: Context,

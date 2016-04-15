@@ -26,7 +26,7 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.Parameters
 import rx.subjects.BehaviorSubject
 
-class ParametersComponent(
+open class ParametersComponent(
         preferences: SharedPreferences,
         parameters: Parameters
 ) : OnSharedPreferenceChangeListener {
@@ -130,7 +130,7 @@ class ParametersComponent(
     val isRealtime: Boolean
         get() = parameters.isRealtime()
 
-    fun trigger() {
+    open fun trigger() {
         Log.v(Main.LOG_TAG, "ParametersComponent.trigger() $parameters")
         observable.onNext(parameters)
     }
