@@ -11,6 +11,8 @@ buildscript {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'net.saliman.cobertura'
+apply plugin: 'com.github.kt3k.coveralls'
 
 android {
     buildToolsVersion "23.0.2"
@@ -41,6 +43,8 @@ android {
         checkReleaseBuilds false
     }
 }
+
+cobertura.coverageFormats = ['html', 'xml']
 
 dependencies {
     compile 'com.android.support:appcompat-v7:23.2.0'
