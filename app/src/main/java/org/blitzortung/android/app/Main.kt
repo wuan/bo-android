@@ -253,25 +253,10 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun setupService() {
-        with(locationHandler) {
-            requestUpdates(ownLocationOverlay.locationEventConsumer)
-            requestUpdates(alert_view.locationEventConsumer)
-        }
-
-        with(alertHandler) {
-            requestUpdates(alert_view.alertEventConsumer)
-            requestUpdates(statusComponent.alertEventConsumer)
-        }
-
         appService?.run {
             historyController.setAppService(this)
         }
 
-        with(dataHandler) {
-            requestUpdates(dataEventConsumer)
-            requestUpdates(historyController.dataConsumer)
-            requestUpdates(histogram_view.dataConsumer)
-        }
     }
 
     private fun setupDebugModeButton() {
@@ -420,6 +405,22 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onStart() {
         super.onStart()
 
+        with(locationHandler) {
+            requestUpdates(ownLocationOverlay.locationEventConsumer)
+            requestUpdates(alert_view.locationEventConsumer)
+        }
+
+        with(alertHandler) {
+            requestUpdates(alert_view.alertEventConsumer)
+            requestUpdates(statusComponent.alertEventConsumer)
+        }
+
+        with(dataHandler) {
+            requestUpdates(dataEventConsumer)
+            requestUpdates(historyController.dataConsumer)
+            requestUpdates(histogram_view.dataConsumer)
+        }
+
         Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
     }
 
@@ -437,6 +438,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     override fun onPause() {
         super.onPause()
+
         Log.v(Main.LOG_TAG, "Main.onPause()")
     }
 
