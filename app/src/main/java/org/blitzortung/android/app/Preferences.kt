@@ -70,6 +70,8 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                 }
             }
+
+            else -> {}
         }
     }
 
@@ -87,7 +89,7 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
 
     private fun configureLocationProviderPreferences(sharedPreferences: SharedPreferences) : String {
         val locationProvider = sharedPreferences.get(PreferenceKey.LOCATION_MODE, LocationManager.NETWORK_PROVIDER)
-        enableManualLocationMode(locationProvider === LocationHandler.MANUAL_PROVIDER)
+        enableManualLocationMode(locationProvider == LocationHandler.MANUAL_PROVIDER)
 
         return locationProvider
     }
