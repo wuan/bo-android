@@ -47,10 +47,12 @@ class OwnLocationOverlay(context: Context, mapView: OwnMapView) : ItemizedOverla
     val locationEventConsumer: (LocationEvent) -> Unit = { event ->
         val location = event.location
 
-        item = if (location != null) OwnLocationOverlayItem(location) else item
+        if (enabled) {
+            item = if (location != null) OwnLocationOverlayItem(location) else item
 
-        populate()
-        refresh()
+            populate()
+            refresh()
+        }
     }
 
     init {
@@ -101,11 +103,15 @@ class OwnLocationOverlay(context: Context, mapView: OwnMapView) : ItemizedOverla
     }
 
     fun enableOwnLocation() {
+        enabled = true
+        refresh()
     }
 
     fun disableOwnLocation() {
+        enabled = false
         item = null
         populate()
+        refresh()
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
