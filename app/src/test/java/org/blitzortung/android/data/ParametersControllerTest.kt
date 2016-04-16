@@ -1,6 +1,6 @@
 package org.blitzortung.android.data
 
-import org.assertj.core.api.KotlinAssertions.Companion.assertThat
+import org.assertj.core.api.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

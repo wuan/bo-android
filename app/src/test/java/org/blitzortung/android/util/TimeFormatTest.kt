@@ -1,7 +1,7 @@
 package org.blitzortung.android.util
 
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.assertj.core.api.KotlinAssertions.Companion.assertThat
+import org.assertj.core.api.assertThat
 import org.junit.Test
 
 class TimeFormatTest {

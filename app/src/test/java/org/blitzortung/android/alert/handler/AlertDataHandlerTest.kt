@@ -1,7 +1,7 @@
 package org.blitzortung.android.alert.handler
 
 import android.location.Location
-import org.assertj.core.api.KotlinAssertions.Companion.assertThat
+import org.assertj.core.api.assertThat
 import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.data.beans.DefaultStrike
@@ -14,8 +14,10 @@ import org.mockito.Mockito.`when`
 import org.mockito.Mockito.any
 import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest= Config.NONE)
 class AlertDataHandlerTest {
 
     private lateinit var strike: DefaultStrike

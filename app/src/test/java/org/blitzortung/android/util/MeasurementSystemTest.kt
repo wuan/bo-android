@@ -1,11 +1,13 @@
 package org.blitzortung.android.util
 
-import org.assertj.core.api.KotlinAssertions.Companion.assertThat
+import org.assertj.core.api .assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest= Config.NONE)
 class MeasurementSystemTest {
 
     @Test
