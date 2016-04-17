@@ -48,7 +48,7 @@ class OwnLocationOverlay(context: Context, mapView: OwnMapView) : ItemizedOverla
         val location = event.location
 
         if (enabled) {
-            item = if (location != null) OwnLocationOverlayItem(location) else item
+            item = location?.run { OwnLocationOverlayItem(location) }
 
             populate()
             refresh()
