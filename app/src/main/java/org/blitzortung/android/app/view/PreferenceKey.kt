@@ -39,6 +39,7 @@ enum class PreferenceKey internal constructor(val key: String) {
     ALERT_VIBRATION_SIGNAL("alarm_vibration_signal"),
     ALERT_NOTIFICATION_DISTANCE_LIMIT("notification_distance_limit"),
     ALERT_SIGNALING_DISTANCE_LIMIT("signaling_distance_limit"),
+    ALERT_SIGNALING_THRESHOLD_TIME("signaling_threshold_time"),
     REGION("region"),
     DATA_SOURCE("data_source"),
     MEASUREMENT_UNIT("measurement_unit"),

@@ -2,6 +2,10 @@
 
 ## English
 
+### Version 1.5.0:
+ - signaling threshold time setting
+ - fixed disabling of own location display
+
 ### Version 1.4.7:
  - fixed non editable manual location coordinates
 
@@ -121,6 +125,10 @@
  * notification and vibration alarm with preference integration
 
 ## German
+
+### Version 1.5.0:
+ - Einstellung Ruheperiode Alarmsignal
+ - Fehlerbeseitigung: Deaktivierung der Anzeige des eigenen Ortes
 
 ### Version 1.4.7:
  - Fehler nicht editierbare Koordinaten bei manueller Ortsbestimmung behoben

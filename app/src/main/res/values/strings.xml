@@ -290,6 +290,25 @@
         <item>500</item>
     </string-array>
 
+    <string name="signaling_threshold_time">Signaling threshold time</string>
+    <string name="signaling_threshold_time_summary">Suppress further alarm signals for given time range</string>
+
+    <string-array name="signaling_threshold_times">
+        <item>off</item>
+        <item>5 min</item>
+        <item>15 min</item>
+        <item>30 min</item>
+        <item>60 min.</item>
+        <item>120 min.</item>
+    </string-array>
+    <string-array name="signaling_threshold_time_values">
+        <item>0</item>
+        <item>5</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+    </string-array>
     <string name="generic_settings">Generic settings</string>
     <string name="measurement_unit">Systems of measurement</string>
     <string name="measurement_unit_summary">choose between km and mi. for distances</string>

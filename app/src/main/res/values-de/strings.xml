@@ -287,6 +287,25 @@
         <item>500</item>
     </string-array>
 
+    <string name="signaling_threshold_time">Alarmsignal Ruheperiode</string>
+    <string name="signaling_threshold_time_summary">Unterdrückung weiterer Alarmsignale innerhalb der Ruheperiode</string>
+    <string-array name="signaling_threshold_times">
+        <item>deaktiviert</item>A
+        <item>5 min</item>
+        <item>15 min</item>
+        <item>30 min</item>
+        <item>60 min.</item>
+        <item>120 min.</item>
+    </string-array>
+    <string-array name="signaling_threshold_time_values">
+        <item>0</item>
+        <item>5</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+    </string-array>
+
     <string name="generic_settings">Allgemeines</string>
     <string name="measurement_unit">Einheitensystem</string>
     <string name="measurement_unit_summary">Wahl der Entfernungsangabe: Kilometer oder Meilen</string>

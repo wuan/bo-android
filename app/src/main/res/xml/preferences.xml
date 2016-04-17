@@ -168,7 +168,6 @@
             android:persistent="true"
             android:summary="@string/location_latitude_summary"
             android:title="@string/latitude" />
-
     </PreferenceScreen>
     <PreferenceScreen
         android:summary="@string/alarm_settings_summary"
@@ -234,6 +233,16 @@
                 android:text=""
                 android:title="@string/alarm_vibration_signal" />
         </PreferenceScreen>
+        <ListPreference
+            android:defaultValue="0"
+            android:enabled="true"
+            android:entries="@array/signaling_threshold_times"
+            android:entryValues="@array/signaling_threshold_time_values"
+            android:key="signaling_threshold_time"
+            android:persistent="true"
+            android:selectable="true"
+            android:summary="@string/signaling_threshold_time_summary"
+            android:title="@string/signaling_threshold_time" />
     </PreferenceScreen>
     <PreferenceScreen android:title="@string/generic_settings">
         <ListPreference
