@@ -1,6 +1,6 @@
 package org.blitzortung.android.data.provider.blitzortung
 
-import org.assertj.core.api.assertThat
+import org.assertj.core.api.KotlinAssertions.assertThat
 import org.junit.Test
 
 class TimestampIteratorTest {
