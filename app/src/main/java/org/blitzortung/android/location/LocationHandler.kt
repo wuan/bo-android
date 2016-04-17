@@ -26,7 +26,6 @@ import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
-import org.blitzortung.android.app.view.put
 import org.blitzortung.android.location.provider.LocationProvider
 import org.blitzortung.android.location.provider.ManagerLocationProvider
 import org.blitzortung.android.location.provider.createLocationProvider
@@ -83,19 +82,6 @@ open class LocationHandler(
                 }
 
                 var newProvider = providerFactory(sharedPreferences.get(key, LocationManager.PASSIVE_PROVIDER))
-                if (newProvider is ManagerLocationProvider) {
-                    if (!newProvider.isPermissionGranted) {
-                        newProvider = providerFactory(LocationHandler.MANUAL_PROVIDER)
-
-                        //Set the location provider inside the preferences back to manual, because we have no permission
-                        val editor = sharedPreferences.edit()
-                        editor.put(PreferenceKey.LOCATION_MODE, LocationHandler.MANUAL_PROVIDER)
-                        editor.commit()
-
-                        //TODO add translated string
-                        context.longToast("Permission for getting locations not granted. Set back to manual")
-                    }
-                }
 
                 enableProvider(newProvider)
             }

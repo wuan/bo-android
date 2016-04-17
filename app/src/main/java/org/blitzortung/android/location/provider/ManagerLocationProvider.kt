@@ -4,6 +4,8 @@ import android.content.Context
 import android.location.Location
 import android.location.LocationListener
 import android.os.Bundle
+import android.util.Log
+import org.blitzortung.android.app.Main
 import org.jetbrains.anko.locationManager
 
 abstract class ManagerLocationProvider(protected val context: Context,
@@ -21,6 +23,12 @@ abstract class ManagerLocationProvider(protected val context: Context,
         get() = if(backgroundMode) 200f else 50f
 
     override fun start() {
+        //Don't start the LocationProvider if we dont have any permissions
+        if(!this.isPermissionGranted) {
+            Log.d(Main.LOG_TAG, "Tried to start provider '$type' without permission granted")
+            return
+        }
+
         super.start()
 
         locationManager.requestLocationUpdates(type, minTime, minDistance, this)
