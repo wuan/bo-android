@@ -22,6 +22,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.location.Location
+import android.location.LocationManager
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.RingtoneManager
@@ -29,6 +30,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Vibrator
 import android.util.Log
+import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.data.AlertSignal
@@ -45,6 +47,7 @@ import org.blitzortung.android.data.provider.result.ClearDataEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.location.LocationHandler
+import org.blitzortung.android.protocol.ConsumerContainer
 import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.MeasurementSystem
 import org.blitzortung.android.util.isAtLeast
@@ -52,7 +55,7 @@ import org.blitzortung.android.util.isAtLeast
 
 class AlertHandler(
         private val locationHandler: LocationHandler,
-        preferences: SharedPreferences,
+        private val preferences: SharedPreferences,
         private val context: Context,
         private val vibrator: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator,
         private val notificationHandler: NotificationHandler = NotificationHandler(context),
@@ -64,12 +67,22 @@ class AlertHandler(
     var alertEvent: AlertEvent = ALERT_CANCEL_EVENT
         private set
 
-    var alertEventConsumer: ((AlertEvent) -> Unit)? = null
-        set (alertEventConsumer: ((AlertEvent) -> Unit)?) {
-            field = alertEventConsumer
-            updateLocationHandler()
-            broadcastEvent()
+    val alertConsumerContainer: ConsumerContainer<AlertEvent> = object : ConsumerContainer<AlertEvent>() {
+        override fun addedFirstConsumer() {
+            Log.d(Main.LOG_TAG, "added first alert consumer")
+
+            refresh()
         }
+
+        override fun removedLastConsumer() {
+            Log.d(Main.LOG_TAG, "removed last alert consumer")
+
+            refresh()
+        }
+    }
+
+    private val dataHandler = BOApplication.dataHandler
+
 
     private var lastStrikes: Collection<Strike>? = null
 
@@ -155,13 +168,14 @@ class AlertHandler(
         }
     }
 
-    private fun updateLocationHandler() {
+    private fun refresh() {
         if (isAlertEnabled) {
-            alertEventConsumer?.let {
-                locationHandler.requestUpdates(locationEventConsumer)
-            }
+            locationHandler.requestUpdates(locationEventConsumer)
+            dataHandler.requestUpdates(dataEventConsumer)
         } else {
             locationHandler.removeUpdates(locationEventConsumer)
+            dataHandler.removeUpdates(dataEventConsumer)
+
             currentLocation = null
             broadcastResult(null)
         }
@@ -182,8 +196,7 @@ class AlertHandler(
     }
 
     fun unsetAlertListener() {
-        alertEventConsumer = null
-        updateLocationHandler()
+        refresh()
     }
 
     val maxDistance: Float
@@ -195,10 +208,9 @@ class AlertHandler(
     }
 
     private fun broadcastEvent() {
-        alertEventConsumer?.let { consumer ->
-            Log.v(Main.LOG_TAG, "AlertHandler.broadcastResult() $alertEvent")
-            consumer(alertEvent)
-        }
+        Log.v(Main.LOG_TAG, "AlertHandler.broadcastResult() $alertEvent")
+
+        alertConsumerContainer.storeAndBroadcast(alertEvent)
     }
 
     private fun processResult(alertResult: AlertResult?) {
@@ -269,8 +281,12 @@ class AlertHandler(
         }
     }
 
-    fun reconfigureLocationHandler() {
-        locationHandler.updateProvider()
+    fun requestUpdates(alertEventConsumer: (AlertEvent) -> Unit) {
+        alertConsumerContainer.addConsumer(alertEventConsumer)
+    }
+
+    fun removeUpdates(alertEventConsumer: (AlertEvent) -> Unit) {
+        alertConsumerContainer.removeConsumer(alertEventConsumer)
     }
 
     companion object {

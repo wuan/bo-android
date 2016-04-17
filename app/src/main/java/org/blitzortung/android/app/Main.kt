@@ -42,6 +42,7 @@ import android.widget.ImageButton
 import android.widget.Toast
 import com.google.android.maps.GeoPoint
 import kotlinx.android.synthetic.main.map_overlay.*
+import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.VersionComponent
@@ -82,6 +83,13 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     private lateinit var historyController: HistoryController
     private var appService: AppService? = null
+
+    private val locationHandler = BOApplication.locationHandler
+    private val alertHandler = BOApplication.alertHandler
+    private val dataHandler = BOApplication.dataHandler
+
+    private val preferences = BOApplication.sharedPreferences
+
     private var serviceConnection: ServiceConnection? = null
 
     private var currentResult: ResultEvent? = null
@@ -94,7 +102,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
             statusComponent.indicateError(event.failed)
             if (!event.failed) {
-                if (event.parameters!!.intervalDuration != appService!!.dataHandler().intervalDuration) {
+                if (event.parameters!!.intervalDuration != BOApplication.dataHandler.intervalDuration) {
                     reloadData()
                 }
 
@@ -173,7 +181,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         this.mapView = mapView
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
-        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
         preferences.registerOnSharedPreferenceChangeListener(this)
 
         strikesOverlay = StrikesOverlay(this, StrikeColorHandler(preferences))
@@ -233,7 +240,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         serviceConnection = object : ServiceConnection {
             override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
                 appService = (iBinder as AppService.DataServiceBinder).service
-                Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + appService!!)
+                Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + appService)
 
                 setupService()
             }
@@ -248,18 +255,8 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private fun setupService() {
         appService?.run {
             historyController.setAppService(this)
-
-            addDataConsumer(historyController.dataConsumer)
-            addDataConsumer(dataEventConsumer)
-
-            addLocationConsumer(ownLocationOverlay.locationEventConsumer)
-            addDataConsumer(histogram_view.dataConsumer)
-
-            addLocationConsumer(alert_view.locationEventConsumer)
-            addAlertConsumer(alert_view.alertEventConsumer)
-
-            addAlertConsumer(statusComponent.alertEventConsumer)
         }
+
     }
 
     private fun setupDebugModeButton() {
@@ -272,7 +269,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
                 setOnClickListener { v ->
                     buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
-                    appService!!.dataHandler().toggleExtendedMode()
+                    BOApplication.dataHandler.toggleExtendedMode()
                     reloadData()
                 }
 
@@ -293,7 +290,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             setBackgroundColor(Color.TRANSPARENT)
             setAlpha(200)
             setOnClickListener { view ->
-                val alertHandler = appService!!.alertHandler
                 if (alertHandler.isAlertEnabled) {
                     val currentLocation = alertHandler.currentLocation
                     if (currentLocation != null) {
@@ -409,7 +405,21 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onStart() {
         super.onStart()
 
-        setupService()
+        with(locationHandler) {
+            requestUpdates(ownLocationOverlay.locationEventConsumer)
+            requestUpdates(alert_view.locationEventConsumer)
+        }
+
+        with(alertHandler) {
+            requestUpdates(alert_view.alertEventConsumer)
+            requestUpdates(statusComponent.alertEventConsumer)
+        }
+
+        with(dataHandler) {
+            requestUpdates(dataEventConsumer)
+            requestUpdates(historyController.dataConsumer)
+            requestUpdates(histogram_view.dataConsumer)
+        }
 
         Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
     }
@@ -417,7 +427,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onRestart() {
         super.onRestart()
 
-        Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
+        Log.d(Main.LOG_TAG, "Main.onRestart() service: " + appService)
     }
 
     override fun onResume() {
@@ -428,28 +438,33 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     override fun onPause() {
         super.onPause()
+
         Log.v(Main.LOG_TAG, "Main.onPause()")
     }
 
     override fun onStop() {
         super.onStop()
 
+        with(locationHandler) {
+            removeUpdates(ownLocationOverlay.locationEventConsumer)
+            removeUpdates(alert_view.locationEventConsumer)
+        }
+
+        with(alertHandler) {
+            removeUpdates(alert_view.alertEventConsumer)
+            removeUpdates(statusComponent.alertEventConsumer)
+        }
+
+        with(dataHandler) {
+            removeUpdates(dataEventConsumer)
+            removeUpdates(historyController.dataConsumer)
+            removeUpdates(histogram_view.dataConsumer)
+        }
+
         appService?.apply {
             Log.v(Main.LOG_TAG, "Main.onStop() remove listeners")
 
             historyController.setAppService(null)
-            removeDataConsumer(historyController.dataConsumer)
-            removeDataConsumer(dataEventConsumer)
-
-            removeLocationConsumer(ownLocationOverlay.locationEventConsumer)
-            removeDataConsumer(histogram_view.dataConsumer)
-
-            with(alert_view) {
-                removeLocationConsumer(this.locationEventConsumer)
-                removeAlertListener(this.alertEventConsumer)
-            }
-
-            removeAlertListener(statusComponent.alertEventConsumer)
         } ?: Log.i(LOG_TAG, "Main.onStop()")
     }
 
@@ -499,14 +514,12 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.v(LOG_TAG, "Main.onRequestPermissionsResult() $requestCode - $permissions - $grantResults")
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-
         val providerRelation = LocationProviderRelation.byOrdinal[requestCode]
         if (providerRelation != null) {
             val providerName = providerRelation.providerName
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.i(LOG_TAG, "$providerName permission has now been granted.")
-                val editor = sharedPreferences.edit()
+                val editor = preferences.edit()
                 editor.put(PreferenceKey.LOCATION_MODE, providerName)
                 editor.commit()
             } else {
@@ -516,10 +529,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
 
-        appService?.let {
-            val preferences = sharedPreferences
-            it.updateLocationHandler(preferences)
-        }
+        locationHandler.update(preferences)
     }
 
     @TargetApi(Build.VERSION_CODES.M)

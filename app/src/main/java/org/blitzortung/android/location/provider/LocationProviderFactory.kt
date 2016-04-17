@@ -3,6 +3,7 @@ package org.blitzortung.android.location.provider
 import android.content.Context
 import android.location.Location
 import android.location.LocationManager
+import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.location.LocationHandler
 import org.jetbrains.anko.defaultSharedPreferences
 
@@ -12,7 +13,7 @@ internal fun createLocationProvider(context: Context, backgroundMode: Boolean, t
         LocationManager.GPS_PROVIDER -> GPSLocationProvider(context, backgroundMode, tmp)
         LocationManager.NETWORK_PROVIDER -> NetworkLocationProvider(context, backgroundMode, tmp)
         LocationManager.PASSIVE_PROVIDER -> PassiveLocationProvider(context, backgroundMode, tmp)
-        LocationHandler.MANUAL_PROVIDER -> ManualLocationProvider(tmp, context.defaultSharedPreferences)
+        LocationHandler.MANUAL_PROVIDER -> ManualLocationProvider(tmp, BOApplication.sharedPreferences)
         else -> null
     } ?: throw IllegalArgumentException("Cannot find provider for name $providerName")
 

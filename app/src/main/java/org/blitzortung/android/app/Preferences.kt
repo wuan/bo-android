@@ -24,7 +24,6 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.preference.PreferenceActivity
-import android.preference.PreferenceManager
 import android.provider.Settings
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
@@ -40,7 +39,7 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
 
         addPreferencesFromResource(R.xml.preferences)
 
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val prefs = BOApplication.sharedPreferences
         prefs.registerOnSharedPreferenceChangeListener(this)
 
         configureDataSourcePreferences(prefs)

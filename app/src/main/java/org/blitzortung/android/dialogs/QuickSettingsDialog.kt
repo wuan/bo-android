@@ -26,6 +26,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.widget.Spinner
+import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
@@ -36,7 +37,7 @@ class QuickSettingsDialog : DialogFragment() {
         val builder = Builder(activity)
         val layoutInflater = activity.layoutInflater
 
-        val preferences = PreferenceManager.getDefaultSharedPreferences(activity)
+        val preferences = BOApplication.sharedPreferences
 
         val regionValues = resources.getStringArray(R.array.regions_values)
         val currentRegionValue = preferences.get(PreferenceKey.REGION, regionValues[0])
