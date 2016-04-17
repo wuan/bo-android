@@ -27,11 +27,9 @@ abstract class ManagerLocationProvider(protected val context: Context,
     }
 
     override fun onLocationChanged(location: Location?) {
-        //We don't want to send NULL to the listeners
+        //Don't send NULL locations to the listeners
         if(location is Location) {
-            this.location.set(location)
-
-            sendLocationUpdate()
+            sendLocationUpdate(location)
         }
     }
 

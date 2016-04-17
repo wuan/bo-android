@@ -5,31 +5,24 @@ import android.util.Log
 import org.blitzortung.android.app.Main
 
 abstract class LocationProvider(protected val locationUpdate: (Location?) -> Unit) {
-    protected var location = Location("")
-
     var isRunning: Boolean = false
         private set
 
     abstract val isEnabled: Boolean
 
-    protected fun sendLocationUpdate() {
+    protected fun sendLocationUpdate(location: Location?) {
         locationUpdate(location)
     }
 
     abstract val type: String
 
-    protected val Location.isValid: Boolean
-        get() = !java.lang.Double.isNaN(longitude) && !java.lang.Double.isNaN(latitude)
+    protected val Location?.isValid: Boolean
+        get() {
+            if(this == null)
+                return false
 
-    protected fun invalidateLocationAndSendLocationUpdate() {
-        locationUpdate(null)
-
-        invalidateLocation()
-    }
-
-    protected  fun invalidateLocation() {
-        location = Location("")
-    }
+            return !java.lang.Double.isNaN(longitude) && !java.lang.Double.isNaN(latitude)
+        }
 
     open fun start() {
         isRunning = true
@@ -38,7 +31,9 @@ abstract class LocationProvider(protected val locationUpdate: (Location?) -> Uni
 
     open fun shutdown() {
         isRunning = false
-        invalidateLocationAndSendLocationUpdate()
+
+        //Send the consumers a NULL location, so they know we don't have a valid location at the moment
+        sendLocationUpdate(null)
         Log.v(Main.LOG_TAG, "Provider $type stopped" )
     }
 }

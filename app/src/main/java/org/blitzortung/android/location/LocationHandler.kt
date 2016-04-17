@@ -44,13 +44,21 @@ open class LocationHandler(
     private var provider: LocationProvider? = null
     private val consumerContainer = object : ConsumerContainer<LocationEvent>() {
         override fun addedFirstConsumer() {
-            provider?.run { start() }
-            Log.d(Main.LOG_TAG, "LocationHandler enable provider")
+            provider?.run {
+                if(!isRunning) {
+                    start()
+                    Log.d(Main.LOG_TAG, "LocationHandler enable provider")
+                }
+            }
         }
 
         override fun removedLastConsumer() {
-            provider?.shutdown()
-            Log.d(Main.LOG_TAG, "LocationHandler disable provider")
+            provider?.run {
+                if(isRunning) {
+                    Log.d(Main.LOG_TAG, "LocationHandler disable provider")
+                    shutdown()
+                }
+            }
         }
     }
 
@@ -141,7 +149,8 @@ open class LocationHandler(
 
     fun updateProvider() {
         provider?.run {
-            shutdown()
+            if(isRunning)
+                shutdown()
 
             if (this is ManagerLocationProvider)
                 this.backgroundMode = backgroundMode

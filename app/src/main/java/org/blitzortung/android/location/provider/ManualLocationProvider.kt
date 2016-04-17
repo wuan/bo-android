@@ -27,13 +27,13 @@ class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sh
         }
 
         when(key) {
-            PreferenceKey.LOCATION_LONGITUDE -> {
-                location.longitude = sharedPreferences.getAndConvert(key, "11.0", doubleConverter) ?: 11.0
-                sendLocationUpdate()
-            }
-            PreferenceKey.LOCATION_LATITUDE -> {
-                location.latitude = sharedPreferences.getAndConvert(key, "49.0", doubleConverter) ?: 49.0
-                sendLocationUpdate()
+            PreferenceKey.LOCATION_LONGITUDE, PreferenceKey.LOCATION_LATITUDE -> {
+                val location = Location("")
+
+                location.longitude = sharedPreferences.getAndConvert(PreferenceKey.LOCATION_LONGITUDE, "11.0", doubleConverter) ?: 11.0
+                location.latitude = sharedPreferences.getAndConvert(PreferenceKey.LOCATION_LATITUDE, "49.0", doubleConverter) ?: 49.0
+
+                sendLocationUpdate(location)
             }
         }
     }
@@ -41,13 +41,16 @@ class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sh
     override val type = LocationHandler.MANUAL_PROVIDER
 
     override fun start() {
+        super.start()
+
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.LOCATION_LONGITUDE)
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.LOCATION_LATITUDE)
     }
 
     override fun shutdown() {
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+
+        super.shutdown()
     }
 }

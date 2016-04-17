@@ -32,14 +32,10 @@ class GPSLocationProvider(context: Context,
                     val secondsElapsedSinceLastFix = (System.currentTimeMillis() - lastKnownGpsLocation.time) / 1000
 
                     if (secondsElapsedSinceLastFix < 10) {
-                        if (!location.isValid) {
-                            location.set(lastKnownGpsLocation)
-                            sendLocationUpdate()
+                        if(lastKnownGpsLocation.isValid) {
+                            sendLocationUpdate(lastKnownGpsLocation)
                         }
                     }
-                }
-                if (location.isValid) {
-                    invalidateLocationAndSendLocationUpdate()
                 }
             }
         }
