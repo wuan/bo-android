@@ -105,7 +105,7 @@ class JsonRpcDataProvider(
 
     @Throws(JSONException::class)
     private fun addStrikesHistogram(response: JSONObject, result: ResultEvent): ResultEvent {
-        var result = result
+        var resultVar = result
 
         if (response.has("h")) {
             val histogram_array = response.get("h") as JSONArray
@@ -115,10 +115,10 @@ class JsonRpcDataProvider(
             for (i in 0..histogram_array.length() - 1) {
                 histogram[i] = histogram_array.getInt(i)
             }
-            result = result.copy(histogram = histogram)
+            resultVar = resultVar.copy(histogram = histogram)
         }
 
-        return result
+        return resultVar
     }
 
     override fun <T> retrieveData(retrieve: DataRetriever.() -> T): T {
@@ -151,7 +151,7 @@ class JsonRpcDataProvider(
         }
 
         override fun getStrikesGrid(parameters: Parameters, result: ResultEvent): ResultEvent {
-            var result = result
+            var resultVar = result
 
             nextId = 0
 
@@ -165,38 +165,38 @@ class JsonRpcDataProvider(
                 val response = client.call("get_strikes_grid", intervalDuration, rasterBaselength, intervalOffset, region, countThreshold)
 
                 val info = "%.0f km".format(rasterBaselength / 1000f)
-                result = addRasterData(response, result, info)
-                result = addStrikesHistogram(response, result)
+                resultVar = addRasterData(response, resultVar, info)
+                resultVar = addStrikesHistogram(response, resultVar)
             } catch (e: Exception) {
                 throw RuntimeException(e)
             }
 
             Log.v(Main.LOG_TAG,
-                    "JsonRpcDataProvider: read %d bytes (%d raster positions, region %d)".format(client.lastNumberOfTransferredBytes, result.strikes?.size, region))
-            return result
+                    "JsonRpcDataProvider: read %d bytes (%d raster positions, region %d)".format(client.lastNumberOfTransferredBytes, resultVar.strikes?.size, region))
+            return resultVar
         }
 
         override fun getStrikes(parameters: Parameters, result: ResultEvent): ResultEvent {
-            var result = result
+            var resultVar = result
             val intervalDuration = parameters.intervalDuration
             val intervalOffset = parameters.intervalOffset
             if (intervalOffset < 0) {
                 nextId = 0
             }
-            result = result.copy(incrementalData = (nextId != 0))
+            resultVar = resultVar.copy(incrementalData = (nextId != 0))
 
             try {
                 val response = client.call("get_strikes", intervalDuration, if (intervalOffset < 0) intervalOffset else nextId)
 
-                result = addStrikes(response, result)
-                result = addStrikesHistogram(response, result)
+                resultVar = addStrikes(response, resultVar)
+                resultVar = addStrikesHistogram(response, resultVar)
             } catch (e: Exception) {
                 throw RuntimeException(e)
             }
 
             Log.v(Main.LOG_TAG,
-                    "JsonRpcDataProvider: read %d bytes (%d new strikes)".format(client.lastNumberOfTransferredBytes, result.strikes?.size))
-            return result
+                    "JsonRpcDataProvider: read %d bytes (%d new strikes)".format(client.lastNumberOfTransferredBytes, resultVar.strikes?.size))
+            return resultVar
         }
 
     }

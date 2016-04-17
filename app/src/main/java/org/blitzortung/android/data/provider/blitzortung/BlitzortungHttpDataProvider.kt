@@ -59,10 +59,7 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
 
     private fun readFromUrl(type: Type, region: Int, intervalTime: Calendar? = null): BufferedReader? {
 
-
         val useGzipCompression = type == Type.STATIONS
-
-        Authenticator.setDefault(MyAuthenticator())
 
         val reader: BufferedReader
 
@@ -118,7 +115,8 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
     override val type: DataProviderType = DataProviderType.HTTP
 
     override fun reset() {
-        latestTime = 0
+        latestTime = 0L
+        strikes = emptyList()
     }
 
     override val isCapableOfHistoricalData: Boolean = false
@@ -132,12 +130,11 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
     }
 
     private inner class Retriever : DataRetriever {
-        override fun getStrikes(parameters: Parameters, resultEvent: ResultEvent): ResultEvent {
-            var resultVar = resultEvent
+        override fun getStrikes(parameters: Parameters, result: ResultEvent): ResultEvent {
+            var resultVar = result
             if (parameters != this@BlitzortungHttpDataProvider.parameters) {
                 this@BlitzortungHttpDataProvider.parameters = parameters
-                strikes = emptyList()
-                latestTime = 0L
+                reset()
             }
 
             val intervalDuration = parameters.intervalDuration
@@ -151,7 +148,9 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
             val startTime = currentTime - intervalDuration * millisecondsPerMinute
             val intervalSequence = createTimestampSequence(10 * millisecondsPerMinute, Math.max(startTime, latestTime))
 
-            val strikes = retrieveData("BlitzortungHttpDataProvider: read %d bytes (%d new strikes) from region $region",
+            Authenticator.setDefault(MyAuthenticator())
+
+            val strikes = retrieveData("BlitzortungHttpDataProvider.getStrikes() read %d bytes (%d new strikes) from region $region",
                     intervalSequence.map {
                         intervalTime.timeInMillis = it
 
@@ -173,7 +172,7 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
 
             if (strikes.count() > 0) {
                 latestTime = currentTime - millisecondsPerMinute
-                Log.d(Main.LOG_TAG, "set latest time to $latestTime")
+                Log.v(Main.LOG_TAG, "BlitzortungHttpDataProvider.getStrikes() set latest time to $latestTime")
             }
 
 
@@ -187,7 +186,10 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
         }
 
         override fun getStations(region: Int): List<Station> {
-            return retrieveData("BlitzortungHttpProvider: read %d bytes (%d stations) from region $region",
+
+            Authenticator.setDefault(MyAuthenticator())
+
+            return retrieveData("BlitzortungHttpDataProvider.getStations() read %d bytes (%d stations) from region $region",
                     sequenceOf(readFromUrl(Type.STATIONS, region))) {
                 stationMapBuilder.buildFromLine(it)
             }

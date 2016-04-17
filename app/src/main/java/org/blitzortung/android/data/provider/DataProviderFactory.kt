@@ -24,15 +24,12 @@ import org.blitzortung.android.data.provider.standard.JsonRpcDataProvider
 
 class DataProviderFactory {
     fun getDataProviderForType(providerType: DataProviderType, sharedPreferences: SharedPreferences, agentSuffix: String): DataProvider {
-        when (providerType) {
-            DataProviderType.RPC -> {
+        return when (providerType) {
+            DataProviderType.RPC -> JsonRpcDataProvider(sharedPreferences, agentSuffix)
 
-                return JsonRpcDataProvider(sharedPreferences, agentSuffix)
-            }
+            DataProviderType.HTTP -> BlitzortungHttpDataProvider(sharedPreferences)
 
-            DataProviderType.HTTP -> return BlitzortungHttpDataProvider(sharedPreferences)
-
-            else -> throw IllegalStateException("unhandled data provider type '%s'".format(providerType))
+            else -> throw IllegalStateException("unhandled data provider type '$providerType'")
         }
     }
 }
