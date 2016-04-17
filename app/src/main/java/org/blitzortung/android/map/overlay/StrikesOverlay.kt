@@ -106,7 +106,7 @@ class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: Stri
     }
 
     fun expireStrikes() {
-        val expireTime = referenceTime - (parameters.intervalDuration - parameters.intervalOffset) * 60 * 1000
+        val expireTime = referenceTime - parameters.intervalDuration * 60 * 1000
 
         val sizeBefore = strikes.size
         strikes = strikes.filter { it.timestamp > expireTime }
@@ -144,7 +144,7 @@ class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: Stri
                         System.currentTimeMillis()
                     else
                         referenceTime,
-                    item.timestamp, parameters)
+                    item.timestamp, parameters.intervalDuration)
 
             if (hasRasterParameters() || current_section != section) {
                 drawable = updateAndReturnDrawable(item, section, colorHandler)

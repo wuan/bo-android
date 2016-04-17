@@ -190,12 +190,12 @@
     </string>
 
     <string-array name="data_sources">
-        <item>Blitzortung.org</item>
         <item>Standard</item>
+        <item>Blitzortung.org</item>
     </string-array>
     <string-array name="data_source_values">
-        <item>HTTP</item>
         <item>RPC</item>
+        <item>HTTP</item>
     </string-array>
 
     <string name="location_settings">Ortsbestimmung</string>

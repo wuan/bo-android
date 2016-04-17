@@ -69,8 +69,6 @@ class JsonRpcDataProvider(
         nextId = 0
     }
 
-    override val isCapableOfHistoricalData: Boolean = true
-
     @Throws(JSONException::class)
     private fun addStrikes(response: JSONObject, result: ResultEvent): ResultEvent {
         val strikes = ArrayList<Strike>()
@@ -95,7 +93,7 @@ class JsonRpcDataProvider(
             strikes.add(dataBuilder.createRasterElement(rasterParameters, referenceTimestamp, strikes_array.getJSONArray(i)))
         }
 
-        return result.copy(strikes = strikes, rasterParameters = rasterParameters, incrementalData = false)
+        return result.copy(strikes = strikes, rasterParameters = rasterParameters, incrementalData = false, referenceTime = referenceTimestamp)
     }
 
     @Throws(JSONException::class)

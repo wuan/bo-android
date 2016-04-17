@@ -119,8 +119,6 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
         strikes = emptyList()
     }
 
-    override val isCapableOfHistoricalData: Boolean = false
-
     enum class Type {
         STRIKES, STATIONS
     }
@@ -138,15 +136,16 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
             }
 
             val intervalDuration = parameters.intervalDuration
+            val intervalOffset = parameters.intervalOffset
             val region = parameters.region
 
             val tz = TimeZone.getTimeZone("UTC")
             val intervalTime = GregorianCalendar(tz)
 
             val millisecondsPerMinute = 60 * 1000L
-            val currentTime = System.currentTimeMillis()
-            val startTime = currentTime - intervalDuration * millisecondsPerMinute
-            val intervalSequence = createTimestampSequence(10 * millisecondsPerMinute, Math.max(startTime, latestTime))
+            val endTime = System.currentTimeMillis() + intervalOffset * millisecondsPerMinute
+            val startTime = endTime - intervalDuration * millisecondsPerMinute
+            val intervalSequence = createTimestampSequence(10 * millisecondsPerMinute, Math.max(startTime, latestTime), endTime)
 
             Authenticator.setDefault(MyAuthenticator())
 
@@ -163,7 +162,7 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
 
             if (latestTime > 0L) {
                 resultVar = resultVar.copy(incrementalData = true)
-                val expireTime = resultVar.referenceTime - (parameters.intervalDuration - parameters.intervalOffset) * 60 * 1000
+                val expireTime = resultVar.referenceTime - (intervalDuration - intervalOffset) * millisecondsPerMinute
                 this@BlitzortungHttpDataProvider.strikes = this@BlitzortungHttpDataProvider.strikes.filter { it.timestamp > expireTime }
                 this@BlitzortungHttpDataProvider.strikes += strikes
             } else {
@@ -171,12 +170,11 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
             }
 
             if (strikes.count() > 0) {
-                latestTime = currentTime - millisecondsPerMinute
+                latestTime = endTime - millisecondsPerMinute
                 Log.v(Main.LOG_TAG, "BlitzortungHttpDataProvider.getStrikes() set latest time to $latestTime")
             }
 
-
-            resultVar = resultVar.copy(strikes = strikes, totalStrikes = this@BlitzortungHttpDataProvider.strikes)
+            resultVar = resultVar.copy(strikes = strikes, totalStrikes = this@BlitzortungHttpDataProvider.strikes, referenceTime = endTime)
 
             return resultVar
         }

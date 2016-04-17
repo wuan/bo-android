@@ -39,8 +39,6 @@ abstract class DataProvider(
 
     abstract fun reset()
 
-    abstract val isCapableOfHistoricalData: Boolean
-
     abstract fun <T> retrieveData(retrieve: DataRetriever.() -> T): T
 
     interface DataRetriever {
