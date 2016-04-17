@@ -16,6 +16,6 @@
 
 */
 
-package org.blitzortung.android.data.provider.result
+package org.blitzortung.android.data.provider.event.status
 
-data class StatusEvent(val status: String) : DataEvent
+data class TimeStatusUpdateEvent(val status: String) : StatusEvent

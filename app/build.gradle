@@ -19,7 +19,7 @@ android {
     defaultConfig {
         compileSdkVersion "Google Inc.:Google APIs:23"
         applicationId "org.blitzortung.android.app"
-        minSdkVersion 8
+        minSdkVersion 9
         targetSdkVersion 23
         versionCode 169
         versionName "1.5.0"
@@ -49,6 +49,7 @@ cobertura.coverageFormats = ['html', 'xml']
 dependencies {
     compile 'com.android.support:appcompat-v7:23.2.0'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile 'io.reactivex:rxandroid:1.1.0'
     compile 'org.jetbrains.anko:anko-sdk23:0.8.3' // sdk19, sdk21, sdk23 are also available
     compile 'org.jetbrains.anko:anko-appcompat-v7:0.8.3' // For appcompat-v7 bindings
     testCompile 'junit:junit:4.12'
@@ -58,4 +59,3 @@ dependencies {
     testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     testCompile 'org.robolectric:robolectric:3.0'
 }
-

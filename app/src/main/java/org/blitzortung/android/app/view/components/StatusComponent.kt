@@ -37,6 +37,10 @@ class StatusComponent(activity: Activity) : AlertLabel {
 
     private val status: TextView
 
+    private var timeStatus = ""
+
+    private var dataStatus = ""
+
     private val warning: TextView
 
     private val progressBar: ProgressBar
@@ -60,10 +64,7 @@ class StatusComponent(activity: Activity) : AlertLabel {
 
         alertEventConsumer = { event ->
             alertLabelHandler.apply(
-                    if (event is AlertResultEvent)
-                        event.alertResult
-                    else
-                        null)
+                    if (event is AlertResultEvent) event.alertResult else null)
         }
     }
 
@@ -81,8 +82,18 @@ class StatusComponent(activity: Activity) : AlertLabel {
         errorIndicator.visibility = if (indicateError) View.VISIBLE else View.INVISIBLE
     }
 
-    fun setText(statusText: String) {
-        status.text = statusText
+    fun setDataStatus(statusText: String) {
+        dataStatus = statusText
+        updateStatus()
+    }
+
+    fun setTimeStatus(statusText: String) {
+        timeStatus = statusText
+        updateStatus()
+    }
+
+    private fun updateStatus() {
+        status.text = "$dataStatus $timeStatus"
     }
 
     override fun setAlarmTextColor(color: Int) {
