@@ -36,11 +36,11 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
         prepare(fields)
 
         for (field in fields) {
-            val parts = field.split(";".toRegex(), 2).toTypedArray()
+            val parts = field.split(SPLIT_PATTERN, 2).toTypedArray()
             if (parts.size > 1) {
                 val key = parts[0]
                 if (keyValueBuilderMap.containsKey(key)) {
-                    val values = Html.fromHtml(parts[1]).toString().split(";".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                    val values = Html.fromHtml(parts[1]).toString().split(SPLIT_PATTERN).dropLastWhile { it.isEmpty() }.toTypedArray()
                     val function: ((Array<String>) -> Unit)? = keyValueBuilderMap[key]
                     function?.invoke(values)
                 }
@@ -54,4 +54,8 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
     protected abstract fun setBuilderMap(keyValueBuilderMap: MutableMap<String, (Array<String>) -> Unit>)
 
     protected abstract fun build(): T
+
+    companion object {
+        val SPLIT_PATTERN = ";".toRegex()
+    }
 }

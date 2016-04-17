@@ -18,8 +18,11 @@
 
 package org.blitzortung.android.data.provider.standard
 
+import android.content.SharedPreferences
 import android.util.Log
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
@@ -32,28 +35,28 @@ import org.blitzortung.android.util.TimeFormat
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 
-class JsonRpcDataProvider(serviceUrl : String? = null) : DataProvider() {
+class JsonRpcDataProvider(
+        preferences: SharedPreferences,
+        private val agentSuffix: String
+) : DataProvider(preferences, PreferenceKey.SERVICE_URL) {
 
-    private val serviceUrl: String
+    private lateinit var serviceUrl: String
     private val dataBuilder: DataBuilder
     private var nextId = 0
 
     init {
         dataBuilder = DataBuilder()
-        this.serviceUrl =
-                if (serviceUrl != null && !serviceUrl.isEmpty()) serviceUrl
-                else "http://bo-service.tryb.de/"
-        Log.v(Main.LOG_TAG, "JsonRpcDataProvider(${this.serviceUrl})")
+
+        Log.v(Main.LOG_TAG, "JsonRpcDataProvider($serviceUrl)")
     }
 
     override val type: DataProviderType = DataProviderType.RPC
 
     private fun setUpClient(): JsonRpcClient {
-        val pInfo = pInfo
-        val agentSuffix = if (pInfo != null) "-" + Integer.toString(pInfo.versionCode) else ""
         val client = JsonRpcClient(serviceUrl, agentSuffix)
 
         return client.apply {
@@ -118,7 +121,7 @@ class JsonRpcDataProvider(serviceUrl : String? = null) : DataProvider() {
         return result
     }
 
-    override fun <T> retrieveData(username: String?, password: String?, retrieve: DataRetriever.() -> T): T {
+    override fun <T> retrieveData(retrieve: DataRetriever.() -> T): T {
         val client = setUpClient()
 
         val t = Retriever(client).retrieve()
@@ -129,7 +132,7 @@ class JsonRpcDataProvider(serviceUrl : String? = null) : DataProvider() {
     }
 
 
-    private inner class Retriever(val client: JsonRpcClient): DataRetriever {
+    private inner class Retriever(val client: JsonRpcClient) : DataRetriever {
         override fun getStations(region: Int): List<Station> {
             val stations = ArrayList<Station>()
 
@@ -198,9 +201,28 @@ class JsonRpcDataProvider(serviceUrl : String? = null) : DataProvider() {
 
     }
 
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+        when (key) {
+            PreferenceKey.SERVICE_URL -> serviceUrl = toCheckedUrl(sharedPreferences.get(PreferenceKey.SERVICE_URL, ""))
+
+            else -> {
+            }
+        }
+    }
+
+    private fun toCheckedUrl(serviceUrl: String): String {
+        try {
+            URL(serviceUrl)
+        } catch (e: Exception) {
+            Log.e(Main.LOG_TAG, "JsonRpcDataProvider.tocheckedUrl($serviceUrl) invalid")
+            return DEFAULT_SERVICE_URL
+        }
+        return serviceUrl
+    }
 
     companion object {
         private val DATE_TIME_FORMATTER = SimpleDateFormat("yyyyMMdd'T'HH:mm:ss")
+        private val DEFAULT_SERVICE_URL = "http://bo-service.tryb.de/"
 
         init {
             val tz = TimeZone.getTimeZone("UTC")

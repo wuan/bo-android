@@ -33,7 +33,7 @@ import org.blitzortung.android.location.provider.createLocationProvider
 import org.blitzortung.android.protocol.ConsumerContainer
 import org.jetbrains.anko.longToast
 
-class LocationHandler(
+open class LocationHandler(
         private val context: Context,
         private val sharedPreferences: SharedPreferences
 

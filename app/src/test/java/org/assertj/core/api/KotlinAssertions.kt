@@ -11,4 +11,6 @@ fun assertThat(actual: Double): AbstractDoubleAssert<*> = DoubleAssert(actual)
 
 fun assertThat(actual: Boolean): AbstractBooleanAssert<*> = BooleanAssert(actual)
 
+fun <T> assertThat(actual: Iterator<T>): AbstractIterableAssert<*, out Iterable<T>, T> = IterableAssert(actual)
+
 fun <T> assertThat(actual: T): AbstractObjectAssert<*, T> = ObjectAssert(actual)

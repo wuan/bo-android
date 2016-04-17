@@ -25,7 +25,7 @@ import org.blitzortung.android.alert.data.AlertSector
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.util.MeasurementSystem
 
-class AlertDataHandler {
+open class AlertDataHandler {
 
     private val strikeLocation: Location = Location("")
 

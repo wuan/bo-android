@@ -140,7 +140,6 @@ class AppService protected constructor(private val handler: Handler, private val
             } catch (e: RuntimeException) {
                 Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() failed", e)
             }
-
         }
     }
 

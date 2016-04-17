@@ -30,7 +30,7 @@ import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.util.isAtLeast
 
-class NotificationHandler(private val context: Context) {
+open class NotificationHandler(private val context: Context) {
 
     private val notificationService: NotificationManager?
 

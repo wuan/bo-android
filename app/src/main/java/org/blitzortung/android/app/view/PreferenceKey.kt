@@ -115,3 +115,16 @@ internal inline fun <reified T> SharedPreferences.Editor.put(key: PreferenceKey,
 
     put(keyString, value)
 }
+
+interface OnSharedPreferenceChangeListener : SharedPreferences.OnSharedPreferenceChangeListener {
+    fun onSharedPreferencesChanged(sharedPreferences: SharedPreferences, vararg keys: PreferenceKey) {
+        keys.forEach { onSharedPreferenceChanged(sharedPreferences, it) }
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
+        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString))
+    }
+
+    fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey);
+
+}

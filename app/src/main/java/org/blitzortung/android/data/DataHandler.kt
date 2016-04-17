@@ -19,14 +19,13 @@
 package org.blitzortung.android.data
 
 import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.content.pm.PackageInfo
 import android.os.AsyncTask
 import android.os.PowerManager
 import android.util.Log
-import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.AppService
+import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProvider
@@ -40,15 +39,13 @@ import org.blitzortung.android.protocol.ConsumerContainer
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 
-class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.WakeLock, private val pInfo: PackageInfo,
-        private val dataProviderFactory: DataProviderFactory = DataProviderFactory()) : OnSharedPreferenceChangeListener {
+class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.WakeLock, private val agentSuffix: String,
+                                            private val dataProviderFactory: DataProviderFactory = DataProviderFactory()) : OnSharedPreferenceChangeListener {
 
     private val sharedPreferences = BOApplication.sharedPreferences
 
     private val lock = ReentrantLock()
     private var dataProvider: DataProvider? = null
-    private var username: String? = null
-    private var password: String? = null
     var parameters = Parameters()
         private set
 
@@ -71,14 +68,7 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
     init {
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.DATA_SOURCE)
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.USERNAME)
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.PASSWORD)
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.RASTER_SIZE)
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.COUNT_THRESHOLD)
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.REGION)
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.INTERVAL_DURATION)
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.HISTORIC_TIMESTEP)
+        onSharedPreferencesChanged(sharedPreferences, PreferenceKey.DATA_SOURCE, PreferenceKey.USERNAME, PreferenceKey.PASSWORD, PreferenceKey.RASTER_SIZE, PreferenceKey.COUNT_THRESHOLD, PreferenceKey.REGION, PreferenceKey.INTERVAL_DURATION, PreferenceKey.HISTORIC_TIMESTEP)
 
         updateProviderSpecifics()
     }
@@ -129,27 +119,19 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
         dataConsumerContainer.storeAndBroadcast(dataEvent)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString))
-    }
-
-    fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         when (key) {
             PreferenceKey.DATA_SOURCE, PreferenceKey.SERVICE_URL -> {
                 val providerTypeString = sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.RPC.toString())
                 val providerType = DataProviderType.valueOf(providerTypeString.toUpperCase())
-                val dataProvider = dataProviderFactory.getDataProviderForType(providerType, sharedPreferences)
-                dataProvider.setPackageInfo(pInfo)
+                val dataProvider = dataProviderFactory.getDataProviderForType(providerType, sharedPreferences, agentSuffix)
+                this.dataProvider?.run {sharedPreferences.unregisterOnSharedPreferenceChangeListener(this@DataHandler.dataProvider)}
                 this.dataProvider = dataProvider
 
                 updateProviderSpecifics()
 
                 notifyDataReset()
             }
-
-            PreferenceKey.USERNAME -> username = sharedPreferences.get(key, "")
-
-            PreferenceKey.PASSWORD -> password = sharedPreferences.get(key, "")
 
             PreferenceKey.RASTER_SIZE -> {
                 val rasterBaselength = Integer.parseInt(sharedPreferences.get(key, "10000"))
@@ -253,7 +235,7 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
                 try {
                     var result = ResultEvent(referenceTime = System.currentTimeMillis(), parameters = parameters)
 
-                    dataProvider!!.retrieveData(username, password) {
+                    dataProvider!!.retrieveData() {
                         if (parameters.isRaster()) {
                             result = getStrikesGrid(parameters, result)
                         } else {

@@ -22,7 +22,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.location.Location
-import android.location.LocationManager
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.RingtoneManager
@@ -30,13 +29,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Vibrator
 import android.util.Log
-import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.data.AlertSignal
 import org.blitzortung.android.alert.event.AlertCancelEvent
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.event.AlertResultEvent
+import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.controller.NotificationHandler
@@ -83,7 +82,6 @@ class AlertHandler(
 
     private val dataHandler = BOApplication.dataHandler
 
-
     private var lastStrikes: Collection<Strike>? = null
 
     private var alertSignal: AlertSignal = AlertSignal()
@@ -114,7 +112,7 @@ class AlertHandler(
     val dataEventConsumer: (Event) -> Unit = { event ->
         if (event is ResultEvent) {
             if (!event.failed && event.containsRealtimeData()) {
-                checkStrikes(event.strikes)
+                checkStrikes(if (event.incrementalData) event.totalStrikes else event.strikes)
             } else {
                 broadcastResult(null)
             }
