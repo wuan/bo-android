@@ -180,7 +180,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         mapView.setBuiltInZoomControls(true)
         this.mapView = mapView
 
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
         preferences.registerOnSharedPreferenceChangeListener(this)
 
         strikesOverlay = StrikesOverlay(this, StrikeColorHandler(preferences))

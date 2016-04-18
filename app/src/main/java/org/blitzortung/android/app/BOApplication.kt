@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.SharedPreferences
 import android.content.pm.PackageInfo
 import android.os.PowerManager
+import android.preference.PreferenceManager
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.data.DataHandler
 import org.blitzortung.android.location.LocationHandler
@@ -15,6 +16,9 @@ class BOApplication : Application() {
         super.onCreate()
 
         backgroundModeHandler = BackgroundModeHandler(this)
+
+        //First of all, set the default values
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
 
         sharedPreferences = applicationContext.defaultSharedPreferences
 
