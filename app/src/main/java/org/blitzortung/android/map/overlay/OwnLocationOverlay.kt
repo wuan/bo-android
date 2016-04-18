@@ -35,7 +35,7 @@ import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.components.LayerOverlayComponent
 import org.blitzortung.android.util.TabletAwareView
 
-class OwnLocationOverlay(context: Context, mapView: OwnMapView) : ItemizedOverlay<OwnLocationOverlayItem>(OwnLocationOverlay.DEFAULT_DRAWABLE), SharedPreferences.OnSharedPreferenceChangeListener, LayerOverlay {
+class OwnLocationOverlay(context: Context, private val mapView: OwnMapView) : ItemizedOverlay<OwnLocationOverlayItem>(OwnLocationOverlay.DEFAULT_DRAWABLE), SharedPreferences.OnSharedPreferenceChangeListener, LayerOverlay {
 
     private val layerOverlayComponent: LayerOverlayComponent
 
@@ -90,9 +90,10 @@ class OwnLocationOverlay(context: Context, mapView: OwnMapView) : ItemizedOverla
     }
 
     private fun refresh() {
-        if (item != null) {
-            item!!.setMarker(ShapeDrawable(OwnLocationShape(sizeFactor * zoomLevel)))
-        }
+        item?.run { setMarker(ShapeDrawable(OwnLocationShape(sizeFactor * zoomLevel))) }
+
+        //Redraw when the OwnLocation is refreshed
+        mapView.postInvalidate()
     }
 
     override fun createItem(i: Int): OwnLocationOverlayItem {
@@ -111,7 +112,7 @@ class OwnLocationOverlay(context: Context, mapView: OwnMapView) : ItemizedOverla
     fun disableOwnLocation() {
         enabled = false
         item = null
-        populate()
+
         refresh()
     }
 
