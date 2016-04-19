@@ -18,10 +18,10 @@ class GPSLocationProvider(context: Context,
         locationManager.addGpsStatusListener(this)
     }
 
-    override fun shutdown() {
+    override fun shutdown(invalidateLocation: Boolean) {
         locationManager.removeGpsStatusListener(this)
 
-        super.shutdown()
+        super.shutdown(invalidateLocation)
     }
 
     override fun onGpsStatusChanged(event: Int) {

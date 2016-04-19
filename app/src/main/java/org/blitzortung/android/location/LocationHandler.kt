@@ -136,23 +136,12 @@ open class LocationHandler(
     private val Location.isValid: Boolean
         get() = !java.lang.Double.isNaN(longitude) && !java.lang.Double.isNaN(latitude)
 
-    fun enableBackgroundMode() {
-        backgroundMode = true
-    }
-
-    fun disableBackgroundMode() {
-        backgroundMode = false
-    }
-
-    fun updateProvider() {
+    private fun updateProvider() {
         provider?.run {
-            if(isRunning)
-                shutdown()
-
             if (this is ManagerLocationProvider)
-                this.backgroundMode = backgroundMode
+                this.backgroundMode = this@LocationHandler.backgroundMode
 
-            start()
+            restart()
         }
     }
 

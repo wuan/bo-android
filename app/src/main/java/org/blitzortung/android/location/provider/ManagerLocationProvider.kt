@@ -29,12 +29,15 @@ abstract class ManagerLocationProvider(protected val context: Context,
             return
         }
 
+        Log.v(Main.LOG_TAG, "LocationProvider: Starting provider '$type' with backgroundMode '$backgroundMode'")
+
         super.start()
 
         locationManager.requestLocationUpdates(type, minTime, minDistance, this)
     }
 
     override fun onLocationChanged(location: Location?) {
+        Log.v(Main.LOG_TAG, "LocationProvider: Sending location which we received from the manager (is Location = ${location is Location})")
         //Don't send NULL locations to the listeners
         if(location is Location) {
             sendLocationUpdate(location)
@@ -51,10 +54,10 @@ abstract class ManagerLocationProvider(protected val context: Context,
         get() = locationManager.isProviderEnabled(type)
 
 
-    override fun shutdown() {
+    override fun shutdown(invalidateLocation: Boolean) {
         locationManager.removeUpdates(this)
 
-        super.shutdown()
+        super.shutdown(invalidateLocation)
     }
 
     abstract val isPermissionGranted: Boolean
