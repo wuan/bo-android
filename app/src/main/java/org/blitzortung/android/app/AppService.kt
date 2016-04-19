@@ -41,7 +41,9 @@ import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.result.StatusEvent
 import org.blitzortung.android.location.LocationHandler
+import org.blitzortung.android.service.BackgroundDownloadReceiver
 import org.blitzortung.android.util.Period
+import org.jetbrains.anko.intentFor
 import java.util.*
 
 class AppService protected constructor(private val handler: Handler, private val updatePeriod: Period) : Service(), Runnable, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -159,18 +161,8 @@ class AppService protected constructor(private val handler: Handler, private val
     }
 
     override fun run() {
-        if (isInBackground) {
-            if (alertEnabled && backgroundPeriod > 0) {
-                Log.v(Main.LOG_TAG, "AppService.run() in background")
-
-                dataHandler.updateDataInBackground()
-            } else {
-                isEnabled = false
-                handler.removeCallbacks(this)
-            }
-        } else {
-            releaseWakeLock()
-
+        //Shouldn't be called anymore when we run in background
+        if (!isInBackground) {
             val currentTime = Period.currentTime
             val updateTargets = HashSet<DataChannel>()
 
@@ -272,9 +264,9 @@ class AppService protected constructor(private val handler: Handler, private val
     private fun createAlarm() {
         if (alarmManager == null && isInBackground && backgroundPeriod > 0) {
             Log.v(Main.LOG_TAG, "AppService.createAlarm() with backgroundPeriod=%d".format(backgroundPeriod))
-            val intent = Intent(this, AppService::class.java)
+            val intent = intentFor<BackgroundDownloadReceiver>()
             intent.action = RETRIEVE_DATA_ACTION
-            pendingIntent = PendingIntent.getService(this, 0, intent, 0)
+            pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
 
             val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager?
             if (alarmManager != null) {

@@ -41,6 +41,14 @@
                 <category android:name="org.blitzortung.android.app" />
             </intent-filter>
         </receiver>
+        <receiver android:name="org.blitzortung.android.service.BackgroundDownloadReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="retrieveData" />
+            </intent-filter>
+        </receiver>
+
         <!--<receiver android:name=".WidgetProvider">
             <meta-data android:name="android.appwidget.provider"
                        android:resource="@xml/widget_provider" />
