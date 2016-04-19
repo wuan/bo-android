@@ -63,10 +63,6 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
         }
     }
 
-    private val internalDataConsumer: (DataEvent) -> Unit = { dataEvent -> dataConsumerContainer.storeAndBroadcast(dataEvent) }
-
-    private val internalDataConsumerContainer = ConsumerContainer<DataEvent>()
-
     private var dataMode = DataMode()
 
     init {
@@ -75,20 +71,10 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
         onSharedPreferencesChanged(sharedPreferences, PreferenceKey.DATA_SOURCE, PreferenceKey.USERNAME, PreferenceKey.PASSWORD, PreferenceKey.RASTER_SIZE, PreferenceKey.COUNT_THRESHOLD, PreferenceKey.REGION, PreferenceKey.INTERVAL_DURATION, PreferenceKey.HISTORIC_TIMESTEP)
 
         updateProviderSpecifics()
-
-        internalDataConsumerContainer.addConsumer(internalDataConsumer)
     }
 
     fun updateDataInBackground() {
         FetchBackgroundDataTask(wakeLock).execute(TaskParameters(parameters = parameters, updateParticipants = false))
-    }
-
-    fun requestInternalUpdates(dataConsumer: (DataEvent) -> Unit) {
-        internalDataConsumerContainer.addConsumer(dataConsumer)
-    }
-
-    fun removeInternalUpdates(dataConsumer: (DataEvent) -> Unit) {
-        internalDataConsumerContainer.removeConsumer(dataConsumer)
     }
 
     fun requestUpdates(dataConsumer: (DataEvent) -> Unit) {
@@ -130,7 +116,7 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
         }
 
     private fun sendEvent(dataEvent: DataEvent) {
-        internalDataConsumerContainer.storeAndBroadcast(dataEvent)
+        dataConsumerContainer.storeAndBroadcast(dataEvent)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
@@ -307,7 +293,7 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
     }
 
     fun broadcastEvent(event: DataEvent) {
-        internalDataConsumerContainer.broadcast(event)
+        dataConsumerContainer.broadcast(event)
     }
 
     companion object {

@@ -169,10 +169,10 @@ class AlertHandler(
     private fun refresh() {
         if (isAlertEnabled) {
             locationHandler.requestUpdates(locationEventConsumer)
-            dataHandler.requestInternalUpdates(dataEventConsumer)
+            dataHandler.requestUpdates(dataEventConsumer)
         } else {
             locationHandler.removeUpdates(locationEventConsumer)
-            dataHandler.removeInternalUpdates(dataEventConsumer)
+            dataHandler.removeUpdates(dataEventConsumer)
 
             currentLocation = null
             broadcastResult(null)

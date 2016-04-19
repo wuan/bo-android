@@ -14,13 +14,15 @@ class BOApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        backgroundModeHandler = BackgroundModeHandler(this)
+
         sharedPreferences = applicationContext.defaultSharedPreferences
 
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG)
 
         dataHandler = DataHandler(wakeLock, "-${getPackageInfo().versionCode.toString()}")
 
-        locationHandler = LocationHandler(applicationContext, sharedPreferences)
+        locationHandler = LocationHandler(applicationContext, backgroundModeHandler, sharedPreferences)
 
         alertHandler = AlertHandler(locationHandler, sharedPreferences, this)
     }
@@ -42,6 +44,8 @@ class BOApplication : Application() {
 
         lateinit var wakeLock: PowerManager.WakeLock
 
+        lateinit var backgroundModeHandler: BackgroundModeHandler
+            private set
 
         val WAKE_LOCK_TAG = "boAndroidWakeLock"
     }

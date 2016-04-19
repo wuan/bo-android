@@ -22,6 +22,8 @@ import android.content.*
 import android.location.Location
 import android.location.LocationManager
 import android.util.Log
+import org.blitzortung.android.app.event.BackgroundModeEvent
+import org.blitzortung.android.app.BackgroundModeHandler
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
@@ -34,6 +36,7 @@ import org.jetbrains.anko.longToast
 
 open class LocationHandler(
         private val context: Context,
+        private val backgroundModeHandler: BackgroundModeHandler,
         private val sharedPreferences: SharedPreferences
 
 )
@@ -61,6 +64,12 @@ open class LocationHandler(
         }
     }
 
+    private val backgroundModeConsumer = {backgroundModeEvent: BackgroundModeEvent ->
+        backgroundMode = backgroundModeEvent.isInBackground
+
+        updateProvider()
+    }
+
     init {
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.LOCATION_MODE)
@@ -68,6 +77,8 @@ open class LocationHandler(
         //We need to know when a LocationProvider is enabled/disabled
         val iFilter = IntentFilter(android.location.LocationManager.PROVIDERS_CHANGED_ACTION)
         context.registerReceiver(LocationProviderChangedReceiver(), iFilter)
+
+        backgroundModeHandler.requestUpdates(backgroundModeConsumer)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
@@ -77,11 +88,11 @@ open class LocationHandler(
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         when (key) {
             PreferenceKey.LOCATION_MODE -> {
-                val providerFactory = { type: String ->
-                    createLocationProvider(context, backgroundMode, { location -> sendLocationUpdate(location) }, type)
-                }
-
-                var newProvider = providerFactory(sharedPreferences.get(key, LocationManager.PASSIVE_PROVIDER))
+                var newProvider = createLocationProvider(context,
+                        backgroundMode,
+                        { location -> sendLocationUpdate(location) },
+                        sharedPreferences.get(key, LocationManager.PASSIVE_PROVIDER)
+                        )
 
                 enableProvider(newProvider)
             }

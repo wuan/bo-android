@@ -113,4 +113,15 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
         findPreference("location_latitude").isEnabled = enabled
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        BOApplication.backgroundModeHandler.updateBackgroundMode(false)
+    }
+
+    override fun onPause() {
+        BOApplication.backgroundModeHandler.updateBackgroundMode(true)
+
+        super.onPause()
+    }
 }
