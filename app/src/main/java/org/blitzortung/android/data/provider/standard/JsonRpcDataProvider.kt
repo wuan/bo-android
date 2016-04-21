@@ -26,7 +26,7 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
-import org.blitzortung.android.data.provider.DataBuilder
+import org.blitzortung.android.data.provider.standard.DataBuilder
 import org.blitzortung.android.data.provider.DataProvider
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.result.ResultEvent

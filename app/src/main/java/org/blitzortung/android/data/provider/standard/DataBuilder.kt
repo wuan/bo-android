@@ -16,7 +16,7 @@
 
 */
 
-package org.blitzortung.android.data.provider
+package org.blitzortung.android.data.provider.standard
 
 import org.blitzortung.android.data.beans.*
 import org.blitzortung.android.util.TimeFormat
@@ -24,7 +24,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-class DataBuilder {
+internal class DataBuilder {
 
     fun createDefaultStrike(referenceTimestamp: Long, jsonArray: JSONArray): Strike {
         try {
