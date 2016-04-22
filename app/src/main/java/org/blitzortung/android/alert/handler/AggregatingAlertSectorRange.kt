@@ -18,7 +18,6 @@
 
 package org.blitzortung.android.alert.handler
 
-import org.blitzortung.android.alert.data.AlertSectorRange
 import org.blitzortung.android.data.beans.Strike
 
 internal class AggregatingAlertSectorRange(
@@ -39,12 +38,5 @@ internal class AggregatingAlertSectorRange(
         strikeCount += strike.multiplicity
     }
 
-    fun toAlertSectorRange(): AlertSectorRange {
-        return AlertSectorRange(
-                rangeMinimum = rangeMinimum,
-                rangeMaximum = rangeMaximum,
-                latestStrikeTimestamp = latestStrikeTimestamp,
-                strikeCount = strikeCount
-        )
-    }
+
 }

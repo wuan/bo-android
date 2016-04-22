@@ -25,7 +25,9 @@ import org.blitzortung.android.alert.data.AlertSector
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.util.MeasurementSystem
 
-open class AlertDataHandler {
+open class AlertDataHandler internal constructor(
+        private val aggregatingAlertDataMapper: AggregatingAlertDataMapper = AggregatingAlertDataMapper()
+) {
 
     private val strikeLocation: Location = Location("")
 
@@ -46,7 +48,7 @@ open class AlertDataHandler {
             }
         }
 
-        return AlertResult(sectors.map { it.toAlertSector() }, parameters, referenceTime)
+        return AlertResult(sectors.map { aggregatingAlertDataMapper.mapSector(it) }, parameters, referenceTime)
     }
 
     internal fun checkStrike(sector: AggregatingAlertSector, strike: Strike, measurementSystem: MeasurementSystem,

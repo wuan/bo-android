@@ -18,8 +18,6 @@
 
 package org.blitzortung.android.alert.handler
 
-import org.blitzortung.android.alert.data.AlertSector
-
 internal class AggregatingAlertSector(
         val label: String,
         val minimumSectorBearing: Float,
@@ -32,15 +30,5 @@ internal class AggregatingAlertSector(
 
     fun updateClosestStrikeDistance(distance: Float) {
         closestStrikeDistance = Math.min(distance, closestStrikeDistance)
-    }
-
-    fun toAlertSector(): AlertSector {
-        return AlertSector(
-                label = label,
-                minimumSectorBearing = minimumSectorBearing,
-                maximumSectorBearing = maximumSectorBearing,
-                closestStrikeDistance = closestStrikeDistance,
-                ranges = ranges.map { it.toAlertSectorRange() }
-        )
     }
 }

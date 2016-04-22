@@ -44,7 +44,10 @@ android {
     }
 }
 
-cobertura.coverageFormats = ['html', 'xml']
+cobertura {
+    coverageFormats = ['html', 'xml']
+    coverageSourceDirs = android.sourceSets.main.java.srcDirs
+}
 
 dependencies {
     compile 'com.android.support:appcompat-v7:23.2.0'
