@@ -27,9 +27,7 @@ import android.content.SharedPreferences
 import android.os.Binder
 import android.os.Handler
 import android.os.IBinder
-import android.preference.PreferenceManager
 import android.util.Log
-import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.view.PreferenceKey
@@ -166,7 +164,6 @@ class AppService protected constructor(private val handler: Handler, private val
             val updateTargets = HashSet<DataChannel>()
 
             if (updatePeriod.shouldUpdate(currentTime, period)) {
-                updatePeriod.lastUpdateTime = currentTime
                 updateTargets.add(DataChannel.STRIKES)
 
                 if (updateParticipants && updatePeriod.isNthUpdate(10)) {

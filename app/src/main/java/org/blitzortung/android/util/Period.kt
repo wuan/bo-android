@@ -20,19 +20,30 @@ package org.blitzortung.android.util
 
 class Period {
 
-    var lastUpdateTime: Long = 0L
-    private var updateCount: Int = 0
+    internal var lastUpdateTime: Long = 0L
+        private set
+
+    internal var updateCount: Int = 0
+        private set
 
     init {
         restart()
     }
 
     fun shouldUpdate(currentTime: Long, currentPeriod: Int): Boolean {
-        if (lastUpdateTime == 0L) {
-            lastUpdateTime = currentTime
-            return true
+
+        val shouldUpdate = if (lastUpdateTime == 0L) {
+            true
+        } else {
+            currentTime >= lastUpdateTime + currentPeriod
         }
-        return currentTime >= lastUpdateTime + currentPeriod
+
+        if (shouldUpdate) {
+            updateCount++
+            lastUpdateTime = currentTime
+        }
+
+        return shouldUpdate
     }
 
     fun isNthUpdate(countPeriod: Int): Boolean {
