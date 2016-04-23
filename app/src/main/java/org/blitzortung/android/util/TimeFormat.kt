@@ -20,8 +20,7 @@ package org.blitzortung.android.util
 
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.TimeZone
+import java.util.*
 
 object TimeFormat {
 
@@ -42,7 +41,6 @@ object TimeFormat {
         } catch (e: ParseException) {
             throw IllegalArgumentException("Unable to parse millisecond time string '%s'".format(timestampString), e)
         }
-
     }
 
     fun parseTimestampWithMillisecondsFromFields(fields: Array<String>): Long {

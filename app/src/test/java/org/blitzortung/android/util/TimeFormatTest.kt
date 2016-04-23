@@ -28,11 +28,17 @@ class TimeFormatTest {
     }
 
     @Test
-    fun testParseTimeWithAdditinalMillisecondsInString() {
+    fun testParseTimeWithAdditionalMillisecondsInString() {
+        val result = TimeFormat.parseTimeWithMilliseconds("20120901T20:10:05.123")
 
-        val result = TimeFormat.parseTime("20120901T20:10:05.123")
+        assertThat(result).isEqualTo(1346530205123L)
+    }
 
-        assertThat(result).isEqualTo(1346530205000L)
+    @Test
+    fun checkParsingFromFields() {
+        val result = TimeFormat.parseTimestampWithMillisecondsFromFields(arrayOf("20120901", "20:10:05.123456789"))
+
+        assertThat(result).isEqualTo(1346530205123L)
     }
 
     @Test
