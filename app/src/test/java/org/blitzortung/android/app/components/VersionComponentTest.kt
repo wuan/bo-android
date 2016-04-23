@@ -49,11 +49,13 @@ class VersionComponentTest {
 
     @Test
     fun shouldReturnUpdatedStateWhenCalledFirstTimeAfterVersionChange() {
-        val preferences = RuntimeEnvironment.application.getSharedPreferences(RuntimeEnvironment.application.packageName, Context.MODE_PRIVATE)
-        preferences
-                .edit().putInt(VersionComponent.CONFIGURED_VERSION_CODE, 1).apply()
+        val context = RuntimeEnvironment.application
 
-        versionComponent = VersionComponent(RuntimeEnvironment.application)
+        val preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
+
+        preferences .edit().putInt(VersionComponent.CONFIGURED_VERSION_CODE, 1).apply()
+
+        versionComponent = VersionComponent(context)
         assertThat(versionComponent.configuredVersionCode).isEqualTo(1)
         assertThat(versionComponent.state).isEqualTo(VersionComponent.State.FIRST_RUN_AFTER_UPDATE)
     }
