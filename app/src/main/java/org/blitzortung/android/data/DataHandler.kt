@@ -51,17 +51,21 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
 
     private var parametersController: ParametersController? = null
 
-    private val dataConsumerContainer: ConsumerContainer<DataEvent> = object : ConsumerContainer<DataEvent>() {
+    private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
         override fun addedFirstConsumer() {
-            Log.d(Main.LOG_TAG, "added first data consumer")
+            Log.d(Main.LOG_TAG, "DataHandler: added first data consumer")
             AppService.instance?.configureServiceMode()
         }
 
         override fun removedLastConsumer() {
-            Log.d(Main.LOG_TAG, "removed last data consumer")
+            Log.d(Main.LOG_TAG, "DataHandler: removed last data consumer")
             AppService.instance?.configureServiceMode()
         }
     }
+
+    private val internalDataConsumer: (DataEvent) -> Unit = { dataEvent -> dataConsumerContainer.storeAndBroadcast(dataEvent) }
+
+    private val internalDataConsumerContainer = ConsumerContainer<DataEvent>()
 
     private var dataMode = DataMode()
 
@@ -71,10 +75,20 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
         onSharedPreferencesChanged(sharedPreferences, PreferenceKey.DATA_SOURCE, PreferenceKey.USERNAME, PreferenceKey.PASSWORD, PreferenceKey.RASTER_SIZE, PreferenceKey.COUNT_THRESHOLD, PreferenceKey.REGION, PreferenceKey.INTERVAL_DURATION, PreferenceKey.HISTORIC_TIMESTEP)
 
         updateProviderSpecifics()
+
+        internalDataConsumerContainer.addConsumer(internalDataConsumer)
     }
 
-    fun updateDatainBackground() {
+    fun updateDataInBackground() {
         FetchBackgroundDataTask(wakeLock).execute(TaskParameters(parameters = parameters, updateParticipants = false))
+    }
+
+    fun requestInternalUpdates(dataConsumer: (DataEvent) -> Unit) {
+        internalDataConsumerContainer.addConsumer(dataConsumer)
+    }
+
+    fun removeInternalUpdates(dataConsumer: (DataEvent) -> Unit) {
+        internalDataConsumerContainer.removeConsumer(dataConsumer)
     }
 
     fun requestUpdates(dataConsumer: (DataEvent) -> Unit) {
@@ -98,7 +112,7 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
                 updateParticipants = true
             }
         }
-
+        Log.d(Main.LOG_TAG, "DataHandler.updateData() $activeParameters")
         FetchDataTask().execute(TaskParameters(parameters = activeParameters, updateParticipants = updateParticipants))
     }
 
@@ -116,7 +130,7 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
         }
 
     private fun sendEvent(dataEvent: DataEvent) {
-        dataConsumerContainer.storeAndBroadcast(dataEvent)
+        internalDataConsumerContainer.storeAndBroadcast(dataEvent)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
@@ -125,7 +139,7 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
                 val providerTypeString = sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.RPC.toString())
                 val providerType = DataProviderType.valueOf(providerTypeString.toUpperCase())
                 val dataProvider = dataProviderFactory.getDataProviderForType(providerType, sharedPreferences, agentSuffix)
-                this.dataProvider?.run {sharedPreferences.unregisterOnSharedPreferenceChangeListener(this@DataHandler.dataProvider)}
+                this.dataProvider?.run { sharedPreferences.unregisterOnSharedPreferenceChangeListener(this@DataHandler.dataProvider) }
                 this.dataProvider = dataProvider
 
                 updateProviderSpecifics()
@@ -293,7 +307,7 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
     }
 
     fun broadcastEvent(event: DataEvent) {
-        dataConsumerContainer.broadcast(event)
+        internalDataConsumerContainer.broadcast(event)
     }
 
     companion object {

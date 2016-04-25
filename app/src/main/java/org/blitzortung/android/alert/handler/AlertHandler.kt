@@ -68,13 +68,13 @@ class AlertHandler(
 
     val alertConsumerContainer: ConsumerContainer<AlertEvent> = object : ConsumerContainer<AlertEvent>() {
         override fun addedFirstConsumer() {
-            Log.d(Main.LOG_TAG, "added first alert consumer")
+            Log.d(Main.LOG_TAG, "AlertHandler: added first alert consumer")
 
             refresh()
         }
 
         override fun removedLastConsumer() {
-            Log.d(Main.LOG_TAG, "removed last alert consumer")
+            Log.d(Main.LOG_TAG, "AlertHandler: removed last alert consumer")
 
             refresh()
         }
@@ -104,7 +104,7 @@ class AlertHandler(
 
 
     val locationEventConsumer: (LocationEvent) -> Unit = { event ->
-        Log.v(Main.LOG_TAG, "AlertHandler received location " + currentLocation + " vs " + event.location)
+        Log.v(Main.LOG_TAG, "AlertHandler: received location " + currentLocation + " vs " + event.location)
         currentLocation = event.location
         checkStrikes(lastStrikes)
     }
@@ -169,10 +169,10 @@ class AlertHandler(
     private fun refresh() {
         if (isAlertEnabled) {
             locationHandler.requestUpdates(locationEventConsumer)
-            dataHandler.requestUpdates(dataEventConsumer)
+            dataHandler.requestInternalUpdates(dataEventConsumer)
         } else {
             locationHandler.removeUpdates(locationEventConsumer)
-            dataHandler.removeUpdates(dataEventConsumer)
+            dataHandler.removeInternalUpdates(dataEventConsumer)
 
             currentLocation = null
             broadcastResult(null)

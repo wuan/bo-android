@@ -42,7 +42,6 @@ import android.widget.ImageButton
 import android.widget.Toast
 import com.google.android.maps.GeoPoint
 import kotlinx.android.synthetic.main.map_overlay.*
-import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.VersionComponent
@@ -243,6 +242,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + appService)
 
                 setupService()
+                setupDataUpdates()
             }
 
             override fun onServiceDisconnected(componentName: ComponentName) {
@@ -405,6 +405,14 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onStart() {
         super.onStart()
 
+        if (appService != null) {
+            setupDataUpdates()
+        }
+
+        Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
+    }
+
+    private fun setupDataUpdates() {
         with(locationHandler) {
             requestUpdates(ownLocationOverlay.locationEventConsumer)
             requestUpdates(alert_view.locationEventConsumer)
@@ -420,8 +428,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             requestUpdates(historyController.dataConsumer)
             requestUpdates(histogram_view.dataConsumer)
         }
-
-        Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
     }
 
     override fun onRestart() {
@@ -480,7 +486,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun reloadData() {
-        appService!!.reloadData()
+        appService?.run { this.reloadData() }
     }
 
     private fun clearDataIfRequested() {

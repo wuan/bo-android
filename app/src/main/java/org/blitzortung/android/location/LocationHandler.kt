@@ -46,7 +46,7 @@ open class LocationHandler(
             provider?.run {
                 if(!isRunning) {
                     start()
-                    Log.d(Main.LOG_TAG, "LocationHandler enable provider")
+                    Log.d(Main.LOG_TAG, "LocationHandler: enable provider")
                 }
             }
         }
@@ -54,7 +54,7 @@ open class LocationHandler(
         override fun removedLastConsumer() {
             provider?.run {
                 if(isRunning) {
-                    Log.d(Main.LOG_TAG, "LocationHandler disable provider")
+                    Log.d(Main.LOG_TAG, "LocationHandler: disable provider")
                     shutdown()
                 }
             }

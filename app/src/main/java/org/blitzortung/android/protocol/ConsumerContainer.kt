@@ -20,7 +20,7 @@ package org.blitzortung.android.protocol
 
 import java.util.*
 
-abstract class ConsumerContainer<P> {
+open class ConsumerContainer<P> {
 
     private val consumers: MutableSet<(P) -> Unit>
 
@@ -30,7 +30,7 @@ abstract class ConsumerContainer<P> {
         consumers = HashSet<(P) -> Unit>()
     }
 
-    fun addConsumer(consumer: ((P) -> Unit)?) {
+    open fun addConsumer(consumer: ((P) -> Unit)?) {
         if (consumer == null) {
             throw IllegalArgumentException("consumer may not be null")
         }
@@ -46,8 +46,7 @@ abstract class ConsumerContainer<P> {
     }
 
     protected fun sendCurrentPayloadTo(consumer: (P) -> Unit) {
-        val currentPayload = currentPayload
-        if (currentPayload != null) {
+        currentPayload?.let { currentPayload ->
             consumer.invoke(currentPayload)
         }
     }
@@ -61,9 +60,11 @@ abstract class ConsumerContainer<P> {
         }
     }
 
-    abstract fun addedFirstConsumer()
+    open fun addedFirstConsumer() {
+    }
 
-    abstract fun removedLastConsumer()
+    open fun removedLastConsumer() {
+    }
 
     fun storeAndBroadcast(payload: P) {
         currentPayload = payload
@@ -79,7 +80,6 @@ abstract class ConsumerContainer<P> {
     val isEmpty: Boolean
         get() = consumers.isEmpty()
 
-    fun size(): Int {
-        return consumers.size
-    }
+    val size: Int
+        get() = consumers.size
 }

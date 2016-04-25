@@ -102,7 +102,7 @@ class AppService protected constructor(private val handler: Handler, private val
 
         preferences.registerOnSharedPreferenceChangeListener(this)
 
-        dataHandler.requestUpdates(dataEventConsumer)
+        dataHandler.requestInternalUpdates(dataEventConsumer)
 
         onSharedPreferenceChanged(preferences, PreferenceKey.QUERY_PERIOD)
         onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED)
@@ -116,7 +116,7 @@ class AppService protected constructor(private val handler: Handler, private val
         if (intent != null && RETRIEVE_DATA_ACTION == intent.action) {
             acquireWakeLock()
 
-            Log.v(Main.LOG_TAG, "AppService.onStartCommand() acquired wake lock " + wakeLock)
+            Log.v(Main.LOG_TAG, "AppService.onStartCommand() with wake lock " + wakeLock)
 
             isEnabled = false
             handler.removeCallbacks(this)
@@ -127,6 +127,7 @@ class AppService protected constructor(private val handler: Handler, private val
     }
 
     private fun acquireWakeLock() {
+        Log.v(Main.LOG_TAG, "AppService.acquireWakeLock() before: $wakeLock")
         wakeLock.acquire()
     }
 
@@ -134,8 +135,8 @@ class AppService protected constructor(private val handler: Handler, private val
         if (wakeLock.isHeld) {
             try {
                 wakeLock.release()
-                Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() " + wakeLock)
-            } catch (e: RuntimeException) {
+                Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() after $wakeLock")
+            } catch (e: Exception) {
                 Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() failed", e)
             }
         }
@@ -152,7 +153,7 @@ class AppService protected constructor(private val handler: Handler, private val
             if (alertEnabled && backgroundPeriod > 0) {
                 Log.v(Main.LOG_TAG, "AppService.run() in background")
 
-                dataHandler.updateDatainBackground()
+                dataHandler.updateDataInBackground()
             } else {
                 isEnabled = false
                 handler.removeCallbacks(this)
@@ -219,38 +220,41 @@ class AppService protected constructor(private val handler: Handler, private val
     }
 
     fun configureServiceMode() {
-        Log.v(Main.LOG_TAG, "AppService.configureServiceMode() entered")
         val backgroundOperation = dataHandler.hasConsumers
+        val logElements = mutableListOf<String>()
         if (backgroundOperation) {
             if (alertEnabled && backgroundPeriod > 0) {
+                logElements += "enable_bg"
                 locationHandler.enableBackgroundMode()
                 locationHandler.updateProvider()
                 createAlarm()
             } else {
+                logElements += "disable_bg"
                 alertHandler.unsetAlertListener()
                 discardAlarm()
             }
         } else {
             discardAlarm()
             if (dataHandler.isRealtime) {
-                Log.v(Main.LOG_TAG, "AppService.configureServiceMode() realtime data")
+                logElements += "realtime_data"
                 if (!isEnabled) {
+                    logElements += "restart_handler"
                     isEnabled = true
                     handler.removeCallbacks(this)
                     handler.post(this)
                 }
             } else {
-                Log.v(Main.LOG_TAG, "AppService.configureServiceMode() historic data")
+                logElements += "historic_data"
                 isEnabled = false
                 handler.removeCallbacks(this)
                 if (lastParameters != null && lastParameters != dataHandler.activeParameters) {
+                    logElements += "force_update"
                     dataHandler.updateData()
                 }
             }
             locationHandler.disableBackgroundMode()
-            Log.v(Main.LOG_TAG, "AppService.configureServiceMode() set alert event consumer")
         }
-        Log.v(Main.LOG_TAG, "AppService.configureServiceMode() done")
+        Log.v(Main.LOG_TAG, "AppService.configureServiceMode() ${logElements.joinToString(", ")}")
     }
 
     private fun createAlarm() {
@@ -271,8 +275,7 @@ class AppService protected constructor(private val handler: Handler, private val
     }
 
     private fun discardAlarm() {
-        val alarmManager = alarmManager
-        if (alarmManager != null) {
+        alarmManager?.let { alarmManager ->
             Log.v(Main.LOG_TAG, "AppService.discardAlarm()")
             alarmManager.cancel(pendingIntent)
             pendingIntent!!.cancel()
