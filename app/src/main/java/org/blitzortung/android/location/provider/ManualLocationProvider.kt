@@ -48,9 +48,9 @@ class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sh
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.LOCATION_LONGITUDE)
     }
 
-    override fun shutdown() {
+    override fun shutdown(invalidateLocation: Boolean) {
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
 
-        super.shutdown()
+        super.shutdown(invalidateLocation)
     }
 }

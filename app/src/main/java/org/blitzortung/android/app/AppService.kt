@@ -30,6 +30,7 @@ import android.os.IBinder
 import android.util.Log
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.handler.AlertHandler
+import org.blitzortung.android.app.event.BackgroundModeEvent
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.DataChannel
@@ -57,8 +58,9 @@ class AppService protected constructor(private val handler: Handler, private val
         private set
 
     private val dataHandler: DataHandler = BOApplication.dataHandler
-    private val locationHandler: LocationHandler = BOApplication.locationHandler
     private val alertHandler: AlertHandler = BOApplication.alertHandler
+    private val backgroundModeHandler = BOApplication.backgroundModeHandler
+    private var isInBackground = true
 
     private val preferences = BOApplication.sharedPreferences
 
@@ -76,6 +78,12 @@ class AppService protected constructor(private val handler: Handler, private val
         }
 
         releaseWakeLock()
+    }
+
+    private val backgroundModeConsumer = {backgroundModeEvent: BackgroundModeEvent ->
+        this.isInBackground = backgroundModeEvent.isInBackground
+
+        configureServiceMode()
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -100,9 +108,11 @@ class AppService protected constructor(private val handler: Handler, private val
         Log.i(Main.LOG_TAG, "AppService.onCreate()")
         super.onCreate()
 
+        backgroundModeHandler.requestUpdates(backgroundModeConsumer)
+
         preferences.registerOnSharedPreferenceChangeListener(this)
 
-        dataHandler.requestInternalUpdates(dataEventConsumer)
+        dataHandler.requestUpdates(dataEventConsumer)
 
         onSharedPreferenceChanged(preferences, PreferenceKey.QUERY_PERIOD)
         onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED)
@@ -149,7 +159,7 @@ class AppService protected constructor(private val handler: Handler, private val
     }
 
     override fun run() {
-        if (dataHandler.hasConsumers) {
+        if (isInBackground) {
             if (alertEnabled && backgroundPeriod > 0) {
                 Log.v(Main.LOG_TAG, "AppService.run() in background")
 
@@ -190,6 +200,9 @@ class AppService protected constructor(private val handler: Handler, private val
 
     override fun onDestroy() {
         super.onDestroy()
+
+        backgroundModeHandler.removeUpdates(backgroundModeConsumer)
+
         Log.v(Main.LOG_TAG, "AppService.onDestroy()")
     }
 
@@ -220,13 +233,12 @@ class AppService protected constructor(private val handler: Handler, private val
     }
 
     fun configureServiceMode() {
-        val backgroundOperation = dataHandler.hasConsumers
+        Log.v(Main.LOG_TAG, "AppService.configureServiceMode() entered")
         val logElements = mutableListOf<String>()
-        if (backgroundOperation) {
+        if (isInBackground) {
+            Log.v(Main.LOG_TAG, "AppService.configureServiceMode() in background")
             if (alertEnabled && backgroundPeriod > 0) {
                 logElements += "enable_bg"
-                locationHandler.enableBackgroundMode()
-                locationHandler.updateProvider()
                 createAlarm()
             } else {
                 logElements += "disable_bg"
@@ -234,6 +246,7 @@ class AppService protected constructor(private val handler: Handler, private val
                 discardAlarm()
             }
         } else {
+            Log.v(Main.LOG_TAG, "AppService.configureServiceMode() in foreground")
             discardAlarm()
             if (dataHandler.isRealtime) {
                 logElements += "realtime_data"
@@ -252,13 +265,12 @@ class AppService protected constructor(private val handler: Handler, private val
                     dataHandler.updateData()
                 }
             }
-            locationHandler.disableBackgroundMode()
         }
         Log.v(Main.LOG_TAG, "AppService.configureServiceMode() ${logElements.joinToString(", ")}")
     }
 
     private fun createAlarm() {
-        if (alarmManager == null && dataHandler.hasConsumers && backgroundPeriod > 0) {
+        if (alarmManager == null && isInBackground && backgroundPeriod > 0) {
             Log.v(Main.LOG_TAG, "AppService.createAlarm() with backgroundPeriod=%d".format(backgroundPeriod))
             val intent = Intent(this, AppService::class.java)
             intent.action = RETRIEVE_DATA_ACTION

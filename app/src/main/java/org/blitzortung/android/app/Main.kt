@@ -86,6 +86,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private val locationHandler = BOApplication.locationHandler
     private val alertHandler = BOApplication.alertHandler
     private val dataHandler = BOApplication.dataHandler
+    private val backgroundModeHandler = BOApplication.backgroundModeHandler
 
     private val preferences = BOApplication.sharedPreferences
 
@@ -439,11 +440,15 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onResume() {
         super.onResume()
 
+        backgroundModeHandler.updateBackgroundMode(false)
+
         Log.d(Main.LOG_TAG, "Main.onResume() service: " + appService)
     }
 
     override fun onPause() {
         super.onPause()
+
+        backgroundModeHandler.updateBackgroundMode(true)
 
         Log.v(Main.LOG_TAG, "Main.onPause()")
     }

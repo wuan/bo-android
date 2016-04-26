@@ -29,11 +29,22 @@ abstract class LocationProvider(protected val locationUpdate: (Location?) -> Uni
         Log.v(Main.LOG_TAG, "Provider $type started" )
     }
 
-    open fun shutdown() {
+    open fun shutdown(invalidateLocation: Boolean = true) {
         isRunning = false
 
         //Send the consumers a NULL location, so they know we don't have a valid location at the moment
-        sendLocationUpdate(null)
+        if(invalidateLocation)
+            sendLocationUpdate(null)
+
         Log.v(Main.LOG_TAG, "Provider $type stopped" )
+    }
+
+    fun restart() {
+        if(isRunning) {
+            //We are just restarting the provider, so there is no need to invalidate the current location
+            shutdown(false)
+        }
+
+        start()
     }
 }
