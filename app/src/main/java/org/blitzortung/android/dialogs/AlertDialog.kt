@@ -21,13 +21,13 @@ package org.blitzortung.android.dialogs
 import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
+import org.blitzortung.android.alert.handler.AlertHandler
 
-import org.blitzortung.android.app.AppService
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.AlertView
 import org.blitzortung.android.map.overlay.color.ColorHandler
 
-class AlertDialog(context: Context, private val service: AppService?, private val colorHandler: ColorHandler) : android.app.AlertDialog(context) {
+class AlertDialog(context: Context, private val alertHandler: AlertHandler, private val colorHandler: ColorHandler) : android.app.AlertDialog(context) {
     private lateinit var alertView: AlertView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,18 +44,15 @@ class AlertDialog(context: Context, private val service: AppService?, private va
 
         setTitle(context.getString(R.string.alarms))
 
-        if (service != null) {
-            alertView.setColorHandler(colorHandler, service.dataHandler().intervalDuration)
-            alertView.alertEventConsumer.invoke(service.alertEvent())
-            service.addAlertConsumer(alertView.alertEventConsumer)
-        }
+        alertHandler.addConsumer(alertView.alertEventConsumer)
+
         colorHandler.updateTarget()
     }
 
     override fun onStop() {
         super.onStop()
 
-        service?.removeAlertListener(alertView.alertEventConsumer)
+        alertHandler.removeConsumer(alertView.alertEventConsumer)
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {

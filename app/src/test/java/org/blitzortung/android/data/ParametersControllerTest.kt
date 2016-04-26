@@ -1,97 +1,105 @@
 package org.blitzortung.android.data
 
+import android.content.Context
+import android.content.SharedPreferences
 import org.assertj.core.api.assertThat
+import org.blitzortung.android.app.ParametersComponent
+import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.test.createPreferences
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest= Config.NONE)
 class ParametersControllerTest {
 
-    private lateinit var parameters: Parameters
+    private var defaultParameters = Parameters(intervalDuration = 60)
 
-    private lateinit var controller: ParametersController
+    private lateinit var controller: ParametersComponent
 
     @Before
     fun setUp() {
-        parameters = Parameters(intervalDuration = 60)
-        controller = ParametersController.withOffsetIncrement(15)
+        val preferences = createPreferences { it.putString(PreferenceKey.HISTORIC_TIMESTEP.key, "15") }
+        controller = ParametersComponent(preferences, defaultParameters)
     }
 
     @Test
     fun testIfRealtimeModeIsDefault() {
-        assertThat(parameters.isRealtime()).isTrue()
+        assertThat(controller.parameters.isRealtime()).isTrue()
     }
 
     @Test
     fun testGetOffsetReturnsZeroByDefault() {
-        assertThat(parameters.intervalOffset).isEqualTo(0)
+        assertThat(controller.parameters.intervalOffset).isEqualTo(0)
     }
 
     private fun update(updater: (Parameters) -> Parameters): Boolean {
-        val oldParameters = parameters
-        parameters = updater.invoke(parameters)
-        return parameters != oldParameters
+        val oldParameters = defaultParameters
+        defaultParameters = updater.invoke(defaultParameters)
+        return defaultParameters != oldParameters
     }
 
     @Test
     fun testRewindInterval() {
-        assertThat(update({ controller.rewInterval(it) })).isTrue()
-        assertThat(parameters.intervalOffset).isEqualTo(-15)
+        assertThat(controller.rewInterval()).isTrue()
+        assertThat(controller.parameters.intervalOffset).isEqualTo(-15)
 
-        assertThat(update({ controller.rewInterval(it) })).isTrue()
-        assertThat(parameters.intervalOffset).isEqualTo(-30)
+        assertThat(controller.rewInterval()).isTrue()
+        assertThat(controller.parameters.intervalOffset).isEqualTo(-30)
 
         for (i in 0..23 * 4 - 2 - 1 - 1) {
-            assertThat(update({ controller.rewInterval(it) })).isTrue()
+            assertThat(controller.rewInterval()).isTrue()
         }
-        assertThat(parameters.intervalOffset).isEqualTo(-23 * 60 + 15)
+        assertThat(controller.parameters.intervalOffset).isEqualTo(-23 * 60 + 15)
 
-        assertThat(update({ controller.rewInterval(it) })).isTrue()
-        assertThat(parameters.intervalOffset).isEqualTo(-23 * 60)
+        assertThat(controller.rewInterval()).isTrue()
+        assertThat(controller.parameters.intervalOffset).isEqualTo(-23 * 60)
 
-        assertThat(update({ controller.rewInterval(it) })).isFalse()
-        assertThat(parameters.intervalOffset).isEqualTo(-23 * 60)
+        assertThat(controller.rewInterval()).isFalse()
+        assertThat(controller.parameters.intervalOffset).isEqualTo(-23 * 60)
     }
 
     @Test
     fun testRewindIntervalWithAlignment() {
-        controller = ParametersController.withOffsetIncrement(45)
+        val preferences = createPreferences { it.putString(PreferenceKey.HISTORIC_TIMESTEP.key, "45") }
+        controller = ParametersComponent(preferences, defaultParameters)
 
-        assertThat(update({ controller.rewInterval(it) })).isTrue()
-        assertThat(parameters.intervalOffset).isEqualTo(-45)
+        assertThat(controller.rewInterval()).isTrue()
+        assertThat(controller.parameters.intervalOffset).isEqualTo(-45)
 
-        assertThat(update({ controller.rewInterval(it) })).isTrue()
-        assertThat(parameters.intervalOffset).isEqualTo(-90)
+        assertThat(controller.rewInterval()).isTrue()
+        assertThat(controller.parameters.intervalOffset).isEqualTo(-90)
 
         for (i in 0..23 / 3 * 4 - 1) {
-            assertThat(update({ controller.rewInterval(it) })).isTrue()
+            assertThat(controller.rewInterval()).isTrue()
         }
-        assertThat(parameters.intervalOffset).isEqualTo(-23 * 60 + 30)
+        assertThat(controller.parameters.intervalOffset).isEqualTo(-23 * 60 + 30)
 
-        assertThat(update({ controller.rewInterval(it) })).isFalse()
-        assertThat(parameters.intervalOffset).isEqualTo(-23 * 60 + 30)
+        assertThat(controller.rewInterval()).isFalse()
+        assertThat(controller.parameters.intervalOffset).isEqualTo(-23 * 60 + 30)
     }
 
     @Test
     fun testFastforwardInterval() {
-        update({ controller.rewInterval(it) })
+        controller.rewInterval()
 
-        assertThat(update({ controller.ffwdInterval(it) })).isTrue()
-        assertThat(parameters.intervalOffset).isEqualTo(0)
+        assertThat(controller.ffwdInterval()).isTrue()
+        assertThat(controller.parameters.intervalOffset).isEqualTo(0)
 
-        assertThat(update({ controller.ffwdInterval(it) })).isFalse()
-        assertThat(parameters.intervalOffset).isEqualTo(0)
+        assertThat(controller.ffwdInterval()).isFalse()
+        assertThat(controller.parameters.intervalOffset).isEqualTo(0)
     }
 
     @Test
     fun testGoRealtime() {
-        assertThat(update({ controller.goRealtime(it) })).isFalse()
+        assertThat(controller.goRealtime()).isFalse()
 
-        update({ controller.rewInterval(it) })
+        controller.rewInterval()
 
-        assertThat(update({ controller.goRealtime(it) })).isTrue()
-        assertThat(parameters.intervalOffset).isEqualTo(0)
+        assertThat(controller.goRealtime()).isTrue()
+        assertThat(controller.parameters.intervalOffset).isEqualTo(0)
     }
 }

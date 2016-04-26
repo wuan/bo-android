@@ -21,11 +21,24 @@ package org.blitzortung.android.app
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.preference.PreferenceManager
+import android.util.Log
+import org.blitzortung.android.app.view.PreferenceKey
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val bootIntent = Intent(context, AppService::class.java)
-        bootIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startService(bootIntent)
+
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+        val queryPeriod = preferences.getString(PreferenceKey.BACKGROUND_QUERY_PERIOD.name, null)
+
+        if (queryPeriod != null) {
+            Log.v(Main.LOG_TAG, "started background service with period " + queryPeriod)
+            /*val bootIntent = Intent(context, AppService::class.java)
+            bootIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startService(bootIntent)*/
+        } else {
+            Log.v(Main.LOG_TAG, "background query disabled -> no service")
+        }
     }
 }

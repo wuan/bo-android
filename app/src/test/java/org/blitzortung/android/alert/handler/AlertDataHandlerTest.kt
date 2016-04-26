@@ -144,7 +144,7 @@ class AlertDataHandlerTest {
         val sectorWithStrike = sectorWithStrike(result)
         assertThat(sectorWithStrike).isNotNull()
         if (sectorWithStrike != null) {
-            assertThat(sectorWithStrike.label).isEqualTo(expectedSectorLabel)
+            assertThat(sectorWithStrike.label as String).isEqualTo(expectedSectorLabel)
             val rangeWithStrike = sectorWithStrike.ranges.filter { it.strikeCount > 0 }.firstOrNull()
             assertThat(rangeWithStrike).isNotNull()
             if (rangeWithStrike != null) {

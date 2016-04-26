@@ -11,10 +11,9 @@
         <org.blitzortung.android.app.view.ScaledTextView
             android:id="@+id/status"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
             android:layout_weight="1"
             android:text=""
             android:textColor="@color/text_foreground"
@@ -34,15 +33,16 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="fill_horizontal|fill_vertical">
+            android:layout_gravity="fill_horizontal|fill_vertical"
+            android:gravity="right">
 
             <ImageView
                 android:id="@+id/error_indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:src="@android:drawable/stat_notify_error"
-                android:contentDescription="@string/error_indicator" />
+                android:contentDescription="@string/error_indicator"
+                android:src="@android:drawable/stat_notify_error" />
 
             <ProgressBar
                 android:id="@+id/progress"

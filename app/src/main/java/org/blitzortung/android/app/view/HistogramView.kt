@@ -27,9 +27,8 @@ import android.util.Log
 import android.view.View
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.map.overlay.StrikesOverlay
-import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.TabletAwareView
 
 class HistogramView @JvmOverloads constructor(
@@ -46,10 +45,8 @@ class HistogramView @JvmOverloads constructor(
     private var strikesOverlay: StrikesOverlay? = null
     private var histogram: IntArray? = null
 
-    val dataConsumer = { event: Event ->
-        if (event is ResultEvent) {
-            updateHistogram(event)
-        }
+    val dataConsumer = { event: DataEvent ->
+        updateHistogram(event)
     }
 
     init {
@@ -123,7 +120,7 @@ class HistogramView @JvmOverloads constructor(
         this.strikesOverlay = strikesOverlay
     }
 
-    private fun updateHistogram(dataEvent: ResultEvent) {
+    private fun updateHistogram(dataEvent: DataEvent) {
         if (dataEvent.failed) {
             visibility = View.INVISIBLE
             histogram = null
@@ -146,20 +143,20 @@ class HistogramView @JvmOverloads constructor(
         }
     }
 
-    private fun createHistogram(result: ResultEvent): Boolean {
-        result.parameters?.let { parameters ->
-            if (result.totalStrikes == null) {
+    private fun createHistogram(data: DataEvent): Boolean {
+        data.parameters?.let { parameters ->
+            if (data.totalStrikes == null) {
                 return false
             }
 
-            Log.v(Main.LOG_TAG, "HistogramView create histogram from ${result.totalStrikes.size} total strikes")
-            val referenceTime = result.referenceTime
+            Log.v(Main.LOG_TAG, "HistogramView create histogram from ${data.totalStrikes.size} total strikes")
+            val referenceTime = data.referenceTime
 
             val binInterval = 5
             val binCount = parameters.intervalDuration / binInterval
             val histogram = IntArray(binCount)
 
-            result.totalStrikes.forEach { strike ->
+            data.totalStrikes.forEach { strike ->
                 val binIndex = (binCount - 1) - ((referenceTime - strike.timestamp) / 1000 / 60 / binInterval).toInt()
                 if (binIndex in 0 .. binCount - 1)
                     histogram[binIndex]++

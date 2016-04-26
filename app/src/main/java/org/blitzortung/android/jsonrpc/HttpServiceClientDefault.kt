@@ -36,9 +36,6 @@ class HttpServiceClientDefault internal constructor(uriString: String, agentSuff
         userAgentString = "bo-android" + agentSuffix
     }
 
-    override fun shutdown() {
-    }
-
     override fun doRequest(data: String): String {
         val connection = url.openConnection() as HttpURLConnection
 
