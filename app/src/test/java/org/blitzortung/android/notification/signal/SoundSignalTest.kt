@@ -1,19 +1,16 @@
 package org.blitzortung.android.notification.signal
 
-import android.content.SharedPreferences
 import android.media.Ringtone
-import android.net.Uri
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.KotlinAssertions.assertThat
-import org.blitzortung.android.app.view.PreferenceKey
-import org.jetbrains.anko.defaultSharedPreferences
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
+import java.util.concurrent.atomic.AtomicInteger
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
@@ -21,42 +18,26 @@ class SoundSignalTest {
 
     lateinit private var soundSignal: SoundSignal
 
-    lateinit private var preferences: SharedPreferences
-
     private val ringtone: Ringtone = mock()
+
+    private val providerCallCounter = AtomicInteger()
 
     @Before
     fun setUp() {
         val context = RuntimeEnvironment.application
-        preferences = context.defaultSharedPreferences
-        soundSignal = SoundSignal(context, preferences)
+        soundSignal = SoundSignal(context, { providerCallCounter.incrementAndGet(); ringtone })
     }
 
     @Test
-    fun soundUriShouldBeInitializedToNullIfNoUriIsSet() {
-        assertThat(soundSignal.soundUri).isNull()
+    fun providerShouldNotBeCalledDuringConstruction() {
+        assertThat(providerCallCounter.get()).isEqualTo(0)
     }
 
     @Test
-    fun soundUriShouldBeUpdatedWhenPreferencesAreModified() {
-        val soundUri = "file:///path/to/signal"
-        preferences.edit().putString(PreferenceKey.ALERT_SOUND_SIGNAL.toString(), soundUri).apply()
-        assertThat(soundSignal.soundUri).isEqualTo(Uri.parse(soundUri))
-    }
-
-    @Test
-    fun ringtoneShouldBePlayedWhenSignalIsCalled() {
-        val soundUri = "file:///path/to/signal"
-        preferences.edit().putString(PreferenceKey.ALERT_SOUND_SIGNAL.toString(), soundUri).apply()
-        soundSignal = SoundSignal(RuntimeEnvironment.application, preferences, { context, uri ->
-            assert(uri.toString() == soundUri)
-            ringtone
-        })
-
+    fun ringtoneShouldBeCreatedAndPlayedWhenSignalIsCalled() {
         soundSignal.signal()
 
+        assertThat(providerCallCounter.get()).isEqualTo(1)
         verify(ringtone).play()
     }
-
-
 }

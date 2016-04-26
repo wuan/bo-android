@@ -1,15 +1,13 @@
 package org.blitzortung.android.notification.signal
 
-import android.content.SharedPreferences
 import org.assertj.core.api.KotlinAssertions.assertThat
-import org.blitzortung.android.app.view.PreferenceKey
-import org.jetbrains.anko.defaultSharedPreferences
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
+import java.util.concurrent.atomic.AtomicInteger
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
@@ -17,36 +15,31 @@ class VibrationSignalTest {
 
     lateinit private var vibrationSignal: VibrationSignal
 
-    lateinit private var preferences: SharedPreferences
+    private val vibrationDuration = 1234L
+
+    private val vibratorCallCounter = AtomicInteger()
+
+    private val vibrator : Function1<Long, Unit> = {vibrationDuration ->
+        assertThat(vibrationDuration).isEqualTo(this.vibrationDuration)
+        vibratorCallCounter.incrementAndGet()
+    }
 
     @Before
     fun setUp() {
         val context = RuntimeEnvironment.application
-        preferences = context.defaultSharedPreferences
-        vibrationSignal = VibrationSignal(context, preferences)
+        vibrationSignal = VibrationSignal(vibrationDuration, vibrator)
     }
 
     @Test
-    fun soundUriShouldBeInitializedWithDefaultValueIfNoDurationIsSet() {
-        assertThat(vibrationSignal.vibrationDuration).isEqualTo(30)
+    fun vibratorShouldNotBeCalledDuringConstruction() {
+        assertThat(vibratorCallCounter.get()).isEqualTo(0)
     }
 
     @Test
-    fun soundUriShouldBeUpdatedWhenPreferencesAreModified() {
-        val vibrationDuration = 1234
-        preferences.edit().putInt(PreferenceKey.ALERT_VIBRATION_SIGNAL.toString(), vibrationDuration).apply()
-        assertThat(vibrationSignal.vibrationDuration).isEqualTo(vibrationDuration * 10L)
-    }
-
-    @Test
-    fun vibratorShouldBeRunWhenSignalIsCalled() {
-        val vibrationDuration = 1234
-        preferences.edit().putInt(PreferenceKey.ALERT_VIBRATION_SIGNAL.toString(), vibrationDuration).apply()
-        vibrationSignal = VibrationSignal(RuntimeEnvironment.application, preferences, { duration ->
-            assert(duration == vibrationDuration * 10L)
-        })
-
+    fun ringtoneShouldBeCreatedAndPlayedWhenSignalIsCalled() {
         vibrationSignal.signal()
+
+        assertThat(vibratorCallCounter.get()).isEqualTo(1)
     }
 }
 
