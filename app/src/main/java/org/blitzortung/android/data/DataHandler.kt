@@ -19,10 +19,8 @@
 package org.blitzortung.android.data
 
 import android.content.SharedPreferences
-import android.os.AsyncTask
 import android.os.PowerManager
 import android.util.Log
-import org.blitzortung.android.app.AppService
 import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
@@ -36,6 +34,8 @@ import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.RequestStartedEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.ConsumerContainer
+import org.jetbrains.anko.async
+import org.jetbrains.anko.uiThread
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 
@@ -53,13 +53,11 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
 
     private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
         override fun addedFirstConsumer() {
-            Log.d(Main.LOG_TAG, "DataHandler: added first data consumer")
-            AppService.instance?.configureServiceMode()
+            Log.d(Main.LOG_TAG, "added first data consumer")
         }
 
         override fun removedLastConsumer() {
-            Log.d(Main.LOG_TAG, "DataHandler: removed last data consumer")
-            AppService.instance?.configureServiceMode()
+            Log.d(Main.LOG_TAG, "removed last data consumer")
         }
     }
 
@@ -71,10 +69,6 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
         onSharedPreferencesChanged(sharedPreferences, PreferenceKey.DATA_SOURCE, PreferenceKey.USERNAME, PreferenceKey.PASSWORD, PreferenceKey.RASTER_SIZE, PreferenceKey.COUNT_THRESHOLD, PreferenceKey.REGION, PreferenceKey.INTERVAL_DURATION, PreferenceKey.HISTORIC_TIMESTEP)
 
         updateProviderSpecifics()
-    }
-
-    fun updateDataInBackground() {
-        FetchBackgroundDataTask(wakeLock).execute(TaskParameters(parameters = parameters, updateParticipants = false))
     }
 
     fun requestUpdates(dataConsumer: (DataEvent) -> Unit) {
@@ -98,8 +92,32 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
                 updateParticipants = true
             }
         }
-        Log.d(Main.LOG_TAG, "DataHandler.updateData() $activeParameters")
-        FetchDataTask().execute(TaskParameters(parameters = activeParameters, updateParticipants = updateParticipants))
+
+        downloadAndBroadcastData(TaskParameters(parameters = parameters, updateParticipants = updateParticipants)) {
+            result -> result?.let { sendEvent(it) }
+        }
+    }
+
+    fun updateDataInBackground() {
+        wakeLock.acquire()
+
+        downloadAndBroadcastData(TaskParameters(parameters = parameters.copy(intervalDuration = 10), updateParticipants = false)) {
+            result ->
+
+            result?.let {
+                sendEvent(it)
+            }
+
+            if (wakeLock.isHeld) {
+                try {
+                    wakeLock.release()
+                    Log.v(Main.LOG_TAG, "FetchBackgroundDataTask released wakelock " + wakeLock)
+                } catch (e: RuntimeException) {
+                    Log.e(Main.LOG_TAG, "FetchBackgroundDataTask release wakelock failed ", e)
+                }
+
+            }
+        }
     }
 
     val activeParameters: Parameters
@@ -114,6 +132,44 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
                 return parameters.copy(rasterBaselength = 0, countThreshold = 0)
             }
         }
+
+    private fun downloadAndBroadcastData(taskParameters: TaskParameters, postDownload: (ResultEvent?) -> Unit) {
+        BOApplication.async() {
+            val parameters = taskParameters.parameters
+
+            val result = if (lock.tryLock()) {
+                try {
+                    var result = ResultEvent(referenceTime = System.currentTimeMillis(), parameters = parameters)
+
+                    dataProvider!!.retrieveData() {
+                        if (parameters.isRaster()) {
+                            result = getStrikesGrid(parameters, result)
+                        } else {
+                            result = getStrikes(parameters, result)
+                        }
+
+                        /*if (taskParameters.updateParticipants) {
+                            result.copy(stations = getStations(parameters.region))
+                        }*/
+                    }
+
+                    result
+                } catch (e: RuntimeException) {
+                    e.printStackTrace()
+                    ResultEvent(failed = true)
+                } finally {
+                    lock.unlock()
+                }
+            }
+            else {
+               null
+            }
+
+            uiThread {
+                postDownload(result)
+            }
+        }
+    }
 
     private fun sendEvent(dataEvent: DataEvent) {
         dataConsumerContainer.storeAndBroadcast(dataEvent)
@@ -214,83 +270,6 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
 
     val isCapableOfHistoricalData: Boolean
         get() = dataProvider!!.isCapableOfHistoricalData
-
-    private open inner class FetchDataTask : AsyncTask<TaskParameters, Int, ResultEvent>() {
-
-        override fun onProgressUpdate(vararg values: Int?) {
-            super.onProgressUpdate(*values)
-        }
-
-        override fun onPostExecute(result: ResultEvent?) {
-            if (result != null) {
-                sendEvent(result)
-            }
-        }
-
-        override fun doInBackground(vararg taskParametersArray: TaskParameters): ResultEvent? {
-            val taskParameters = taskParametersArray[0]
-            val parameters = taskParameters.parameters
-
-            if (lock.tryLock()) {
-                try {
-                    var result = ResultEvent(referenceTime = System.currentTimeMillis(), parameters = parameters)
-
-                    dataProvider!!.retrieveData() {
-                        if (parameters.isRaster()) {
-                            result = getStrikesGrid(parameters, result)
-                        } else {
-                            result = getStrikes(parameters, result)
-                        }
-
-                        /*if (taskParameters.updateParticipants) {
-                            result.copy(stations = getStations(parameters.region))
-                        }*/
-                    }
-
-                    /*if (taskParameters.updateParticipants) {
-                        result.copy(stations = dataProvider!!.getStations(parameters.region))
-                    }*/
-
-                    return result
-                } catch (e: RuntimeException) {
-                    e.printStackTrace()
-                    return ResultEvent(failed = true)
-                } finally {
-                    lock.unlock()
-                }
-            }
-            return null
-        }
-    }
-
-    private inner class FetchBackgroundDataTask(private val wakeLock: PowerManager.WakeLock) : FetchDataTask() {
-
-        override fun onPostExecute(result: ResultEvent?) {
-            super.onPostExecute(result)
-            if (wakeLock.isHeld) {
-                try {
-                    wakeLock.release()
-                    Log.v(Main.LOG_TAG, "FetchBackgroundDataTask released wakelock " + wakeLock)
-                } catch (e: RuntimeException) {
-                    Log.e(Main.LOG_TAG, "FetchBackgroundDataTask release wakelock failed ", e)
-                }
-
-            } else {
-                Log.e(Main.LOG_TAG, "FetchBackgroundDataTask release wakelock not held ")
-            }
-        }
-
-        override fun doInBackground(vararg params: TaskParameters): ResultEvent? {
-            wakeLock.acquire()
-            Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquire wakelock " + wakeLock)
-
-            val taskParameters = params[0]
-            val updatedParameters = taskParameters.parameters.copy(intervalDuration = 10)
-            val updatedParams = arrayOf(taskParameters.copy(parameters = updatedParameters))
-
-            return super.doInBackground(*updatedParams)
-        }
-    }
 
     fun broadcastEvent(event: DataEvent) {
         dataConsumerContainer.broadcast(event)
