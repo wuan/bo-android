@@ -7,8 +7,8 @@ class SignalManager(
         context: Context,
         sharedPreferences: SharedPreferences,
         private val signals: List<NotificationSignal> = listOf(
-                VibrationSignal(context, sharedPreferences),
-                SoundSignal(context, sharedPreferences)
+                VibrationSignalContainer(context, sharedPreferences),
+                SoundSignalContainer(context, sharedPreferences)
         )
 ) {
     fun signal() {
