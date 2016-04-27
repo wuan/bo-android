@@ -40,7 +40,6 @@ import org.blitzortung.android.data.provider.result.ClearDataEvent
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.result.StatusEvent
-import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.service.BackgroundDownloadReceiver
 import org.blitzortung.android.util.Period
 import org.jetbrains.anko.intentFor
@@ -63,7 +62,6 @@ class AppService protected constructor(private val handler: Handler, private val
         private set
 
     private val dataHandler: DataHandler = BOApplication.dataHandler
-    private val alertHandler: AlertHandler = BOApplication.alertHandler
     private val backgroundModeHandler = BOApplication.backgroundModeHandler
     private var isInBackground = true
 
@@ -81,16 +79,18 @@ class AppService protected constructor(private val handler: Handler, private val
             restart()
         } else if (event is ResultEvent) {
             lastParameters = event.parameters
-            configureServiceMode()
         }
 
         releaseWakeLock()
     }
 
     private val backgroundModeConsumer = {backgroundModeEvent: BackgroundModeEvent ->
-        this.isInBackground = backgroundModeEvent.isInBackground
+        //If it has changed, reconfigure the serviceMode
+        if(this.isInBackground != backgroundModeEvent.isInBackground) {
+            this.isInBackground = backgroundModeEvent.isInBackground
 
-        configureServiceMode()
+            configureServiceMode()
+        }
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -181,7 +181,6 @@ class AppService protected constructor(private val handler: Handler, private val
     }
 
     fun restart() {
-        configureServiceMode()
         updatePeriod.restart()
     }
 
@@ -189,6 +188,8 @@ class AppService protected constructor(private val handler: Handler, private val
         super.onDestroy()
 
         backgroundModeHandler.removeUpdates(backgroundModeConsumer)
+
+        AppService.instance = null
 
         Log.v(Main.LOG_TAG, "AppService.onDestroy()")
     }
@@ -224,7 +225,6 @@ class AppService protected constructor(private val handler: Handler, private val
                 createAlarm()
             } else {
                 logElements += "disable_bg"
-                alertHandler.unsetAlertListener()
                 discardAlarm()
             }
         } else {
@@ -232,14 +232,13 @@ class AppService protected constructor(private val handler: Handler, private val
             discardAlarm()
             if (dataHandler.isRealtime) {
                 logElements += "realtime_data"
-                if (!isEnabled) {
-                    logElements += "restart_handler"
-                    isEnabled = true
-                    handler.removeCallbacks(this)
-                    handler.post(this)
-                }
+
+                isEnabled = true
+                handler.removeCallbacks(this)
+                handler.post(this)
             } else {
                 logElements += "historic_data"
+
                 isEnabled = false
                 handler.removeCallbacks(this)
                 if (lastParameters != null && lastParameters != dataHandler.activeParameters) {
@@ -277,10 +276,6 @@ class AppService protected constructor(private val handler: Handler, private val
             pendingIntent = null
             this.alarmManager = null
         }
-    }
-
-    fun alertEvent(): AlertEvent {
-        return alertHandler.alertEvent
     }
 
     inner class DataServiceBinder : Binder() {

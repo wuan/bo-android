@@ -31,8 +31,6 @@ import org.blitzortung.android.protocol.Event
 
 class HistoryController(activity: Activity, private val buttonHandler: ButtonColumnHandler<ImageButton, ButtonGroup>) {
 
-    private var appService: AppService? = null
-
     private val dataHandler: DataHandler = BOApplication.dataHandler
 
     private val buttons: MutableCollection<ImageButton> = arrayListOf()
@@ -77,6 +75,9 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
                 disableButtonColumn()
                 historyForward.visibility = View.VISIBLE
                 goRealtime.visibility = View.VISIBLE
+
+                AppService.instance?.configureServiceMode()
+
                 updateButtonColumn()
                 updateData()
             } else {
@@ -91,6 +92,8 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
             if (dataHandler.ffwdInterval()) {
                 if (dataHandler.isRealtime) {
                     configureForRealtimeOperation()
+
+                    AppService.instance?.configureServiceMode()
                 } else {
                     dataHandler.updateData()
                 }
@@ -119,8 +122,10 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
         historyForward.visibility = View.INVISIBLE
         goRealtime.visibility = View.INVISIBLE
         updateButtonColumn()
+
+        AppService.instance?.configureServiceMode()
+
         dataHandler.updateData()
-        appService?.restart()
     }
 
     private fun updateButtonColumn() {
@@ -137,10 +142,5 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
 
     private fun updateData() {
         dataHandler.updateData(setOf(DataChannel.STRIKES))
-    }
-
-    fun setAppService(appService: AppService?) {
-        Log.v(Main.LOG_TAG, "HistoryController.setAppService($appService)")
-        this.appService = appService
     }
 }
