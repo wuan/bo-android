@@ -8,6 +8,7 @@ import android.preference.PreferenceManager
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.data.DataHandler
 import org.blitzortung.android.location.LocationHandler
+import org.blitzortung.android.notification.NotificationHandler
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.powerManager
 
@@ -28,7 +29,7 @@ class BOApplication : Application() {
 
         locationHandler = LocationHandler(applicationContext, backgroundModeHandler, sharedPreferences)
 
-        alertHandler = AlertHandler(locationHandler, sharedPreferences, this)
+        notificationHandler = NotificationHandler(alertHandler, sharedPreferences, this)
     }
 
     private fun getPackageInfo(): PackageInfo = packageManager.getPackageInfo(packageName, 0)
@@ -47,6 +48,10 @@ class BOApplication : Application() {
             private set
 
         lateinit var wakeLock: PowerManager.WakeLock
+            private set
+
+        lateinit var notificationHandler: NotificationHandler
+            private set
 
         lateinit var backgroundModeHandler: BackgroundModeHandler
             private set
