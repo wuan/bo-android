@@ -29,6 +29,8 @@ class BOApplication : Application() {
 
         locationHandler = LocationHandler(applicationContext, backgroundModeHandler, sharedPreferences)
 
+        alertHandler = AlertHandler(locationHandler, dataHandler, sharedPreferences, this)
+
         notificationHandler = NotificationHandler(alertHandler, sharedPreferences, this)
     }
 
