@@ -512,9 +512,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             R.id.info_dialog -> InfoDialog(this, versionComponent)
 
             R.id.alarm_dialog ->
-                appService?.let { appService ->
-                    AlertDialog(this, appService, AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)))
-                }
+                AlertDialog(this, AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)))
 
             R.id.log_dialog -> LogDialog(this)
 

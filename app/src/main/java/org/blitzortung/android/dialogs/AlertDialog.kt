@@ -29,7 +29,7 @@ import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.AlertView
 import org.blitzortung.android.map.overlay.color.ColorHandler
 
-class AlertDialog(context: Context, private val service: AppService?, private val colorHandler: ColorHandler) : android.app.AlertDialog(context) {
+class AlertDialog(context: Context, private val colorHandler: ColorHandler) : android.app.AlertDialog(context) {
     private lateinit var alertView: AlertView
 
     private val alertHandler: AlertHandler = BOApplication.alertHandler
@@ -51,9 +51,8 @@ class AlertDialog(context: Context, private val service: AppService?, private va
         alertHandler.requestUpdates(alertView.alertEventConsumer)
 
         alertView.setColorHandler(colorHandler, BOApplication.dataHandler.intervalDuration)
-        service?.run {
-            alertView.alertEventConsumer.invoke(this.alertEvent())
-        }
+        alertView.alertEventConsumer(alertHandler.alertEvent)
+
         colorHandler.updateTarget()
     }
 
