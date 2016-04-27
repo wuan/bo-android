@@ -21,10 +21,11 @@ package org.blitzortung.android.app
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import org.jetbrains.anko.intentFor
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val bootIntent = Intent(context, AppService::class.java)
+        val bootIntent = context.intentFor<AppService>()
         bootIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startService(bootIntent)
     }
