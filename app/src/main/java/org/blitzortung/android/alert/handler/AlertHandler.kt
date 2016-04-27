@@ -22,12 +22,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.location.Location
-import android.media.AudioAttributes
-import android.media.AudioManager
-import android.media.RingtoneManager
-import android.net.Uri
-import android.os.Build
-import android.os.Vibrator
 import android.util.Log
 import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
@@ -65,14 +59,10 @@ class AlertHandler(
     val alertConsumerContainer: ConsumerContainer<AlertEvent> = object : ConsumerContainer<AlertEvent>() {
         override fun addedFirstConsumer() {
             Log.d(Main.LOG_TAG, "AlertHandler: added first alert consumer")
-
-            refresh()
         }
 
         override fun removedLastConsumer() {
             Log.d(Main.LOG_TAG, "AlertHandler: removed last alert consumer")
-
-            refresh()
         }
     }
 
@@ -81,8 +71,8 @@ class AlertHandler(
     var currentLocation: Location? = null
         private set
 
-    var isAlertEnabled: Boolean = false
-        private set
+    val isAlertEnabled: Boolean
+        get() = preferences.get(PreferenceKey.ALERT_ENABLED, false)
 
     val locationEventConsumer: (LocationEvent) -> Unit = { event ->
         Log.v(Main.LOG_TAG, "AlertHandler: received location " + currentLocation + " vs " + event.location)
@@ -109,8 +99,9 @@ class AlertHandler(
         alertParameters = AlertParameters(alarmInterval, rangeSteps, sectorLabels, MeasurementSystem.METRIC)
 
         preferences.registerOnSharedPreferenceChangeListener(this)
-        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED)
         onSharedPreferenceChanged(preferences, PreferenceKey.MEASUREMENT_UNIT)
+
+        refresh()
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
@@ -120,9 +111,7 @@ class AlertHandler(
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         when (key) {
             PreferenceKey.ALERT_ENABLED -> {
-                isAlertEnabled = sharedPreferences.get(key, false)
-
-                //If isAlertEnabled has changed, we  need to refresh the AlertHandler
+                //If isAlertEnabled has changed, we need to refresh the AlertHandler
                 refresh()
             }
 
@@ -159,10 +148,6 @@ class AlertHandler(
         } else {
             null
         }
-    }
-
-    fun unsetAlertListener() {
-        refresh()
     }
 
     val maxDistance: Float

@@ -234,7 +234,6 @@ class AppService protected constructor(private val handler: Handler, private val
                 createAlarm()
             } else {
                 logElements += "disable_bg"
-                alertHandler.unsetAlertListener()
                 discardAlarm()
             }
         } else {
