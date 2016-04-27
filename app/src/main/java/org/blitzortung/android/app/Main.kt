@@ -64,7 +64,6 @@ import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
 import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.startActivity
 
 class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private val androidIdsForExtendedFunctionality = setOf("44095eb4f9f1a6a6", "f2be4516e5843964")
@@ -381,27 +380,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             return dbg
         }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        super.onCreateOptionsMenu(menu)
-        val inflater = menuInflater
-        inflater.inflate(R.menu.main_menu, menu)
-
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_info -> showDialog(R.id.info_dialog)
-
-            R.id.menu_alarms -> showDialog(R.id.alarm_dialog)
-
-            R.id.menu_log -> showDialog(R.id.log_dialog)
-
-            R.id.menu_preferences -> startActivity<Preferences>()
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun onStart() {
         super.onStart()
 
@@ -501,21 +479,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         strikesOverlay.clear()
         participantsOverlay.clear()
-    }
-
-    override fun onCreateDialog(id: Int, args: Bundle?): Dialog? {
-        return when (id) {
-            R.id.info_dialog -> InfoDialog(this, versionComponent)
-
-            R.id.alarm_dialog ->
-                appService?.let { appService ->
-                    AlertDialog(this, appService, AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)))
-                }
-
-            R.id.log_dialog -> LogDialog(this)
-
-            else -> throw RuntimeException("unhandled dialog with id $id")
-        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -633,7 +596,11 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 isAtLeast(Build.VERSION_CODES.ICE_CREAM_SANDWICH) &&
                         !config.hasPermanentMenuKey()) {
             menu.visibility = View.VISIBLE
-            menu.setOnClickListener { v -> openOptionsMenu() }
+            menu.setOnClickListener {
+                val popupMenu = MainPopupMenu(this, menu)
+                popupMenu.showPopupMenu()
+            }
+
             buttonColumnHandler.addElement(menu)
         }
     }
