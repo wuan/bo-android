@@ -63,8 +63,8 @@ import org.blitzortung.android.map.overlay.color.ParticipantColorHandler
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
-import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.startService
 
 class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private val androidIdsForExtendedFunctionality = setOf("44095eb4f9f1a6a6", "f2be4516e5843964")
@@ -171,6 +171,8 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         }
 
         Log.v(LOG_TAG, "Main.onCreate()")
+
+        startService<AppService>()
 
         versionComponent = VersionComponent(this.applicationContext)
 

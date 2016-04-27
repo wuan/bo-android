@@ -122,25 +122,20 @@ class AppService protected constructor(private val handler: Handler, private val
         dataHandler.requestUpdates(dataEventConsumer)
     }
 
+    private var isStarted = false
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.i(Main.LOG_TAG, "AppService.onStartCommand() startId: $startId $intent")
 
-        if (intent != null && RETRIEVE_DATA_ACTION == intent.action) {
-            acquireWakeLock()
+        if(!isStarted) {
+            //We won't get Intents to download data anymore,
+            //So if we receive an Intent, all we have to do is start the appropriate alarm or start updating the ui
+            configureServiceMode()
 
-            Log.v(Main.LOG_TAG, "AppService.onStartCommand() with wake lock " + wakeLock)
-
-            isEnabled = false
-            handler.removeCallbacks(this)
-            handler.post(this)
+            isStarted = true
         }
 
         return Service.START_STICKY
-    }
-
-    private fun acquireWakeLock() {
-        Log.v(Main.LOG_TAG, "AppService.acquireWakeLock() before: $wakeLock")
-        wakeLock.acquire()
     }
 
     fun releaseWakeLock() {
