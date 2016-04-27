@@ -90,8 +90,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     private val preferences = BOApplication.sharedPreferences
 
-    private var serviceConnection: ServiceConnection? = null
-
     private var currentResult: ResultEvent? = null
 
     val dataEventConsumer: (DataEvent) -> Unit = { event ->
@@ -102,15 +100,11 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
             statusComponent.indicateError(event.failed)
             if (!event.failed) {
-                if (event.parameters!!.intervalDuration != BOApplication.dataHandler.intervalDuration) {
-                    reloadData()
-                }
-
                 currentResult = event
 
                 Log.d(Main.LOG_TAG, "Main.onDataUpdate() " + event)
 
-                val resultParameters = event.parameters
+                val resultParameters = event.parameters!!
 
                 clearDataIfRequested()
 
@@ -226,39 +220,9 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             requestPermissions(preferences)
         }
 
-        createAndBindToDataService()
-
         if (versionComponent.state == VersionComponent.State.FIRST_RUN) {
             openQuickSettingsDialog()
         }
-    }
-
-    private fun createAndBindToDataService() {
-        val serviceIntent = intentFor<AppService>()
-
-        startService(serviceIntent)
-
-        serviceConnection = object : ServiceConnection {
-            override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-                appService = (iBinder as AppService.DataServiceBinder).service
-                Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + appService)
-
-                setupService()
-                setupDataUpdates()
-            }
-
-            override fun onServiceDisconnected(componentName: ComponentName) {
-            }
-        }
-
-        bindService(serviceIntent, serviceConnection, 0)
-    }
-
-    private fun setupService() {
-        appService?.run {
-            historyController.setAppService(this)
-        }
-
     }
 
     private fun setupDebugModeButton() {
@@ -272,7 +236,8 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 setOnClickListener { v ->
                     buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
                     BOApplication.dataHandler.toggleExtendedMode()
-                    reloadData()
+
+                    AppService.instance?.reloadData()
                 }
 
                 buttonColumnHandler.addElement(this, ButtonGroup.DATA_UPDATING)
@@ -407,11 +372,9 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onStart() {
         super.onStart()
 
-        if (appService != null) {
-            setupDataUpdates()
-        }
+        setupDataUpdates()
 
-        Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
+        Log.d(Main.LOG_TAG, "Main.onStart()")
     }
 
     private fun setupDataUpdates() {
@@ -435,7 +398,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onRestart() {
         super.onRestart()
 
-        Log.d(Main.LOG_TAG, "Main.onRestart() service: " + appService)
+        Log.d(Main.LOG_TAG, "Main.onRestart()")
     }
 
     override fun onResume() {
@@ -443,7 +406,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         backgroundModeHandler.updateBackgroundMode(false)
 
-        Log.d(Main.LOG_TAG, "Main.onResume() service: " + appService)
+        Log.d(Main.LOG_TAG, "Main.onResume()")
     }
 
     override fun onPause() {
@@ -472,27 +435,15 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             removeUpdates(historyController.dataConsumer)
             removeUpdates(histogram_view.dataConsumer)
         }
-
-        appService?.apply {
-            Log.v(Main.LOG_TAG, "Main.onStop() remove listeners")
-
-            historyController.setAppService(null)
-        } ?: Log.i(LOG_TAG, "Main.onStop()")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.i(LOG_TAG, "Main: onDestroy() unbind service")
-
-        unbindService(serviceConnection)
+        Log.i(LOG_TAG, "Main: onDestroy()")
     }
 
     override fun isRouteDisplayed(): Boolean {
         return false
-    }
-
-    private fun reloadData() {
-        appService?.run { this.reloadData() }
     }
 
     private fun clearDataIfRequested() {
