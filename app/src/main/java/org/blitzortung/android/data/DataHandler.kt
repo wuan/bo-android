@@ -31,10 +31,7 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProvider
 import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
-import org.blitzortung.android.data.provider.result.ClearDataEvent
-import org.blitzortung.android.data.provider.result.DataEvent
-import org.blitzortung.android.data.provider.result.RequestStartedEvent
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.*
 import org.blitzortung.android.protocol.ConsumerContainer
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
@@ -63,7 +60,13 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
         }
     }
 
-    private val internalDataConsumer: (DataEvent) -> Unit = { dataEvent -> dataConsumerContainer.storeAndBroadcast(dataEvent) }
+    private val internalDataConsumer: (DataEvent) -> Unit = {
+        dataEvent ->
+            if(dataEvent is ResultEvent)
+                dataConsumerContainer.storeAndBroadcast(dataEvent)
+            else
+                dataConsumerContainer.broadcast(dataEvent)
+    }
 
     private val internalDataConsumerContainer = ConsumerContainer<DataEvent>()
 
@@ -130,7 +133,11 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
         }
 
     private fun sendEvent(dataEvent: DataEvent) {
-        internalDataConsumerContainer.storeAndBroadcast(dataEvent)
+        if(dataEvent is StatusEvent || dataEvent is RequestStartedEvent)
+            internalDataConsumerContainer.broadcast(dataEvent)
+        else {
+            internalDataConsumerContainer.storeAndBroadcast(dataEvent)
+        }
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
