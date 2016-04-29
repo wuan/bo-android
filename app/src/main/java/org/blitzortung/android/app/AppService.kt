@@ -56,6 +56,9 @@ class AppService protected constructor(private val handler: Handler, private val
     var isEnabled: Boolean = false
         private set
 
+    var showHistoricData: Boolean = false
+        private set
+
     private val dataHandler: DataHandler = BOApplication.dataHandler
     private val locationHandler: LocationHandler = BOApplication.locationHandler
     private val alertHandler: AlertHandler = BOApplication.alertHandler
@@ -176,10 +179,12 @@ class AppService protected constructor(private val handler: Handler, private val
                 dataHandler.updateData(updateTargets)
             }
 
-            val statusString = "" + updatePeriod.getCurrentUpdatePeriod(currentTime, period) + "/" + period
-            dataHandler.broadcastEvent(StatusEvent(statusString))
-            // Schedule the next update
-            handler.postDelayed(this, 1000)
+            if(!showHistoricData) {
+                val statusString = "" + updatePeriod.getCurrentUpdatePeriod(currentTime, period) + "/" + period
+                dataHandler.broadcastEvent(StatusEvent(statusString))
+                // Schedule the next update
+                handler.postDelayed(this, 1000)
+            }
         }
     }
 
@@ -240,12 +245,14 @@ class AppService protected constructor(private val handler: Handler, private val
                 if (!isEnabled) {
                     logElements += "restart_handler"
                     isEnabled = true
+                    showHistoricData = false
                     handler.removeCallbacks(this)
                     handler.post(this)
                 }
             } else {
                 logElements += "historic_data"
                 isEnabled = false
+                showHistoricData = false
                 handler.removeCallbacks(this)
                 if (lastParameters != null && lastParameters != dataHandler.activeParameters) {
                     logElements += "force_update"
