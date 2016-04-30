@@ -383,9 +383,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onStart() {
         super.onStart()
 
-        if (appService != null) {
-            setupDataUpdates()
-        }
+        setupDataUpdates()
 
         Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
     }
