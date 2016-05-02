@@ -20,7 +20,6 @@ package org.blitzortung.android.app
 
 import android.Manifest
 import android.annotation.TargetApi
-import android.app.Dialog
 import android.content.ComponentName
 import android.content.ServiceConnection
 import android.content.SharedPreferences
@@ -37,7 +36,9 @@ import android.preference.PreferenceManager
 import android.provider.Settings
 import android.text.format.DateFormat
 import android.util.Log
-import android.view.*
+import android.view.View
+import android.view.ViewConfiguration
+import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.Toast
 import com.google.android.maps.GeoPoint
@@ -51,8 +52,11 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.app.view.put
-import org.blitzortung.android.data.provider.result.*
-import org.blitzortung.android.dialogs.*
+import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.provider.result.RequestStartedEvent
+import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.StatusEvent
+import org.blitzortung.android.dialogs.QuickSettingsDialog
 import org.blitzortung.android.map.OwnMapActivity
 import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.overlay.FadeOverlay
@@ -94,6 +98,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     val dataEventConsumer: (DataEvent) -> Unit = { event ->
         if (event is RequestStartedEvent) {
+            Log.d(Main.LOG_TAG, "Main.onDataUpdate() received request started event")
             buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
             statusComponent.startProgress()
         } else if (event is ResultEvent) {
@@ -153,8 +158,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
             mapView.invalidate()
             legend_view.invalidate()
-        } else if (event is ClearDataEvent) {
-            clearData()
         } else if (event is StatusEvent) {
             setStatusString(event.status)
         }
@@ -513,12 +516,12 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         }
     }
 
-    private enum class LocationProviderRelation(val providerName : String) {
+    private enum class LocationProviderRelation(val providerName: String) {
         GPS(LocationManager.GPS_PROVIDER), PASSIVE(LocationManager.PASSIVE_PROVIDER), NETWORK(LocationManager.NETWORK_PROVIDER);
 
         companion object {
-            val byProviderName: Map<String, LocationProviderRelation> = LocationProviderRelation.values().groupBy {it.providerName}.mapValues { it.value.first() }
-            val byOrdinal : Map<Int, LocationProviderRelation> = LocationProviderRelation.values().groupBy {it.ordinal}.mapValues { it.value.first() }
+            val byProviderName: Map<String, LocationProviderRelation> = LocationProviderRelation.values().groupBy { it.providerName }.mapValues { it.value.first() }
+            val byOrdinal: Map<Int, LocationProviderRelation> = LocationProviderRelation.values().groupBy { it.ordinal }.mapValues { it.value.first() }
         }
     }
 
