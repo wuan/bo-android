@@ -51,8 +51,8 @@
     </string-array>
     <string-array name="color_scheme_values">
         <item>BLITZORTUNG</item>
-        <item>ARCO IRIS</item>
-        <item>TEMPERATURA</item>
+        <item>RAINBOW</item>
+        <item>TEMPERATURE</item>
     </string-array>
 
     <string name="color_scheme">Esquema de colores</string>
@@ -208,8 +208,8 @@
         <item>Manual</item>
     </string-array>
     <string-array name="location_mode_values">
-        <item>pasiva</item>
-        <item>red</item>
+        <item>passive</item>
+        <item>network</item>
         <item>gps</item>
         <item>manual</item>
     </string-array>
@@ -317,7 +317,7 @@
         <item>imperial</item>
     </string-array>
     <string-array name="measurement_unit_values">
-        <item>MÉTRICO</item>
+        <item>METRIC</item>
         <item>IMPERIAL</item>
     </string-array>
     <string name="do_not_sleep">No apagar la pantalla</string>
