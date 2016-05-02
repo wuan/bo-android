@@ -40,7 +40,6 @@ import org.blitzortung.android.data.provider.result.ClearDataEvent
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.result.StatusEvent
-import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.service.BackgroundDownloadReceiver
 import org.blitzortung.android.util.Period
 import org.jetbrains.anko.intentFor
@@ -49,24 +48,28 @@ import java.util.*
 class AppService protected constructor(private val handler: Handler, private val updatePeriod: Period) : Service(), Runnable, SharedPreferences.OnSharedPreferenceChangeListener {
     private val binder = DataServiceBinder()
 
-    var period: Int = 0
-        private set
-    var backgroundPeriod: Int = 0
-        private set
+    private val period: Int
+        get() = preferences.get(PreferenceKey.QUERY_PERIOD, "60").toInt()
+
+    private val backgroundPeriod: Int
+        get() = preferences.get(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0").toInt()
 
     private var lastParameters: Parameters? = null
-    private var updateParticipants: Boolean = false
+    private val updateParticipants: Boolean
+        get() = preferences.get(PreferenceKey.SHOW_PARTICIPANTS, true)
+
     var isEnabled: Boolean = false
         private set
 
     private val dataHandler: DataHandler = BOApplication.dataHandler
-    private val alertHandler: AlertHandler = BOApplication.alertHandler
     private val backgroundModeHandler = BOApplication.backgroundModeHandler
     private var isInBackground = true
 
     private val preferences = BOApplication.sharedPreferences
 
-    private var alertEnabled: Boolean = false
+    private val alertEnabled: Boolean
+        get() = preferences.get(PreferenceKey.ALERT_ENABLED, false)
+
     private var alarmManager: AlarmManager? = null
     private var pendingIntent: PendingIntent? = null
     private val wakeLock = BOApplication.wakeLock
@@ -76,16 +79,18 @@ class AppService protected constructor(private val handler: Handler, private val
             restart()
         } else if (event is ResultEvent) {
             lastParameters = event.parameters
-            configureServiceMode()
         }
 
         releaseWakeLock()
     }
 
     private val backgroundModeConsumer = {backgroundModeEvent: BackgroundModeEvent ->
-        this.isInBackground = backgroundModeEvent.isInBackground
+        //If it has changed, reconfigure the serviceMode
+        if(this.isInBackground != backgroundModeEvent.isInBackground) {
+            this.isInBackground = backgroundModeEvent.isInBackground
 
-        configureServiceMode()
+            configureServiceMode()
+        }
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -115,32 +120,22 @@ class AppService protected constructor(private val handler: Handler, private val
         preferences.registerOnSharedPreferenceChangeListener(this)
 
         dataHandler.requestUpdates(dataEventConsumer)
-
-        onSharedPreferenceChanged(preferences, PreferenceKey.QUERY_PERIOD)
-        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED)
-        onSharedPreferenceChanged(preferences, PreferenceKey.BACKGROUND_QUERY_PERIOD)
-        onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_PARTICIPANTS)
     }
+
+    private var isStarted = false
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.i(Main.LOG_TAG, "AppService.onStartCommand() startId: $startId $intent")
 
-        if (intent != null && RETRIEVE_DATA_ACTION == intent.action) {
-            acquireWakeLock()
+        if(!isStarted) {
+            //We won't get Intents to download data anymore,
+            //So if we receive an Intent, all we have to do is start the appropriate alarm or start updating the ui
+            configureServiceMode()
 
-            Log.v(Main.LOG_TAG, "AppService.onStartCommand() with wake lock " + wakeLock)
-
-            isEnabled = false
-            handler.removeCallbacks(this)
-            handler.post(this)
+            isStarted = true
         }
 
         return Service.START_STICKY
-    }
-
-    private fun acquireWakeLock() {
-        Log.v(Main.LOG_TAG, "AppService.acquireWakeLock() before: $wakeLock")
-        wakeLock.acquire()
     }
 
     fun releaseWakeLock() {
@@ -186,7 +181,6 @@ class AppService protected constructor(private val handler: Handler, private val
     }
 
     fun restart() {
-        configureServiceMode()
         updatePeriod.restart()
     }
 
@@ -194,6 +188,8 @@ class AppService protected constructor(private val handler: Handler, private val
         super.onDestroy()
 
         backgroundModeHandler.removeUpdates(backgroundModeConsumer)
+
+        AppService.instance = null
 
         Log.v(Main.LOG_TAG, "AppService.onDestroy()")
     }
@@ -205,22 +201,17 @@ class AppService protected constructor(private val handler: Handler, private val
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         when (key) {
             PreferenceKey.ALERT_ENABLED -> {
-                alertEnabled = sharedPreferences.get(key, false)
-
-                configureServiceMode()
+                //Only if we are running in the background, we have to reconfigure our service
+                if(isInBackground)
+                    configureServiceMode()
             }
-
-            PreferenceKey.QUERY_PERIOD -> period = Integer.parseInt(sharedPreferences.get(key, "60"))
 
             PreferenceKey.BACKGROUND_QUERY_PERIOD -> {
-                backgroundPeriod = Integer.parseInt(sharedPreferences.get(key, "0"))
-
                 Log.v(Main.LOG_TAG, "AppService.onSharedPreferenceChanged() backgroundPeriod=%d".format(backgroundPeriod))
                 discardAlarm()
+
                 configureServiceMode()
             }
-
-            PreferenceKey.SHOW_PARTICIPANTS -> updateParticipants = sharedPreferences.get(key, true)
         }
     }
 
@@ -241,14 +232,13 @@ class AppService protected constructor(private val handler: Handler, private val
             discardAlarm()
             if (dataHandler.isRealtime) {
                 logElements += "realtime_data"
-                if (!isEnabled) {
-                    logElements += "restart_handler"
-                    isEnabled = true
-                    handler.removeCallbacks(this)
-                    handler.post(this)
-                }
+
+                isEnabled = true
+                handler.removeCallbacks(this)
+                handler.post(this)
             } else {
                 logElements += "historic_data"
+
                 isEnabled = false
                 handler.removeCallbacks(this)
                 if (lastParameters != null && lastParameters != dataHandler.activeParameters) {
@@ -286,10 +276,6 @@ class AppService protected constructor(private val handler: Handler, private val
             pendingIntent = null
             this.alarmManager = null
         }
-    }
-
-    fun alertEvent(): AlertEvent {
-        return alertHandler.alertEvent
     }
 
     inner class DataServiceBinder : Binder() {
