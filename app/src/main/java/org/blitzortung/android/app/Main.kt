@@ -36,9 +36,7 @@ import android.preference.PreferenceManager
 import android.provider.Settings
 import android.text.format.DateFormat
 import android.util.Log
-import android.view.View
-import android.view.ViewConfiguration
-import android.view.WindowManager
+import android.view.*
 import android.widget.ImageButton
 import android.widget.Toast
 import com.google.android.maps.GeoPoint
@@ -523,6 +521,19 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             val byProviderName: Map<String, LocationProviderRelation> = LocationProviderRelation.values().groupBy { it.providerName }.mapValues { it.value.first() }
             val byOrdinal: Map<Int, LocationProviderRelation> = LocationProviderRelation.values().groupBy { it.ordinal }.mapValues { it.value.first() }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.main_menu, menu)
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val popupMenu = MainPopupMenu(this, menu)
+
+        return popupMenu.onMenuItemSelected(null, item)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {

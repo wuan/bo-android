@@ -16,7 +16,7 @@ import org.jetbrains.anko.startActivity
 class MainPopupMenu(private val context: Context, anchor: View) : PopupMenu(context, anchor) {
     override fun onMenuItemSelected(menu: MenuBuilder?, item: MenuItem): Boolean {
         val versionComponent = VersionComponent(context)
-        if(item.itemId == R.id.menu_preferences) {
+        if (item.itemId == R.id.menu_preferences) {
             context.startActivity<Preferences>()
         } else {
             val dialog = when (item.itemId) {
@@ -29,7 +29,7 @@ class MainPopupMenu(private val context: Context, anchor: View) : PopupMenu(cont
                 else -> null
             }
 
-            if(dialog is Dialog) {
+            if (dialog is Dialog) {
                 dialog.show()
             }
         }
