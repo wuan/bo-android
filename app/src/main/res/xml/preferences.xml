@@ -57,7 +57,7 @@
         <org.blitzortung.android.preferences.SlidePreferences
             android:defaultValue="30"
             android:key="map_fade"
-            android:max="60"
+            android:max="90"
             android:persistent="true"
             android:selectable="true"
             android:summary="@string/map_fade_summary"
