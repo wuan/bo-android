@@ -119,8 +119,7 @@ class AppService protected constructor(private val handler: Handler, private val
 
             Log.v(Main.LOG_TAG, "AppService.onStartCommand() with wake lock " + wakeLock)
 
-            isEnabled = false
-            handler.removeCallbacks(this)
+            disableHandler()
             handler.post(this)
         }
 
@@ -156,8 +155,7 @@ class AppService protected constructor(private val handler: Handler, private val
 
                 dataHandler.updateDataInBackground()
             } else {
-                isEnabled = false
-                handler.removeCallbacks(this)
+                disableHandler()
             }
         } else {
             releaseWakeLock()
@@ -230,6 +228,7 @@ class AppService protected constructor(private val handler: Handler, private val
                 logElements += "enable_bg"
                 locationHandler.enableBackgroundMode()
                 locationHandler.updateProvider()
+                disableHandler()
                 createAlarm()
             } else {
                 logElements += "disable_bg"
@@ -250,8 +249,7 @@ class AppService protected constructor(private val handler: Handler, private val
             } else {
                 logElements += "historic_data"
                 isEnabled = false
-                showHistoricData = false
-                handler.removeCallbacks(this)
+                disableHandler()
                 if (lastParameters != null && lastParameters != dataHandler.activeParameters) {
                     logElements += "force_update"
                     dataHandler.updateData()
@@ -260,6 +258,11 @@ class AppService protected constructor(private val handler: Handler, private val
             locationHandler.disableBackgroundMode()
         }
         Log.v(Main.LOG_TAG, "AppService.configureServiceMode() ${logElements.joinToString(", ")}")
+    }
+
+    private fun disableHandler() {
+        isEnabled = false
+        handler.removeCallbacks(this)
     }
 
     private fun createAlarm() {
