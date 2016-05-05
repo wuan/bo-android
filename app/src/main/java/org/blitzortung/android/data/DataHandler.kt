@@ -31,7 +31,9 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProvider
 import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
-import org.blitzortung.android.data.provider.result.*
+import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.provider.result.RequestStartedEvent
+import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.ConsumerContainer
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
@@ -60,12 +62,12 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
         }
     }
 
-    private val internalDataConsumer: (DataEvent) -> Unit = {
-        dataEvent ->
-            if(dataEvent is ResultEvent)
-                dataConsumerContainer.storeAndBroadcast(dataEvent)
-            else
-                dataConsumerContainer.broadcast(dataEvent)
+    private val internalDataConsumer: (DataEvent) -> Unit = { dataEvent ->
+        if (dataEvent is ResultEvent) {
+            dataConsumerContainer.storeAndBroadcast(dataEvent)
+        } else {
+            dataConsumerContainer.broadcast(dataEvent)
+        }
     }
 
     private val internalDataConsumerContainer = ConsumerContainer<DataEvent>()
@@ -105,7 +107,7 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
     val hasConsumers: Boolean
         get() = dataConsumerContainer.isEmpty
 
-    @JvmOverloads fun updateData(updateTargets: Set<DataChannel> = DEFAULT_DATA_CHANNELS) {
+    fun updateData(updateTargets: Set<DataChannel> = DEFAULT_DATA_CHANNELS) {
 
         sendEvent(REQUEST_STARTED_EVENT)
 
@@ -133,10 +135,10 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
         }
 
     private fun sendEvent(dataEvent: DataEvent) {
-        if(dataEvent is StatusEvent || dataEvent is RequestStartedEvent)
-            internalDataConsumerContainer.broadcast(dataEvent)
-        else {
+        if (dataEvent is ResultEvent) {
             internalDataConsumerContainer.storeAndBroadcast(dataEvent)
+        } else {
+            internalDataConsumerContainer.broadcast(dataEvent)
         }
     }
 
@@ -150,26 +152,24 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
                 this.dataProvider = dataProvider
 
                 updateProviderSpecifics()
-
-                notifyDataReset()
+                updateData()
             }
 
             PreferenceKey.RASTER_SIZE -> {
                 val rasterBaselength = Integer.parseInt(sharedPreferences.get(key, "10000"))
                 parameters = parameters.copy(rasterBaselength = rasterBaselength);
-                notifyDataReset()
+                updateData()
             }
 
             PreferenceKey.COUNT_THRESHOLD -> {
                 val countThreshold = Integer.parseInt(sharedPreferences.get(key, "1"))
                 parameters = parameters.copy(countThreshold = countThreshold);
-                notifyDataReset()
+                updateData()
             }
 
             PreferenceKey.INTERVAL_DURATION -> {
                 parameters = parameters.copy(intervalDuration = Integer.parseInt(sharedPreferences.get(key, "60")));
-                dataProvider!!.reset()
-                notifyDataReset()
+                updateData()
             }
 
             PreferenceKey.HISTORIC_TIMESTEP -> parametersController = ParametersController.withOffsetIncrement(
@@ -178,8 +178,7 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
             PreferenceKey.REGION -> {
                 val region = Integer.parseInt(sharedPreferences.get(key, "1"))
                 parameters = parameters.copy(region = region);
-                dataProvider!!.reset()
-                notifyDataReset()
+                updateData()
             }
         }
     }
@@ -193,10 +192,6 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
 
             DataProviderType.HTTP -> DataMode(raster = false, region = true)
         }
-    }
-
-    private fun notifyDataReset() {
-        sendEvent(CLEAR_DATA_EVENT)
     }
 
     fun toggleExtendedMode() {
@@ -319,11 +314,6 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
 
     companion object {
         val REQUEST_STARTED_EVENT = RequestStartedEvent()
-        val CLEAR_DATA_EVENT = ClearDataEvent()
-        val DEFAULT_DATA_CHANNELS: MutableSet<DataChannel> = HashSet()
-
-        init {
-            DEFAULT_DATA_CHANNELS.add(DataChannel.STRIKES)
-        }
+        val DEFAULT_DATA_CHANNELS = setOf(DataChannel.STRIKES)
     }
 }

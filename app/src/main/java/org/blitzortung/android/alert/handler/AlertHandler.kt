@@ -42,7 +42,6 @@ import org.blitzortung.android.app.controller.NotificationHandler
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.beans.Strike
-import org.blitzortung.android.data.provider.result.ClearDataEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.location.LocationHandler
@@ -116,8 +115,6 @@ class AlertHandler(
             } else {
                 broadcastResult(null)
             }
-        } else if (event is ClearDataEvent) {
-            broadcastResult(null)
         }
     }
 
