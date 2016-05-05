@@ -46,7 +46,7 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
 
     fun getColorSection(referenceTime: Long, eventTime: Long, intervalDuration: Int): Int {
         val minutesPerColor = intervalDuration / colors.size
-        var section = ((referenceTime - eventTime) / 1000 / 60 / minutesPerColor).toInt()
+        var section = if (minutesPerColor > 0) ((referenceTime - eventTime) / 1000 / 60 / minutesPerColor).toInt() else 0
         return limitToValidRange(section)
     }
 
