@@ -66,7 +66,7 @@ class DataHandler @JvmOverloads constructor(
     }
 
     private val internalDataConsumer: (DataEvent) -> Unit = { dataEvent ->
-        if (dataEvent is ResultEvent) {
+        if (dataEvent is ResultEvent && dataEvent.parameters?.storeResult ?: false) {
             dataConsumerContainer.storeAndBroadcast(dataEvent)
         } else {
             dataConsumerContainer.broadcast(dataEvent)
@@ -138,7 +138,7 @@ class DataHandler @JvmOverloads constructor(
         }
 
     private fun sendEvent(dataEvent: DataEvent) {
-        if (dataEvent is ResultEvent) {
+        if (dataEvent is ResultEvent && dataEvent.parameters?.storeResult ?: false) {
             internalDataConsumerContainer.storeAndBroadcast(dataEvent)
         } else {
             internalDataConsumerContainer.broadcast(dataEvent)
@@ -304,7 +304,7 @@ class DataHandler @JvmOverloads constructor(
             Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquire wakelock " + wakeLock)
 
             val taskParameters = taskParametersArray[0]
-            val updatedParameters = taskParameters.parameters.copy(intervalDuration = 10)
+            val updatedParameters = taskParameters.parameters.copy(intervalDuration = 10, storeResult = false)
             val updatedParams = arrayOf(taskParameters.copy(parameters = updatedParameters))
 
             return super.doInBackground(*updatedParams)

@@ -23,7 +23,9 @@ data class Parameters(
         val rasterBaselength: Int = 0,
         override val intervalDuration: Int = 0,
         override val intervalOffset: Int = 0,
-        val countThreshold: Int = 0) : TimeIntervalWithOffset {
+        val countThreshold: Int = 0,
+        val storeResult: Boolean = true
+) : TimeIntervalWithOffset {
 
     fun isRealtime(): Boolean = intervalOffset == 0
 
