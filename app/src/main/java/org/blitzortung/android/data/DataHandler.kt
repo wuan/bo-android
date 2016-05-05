@@ -51,7 +51,7 @@ class DataHandler @JvmOverloads constructor(
     var parameters = Parameters()
         private set
 
-    private var parametersController: ParametersController? = null
+    lateinit private var parametersController: ParametersController
 
     private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
         override fun addedFirstConsumer() {
@@ -66,7 +66,7 @@ class DataHandler @JvmOverloads constructor(
     }
 
     private val internalDataConsumer: (DataEvent) -> Unit = { dataEvent ->
-        if (dataEvent is ResultEvent && dataEvent.parameters?.storeResult ?: false) {
+        if (dataEvent is ResultEvent && dataEvent.flags.storeResult) {
             dataConsumerContainer.storeAndBroadcast(dataEvent)
         } else {
             dataConsumerContainer.broadcast(dataEvent)
@@ -138,7 +138,7 @@ class DataHandler @JvmOverloads constructor(
         }
 
     private fun sendEvent(dataEvent: DataEvent) {
-        if (dataEvent is ResultEvent && dataEvent.parameters?.storeResult ?: false) {
+        if (dataEvent is ResultEvent && dataEvent.flags.storeResult) {
             internalDataConsumerContainer.storeAndBroadcast(dataEvent)
         } else {
             internalDataConsumerContainer.broadcast(dataEvent)
@@ -214,15 +214,15 @@ class DataHandler @JvmOverloads constructor(
         get() = parameters.intervalDuration
 
     fun ffwdInterval(): Boolean {
-        return updateParameters({ parametersController!!.ffwdInterval(it) })
+        return updateParameters({ parametersController.ffwdInterval(it) })
     }
 
     fun rewInterval(): Boolean {
-        return updateParameters({ parametersController!!.rewInterval(it) })
+        return updateParameters({ parametersController.rewInterval(it) })
     }
 
     fun goRealtime(): Boolean {
-        return updateParameters({ parametersController!!.goRealtime(it) })
+        return updateParameters({ parametersController.goRealtime(it) })
     }
 
     fun updateParameters(updater: (Parameters) -> Parameters): Boolean {
@@ -249,10 +249,11 @@ class DataHandler @JvmOverloads constructor(
         override fun doInBackground(vararg taskParametersArray: TaskParameters): ResultEvent? {
             val taskParameters = taskParametersArray[0]
             val parameters = taskParameters.parameters
+            val flags = taskParameters.flags
 
             if (lock.tryLock()) {
                 try {
-                    var result = ResultEvent(referenceTime = System.currentTimeMillis(), parameters = parameters)
+                    var result = ResultEvent(referenceTime = System.currentTimeMillis(), parameters = parameters, flags = flags)
 
                     dataProvider!!.retrieveData() {
                         if (parameters.isRaster()) {
@@ -273,7 +274,7 @@ class DataHandler @JvmOverloads constructor(
                     return result
                 } catch (e: RuntimeException) {
                     e.printStackTrace()
-                    return ResultEvent(failed = true)
+                    return ResultEvent(failed = true, referenceTime = System.currentTimeMillis(), parameters = parameters, flags = flags)
                 } finally {
                     lock.unlock()
                 }
@@ -304,8 +305,8 @@ class DataHandler @JvmOverloads constructor(
             Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquire wakelock " + wakeLock)
 
             val taskParameters = taskParametersArray[0]
-            val updatedParameters = taskParameters.parameters.copy(intervalDuration = 10, storeResult = false)
-            val updatedParams = arrayOf(taskParameters.copy(parameters = updatedParameters))
+            val updatedParameters = taskParameters.parameters.copy(intervalDuration = 10)
+            val updatedParams = arrayOf(taskParameters.copy(parameters = updatedParameters, flags = Flags(storeResult = false)))
 
             return super.doInBackground(*updatedParams)
         }
