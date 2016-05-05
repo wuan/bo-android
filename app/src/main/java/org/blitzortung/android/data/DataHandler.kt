@@ -38,8 +38,11 @@ import org.blitzortung.android.protocol.ConsumerContainer
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 
-class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.WakeLock, private val agentSuffix: String,
-                                            private val dataProviderFactory: DataProviderFactory = DataProviderFactory()) : OnSharedPreferenceChangeListener {
+class DataHandler @JvmOverloads constructor(
+        private val wakeLock: PowerManager.WakeLock,
+        private val agentSuffix: String,
+        private val dataProviderFactory: DataProviderFactory = DataProviderFactory()
+) : OnSharedPreferenceChangeListener {
 
     private val sharedPreferences = BOApplication.sharedPreferences
 
@@ -180,6 +183,9 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
                 parameters = parameters.copy(region = region);
                 updateData()
             }
+
+            else -> {
+            }
         }
     }
 
@@ -227,9 +233,6 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
 
     val isRealtime: Boolean
         get() = parameters.isRealtime()
-
-    val isCapableOfHistoricalData: Boolean
-        get() = dataProvider!!.isCapableOfHistoricalData
 
     private open inner class FetchDataTask : AsyncTask<TaskParameters, Int, ResultEvent>() {
 
@@ -296,11 +299,11 @@ class DataHandler @JvmOverloads constructor(private val wakeLock: PowerManager.W
             }
         }
 
-        override fun doInBackground(vararg params: TaskParameters): ResultEvent? {
+        override fun doInBackground(vararg taskParametersArray: TaskParameters): ResultEvent? {
             wakeLock.acquire()
             Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquire wakelock " + wakeLock)
 
-            val taskParameters = params[0]
+            val taskParameters = taskParametersArray[0]
             val updatedParameters = taskParameters.parameters.copy(intervalDuration = 10)
             val updatedParams = arrayOf(taskParameters.copy(parameters = updatedParameters))
 

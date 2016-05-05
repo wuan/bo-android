@@ -17,15 +17,12 @@ class TimestampIteratorTest {
 
     @Test
     fun createsTimestampSequence() {
-        val currentTime = System.currentTimeMillis()
-        val startTime = currentTime - 4100
+        val endTime:Long = 12300
+        val startTime: Long = endTime - 4000
         val intervalLength: Long = 1000
 
-        val sequence = createTimestampSequence(intervalLength, startTime)
+        val sequence = createTimestampSequence(intervalLength, startTime, endTime)
 
-        for (value in sequence) {
-            assertThat(value).isBetween(startTime / intervalLength * intervalLength, currentTime)
-            assertThat(value / intervalLength * intervalLength).isEqualTo(value)
-        }
+        assertThat(sequence).containsExactly(8000L, 9000L, 10000L, 11000L, 12000L)
     }
 }
