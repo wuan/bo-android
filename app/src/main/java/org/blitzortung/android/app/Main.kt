@@ -97,7 +97,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     val dataEventConsumer: (DataEvent) -> Unit = { event ->
         if (event is RequestStartedEvent) {
             Log.d(Main.LOG_TAG, "Main.onDataUpdate() received request started event")
-            buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
             statusComponent.startProgress()
         } else if (event is ResultEvent) {
 
@@ -151,8 +150,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             }
 
             statusComponent.stopProgress()
-
-            buttonColumnHandler.unlockButtonColumn(ButtonGroup.DATA_UPDATING)
 
             mapView.invalidate()
             legend_view.invalidate()
@@ -212,7 +209,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         setupDebugModeButton()
 
-        buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
         buttonColumnHandler.updateButtonColumn()
 
         setupCustomViews()
@@ -268,7 +264,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 visibility = View.VISIBLE
 
                 setOnClickListener { v ->
-                    buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
                     BOApplication.dataHandler.toggleExtendedMode()
                     reloadData()
                 }

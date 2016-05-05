@@ -42,27 +42,6 @@ class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) 
         this.elements.addAll(elements.map { GroupedView(it, *groups) })
     }
 
-    fun lockButtonColumn(vararg groups: G) {
-        enableButtonElements(false, *groups)
-    }
-
-    fun unlockButtonColumn(vararg groups: G) {
-        enableButtonElements(true, *groups)
-    }
-
-    private fun enableButtonElements(enabled: Boolean, vararg groups: G) {
-
-        val filter: (GroupedView<V, G>) -> Boolean = if (groups.isEmpty()) {
-            element -> true
-        } else {
-            element -> element.groups.intersect(groups.toSet()).isNotEmpty()
-        }
-
-        elements.filter { filter.invoke(it) }.forEach {
-            it.view.isEnabled = enabled
-        }
-    }
-
     fun updateButtonColumn() {
         var previousIndex = -1
         for (currentIndex in elements.indices) {

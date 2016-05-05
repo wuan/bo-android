@@ -63,7 +63,6 @@ class HistoryController(private val activity: Activity, private val buttonHandle
     private fun setupHistoryRewindButton() {
         addButtonWithOnClickAction(activity.historyRew, { v ->
             if (dataHandler.rewInterval()) {
-                disableButtonColumn()
                 activity.historyFfwd.visibility = View.VISIBLE
                 activity.goRealtime.visibility = View.VISIBLE
                 updateButtonColumn()
@@ -104,7 +103,6 @@ class HistoryController(private val activity: Activity, private val buttonHandle
     }
 
     private fun configureForRealtimeOperation() {
-        disableButtonColumn()
         activity.historyFfwd.visibility = View.INVISIBLE
         activity.goRealtime.visibility = View.INVISIBLE
         updateButtonColumn()
@@ -118,10 +116,6 @@ class HistoryController(private val activity: Activity, private val buttonHandle
 
     fun getButtons(): Collection<ImageButton> {
         return buttons.toList()
-    }
-
-    private fun disableButtonColumn() {
-        buttonHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
     }
 
     private fun updateData() {
