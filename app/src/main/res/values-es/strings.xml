@@ -22,8 +22,6 @@
         Traducción checa por: Jakub Mareček (jakubmarecek715@gmail.com)\n
 		Traducción polaca por: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
     </string>
-    <string name="copyright" translatable="false">© 2011–2016, Andreas Würl</string>
-    <string name="project_email" translatable="false">blitzortung@tryb.de</string>
     <string name="legend">Leyenda</string>
     <string name="total_time">Tiempo total</string>
     <string name="activity">Actividad</string>
