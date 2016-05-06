@@ -20,10 +20,8 @@ package org.blitzortung.android.map.overlay.color
 
 import android.content.SharedPreferences
 import android.graphics.Color
-
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
-import org.blitzortung.android.data.TimeIntervalWithOffset
 
 abstract class ColorHandler(private val preferences: SharedPreferences) {
 
@@ -37,8 +35,16 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
     }
 
     fun updateTarget() {
-        target = ColorTarget.valueOf(preferences.get(PreferenceKey.MAP_TYPE, "SATELLITE"))
+        target = getColorTarget()
         colorScheme = ColorScheme.valueOf(preferences.get(PreferenceKey.COLOR_SCHEME, ColorScheme.BLITZORTUNG.toString()))
+    }
+
+    private fun getColorTarget(): ColorTarget {
+        try {
+            return ColorTarget.valueOf(preferences.get(PreferenceKey.MAP_TYPE, "SATELLITE"))
+        } catch (e: IllegalArgumentException) {
+            return ColorTarget.SATELLITE
+        }
     }
 
     val colors: IntArray
@@ -46,18 +52,14 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
 
     protected abstract fun getColors(target: ColorTarget): IntArray
 
-    fun getColorSection(now: Long, eventTime: Long, timeIntervalWithOffset: TimeIntervalWithOffset): Int {
-        return getColorSection(now, eventTime, timeIntervalWithOffset.intervalDuration, timeIntervalWithOffset.intervalOffset)
-    }
-
-    private fun getColorSection(now: Long, eventTime: Long, intervalDuration: Int, intervalOffset: Int): Int {
+    fun getColorSection(referenceTime: Long, eventTime: Long, intervalDuration: Int): Int {
         val minutesPerColor = intervalDuration / colors.size
-        var section = (now + intervalOffset * 60 * 1000 - eventTime).toInt() / 1000 / 60 / minutesPerColor
+        var section = if (minutesPerColor > 0) ((referenceTime - eventTime) / 1000 / 60 / minutesPerColor).toInt() else 0
         return limitToValidRange(section)
     }
 
-    fun getColor(now: Long, eventTime: Long, intervalDuration: Int): Int {
-        return getColor(getColorSection(now, eventTime, intervalDuration, 0))
+    fun getColor(referenceTime: Long, eventTime: Long, intervalDuration: Int): Int {
+        return getColor(getColorSection(referenceTime, eventTime, intervalDuration))
     }
 
     fun getColor(index: Int): Int {

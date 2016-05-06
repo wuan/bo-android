@@ -1,6 +1,6 @@
 /*
 
-   Copyright 2015 Andreas Würl
+   Copyright 2015, 2016 Andreas Würl
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -23,23 +23,18 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
+import kotlinx.android.synthetic.main.map_overlay.*
 import org.blitzortung.android.app.*
 import org.blitzortung.android.data.DataChannel
 import org.blitzortung.android.data.DataHandler
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.Event
 
-class HistoryController(activity: Activity, private val buttonHandler: ButtonColumnHandler<ImageButton, ButtonGroup>) {
+class HistoryController(private val activity: Activity, private val buttonHandler: ButtonColumnHandler<ImageButton, ButtonGroup>) {
 
     private val dataHandler: DataHandler = BOApplication.dataHandler
 
     private val buttons: MutableCollection<ImageButton> = arrayListOf()
-
-    private lateinit var historyRewind: ImageButton
-
-    private lateinit var historyForward: ImageButton
-
-    private lateinit var goRealtime: ImageButton
 
     val dataConsumer = { event: Event ->
         if (event is ResultEvent) {
@@ -48,33 +43,26 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
     }
 
     init {
-        setupHistoryRewindButton(activity)
-        setupHistoryForwardButton(activity)
-        setupGoRealtimeButton(activity)
+        setupHistoryRewindButton()
+        setupHistoryForwardButton()
+        setupGoRealtimeButton()
 
         setRealtimeData(true)
     }
 
     fun setRealtimeData(realtimeData: Boolean) {
-        if (dataHandler.isCapableOfHistoricalData) {
-            historyRewind.visibility = View.VISIBLE
-            val historyButtonsVisibility = if (realtimeData) View.INVISIBLE else View.VISIBLE
-            historyForward.visibility = historyButtonsVisibility
-            goRealtime.visibility = historyButtonsVisibility
-        } else {
-            historyRewind.visibility = View.INVISIBLE
-            historyForward.visibility = View.INVISIBLE
-            goRealtime.visibility = View.INVISIBLE
-        }
+        activity.historyRew.visibility = View.VISIBLE
+        val historyButtonsVisibility = if (realtimeData) View.INVISIBLE else View.VISIBLE
+        activity.historyFfwd.visibility = historyButtonsVisibility
+        activity.goRealtime.visibility = historyButtonsVisibility
         updateButtonColumn()
     }
 
-    private fun setupHistoryRewindButton(activity: Activity) {
-        historyRewind = addButtonWithAction(activity, R.id.historyRew, { v ->
+    private fun setupHistoryRewindButton() {
+        addButtonWithOnClickAction(activity.historyRew, { v ->
             if (dataHandler.rewInterval()) {
-                disableButtonColumn()
-                historyForward.visibility = View.VISIBLE
-                goRealtime.visibility = View.VISIBLE
+                activity.historyFfwd.visibility = View.VISIBLE
+                activity.goRealtime.visibility = View.VISIBLE
 
                 AppService.instance?.configureServiceMode()
 
@@ -87,8 +75,8 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
         })
     }
 
-    private fun setupHistoryForwardButton(activity: Activity) {
-        historyForward = addButtonWithAction(activity, R.id.historyFfwd, { v ->
+    private fun setupHistoryForwardButton() {
+        addButtonWithOnClickAction(activity.historyFfwd, { v ->
             if (dataHandler.ffwdInterval()) {
                 if (dataHandler.isRealtime) {
                     configureForRealtimeOperation()
@@ -101,16 +89,16 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
         })
     }
 
-    private fun setupGoRealtimeButton(activity: Activity) {
-        goRealtime = addButtonWithAction(activity, R.id.goRealtime, { v ->
+    private fun setupGoRealtimeButton() {
+        addButtonWithOnClickAction(activity.goRealtime, { v ->
             if (dataHandler.goRealtime()) {
                 configureForRealtimeOperation()
             }
         })
     }
 
-    private fun addButtonWithAction(activity: Activity, id: Int, action: (View) -> Unit): ImageButton {
-        return (activity.findViewById(id) as ImageButton).apply {
+    private fun addButtonWithOnClickAction(button: ImageButton, action: (View) -> Unit): ImageButton {
+        return button.apply {
             buttons.add(this)
             visibility = View.INVISIBLE
             setOnClickListener(action)
@@ -118,9 +106,8 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
     }
 
     private fun configureForRealtimeOperation() {
-        disableButtonColumn()
-        historyForward.visibility = View.INVISIBLE
-        goRealtime.visibility = View.INVISIBLE
+        activity.historyFfwd.visibility = View.INVISIBLE
+        activity.goRealtime.visibility = View.INVISIBLE
         updateButtonColumn()
 
         AppService.instance?.configureServiceMode()
@@ -134,10 +121,6 @@ class HistoryController(activity: Activity, private val buttonHandler: ButtonCol
 
     fun getButtons(): Collection<ImageButton> {
         return buttons.toList()
-    }
-
-    private fun disableButtonColumn() {
-        buttonHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
     }
 
     private fun updateData() {

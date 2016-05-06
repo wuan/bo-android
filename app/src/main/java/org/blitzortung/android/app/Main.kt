@@ -20,7 +20,6 @@ package org.blitzortung.android.app
 
 import android.Manifest
 import android.annotation.TargetApi
-import android.app.Dialog
 import android.content.ComponentName
 import android.content.ServiceConnection
 import android.content.SharedPreferences
@@ -51,8 +50,11 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.app.view.put
-import org.blitzortung.android.data.provider.result.*
-import org.blitzortung.android.dialogs.*
+import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.provider.result.RequestStartedEvent
+import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.StatusEvent
+import org.blitzortung.android.dialogs.QuickSettingsDialog
 import org.blitzortung.android.map.OwnMapActivity
 import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.overlay.FadeOverlay
@@ -65,6 +67,7 @@ import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.startService
+import org.jetbrains.anko.intentFor
 
 class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private val androidIdsForExtendedFunctionality = setOf("44095eb4f9f1a6a6", "f2be4516e5843964")
@@ -94,7 +97,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     val dataEventConsumer: (DataEvent) -> Unit = { event ->
         if (event is RequestStartedEvent) {
-            buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
+            Log.d(Main.LOG_TAG, "Main.onDataUpdate() received request started event")
             statusComponent.startProgress()
         } else if (event is ResultEvent) {
 
@@ -145,12 +148,8 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
             statusComponent.stopProgress()
 
-            buttonColumnHandler.unlockButtonColumn(ButtonGroup.DATA_UPDATING)
-
             mapView.invalidate()
             legend_view.invalidate()
-        } else if (event is ClearDataEvent) {
-            clearData()
         } else if (event is StatusEvent) {
             setStatusString(event.status)
         }
@@ -208,7 +207,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         setupDebugModeButton()
 
-        buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
         buttonColumnHandler.updateButtonColumn()
 
         setupCustomViews()
@@ -234,7 +232,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 visibility = View.VISIBLE
 
                 setOnClickListener { v ->
-                    buttonColumnHandler.lockButtonColumn(ButtonGroup.DATA_UPDATING)
                     BOApplication.dataHandler.toggleExtendedMode()
 
                     AppService.instance?.reloadData()
@@ -348,27 +345,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             return dbg
         }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        super.onCreateOptionsMenu(menu)
-        val inflater = menuInflater
-        inflater.inflate(R.menu.main_menu, menu)
-
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_info -> showDialog(R.id.info_dialog)
-
-            R.id.menu_alarms -> showDialog(R.id.alarm_dialog)
-
-            R.id.menu_log -> showDialog(R.id.log_dialog)
-
-            R.id.menu_preferences -> startActivity<Preferences>()
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun onStart() {
         super.onStart()
 
@@ -460,19 +436,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         participantsOverlay.clear()
     }
 
-    override fun onCreateDialog(id: Int, args: Bundle?): Dialog? {
-        return when (id) {
-            R.id.info_dialog -> InfoDialog(this, versionComponent)
-
-            R.id.alarm_dialog ->
-                AlertDialog(this, AlertDialogColorHandler(PreferenceManager.getDefaultSharedPreferences(this)))
-
-            R.id.log_dialog -> LogDialog(this)
-
-            else -> throw RuntimeException("unhandled dialog with id $id")
-        }
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.v(LOG_TAG, "Main.onRequestPermissionsResult() $requestCode - $permissions - $grantResults")
         val providerRelation = LocationProviderRelation.byOrdinal[requestCode]
@@ -507,13 +470,26 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         }
     }
 
-    private enum class LocationProviderRelation(val providerName : String) {
+    private enum class LocationProviderRelation(val providerName: String) {
         GPS(LocationManager.GPS_PROVIDER), PASSIVE(LocationManager.PASSIVE_PROVIDER), NETWORK(LocationManager.NETWORK_PROVIDER);
 
         companion object {
-            val byProviderName: Map<String, LocationProviderRelation> = LocationProviderRelation.values().groupBy {it.providerName}.mapValues { it.value.first() }
-            val byOrdinal : Map<Int, LocationProviderRelation> = LocationProviderRelation.values().groupBy {it.ordinal}.mapValues { it.value.first() }
+            val byProviderName: Map<String, LocationProviderRelation> = LocationProviderRelation.values().groupBy { it.providerName }.mapValues { it.value.first() }
+            val byOrdinal: Map<Int, LocationProviderRelation> = LocationProviderRelation.values().groupBy { it.ordinal }.mapValues { it.value.first() }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.main_menu, menu)
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val popupMenu = MainPopupMenu(this, menu)
+
+        return popupMenu.onMenuItemSelected(null, item)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
@@ -588,7 +564,11 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 isAtLeast(Build.VERSION_CODES.ICE_CREAM_SANDWICH) &&
                         !config.hasPermanentMenuKey()) {
             menu.visibility = View.VISIBLE
-            menu.setOnClickListener { v -> openOptionsMenu() }
+            menu.setOnClickListener {
+                val popupMenu = MainPopupMenu(this, menu)
+                popupMenu.showPopupMenu()
+            }
+
             buttonColumnHandler.addElement(menu)
         }
     }

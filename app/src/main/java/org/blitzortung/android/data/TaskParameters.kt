@@ -21,6 +21,10 @@ package org.blitzortung.android.data
 
 data class TaskParameters(
         val parameters: Parameters,
+        val flags: Flags = DEFAULT_FLAGS,
         val updateParticipants: Boolean = false
 ) {
+    companion object {
+        private val DEFAULT_FLAGS = Flags()
+    }
 }

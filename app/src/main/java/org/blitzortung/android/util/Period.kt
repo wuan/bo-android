@@ -64,4 +64,10 @@ class Period {
             get() = System.currentTimeMillis() / 1000
     }
 
+    fun updateLastUpdateTime(timestamp: Long, currentPeriod: Int) {
+        if (timestamp in lastUpdateTime..lastUpdateTime + currentPeriod) {
+            lastUpdateTime = timestamp
+        }
+    }
+
 }

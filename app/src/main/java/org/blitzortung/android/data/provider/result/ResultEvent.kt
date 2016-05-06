@@ -18,6 +18,7 @@
 
 package org.blitzortung.android.data.provider.result
 
+import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Station
@@ -32,11 +33,12 @@ data class ResultEvent(
         val failed: Boolean = false,
         val incrementalData: Boolean = false,
         val referenceTime: Long = 0,
-        val parameters: Parameters? = null
+        val parameters: Parameters,
+        val flags: Flags
 ) : DataEvent {
 
     fun containsRealtimeData(): Boolean {
-        return parameters != null && parameters.intervalOffset == 0
+        return parameters.intervalOffset == 0
     }
 
     override fun toString(): String {

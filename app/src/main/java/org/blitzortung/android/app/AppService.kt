@@ -36,7 +36,6 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.DataChannel
 import org.blitzortung.android.data.DataHandler
 import org.blitzortung.android.data.Parameters
-import org.blitzortung.android.data.provider.result.ClearDataEvent
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.result.StatusEvent
@@ -61,6 +60,9 @@ class AppService protected constructor(private val handler: Handler, private val
     var isEnabled: Boolean = false
         private set
 
+    var showHistoricData: Boolean = false
+        private set
+
     private val dataHandler: DataHandler = BOApplication.dataHandler
     private val backgroundModeHandler = BOApplication.backgroundModeHandler
     private var isInBackground = true
@@ -75,9 +77,7 @@ class AppService protected constructor(private val handler: Handler, private val
     private val wakeLock = BOApplication.wakeLock
 
     private val dataEventConsumer = { event: DataEvent ->
-        if (event is ClearDataEvent) {
-            restart()
-        } else if (event is ResultEvent) {
+        if (event is ResultEvent) {
             lastParameters = event.parameters
         }
 
@@ -107,7 +107,7 @@ class AppService protected constructor(private val handler: Handler, private val
         if (isEnabled) {
             restart()
         } else {
-            dataHandler.updateData(setOf(DataChannel.STRIKES))
+            dataHandler.updateData()
         }
     }
 
@@ -173,10 +173,12 @@ class AppService protected constructor(private val handler: Handler, private val
                 dataHandler.updateData(updateTargets)
             }
 
-            val statusString = "" + updatePeriod.getCurrentUpdatePeriod(currentTime, period) + "/" + period
-            dataHandler.broadcastEvent(StatusEvent(statusString))
-            // Schedule the next update
-            handler.postDelayed(this, 1000)
+            if (!showHistoricData) {
+                val statusString = "" + updatePeriod.getCurrentUpdatePeriod(currentTime, period) + "/" + period
+                dataHandler.broadcastEvent(StatusEvent(statusString))
+                // Schedule the next update
+                handler.postDelayed(this, 1000)
+            }
         }
     }
 
@@ -240,7 +242,7 @@ class AppService protected constructor(private val handler: Handler, private val
                 logElements += "historic_data"
 
                 isEnabled = false
-                handler.removeCallbacks(this)
+                disableHandler()
                 if (lastParameters != null && lastParameters != dataHandler.activeParameters) {
                     logElements += "force_update"
                     dataHandler.updateData()
@@ -248,6 +250,11 @@ class AppService protected constructor(private val handler: Handler, private val
             }
         }
         Log.v(Main.LOG_TAG, "AppService.configureServiceMode() ${logElements.joinToString(", ")}")
+    }
+
+    private fun disableHandler() {
+        isEnabled = false
+        handler.removeCallbacks(this)
     }
 
     private fun createAlarm() {

@@ -2,6 +2,12 @@
 
 ## English
 
+### Version 1.5.1:
+ - historical Blitzortung.org data
+ - refactoring of internal data handling
+ - new menu dialog for Android 4 and newer
+ - spanish translation
+
 ### Version 1.5.0:
  - signaling threshold time setting
  - fixed disabling of own location display
@@ -125,6 +131,12 @@
  * notification and vibration alarm with preference integration
 
 ## German
+
+### Version 1.5.1:
+ - historische Daten von Blitzortung.org
+ - Überarbeitung der internen Datenverarbeitung
+ - Neuer Menü-Dialog ab Android 4
+ - Spanische Übersetzung
 
 ### Version 1.5.0:
  - Einstellung Ruheperiode Alarmsignal

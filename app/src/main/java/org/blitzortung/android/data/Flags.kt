@@ -1,6 +1,6 @@
 /*
 
-   Copyright 2015 Andreas Würl
+   Copyright 2016 Andreas Würl
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 */
 
-package org.blitzortung.android.data.provider.result
+package org.blitzortung.android.data
 
-class ClearDataEvent : DataEvent
+data class Flags(
+        val storeResult: Boolean = true
+) {}
