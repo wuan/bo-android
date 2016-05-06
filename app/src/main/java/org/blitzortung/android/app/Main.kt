@@ -36,7 +36,10 @@ import android.preference.PreferenceManager
 import android.provider.Settings
 import android.text.format.DateFormat
 import android.util.Log
-import android.view.*
+import android.view.KeyEvent
+import android.view.View
+import android.view.ViewConfiguration
+import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.Toast
 import com.google.android.maps.GeoPoint
@@ -518,17 +521,12 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        super.onCreateOptionsMenu(menu)
-        menuInflater.inflate(R.menu.main_menu, menu)
-
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val popupMenu = MainPopupMenu(this, menu)
-
-        return popupMenu.onMenuItemSelected(null, item)
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            showPopupMenu()
+            return true;
+        }
+        return super.onKeyUp(keyCode, event);
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
@@ -604,12 +602,16 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                         !config.hasPermanentMenuKey()) {
             menu.visibility = View.VISIBLE
             menu.setOnClickListener {
-                val popupMenu = MainPopupMenu(this, menu)
-                popupMenu.showPopupMenu()
+                showPopupMenu()
             }
 
             buttonColumnHandler.addElement(menu)
         }
+    }
+
+    private fun showPopupMenu() {
+        val popupMenu = MainPopupMenu(this, menu)
+        popupMenu.showPopupMenu()
     }
 
     private fun hideActionBar() {

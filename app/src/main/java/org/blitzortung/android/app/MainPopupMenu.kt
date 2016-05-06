@@ -31,10 +31,12 @@ class MainPopupMenu(private val context: Context, anchor: View) : PopupMenu(cont
 
             if (dialog is Dialog) {
                 dialog.show()
+            } else {
+                return false
             }
         }
 
-        return super.onMenuItemSelected(menu, item)
+        return true
     }
 
     fun showPopupMenu() {
