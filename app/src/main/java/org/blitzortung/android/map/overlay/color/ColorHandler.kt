@@ -35,8 +35,16 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
     }
 
     fun updateTarget() {
-        target = ColorTarget.valueOf(preferences.get(PreferenceKey.MAP_TYPE, "SATELLITE"))
+        target = getColorTarget()
         colorScheme = ColorScheme.valueOf(preferences.get(PreferenceKey.COLOR_SCHEME, ColorScheme.BLITZORTUNG.toString()))
+    }
+
+    private fun getColorTarget(): ColorTarget {
+        try {
+            return ColorTarget.valueOf(preferences.get(PreferenceKey.MAP_TYPE, "SATELLITE"))
+        } catch (e: IllegalArgumentException) {
+            return ColorTarget.SATELLITE
+        }
     }
 
     val colors: IntArray
