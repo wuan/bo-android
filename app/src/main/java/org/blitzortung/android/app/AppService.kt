@@ -227,12 +227,12 @@ class AppService protected constructor(private val handler: Handler, private val
             if (alertEnabled && backgroundPeriod > 0) {
                 logElements += "enable_bg"
                 locationHandler.enableBackgroundMode()
-                locationHandler.updateProvider()
                 disableHandler()
                 createAlarm()
             } else {
                 logElements += "disable_bg"
                 alertHandler.unsetAlertListener()
+                locationHandler.shutdown()
                 discardAlarm()
             }
         } else {
@@ -255,6 +255,7 @@ class AppService protected constructor(private val handler: Handler, private val
                     dataHandler.updateData()
                 }
             }
+            locationHandler.start()
             locationHandler.disableBackgroundMode()
         }
         Log.v(Main.LOG_TAG, "AppService.configureServiceMode() ${logElements.joinToString(", ")}")

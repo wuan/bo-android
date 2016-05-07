@@ -26,7 +26,7 @@ abstract class LocationProvider(protected val locationUpdate: (Location?) -> Uni
 
     open fun start() {
         isRunning = true
-        Log.v(Main.LOG_TAG, "Provider $type started" )
+        Log.v(Main.LOG_TAG, "LocationProvider.start() type: $type" )
     }
 
     open fun shutdown() {
@@ -34,6 +34,6 @@ abstract class LocationProvider(protected val locationUpdate: (Location?) -> Uni
 
         //Send the consumers a NULL location, so they know we don't have a valid location at the moment
         sendLocationUpdate(null)
-        Log.v(Main.LOG_TAG, "Provider $type stopped" )
+        Log.v(Main.LOG_TAG, "LocationProvider.shutdown() type: $type" )
     }
 }
