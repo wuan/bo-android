@@ -429,7 +429,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onStop() {
         super.onStop()
 
-        Log.v(Main.LOG_TAG, "Main.onPause()")
+        Log.v(Main.LOG_TAG, "Main.onStop()")
     }
 
     private fun disableDataUpdates() {
