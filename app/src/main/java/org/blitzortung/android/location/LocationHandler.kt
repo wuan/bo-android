@@ -43,11 +43,19 @@ open class LocationHandler(
 : SharedPreferences.OnSharedPreferenceChangeListener {
 
     private var backgroundMode = true
+        set(value) {
+            val shouldUpdateProvider = field != value
+            field = value
+            if (shouldUpdateProvider) {
+                updateProvider()
+            }
+        }
+
     private var provider: LocationProvider? = null
     private val consumerContainer = object : ConsumerContainer<LocationEvent>() {
         override fun addedFirstConsumer() {
             provider?.run {
-                if(!isRunning) {
+                if (!isRunning) {
                     start()
                     Log.d(Main.LOG_TAG, "LocationHandler: enable provider")
                 }
@@ -56,7 +64,7 @@ open class LocationHandler(
 
         override fun removedLastConsumer() {
             provider?.run {
-                if(isRunning) {
+                if (isRunning) {
                     Log.d(Main.LOG_TAG, "LocationHandler: disable provider")
                     shutdown()
                 }
@@ -166,4 +174,5 @@ open class LocationHandler(
     companion object {
         val MANUAL_PROVIDER = "manual"
     }
+
 }
