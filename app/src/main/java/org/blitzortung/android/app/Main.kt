@@ -44,6 +44,7 @@ import android.widget.ImageButton
 import android.widget.Toast
 import com.google.android.maps.GeoPoint
 import kotlinx.android.synthetic.main.map_overlay.*
+import kotlinx.android.synthetic.main.overlay_top.*
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.VersionComponent
@@ -523,7 +524,8 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
-            showPopupMenu()
+            Log.v(Main.LOG_TAG, "Main.onKeyUp(KEYCODE_MENU)")
+            showPopupMenu(upper_row)
             return true;
         }
         return super.onKeyUp(keyCode, event);
@@ -602,15 +604,15 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                         !config.hasPermanentMenuKey()) {
             menu.visibility = View.VISIBLE
             menu.setOnClickListener {
-                showPopupMenu()
+                showPopupMenu(menu)
             }
 
             buttonColumnHandler.addElement(menu)
         }
     }
 
-    private fun showPopupMenu() {
-        val popupMenu = MainPopupMenu(this, menu)
+    private fun showPopupMenu(anchor: View) {
+        val popupMenu = MainPopupMenu(this, anchor)
         popupMenu.showPopupMenu()
     }
 
@@ -622,7 +624,5 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     companion object {
         val LOG_TAG = "BO_ANDROID"
-
-        val REQUEST_GPS = 1
     }
 }

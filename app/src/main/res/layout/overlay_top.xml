@@ -3,7 +3,7 @@
     xmlns:local="http://schemas.android.com/apk/res-auto">
 
     <TableRow
-        android:id="@+id/upperRow"
+        android:id="@+id/upper_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/translucent_background">
