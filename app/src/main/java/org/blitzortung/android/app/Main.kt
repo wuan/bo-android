@@ -242,7 +242,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + appService)
 
                 setupService()
-                setupDataUpdates()
+                enableDataUpdates()
             }
 
             override fun onServiceDisconnected(componentName: ComponentName) {
@@ -383,12 +383,10 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onStart() {
         super.onStart()
 
-        setupDataUpdates()
-
         Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
     }
 
-    private fun setupDataUpdates() {
+    private fun enableDataUpdates() {
         with(locationHandler) {
             requestUpdates(ownLocationOverlay.locationEventConsumer)
             requestUpdates(alert_view.locationEventConsumer)
@@ -415,11 +413,15 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onResume() {
         super.onResume()
 
+        enableDataUpdates()
+
         Log.d(Main.LOG_TAG, "Main.onResume() service: " + appService)
     }
 
     override fun onPause() {
         super.onPause()
+
+        disableDataUpdates()
 
         Log.v(Main.LOG_TAG, "Main.onPause()")
     }
@@ -427,6 +429,10 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onStop() {
         super.onStop()
 
+        Log.v(Main.LOG_TAG, "Main.onPause()")
+    }
+
+    private fun disableDataUpdates() {
         with(locationHandler) {
             removeUpdates(ownLocationOverlay.locationEventConsumer)
             removeUpdates(alert_view.locationEventConsumer)
@@ -444,10 +450,10 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         }
 
         appService?.apply {
-            Log.v(Main.LOG_TAG, "Main.onStop() remove listeners")
+            Log.v(LOG_TAG, "Main.stopDataUpdates() remove listeners")
 
             historyController.setAppService(null)
-        } ?: Log.i(LOG_TAG, "Main.onStop()")
+        } ?: Log.i(LOG_TAG, "Main.stopDataUpdates()")
     }
 
     override fun onDestroy() {
