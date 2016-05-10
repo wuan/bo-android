@@ -2,6 +2,21 @@
 
 ## English
 
+### Version 1.5.5:
+ - cache location during device rotation
+ - fixed period times outside range
+
+### Version 1.5.4:
+ - fixed options menu closing at layout event
+ - fixed service lifecycle
+
+### Version 1.5.3:
+ - fixed location handler lifecycle and parameters
+ - fixed options menu for newer devices with menu button
+
+### Version 1.5.2:
+ - fixed sporadic crash
+
 ### Version 1.5.1:
  - historical Blitzortung.org data
  - refactoring of internal data handling
@@ -131,6 +146,21 @@
  * notification and vibration alarm with preference integration
 
 ## German
+
+### Version 1.5.5:
+ - Zwischenspeichern des aktuellen Ortes
+ - Problem mit Periodenzeiten außerhalb des aktuellen Bereichs behoben
+
+### Version 1.5.4:
+ - Schließen des Options- Menüs bei Layout-Events behoben
+ - Lebenszyklus der Service-Anbidung verbessert
+
+### Version 1.5.3:
+ - Location-Handler Lebenszyklus und Parameter korrigiert
+ - Anzeige des Menüs auf neueren Geräten mit Menü-Knopf korrigiert
+
+### Version 1.5.2:
+ - gelegentlichen Absturz behoben
 
 ### Version 1.5.1:
  - historische Daten von Blitzortung.org
