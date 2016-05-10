@@ -91,16 +91,20 @@ open class LocationHandler(
 
                 var newProvider = providerFactory(sharedPreferences.get(key, LocationManager.PASSIVE_PROVIDER))
 
-                enableProvider(newProvider)
+                if (provider?.type != newProvider.type || !(provider?.isRunning ?: false)) {
+                    consumerContainer.storeAndBroadcast(LocationEvent())
+                    enableNewProvider(newProvider)
+                }
             }
         }
     }
 
-    private fun enableProvider(newProvider: LocationProvider) {
+    private fun enableNewProvider(newProvider: LocationProvider) {
+        Log.v(Main.LOG_TAG, "LocationHandler.enableProvider(${newProvider.type})")
         //If the current provider is not null and is Running, shut it down first
-        provider?.let {
-            if (it.isRunning) {
-                it.shutdown()
+        provider?.let { provider ->
+            if (provider.isRunning) {
+                provider.shutdown()
             }
         }
 
@@ -109,8 +113,9 @@ open class LocationHandler(
         this.provider = newProvider.apply {
             if (!this.isEnabled) {
                 context.longToast(context.resources.getText(R.string.location_provider_disabled).toString().format(newProvider.type))
-            } else
+            } else {
                 start()
+            }
         }
     }
 
@@ -119,7 +124,13 @@ open class LocationHandler(
     }
 
     private fun sendLocationUpdateToListeners(location: Location?) {
-        consumerContainer.storeAndBroadcast(LocationEvent(location))
+        Log.v(Main.LOG_TAG, "LocationHandler.sendLocationUpdateToListeners($location)")
+
+        if (location != null) {
+            consumerContainer.storeAndBroadcast(LocationEvent(location))
+        } else {
+            consumerContainer.broadcast(LocationEvent())
+        }
     }
 
     fun requestUpdates(locationConsumer: (LocationEvent) -> Unit) {

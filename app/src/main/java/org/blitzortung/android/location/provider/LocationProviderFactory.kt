@@ -5,15 +5,14 @@ import android.location.Location
 import android.location.LocationManager
 import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.location.LocationHandler
-import org.jetbrains.anko.defaultSharedPreferences
 
 
-internal fun createLocationProvider(context: Context, backgroundMode: Boolean, tmp: (Location?) -> Unit, providerName: String): LocationProvider {
+internal fun createLocationProvider(context: Context, backgroundMode: Boolean, updateConsumer: (Location?) -> Unit, providerName: String): LocationProvider {
     val provider = when(providerName) {
-        LocationManager.GPS_PROVIDER -> GPSLocationProvider(context, backgroundMode, tmp)
-        LocationManager.NETWORK_PROVIDER -> NetworkLocationProvider(context, backgroundMode, tmp)
-        LocationManager.PASSIVE_PROVIDER -> PassiveLocationProvider(context, backgroundMode, tmp)
-        LocationHandler.MANUAL_PROVIDER -> ManualLocationProvider(tmp, BOApplication.sharedPreferences)
+        LocationManager.GPS_PROVIDER -> GPSLocationProvider(context, backgroundMode, updateConsumer)
+        LocationManager.NETWORK_PROVIDER -> NetworkLocationProvider(context, backgroundMode, updateConsumer)
+        LocationManager.PASSIVE_PROVIDER -> PassiveLocationProvider(context, backgroundMode, updateConsumer)
+        LocationHandler.MANUAL_PROVIDER -> ManualLocationProvider(updateConsumer, BOApplication.sharedPreferences)
         else -> null
     } ?: throw IllegalArgumentException("Cannot find provider for name $providerName")
 

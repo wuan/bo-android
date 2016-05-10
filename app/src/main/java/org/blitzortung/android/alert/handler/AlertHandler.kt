@@ -62,9 +62,6 @@ class AlertHandler(
 ) : OnSharedPreferenceChangeListener {
     var alertParameters: AlertParameters
 
-    var alertEvent: AlertEvent = ALERT_CANCEL_EVENT
-        private set
-
     val alertConsumerContainer: ConsumerContainer<AlertEvent> = object : ConsumerContainer<AlertEvent>() {
         override fun addedFirstConsumer() {
             Log.d(Main.LOG_TAG, "AlertHandler: added first alert consumer")
@@ -103,13 +100,15 @@ class AlertHandler(
 
 
     val locationEventConsumer: (LocationEvent) -> Unit = { event ->
-        Log.v(Main.LOG_TAG, "AlertHandler: received location " + currentLocation + " vs " + event.location)
-        currentLocation = event.location
+        Log.v(Main.LOG_TAG, "AlertHandler: received location ${event.location} (was $currentLocation)")
+
+        this.currentLocation = event.location
         checkStrikes(lastStrikes)
     }
 
     val dataEventConsumer: (Event) -> Unit = { event ->
         if (event is ResultEvent) {
+            Log.v(Main.LOG_TAG, "AlertHandler: received data $event")
             if (!event.failed && event.containsRealtimeData()) {
                 checkStrikes(if (event.incrementalData) event.totalStrikes else event.strikes)
             } else {
@@ -139,6 +138,7 @@ class AlertHandler(
     }
 
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+        @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
             PreferenceKey.ALERT_ENABLED -> isAlertEnabled = sharedPreferences.get(key, false)
 
@@ -198,13 +198,11 @@ class AlertHandler(
         get() = alertParameters.rangeSteps.last()
 
     private fun broadcastResult(alertResult: AlertResult?) {
-        alertEvent = if (alertResult != null) AlertResultEvent(alertResult) else ALERT_CANCEL_EVENT
-        broadcastEvent()
+        broadcastEvent(if (alertResult != null) AlertResultEvent(alertResult) else ALERT_CANCEL_EVENT)
     }
 
-    private fun broadcastEvent() {
-        Log.v(Main.LOG_TAG, "AlertHandler.broadcastResult() $alertEvent")
-
+    private fun broadcastEvent(alertEvent: AlertEvent) {
+        Log.v(Main.LOG_TAG, "AlertHandler.broadcastEvent($alertEvent)")
         alertConsumerContainer.storeAndBroadcast(alertEvent)
     }
 
@@ -229,7 +227,7 @@ class AlertHandler(
             notificationHandler.clearNotification()
         }
 
-        Log.v(Main.LOG_TAG, "AlertHandler.processResult() broadcast result %s".format(alertResult))
+        Log.v(Main.LOG_TAG, "AlertHandler.handleAlert() broadcast result %s".format(alertResult))
         broadcastResult(alertResult)
     }
 
@@ -283,6 +281,8 @@ class AlertHandler(
     fun removeUpdates(alertEventConsumer: (AlertEvent) -> Unit) {
         alertConsumerContainer.removeConsumer(alertEventConsumer)
     }
+
+    val alertEvent: AlertEvent = alertConsumerContainer.currentPayload ?: ALERT_CANCEL_EVENT
 
     companion object {
         val ALERT_CANCEL_EVENT = AlertCancelEvent()

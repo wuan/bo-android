@@ -24,7 +24,8 @@ open class ConsumerContainer<P> {
 
     private val consumers: MutableSet<(P) -> Unit>
 
-    private var currentPayload: P? = null
+    var currentPayload: P? = null
+        private set
 
     init {
         consumers = HashSet<(P) -> Unit>()
@@ -41,8 +42,8 @@ open class ConsumerContainer<P> {
             if (isFirst) {
                 addedFirstConsumer()
             }
-            sendCurrentPayloadTo(consumer)
         }
+        sendCurrentPayloadTo(consumer)
     }
 
     protected fun sendCurrentPayloadTo(consumer: (P) -> Unit) {

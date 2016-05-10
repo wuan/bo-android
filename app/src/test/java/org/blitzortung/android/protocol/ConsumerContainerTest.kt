@@ -38,6 +38,21 @@ class ConsumerContainerTest {
     }
 
     @Test
+    fun consumerShoudReceivePayloadBroadcastEvenIfAlreadyRegistered() {
+        var result: String? = null
+        val consumer: (String) -> Unit = { string -> result = string }
+
+        testConsumerContainer.storeAndBroadcast("foo")
+        testConsumerContainer.addConsumer(consumer)
+        assertThat(result).isEqualTo("foo")
+
+        testConsumerContainer.storeAndBroadcast("bar")
+        result = "baz"
+        testConsumerContainer.addConsumer(consumer)
+        assertThat(result!!).isEqualTo("bar")
+    }
+
+    @Test
     fun addingNullConsumerShouldThrow() {
         assertThatThrownBy {
             testConsumerContainer.addConsumer(null)

@@ -21,10 +21,9 @@ package org.blitzortung.android.dialogs
 import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
-import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.alert.handler.AlertHandler
-
 import org.blitzortung.android.app.AppService
+import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.AlertView
 import org.blitzortung.android.map.overlay.color.ColorHandler
@@ -48,13 +47,10 @@ class AlertDialog(context: Context, private val service: AppService?, private va
 
         setTitle(context.getString(R.string.alarms))
 
-        alertHandler.requestUpdates(alertView.alertEventConsumer)
-
         alertView.setColorHandler(colorHandler, BOApplication.dataHandler.intervalDuration)
-        service?.run {
-            alertView.alertEventConsumer.invoke(this.alertEvent())
-        }
         colorHandler.updateTarget()
+
+        alertHandler.requestUpdates(alertView.alertEventConsumer)
     }
 
     override fun onStop() {

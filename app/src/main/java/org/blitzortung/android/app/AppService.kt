@@ -28,7 +28,6 @@ import android.os.Binder
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
-import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
@@ -293,10 +292,6 @@ class AppService protected constructor(private val handler: Handler, private val
             pendingIntent = null
             this.alarmManager = null
         }
-    }
-
-    fun alertEvent(): AlertEvent {
-        return alertHandler.alertEvent
     }
 
     inner class DataServiceBinder : Binder() {

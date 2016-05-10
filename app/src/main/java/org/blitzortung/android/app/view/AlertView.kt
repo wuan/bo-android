@@ -68,6 +68,7 @@ class AlertView @JvmOverloads constructor(
     }
 
     val locationEventConsumer: (LocationEvent) -> Unit = { locationEvent ->
+        Log.v(Main.LOG_TAG, "AlertView received location ${locationEvent.location}")
         location = locationEvent.location
         val visibility = if (location != null) View.VISIBLE else View.INVISIBLE
         setVisibility(visibility)

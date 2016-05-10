@@ -26,6 +26,7 @@ class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sh
             return null
         }
 
+        @Suppress("NON_EXHAUSTIVE_WHEN")
         when(key) {
             PreferenceKey.LOCATION_LONGITUDE, PreferenceKey.LOCATION_LATITUDE -> {
                 val location = Location("")
