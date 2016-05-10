@@ -72,7 +72,7 @@ class AppService protected constructor(private val handler: Handler, private val
     private val dataEventConsumer = { event: DataEvent ->
         if (event is ResultEvent) {
             lastParameters = event.parameters
-            updatePeriod.updateLastUpdateTime(event.referenceTime / 1000, period)
+            updatePeriod.updateLastUpdateTime(period)
             configureServiceMode()
         }
 
@@ -185,6 +185,7 @@ class AppService protected constructor(private val handler: Handler, private val
     }
 
     fun restart() {
+        Log.v(Main.LOG_TAG, "AppService.restart()")
         configureServiceMode()
         updatePeriod.restart()
     }

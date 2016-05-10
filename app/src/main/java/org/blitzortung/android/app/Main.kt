@@ -241,7 +241,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 appService = (iBinder as AppService.DataServiceBinder).service
                 Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + appService)
 
-                setupService()
                 enableDataUpdates()
             }
 
@@ -250,13 +249,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         }
 
         bindService(serviceIntent, serviceConnection, 0)
-    }
-
-    private fun setupService() {
-        appService?.run {
-            historyController.setAppService(this)
-        }
-
     }
 
     private fun setupDebugModeButton() {
@@ -387,20 +379,24 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun enableDataUpdates() {
-        with(locationHandler) {
-            requestUpdates(ownLocationOverlay.locationEventConsumer)
-            requestUpdates(alert_view.locationEventConsumer)
-        }
+        appService?.let { appService ->
+            with(locationHandler) {
+                requestUpdates(ownLocationOverlay.locationEventConsumer)
+                requestUpdates(alert_view.locationEventConsumer)
+            }
 
-        with(alertHandler) {
-            requestUpdates(alert_view.alertEventConsumer)
-            requestUpdates(statusComponent.alertEventConsumer)
-        }
+            with(alertHandler) {
+                requestUpdates(alert_view.alertEventConsumer)
+                requestUpdates(statusComponent.alertEventConsumer)
+            }
 
-        with(dataHandler) {
-            requestUpdates(dataEventConsumer)
-            requestUpdates(historyController.dataConsumer)
-            requestUpdates(histogram_view.dataConsumer)
+            with(dataHandler) {
+                requestUpdates(dataEventConsumer)
+                requestUpdates(historyController.dataConsumer)
+                requestUpdates(histogram_view.dataConsumer)
+            }
+
+            historyController.setAppService(appService)
         }
     }
 

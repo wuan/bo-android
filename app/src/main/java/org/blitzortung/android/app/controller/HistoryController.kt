@@ -106,7 +106,6 @@ class HistoryController(private val activity: Activity, private val buttonHandle
         activity.historyFfwd.visibility = View.INVISIBLE
         activity.goRealtime.visibility = View.INVISIBLE
         updateButtonColumn()
-        dataHandler.updateData()
         appService?.restart()
     }
 

@@ -8,7 +8,7 @@ class PeriodTest {
 
     private val currentTime = Period.currentTime
 
-    private val currentPeriod = 1000
+    private val currentPeriod = 60
 
     lateinit private var period: Period
 
@@ -40,7 +40,7 @@ class PeriodTest {
     fun getCurrentUpdatePeriodShouldReturnTimeUntilNextUpdate() {
         period.shouldUpdate(currentTime, currentPeriod)
 
-        assertThat(period.getCurrentUpdatePeriod(currentTime + 200, currentPeriod)).isEqualTo(800)
+        assertThat(period.getCurrentUpdatePeriod(currentTime + 20, currentPeriod)).isEqualTo(40)
     }
 
     @Test
@@ -75,6 +75,39 @@ class PeriodTest {
 
         assertThat(period.lastUpdateTime).isEqualTo(0)
         assertThat(period.updateCount).isEqualTo(0)
+    }
+
+    @Test
+    fun updateLastUpdateTimeShouldUpdateToCurrentTime() {
+        val currentTime = Period.currentTime
+
+        period.lastUpdateTime = currentTime - currentPeriod
+
+        period.updateLastUpdateTime(currentPeriod)
+
+        assertThat(period.lastUpdateTime).isEqualTo(currentTime)
+    }
+
+    @Test
+    fun updateLastUpdateTimeShouldUpdateToTimeWithOffset() {
+        val currentTime = Period.currentTime
+
+        period.lastUpdateTime = currentTime - currentPeriod - 10
+
+        period.updateLastUpdateTime(currentPeriod)
+
+        assertThat(period.lastUpdateTime).isEqualTo(currentTime - 10)
+    }
+
+    @Test
+    fun updateLastUpdateTimeShouldSkipIfDifferenceIsHigherThanASinglePeriod() {
+        val currentTime = Period.currentTime
+
+        period.lastUpdateTime = currentTime - 4 * currentPeriod - 5
+
+        period.updateLastUpdateTime(currentPeriod)
+
+        assertThat(period.lastUpdateTime).isEqualTo(currentTime - 5)
     }
 
 }

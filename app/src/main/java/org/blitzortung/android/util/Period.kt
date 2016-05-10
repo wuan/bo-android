@@ -18,10 +18,12 @@
 
 package org.blitzortung.android.util
 
+import android.util.Log
+import org.blitzortung.android.app.Main
+
 class Period {
 
     internal var lastUpdateTime: Long = 0L
-        private set
 
     internal var updateCount: Int = 0
         private set
@@ -64,9 +66,13 @@ class Period {
             get() = System.currentTimeMillis() / 1000
     }
 
-    fun updateLastUpdateTime(timestamp: Long, currentPeriod: Int) {
-        if (timestamp in lastUpdateTime..lastUpdateTime + currentPeriod) {
-            lastUpdateTime = timestamp
+    fun updateLastUpdateTime(currentPeriod: Int) {
+        if (currentPeriod <= 0) {
+            Log.w(Main.LOG_TAG, "Period.updateLastUpdateTime($currentPeriod) bad value")
+        } else {
+            val skipPeriodCount = (currentTime - lastUpdateTime) / currentPeriod
+
+            lastUpdateTime += skipPeriodCount * currentPeriod
         }
     }
 
