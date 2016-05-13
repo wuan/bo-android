@@ -31,10 +31,7 @@ import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.result.ResultEvent
 import java.io.BufferedReader
 import java.io.FileNotFoundException
-import java.net.Authenticator
-import java.net.PasswordAuthentication
-import java.net.SocketException
-import java.net.URL
+import java.net.*
 import java.util.*
 import java.util.zip.GZIPInputStream
 
@@ -83,6 +80,9 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
             reader = inputStream.bufferedReader()
         } catch (e: FileNotFoundException) {
             Log.w(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() URL $urlString not found")
+            return null
+        } catch (e: UnknownHostException) {
+            Log.w(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() URL $urlString host not found")
             return null
         }
 
