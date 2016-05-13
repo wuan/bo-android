@@ -106,10 +106,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
             statusComponent.indicateError(event.failed)
             if (!event.failed) {
-                if (event.parameters!!.intervalDuration != BOApplication.dataHandler.intervalDuration) {
-                    reloadData()
-                }
-
                 currentResult = event
 
                 Log.d(Main.LOG_TAG, "Main.onDataUpdate() " + event)
