@@ -15,7 +15,9 @@ class GPSLocationProvider(context: Context,
     override fun start() {
         super.start()
 
-        locationManager.addGpsStatusListener(this)
+        if (isPermissionGranted) {
+            locationManager.addGpsStatusListener(this)
+        }
     }
 
     override fun shutdown() {
