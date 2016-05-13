@@ -33,6 +33,7 @@ import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.net.Authenticator
 import java.net.PasswordAuthentication
+import java.net.SocketException
 import java.net.URL
 import java.util.*
 import java.util.zip.GZIPInputStream
@@ -105,7 +106,11 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
             }
         }
 
-        val strikeList = strikeSequence.toList()
+        val strikeList = try {
+            strikeSequence.toList()
+        } catch (e: SocketException) {
+            emptyList<T>()
+        }
 
         Log.v(Main.LOG_TAG, logMessage.format(size, strikeList.count()))
 
