@@ -35,6 +35,7 @@ import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.RequestStartedEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.ConsumerContainer
+import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 
 class DataHandler @JvmOverloads constructor(

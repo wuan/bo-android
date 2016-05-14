@@ -10,7 +10,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest=Config.NONE)
+@Config(manifest = Config.NONE)
 class VersionComponentTest {
 
     lateinit private var versionComponent: VersionComponent
@@ -27,7 +27,7 @@ class VersionComponentTest {
 
     @Test
     fun stateShouldBeFirstRunWhenConfiguredVersionIsUndefined() {
-       assertThat(versionComponent.state).isEqualTo(VersionComponent.State.FIRST_RUN)
+        assertThat(versionComponent.state).isEqualTo(VersionComponent.State.FIRST_RUN)
     }
 
     @Test
@@ -53,7 +53,7 @@ class VersionComponentTest {
 
         val preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 
-        preferences .edit().putInt(VersionComponent.CONFIGURED_VERSION_CODE, 1).apply()
+        preferences.edit().putInt(VersionComponent.CONFIGURED_VERSION_CODE, 1).apply()
 
         versionComponent = VersionComponent(context)
         assertThat(versionComponent.configuredVersionCode).isEqualTo(1)
