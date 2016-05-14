@@ -18,11 +18,14 @@
 
 package org.blitzortung.android.jsonrpc
 
+import android.util.Log
+import org.blitzortung.android.app.Main
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URI
 import java.net.URL
 import java.nio.charset.Charset
+import java.util.zip.GZIPInputStream
 
 class HttpServiceClientDefault internal constructor(uriString: String, agentSuffix: String) : HttpServiceClient {
 
@@ -49,12 +52,21 @@ class HttpServiceClientDefault internal constructor(uriString: String, agentSuff
         connection.setRequestProperty("Content-Type", "text/json")
         connection.setRequestProperty("Content-Length", postDataBytes.size.toString())
         connection.setRequestProperty("User-Agent", userAgentString)
+        connection.setRequestProperty("Accept-Encoding", "gzip");
 
         connection.doOutput = true
         connection.outputStream.write(postDataBytes)
         connection.connectTimeout = connectionTimeout
         connection.readTimeout = socketTimeout
 
-        return InputStreamReader(connection.inputStream, "UTF-8").use { it.readText() }
+        var inputStream = connection.inputStream
+
+        when (connection.contentEncoding) {
+            "gzip" -> { inputStream = GZIPInputStream(inputStream) }
+        }
+
+        Log.v(Main.LOG_TAG, "HttpServiceClient contentEncoding: ${connection.contentEncoding}")
+
+        return InputStreamReader(inputStream, "UTF-8").use { it.readText() }
     }
 }
