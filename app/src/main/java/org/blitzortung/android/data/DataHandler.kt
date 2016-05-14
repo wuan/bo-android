@@ -35,7 +35,6 @@ import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.RequestStartedEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.ConsumerContainer
-import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 
 class DataHandler @JvmOverloads constructor(
@@ -47,9 +46,13 @@ class DataHandler @JvmOverloads constructor(
     private val sharedPreferences = BOApplication.sharedPreferences
 
     private val lock = ReentrantLock()
+
     private var dataProvider: DataProvider? = null
+
     var parameters = Parameters()
         private set
+
+    private var enabled = false
 
     lateinit private var parametersController: ParametersController
 
@@ -85,6 +88,8 @@ class DataHandler @JvmOverloads constructor(
         updateProviderSpecifics()
 
         internalDataConsumerContainer.addConsumer(internalDataConsumer)
+
+        enabled = true
     }
 
     fun updateDataInBackground() {
@@ -111,17 +116,20 @@ class DataHandler @JvmOverloads constructor(
         get() = dataConsumerContainer.isEmpty
 
     fun updateData(updateTargets: Set<DataChannel> = DEFAULT_DATA_CHANNELS) {
+        if (enabled) {
+            sendEvent(REQUEST_STARTED_EVENT)
 
-        sendEvent(REQUEST_STARTED_EVENT)
-
-        var updateParticipants = false
-        if (updateTargets.contains(DataChannel.PARTICIPANTS)) {
-            if (dataProvider!!.type == DataProviderType.HTTP || !dataMode.raster) {
-                updateParticipants = true
+            var updateParticipants = false
+            if (updateTargets.contains(DataChannel.PARTICIPANTS)) {
+                if (dataProvider!!.type == DataProviderType.HTTP || !dataMode.raster) {
+                    updateParticipants = true
+                }
             }
+            Log.d(Main.LOG_TAG, "DataHandler.updateData() $activeParameters")
+            FetchDataTask().execute(TaskParameters(parameters = activeParameters, updateParticipants = updateParticipants))
+        } else {
+            Log.d(Main.LOG_TAG, "DataHandler.updateData() disabled")
         }
-        Log.d(Main.LOG_TAG, "DataHandler.updateData() $activeParameters")
-        FetchDataTask().execute(TaskParameters(parameters = activeParameters, updateParticipants = updateParticipants))
     }
 
     val activeParameters: Parameters
@@ -256,7 +264,7 @@ class DataHandler @JvmOverloads constructor(
                     var result = ResultEvent(referenceTime = System.currentTimeMillis(), parameters = parameters, flags = flags)
 
                     dataProvider!!.retrieveData() {
-                        if (parameters.isRaster()) {
+                        if (dataMode.raster) {
                             result = getStrikesGrid(parameters, result)
                         } else {
                             result = getStrikes(parameters, result)
