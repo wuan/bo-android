@@ -20,7 +20,6 @@ package org.blitzortung.android.map
 
 import android.content.Context
 import android.graphics.Canvas
-import android.preference.PreferenceManager
 import android.util.AttributeSet
 import android.util.Log
 import android.view.GestureDetector
@@ -90,11 +89,14 @@ class OwnMapView : MapView {
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        val result = super.onTouchEvent(event)
+        val result = try {
+            super.onTouchEvent(event)
+        } catch (e: ArrayIndexOutOfBoundsException) {
+            Log.e(Main.LOG_TAG, "OwnMapView.onTouchEvent() catched out of bounds exception")
+            false
+        }
 
-        gestureDetector.onTouchEvent(event)
-
-        return result
+        return result || gestureDetector.onTouchEvent(event)
     }
 
     protected fun detectAndHandleZoomAction() {
