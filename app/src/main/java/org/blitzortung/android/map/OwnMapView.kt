@@ -96,7 +96,9 @@ class OwnMapView : MapView {
             false
         }
 
-        return result || gestureDetector.onTouchEvent(event)
+        val localResult = gestureDetector.onTouchEvent(event)
+
+        return result || localResult
     }
 
     protected fun detectAndHandleZoomAction() {
