@@ -71,7 +71,6 @@ class AppService protected constructor(private val handler: Handler, private val
     private val dataEventConsumer = { event: DataEvent ->
         if (event is ResultEvent) {
             lastParameters = event.parameters
-            updatePeriod.updateLastUpdateTime(period)
             configureServiceMode()
         }
 

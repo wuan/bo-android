@@ -76,38 +76,4 @@ class PeriodTest {
         assertThat(period.lastUpdateTime).isEqualTo(0)
         assertThat(period.updateCount).isEqualTo(0)
     }
-
-    @Test
-    fun updateLastUpdateTimeShouldUpdateToCurrentTime() {
-        val currentTime = Period.currentTime
-
-        period.lastUpdateTime = currentTime - currentPeriod
-
-        period.updateLastUpdateTime(currentPeriod)
-
-        assertThat(period.lastUpdateTime).isEqualTo(currentTime)
-    }
-
-    @Test
-    fun updateLastUpdateTimeShouldUpdateToTimeWithOffset() {
-        val currentTime = Period.currentTime
-
-        period.lastUpdateTime = currentTime - currentPeriod - 10
-
-        period.updateLastUpdateTime(currentPeriod)
-
-        assertThat(period.lastUpdateTime).isEqualTo(currentTime - 10)
-    }
-
-    @Test
-    fun updateLastUpdateTimeShouldSkipIfDifferenceIsHigherThanASinglePeriod() {
-        val currentTime = Period.currentTime
-
-        period.lastUpdateTime = currentTime - 4 * currentPeriod - 5
-
-        period.updateLastUpdateTime(currentPeriod)
-
-        assertThat(period.lastUpdateTime).isEqualTo(currentTime - 5)
-    }
-
 }
