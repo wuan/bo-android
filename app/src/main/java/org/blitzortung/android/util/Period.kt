@@ -30,19 +30,13 @@ class Period {
     }
 
     fun shouldUpdate(currentTime: Long, currentPeriod: Int): Boolean {
-
-        val shouldUpdate = if (lastUpdateTime == 0L) {
-            true
-        } else {
-            currentTime >= lastUpdateTime + currentPeriod
-        }
-
-        if (shouldUpdate) {
+        return if (currentTime >= lastUpdateTime + currentPeriod) {
             updateCount++
             lastUpdateTime = currentTime
+            true
+        } else {
+            false
         }
-
-        return shouldUpdate
     }
 
     fun isNthUpdate(countPeriod: Int): Boolean {
