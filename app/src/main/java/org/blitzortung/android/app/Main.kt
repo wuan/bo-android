@@ -577,8 +577,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     protected fun setHistoricStatusString() {
         if (!strikesOverlay.hasRealtimeData()) {
-            val referenceTime = strikesOverlay.referenceTime + strikesOverlay.parameters.intervalOffset * 60 * 1000
-            val timeString = DateFormat.format("@ kk:mm", referenceTime) as String
+            val timeString = DateFormat.format("@ kk:mm", strikesOverlay.referenceTime) as String
             setStatusString(timeString)
         }
     }
