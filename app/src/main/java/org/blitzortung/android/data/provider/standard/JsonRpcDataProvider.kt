@@ -26,7 +26,6 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
-import org.blitzortung.android.data.provider.standard.DataBuilder
 import org.blitzortung.android.data.provider.DataProvider
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.result.ResultEvent
@@ -200,10 +199,11 @@ class JsonRpcDataProvider(
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+        @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
-            PreferenceKey.SERVICE_URL -> serviceUrl = toCheckedUrl(sharedPreferences.get(PreferenceKey.SERVICE_URL, ""))
-
-            else -> {
+            PreferenceKey.SERVICE_URL -> {
+                val serviceUrl = toCheckedUrl(sharedPreferences.get(PreferenceKey.SERVICE_URL, ""))
+                this.serviceUrl = if (serviceUrl.isNotBlank()) serviceUrl.trim() else DEFAULT_SERVICE_URL
             }
         }
     }
