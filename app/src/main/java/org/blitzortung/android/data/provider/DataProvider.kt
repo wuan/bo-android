@@ -41,6 +41,10 @@ abstract class DataProvider(
 
     abstract fun <T> retrieveData(retrieve: DataRetriever.() -> T): T
 
+    fun unregister() {
+        preferences.unregisterOnSharedPreferenceChangeListener(this)
+    }
+
     interface DataRetriever {
         fun getStrikes(parameters: Parameters, result: ResultEvent): ResultEvent
         fun getStrikesGrid(parameters: Parameters, result: ResultEvent): ResultEvent

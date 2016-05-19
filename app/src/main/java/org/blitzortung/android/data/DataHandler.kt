@@ -160,7 +160,7 @@ class DataHandler @JvmOverloads constructor(
                 val providerTypeString = sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.RPC.toString())
                 val providerType = DataProviderType.valueOf(providerTypeString.toUpperCase())
                 val dataProvider = dataProviderFactory.getDataProviderForType(providerType, sharedPreferences, agentSuffix)
-                this.dataProvider?.run { sharedPreferences.unregisterOnSharedPreferenceChangeListener(this@DataHandler.dataProvider) }
+                this.dataProvider?.run { unregister() }
                 this.dataProvider = dataProvider
 
                 updateProviderSpecifics()
@@ -184,8 +184,10 @@ class DataHandler @JvmOverloads constructor(
                 updateData()
             }
 
-            PreferenceKey.HISTORIC_TIMESTEP -> parametersController = ParametersController.withOffsetIncrement(
-                    Integer.parseInt(sharedPreferences.get(key, "30")))
+            PreferenceKey.HISTORIC_TIMESTEP -> {
+                parametersController = ParametersController.withOffsetIncrement(
+                        sharedPreferences.get(key, "30").toInt())
+            }
 
             PreferenceKey.REGION -> {
                 val region = Integer.parseInt(sharedPreferences.get(key, "1"))
