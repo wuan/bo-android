@@ -211,7 +211,6 @@ class AlertHandler(
             handleAlert(alertResult)
         } else {
             Log.v(Main.LOG_TAG, "AlertHandler.processResult() no result")
-            notificationHandler.clearNotification()
             broadcastResult(null)
         }
     }
@@ -223,8 +222,6 @@ class AlertHandler(
 
         if (alertResult.closestStrikeDistance <= notificationDistanceLimit) {
             handleAlertNotification(alertResult)
-        } else {
-            notificationHandler.clearNotification()
         }
 
         Log.v(Main.LOG_TAG, "AlertHandler.handleAlert() broadcast result %s".format(alertResult))
