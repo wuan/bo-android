@@ -343,4 +343,6 @@
     <string name="app_log">Application log</string>
     <string name="share_log">Send email …</string>
     <string name="share_unavailable">E-mail sharing is not available.</string>
+    <string name="timeout_warning">Network timeout.\nPlease check your network connectivity.</string>
+    <string name="connection_warning">Could not connect.\nPlease check your network connectivity.</string>
 </resources>

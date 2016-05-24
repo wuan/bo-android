@@ -18,13 +18,16 @@
 
 package org.blitzortung.android.data
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.AsyncTask
 import android.os.PowerManager
 import android.util.Log
+import android.widget.Toast
 import org.blitzortung.android.app.AppService
 import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
@@ -35,10 +38,15 @@ import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.RequestStartedEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.ConsumerContainer
+import org.jetbrains.anko.async
+import org.jetbrains.anko.uiThread
+import java.net.ConnectException
+import java.net.SocketTimeoutException
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 
 class DataHandler @JvmOverloads constructor(
+        private val context: Context,
         private val wakeLock: PowerManager.WakeLock,
         private val agentSuffix: String,
         private val dataProviderFactory: DataProviderFactory = DataProviderFactory()
@@ -285,12 +293,35 @@ class DataHandler @JvmOverloads constructor(
                     return result
                 } catch (e: RuntimeException) {
                     e.printStackTrace()
+
+                    handleErrorUserFeedback(e)
+
                     return ResultEvent(failed = true, referenceTime = System.currentTimeMillis(), parameters = parameters, flags = flags)
                 } finally {
                     lock.unlock()
                 }
             }
             return null
+        }
+
+        private fun handleErrorUserFeedback(e: RuntimeException) {
+            val warningToastStringResource = when (e.cause) {
+                is SocketTimeoutException ->
+                    R.string.timeout_warning
+
+                is ConnectException ->
+                    R.string.connection_warning
+
+                else -> null
+            }
+
+            if (warningToastStringResource != null) {
+                async() {
+                    uiThread {
+                        Toast.makeText(context, warningToastStringResource, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
         }
     }
 

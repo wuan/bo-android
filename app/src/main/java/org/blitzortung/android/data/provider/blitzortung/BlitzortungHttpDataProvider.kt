@@ -30,8 +30,10 @@ import org.blitzortung.android.data.provider.DataProvider
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.result.ResultEvent
 import java.io.BufferedReader
-import java.io.FileNotFoundException
-import java.net.*
+import java.net.Authenticator
+import java.net.PasswordAuthentication
+import java.net.SocketException
+import java.net.URL
 import java.util.*
 import java.util.zip.GZIPInputStream
 
@@ -69,8 +71,8 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
             val url: URL
             url = URL(urlString)
             val connection = url.openConnection()
-            connection.connectTimeout = 60000
-            connection.readTimeout = 60000
+            connection.connectTimeout = 40000
+            connection.readTimeout = 40000
             connection.allowUserInteraction = false
             var inputStream = connection.inputStream
             if (useGzipCompression) {
@@ -78,12 +80,9 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
             }
 
             reader = inputStream.bufferedReader()
-        } catch (e: FileNotFoundException) {
-            Log.w(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() URL $urlString not found")
-            return null
-        } catch (e: UnknownHostException) {
-            Log.w(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() URL $urlString host not found")
-            return null
+        } catch (e: Exception) {
+            Log.w(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() URL $urlString failed")
+            throw RuntimeException(e)
         }
 
         return reader

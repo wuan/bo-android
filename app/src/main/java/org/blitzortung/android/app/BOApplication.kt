@@ -18,7 +18,7 @@ class BOApplication : Application() {
 
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG)
 
-        dataHandler = DataHandler(wakeLock, "-${getPackageInfo().versionCode.toString()}")
+        dataHandler = DataHandler(applicationContext, wakeLock, "-${getPackageInfo().versionCode.toString()}")
 
         locationHandler = LocationHandler(applicationContext, sharedPreferences)
 

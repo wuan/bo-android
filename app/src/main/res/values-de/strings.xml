@@ -337,6 +337,8 @@
     <string name="service_url_summary">Benutzerdefinierte Service-URL, falls gesetzt</string>
     <string name="set_manual_location">Benutzerdefinierter Ort</string>
     <string name="app_log">App-Log</string>
-    <string name="share_log">E-Mail senden ...</string>
+    <string name="share_log">E-Mail senden …</string>
     <string name="share_unavailable">E-Mail kann nicht versendet werden.</string>
+    <string name="timeout_warning">Netzwerk-Zeitüberschreitung.\nBitte überprüfen sie die Internetverbindung.</string>
+    <string name="connection_warning">Kein Netzwerk.\nBitte überprüfen sie die Internetverbindung.</string>
 </resources>
