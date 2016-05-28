@@ -277,7 +277,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             setBackgroundColor(Color.TRANSPARENT)
             setAlpha(200)
             setOnClickListener { view ->
-                if (alertHandler.isAlertEnabled) {
+                if (alertHandler.alertEnabled) {
                     val currentLocation = alertHandler.currentLocation
                     if (currentLocation != null) {
                         var radius = determineTargetZoomRadius(alertHandler)

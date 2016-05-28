@@ -20,7 +20,6 @@ package org.blitzortung.android.alert.handler
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.location.Location
 import android.media.AudioAttributes
 import android.media.AudioManager
@@ -39,6 +38,7 @@ import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.controller.NotificationHandler
+import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.beans.Strike
@@ -85,7 +85,7 @@ class AlertHandler(
     var currentLocation: Location? = null
         private set
 
-    var isAlertEnabled: Boolean = false
+    var alertEnabled: Boolean = false
         private set
 
     private var notificationDistanceLimit: Float = 0.0f
@@ -124,47 +124,61 @@ class AlertHandler(
         alertParameters = AlertParameters(alarmInterval, rangeSteps, sectorLabels, MeasurementSystem.METRIC)
 
         preferences.registerOnSharedPreferenceChangeListener(this)
-        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED)
-        onSharedPreferenceChanged(preferences, PreferenceKey.MEASUREMENT_UNIT)
-        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT)
-        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT)
-        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME)
-        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_VIBRATION_SIGNAL)
-        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_SOUND_SIGNAL)
+        onSharedPreferencesChanged(preferences, PreferenceKey.ALERT_ENABLED, PreferenceKey.MEASUREMENT_UNIT,
+                PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT,
+                PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME, PreferenceKey.ALERT_VIBRATION_SIGNAL,
+                PreferenceKey.ALERT_SOUND_SIGNAL)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString))
     }
 
-    private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
-            PreferenceKey.ALERT_ENABLED -> isAlertEnabled = sharedPreferences.get(key, false)
+            PreferenceKey.ALERT_ENABLED -> {
+                alertEnabled = sharedPreferences.get(key, false)
+                Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() alertEnabled = $alertEnabled")
+            }
 
             PreferenceKey.MEASUREMENT_UNIT -> {
                 val measurementSystemName = sharedPreferences.get(key, MeasurementSystem.METRIC.toString())
 
                 alertParameters = alertParameters.copy(measurementSystem = MeasurementSystem.valueOf(measurementSystemName))
+                Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() measurementSystem = ${alertParameters.measurementSystem}")
             }
 
-            PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT -> notificationDistanceLimit = sharedPreferences.get(key, "50").toFloat()
+            PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT -> {
+                notificationDistanceLimit = sharedPreferences.get(key, "50").toFloat()
+                Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() notificationDistanceLimit = $notificationDistanceLimit")
+            }
 
-            PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT -> signalingDistanceLimit = sharedPreferences.get(key, "25").toFloat()
+            PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT -> {
+                signalingDistanceLimit = sharedPreferences.get(key, "25").toFloat()
+                Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() signalingDistanceLimit = $signalingDistanceLimit")
+            }
 
-            PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME -> signalingThresholdTime = sharedPreferences.get(key, "25").toLong() * 1000 * 60
+            PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME -> {
+                signalingThresholdTime = sharedPreferences.get(key, "25").toLong() * 1000 * 60
+                Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() signalingThresholdTime = $signalingThresholdTime")
+            }
 
-            PreferenceKey.ALERT_VIBRATION_SIGNAL -> alertSignal = alertSignal.copy(vibrationDuration = sharedPreferences.get(key, 3) * 10)
+            PreferenceKey.ALERT_VIBRATION_SIGNAL -> {
+                alertSignal = alertSignal.copy(vibrationDuration = sharedPreferences.get(key, 3) * 10)
+                Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() vibrationDuration = ${alertSignal.vibrationDuration}")
+            }
 
             PreferenceKey.ALERT_SOUND_SIGNAL -> {
                 val signalUri = sharedPreferences.get(key, "")
                 alertSignal = alertSignal.copy(soundSignal = if (!signalUri.isEmpty()) Uri.parse(signalUri) else null)
+                Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() soundSignal = ${alertSignal.soundSignal}")
             }
         }
     }
 
     private fun refresh() {
-        if (isAlertEnabled) {
+        if (alertEnabled) {
             locationHandler.requestUpdates(locationEventConsumer)
             dataHandler.requestInternalUpdates(dataEventConsumer)
         } else {
@@ -183,7 +197,7 @@ class AlertHandler(
 
     fun checkStrikes(strikes: Collection<Strike>?, location: Location?): AlertResult? {
         lastStrikes = strikes
-        return if (isAlertEnabled && location != null && strikes != null) {
+        return if (alertEnabled && location != null && strikes != null) {
             alertDataHandler.checkStrikes(strikes, location, alertParameters)
         } else {
             null
