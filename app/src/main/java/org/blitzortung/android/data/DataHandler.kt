@@ -347,7 +347,7 @@ class DataHandler @JvmOverloads constructor(
             Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquire wakelock " + wakeLock)
 
             val taskParameters = taskParametersArray[0]
-            val updatedParameters = taskParameters.parameters.copy(intervalDuration = 10)
+            val updatedParameters = taskParameters.parameters.copy(intervalDuration = 10, intervalOffset = 0)
             val updatedParams = arrayOf(taskParameters.copy(parameters = updatedParameters, flags = Flags(storeResult = false)))
 
             return super.doInBackground(*updatedParams)
