@@ -114,29 +114,41 @@ class AppService protected constructor(private val handler: Handler, private val
         Log.i(Main.LOG_TAG, "AppService.onStartCommand() startId: $startId $intent")
 
         if (intent != null && RETRIEVE_DATA_ACTION == intent.action) {
-            acquireWakeLock()
+            if (acquireWakeLock()) {
+                Log.v(Main.LOG_TAG, "AppService.onStartCommand() ${LogUtil.timestamp} with wake lock " + wakeLock)
 
-            Log.v(Main.LOG_TAG, "AppService.onStartCommand() ${LogUtil.timestamp} with wake lock " + wakeLock)
-
-            disableHandler()
-            handler.post(this)
+                disableHandler()
+                handler.post(this)
+            } else {
+                Log.v(Main.LOG_TAG, "AppService.onStartCommand() ${LogUtil.timestamp} skip with held wake lock " + wakeLock)
+            }
         }
 
         return Service.START_STICKY
     }
 
-    private fun acquireWakeLock() {
-        Log.v(Main.LOG_TAG, "AppService.acquireWakeLock() before: $wakeLock")
-        wakeLock.acquire()
+    private fun acquireWakeLock(): Boolean {
+        synchronized(wakeLock) {
+            if (!wakeLock.isHeld) {
+                Log.v(Main.LOG_TAG, "AppService.acquireWakeLock() before: $wakeLock")
+                wakeLock.acquire()
+                return true
+            } else {
+                Log.v(Main.LOG_TAG, "AppService.acquireWakeLock() skip")
+                return false
+            }
+        }
     }
 
     fun releaseWakeLock() {
-        if (wakeLock.isHeld) {
-            try {
-                wakeLock.release()
-                Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() after $wakeLock")
-            } catch (e: Exception) {
-                Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() failed", e)
+        synchronized(wakeLock) {
+            if (wakeLock.isHeld) {
+                try {
+                    wakeLock.release()
+                    Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() after $wakeLock")
+                } catch (e: Exception) {
+                    Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() failed", e)
+                }
             }
         }
     }

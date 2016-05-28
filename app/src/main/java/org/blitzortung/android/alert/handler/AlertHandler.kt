@@ -190,6 +190,7 @@ class AlertHandler(
     }
 
     fun checkStrikes(strikes: Collection<Strike>?) {
+        Log.v(Main.LOG_TAG, "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${currentLocation != null}")
         val alertResult = checkStrikes(strikes, currentLocation)
         processResult(alertResult)
     }
@@ -223,7 +224,7 @@ class AlertHandler(
         if (alertResult != null) {
             handleAlert(alertResult)
         } else {
-            Log.v(Main.LOG_TAG, "AlertHandler.processResult() no result")
+            Log.v(Main.LOG_TAG, "AlertHandler.processResult() no result ")
             broadcastResult(null)
         }
     }
