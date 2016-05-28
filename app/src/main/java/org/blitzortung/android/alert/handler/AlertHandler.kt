@@ -172,7 +172,6 @@ class AlertHandler(
             PreferenceKey.ALERT_SOUND_SIGNAL -> {
                 val signalUri = sharedPreferences.get(key, "")
                 alertSignal = alertSignal.copy(soundSignal = if (!signalUri.isEmpty()) Uri.parse(signalUri) else null)
-                Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() soundSignal = ${alertSignal.soundSignal}")
             }
         }
     }
