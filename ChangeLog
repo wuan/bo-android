@@ -2,6 +2,26 @@
 
 ## English
 
+### Version 1.5.10:
+ - fixed background query time offset
+ - avoid invalidation of location
+ - improved logging
+
+### Version 1.5.9:
+ - fixed non persistent notifications
+ - added message at network errors
+
+### Version 1.5.8:
+ - smaller fixes
+
+### Version 1.5.7:
+ - added compression to data transmission to save bandwith
+ - fixed initialization of data provider
+
+### Version 1.5.6:
+ - fixed security exception with deactivated GPS
+ - fixed some Blitzortung.org data retrieval exceptions
+
 ### Version 1.5.5:
  - cache location during device rotation
  - fixed period times outside range
@@ -146,6 +166,26 @@
  * notification and vibration alarm with preference integration
 
 ## German
+
+### Version 1.5.10:
+ - Zeitoffset bei der Hintergrundabfrage behoben
+ - keine Invalidierung von Ortsinformationen
+ - Verbesserung des Loggings
+
+### Version 1.5.9:
+ - Fehler verschwindender Warnmeldungen behoben
+ - Hinweismeldungen bei Netzwerkfehlern
+
+### Version 1.5.8:
+ - kleinere Fehlerbehebungen
+
+### Version 1.5.7:
+ - komprimierte Übertragung der Daten
+ - Initialisierung der Datenverwaltung verbessert
+
+### Version 1.5.6:
+ - SecurityException bei deaktiviertem GPS behoben
+ - Fehler beim Blitzortung.org Datenabruf behoben
 
 ### Version 1.5.5:
  - Zwischenspeichern des aktuellen Ortes
