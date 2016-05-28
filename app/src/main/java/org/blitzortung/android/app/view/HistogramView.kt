@@ -147,7 +147,7 @@ class HistogramView @JvmOverloads constructor(
     }
 
     private fun createHistogram(result: ResultEvent): Boolean {
-        result.parameters?.let { parameters ->
+        result.parameters.let { parameters ->
             if (result.totalStrikes == null) {
                 return false
             }

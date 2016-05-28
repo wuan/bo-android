@@ -21,16 +21,19 @@ package org.blitzortung.android.dialogs
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import org.blitzortung.android.app.R
+import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.dialogs.log.LogProvider
 
 class LogDialog(
         context: Context,
+        private val versionComponent: VersionComponent,
         private val logProvider: LogProvider = LogProvider()
 ) : android.app.AlertDialog(context) {
 
@@ -45,8 +48,11 @@ class LogDialog(
 
         setTitle(context.resources.getText(R.string.app_log))
 
+        val versionText = getVersionString()
+        val deviceText = getDeviceString()
         val logLines = logProvider.getLogLines()
-        val logText = logLines.joinToString("\n")
+
+        val logText = versionText + "\n\n" + deviceText + "\n\n" + logLines.joinToString("\n")
 
         with(findViewById(R.id.log_text) as TextView) {
             setHorizontallyScrolling(true)
@@ -56,6 +62,21 @@ class LogDialog(
         with(findViewById(R.id.log_send_email) as Button) {
             setOnClickListener { view -> composeEmail(logText) }
         }
+    }
+
+    private fun getDeviceString(): String {
+        val device = Build.DEVICE           // Device
+        val model = Build.MODEL            // Model
+        val product = Build.PRODUCT          // Product
+        val version = System.getProperty("os.version"); // OS version
+        val sdkInt = Build.VERSION.SDK_INT      // API Level
+
+        val deviceText = "Device: $device, model: $model, Product: $product, Version: $version, SDK: $sdkInt"
+        return deviceText
+    }
+
+    private fun getVersionString(): String {
+        return versionComponent.run { "Version $versionName ($versionCode)" }
     }
 
     fun composeEmail(logText: String) {

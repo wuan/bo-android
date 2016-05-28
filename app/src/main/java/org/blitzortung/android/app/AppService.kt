@@ -38,6 +38,7 @@ import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.result.StatusEvent
 import org.blitzortung.android.location.LocationHandler
+import org.blitzortung.android.util.LogUtil
 import org.blitzortung.android.util.Period
 import java.util.*
 
@@ -96,7 +97,7 @@ class AppService protected constructor(private val handler: Handler, private val
     }
 
     override fun onCreate() {
-        Log.i(Main.LOG_TAG, "AppService.onCreate()")
+        Log.i(Main.LOG_TAG, "AppService.onCreate() ${LogUtil.timestamp}")
         super.onCreate()
 
         preferences.registerOnSharedPreferenceChangeListener(this)
@@ -115,7 +116,7 @@ class AppService protected constructor(private val handler: Handler, private val
         if (intent != null && RETRIEVE_DATA_ACTION == intent.action) {
             acquireWakeLock()
 
-            Log.v(Main.LOG_TAG, "AppService.onStartCommand() with wake lock " + wakeLock)
+            Log.v(Main.LOG_TAG, "AppService.onStartCommand() ${LogUtil.timestamp} with wake lock " + wakeLock)
 
             disableHandler()
             handler.post(this)
@@ -183,14 +184,14 @@ class AppService protected constructor(private val handler: Handler, private val
     }
 
     fun restart() {
-        Log.v(Main.LOG_TAG, "AppService.restart()")
+        Log.v(Main.LOG_TAG, "AppService.restart() ${LogUtil.timestamp}")
         configureServiceMode()
         updatePeriod.restart()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.v(Main.LOG_TAG, "AppService.onDestroy()")
+        Log.v(Main.LOG_TAG, "AppService.onDestroy() ${LogUtil.timestamp}")
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {

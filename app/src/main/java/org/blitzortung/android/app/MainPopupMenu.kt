@@ -25,7 +25,7 @@ class MainPopupMenu(private val context: Context, anchor: View) : PopupMenu(cont
 
                 R.id.menu_alarms -> AlertDialog(context, AppService.instance, AlertDialogColorHandler(BOApplication.sharedPreferences))
 
-                R.id.menu_log -> LogDialog(context)
+                R.id.menu_log -> LogDialog(context, versionComponent)
 
                 else -> null
             }

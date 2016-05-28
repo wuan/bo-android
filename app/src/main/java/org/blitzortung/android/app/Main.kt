@@ -67,6 +67,7 @@ import org.blitzortung.android.map.overlay.ParticipantsOverlay
 import org.blitzortung.android.map.overlay.StrikesOverlay
 import org.blitzortung.android.map.overlay.color.ParticipantColorHandler
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
+import org.blitzortung.android.util.LogUtil
 import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
 import org.jetbrains.anko.intentFor
@@ -75,7 +76,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private val androidIdsForExtendedFunctionality = setOf("f0f71d2b06703e28")
 
     private lateinit var statusComponent: StatusComponent
-    private lateinit var versionComponent: VersionComponent
+    internal lateinit var versionComponent: VersionComponent
 
     private lateinit var strikesOverlay: StrikesOverlay
     private lateinit var participantsOverlay: ParticipantsOverlay
@@ -399,7 +400,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onRestart() {
         super.onRestart()
 
-        Log.d(Main.LOG_TAG, "Main.onRestart() service: " + appService)
+        Log.d(Main.LOG_TAG, "Main.onRestart() ${LogUtil.timestamp} service: " + appService)
     }
 
     override fun onResume() {
@@ -407,7 +408,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         enableDataUpdates()
 
-        Log.d(Main.LOG_TAG, "Main.onResume() service: " + appService)
+        Log.d(Main.LOG_TAG, "Main.onResume() ${LogUtil.timestamp} service: " + appService)
     }
 
     override fun onPause() {
@@ -415,13 +416,13 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         disableDataUpdates()
 
-        Log.v(Main.LOG_TAG, "Main.onPause()")
+        Log.v(Main.LOG_TAG, "Main.onPause() ${LogUtil.timestamp}")
     }
 
     override fun onStop() {
         super.onStop()
 
-        Log.v(Main.LOG_TAG, "Main.onStop()")
+        Log.v(Main.LOG_TAG, "Main.onStop() ${LogUtil.timestamp}")
     }
 
     private fun disableDataUpdates() {
@@ -450,7 +451,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.i(LOG_TAG, "Main: onDestroy() unbind service")
+        Log.i(LOG_TAG, "Main: onDestroy() ${LogUtil.timestamp} unbind service")
 
         unbindService(serviceConnection)
     }
@@ -538,6 +539,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+        @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
             PreferenceKey.MAP_TYPE -> {
                 val mapTypeString = sharedPreferences.get(key, "SATELLITE")
