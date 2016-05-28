@@ -49,6 +49,7 @@ open class LocationHandler(
         }
 
     private var provider: LocationProvider? = null
+
     private val consumerContainer = object : ConsumerContainer<LocationEvent>() {
         override fun addedFirstConsumer() {
             provider?.run {
@@ -83,6 +84,7 @@ open class LocationHandler(
     }
 
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+        @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
             PreferenceKey.LOCATION_MODE -> {
                 val providerFactory = { type: String ->
@@ -92,7 +94,6 @@ open class LocationHandler(
                 var newProvider = providerFactory(sharedPreferences.get(key, LocationManager.PASSIVE_PROVIDER))
 
                 if (provider?.type != newProvider.type || !(provider?.isRunning ?: false)) {
-                    consumerContainer.storeAndBroadcast(LocationEvent())
                     enableNewProvider(newProvider)
                 }
             }
@@ -124,12 +125,9 @@ open class LocationHandler(
     }
 
     private fun sendLocationUpdateToListeners(location: Location?) {
-        Log.v(Main.LOG_TAG, "LocationHandler.sendLocationUpdateToListeners($location)")
-
         if (location != null) {
+            Log.v(Main.LOG_TAG, "LocationHandler.sendLocationUpdateToListeners($location)")
             consumerContainer.storeAndBroadcast(LocationEvent(location))
-        } else {
-            consumerContainer.broadcast(LocationEvent())
         }
     }
 
