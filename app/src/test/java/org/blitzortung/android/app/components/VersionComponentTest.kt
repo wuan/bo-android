@@ -1,13 +1,6 @@
 package org.blitzortung.android.app.components
 
 import android.content.Context
-import org.assertj.core.api.KotlinAssertions.assertThat
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
-import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
@@ -61,7 +54,7 @@ class VersionComponentTest {
     }
 
     companion object {
-        val CURRENT_VERSION_CODE = 182
-        val CURRENT_VERSION_NAME = "1.5.11"
+        val CURRENT_VERSION_CODE = 183
+        val CURRENT_VERSION_NAME = "1.5.12"
     }
 }
