@@ -76,7 +76,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private val androidIdsForExtendedFunctionality = setOf("f0f71d2b06703e28")
 
     private lateinit var statusComponent: StatusComponent
-    internal lateinit var versionComponent: VersionComponent
+    private lateinit var versionComponent: VersionComponent
 
     private lateinit var strikesOverlay: StrikesOverlay
     private lateinit var participantsOverlay: ParticipantsOverlay

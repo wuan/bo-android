@@ -36,13 +36,16 @@ open class ConsumerContainer<P> {
             throw IllegalArgumentException("consumer may not be null")
         }
 
-        if (!consumers.contains(consumer)) {
-            val isFirst = consumers.isEmpty()
-            consumers.add(consumer)
-            if (isFirst) {
-                addedFirstConsumer()
+        synchronized(consumers) {
+            if (!consumers.contains(consumer)) {
+                val isFirst = consumers.isEmpty()
+                consumers.add(consumer)
+                if (isFirst) {
+                    addedFirstConsumer()
+                }
             }
         }
+
         sendCurrentPayloadTo(consumer)
     }
 
@@ -53,10 +56,12 @@ open class ConsumerContainer<P> {
     }
 
     fun removeConsumer(consumer: (P) -> Unit) {
-        if (consumers.contains(consumer)) {
-            consumers.remove(consumer)
-            if (consumers.isEmpty()) {
-                removedLastConsumer()
+        synchronized(consumers) {
+            if (consumers.contains(consumer)) {
+                consumers.remove(consumer)
+                if (consumers.isEmpty()) {
+                    removedLastConsumer()
+                }
             }
         }
     }

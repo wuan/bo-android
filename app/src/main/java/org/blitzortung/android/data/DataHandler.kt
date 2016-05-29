@@ -338,7 +338,7 @@ class DataHandler @JvmOverloads constructor(
                 }
 
             } else {
-                Log.e(Main.LOG_TAG, "FetchBackgroundDataTask release wakelock not held ")
+                Log.e(Main.LOG_TAG, "FetchBackgroundDataTask release wakelock not held")
             }
         }
 

@@ -66,13 +66,13 @@ class AlertHandler(
         override fun addedFirstConsumer() {
             Log.d(Main.LOG_TAG, "AlertHandler: added first alert consumer")
 
-            refresh()
+            refresh(enable = true)
         }
 
         override fun removedLastConsumer() {
             Log.d(Main.LOG_TAG, "AlertHandler: removed last alert consumer")
 
-            refresh()
+            refresh(enable = false)
         }
     }
 
@@ -118,6 +118,7 @@ class AlertHandler(
     }
 
     init {
+        Log.d(Main.LOG_TAG, "AlertHandler() create $this")
         val rangeSteps = arrayOf(10f, 25f, 50f, 100f, 250f, 500f)
         val alarmInterval = 10 * 60 * 1000L
         val sectorLabels = context.resources.getStringArray(R.array.direction_names)
@@ -176,15 +177,19 @@ class AlertHandler(
         }
     }
 
-    private fun refresh() {
-        if (alertEnabled) {
+    private fun refresh(enable: Boolean = true) {
+        if (alertEnabled && enable) {
+            Log.v(Main.LOG_TAG, "AlertHandler.refresh() enable updates")
             locationHandler.requestUpdates(locationEventConsumer)
             dataHandler.requestInternalUpdates(dataEventConsumer)
         } else {
+            Log.v(Main.LOG_TAG, "AlertHandler.refresh() enable updates")
             locationHandler.removeUpdates(locationEventConsumer)
             dataHandler.removeInternalUpdates(dataEventConsumer)
 
             currentLocation = null
+            lastStrikes = null
+
             broadcastResult(null)
         }
     }
@@ -205,7 +210,7 @@ class AlertHandler(
     }
 
     fun unsetAlertListener() {
-        refresh()
+        refresh(enable = false)
     }
 
     val maxDistance: Float

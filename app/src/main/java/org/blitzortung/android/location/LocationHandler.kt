@@ -55,7 +55,6 @@ open class LocationHandler(
             provider?.run {
                 if (!isRunning) {
                     start()
-                    Log.d(Main.LOG_TAG, "LocationHandler: enable provider")
                 }
             }
         }
@@ -63,7 +62,6 @@ open class LocationHandler(
         override fun removedLastConsumer() {
             provider?.run {
                 if (isRunning) {
-                    Log.d(Main.LOG_TAG, "LocationHandler: disable provider")
                     shutdown()
                 }
             }
@@ -91,7 +89,7 @@ open class LocationHandler(
                     createLocationProvider(context, backgroundMode, { location -> sendLocationUpdate(location) }, type)
                 }
 
-                var newProvider = providerFactory(sharedPreferences.get(key, LocationManager.PASSIVE_PROVIDER))
+                val newProvider = providerFactory(sharedPreferences.get(key, LocationManager.PASSIVE_PROVIDER))
 
                 if (provider?.type != newProvider.type || !(provider?.isRunning ?: false)) {
                     enableNewProvider(newProvider)
@@ -121,6 +119,9 @@ open class LocationHandler(
     }
 
     private fun sendLocationUpdate(location: Location?) {
+        if (!(location?.isValid ?: true)) {
+            Log.w(Main.LOG_TAG, "LocationHandler.sendLocationUpdate() invalid location $location")
+        }
         sendLocationUpdateToListeners(if (location != null && location.isValid) location else null)
     }
 
@@ -166,6 +167,8 @@ open class LocationHandler(
         provider?.run {
             if (isRunning) {
                 shutdown()
+            } else {
+                Log.v(Main.LOG_TAG, "LocationHandler.shutdown() provider $type already stopped")
             }
         }
     }
@@ -174,6 +177,8 @@ open class LocationHandler(
         provider?.run {
             if (!isRunning) {
                 start()
+            } else {
+                Log.v(Main.LOG_TAG, "LocationHandler.start() provider $type already running")
             }
         }
     }
