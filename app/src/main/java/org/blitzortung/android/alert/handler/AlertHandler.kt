@@ -65,14 +65,10 @@ class AlertHandler(
     val alertConsumerContainer: ConsumerContainer<AlertEvent> = object : ConsumerContainer<AlertEvent>() {
         override fun addedFirstConsumer() {
             Log.d(Main.LOG_TAG, "AlertHandler: added first alert consumer")
-
-            refresh(enable = true)
         }
 
         override fun removedLastConsumer() {
             Log.d(Main.LOG_TAG, "AlertHandler: removed last alert consumer")
-
-            refresh(enable = false)
         }
     }
 
@@ -141,6 +137,7 @@ class AlertHandler(
             PreferenceKey.ALERT_ENABLED -> {
                 alertEnabled = sharedPreferences.get(key, false)
                 Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() alertEnabled = $alertEnabled")
+                updateAlertState()
             }
 
             PreferenceKey.MEASUREMENT_UNIT -> {
@@ -177,13 +174,13 @@ class AlertHandler(
         }
     }
 
-    private fun refresh(enable: Boolean = true) {
-        if (alertEnabled && enable) {
+    private fun updateAlertState() {
+        if (alertEnabled) {
             Log.v(Main.LOG_TAG, "AlertHandler.refresh() enable updates")
             locationHandler.requestUpdates(locationEventConsumer)
             dataHandler.requestInternalUpdates(dataEventConsumer)
         } else {
-            Log.v(Main.LOG_TAG, "AlertHandler.refresh() enable updates")
+            Log.v(Main.LOG_TAG, "AlertHandler.refresh() disable updates")
             locationHandler.removeUpdates(locationEventConsumer)
             dataHandler.removeInternalUpdates(dataEventConsumer)
 
@@ -207,10 +204,6 @@ class AlertHandler(
         } else {
             null
         }
-    }
-
-    fun unsetAlertListener() {
-        refresh(enable = false)
     }
 
     val maxDistance: Float
