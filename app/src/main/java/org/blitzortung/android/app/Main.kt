@@ -73,7 +73,7 @@ import org.blitzortung.android.util.isAtLeast
 import org.jetbrains.anko.intentFor
 
 class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
-    private val androidIdsForExtendedFunctionality = setOf("f0f71d2b06703e28")
+    private val androidIdsForExtendedFunctionality = emptySet<String>() // setOf("f0f71d2b06703e28")
 
     private lateinit var statusComponent: StatusComponent
     private lateinit var versionComponent: VersionComponent
