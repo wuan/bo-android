@@ -14,7 +14,6 @@ We are still looking forward to volunteers preparing a translation for the follo
 
   * French
   * Dutch
-  * Italian
   * Croatian
   
 Translations to other languages are welcome as well. Please contact us via `blitzortung at tryb.de`
