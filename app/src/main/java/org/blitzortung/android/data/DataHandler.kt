@@ -38,7 +38,7 @@ import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.RequestStartedEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.ConsumerContainer
-import org.jetbrains.anko.async
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -316,7 +316,7 @@ class DataHandler @JvmOverloads constructor(
             }
 
             if (warningToastStringResource != null) {
-                async() {
+                doAsync() {
                     uiThread {
                         Toast.makeText(context, warningToastStringResource, Toast.LENGTH_LONG).show()
                     }

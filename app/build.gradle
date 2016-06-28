@@ -50,15 +50,15 @@ cobertura {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:appcompat-v7:24.0.0'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'org.jetbrains.anko:anko-sdk23:0.8.3' // sdk19, sdk21, sdk23 are also available
-    compile 'org.jetbrains.anko:anko-appcompat-v7:0.8.3' // For appcompat-v7 bindings
+    compile 'org.jetbrains.anko:anko-sdk23:0.9' // sdk19, sdk21, sdk23 are also available
+    compile 'org.jetbrains.anko:anko-appcompat-v7:0.9' // For appcompat-v7 bindings
     testCompile 'junit:junit:4.12'
     testCompile 'net.wuerl.kotlin:assertj-core-kotlin:0.1.1'
-    testCompile 'com.nhaarman:mockito-kotlin:0.3.1'
+    testCompile 'com.nhaarman:mockito-kotlin:0.5.0'
     testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    testCompile 'org.robolectric:robolectric:3.0'
+    testCompile 'org.robolectric:robolectric:3.1'
 }
 
