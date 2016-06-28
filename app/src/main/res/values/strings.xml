@@ -19,8 +19,10 @@
     <string name="info_text">Project home:\n\thttps://github.com/wuan/bo-android\n\nVisualized lightning data
         is\nprovided by the\n<b>Blitzortung.org</b>\nrealtime lighning community project. Please refer
         to\n\thttp://blitzortung.org/\nfor further information or how\nto participate.\n\n
-        Czech translation by: Jakub Mareček (jakubmarecek715@gmail.com)\n
-		Polish translation by: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+        Translations:\\
+        Czech by Jakub Mareček (jakubmarecek715@gmail.com)\n
+        Polish by Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+        Italian by Michele Locati (michele@locati.it)\n
     </string>
     <string name="copyright" translatable="false">© 2011–2016, Andreas Würl</string>
     <string name="project_email" translatable="false">blitzortung@tryb.de</string>

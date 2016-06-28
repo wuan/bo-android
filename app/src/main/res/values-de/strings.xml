@@ -19,8 +19,10 @@
     <string name="info_text">Projektseite:\n\thttps://github.com/wuan/bo-android\n\nDiese Software visualisiert
         Blitzdaten des Gemeinschaftsprojekts <b>blitzortung.org</b>.\n\nWeitere Informationen über das Projekt, oder wie Sie
         daran teilnehmen können, finden Sie unter:\n\thttp://blitzortung.org\n\n
-        Czech translation by: Jakub Mareček (jakubmarecek715@gmail.com)\n
-		Polish translation by: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+        Übersetzungen:\n
+        Tschechisch: Jakub Mareček (jakubmarecek715@gmail.com)\n
+        Polnisch: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+        Italienisch: Michele Locati (michele@locati.it)\n
     </string>
     <string name="legend">Legende</string>
     <string name="total_time">Gesamtzeit</string>
