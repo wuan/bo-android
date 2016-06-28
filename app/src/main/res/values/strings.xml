@@ -339,7 +339,7 @@
     <string name="service_url">Non-default service URL</string>
     <string name="service_url_summary">Overrides the default service URL if set</string>
     <string name="set_manual_location">set manual location</string>
-    <string name="error_indicator">error indicator</string>
+    <string name="error_indicator">Error indicator</string>
     <string name="app_log">Application log</string>
     <string name="share_log">Send email …</string>
     <string name="share_unavailable">E-mail sharing is not available.</string>
