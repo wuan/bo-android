@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = "1.0.2-1"
+    ext.kotlin_version = "1.0.3"
     repositories {
         mavenCentral()
     }
@@ -21,8 +21,8 @@ android {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 8
         targetSdkVersion 23
-        versionCode 185
-        versionName "1.5.14"
+        versionCode 186
+        versionName "1.5.15"
         multiDexEnabled true
     }
     buildTypes {

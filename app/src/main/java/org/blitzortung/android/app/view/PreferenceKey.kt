@@ -21,7 +21,7 @@ package org.blitzortung.android.app.view
 import android.content.SharedPreferences
 import java.util.*
 
-enum class PreferenceKey internal constructor(val key: String) {
+enum class PreferenceKey private constructor(val key: String) {
     USERNAME("username"),
     PASSWORD("password"),
     SERVICE_URL("service_url"),

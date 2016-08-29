@@ -30,10 +30,7 @@ import org.blitzortung.android.data.provider.DataProvider
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.result.ResultEvent
 import java.io.BufferedReader
-import java.net.Authenticator
-import java.net.PasswordAuthentication
-import java.net.SocketException
-import java.net.URL
+import java.net.*
 import java.util.*
 import java.util.zip.GZIPInputStream
 
@@ -108,6 +105,10 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
         val strikeList = try {
             strikeSequence.toList()
         } catch (e: SocketException) {
+            Log.w(Main.LOG_TAG, e);
+            emptyList<T>()
+        } catch (e: SocketTimeoutException) {
+            Log.w(Main.LOG_TAG, e);
             emptyList<T>()
         }
 

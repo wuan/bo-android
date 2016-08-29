@@ -40,7 +40,7 @@ import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.ConsumerContainer
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
-import java.net.ConnectException
+import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
@@ -309,7 +309,7 @@ class DataHandler @JvmOverloads constructor(
                 is SocketTimeoutException ->
                     R.string.timeout_warning
 
-                is ConnectException ->
+                is SocketException ->
                     R.string.connection_warning
 
                 else -> null
