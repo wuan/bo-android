@@ -5,6 +5,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import org.blitzortung.android.app.Main
 import org.jetbrains.anko.locationManager
 
@@ -33,7 +34,13 @@ abstract class ManagerLocationProvider(
         super.start()
 
         Log.v(Main.LOG_TAG, "ManagerLocationProvider.start() background: $backgroundMode, type: $type, minTime: $minTime, minDistance: $minDistance")
-        locationManager.requestLocationUpdates(type, minTime, minDistance, this)
+        if (locationManager.getAllProviders().contains(type)) {
+            locationManager.requestLocationUpdates(type, minTime, minDistance, this)
+        } else {
+            val message = "location provider ${type} is not available"
+            Toast.makeText(context, "Warning:\n$message", Toast.LENGTH_LONG).show()
+            Log.w(Main.LOG_TAG, message)
+        }
     }
 
     override fun onLocationChanged(location: Location?) {

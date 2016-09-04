@@ -26,6 +26,7 @@ abstract class LocationProvider(protected val locationUpdate: (Location?) -> Uni
 
     open fun start() {
         isRunning = true
+
         Log.v(Main.LOG_TAG, "LocationProvider.start() type: $type" )
     }
 
