@@ -24,7 +24,7 @@
         Polish by Jakub Świątkiewicz (kuba.dex@gmail.com)\n
         Italian by Michele Locati (michele@locati.it)\n
     </string>
-    <string name="copyright" translatable="false">© 2011–2016, Andreas Würl</string>
+    <string name="copyright" translatable="false">© 2011–2017, Andreas Würl</string>
     <string name="project_email" translatable="false">blitzortung@tryb.de</string>
     <string name="legend">Legend</string>
     <string name="total_time">total time</string>

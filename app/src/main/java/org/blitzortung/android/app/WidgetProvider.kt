@@ -30,13 +30,11 @@ class WidgetProvider : AppWidgetProvider() {
         val N = appWidgetIds.size
         for (i in 0..N - 1) {
             val appWidgetId = appWidgetIds[i]
-            updateAppWidget(context, appWidgetManager, appWidgetId)
+            updateAppWidget(context)
         }
     }
 
-    private fun updateAppWidget(context: Context,
-            appWidgetManager: AppWidgetManager,
-            appWidgetId: Int) {
+    private fun updateAppWidget(context: Context) {
 
         val alertView = AlertView(context)
         alertView.measure(150, 150)

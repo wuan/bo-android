@@ -256,7 +256,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 isEnabled = true
                 visibility = View.VISIBLE
 
-                setOnClickListener { v ->
+                setOnClickListener {
                     BOApplication.dataHandler.toggleExtendedMode()
                     reloadData()
                 }
@@ -270,14 +270,14 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         with(legend_view) {
             strikesOverlay = this@Main.strikesOverlay
             setAlpha(150)
-            setOnClickListener { v -> openQuickSettingsDialog() }
+            setOnClickListener { openQuickSettingsDialog() }
         }
 
         with(alert_view) {
             setColorHandler(strikesOverlay.getColorHandler(), strikesOverlay.parameters.intervalDuration)
             setBackgroundColor(Color.TRANSPARENT)
             setAlpha(200)
-            setOnClickListener { view ->
+            setOnClickListener {
                 if (alertHandler.alertEnabled) {
                     val currentLocation = alertHandler.currentLocation
                     if (currentLocation != null) {
@@ -292,7 +292,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         with(histogram_view) {
             setStrikesOverlay(strikesOverlay)
-            setOnClickListener { view ->
+            setOnClickListener {
                 val currentResult = currentResult
                 if (currentResult != null) {
                     val rasterParameters = currentResult.rasterParameters
