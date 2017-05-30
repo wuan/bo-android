@@ -202,7 +202,7 @@ class JsonRpcDataProvider(
         @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
             PreferenceKey.SERVICE_URL -> {
-                val serviceUrl = toCheckedUrl(sharedPreferences.get(PreferenceKey.SERVICE_URL, ""))
+                val serviceUrl = toCheckedUrl(sharedPreferences.get(PreferenceKey.SERVICE_URL, DEFAULT_SERVICE_URL))
                 this.serviceUrl = if (serviceUrl.isNotBlank()) serviceUrl.trim() else DEFAULT_SERVICE_URL
             }
         }
