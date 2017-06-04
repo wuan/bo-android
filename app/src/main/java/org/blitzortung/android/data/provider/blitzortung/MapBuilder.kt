@@ -18,7 +18,13 @@
 
 package org.blitzortung.android.data.provider.blitzortung
 
+import android.os.Build
 import android.text.Html
+import android.text.Html.FROM_HTML_MODE_COMPACT
+import android.util.Log
+import org.blitzortung.android.app.Main
+import org.blitzortung.android.util.isAtLeast
+import java.lang.Exception
 import java.util.*
 
 abstract class MapBuilder<T> internal constructor(private val lineSplitter: (String) -> Array<String>) {
@@ -40,7 +46,18 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
             if (parts.size > 1) {
                 val key = parts[0]
                 if (keyValueBuilderMap.containsKey(key)) {
-                    val values = Html.fromHtml(parts[1]).toString().split(SPLIT_PATTERN).dropLastWhile { it.isEmpty() }.toTypedArray()
+                    val htmlString = parts[1]
+                    val valueString = if (isAtLeast(Build.VERSION_CODES.N)) {
+                        Html.fromHtml(htmlString, FROM_HTML_MODE_COMPACT).toString()
+                    } else {
+                        try {
+                            Html.fromHtml(htmlString).toString()
+                        } catch (throwable: Throwable) {
+                            Log.w(Main.LOG_TAG, throwable)
+                            break
+                        }
+                    }
+                    val values = valueString.split(SPLIT_PATTERN).dropLastWhile { it.isEmpty() }.toTypedArray()
                     val function: ((Array<String>) -> Unit)? = keyValueBuilderMap[key]
                     function?.invoke(values)
                 }

@@ -102,7 +102,11 @@ class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: Stri
         Log.v(Main.LOG_TAG, "StrikesOverlay.addStrikes() #" + strikes.size)
         this.strikes += strikes.map { StrikeOverlayItem(it) }
         lastFocusedIndex = -1
-        populate()
+        try {
+            populate()
+        } catch (throwable: Throwable) {
+            Log.w(Main.LOG_TAG, throwable)
+        }
     }
 
     fun expireStrikes() {
