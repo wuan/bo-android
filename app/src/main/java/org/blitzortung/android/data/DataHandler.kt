@@ -172,6 +172,10 @@ class DataHandler @JvmOverloads constructor(
                 this.dataProvider = dataProvider
 
                 updateProviderSpecifics()
+
+                if (providerTypeString == DataProviderType.HTTP.toString()) {
+                    showBlitzortungProviderWarning()
+                }
                 updateData()
             }
 
@@ -204,6 +208,14 @@ class DataHandler @JvmOverloads constructor(
             }
 
             else -> {
+            }
+        }
+    }
+
+    private fun showBlitzortungProviderWarning() {
+        doAsync() {
+            uiThread {
+                Toast.makeText(context, R.string.provider_warning, Toast.LENGTH_LONG).show()
             }
         }
     }

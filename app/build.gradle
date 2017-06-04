@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = "1.1.2-2"
+    ext.kotlin_version = "1.1.2-4"
     repositories {
         mavenCentral()
     }
@@ -15,14 +15,14 @@ apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
 
 android {
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '25.0.3'
     defaultConfig {
         compileSdkVersion "Google Inc.:Google APIs:24"
         applicationId "org.blitzortung.android.app"
         minSdkVersion 9
         targetSdkVersion 25
-        versionCode 188
-        versionName "1.5.17"
+        versionCode 189
+        versionName "1.5.18"
         multiDexEnabled true
     }
     buildTypes {

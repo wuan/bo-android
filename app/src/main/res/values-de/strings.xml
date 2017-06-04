@@ -338,9 +338,9 @@
     <string name="service_url">Service-URL</string>
     <string name="service_url_summary">Benutzerdefinierte Service-URL, falls gesetzt</string>
     <string name="set_manual_location">Benutzerdefinierter Ort</string>
-    <string name="app_log">App-Log</string>
     <string name="share_log">E-Mail senden …</string>
     <string name="share_unavailable">E-Mail kann nicht versendet werden.</string>
     <string name="timeout_warning">Netzwerk-Zeitüberschreitung.\nBitte überprüfen sie die Internetverbindung.</string>
     <string name="connection_warning">Kein Netzwerk.\nBitte überprüfen sie die Internetverbindung.</string>
+    <string name="provider_warning">Bitte nutzen sie die Blitzortung.org Datenquelle nicht bei hoher Blitzaktivität. Die Dastellung der Karte wird möglicherweise verzögert.</string>
 </resources>
