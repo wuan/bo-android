@@ -38,6 +38,11 @@ class RasterShape : Shape() {
     }
 
     override fun draw(canvas: Canvas, paint: Paint) {
+        //Only draw visible Raster-Items
+        if(canvas.quickReject(rect, Canvas.EdgeType.BW)){
+            return
+        }
+
         paint.color = color
         paint.alpha = alpha
         canvas.drawRect(rect, paint)
