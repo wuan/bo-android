@@ -25,6 +25,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.support.annotation.RequiresApi
 
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
@@ -54,13 +55,21 @@ open class NotificationHandler(private val context: Context) {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     private fun createNotification(contentIntent: PendingIntent?, notificationText: String): Notification? {
-        return Notification.Builder(context)
+        val builder = Notification.Builder(context)
                 .setSmallIcon(R.drawable.icon)
                 .setContentTitle(context.resources.getText(R.string.app_name))
                 .setContentText(notificationText)
                 .setContentIntent(contentIntent)
-                .setAutoCancel(true).build()
+                .setAutoCancel(true)
+
+        if (isAtLeast(Build.VERSION_CODES.JELLY_BEAN_MR1)) {
+            builder.setWhen(System.currentTimeMillis())
+                    .setShowWhen(true);
+        }
+
+        return builder.build()
     }
 
     private fun createLegacyNotification(contentIntent: PendingIntent?, notificationText: String): Notification {
