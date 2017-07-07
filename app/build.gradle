@@ -41,11 +41,8 @@ android {
     }
 }
 
-jacocoTestReport {
-    reports {
-        xml.enabled = true // coveralls plugin depends on xml format report
-        html.enabled = true
-    }
+jacoco {
+    toolVersion = "0.7.9"
 }
 
 def anko_version = '0.9.1'
