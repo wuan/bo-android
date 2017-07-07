@@ -6,7 +6,6 @@
     <string name="cancel">@android:string/cancel</string>
 
     <plurals name="strike">
-        <item quantity="zero">nessun fulmine</item>
         <item quantity="one">1 fulmine</item>
         <item quantity="other">%d fulmini</item>
     </plurals>
