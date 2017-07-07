@@ -1,6 +1,6 @@
 package org.blitzortung.android.data.provider.blitzortung
 
-import org.assertj.core.api.KotlinAssertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class TimestampIteratorTest {
@@ -23,6 +23,6 @@ class TimestampIteratorTest {
 
         val sequence = createTimestampSequence(intervalLength, startTime, endTime)
 
-        assertThat(sequence).containsExactly(8000L, 9000L, 10000L, 11000L, 12000L)
+        assertThat(sequence.asIterable()).containsExactly(8000L, 9000L, 10000L, 11000L, 12000L)
     }
 }

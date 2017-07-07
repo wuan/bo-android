@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = "1.1.2-4"
+    ext.kotlin_version = "1.1.3-2"
     repositories {
         mavenCentral()
     }
@@ -49,8 +49,8 @@ dependencies {
     compile "org.jetbrains.anko:anko-sdk23:$anko_version" // sdk19, sdk21, sdk23 are also available
     compile "org.jetbrains.anko:anko-appcompat-v7:$anko_version" // For appcompat-v7 bindings
     testCompile 'junit:junit:4.12'
-    testCompile 'net.wuerl.kotlin:assertj-core-kotlin:0.2.1'
-    testCompile 'com.nhaarman:mockito-kotlin:1.4.0'
+    testCompile 'org.assertj:assertj-core:3.8.0'
+    testCompile 'com.nhaarman:mockito-kotlin:1.5.0'
     testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     testCompile 'org.robolectric:robolectric:3.3.2'

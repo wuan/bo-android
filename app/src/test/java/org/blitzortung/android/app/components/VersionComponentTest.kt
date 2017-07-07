@@ -1,7 +1,7 @@
 package org.blitzortung.android.app.components
 
 import android.content.Context
-import org.assertj.core.api.KotlinAssertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
