@@ -41,6 +41,13 @@ android {
     }
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
+}
+
 def anko_version = '0.9.1'
 
 dependencies {
