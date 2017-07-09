@@ -97,7 +97,7 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
 
         val sizeBefore = strikeList.size
         strikeList.removeAll { it.timestamp > expireTime }
-        Log.v(Main.LOG_TAG, "StrikesOverlay.expireStrikes() expired ${sizeBefore - strikeList.size} from $sizeBefore")
+        Log.v(Main.LOG_TAG, "StrikesListOverlay.expireStrikes() expired ${sizeBefore - strikeList.size} from $sizeBefore")
     }
 
     fun clear() {

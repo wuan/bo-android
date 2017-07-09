@@ -33,7 +33,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.preference.PreferenceManager
-import android.provider.Settings
 import android.text.format.DateFormat
 import android.util.Log
 import android.view.KeyEvent
@@ -73,8 +72,6 @@ import org.blitzortung.android.util.isAtLeast
 import org.jetbrains.anko.intentFor
 
 class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
-    private val androidIdsForExtendedFunctionality = emptySet<String>() // setOf("f0f71d2b06703e28")
-
     private lateinit var statusComponent: StatusComponent
     private lateinit var versionComponent: VersionComponent
 
@@ -210,7 +207,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         buttonColumnHandler.addAllElements(historyController.getButtons(), ButtonGroup.DATA_UPDATING)
 
-        setupDebugModeButton()
+        setupDetailModeButton()
 
         buttonColumnHandler.updateButtonColumn()
 
@@ -250,21 +247,17 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         bindService(serviceIntent, serviceConnection, 0)
     }
 
-    private fun setupDebugModeButton() {
-        val androidId = Settings.Secure.getString(baseContext.contentResolver, Settings.Secure.ANDROID_ID)
-        Log.v(Main.LOG_TAG, "AndroidId: $androidId")
-        if ((androidId != null && androidIdsForExtendedFunctionality.contains(androidId))) {
-            with(toggleExtendedMode) {
-                isEnabled = true
-                visibility = View.VISIBLE
+    private fun setupDetailModeButton() {
+        with(toggleExtendedMode) {
+            isEnabled = true
+            visibility = View.VISIBLE
 
-                setOnClickListener {
-                    BOApplication.dataHandler.toggleExtendedMode()
-                    reloadData()
-                }
-
-                buttonColumnHandler.addElement(this, ButtonGroup.DATA_UPDATING)
+            setOnClickListener {
+                BOApplication.dataHandler.toggleExtendedMode()
+                reloadData()
             }
+
+            buttonColumnHandler.addElement(this, ButtonGroup.DATA_UPDATING)
         }
     }
 
