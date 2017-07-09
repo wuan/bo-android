@@ -48,7 +48,7 @@ data class ResultEvent(
         } else {
             sb.append("Result(")
             val currentStrikes = strikes
-            sb.append(if (currentStrikes != null) currentStrikes.size else 0).append(" strikes, ")
+            sb.append(currentStrikes?.size ?: 0).append(" strikes, ")
             sb.append(parameters)
             if (rasterParameters != null) {
                 sb.append(", ").append(rasterParameters)
