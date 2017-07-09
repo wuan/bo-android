@@ -49,7 +49,7 @@ import org.blitzortung.android.protocol.ConsumerContainer
 import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.MeasurementSystem
 import org.blitzortung.android.util.isAtLeast
-import org.jetbrains.anko.async
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
 
@@ -195,7 +195,7 @@ class AlertHandler(
 
     fun checkStrikes(strikes: Collection<Strike>?) {
         //Do the checkStrikes stuff in another thread
-        async {
+        doAsync {
             Log.v(Main.LOG_TAG, "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${currentLocation != null}")
             val alertResult = checkStrikes(strikes, currentLocation)
 

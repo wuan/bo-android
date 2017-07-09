@@ -20,23 +20,43 @@ package org.blitzortung.android.map.overlay
 
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.drawable.shapes.Shape
+import android.graphics.Point
+import com.google.android.maps.GeoPoint
+import com.google.android.maps.MapView
 
-class StrikeShape : Shape() {
+class StrikeShape(private val center: GeoPoint) : LightningShape {
 
     private var size: Float = 0.toFloat()
     private var color: Int = 0
 
-    override fun draw(canvas: Canvas, paint: Paint) {
+    override fun draw(canvas: Canvas, mapView: MapView, paint: Paint) {
+        mapView.projection.toPixels(center, centerPoint)
+
         paint.color = color
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = size / 4
-        canvas.drawLine(-size / 2, 0.0f, size / 2, 0.0f, paint)
-        canvas.drawLine(0.0f, -size / 2, 0.0f, size / 2, paint)
+
+        canvas.drawLine(
+                centerPoint.x - size / 2,
+                centerPoint.y.toFloat(),
+                centerPoint.x + size / 2,
+                centerPoint.y.toFloat(),
+                paint)
+
+        canvas.drawLine(
+                centerPoint.x.toFloat(),
+                centerPoint.y - size / 2,
+                centerPoint.x.toFloat(),
+                centerPoint.y + size / 2,
+                paint)
     }
 
     fun update(size: Float, color: Int) {
         this.size = size
         this.color = color
+    }
+
+    companion object {
+        private val centerPoint = Point()
     }
 }
