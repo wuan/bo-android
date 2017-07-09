@@ -59,8 +59,9 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
 
                 drawDataAreaRect(canvas, mapView, paint)
 
+                paint.style = Style.FILL
                 strikeList.forEach {
-                    it.draw(canvas, mapView, false)
+                    it.draw(canvas, mapView, false, paint)
                 }
             }
         }

@@ -17,9 +17,9 @@ class StrikeOverlay(strike: Strike) {
 
     var shape: LightningShape? = null
 
-    fun draw(canvas: Canvas, mapView: MapView, shadow: Boolean) {
+    fun draw(canvas: Canvas, mapView: MapView, shadow: Boolean, paint: Paint) {
         shape?.run {
-            draw(canvas, mapView, Paint())
+            draw(canvas, mapView, paint)
         }
     }
 
