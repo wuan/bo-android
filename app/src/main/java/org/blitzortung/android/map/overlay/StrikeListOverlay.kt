@@ -52,17 +52,21 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
         if (!shadow) {
             super.draw(canvas, mapView, false)
 
-            if (hasRasterParameters() && canvas != null && mapView != null) {
-                val paint = Paint()
+            if(canvas == null || mapView == null) {
+                return
+            }
+
+            val paint = Paint()
+            if (hasRasterParameters()) {
                 paint.color = colorHandler.lineColor
                 paint.style = Style.STROKE
 
                 drawDataAreaRect(canvas, mapView, paint)
+            }
 
-                paint.style = Style.FILL
-                strikeList.forEach {
-                    it.draw(canvas, mapView, false, paint)
-                }
+            paint.style = Style.FILL
+            strikeList.forEach {
+                it.draw(canvas, mapView, false, paint)
             }
         }
     }
