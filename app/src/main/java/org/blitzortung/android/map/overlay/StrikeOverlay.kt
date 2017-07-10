@@ -26,7 +26,7 @@ class StrikeOverlay(strike: Strike) {
     fun updateShape(rasterParameters: RasterParameters?, projection: Projection, color: Int, textColor: Int, zoomLevel: Int) {
         var shape: LightningShape? = shape
         if (rasterParameters != null) {
-            if (shape == null && shape !is RasterShape) {
+            if (shape !is RasterShape) {
                 shape = RasterShape(center)
             }
 
