@@ -32,6 +32,17 @@ class StrikeShape(private val center: GeoPoint) : LightningShape {
     override fun draw(canvas: Canvas, mapView: MapView, paint: Paint) {
         mapView.projection.toPixels(center, centerPoint)
 
+        //Only draw it when its visible
+        if(canvas.quickReject(
+                centerPoint.x - size / 2,
+                centerPoint.y - size / 2,
+                centerPoint.x + size / 2,
+                centerPoint.y + size /2,
+                Canvas.EdgeType.BW)) {
+
+            return
+        }
+
         paint.color = color
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = size / 4
