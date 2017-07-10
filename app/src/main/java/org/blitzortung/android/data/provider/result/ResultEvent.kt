@@ -54,6 +54,7 @@ data class ResultEvent(
                 sb.append(", ").append(rasterParameters)
             }
             sb.append(", incrementalData=$incrementalData")
+            sb.append(", referenceTime=$referenceTime")
             sb.append(")")
         }
 
