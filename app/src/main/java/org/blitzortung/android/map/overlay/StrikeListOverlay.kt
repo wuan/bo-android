@@ -118,6 +118,8 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
     }
 
     fun refresh() {
+        val current_section = -1
+
         colorHandler.updateTarget()
 
         var drawable: LightningShape? = null
@@ -130,7 +132,7 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
                         referenceTime,
                     item.timestamp, parameters.intervalDuration)
 
-            if (hasRasterParameters()) {
+            if (hasRasterParameters() || current_section != section) {
                 drawable = updateAndReturnDrawable(item, section, colorHandler)
             } else {
                 if (drawable != null) {
