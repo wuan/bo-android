@@ -101,6 +101,7 @@
                 android:selectable="true"
                 android:persistent="true"
                 android:text="%"
+                min="50"
                 />
         </PreferenceScreen>
     </PreferenceScreen>
