@@ -21,7 +21,7 @@ package org.blitzortung.android.app.view
 import android.content.SharedPreferences
 import java.util.*
 
-enum class PreferenceKey private constructor(val key: String) {
+enum class PreferenceKey(val key: String) {
     USERNAME("username"),
     PASSWORD("password"),
     SERVICE_URL("service_url"),
@@ -34,6 +34,7 @@ enum class PreferenceKey private constructor(val key: String) {
     BACKGROUND_QUERY_PERIOD("background_query_period"),
     SHOW_PARTICIPANTS("show_participants"),
     SHOW_LOCATION("location"),
+    OWN_LOCATION_SIZE("own_location_size"),
     ALERT_ENABLED("alarm_enabled"),
     ALERT_SOUND_SIGNAL("alarm_sound_signal"),
     ALERT_VIBRATION_SIGNAL("alarm_vibration_signal"),
@@ -125,6 +126,6 @@ interface OnSharedPreferenceChangeListener : SharedPreferences.OnSharedPreferenc
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString))
     }
 
-    fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey);
+    fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey)
 
 }
