@@ -35,11 +35,17 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
     private var valueText: TextView? = null
     private var slider: SeekBar? = null
     private var currentValue: Int = 0
+    private var minimumValue: Int
 
     init {
         unitSuffix = " " + attrs.getAttributeValue(ATTRIBUTE_NAMESPACE, "text")
         defaultValue = attrs.getAttributeIntValue(ATTRIBUTE_NAMESPACE, "defaultValue", 30)
-        maximumValue = attrs.getAttributeIntValue(ATTRIBUTE_NAMESPACE, "max", 80)
+        minimumValue = attrs.getAttributeIntValue(null, "min", 0)
+
+        //If there is a minimum value, we always add the minimum-value to the slider
+        //E. g. max of 400 with min 20 value. if we were at 400, we would get 400 + 20
+        //So always set the max-value of the Seekbar to maxValue - minValue
+        maximumValue = attrs.getAttributeIntValue(ATTRIBUTE_NAMESPACE, "max", 80) - minimumValue
     }
 
     override fun onCreateDialogView(): View {
@@ -50,22 +56,22 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
         val valueText = TextView(context)
         valueText.gravity = Gravity.CENTER_HORIZONTAL
         valueText.textSize = 32f
+        //Set initial text
+        valueText.text =  "$currentValue $unitSuffix"
         val params = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT)
         layout.addView(valueText, params)
         this.valueText = valueText
 
-        slider = SeekBar(context)
-        slider!!.setOnSeekBarChangeListener(this)
-        layout.addView(slider, params)
+        slider = SeekBar(context).apply {
+            setOnSeekBarChangeListener(this@SlidePreferences)
+            layout.addView(this, params)
 
-        if (shouldPersist()) {
-            currentValue = getPersistedInt(defaultValue)
+            //We need to adapt the value of the SeekBar to our Minimum-Value
+            max = maximumValue
+            progress = currentValue - minimumValue
         }
-
-        slider!!.max = maximumValue
-        slider!!.progress = currentValue
 
         return layout
     }
@@ -74,29 +80,43 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
         super.onBindDialogView(v)
 
         slider!!.max = maximumValue
-        slider!!.progress = currentValue
+        //We need to adapt the value of the SeekBar to our Minimum-Value
+        slider!!.progress = currentValue - minimumValue
     }
 
     override fun onSetInitialValue(should_restore: Boolean, defaultValue: Any?) {
         super.onSetInitialValue(should_restore, defaultValue)
 
-        if (should_restore) {
-            currentValue = if (shouldPersist()) getPersistedInt(this.defaultValue) else this.defaultValue
-        } else if (defaultValue != null) {
-            currentValue = defaultValue as Int
+        if (should_restore && shouldPersist()) {
+            currentValue = getPersistedInt(this.defaultValue)
+        } else if (defaultValue is Int) {
+            currentValue = defaultValue
         }
     }
 
-    override fun onProgressChanged(seekBar: SeekBar, currentValue: Int, fromTouch: Boolean) {
-        val t = currentValue.toString()
+    override fun onProgressChanged(seekBar: SeekBar, seekBarValue: Int, fromTouch: Boolean) {
+        //Ignore events that wasn't done by the user
+        if(!fromTouch)
+            return
 
-        valueText!!.text = t + unitSuffix
+        //We need to adapt the value of the SeekBar to our Minimum-Value
+        currentValue = seekBarValue + minimumValue
 
-        if (shouldPersist()) {
-            persistInt(currentValue)
-        }
+        valueText!!.text = "$currentValue $unitSuffix"
 
         callChangeListener(currentValue)
+    }
+
+    override fun onDialogClosed(positiveResult: Boolean) {
+        if(positiveResult) {
+            if (shouldPersist())
+                persistInt(currentValue)
+        } else {
+            //Use pressed Cancel, so reset currentValue
+            onSetInitialValue(true, defaultValue)
+        }
+
+        super.onDialogClosed(positiveResult)
     }
 
     override fun onStartTrackingTouch(seekBar: SeekBar) {
