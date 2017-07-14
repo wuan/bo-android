@@ -34,8 +34,18 @@ abstract class ManagerLocationProvider(
         super.start()
 
         Log.v(Main.LOG_TAG, "ManagerLocationProvider.start() background: $backgroundMode, type: $type, minTime: $minTime, minDistance: $minDistance")
-        if (locationManager.getAllProviders().contains(type)) {
+        if (locationManager.allProviders.contains(type)) {
             locationManager.requestLocationUpdates(type, minTime, minDistance, this)
+
+            //Now try to get the last known location from the current provider
+            val lastKnownLocation = locationManager.getLastKnownLocation(type)
+            if (lastKnownLocation != null) {
+                val secondsElapsedSinceLastFix = (System.currentTimeMillis() - lastKnownLocation.time) / 1000
+
+                if (secondsElapsedSinceLastFix < 30 && lastKnownLocation.isValid) {
+                    sendLocationUpdate(lastKnownLocation)
+                }
+            }
         } else {
             val message = "location provider ${type} is not available"
             Toast.makeText(context, "Warning:\n$message", Toast.LENGTH_LONG).show()
