@@ -44,6 +44,7 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
 
         configureDataSourcePreferences(prefs)
         configureLocationProviderPreferences(prefs)
+        configureOwnLocationSizePreference(prefs)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
@@ -66,12 +67,20 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
                 val provider = configureLocationProviderPreferences(sharedPreferences)
 
                 if(provider != LocationHandler.MANUAL_PROVIDER && !this.locationManager.isProviderEnabled(provider)) {
-                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 }
+            }
+
+            PreferenceKey.SHOW_LOCATION -> {
+                configureOwnLocationSizePreference(sharedPreferences)
             }
 
             else -> {}
         }
+    }
+
+    private fun configureOwnLocationSizePreference(sharedPreferences: SharedPreferences) {
+        findPreference("own_location_size").isEnabled = sharedPreferences.get(PreferenceKey.SHOW_LOCATION, false)
     }
 
     private fun configureDataSourcePreferences(sharedPreferences: SharedPreferences): DataProviderType {

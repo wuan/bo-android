@@ -80,13 +80,30 @@
             android:selectable="true"
             android:summary="@string/show_participants_summary"
             android:title="@string/show_participants" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:enabled="true"
-            android:key="location"
-            android:selectable="true"
-            android:summary="@string/show_location_summary"
-            android:title="@string/show_location" />
+        <PreferenceScreen
+            android:key="own_location_settings"
+            android:summary="@string/own_location_summary"
+            android:title="@string/own_location">
+
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:enabled="true"
+                android:key="location"
+                android:selectable="true"
+                android:summary="@string/show_location_summary"
+                android:title="@string/show_location" />
+            <org.blitzortung.android.preferences.SlidePreferences
+                android:title="@string/own_location_size"
+                android:summary="@string/own_location_size_summary"
+                android:defaultValue="100"
+                android:key="own_location_size"
+                android:max="400"
+                android:selectable="true"
+                android:persistent="true"
+                android:text="%"
+                min="50"
+                />
+        </PreferenceScreen>
     </PreferenceScreen>
     <PreferenceScreen
         android:key="data_settings"

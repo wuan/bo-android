@@ -3,4 +3,7 @@
     <declare-styleable name="View">
         <attr name="tablet_scaleable" format="boolean"/>
     </declare-styleable>
+    <declare-styleable name="org.blitzortung.android.preferences.SlidePreferences">
+        <attr name="min" format="integer" />
+    </declare-styleable>
 </resources>

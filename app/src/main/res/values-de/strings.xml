@@ -72,7 +72,7 @@
         Datenquelle)
     </string>
     <string name="show_location">Standort anzeigen</string>
-    <string name="show_location_summary">eigenen Standort als Symbol in der Karte anzeigen</string>
+    <string name="show_location_summary">Eigenen Standort als Symbol in der Karte anzeigen</string>
     <string name="data_settings">Datenübertragung</string>
     <string name="region">Region auswählen</string>
     <string name="region_summary">Europa, Nordamerika oder Ozeanien</string>
@@ -343,4 +343,8 @@
     <string name="timeout_warning">Netzwerk-Zeitüberschreitung.\nBitte überprüfen sie die Internetverbindung.</string>
     <string name="connection_warning">Kein Netzwerk.\nBitte überprüfen sie die Internetverbindung.</string>
     <string name="provider_warning">Bitte nutzen sie die Blitzortung.org Datenquelle nicht bei hoher Blitzaktivität. Die Dastellung der Karte wird möglicherweise verzögert.</string>
+    <string name="own_location_summary" >Einstellungen der Anzeige des Standorts</string>
+    <string name="own_location" >Eigener Standort</string>
+    <string name="own_location_size" >Größe des Standort-Symbols</string>
+    <string name="own_location_size_summary" >Einstellung der Größe des Standort-Symbols</string>
 </resources>
