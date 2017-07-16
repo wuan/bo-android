@@ -19,8 +19,10 @@
     <string name="info_text">Strona projektu:\n\thttps://github.com/wuan/bo-android\n\nDane dostarczane
         są przez\n<b>Blitzortung.org</b>\nrealtime lighning community project.\nSprawdź na
         stronie\n\thttp://blitzortung.org/\nwięcej informacji oraz dowiedz się jak zostać uczestnikiem.\n\n
-        Czech translation by: Jakub Mareček (jakubmarecek715@gmail.com)\n
-		Polish translation by: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+        Tłumaczenie na język czeski: Jakub Mareček (jakubmarecek715@gmail.com)\n
+		Tłumaczenie polskie: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+        Tłumaczenie włoskie: Michele Locati (mlocati@gmail.com)\n
+        Tłumaczenie chorwacki:  Igor Dobrača (idobraca@rovinj.net)\n
     </string>
     <string name="legend">Legenda</string>
     <string name="total_time">łączny czas</string>
