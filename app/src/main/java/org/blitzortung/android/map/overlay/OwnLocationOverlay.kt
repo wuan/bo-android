@@ -23,23 +23,28 @@ import android.content.SharedPreferences
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
-import android.preference.PreferenceManager
 import com.google.android.maps.ItemizedOverlay
 import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.app.view.getAndConvert
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.components.LayerOverlayComponent
 import org.blitzortung.android.util.TabletAwareView
 
-class OwnLocationOverlay(context: Context, private val mapView: OwnMapView) : ItemizedOverlay<OwnLocationOverlayItem>(OwnLocationOverlay.DEFAULT_DRAWABLE), SharedPreferences.OnSharedPreferenceChangeListener, LayerOverlay {
+class OwnLocationOverlay(context: Context, private val mapView: OwnMapView) :
+        ItemizedOverlay<OwnLocationOverlayItem>(OwnLocationOverlay.DEFAULT_DRAWABLE),
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        LayerOverlay {
 
     private val layerOverlayComponent: LayerOverlayComponent
 
     private var item: OwnLocationOverlayItem? = null
+
+    private var symbolSize: Float = 1.0f
 
     private val sizeFactor: Float
 
@@ -78,7 +83,8 @@ class OwnLocationOverlay(context: Context, private val mapView: OwnMapView) : It
 
         val preferences = BOApplication.sharedPreferences
         preferences.registerOnSharedPreferenceChangeListener(this)
-        onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_LOCATION.toString())
+        onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_LOCATION)
+        onSharedPreferenceChanged(preferences, PreferenceKey.OWN_LOCATION_SIZE)
 
         refresh()
     }
@@ -90,7 +96,7 @@ class OwnLocationOverlay(context: Context, private val mapView: OwnMapView) : It
     }
 
     private fun refresh() {
-        item?.run { setMarker(ShapeDrawable(OwnLocationShape(sizeFactor * zoomLevel))) }
+        item?.run { setMarker(ShapeDrawable(OwnLocationShape(sizeFactor * zoomLevel * symbolSize))) }
 
         //Redraw when the OwnLocation is refreshed
         mapView.postInvalidate()
@@ -128,6 +134,10 @@ class OwnLocationOverlay(context: Context, private val mapView: OwnMapView) : It
                 enableOwnLocation()
             } else {
                 disableOwnLocation()
+            }
+        } else if(key == PreferenceKey.OWN_LOCATION_SIZE) {
+            symbolSize = sharedPreferences.getAndConvert(PreferenceKey.OWN_LOCATION_SIZE, 100) {
+                it.toFloat() / 100
             }
         }
     }
