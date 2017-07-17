@@ -97,6 +97,9 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     private var currentResult: ResultEvent? = null
 
+    private val keepZoomOnGotoOwnLocation: Boolean
+        inline get() = BOApplication.sharedPreferences.get(PreferenceKey.KEEP_ZOOM_GOTO_OWN_LOCATION, false)
+
     val dataEventConsumer: (DataEvent) -> Unit = { event ->
         if (event is RequestStartedEvent) {
             Log.d(Main.LOG_TAG, "Main.onDataUpdate() received request started event")
@@ -276,9 +279,16 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 if (alertHandler.alertEnabled) {
                     val currentLocation = alertHandler.currentLocation
                     if (currentLocation != null) {
-                        var radius = determineTargetZoomRadius(alertHandler)
+                        val diameter = if(!keepZoomOnGotoOwnLocation) {
+                            var radius = determineTargetZoomRadius(alertHandler)
 
-                        val diameter = 1.5f * 2f * radius
+                            //Calculate the new diameter
+                            1.5f * 2f * radius
+                        } else {
+                            //User doesn't want to zoom, so we do not provide a diameter
+                            null
+                        }
+
                         animateToLocationAndVisibleSize(currentLocation.longitude, currentLocation.latitude, diameter)
                     }
                 }
@@ -321,14 +331,18 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         }
     }
 
-    private fun animateToLocationAndVisibleSize(longitude: Double, latitude: Double, diameter: Float) {
+    private fun animateToLocationAndVisibleSize(longitude: Double, latitude: Double, diameter: Float?) {
         Log.d(Main.LOG_TAG, "Main.animateAndZoomTo() %.4f, %.4f, %.0fkm".format(longitude, latitude, diameter))
 
         val mapView = mapView
         val controller = mapView.controller
 
         val startZoomLevel = mapView.zoomLevel
-        val targetZoomLevel = mapView.calculateTargetZoomLevel(diameter * 1000f)
+        //If no diameter is provided, we keep the current zoomLevel
+        val targetZoomLevel = if(diameter is Float)
+            mapView.calculateTargetZoomLevel(diameter * 1000f)
+        else
+            startZoomLevel
 
         controller.animateTo(GeoPoint((latitude * 1e6).toInt(), (longitude * 1e6).toInt()), {
             if (startZoomLevel != targetZoomLevel) {
