@@ -16,13 +16,17 @@
     </plurals>
 
     <string name="info">Information</string>
-    <string name="info_text">Projektseite:\n\thttps://github.com/wuan/bo-android\n\nDiese Software visualisiert
-        Blitzdaten des Gemeinschaftsprojekts <b>blitzortung.org</b>.\n\nWeitere Informationen über das Projekt, oder wie Sie
-        daran teilnehmen können, finden Sie unter:\n\thttp://blitzortung.org\n\n
-        Übersetzungen:\n
-        Tschechisch: Jakub Mareček (jakubmarecek715@gmail.com)\n
-        Polnisch: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
-        Italienisch: Michele Locati (michele@locati.it)\n
+    <string name="info_text">Projektseite:\n\thttps://github.com/wuan/bo-android\n\n
+        Diese Software visualisiert Blitzdaten des Gemeinschaftsprojekts <b>blitzortung.org</b>.\n
+        \n
+        Weitere Informationen über das Projekt, oder wie Sie
+        daran teilnehmen können, finden Sie unter:\n
+        \thttp://blitzortung.org\n
+        \n
+        Tschechische Übersetzung: Jakub Mareček (jakubmarecek715@gmail.com)\n
+		Polnische Übersetzung: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+        Italienische Übersetzung: Michele Locati (mlocati@gmail.com)\n
+        Kroatische Übersetzung: Igor Dobrača (idobraca@rovinj.net)\n
     </string>
     <string name="legend">Legende</string>
     <string name="total_time">Gesamtzeit</string>
