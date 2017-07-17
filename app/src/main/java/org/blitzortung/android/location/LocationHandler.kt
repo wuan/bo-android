@@ -27,7 +27,6 @@ import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.location.provider.LocationProvider
-import org.blitzortung.android.location.provider.ManagerLocationProvider
 import org.blitzortung.android.location.provider.createLocationProvider
 import org.blitzortung.android.protocol.ConsumerContainer
 import org.jetbrains.anko.longToast
@@ -145,15 +144,11 @@ open class LocationHandler(
     }
 
     private fun updateProvider() {
-        shutdown()
-
         provider?.run {
-            if (this is ManagerLocationProvider) {
-                backgroundMode = this@LocationHandler.backgroundMode
-            }
+            //Reconfigure the Provider only, when its running
+            if(isRunning)
+                reconfigureProvider(this@LocationHandler.backgroundMode)
         }
-
-        start()
     }
 
     fun shutdown() {

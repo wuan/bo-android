@@ -54,4 +54,6 @@ class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sh
 
         super.shutdown()
     }
+
+    override fun reconfigureProvider(isInBackground: Boolean) { /* Nothing to do here */ }
 }

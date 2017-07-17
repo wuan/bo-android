@@ -11,7 +11,7 @@ import org.jetbrains.anko.locationManager
 
 abstract class ManagerLocationProvider(
         protected val context: Context,
-        var backgroundMode: Boolean = true,
+        protected var isInBackground: Boolean = true,
         locationUpdate: (Location?) -> Unit,
         override val type: String
 ) : LocationProvider(locationUpdate), LocationListener {
@@ -19,10 +19,10 @@ abstract class ManagerLocationProvider(
     protected val locationManager = context.locationManager
 
     protected open val minTime: Long
-        get() = if (backgroundMode) 120000 else 20000
+        get() = if (isInBackground) 120000 else 20000
 
     protected open val minDistance: Float
-        get() = if (backgroundMode) 200f else 50f
+        get() = if (isInBackground) 200f else 50f
 
     override fun start() {
         //Don't start the LocationProvider if we dont have any permissions
@@ -33,7 +33,7 @@ abstract class ManagerLocationProvider(
 
         super.start()
 
-        Log.v(Main.LOG_TAG, "ManagerLocationProvider.start() background: $backgroundMode, type: $type, minTime: $minTime, minDistance: $minDistance")
+        Log.v(Main.LOG_TAG, "ManagerLocationProvider.start() background: $isInBackground, type: $type, minTime: $minTime, minDistance: $minDistance")
         if (locationManager.allProviders.contains(type)) {
             locationManager.requestLocationUpdates(type, minTime, minDistance, this)
 
@@ -77,6 +77,21 @@ abstract class ManagerLocationProvider(
         locationManager.removeUpdates(this)
 
         super.shutdown()
+    }
+
+    override fun reconfigureProvider(isInBackground: Boolean) {
+        this.isInBackground = isInBackground
+
+        if(!isRunning) {
+            Log.w(Main.LOG_TAG, "Provider MUST NOT be reconfigured when its not running")
+
+            return
+        }
+
+        Log.d(Main.LOG_TAG, "ManagerLocationProvider: Reconfigure provider, background: ${this.isInBackground}")
+
+        locationManager.removeUpdates(this)
+        locationManager.requestLocationUpdates(type, minTime, minDistance, this)
     }
 
     abstract val isPermissionGranted: Boolean
