@@ -25,7 +25,6 @@ import android.graphics.Paint.Style
 import android.location.Location
 import android.util.AttributeSet
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.data.AlertSector
@@ -96,13 +95,11 @@ class AlertView @JvmOverloads constructor(
 
         background.color = 0xffb0b0b0.toInt()
 
-        setOnTouchListener { view, motionEvent ->
-            if(motionEvent.action == MotionEvent.ACTION_UP) {
-                AlertDialog(context, AppService.instance, AlertDialogColorHandler(BOApplication.sharedPreferences))
-                        .show()
-            }
+        setOnLongClickListener {
+            AlertDialog(context, AppService.instance, AlertDialogColorHandler(BOApplication.sharedPreferences))
+                    .show()
 
-            return@setOnTouchListener true
+            true
         }
     }
 
