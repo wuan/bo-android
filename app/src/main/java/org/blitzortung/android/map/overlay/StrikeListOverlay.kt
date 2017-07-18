@@ -73,6 +73,8 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
 
     fun addStrikes(strikes: List<Strike>) {
         strikeList.addAll(strikes.map { StrikeOverlay(it) })
+
+        updateTotalNumberOfStrikes()
     }
 
     private fun drawDataAreaRect(canvas: Canvas, mapView: MapView, paint: Paint) {
@@ -104,10 +106,14 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
         val difference = first_time?.let { it - expireTime }
         strikeList.removeAll { it.timestamp < expireTime }
         Log.v(Main.LOG_TAG, "StrikesListOverlay.expireStrikes() expired ${sizeBefore - strikeList.size} from $sizeBefore (first: $first_time, difference: $difference, ref: $referenceTime")
+
+        updateTotalNumberOfStrikes()
     }
 
     fun clear() {
         strikeList.clear()
+
+        updateTotalNumberOfStrikes()
     }
 
     fun updateZoomLevel(zoomLevel: Int) {
@@ -184,8 +190,12 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
         return false
     }*/
 
-    val totalNumberOfStrikes: Int
-        get() = strikeList.fold(0, { previous, item -> previous + item.multiplicity })
+    private fun updateTotalNumberOfStrikes() {
+        totalNumberOfStrikes = strikeList.fold(0, { previous, item -> previous + item.multiplicity })
+    }
+
+    var totalNumberOfStrikes: Int = 0
+        private set
 
     override val name: String
         get() = layerOverlayComponent.name
