@@ -100,8 +100,8 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
         val expireTime = referenceTime - parameters.intervalDuration * 60 * 1000
 
         val sizeBefore = strikeList.size
-        val first_time = strikeList.first().timestamp
-        val difference = first_time - expireTime
+        val first_time = strikeList.firstOrNull()?.timestamp
+        val difference = first_time?.let { it - expireTime }
         strikeList.removeAll { it.timestamp < expireTime }
         Log.v(Main.LOG_TAG, "StrikesListOverlay.expireStrikes() expired ${sizeBefore - strikeList.size} from $sizeBefore (first: $first_time, difference: $difference, ref: $referenceTime")
     }
