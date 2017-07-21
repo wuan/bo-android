@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Mnitor di fulmini Blitzortung</string>
+    <string name="app_name">Monitor di fulmini Blitzortung</string>
     <string name="ok">@android:string/ok</string>
     <string name="cancel">@android:string/cancel</string>
 
