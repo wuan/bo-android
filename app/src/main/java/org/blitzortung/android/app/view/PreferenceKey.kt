@@ -49,7 +49,8 @@ enum class PreferenceKey(val key: String) {
     HISTORIC_TIMESTEP("historic_timestep"),
     LOCATION_MODE("location_mode"),
     LOCATION_LONGITUDE("location_longitude"),
-    LOCATION_LATITUDE("location_latitude");
+    LOCATION_LATITUDE("location_latitude"),
+    KEEP_ZOOM_GOTO_OWN_LOCATION("keep_zoom_goto_own_location");
 
     override fun toString(): String {
         return key
