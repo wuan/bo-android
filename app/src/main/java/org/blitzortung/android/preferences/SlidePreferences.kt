@@ -34,12 +34,15 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
     private val maximumValue: Int
     private var valueText: TextView? = null
     private var slider: SeekBar? = null
-    private var currentValue: Int = 0
+    private var currentValue: Int
     private var minimumValue: Int
 
     init {
         unitSuffix = " " + attrs.getAttributeValue(ATTRIBUTE_NAMESPACE, "text")
         defaultValue = attrs.getAttributeIntValue(ATTRIBUTE_NAMESPACE, "defaultValue", 30)
+        //Initial value is the default value.
+        //When there is a value presisted, it will be set afterwards through onSetInitialValue
+        currentValue = defaultValue
         minimumValue = attrs.getAttributeIntValue(null, "min", 0)
 
         //If there is a minimum value, we always add the minimum-value to the slider
