@@ -3,9 +3,14 @@ package org.blitzortung.android.map.overlay
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Point
+import android.text.format.DateFormat
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import com.google.android.maps.GeoPoint
 import com.google.android.maps.MapView
 import com.google.android.maps.Projection
+import org.blitzortung.android.app.R
 import org.blitzortung.android.data.Coordsys
 import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Strike
@@ -13,7 +18,7 @@ import org.blitzortung.android.data.beans.Strike
 class StrikeOverlay(strike: Strike) {
     val timestamp: Long = strike.timestamp
     val multiplicity = strike.multiplicity
-    private val center: GeoPoint = Coordsys.toMapCoords(strike.longitude, strike.latitude)
+    val center: GeoPoint = Coordsys.toMapCoords(strike.longitude, strike.latitude)
 
     var shape: LightningShape? = null
 
@@ -54,6 +59,11 @@ class StrikeOverlay(strike: Strike) {
             }
         }
         this.shape = shape
+    }
+
+    fun pointIsInside(point: GeoPoint, projection: Projection): Boolean {
+        return shape?.isPointInside(point, projection)
+                ?: false
     }
 
     companion object {

@@ -23,8 +23,19 @@ import android.graphics.Paint
 import android.graphics.Point
 import com.google.android.maps.GeoPoint
 import com.google.android.maps.MapView
+import com.google.android.maps.Projection
 
 class StrikeShape(private val center: GeoPoint) : LightningShape {
+    override fun isPointInside(tappedGeoPoint: GeoPoint, projection: Projection): Boolean {
+        val shapeCenter = Point()
+        projection.toPixels(center, shapeCenter)
+
+        val tappedPoint = Point()
+        projection.toPixels(tappedGeoPoint, tappedPoint)
+
+        return tappedPoint.x >= shapeCenter.x - size / 2 && tappedPoint.x <= shapeCenter.x + size / 2
+                && tappedPoint.y >= shapeCenter.y - size / 2 && tappedPoint.y <= shapeCenter.y + size / 2
+    }
 
     private var size: Float = 0.toFloat()
     private var color: Int = 0

@@ -25,6 +25,7 @@ import android.graphics.Point
 import android.graphics.RectF
 import com.google.android.maps.GeoPoint
 import com.google.android.maps.MapView
+import com.google.android.maps.Projection
 
 class RasterShape(private val center: GeoPoint) : LightningShape {
 
@@ -69,6 +70,17 @@ class RasterShape(private val center: GeoPoint) : LightningShape {
                     centerPoint.y.toFloat() + textSize / 2,
                     paint)
         }
+    }
+
+    override fun isPointInside(tappedGeoPoint: GeoPoint, projection: Projection): Boolean {
+        val shapeCenter = Point()
+        projection.toPixels(center, shapeCenter)
+
+        val tappedPoint = Point()
+        projection.toPixels(tappedGeoPoint, tappedPoint)
+
+        return tappedPoint.x >= shapeCenter.x + size.left && tappedPoint.x <= shapeCenter.x + size.right
+                && tappedPoint.y >= shapeCenter.y + size.top && tappedPoint.y <= shapeCenter.y + size.bottom
     }
 
     fun update(topLeft: Point, bottomRight: Point, color: Int, multiplicity: Int, textColor: Int) {
