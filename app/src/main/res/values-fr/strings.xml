@@ -293,7 +293,7 @@
     </string-array>
 
     <string name="signaling_threshold_time">Seuil de durée pour l\'alarme</string>
-    <string name="signaling_threshold_time_summary">Supprime d'autres signaux d\'alarme pour la plage de temps donnée</string>
+    <string name="signaling_threshold_time_summary">Supprime d\'autres signaux d\'alarme pour la plage de temps donnée</string>
 
     <string-array name="signaling_threshold_times">
         <item>off</item>
