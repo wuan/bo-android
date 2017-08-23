@@ -7,11 +7,11 @@
 
     <plurals name="strike">
         <item quantity="zero">brak wyładowań</item>
-        <item quantity="one">1 wyładowanie</item>
+        <item quantity="one">%d wyładowanie</item>
         <item quantity="other">%d wyładowań</item>
     </plurals>
     <plurals name="minute">
-        <item quantity="one">1 minuta</item>
+        <item quantity="one">%d minuta</item>
         <item quantity="other">%d minut</item>
     </plurals>
 
@@ -27,6 +27,7 @@
         więcej informacji oraz dowiedz się jak zostać uczestnikiem.\n
         \n
         Tłumaczenie na język czeski: Jakub Mareček (jakubmarecek715@gmail.com)\n
+        Tłumaczenie francuski: Frédéric France (frederic.france@free.fr)\n
 		Tłumaczenie polskie: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
         Tłumaczenie włoskie: Michele Locati (mlocati@gmail.com)\n
         Tłumaczenie chorwacki:  Igor Dobrača (idobraca@rovinj.net)\n
