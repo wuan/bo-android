@@ -12,7 +12,6 @@ built from these sources visualizes lightning data provided by the blitzortung.o
 
 We are still looking forward to volunteers preparing a translation for the following languages:
 
-  * French
   * Dutch
   * Croatian
   
