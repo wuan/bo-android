@@ -7,11 +7,11 @@
 
     <plurals name="strike">
         <item quantity="zero">nema munja</item>
-        <item quantity="one">1 munja</item>
+        <item quantity="one">%d munja</item>
         <item quantity="other">%d munja</item>
     </plurals>
     <plurals name="minute">
-        <item quantity="one">1 minuta</item>
+        <item quantity="one">%d minuta</item>
         <item quantity="other">%d minuta</item>
     </plurals>
 
@@ -24,6 +24,7 @@
         \thttp://blitzortung.org/\n\n
         Prevoditelji:\n
         Češki: Jakub Mareček (jakubmarecek715@gmail.com)\n
+        Francuzi: Frédéric France (frederic.france@free.fr)\n
         Poljski: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
         Talijanski: Michele Locati (michele@locati.it)\n
         Hrvatski: Igor Dobrača (idobraca@rovinj.net)\n

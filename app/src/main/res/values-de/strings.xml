@@ -6,7 +6,6 @@
     <string name="cancel">Abbrechen</string>
 
     <plurals name="strike">
-        <item quantity="zero">kein Blitz</item>
         <item quantity="one">1 Blitz</item>
         <item quantity="other">%d Blitze</item>
     </plurals>
@@ -23,10 +22,11 @@
         daran teilnehmen können, finden Sie unter:\n
         \thttp://blitzortung.org\n
         \n
-        Tschechische Übersetzung: Jakub Mareček (jakubmarecek715@gmail.com)\n
-		Polnische Übersetzung: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
-        Italienische Übersetzung: Michele Locati (mlocati@gmail.com)\n
-        Kroatische Übersetzung: Igor Dobrača (idobraca@rovinj.net)\n
+        Französich: Frédéric France (frederic.france@free.fr)\n
+        Italienisch: Michele Locati (mlocati@gmail.com)\n
+        Kroatisch: Igor Dobrača (idobraca@rovinj.net)\n
+		Polnisch: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+        Tschechisch: Jakub Mareček (jakubmarecek715@gmail.com)\n
     </string>
     <string name="legend">Legende</string>
     <string name="total_time">Gesamtzeit</string>
