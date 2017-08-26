@@ -22,6 +22,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Paint.Style
 import android.util.Log
+import android.view.ViewGroup
 import com.google.android.maps.GeoPoint
 import com.google.android.maps.MapView
 import com.google.android.maps.Overlay
@@ -31,7 +32,9 @@ import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.map.OwnMapActivity
+import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.components.LayerOverlayComponent
+import org.blitzortung.android.map.createStrikePopUp
 import org.blitzortung.android.map.overlay.color.ColorHandler
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 
@@ -123,10 +126,26 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
         }
     }
 
-    override fun onTap(p0: GeoPoint?, p1: MapView?): Boolean {
-        //TODO Implement onTap for the different strikes
+    override fun onTap(point: GeoPoint, map: MapView): Boolean {
         Log.d(Main.LOG_TAG, "Tapped on StrikeList")
-        return super.onTap(p0, p1)
+
+        val strikeTapped = strikeList.firstOrNull { it.pointIsInside(point, map.projection) }
+
+        val popup = (map as OwnMapView).popup
+        map.removeView(popup)
+
+        if(strikeTapped != null) {
+            val newPopup = createStrikePopUp(popup, strikeTapped)
+
+            val mapParams = MapView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                    point, 0, 0, MapView.LayoutParams.BOTTOM_CENTER)
+
+            map.addView(newPopup, mapParams)
+
+            return true
+        }
+
+        return false
     }
 
     fun refresh() {
@@ -172,23 +191,6 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
     fun hasRealtimeData(): Boolean {
         return parameters.isRealtime()
     }
-
-    /*override fun onTap(index: Int): Boolean {
-        val item = strikeList[index]
-        if (item.point != null && item.timestamp > 0) {
-            var result = DateFormat.format("kk:mm:ss", item.timestamp) as String
-
-            if (item.shape is RasterShape) {
-                result += ", #%d".format(item.multiplicity)
-            } else if (item.shape is StrikeShape) {
-                result += " (%.4f %.4f)".format(item.longitude, item.latitude)
-            }
-
-            showPopup(item.point, result)
-            return true
-        }
-        return false
-    }*/
 
     private fun updateTotalNumberOfStrikes() {
         totalNumberOfStrikes = strikeList.fold(0, { previous, item -> previous + item.multiplicity })
