@@ -16,12 +16,12 @@
     </plurals>
 
     <string name="info">Informacije</string>
-    <string name="info_text">Web sjedište projekta:\n\thttps://github.com/wuan/bo-android\n\n
+    <string name="info_text">Web sjedište projekta:\nhttps://github.com/wuan/bo-android\n\n
         Vizualizaciju podataka o munjama omogućuje\n
         <b>Blitzortung.org</b>,\n
         projekt prikaza munja u stvarnom vremenu.\n
         Za više informacija ili uključenje u projekt:\n
-        \thttp://blitzortung.org/\n\n
+        http://blitzortung.org/\n\n
         Prevoditelji:\n
         Češki: Jakub Mareček (jakubmarecek715@gmail.com)\n
         Poljski: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
@@ -31,7 +31,7 @@
 
     <string name="legend">Legenda</string>
     <string name="total_time">ukupno vrijeme</string>
-    <string name="activity">aktivnost</string>
+    <string name="activity">Aktivnost</string>
     <string name="during">tijekom prošlosti</string>
     <string name="minute">minute</string>
     <string name="alarms">Alarmi</string>
@@ -72,13 +72,13 @@
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Lokacija učesnika</string>
-    <string name="show_participants_summary">Prikaz lokacije svih postaja na karti (samo ako je Blitzortung.org izvor podataka)</string>
-    <string name="show_location">Trenutna lokacija</string>
-    <string name="show_location_summary">Prikaz trenutne lokacije na karti</string>
+    <string name="show_participants">Prikaži lokacije učesnika</string>
+    <string name="show_participants_summary">Prikaz lokacije svih postaja na karti\n(samo ako je Blitzortung.org izvor podataka)</string>
+    <string name="show_location">Prikaži vlastitu lokaciju</string>
+    <string name="show_location_summary">Prikaz vlastite lokacije na karti</string>
     <string name="data_settings">Prijenos podataka</string>
     <string name="region">Područje</string>
-    <string name="region_summary">Odaberite Europu, Sjevernu Ameriku ili Oceaniju</string>
+    <string name="region_summary">Odabir geografskog područja\n(Europa, Sjeverna Amerika, Oceanija, ..)</string>
 
     <string-array name="regions">
         <item>Europa</item>
@@ -119,7 +119,7 @@
 
     <string name="historic_timestep_limit_reached">Dosegnut 24-satni limit</string>
     <string name="historic_timestep">Povijesni podaci</string>
-    <string name="historic_timestep_summary">Vremenski korak za pregled povijesnih podataka</string>
+    <string name="historic_timestep_summary">Vremenski interval za pregled povijesnih podataka</string>
 
     <string-array name="historic_timesteps">
         <item>15 min</item>
@@ -153,7 +153,7 @@
     </string-array>
 
     <string name="raster_size">Veličina rastera</string>
-    <string name="raster_size_summary">Površina kvadrata za prikaz ukupnog broja munja</string>
+    <string name="raster_size_summary">Obuhvat površine za prikaz ukupnog broja munja</string>
 
     <string-array name="raster_sizes">
         <item>5 km</item>
@@ -170,8 +170,8 @@
         <item>100000</item>
     </string-array>
 
-    <string name="count_threshold">Prag brojača munja</string>
-    <string name="count_threshold_summary">Minimalni broj munja za stvaranje rastera</string>
+    <string name="count_threshold">Prag broja munja</string>
+    <string name="count_threshold_summary">Minimalni broj munja za prikaz rastera</string>
 
     <string-array name="count_thresholds">
         <item>isključeno</item>
@@ -191,10 +191,10 @@
     </string-array>
 
     <string name="data_source">Izvor podataka</string>
-    <string name="data_source_summary">Integrirani izvor podataka ili pristup na blitzortung.org (samo za postaje)</string>
+    <string name="data_source_summary">Zadani izvor podataka ili blitzortung.org (samo za postaje)</string>
 
     <string-array name="data_sources">
-        <item>Zadano</item>
+        <item>zadani</item>
         <item>Blitzortung.org</item>
     </string-array>
     <string-array name="data_source_values">
@@ -204,10 +204,10 @@
 
     <string name="location_settings">Postavke lokacije</string>
     <string-array name="location_modes">
-        <item>Pasivno</item>
+        <item>pasivna</item>
         <item>prema mreži</item>
-        <item>Prema GPS-u</item>
-        <item>Ručni unos</item>
+        <item>prema GPS-u</item>
+        <item>ručni unos</item>
     </string-array>
     <string-array name="location_mode_values">
         <item>passive</item>
@@ -216,16 +216,16 @@
         <item>manual</item>
     </string-array>
     <string name="location_mode">Metoda određivanja lokacije</string>
-    <string name="location_mode_summary">odaberite metodu za određivanje trenutne lokacije</string>
+    <string name="location_mode_summary">Odabir metode za određivanje vlastite lokacije</string>
     <string name="longitude">Dužina</string>
-    <string name="location_longitude_summary">Ručni unos geografske dužine</string>
+    <string name="location_longitude_summary">Ručni unos geografske dužine vlastite lokacije</string>
     <string name="latitude">Širina</string>
-    <string name="location_latitude_summary">Ručni unos geografske širine</string>
+    <string name="location_latitude_summary">Ručni unos geografske širine vlastite lokacije</string>
     <string name="alarm_settings">Postavke alarma</string>
     <string name="alarm_enabled">Alarm uključen</string>
-    <string name="alarm_enabled_summary">Provjera aktivnosti munje oko trenutne lokacije</string>
-    <string name="background_query_period">Pozadinsko razdoblje upita</string>
-    <string name="background_query_period_summary">Ako je odabrano: učestalost pozadinske provjere alarma kad je aplikacija neaktivna</string>
+    <string name="alarm_enabled_summary">Prati aktivnosti munja oko vlastite lokacije</string>
+    <string name="background_query_period">Pozadinska aktivnost</string>
+    <string name="background_query_period_summary">Ako je zadano: učestalost provjere prisutnosti munja dok je aplikacija neaktivna</string>
 
     <string-array name="background_query_periods">
         <item>isključeno</item>
@@ -248,10 +248,10 @@
 
     <item name="alarm_notification_id" type="id" />
 
-    <string name="notification_distance_limit">Obavijesti temeljem udaljenosti</string>
-    <string name="notification_distance_limit_summary">Ako je odabrano: prikaži obavijest kada se pojave munje unutar odabranog radijusa</string>
+    <string name="notification_distance_limit">Obavješćivanje temeljem udaljenosti</string>
+    <string name="notification_distance_limit_summary">Ako je zadano: obavijesti o pojavi munja unutar zadanog radijusa</string>
     <string name="signaling_distance_limit">Signaliziranje temeljem udaljenosti</string>
-    <string name="signaling_distance_limit_summary">Ako je odabrano: signaliziraj kada se pojave munje unutar odabranog radijusa</string>
+    <string name="signaling_distance_limit_summary">Ako je zadano: signaliziraj pojavu munja unutar zadanog radijusa</string>
 
     <string-array name="direction_names">
         <item>J</item>
@@ -286,8 +286,8 @@
         <item>500</item>
     </string-array>
 
-    <string name="signaling_threshold_time">Vremensko razdoblje signaliziranja</string>
-    <string name="signaling_threshold_time_summary">Isključivanje ponavljanja signaliziranja za odabrano vremensko razdoblje</string>
+    <string name="signaling_threshold_time">Ograničavanje ponavljanja signaliziranja</string>
+    <string name="signaling_threshold_time_summary">Onemogući ponovno signaliziranje tijekom odabranog vremenskog razdoblja</string>
 
     <string-array name="signaling_threshold_times">
         <item>isključeno</item>
@@ -309,15 +309,15 @@
     <string name="measurement_unit">Mjerne jedinice</string>
     <string name="measurement_unit_summary">Prikaz jednica za udaljenost u km ili miljama</string>
     <string-array name="measurement_units">
-        <item>metrički</item>
-        <item>imperijalni</item>
+        <item>metrički sustav mjera</item>
+        <item>imperijalni sustav mjera</item>
     </string-array>
     <string-array name="measurement_unit_values">
         <item>METRIC</item>
         <item>IMPERIAL</item>
     </string-array>
-    <string name="do_not_sleep">Isključi mirovanje</string>
-    <string name="do_not_sleep_summary">Dok je aplikacija aktivna isključi aktivaciju stanja mirovanja</string>
+    <string name="do_not_sleep">Onemogući stanje mirovanja</string>
+    <string name="do_not_sleep_summary">Dok je aplikacija aktivna onemogući prijelaz u stanje mirovanja</string>
     <string name="participants_layer">Lokacija učesnika</string>
     <string name="own_location_layer">Vlastita lokacija</string>
     <string name="strikes_layer">Munje</string>
@@ -328,12 +328,12 @@
     <string name="alarm_signal_settings">Postavke signaliziranja alarma</string>
     <string name="alarm_audio_signal">Audio zvuka alarma</string>
     <string name="alarm_vibration_signal">Trajanje vibracije alarma</string>
-    <string name="alarm_audio_signal_summary">Odaberite audio zvuk za signaliziranje alarma</string>
-    <string name="alarm_vibration_signal_summary">Odaberite trajanje vibriranja mobitela u slučaju alarma</string>
+    <string name="alarm_audio_signal_summary">Odabir audio zvuka za signaliziranje alarma</string>
+    <string name="alarm_vibration_signal_summary">Trajanja vibriranja mobitela u slučaju alarma</string>
     <string name="location_provider_not_available">Pružatelj lokacije \'%s\' nije dostupan.</string>
     <string name="location_provider_disabled">Pružatelj lokacije \'%s\' je isključen.</string>
     <string name="service_url">Alternativni URL servisa</string>
-    <string name="service_url_summary">Navedite alternativni URL servisa</string>
+    <string name="service_url_summary">Unos alternativnog URL-a servisa izvora podataka</string>
     <string name="set_manual_location">Ručni unos lokacije</string>
     <string name="error_indicator">Indikator pogreške</string>
     <string name="share_log">Pošalji email …</string>
@@ -341,4 +341,10 @@
     <string name="timeout_warning">Predugo čekanje na odgovor mreže.\nMolimo provjerite internet vezu.</string>
     <string name="connection_warning">Neuspjelo spajanje.\nMolimo provjerite internet vezu.</string>
     <string name="provider_warning">Molimo nemojte koristiti Blitzortung.org kao izvor podataka tijekom učestalih aktivnosti munja jer će doći do degradacije pri prikazu karte.</string>
+	<string name="own_location_summary">Postavke prikaza vlastite lokacije</string>
+	<string name="own_location">Vlastita lokacija</string>
+    <string name="own_location_size">Veličina simbola vlastite lokacije</string>
+    <string name="own_location_size_summary">Određivanje veličine simbola vlastite lokacije</string>
+    <string name="keep_zoom_goto_own_location_summary">Zadrži trenutno zumiranje pri centriranju vlastite lokacije</string>
+    <string name="keep_zoom_goto_own_location_title">Zadrži zumiranje</string>
 </resources>
