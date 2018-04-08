@@ -21,7 +21,7 @@ android {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 9
         targetSdkVersion 25
-        versionCode 197
+        versionCode 196
         versionName "1.6-beta4"
         multiDexEnabled true
     }
