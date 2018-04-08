@@ -30,6 +30,9 @@ import org.blitzortung.android.data.provider.DataProvider
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.result.ResultEvent
 import java.io.BufferedReader
+import java.io.ByteArrayInputStream
+import java.io.FileNotFoundException
+import java.io.InputStreamReader
 import java.net.*
 import java.util.*
 import java.util.zip.GZIPInputStream
@@ -62,7 +65,7 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
 
         val urlString = urlFormatter.getUrlFor(type, region, intervalTime, useGzipCompression)
 
-        Log.v(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() $urlString")
+
 
         try {
             val url: URL
@@ -78,9 +81,19 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
 
             reader = inputStream.bufferedReader()
         } catch (e: Exception) {
-            Log.w(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() URL $urlString failed")
-            throw RuntimeException(e)
+            when (e) {
+                is FileNotFoundException -> {
+                    Log.w(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() $urlString not found")
+                    return BufferedReader(InputStreamReader(ByteArrayInputStream("".toByteArray())))
+                }
+                else -> {
+                    Log.w(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() $urlString failed")
+                    throw RuntimeException(e)
+                }
+            }
         }
+
+        Log.v(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() $urlString")
 
         return reader
     }
