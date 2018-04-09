@@ -210,7 +210,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         buttonColumnHandler.addAllElements(historyController.getButtons(), ButtonGroup.DATA_UPDATING)
 
-        setupDetailModeButton()
+        //setupDetailModeButton()
 
         buttonColumnHandler.updateButtonColumn()
 
