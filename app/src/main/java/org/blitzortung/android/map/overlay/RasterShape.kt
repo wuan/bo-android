@@ -23,21 +23,32 @@ import android.graphics.Paint
 import android.graphics.Paint.Align
 import android.graphics.Point
 import android.graphics.RectF
-import android.graphics.drawable.shapes.Shape
+import com.google.android.maps.GeoPoint
+import com.google.android.maps.MapView
+import com.google.android.maps.Projection
 
-class RasterShape : Shape() {
+class RasterShape(private val center: GeoPoint) : LightningShape {
 
-    private val rect: RectF
+    private val size: RectF
     private var color: Int = 0
     private var alpha: Int = 0
     private var multiplicity: Int = 0
     private var textColor: Int = 0
 
     init {
-        rect = RectF()
+        size = RectF()
     }
 
-    override fun draw(canvas: Canvas, paint: Paint) {
+    override fun draw(canvas: Canvas, mapView: MapView, paint: Paint) {
+        val centerPoint = Point()
+        mapView.projection.toPixels(center, centerPoint)
+
+        val rect = RectF(
+                centerPoint.x + size.left,
+                centerPoint.y + size.top,
+                centerPoint.x + size.right,
+                centerPoint.y + size.bottom)
+
         //Only draw visible Raster-Items
         if(canvas.quickReject(rect, Canvas.EdgeType.BW)){
             return
@@ -53,12 +64,23 @@ class RasterShape : Shape() {
             paint.alpha = calculateAlphaValue(textSize, 20, 80, 255, 60)
             paint.textAlign = Align.CENTER
             paint.textSize = textSize
-            canvas.drawText(multiplicity.toString(), 0.0f, 0.4f * textSize, paint)
+            canvas.drawText(
+                    multiplicity.toString(),
+                    centerPoint.x.toFloat(),
+                    centerPoint.y.toFloat() + textSize / 2,
+                    paint)
         }
     }
 
-    override fun hasAlpha(): Boolean {
-        return alpha != 255
+    override fun isPointInside(tappedGeoPoint: GeoPoint, projection: Projection): Boolean {
+        val shapeCenter = Point()
+        projection.toPixels(center, shapeCenter)
+
+        val tappedPoint = Point()
+        projection.toPixels(tappedGeoPoint, tappedPoint)
+
+        return tappedPoint.x >= shapeCenter.x + size.left && tappedPoint.x <= shapeCenter.x + size.right
+                && tappedPoint.y >= shapeCenter.y + size.top && tappedPoint.y <= shapeCenter.y + size.bottom
     }
 
     fun update(topLeft: Point, bottomRight: Point, color: Int, multiplicity: Int, textColor: Int) {
@@ -66,14 +88,13 @@ class RasterShape : Shape() {
         val y1 = Math.min(topLeft.y.toFloat(), -MIN_SIZE)
         val x2 = Math.max(bottomRight.x.toFloat(), MIN_SIZE)
         val y2 = Math.max(bottomRight.y.toFloat(), MIN_SIZE)
-        rect.set(x1, y1, x2, y2)
-        resize(rect.width(), rect.height())
+        size.set(x1, y1, x2, y2)
 
         this.multiplicity = multiplicity
         this.color = color
         this.textColor = textColor
 
-        alpha = calculateAlphaValue(rect.width(), 10, 40, 255, 100)
+        alpha = calculateAlphaValue(size.width(), 10, 40, 255, 100)
     }
 
     private fun calculateAlphaValue(value: Float, minValue: Int, maxValue: Int, maxAlpha: Int, minAlpha: Int): Int {

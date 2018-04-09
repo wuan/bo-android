@@ -33,6 +33,11 @@ abstract class LocationProvider(protected val locationUpdate: (Location?) -> Uni
     open fun shutdown() {
         isRunning = false
 
+        //Invalidate the current location, when the provider is stopped
+        sendLocationUpdate(null)
+
         Log.v(Main.LOG_TAG, "LocationProvider.shutdown() type: $type" )
     }
+
+    abstract fun reconfigureProvider(isInBackground: Boolean)
 }

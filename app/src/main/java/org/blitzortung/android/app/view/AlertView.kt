@@ -30,8 +30,12 @@ import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.data.AlertSector
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.event.AlertResultEvent
+import org.blitzortung.android.app.AppService
+import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
+import org.blitzortung.android.dialogs.AlertDialog
+import org.blitzortung.android.dialogs.AlertDialogColorHandler
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.overlay.color.ColorHandler
 import org.blitzortung.android.util.TabletAwareView
@@ -90,6 +94,13 @@ class AlertView @JvmOverloads constructor(
         }
 
         background.color = 0xffb0b0b0.toInt()
+
+        setOnLongClickListener {
+            AlertDialog(context, AppService.instance, AlertDialogColorHandler(BOApplication.sharedPreferences))
+                    .show()
+
+            true
+        }
     }
 
     fun enableDescriptionText() {

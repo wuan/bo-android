@@ -104,6 +104,13 @@
                 min="50"
                 />
         </PreferenceScreen>
+        <CheckBoxPreference
+            android:title="@string/keep_zoom_goto_own_location_title"
+            android:summary="@string/keep_zoom_goto_own_location_summary"
+            android:key="keep_zoom_goto_own_location"
+            android:selectable="true"
+            android:defaultValue="false"
+            android:persistent="true"/>
     </PreferenceScreen>
     <PreferenceScreen
         android:key="data_settings"

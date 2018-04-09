@@ -13,7 +13,7 @@ class GPSLocationProvider(context: Context,
 : ManagerLocationProvider(context, backgroundMode, locationUpdate, LocationManager.GPS_PROVIDER) {
 
     override val minTime: Long
-        get() = if(backgroundMode) 1200 else 1000
+        get() = if(isInBackground) 1200 else 1000
 
     override val isPermissionGranted: Boolean
         get() = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED

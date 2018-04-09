@@ -28,7 +28,7 @@ import android.view.View
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.provider.result.ResultEvent
-import org.blitzortung.android.map.overlay.StrikesOverlay
+import org.blitzortung.android.map.overlay.StrikeListOverlay
 import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.TabletAwareView
 
@@ -43,7 +43,7 @@ class HistogramView @JvmOverloads constructor(
     private val textPaint: Paint
     private val defaultForegroundColor: Int
     private val backgroundRect: RectF
-    private var strikesOverlay: StrikesOverlay? = null
+    private var strikesOverlay: StrikeListOverlay? = null
     private var histogram: IntArray? = null
 
     val dataConsumer = { event: Event ->
@@ -82,7 +82,7 @@ class HistogramView @JvmOverloads constructor(
         val strikesOverlay = strikesOverlay
         val histogram = histogram
         if (strikesOverlay != null && histogram != null && histogram.size > 0) {
-            val colorHandler = strikesOverlay.getColorHandler()
+            val colorHandler = strikesOverlay.colorHandler
             val minutesPerColor = strikesOverlay.parameters.intervalDuration / colorHandler.numberOfColors
             val minutesPerBin = 5
             val ratio = minutesPerColor / minutesPerBin
@@ -119,7 +119,7 @@ class HistogramView @JvmOverloads constructor(
         }
     }
 
-    fun setStrikesOverlay(strikesOverlay: StrikesOverlay) {
+    fun setStrikesOverlay(strikesOverlay: StrikeListOverlay) {
         this.strikesOverlay = strikesOverlay
     }
 
@@ -167,7 +167,6 @@ class HistogramView @JvmOverloads constructor(
             this.histogram = histogram
             return true
         }
-        return false
     }
 }
 

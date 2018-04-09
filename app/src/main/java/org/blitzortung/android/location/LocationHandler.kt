@@ -27,7 +27,6 @@ import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.location.provider.LocationProvider
-import org.blitzortung.android.location.provider.ManagerLocationProvider
 import org.blitzortung.android.location.provider.createLocationProvider
 import org.blitzortung.android.protocol.ConsumerContainer
 import org.jetbrains.anko.longToast
@@ -119,17 +118,10 @@ open class LocationHandler(
     }
 
     private fun sendLocationUpdate(location: Location?) {
-        if (!(location?.isValid ?: true)) {
-            Log.w(Main.LOG_TAG, "LocationHandler.sendLocationUpdate() invalid location $location")
-        }
-        sendLocationUpdateToListeners(if (location != null && location.isValid) location else null)
-    }
+        val location = location?.takeIf { it.isValid }
 
-    private fun sendLocationUpdateToListeners(location: Location?) {
-        if (location != null) {
-            Log.v(Main.LOG_TAG, "LocationHandler.sendLocationUpdateToListeners($location)")
-            consumerContainer.storeAndBroadcast(LocationEvent(location))
-        }
+        Log.i(Main.LOG_TAG, "LocationHandler.sendLocationUpdate() location $location")
+        consumerContainer.storeAndBroadcast(LocationEvent(location))
     }
 
     fun requestUpdates(locationConsumer: (LocationEvent) -> Unit) {
@@ -152,15 +144,11 @@ open class LocationHandler(
     }
 
     private fun updateProvider() {
-        shutdown()
-
         provider?.run {
-            if (this is ManagerLocationProvider) {
-                backgroundMode = this@LocationHandler.backgroundMode
-            }
+            //Reconfigure the Provider only, when its running
+            if(isRunning)
+                reconfigureProvider(this@LocationHandler.backgroundMode)
         }
-
-        start()
     }
 
     fun shutdown() {

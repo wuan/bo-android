@@ -21,27 +21,25 @@ package org.blitzortung.android.map.overlay
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Paint.Style
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.Shape
-import android.text.format.DateFormat
 import android.util.Log
-import com.google.android.maps.ItemizedOverlay
+import android.view.ViewGroup
+import com.google.android.maps.GeoPoint
 import com.google.android.maps.MapView
+import com.google.android.maps.Overlay
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.map.OwnMapActivity
+import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.components.LayerOverlayComponent
+import org.blitzortung.android.map.createStrikePopUp
 import org.blitzortung.android.map.overlay.color.ColorHandler
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 
-class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: StrikeColorHandler) : PopupOverlay<StrikeOverlayItem>(mapActivity, ItemizedOverlay.boundCenter(StrikesOverlay.DEFAULT_DRAWABLE)), LayerOverlay {
-
-    var strikes: List<StrikeOverlayItem>
-        protected set
+class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandler: StrikeColorHandler): Overlay(), LayerOverlay {
+    private val strikeList = mutableListOf<StrikeOverlay>()
 
     private val layerOverlayComponent: LayerOverlayComponent
     private var zoomLevel: Int = 0
@@ -51,33 +49,38 @@ class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: Stri
 
     init {
         layerOverlayComponent = LayerOverlayComponent(mapActivity.resources.getString(R.string.strikes_layer))
-        strikes = listOf()
-        populate()
-    }
-
-    override fun createItem(index: Int): StrikeOverlayItem {
-        return strikes[index]
-    }
-
-    override fun size(): Int {
-        return strikes.size
     }
 
     override fun draw(canvas: Canvas?, mapView: com.google.android.maps.MapView?, shadow: Boolean) {
         if (!shadow) {
             super.draw(canvas, mapView, false)
 
-            if (hasRasterParameters() && canvas != null && mapView != null) {
-                drawDataAreaRect(canvas, mapView)
+            if(canvas == null || mapView == null) {
+                return
+            }
+
+            val paint = Paint()
+            if (hasRasterParameters()) {
+                paint.color = colorHandler.lineColor
+                paint.style = Style.STROKE
+
+                drawDataAreaRect(canvas, mapView, paint)
+            }
+
+            paint.style = Style.FILL
+            strikeList.forEach {
+                it.draw(canvas, mapView, false, paint)
             }
         }
     }
 
-    private fun drawDataAreaRect(canvas: Canvas, mapView: MapView) {
-        val paint = Paint()
-        paint.color = colorHandler.lineColor
-        paint.style = Style.STROKE
+    fun addStrikes(strikes: List<Strike>) {
+        strikeList.addAll(strikes.map { StrikeOverlay(it) })
 
+        updateTotalNumberOfStrikes()
+    }
+
+    private fun drawDataAreaRect(canvas: Canvas, mapView: MapView, paint: Paint) {
         val clipBounds = canvas.clipBounds
         val currentRasterParameters = rasterParameters
         if (currentRasterParameters != null) {
@@ -98,30 +101,22 @@ class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: Stri
         }
     }
 
-    fun addStrikes(strikes: List<Strike>) {
-        Log.v(Main.LOG_TAG, "StrikesOverlay.addStrikes() #" + strikes.size)
-        this.strikes += strikes.map { StrikeOverlayItem(it) }
-        lastFocusedIndex = -1
-        try {
-            populate()
-        } catch (throwable: Throwable) {
-            Log.w(Main.LOG_TAG, throwable)
-        }
-    }
-
     fun expireStrikes() {
         val expireTime = referenceTime - parameters.intervalDuration * 60 * 1000
 
-        val sizeBefore = strikes.size
-        strikes = strikes.filter { it.timestamp > expireTime }
-        Log.v(Main.LOG_TAG, "StrikesOverlay.expireStrikes() expired ${sizeBefore - strikes.size} from $sizeBefore")
+        val sizeBefore = strikeList.size
+        val first_time = strikeList.firstOrNull()?.timestamp
+        val difference = first_time?.let { it - expireTime }
+        strikeList.removeAll { it.timestamp < expireTime }
+        Log.v(Main.LOG_TAG, "StrikesListOverlay.expireStrikes() expired ${sizeBefore - strikeList.size} from $sizeBefore (first: $first_time, difference: $difference, ref: $referenceTime")
+
+        updateTotalNumberOfStrikes()
     }
 
     fun clear() {
-        lastFocusedIndex = -1
-        clearPopup()
-        strikes = listOf()
-        populate()
+        strikeList.clear()
+
+        updateTotalNumberOfStrikes()
     }
 
     fun updateZoomLevel(zoomLevel: Int) {
@@ -131,8 +126,26 @@ class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: Stri
         }
     }
 
-    fun getColorHandler(): ColorHandler {
-        return colorHandler
+    override fun onTap(point: GeoPoint, map: MapView): Boolean {
+        Log.d(Main.LOG_TAG, "Tapped on StrikeList")
+
+        val strikeTapped = strikeList.firstOrNull { it.pointIsInside(point, map.projection) }
+
+        val popup = (map as OwnMapView).popup
+        map.removeView(popup)
+
+        if(strikeTapped != null) {
+            val newPopup = createStrikePopUp(popup, strikeTapped)
+
+            val mapParams = MapView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                    point, 0, 0, MapView.LayoutParams.BOTTOM_CENTER)
+
+            map.addView(newPopup, mapParams)
+
+            return true
+        }
+
+        return false
     }
 
     fun refresh() {
@@ -140,9 +153,9 @@ class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: Stri
 
         colorHandler.updateTarget()
 
-        var drawable: Shape? = null
+        var drawable: LightningShape? = null
 
-        for (item in strikes) {
+        for (item in strikeList) {
             val section = colorHandler.getColorSection(
                     if (hasRealtimeData())
                         System.currentTimeMillis()
@@ -161,8 +174,8 @@ class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: Stri
     }
 
     // VisibleForTesting
-    protected fun updateAndReturnDrawable(item: StrikeOverlayItem, section: Int, colorHandler: ColorHandler): Shape {
-        val projection = activity.mapView.projection
+    protected fun updateAndReturnDrawable(item: StrikeOverlay, section: Int, colorHandler: ColorHandler): LightningShape {
+        val projection = mapActivity.mapView.projection
         val color = colorHandler.getColor(section)
         val textColor = colorHandler.textColor
 
@@ -179,25 +192,12 @@ class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: Stri
         return parameters.isRealtime()
     }
 
-    override fun onTap(index: Int): Boolean {
-        val item = strikes[index]
-        if (item.point != null && item.timestamp > 0) {
-            var result = DateFormat.format("kk:mm:ss", item.timestamp) as String
-
-            if (item.shape is RasterShape) {
-                result += ", #%d".format(item.multiplicity)
-            } else if (item.shape is StrikeShape) {
-                result += " (%.4f %.4f)".format(item.longitude, item.latitude)
-            }
-
-            showPopup(item.point, result)
-            return true
-        }
-        return false
+    private fun updateTotalNumberOfStrikes() {
+        totalNumberOfStrikes = strikeList.fold(0, { previous, item -> previous + item.multiplicity })
     }
 
-    val totalNumberOfStrikes: Int
-        get() = strikes.fold(0, { previous, item -> previous + item.multiplicity })
+    var totalNumberOfStrikes: Int = 0
+        private set
 
     override val name: String
         get() = layerOverlayComponent.name
@@ -213,14 +213,4 @@ class StrikesOverlay(mapActivity: OwnMapActivity, private val colorHandler: Stri
         set(value) {
             layerOverlayComponent.visible = value
         }
-
-    companion object {
-        private val DEFAULT_DRAWABLE: Drawable
-
-        init {
-            val shape = StrikeShape()
-            shape.update(1f, 0)
-            DEFAULT_DRAWABLE = ShapeDrawable(shape)
-        }
-    }
 }

@@ -26,7 +26,7 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import org.blitzortung.android.app.R
-import org.blitzortung.android.map.overlay.StrikesOverlay
+import org.blitzortung.android.map.overlay.StrikeListOverlay
 import org.blitzortung.android.util.TabletAwareView
 
 class LegendView @JvmOverloads constructor(
@@ -43,7 +43,7 @@ class LegendView @JvmOverloads constructor(
     private val foregroundPaint: Paint
     private val backgroundRect: RectF
     private val legendColorRect: RectF
-    var strikesOverlay: StrikesOverlay? = null
+    var strikesOverlay: StrikeListOverlay? = null
 
     init {
         colorFieldSize = textSize
@@ -101,9 +101,9 @@ class LegendView @JvmOverloads constructor(
 
         val width = Math.min(determineWidth(strikesOverlay?.parameters?.intervalDuration ?: 0), parentWidth.toFloat())
 
-        val colorHandler = strikesOverlay?.getColorHandler()
+        val colorHandler = strikesOverlay?.colorHandler
 
-        var height = 0.0f;
+        var height = 0.0f
         if (colorHandler != null) {
             height = Math.min((colorFieldSize + padding) * colorHandler.colors.size + padding, parentHeight.toFloat())
 
@@ -125,7 +125,7 @@ class LegendView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         strikesOverlay?.let { strikesOverlay ->
-            val colorHandler = strikesOverlay.getColorHandler()
+            val colorHandler = strikesOverlay.colorHandler
             val minutesPerColor = strikesOverlay.parameters.intervalDuration / colorHandler.numberOfColors
 
             backgroundRect.set(0f, 0f, width.toFloat(), height.toFloat())
