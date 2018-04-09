@@ -42,7 +42,7 @@ android {
 }
 
 jacoco {
-    toolVersion = "0.7.9"
+    toolVersion = "0.8.1"
 }
 
 def anko_version = '0.9.1'
