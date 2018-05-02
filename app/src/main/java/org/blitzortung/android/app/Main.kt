@@ -588,8 +588,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     protected fun setHistoricStatusString() {
         if (!strikeListOverlay.hasRealtimeData()) {
-            val referenceTime = strikeListOverlay.referenceTime + strikeListOverlay.parameters.intervalOffset * 60 * 1000
-            val timeString = DateFormat.format("@ kk:mm", referenceTime) as String
+            val timeString = DateFormat.format("@ kk:mm", strikeListOverlay.referenceTime) as String
             setStatusString(timeString)
         }
     }
