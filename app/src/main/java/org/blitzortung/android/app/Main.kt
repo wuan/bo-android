@@ -26,11 +26,11 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.LocationManager
-import android.net.Uri
 import android.os.*
 import android.preference.PreferenceManager
 import android.provider.Settings
 import android.text.format.DateFormat
+import android.util.AndroidRuntimeException
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
@@ -541,7 +541,11 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                     Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
                     val intent = Intent();
                     intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
-                    context.startActivity(intent);
+                    try {
+                        context.startActivity(intent);
+                    } catch (e: AndroidRuntimeException) {
+                        Log.e(LOG_TAG, "requestWakeupPermissions() could not open battery optimization settings", e)
+                    }
                 }
             } else {
                 Log.w(LOG_TAG, "requestWakeupPermissions() could not get PowerManager")
