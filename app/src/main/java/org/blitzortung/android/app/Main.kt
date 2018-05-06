@@ -530,17 +530,19 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         val backgroundPeriod = sharedPreferences.get(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0").toInt()
         Log.v(LOG_TAG, "requestWakeupPermissions() background period: $backgroundPeriod")
 
-        val packageName = context.packageName;
-        val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager;
         if (backgroundPeriod > 0) {
-            Log.v(LOG_TAG, "requestWakeupPermissions() package name $packageName")
-            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
-                Toast.makeText(baseContext, R.string.background_query_toast, Toast.LENGTH_LONG).show()
+            val pm = context.getSystemService(Context.POWER_SERVICE)
+            if (pm is PowerManager) {
+                val packageName = context.packageName;
+                Log.v(LOG_TAG, "requestWakeupPermissions() package name $packageName")
+                if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                    Toast.makeText(baseContext, R.string.background_query_toast, Toast.LENGTH_LONG).show()
 
-                Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
-                val intent = Intent();
-                intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
-                context.startActivity(intent);
+                    Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
+                    val intent = Intent();
+                    intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                    context.startActivity(intent);
+                }
             }
         }
     }
