@@ -19,14 +19,15 @@
 package org.blitzortung.android.map
 
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Canvas
+import android.support.v7.app.AlertDialog
 import android.util.AttributeSet
 import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.widget.Toast
 import com.google.android.maps.MapView
 import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.Main
@@ -34,6 +35,7 @@ import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.location.LocationHandler
 import java.util.*
+
 
 class OwnMapView : MapView {
 
@@ -71,14 +73,29 @@ class OwnMapView : MapView {
             Log.v(Main.LOG_TAG, "GestureListener.onLongPress() $point")
             val context = this@OwnMapView.context
             val locationText = context.resources.getString(R.string.set_manual_location)
-            val preferences = BOApplication.sharedPreferences
-            val editor = preferences.edit()
-            editor.putString(PreferenceKey.LOCATION_LONGITUDE.toString(), longitude.toString())
-            editor.putString(PreferenceKey.LOCATION_LATITUDE.toString(), latitude.toString())
-            editor.putString(PreferenceKey.LOCATION_MODE.toString(), LocationHandler.MANUAL_PROVIDER)
-            editor.apply()
-            Toast.makeText(context, "%s: %.4f %.4f".format(locationText, longitude, latitude),
-                    Toast.LENGTH_LONG).show()
+
+            val dialogClickListener = DialogInterface.OnClickListener { dialog, which ->
+                when (which) {
+                    DialogInterface.BUTTON_POSITIVE -> {
+                        val preferences = BOApplication.sharedPreferences
+                        preferences.edit().apply {
+                            putString(PreferenceKey.LOCATION_LONGITUDE.toString(), longitude.toString())
+                            putString(PreferenceKey.LOCATION_LATITUDE.toString(), latitude.toString())
+                            putString(PreferenceKey.LOCATION_MODE.toString(), LocationHandler.MANUAL_PROVIDER)
+                            apply()
+                        }
+                    }
+
+                    DialogInterface.BUTTON_NEGATIVE -> {
+                    }
+                }
+            }
+
+            val builder = AlertDialog.Builder(context)
+            builder.setMessage("%s: %.4f %.4f?".format(locationText, longitude, latitude))
+                    .setPositiveButton(android.R.string.yes, dialogClickListener)
+                    .setNegativeButton(android.R.string.no, dialogClickListener)
+                    .show()
         }
     }
 
