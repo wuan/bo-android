@@ -228,6 +228,7 @@
     <string name="background_query_period_summary">if selected: background query frequency to check for alarms if app is
         not active
     </string>
+    <string name="background_query_toast">Please disable battery optimization for this app for fully functional background alarm.</string>
 
     <string-array name="background_query_periods">
         <item>off</item>

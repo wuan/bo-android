@@ -20,19 +20,16 @@ package org.blitzortung.android.app
 
 import android.Manifest
 import android.annotation.TargetApi
-import android.content.ComponentName
-import android.content.ServiceConnection
-import android.content.SharedPreferences
+import android.content.*
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.LocationManager
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.IBinder
+import android.net.Uri
+import android.os.*
 import android.preference.PreferenceManager
+import android.provider.Settings
 import android.text.format.DateFormat
 import android.util.Log
 import android.view.KeyEvent
@@ -219,9 +216,10 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
                 PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS)
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(preferences)
-        }
+        /*if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestLocationPermissions(preferences)
+            requestWakeupPermissions(preferences, baseContext)
+        }*/
 
         createAndBindToDataService()
 
@@ -279,7 +277,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 if (alertHandler.alertEnabled) {
                     val currentLocation = alertHandler.currentLocation
                     if (currentLocation != null) {
-                        val diameter = if(!keepZoomOnGotoOwnLocation) {
+                        val diameter = if (!keepZoomOnGotoOwnLocation) {
                             var radius = determineTargetZoomRadius(alertHandler)
 
                             //Calculate the new diameter
@@ -339,7 +337,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         val startZoomLevel = mapView.zoomLevel
         //If no diameter is provided, we keep the current zoomLevel
-        val targetZoomLevel = if(diameter is Float)
+        val targetZoomLevel = if (diameter is Float)
             mapView.calculateTargetZoomLevel(diameter * 1000f)
         else
             startZoomLevel
@@ -380,6 +378,11 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     override fun onStart() {
         super.onStart()
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestLocationPermissions(preferences)
+            requestWakeupPermissions(preferences, baseContext)
+        }
 
         Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
     }
@@ -508,7 +511,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    private fun requestPermissions(sharedPreferences: SharedPreferences) {
+    private fun requestLocationPermissions(sharedPreferences: SharedPreferences) {
         val locationProviderName = sharedPreferences.get(PreferenceKey.LOCATION_MODE, LocationManager.PASSIVE_PROVIDER)
         val permission = when (locationProviderName) {
             LocationManager.PASSIVE_PROVIDER, LocationManager.GPS_PROVIDER -> Manifest.permission.ACCESS_FINE_LOCATION
@@ -517,7 +520,28 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         }
 
         if (permission is String && checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(permission), LocationProviderRelation.byProviderName[locationProviderName]?.ordinal ?: Int.MIN_VALUE)
+            requestPermissions(arrayOf(permission), LocationProviderRelation.byProviderName[locationProviderName]?.ordinal
+                    ?: Int.MIN_VALUE)
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private fun requestWakeupPermissions(sharedPreferences: SharedPreferences, context: Context) {
+        val backgroundPeriod = sharedPreferences.get(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0").toInt()
+        Log.v(LOG_TAG, "requestWakeupPermissions() background period: $backgroundPeriod")
+
+        val packageName = context.packageName;
+        val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager;
+        if (backgroundPeriod > 0) {
+            Log.v(LOG_TAG, "requestWakeupPermissions() package name $packageName")
+            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                Toast.makeText(baseContext, R.string.background_query_toast, Toast.LENGTH_LONG).show()
+
+                Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
+                val intent = Intent();
+                intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                context.startActivity(intent);
+            }
         }
     }
 
@@ -609,7 +633,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         if (isAtLeast(Build.VERSION_CODES.LOLLIPOP) ||
                 isAtLeast(Build.VERSION_CODES.ICE_CREAM_SANDWICH) &&
-                        !config.hasPermanentMenuKey()) {
+                !config.hasPermanentMenuKey()) {
             menu.visibility = View.VISIBLE
             menu.setOnClickListener {
                 showPopupMenu(menu)
