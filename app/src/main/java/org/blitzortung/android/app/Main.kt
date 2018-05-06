@@ -543,6 +543,8 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                     intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
                     context.startActivity(intent);
                 }
+            } else {
+                Log.w(LOG_TAG, "requestWakeupPermissions() could not get PowerManager")
             }
         }
     }
