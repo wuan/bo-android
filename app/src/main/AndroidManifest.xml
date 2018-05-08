@@ -37,7 +37,6 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="org.blitzortung.android.app" />
             </intent-filter>

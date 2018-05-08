@@ -29,6 +29,7 @@ import android.location.LocationManager
 import android.os.*
 import android.preference.PreferenceManager
 import android.provider.Settings
+import android.support.v7.app.AlertDialog
 import android.text.format.DateFormat
 import android.util.AndroidRuntimeException
 import android.util.Log
@@ -215,11 +216,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
                 PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS)
-
-        /*if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestLocationPermissions(preferences)
-            requestWakeupPermissions(preferences, baseContext)
-        }*/
 
         createAndBindToDataService()
 
@@ -536,16 +532,38 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 val packageName = context.packageName;
                 Log.v(LOG_TAG, "requestWakeupPermissions() package name $packageName")
                 if (!pm.isIgnoringBatteryOptimizations(packageName)) {
-                    Toast.makeText(baseContext, R.string.background_query_toast, Toast.LENGTH_LONG).show()
+                    val locationText = context.resources.getString(R.string.open_battery_optimiziation)
 
-                    Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
-                    val intent = Intent();
-                    intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
-                    try {
-                        context.startActivity(intent);
-                    } catch (e: AndroidRuntimeException) {
-                        Log.e(LOG_TAG, "requestWakeupPermissions() could not open battery optimization settings", e)
+                    val dialogClickListener = DialogInterface.OnClickListener { dialog, which ->
+                        when (which) {
+                            DialogInterface.BUTTON_POSITIVE -> {
+                                Toast.makeText(baseContext, R.string.background_query_toast, Toast.LENGTH_LONG).show()
+
+                                Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
+                                val intent = Intent();
+                                intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                                try {
+                                    context.startActivity(intent);
+                                } catch (e: AndroidRuntimeException) {
+                                    Log.e(LOG_TAG, "requestWakeupPermissions() could not open battery optimization settings", e)
+                                }
+                            }
+
+                            DialogInterface.BUTTON_NEGATIVE -> {
+                                val preferences = BOApplication.sharedPreferences
+                                preferences.edit().apply {
+                                    putString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), 0.toString())
+                                    apply()
+                                }
+                            }
+                        }
                     }
+
+                    val builder = AlertDialog.Builder(this)
+                    builder.setMessage(locationText)
+                            .setPositiveButton(android.R.string.yes, dialogClickListener)
+                            .setNegativeButton(android.R.string.no, dialogClickListener)
+                            .show()
                 }
             } else {
                 Log.w(LOG_TAG, "requestWakeupPermissions() could not get PowerManager")

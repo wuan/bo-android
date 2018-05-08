@@ -79,7 +79,7 @@ class OwnLocationOverlay(context: Context, private val mapView: OwnMapView) :
 
         mapView.overlays.add(this)
 
-        sizeFactor = ViewHelper.pxFromDp(mapView, 0.5f) * TabletAwareView.sizeFactor(context)
+        sizeFactor = ViewHelper.pxFromDp(mapView, 1.0f) * TabletAwareView.sizeFactor(context)
 
         val preferences = BOApplication.sharedPreferences
         preferences.registerOnSharedPreferenceChangeListener(this)

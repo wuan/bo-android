@@ -229,6 +229,7 @@
         not active
     </string>
     <string name="background_query_toast">Please disable battery optimization for this app for fully functional background alarm.</string>
+    <string name="open_battery_optimiziation">Please disable battery optimization for this app when background query is enabled. Press CANCEL to disable background query and OK to proceed to the battery optimization setting.</string>
 
     <string-array name="background_query_periods">
         <item>off</item>
@@ -332,10 +333,10 @@
     <string name="map_settings_summary">Map mode and appearance related settings</string>
     <string name="location_settings_summary">Location determination mode</string>
     <string name="alarm_settings_summary">Alarm activation, background service and radiuses</string>
-    <string name="alarm_signal_settings">alarm signal settings</string>
-    <string name="alarm_audio_signal">alarm audio signal</string>
-    <string name="alarm_vibration_signal">alarm vibration duration</string>
-    <string name="alarm_audio_signal_summary">choose an audio notfication for alarm signalig</string>
+    <string name="alarm_signal_settings">Alarm signal settings</string>
+    <string name="alarm_audio_signal">Alarm audio signal</string>
+    <string name="alarm_vibration_signal">Alarm vibration duration</string>
+    <string name="alarm_audio_signal_summary">choose an audio notfication for alarm signaling</string>
     <string name="alarm_vibration_signal_summary">choose the duration of vibration signaling in alarm case</string>
     <string name="location_provider_not_available">location provider \'%s\' not available</string>
     <string name="location_provider_disabled">location provider \'%s\' is disabled</string>

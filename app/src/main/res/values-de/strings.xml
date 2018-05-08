@@ -354,4 +354,5 @@
     <string name="keep_zoom_goto_own_location_title" >Zoom beibehalten</string>
     <string name="keep_zoom_goto_own_location_summary">Einstellung zur Beibehaltung des aktuellen Zooms beim Zentrieren des eigenen Standorts</string>
     <string name="background_query_toast">Bitte deaktivieren Sie die Akku-Optimierung für diese App damit die Warnung im Hintergrund zuverlässig funktioniert.</string>
+    <string name="open_battery_optimiziation">Bitte deaktivieren Sie die Akku-Optimierung für diese App wenn die Hintergrundabfrage aktiv ist. Drücken Sie auf Abbrechen um die Hintergrundabfrage zu deaktiveren oder auf OK um zur Einstellung der Batterieoptimierung zu gelangen.</string>
 </resources>

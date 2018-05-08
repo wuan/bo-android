@@ -35,7 +35,7 @@ jacoco {
     toolVersion = "0.8.1"
 }
 
-def anko_version = '0.9.1'
+def anko_version = '0.10.5'
 
 dependencies {
     implementation 'com.android.support:appcompat-v7:25.3.1'
