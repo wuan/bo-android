@@ -2,8 +2,6 @@
 <resources>
 
     <string name="app_name">Blitzortung Lightning Monitor</string>
-    <string name="ok">@android:string/ok</string>
-    <string name="cancel">@android:string/cancel</string>
 
     <plurals name="strike">
         <item quantity="one">1 rayo</item>
@@ -29,6 +27,7 @@
         Traducción francés por: Frédéric France (frederic.france@free.fr)\n
 		Traducción italiana por: Michele Locati (mlocati@gmail.com)\n
 		Traducción polaca por: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+        Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="legend">Leyenda</string>
     <string name="total_time">Tiempo total</string>

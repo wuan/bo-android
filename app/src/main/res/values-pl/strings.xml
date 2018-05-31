@@ -2,8 +2,6 @@
 <resources>
 
     <string name="app_name">Blitzortung Lightning Monitor</string>
-    <string name="ok">@android:string/ok</string>
-    <string name="cancel">@android:string/cancel</string>
 
     <plurals name="strike">
         <item quantity="zero">brak wyładowań</item>
@@ -30,7 +28,8 @@
         Tłumaczenie francuski: Frédéric France (frederic.france@free.fr)\n
 		Tłumaczenie polskie: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
         Tłumaczenie włoskie: Michele Locati (mlocati@gmail.com)\n
-        Tłumaczenie chorwacki:  Igor Dobrača (idobraca@rovinj.net)\n
+        Tłumaczenie chorwacki: Igor Dobrača (idobraca@rovinj.net)\n
+        Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="legend">Legenda</string>
     <string name="total_time">łączny czas</string>

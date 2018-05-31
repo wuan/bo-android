@@ -2,8 +2,6 @@
 <resources>
 
     <string name="app_name">Blitzortung Gewitter-Monitor</string>
-    <string name="ok">Übernehmen</string>
-    <string name="cancel">Abbrechen</string>
 
     <plurals name="strike">
         <item quantity="one">1 Blitz</item>
@@ -26,6 +24,7 @@
         Italienisch: Michele Locati (mlocati@gmail.com)\n
         Kroatisch: Igor Dobrača (idobraca@rovinj.net)\n
 		Polnisch: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+        Russisch: Ivan Karev (karev.ivan@gmail.com)\n
         Tschechisch: Jakub Mareček (jakubmarecek715@gmail.com)\n
     </string>
     <string name="legend">Legende</string>

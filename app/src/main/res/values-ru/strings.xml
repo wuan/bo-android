@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <string name="app_name">Blitzortung Lightning Monitor</string> 
-  <string name="ok">@android:string/ok</string> 
-  <string name="cancel">@android:string/cancel</string> 
+  <string name="app_name">Blitzortung Lightning Monitor</string>
 
     <plurals name="strike">
         <item quantity="zero">Нет молний</item>
@@ -25,8 +23,6 @@
         Italian by Michele Locati (michele@locati.it)\n
         Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string>
-    <string name="copyright" translatable="false">© 2011–2018, Andreas Würl</string>
-    <string name="project_email" translatable="false">blitzortung@tryb.de</string>
     <string name="legend">Обозначение</string>
     <string name="total_time">всего времени</string>
     <string name="activity">активность</string>
@@ -345,7 +341,6 @@
     <string name="service_url_summary">Установите адрес стороннего сервера данных</string>
     <string name="set_manual_location">Установить месторасположение вручную</string>
     <string name="error_indicator">Ошибка индикатора</string>
-    <string name="app_log" translatable="false">Лог приложения</string>
     <string name="share_log">Отправить по email …</string>
     <string name="share_unavailable">Обмен по E-mail не доступен.</string>
     <string name="timeout_warning">Нет ответа сети.\nПожалуйста, проверьте подключение к сети</string>

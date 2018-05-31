@@ -2,8 +2,6 @@
 <resources>
 
     <string name="app_name">Blitzortung Moniteur d\'activité orageuse</string>
-    <string name="ok">Valider</string>
-    <string name="cancel">Annuler</string>
 
     <plurals name="strike">
         <item quantity="one">%d impact</item>
@@ -27,6 +25,7 @@
         Italien: Michele Locati (mlocati@gmail.com)\n
 		Polonais: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
         Tchèque: Jakub Mareček (jakubmarecek715@gmail.com)\n
+        Russe: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="legend">Légende</string>
     <string name="total_time">Temps total</string>

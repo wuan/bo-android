@@ -2,8 +2,6 @@
 <resources>
 
     <string name="app_name">Monitor di fulmini Blitzortung</string>
-    <string name="ok">@android:string/ok</string>
-    <string name="cancel">@android:string/cancel</string>
 
     <plurals name="strike">
         <item quantity="one">1 fulmine</item>
@@ -27,6 +25,7 @@
         Traduzione polacca di: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
         Traduzione italiana di: Michele Locati (mlocati@gmail.com)\n
         Traduzione croato di: Igor Dobrača (idobraca@rovinj.net)\n
+        Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="legend">Legenda</string>
     <string name="total_time">tempo totale</string>

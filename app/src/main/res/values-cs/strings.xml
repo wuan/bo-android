@@ -2,8 +2,6 @@
 <resources>
 
     <string name="app_name">Blitzortung Lightning Monitor</string>
-    <string name="ok">Ok</string>
-    <string name="cancel">Cancel</string>
 
     <plurals name="strike">
         <item quantity="zero">žádné blesky</item>
@@ -30,6 +28,7 @@
         Francouzský překlad: Frédéric France (frederic.france@free.fr)\n
         Italský překlad: Michele Locati (mlocati@gmail.com)\n
 		Polský překlad: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+        Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="legend">Legenda</string>
     <string name="total_time">celkový čas</string>

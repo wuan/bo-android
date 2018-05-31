@@ -2,8 +2,8 @@
 <resources>
 
     <string name="app_name">Blitzortung Lightning Monitor</string>
-    <string name="ok">@android:string/ok</string>
-    <string name="cancel">@android:string/cancel</string>
+    <string name="ok" translatable="false">@android:string/ok</string>
+    <string name="cancel" translatable="false">@android:string/cancel</string>
 
     <plurals name="strike">
         <item quantity="zero">no strike</item>
@@ -20,9 +20,12 @@
         is\nprovided by the\n<b>Blitzortung.org</b>\nrealtime lighning community project. Please refer
         to\n\thttp://blitzortung.org/\nfor further information or how\nto participate.\n\n
         Translations:\\
+        Croatian by Igor Dobrača (idobraca@rovinj.net)\n
         Czech by Jakub Mareček (jakubmarecek715@gmail.com)\n
+        French by Frédéric France (frederic.france@free.fr)\n
         Polish by Jakub Świątkiewicz (kuba.dex@gmail.com)\n
         Italian by Michele Locati (michele@locati.it)\n
+        Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="copyright" translatable="false">© 2011–2018, Andreas Würl</string>
     <string name="project_email" translatable="false">blitzortung@tryb.de</string>

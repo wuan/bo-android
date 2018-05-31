@@ -2,8 +2,6 @@
 <resources>
 
     <string name="app_name">Blitzortung Lightning Monitor</string>
-    <string name="ok">@android:string/ok</string>
-    <string name="cancel">@android:string/cancel</string>
 
     <plurals name="strike">
         <item quantity="zero">nema munja</item>
@@ -28,6 +26,7 @@
         Poljski: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
         Talijanski: Michele Locati (michele@locati.it)\n
         Hrvatski: Igor Dobrača (idobraca@rovinj.net)\n
+        Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
 
     <string name="legend">Legenda</string>
