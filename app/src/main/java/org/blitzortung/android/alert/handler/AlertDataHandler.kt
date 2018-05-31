@@ -56,7 +56,7 @@ open class AlertDataHandler internal constructor(
         val distance = calculateDistanceTo(location, strike, measurementSystem)
 
         sector.ranges.find { distance <= it.rangeMaximum }?.let {
-            it.addStrike(strike);
+            it.addStrike(strike)
             if (strike.timestamp >= thresholdTime) {
                 sector.updateClosestStrikeDistance(distance)
             }

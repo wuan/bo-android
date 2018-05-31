@@ -51,12 +51,6 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString))
     }
 
-    private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, vararg keys: PreferenceKey) {
-        for (key in keys) {
-            onSharedPreferenceChanged(sharedPreferences, key)
-        }
-    }
-
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         when (key) {
             PreferenceKey.DATA_SOURCE -> {

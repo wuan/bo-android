@@ -45,14 +45,9 @@ class OwnMapView : MapView {
 
     private var oldPixelSize = -1f
 
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-    }
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle) {
-    }
-
-    constructor(context: Context, apiKey: String) : super(context, apiKey) {
-    }
+    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle)
 
     inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
         override fun onDoubleTap(event: MotionEvent): Boolean {

@@ -23,4 +23,4 @@ data class AlertSectorRange(
         val rangeMaximum: Float,
         val strikeCount: Int,
         val latestStrikeTimestamp: Long
-) {}
+)

@@ -33,8 +33,7 @@ import org.jetbrains.anko.longToast
 
 open class LocationHandler(
         private val context: Context,
-        private val sharedPreferences: SharedPreferences
-
+        sharedPreferences: SharedPreferences
 )
 : SharedPreferences.OnSharedPreferenceChangeListener {
 

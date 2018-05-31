@@ -28,7 +28,7 @@ open class ConsumerContainer<P> {
         private set
 
     init {
-        consumers = HashSet<(P) -> Unit>()
+        consumers = HashSet()
     }
 
     open fun addConsumer(consumer: ((P) -> Unit)?) {

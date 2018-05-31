@@ -84,10 +84,10 @@ class LegendView @JvmOverloads constructor(
     }
 
     private fun determineWidth(intervalDuration: Int): Float {
-        var innerWidth = colorFieldSize + padding + textPaint.measureText(if (intervalDuration > 100) "< 100min" else "< 10min").toFloat()
+        var innerWidth = colorFieldSize + padding + textPaint.measureText(if (intervalDuration > 100) "< 100min" else "< 10min")
 
         if (hasRegion()) {
-            innerWidth = Math.max(innerWidth, regionTextPaint.measureText(regionName).toFloat())
+            innerWidth = Math.max(innerWidth, regionTextPaint.measureText(regionName))
         }
 
         return padding + innerWidth + padding
@@ -201,8 +201,8 @@ class LegendView @JvmOverloads constructor(
     }
 
     companion object {
-        val REGION_HEIGHT = 1.1f
-        val RASTER_HEIGHT = 0.8f
-        val COUNT_THRESHOLD_HEIGHT = 0.8f
+        const val REGION_HEIGHT = 1.1f
+        const val RASTER_HEIGHT = 0.8f
+        const val COUNT_THRESHOLD_HEIGHT = 0.8f
     }
 }

@@ -26,7 +26,7 @@ import org.blitzortung.android.map.overlay.LayerOverlay
 
 abstract class OwnMapActivity : MapActivity() {
 
-    private var overlays: MutableList<Overlay> = arrayListOf();
+    private var overlays: MutableList<Overlay> = arrayListOf()
 
     lateinit var mapView: OwnMapView
 

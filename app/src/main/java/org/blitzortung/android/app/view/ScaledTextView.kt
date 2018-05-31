@@ -2,14 +2,13 @@ package org.blitzortung.android.app.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.widget.TextView
 import org.blitzortung.android.app.R
 import org.blitzortung.android.util.TabletAwareView
 
-class ScaledTextView(context: Context, attrs: AttributeSet?) : TextView(context, attrs) {
+class ScaledTextView(context: Context, attrs: AttributeSet?) : android.support.v7.widget.AppCompatTextView(context, attrs) {
 
     init {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.View, 0, 0);
+        val a = context.obtainStyledAttributes(attrs, R.styleable.View, 0, 0)
 
         val scaleForTablet = a.getBoolean(R.styleable.View_tablet_scaleable, false) && TabletAwareView.isTablet(context)
 
@@ -17,5 +16,6 @@ class ScaledTextView(context: Context, attrs: AttributeSet?) : TextView(context,
             val displayMetrics = context.resources.displayMetrics
             textSize *= TabletAwareView.textSizeFactor(scaleForTablet) / displayMetrics.scaledDensity
         }
+        a.recycle()
     }
 }

@@ -24,7 +24,6 @@ import android.text.Html.FROM_HTML_MODE_COMPACT
 import android.util.Log
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.util.isAtLeast
-import java.lang.Exception
 import java.util.*
 
 abstract class MapBuilder<T> internal constructor(private val lineSplitter: (String) -> Array<String>) {
@@ -32,7 +31,7 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
     private val keyValueBuilderMap: Map<String, (Array<String>) -> Unit>
 
     init {
-        keyValueBuilderMap = HashMap<String, (Array<String>) -> Unit>()
+        keyValueBuilderMap = HashMap()
         setBuilderMap(keyValueBuilderMap)
     }
 

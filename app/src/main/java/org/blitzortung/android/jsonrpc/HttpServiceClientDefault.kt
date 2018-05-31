@@ -52,7 +52,7 @@ class HttpServiceClientDefault internal constructor(uriString: String, agentSuff
         connection.setRequestProperty("Content-Type", "text/json")
         connection.setRequestProperty("Content-Length", postDataBytes.size.toString())
         connection.setRequestProperty("User-Agent", userAgentString)
-        connection.setRequestProperty("Accept-Encoding", "gzip");
+        connection.setRequestProperty("Accept-Encoding", "gzip")
 
         connection.doOutput = true
         connection.outputStream.write(postDataBytes)

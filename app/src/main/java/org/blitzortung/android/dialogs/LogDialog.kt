@@ -68,11 +68,10 @@ class LogDialog(
         val device = Build.DEVICE           // Device
         val model = Build.MODEL            // Model
         val product = Build.PRODUCT          // Product
-        val version = System.getProperty("os.version"); // OS version
+        val version = System.getProperty("os.version") // OS version
         val sdkInt = Build.VERSION.SDK_INT      // API Level
 
-        val deviceText = "Device: $device, model: $model, Product: $product, Version: $version, SDK: $sdkInt"
-        return deviceText
+        return "Device: $device, model: $model, Product: $product, Version: $version, SDK: $sdkInt"
     }
 
     private fun getVersionString(): String {
@@ -80,19 +79,19 @@ class LogDialog(
     }
 
     fun composeEmail(logText: String) {
-        val intent = Intent(Intent.ACTION_SENDTO);
+        val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = Uri.parse("mailto:")
-        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(context.resources.getString(R.string.project_email)));
+        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(context.resources.getString(R.string.project_email)))
         intent.putExtra(Intent.EXTRA_SUBJECT, context.resources.getString(R.string.app_log))
         intent.putExtra(Intent.EXTRA_TEXT, logText)
         if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(intent);
+            context.startActivity(intent)
         } else {
             Toast.makeText(context, context.resources.getString(R.string.share_unavailable), Toast.LENGTH_LONG).show()
             intent.data = null
             intent.action = Intent.ACTION_SEND
             if (intent.resolveActivity(context.packageManager) != null) {
-                context.startActivity(intent);
+                context.startActivity(intent)
             }
         }
     }

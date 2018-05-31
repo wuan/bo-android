@@ -23,8 +23,7 @@ import org.json.JSONObject
 
 class JsonRpcClient(client: HttpServiceClient) : HttpServiceClient by client {
 
-    constructor(uri: String, agentSuffix: String) : this(HttpServiceClientDefault(uri, agentSuffix)) {
-    }
+    constructor(uri: String, agentSuffix: String) : this(HttpServiceClientDefault(uri, agentSuffix))
 
     private val id = 0
 

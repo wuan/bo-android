@@ -24,9 +24,9 @@ import java.util.*
 
 class LogProvider {
     fun getLogLines(): List<String> {
-        val process = Runtime.getRuntime().exec("logcat -d");
+        val process = Runtime.getRuntime().exec("logcat -d")
         val reader = BufferedReader(
-                InputStreamReader(process.inputStream));
+                InputStreamReader(process.inputStream))
 
         val lines: ArrayList<String> = arrayListOf()
         reader.use {

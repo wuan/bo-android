@@ -24,6 +24,4 @@ class LayerOverlayComponent(
         override val name: String,
         override var visible: Boolean = true,
         override var enabled: kotlin.Boolean = true
-) : LayerOverlay {
-
-}
+) : LayerOverlay

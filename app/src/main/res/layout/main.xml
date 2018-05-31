@@ -8,7 +8,8 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:apiKey="0H7fqZDUCcfqpS1Z7CUqxVNKRduP-E1DNEhXx1A"
-        android:clickable="true" />
+        android:clickable="true"
+        android:focusable="true" />
 
     <include
         android:id="@+id/cell2"

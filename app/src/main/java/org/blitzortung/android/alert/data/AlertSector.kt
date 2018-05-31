@@ -24,4 +24,4 @@ data class AlertSector(
         val maximumSectorBearing: Float,
         val ranges: List<AlertSectorRange>,
         val closestStrikeDistance: Float
-) {}
+)

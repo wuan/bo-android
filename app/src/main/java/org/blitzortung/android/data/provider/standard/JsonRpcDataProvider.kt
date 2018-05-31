@@ -72,9 +72,9 @@ class JsonRpcDataProvider(
     private fun addStrikes(response: JSONObject, result: ResultEvent): ResultEvent {
         val strikes = ArrayList<Strike>()
         val referenceTimestamp = getReferenceTimestamp(response)
-        val strikes_array = response.get("s") as JSONArray
-        for (i in 0..strikes_array.length() - 1) {
-            strikes.add(dataBuilder.createDefaultStrike(referenceTimestamp, strikes_array.getJSONArray(i)))
+        val strikesArray = response.get("s") as JSONArray
+        for (i in 0..strikesArray.length() - 1) {
+            strikes.add(dataBuilder.createDefaultStrike(referenceTimestamp, strikesArray.getJSONArray(i)))
         }
         if (response.has("next")) {
             nextId = response.get("next") as Int
@@ -86,10 +86,10 @@ class JsonRpcDataProvider(
         val rasterParameters = dataBuilder.createRasterParameters(response, info)
         val referenceTimestamp = getReferenceTimestamp(response)
 
-        val strikes_array = response.get("r") as JSONArray
+        val strikesArray = response.get("r") as JSONArray
         val strikes = ArrayList<Strike>()
-        for (i in 0..strikes_array.length() - 1) {
-            strikes.add(dataBuilder.createRasterElement(rasterParameters, referenceTimestamp, strikes_array.getJSONArray(i)))
+        for (i in 0..strikesArray.length() - 1) {
+            strikes.add(dataBuilder.createRasterElement(rasterParameters, referenceTimestamp, strikesArray.getJSONArray(i)))
         }
 
         return result.copy(strikes = strikes, rasterParameters = rasterParameters, incrementalData = false, referenceTime = referenceTimestamp)
@@ -105,12 +105,12 @@ class JsonRpcDataProvider(
         var resultVar = result
 
         if (response.has("h")) {
-            val histogram_array = response.get("h") as JSONArray
+            val histogramArray = response.get("h") as JSONArray
 
-            val histogram = IntArray(histogram_array.length())
+            val histogram = IntArray(histogramArray.length())
 
-            for (i in 0..histogram_array.length() - 1) {
-                histogram[i] = histogram_array.getInt(i)
+            for (i in 0..histogramArray.length() - 1) {
+                histogram[i] = histogramArray.getInt(i)
             }
             resultVar = resultVar.copy(histogram = histogram)
         }
@@ -135,10 +135,10 @@ class JsonRpcDataProvider(
 
             try {
                 val response = client.call("get_stations")
-                val stations_array = response.get("stations") as JSONArray
+                val stationsArray = response.get("stations") as JSONArray
 
-                for (i in 0..stations_array.length() - 1) {
-                    stations.add(dataBuilder.createStation(stations_array.getJSONArray(i)))
+                for (i in 0..stationsArray.length() - 1) {
+                    stations.add(dataBuilder.createStation(stationsArray.getJSONArray(i)))
                 }
             } catch (e: Exception) {
                 throw RuntimeException(e)
@@ -220,7 +220,7 @@ class JsonRpcDataProvider(
 
     companion object {
         private val DATE_TIME_FORMATTER = SimpleDateFormat("yyyyMMdd'T'HH:mm:ss")
-        private val DEFAULT_SERVICE_URL = "http://bo-service.tryb.de/"
+        private const val DEFAULT_SERVICE_URL = "http://bo-service.tryb.de/"
 
         init {
             val tz = TimeZone.getTimeZone("UTC")

@@ -25,6 +25,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Binder
+import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
@@ -40,6 +41,7 @@ import org.blitzortung.android.data.provider.result.StatusEvent
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.util.LogUtil
 import org.blitzortung.android.util.Period
+import org.blitzortung.android.util.isAtLeast
 import java.util.*
 
 class AppService protected constructor(private val handler: Handler, private val updatePeriod: Period) : Service(), Runnable, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -60,7 +62,6 @@ class AppService protected constructor(private val handler: Handler, private val
 
     private val dataHandler: DataHandler = BOApplication.dataHandler
     private val locationHandler: LocationHandler = BOApplication.locationHandler
-    private val alertHandler: AlertHandler = BOApplication.alertHandler
 
     private val preferences = BOApplication.sharedPreferences
 
@@ -131,7 +132,11 @@ class AppService protected constructor(private val handler: Handler, private val
         synchronized(wakeLock) {
             if (!wakeLock.isHeld) {
                 Log.v(Main.LOG_TAG, "AppService.acquireWakeLock() before: $wakeLock")
-                wakeLock.acquire()
+                if (isAtLeast(Build.VERSION_CODES.N)) {
+                    wakeLock.acquire(WAKELOCK_TIMEOUT)
+                } else {
+                    wakeLock.acquire()
+                }
                 return true
             } else {
                 Log.v(Main.LOG_TAG, "AppService.acquireWakeLock() skip")
@@ -211,6 +216,7 @@ class AppService protected constructor(private val handler: Handler, private val
     }
 
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+        @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
             PreferenceKey.ALERT_ENABLED -> {
                 alertEnabled = sharedPreferences.get(key, false)
@@ -315,7 +321,8 @@ class AppService protected constructor(private val handler: Handler, private val
     }
 
     companion object {
-        val RETRIEVE_DATA_ACTION = "retrieveData"
+        const val RETRIEVE_DATA_ACTION = "retrieveData"
+        const val WAKELOCK_TIMEOUT = 5000L
 
         var instance: AppService? = null
             private set

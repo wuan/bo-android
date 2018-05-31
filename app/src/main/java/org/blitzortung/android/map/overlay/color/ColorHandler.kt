@@ -95,8 +95,8 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
 
     open fun getBackgroundColor(target: ColorTarget): Int {
         return when (target) {
-            ColorTarget.SATELLITE -> 0x00000000.toInt()
-            ColorTarget.STREETMAP -> 0x00ffffff.toInt()
+            ColorTarget.SATELLITE -> 0x00000000
+            ColorTarget.STREETMAP -> 0x00ffffff
         }
     }
 
@@ -104,12 +104,12 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
         get() = colors.size
 
     fun modifyBrightness(colors: IntArray, factor: Float): IntArray {
-        val HSVValues = FloatArray(3)
+        val hsvValues = FloatArray(3)
 
         return colors.map {
-            Color.colorToHSV(it, HSVValues)
-            HSVValues[2] *= factor
-            Color.HSVToColor(HSVValues)
+            Color.colorToHSV(it, hsvValues)
+            hsvValues[2] *= factor
+            Color.HSVToColor(hsvValues)
         }.toIntArray()
     }
 

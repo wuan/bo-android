@@ -36,7 +36,7 @@ open class TabletAwareView(
     protected val sizeFactor: Float
 
     init {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.View, defStyle, 0);
+        val a = context.obtainStyledAttributes(attrs, R.styleable.View, defStyle, 0)
 
         val scaleForTablet = a.getBoolean(R.styleable.View_tablet_scaleable, false) && isTablet(context)
 
@@ -44,16 +44,14 @@ open class TabletAwareView(
         textSize = ViewHelper.pxFromSp(this, textSize(scaleForTablet))
         sizeFactor = sizeFactor(scaleForTablet)
 
-        a.recycle();
+        a.recycle()
     }
 
     @SuppressWarnings("unused")
-    constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0) {
-    }
+    constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
 
     @SuppressWarnings("unused")
-    constructor(context: Context) : this(context, null, 0) {
-    }
+    constructor(context: Context) : this(context, null, 0)
 
     companion object {
         fun isTablet(context: Context): Boolean {

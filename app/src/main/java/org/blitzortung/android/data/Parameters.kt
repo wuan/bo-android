@@ -28,5 +28,4 @@ data class Parameters(
 
     fun isRealtime(): Boolean = intervalOffset == 0
 
-    fun isRaster(): Boolean = rasterBaselength != 0
 }

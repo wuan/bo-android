@@ -202,7 +202,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         hideActionBar()
 
-        buttonColumnHandler = ButtonColumnHandler<ImageButton, ButtonGroup>(if (TabletAwareView.isTablet(this)) 75f else 55f)
+        buttonColumnHandler = ButtonColumnHandler(if (TabletAwareView.isTablet(this)) 75f else 55f)
         configureMenuAccess()
         historyController = HistoryController(this, buttonColumnHandler)
 
@@ -244,20 +244,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         bindService(serviceIntent, serviceConnection, 0)
     }
 
-    private fun setupDetailModeButton() {
-        with(toggleExtendedMode) {
-            isEnabled = true
-            visibility = View.VISIBLE
-
-            setOnClickListener {
-                BOApplication.dataHandler.toggleExtendedMode()
-                reloadData()
-            }
-
-            buttonColumnHandler.addElement(this, ButtonGroup.DATA_UPDATING)
-        }
-    }
-
     private fun setupCustomViews() {
         with(legend_view) {
             strikesOverlay = this@Main.strikeListOverlay
@@ -291,7 +277,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
         with(histogram_view) {
             setStrikesOverlay(strikeListOverlay)
-            setOnClickListener { view ->
+            setOnClickListener { _ ->
                 val currentResult = currentResult
                 if (currentResult != null) {
                     val rasterParameters = currentResult.rasterParameters
@@ -495,7 +481,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 Log.i(LOG_TAG, "$providerName permission has now been granted.")
                 val editor = preferences.edit()
                 editor.put(PreferenceKey.LOCATION_MODE, providerName)
-                editor.commit()
+                editor.apply()
             } else {
                 Log.i(LOG_TAG, "$providerName permission was NOT granted.")
             }
@@ -529,21 +515,21 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         if (backgroundPeriod > 0) {
             val pm = context.getSystemService(Context.POWER_SERVICE)
             if (pm is PowerManager) {
-                val packageName = context.packageName;
+                val packageName = context.packageName
                 Log.v(LOG_TAG, "requestWakeupPermissions() package name $packageName")
                 if (!pm.isIgnoringBatteryOptimizations(packageName)) {
                     val locationText = context.resources.getString(R.string.open_battery_optimiziation)
 
-                    val dialogClickListener = DialogInterface.OnClickListener { dialog, which ->
+                    val dialogClickListener = DialogInterface.OnClickListener { _, which ->
                         when (which) {
                             DialogInterface.BUTTON_POSITIVE -> {
                                 Toast.makeText(baseContext, R.string.background_query_toast, Toast.LENGTH_LONG).show()
 
                                 Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
-                                val intent = Intent();
-                                intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                                val intent = Intent()
+                                intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
                                 try {
-                                    context.startActivity(intent);
+                                    context.startActivity(intent)
                                 } catch (e: AndroidRuntimeException) {
                                     Log.e(LOG_TAG, "requestWakeupPermissions() could not open battery optimization settings", e)
                                 }

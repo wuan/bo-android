@@ -3,14 +3,9 @@ package org.blitzortung.android.map.overlay
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Point
-import android.text.format.DateFormat
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
 import com.google.android.maps.GeoPoint
 import com.google.android.maps.MapView
 import com.google.android.maps.Projection
-import org.blitzortung.android.app.R
 import org.blitzortung.android.data.Coordsys
 import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Strike
@@ -35,16 +30,16 @@ class StrikeOverlay(strike: Strike) {
                 shape = RasterShape(center)
             }
 
-            val lon_delta = rasterParameters.longitudeDelta / 2.0f * 1e6f
-            val lat_delta = rasterParameters.latitudeDelta / 2.0f * 1e6f
+            val lonDelta = rasterParameters.longitudeDelta / 2.0f * 1e6f
+            val latDelta = rasterParameters.latitudeDelta / 2.0f * 1e6f
 
             projection.toPixels(center, centerPoint)
             projection.toPixels(GeoPoint(
-                    (center.latitudeE6 + lat_delta).toInt(),
-                    (center.longitudeE6 - lon_delta).toInt()), topLeft)
+                    (center.latitudeE6 + latDelta).toInt(),
+                    (center.longitudeE6 - lonDelta).toInt()), topLeft)
             projection.toPixels(GeoPoint(
-                    (center.latitudeE6 - lat_delta).toInt(),
-                    (center.longitudeE6 + lon_delta).toInt()), bottomRight)
+                    (center.latitudeE6 - latDelta).toInt(),
+                    (center.longitudeE6 + lonDelta).toInt()), bottomRight)
             topLeft.offset(-centerPoint.x, -centerPoint.y)
             bottomRight.offset(-centerPoint.x, -centerPoint.y)
             if (shape is RasterShape) {

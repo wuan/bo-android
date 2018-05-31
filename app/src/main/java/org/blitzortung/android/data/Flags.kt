@@ -20,4 +20,4 @@ package org.blitzortung.android.data
 
 data class Flags(
         val storeResult: Boolean = true
-) {}
+)

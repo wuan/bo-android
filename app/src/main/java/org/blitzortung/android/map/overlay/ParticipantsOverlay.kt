@@ -55,7 +55,7 @@ class ParticipantsOverlay(mapActivity: OwnMapActivity, private val colorHandler:
 
         layerOverlayComponent = LayerOverlayComponent(mapActivity.resources.getString(R.string.participants_layer))
 
-        participants = ArrayList<ParticipantOverlayItem>()
+        participants = ArrayList()
         populate()
     }
 

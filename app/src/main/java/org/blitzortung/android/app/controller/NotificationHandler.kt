@@ -66,7 +66,7 @@ open class NotificationHandler(private val context: Context) {
 
         if (isAtLeast(Build.VERSION_CODES.JELLY_BEAN_MR1)) {
             builder.setWhen(System.currentTimeMillis())
-                    .setShowWhen(true);
+                    .setShowWhen(true)
         }
 
         return builder.build()
@@ -79,7 +79,4 @@ open class NotificationHandler(private val context: Context) {
         return notification
     }
 
-    fun clearNotification() {
-        notificationService?.cancel(R.id.alarm_notification_id)
-    }
 }

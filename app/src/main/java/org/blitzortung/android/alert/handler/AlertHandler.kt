@@ -55,7 +55,7 @@ import org.jetbrains.anko.uiThread
 
 class AlertHandler(
         private val locationHandler: LocationHandler,
-        private val preferences: SharedPreferences,
+        preferences: SharedPreferences,
         private val context: Context,
         private val vibrator: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator,
         private val notificationHandler: NotificationHandler = NotificationHandler(context),
@@ -282,6 +282,7 @@ class AlertHandler(
                     if (isAtLeast(Build.VERSION_CODES.LOLLIPOP)) {
                         ringtone.audioAttributes = AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_NOTIFICATION).build()
                     } else {
+                        @Suppress("DEPRECATION")
                         ringtone.streamType = AudioManager.STREAM_NOTIFICATION
                     }
                     ringtone.play()

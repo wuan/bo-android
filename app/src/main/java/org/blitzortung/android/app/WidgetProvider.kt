@@ -27,8 +27,7 @@ import org.blitzortung.android.app.view.AlertView
 class WidgetProvider : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        val N = appWidgetIds.size
-        for (i in 0..N - 1) {
+        for (i in 0..appWidgetIds.size - 1) {
             val appWidgetId = appWidgetIds[i]
             updateAppWidget(context)
         }

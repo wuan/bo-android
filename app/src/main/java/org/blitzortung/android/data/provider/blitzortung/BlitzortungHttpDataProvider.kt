@@ -118,10 +118,10 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
         val strikeList = try {
             strikeSequence.toList()
         } catch (e: SocketException) {
-            Log.w(Main.LOG_TAG, e);
+            Log.w(Main.LOG_TAG, e)
             emptyList<T>()
         } catch (e: SocketTimeoutException) {
-            Log.w(Main.LOG_TAG, e);
+            Log.w(Main.LOG_TAG, e)
             emptyList<T>()
         }
 

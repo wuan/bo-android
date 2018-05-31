@@ -21,6 +21,7 @@ package org.blitzortung.android.data
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.AsyncTask
+import android.os.Build
 import android.os.PowerManager
 import android.util.Log
 import android.widget.Toast
@@ -38,6 +39,7 @@ import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.RequestStartedEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.ConsumerContainer
+import org.blitzortung.android.util.isAtLeast
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import java.net.SocketException
@@ -181,18 +183,18 @@ class DataHandler @JvmOverloads constructor(
 
             PreferenceKey.RASTER_SIZE -> {
                 val rasterBaselength = Integer.parseInt(sharedPreferences.get(key, "10000"))
-                parameters = parameters.copy(rasterBaselength = rasterBaselength);
+                parameters = parameters.copy(rasterBaselength = rasterBaselength)
                 updateData()
             }
 
             PreferenceKey.COUNT_THRESHOLD -> {
                 val countThreshold = Integer.parseInt(sharedPreferences.get(key, "1"))
-                parameters = parameters.copy(countThreshold = countThreshold);
+                parameters = parameters.copy(countThreshold = countThreshold)
                 updateData()
             }
 
             PreferenceKey.INTERVAL_DURATION -> {
-                parameters = parameters.copy(intervalDuration = Integer.parseInt(sharedPreferences.get(key, "60")));
+                parameters = parameters.copy(intervalDuration = Integer.parseInt(sharedPreferences.get(key, "60")))
                 updateData()
             }
 
@@ -203,7 +205,7 @@ class DataHandler @JvmOverloads constructor(
 
             PreferenceKey.REGION -> {
                 val region = Integer.parseInt(sharedPreferences.get(key, "1"))
-                parameters = parameters.copy(region = region);
+                parameters = parameters.copy(region = region)
                 updateData()
             }
 
@@ -213,7 +215,7 @@ class DataHandler @JvmOverloads constructor(
     }
 
     private fun showBlitzortungProviderWarning() {
-        doAsync() {
+        doAsync {
             uiThread {
                 Toast.makeText(context, R.string.provider_warning, Toast.LENGTH_LONG).show()
             }
@@ -267,10 +269,6 @@ class DataHandler @JvmOverloads constructor(
 
     private open inner class FetchDataTask : AsyncTask<TaskParameters, Int, ResultEvent>() {
 
-        override fun onProgressUpdate(vararg values: Int?) {
-            super.onProgressUpdate(*values)
-        }
-
         override fun onPostExecute(result: ResultEvent?) {
             if (result != null) {
                 sendEvent(result)
@@ -286,7 +284,7 @@ class DataHandler @JvmOverloads constructor(
                 try {
                     var result = ResultEvent(referenceTime = System.currentTimeMillis(), parameters = parameters, flags = flags)
 
-                    dataProvider!!.retrieveData() {
+                    dataProvider!!.retrieveData {
                         if (dataMode.raster) {
                             result = getStrikesGrid(parameters, result)
                         } else {
@@ -328,7 +326,7 @@ class DataHandler @JvmOverloads constructor(
             }
 
             if (warningToastStringResource != null) {
-                doAsync() {
+                doAsync {
                     uiThread {
                         Toast.makeText(context, warningToastStringResource, Toast.LENGTH_LONG).show()
                     }
@@ -355,7 +353,12 @@ class DataHandler @JvmOverloads constructor(
         }
 
         override fun doInBackground(vararg taskParametersArray: TaskParameters): ResultEvent? {
-            wakeLock.acquire()
+            if (isAtLeast(Build.VERSION_CODES.N)) {
+                wakeLock.acquire(WAKELOCK_TIMEOUT)
+            } else {
+                wakeLock.acquire()
+            }
+
             Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquire wakelock " + wakeLock)
 
             val taskParameters = taskParametersArray[0]
@@ -373,5 +376,6 @@ class DataHandler @JvmOverloads constructor(
     companion object {
         val REQUEST_STARTED_EVENT = RequestStartedEvent()
         val DEFAULT_DATA_CHANNELS = setOf(DataChannel.STRIKES)
+        const val WAKELOCK_TIMEOUT = 5000L
     }
 }

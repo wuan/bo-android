@@ -30,7 +30,6 @@ import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.data.AlertSector
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.event.AlertResultEvent
-import org.blitzortung.android.app.AppService
 import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
@@ -96,7 +95,7 @@ class AlertView @JvmOverloads constructor(
         background.color = 0xffb0b0b0.toInt()
 
         setOnLongClickListener {
-            AlertDialog(context, AppService.instance, AlertDialogColorHandler(BOApplication.sharedPreferences))
+            AlertDialog(context, AlertDialogColorHandler(BOApplication.sharedPreferences))
                     .show()
 
             true
@@ -116,14 +115,6 @@ class AlertView @JvmOverloads constructor(
         val size = Math.min(parentWidth.toInt(), parentHeight.toInt())
 
         super.onMeasure(View.MeasureSpec.makeMeasureSpec(size, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(size, View.MeasureSpec.EXACTLY))
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
     }
 
     override fun onDraw(canvas: Canvas) {

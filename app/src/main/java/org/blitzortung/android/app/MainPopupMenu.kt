@@ -13,7 +13,7 @@ import org.blitzortung.android.dialogs.InfoDialog
 import org.blitzortung.android.dialogs.LogDialog
 import org.jetbrains.anko.startActivity
 
-class MainPopupMenu(private val context: Context, anchor: View) : PopupMenu(context, anchor) {
+class MainPopupMenu(context: Context, anchor: View) : PopupMenu(context, anchor) {
 
     init {
         setOnMenuItemClickListener(ClickListener(context))
@@ -28,7 +28,7 @@ class MainPopupMenu(private val context: Context, anchor: View) : PopupMenu(cont
                 val dialog = when (item?.itemId) {
                     R.id.menu_info -> InfoDialog(context, versionComponent)
 
-                    R.id.menu_alarms -> AlertDialog(context, AppService.instance, AlertDialogColorHandler(BOApplication.sharedPreferences))
+                    R.id.menu_alarms -> AlertDialog(context, AlertDialogColorHandler(BOApplication.sharedPreferences))
 
                     R.id.menu_log -> LogDialog(context, versionComponent)
 

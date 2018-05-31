@@ -105,10 +105,10 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
         val expireTime = referenceTime - parameters.intervalDuration * 60 * 1000
 
         val sizeBefore = strikeList.size
-        val first_time = strikeList.firstOrNull()?.timestamp
-        val difference = first_time?.let { it - expireTime }
+        val firstTime = strikeList.firstOrNull()?.timestamp
+        val difference = firstTime?.let { it - expireTime }
         strikeList.removeAll { it.timestamp < expireTime }
-        Log.v(Main.LOG_TAG, "StrikesListOverlay.expireStrikes() expired ${sizeBefore - strikeList.size} from $sizeBefore (first: $first_time, difference: $difference, ref: $referenceTime")
+        Log.v(Main.LOG_TAG, "StrikesListOverlay.expireStrikes() expired ${sizeBefore - strikeList.size} from $sizeBefore (first: $firstTime, difference: $difference, ref: $referenceTime")
 
         updateTotalNumberOfStrikes()
     }
@@ -149,7 +149,7 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
     }
 
     fun refresh() {
-        val current_section = -1
+        val currentSection = -1
 
         colorHandler.updateTarget()
 
@@ -163,7 +163,7 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
                         referenceTime,
                     item.timestamp, parameters.intervalDuration)
 
-            if (hasRasterParameters() || current_section != section) {
+            if (hasRasterParameters() || currentSection != section) {
                 drawable = updateAndReturnDrawable(item, section, colorHandler)
             } else {
                 if (drawable != null) {

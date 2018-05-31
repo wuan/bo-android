@@ -25,6 +25,5 @@ data class AlertParameters(
         val rangeSteps: Array<Float>,
         val sectorLabels: Array<String>,
         val measurementSystem: MeasurementSystem
-) {
-}
+)
 
