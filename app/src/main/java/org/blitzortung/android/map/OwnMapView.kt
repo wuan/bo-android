@@ -21,7 +21,6 @@ package org.blitzortung.android.map
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Canvas
-import android.os.Build
 import android.support.v7.app.AlertDialog
 import android.util.AttributeSet
 import android.util.Log
@@ -87,12 +86,8 @@ class OwnMapView : MapView {
                 }
             }
 
-            val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert);
-            } else {
-                AlertDialog.Builder(context);
-            }
-            builder.setMessage("%s: %.4f %.4f?".format(locationText, longitude, latitude))
+            AlertDialog.Builder(context)
+                    .setMessage("%s: %.4f %.4f?".format(locationText, longitude, latitude))
                     .setPositiveButton(android.R.string.yes, dialogClickListener)
                     .setNegativeButton(android.R.string.no, dialogClickListener)
                     .show()

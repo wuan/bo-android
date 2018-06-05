@@ -11,7 +11,7 @@ android {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 9
         targetSdkVersion 25
-        versionCode 205
+        versionCode 206
         versionName "1.6.3"
         multiDexEnabled true
     }
@@ -38,7 +38,7 @@ jacoco {
 def anko_version = '0.10.5'
 
 dependencies {
-    implementation 'com.android.support:appcompat-v7:25.3.1'
+    implementation 'com.android.support:appcompat-v7:24.2.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "org.jetbrains.anko:anko-sdk23:$anko_version" // sdk19, sdk21, sdk23 are also available
     implementation "org.jetbrains.anko:anko-appcompat-v7:$anko_version" // For appcompat-v7 bindings

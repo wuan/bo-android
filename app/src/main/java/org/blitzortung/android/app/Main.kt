@@ -545,12 +545,8 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                         }
                     }
 
-                    val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert);
-                    } else {
-                        AlertDialog.Builder(context);
-                    }
-                    builder.setMessage(locationText)
+                    AlertDialog.Builder(this)
+                            .setMessage(locationText)
                             .setPositiveButton(android.R.string.yes, dialogClickListener)
                             .setNegativeButton(android.R.string.no, dialogClickListener)
                             .show()
