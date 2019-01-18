@@ -32,7 +32,7 @@ data class RasterParameters(
         val latitudeDelta: Float,
         val longitudeBins: Int,
         val latitudeBins: Int,
-        val info: String? = null) {
+        val minDistance: Float? = null) {
 
     val rectCenterLongitude: Float
         get() = longitudeStart + longitudeDelta * longitudeBins / 2f

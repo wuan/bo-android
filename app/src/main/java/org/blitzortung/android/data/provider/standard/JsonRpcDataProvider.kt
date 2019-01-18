@@ -82,8 +82,8 @@ class JsonRpcDataProvider(
         return result.copy(strikes = strikes)
     }
 
-    private fun addRasterData(response: JSONObject, result: ResultEvent, info: String): ResultEvent {
-        val rasterParameters = dataBuilder.createRasterParameters(response, info)
+    private fun addRasterData(response: JSONObject, result: ResultEvent, minDistance: Float): ResultEvent {
+        val rasterParameters = dataBuilder.createRasterParameters(response, minDistance)
         val referenceTimestamp = getReferenceTimestamp(response)
 
         val strikesArray = response.get("r") as JSONArray
@@ -160,9 +160,8 @@ class JsonRpcDataProvider(
 
             try {
                 val response = client.call("get_strikes_grid", intervalDuration, rasterBaselength, intervalOffset, region, countThreshold)
-
-                val info = "%.0f km".format(rasterBaselength / 1000f)
-                resultVar = addRasterData(response, resultVar, info)
+                val minDistance = rasterBaselength / 1000f
+                resultVar = addRasterData(response, resultVar, minDistance)
                 resultVar = addStrikesHistogram(response, resultVar)
             } catch (e: Exception) {
                 throw RuntimeException(e)

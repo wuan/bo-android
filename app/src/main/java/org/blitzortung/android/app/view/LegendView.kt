@@ -94,12 +94,13 @@ class LegendView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val getSize = fun (spec: Int) = View.MeasureSpec.getSize(spec)
+        val getSize = fun(spec: Int) = View.MeasureSpec.getSize(spec)
 
         val parentWidth = getSize(widthMeasureSpec)
         val parentHeight = getSize(heightMeasureSpec)
 
-        val width = Math.min(determineWidth(strikesOverlay?.parameters?.intervalDuration ?: 0), parentWidth.toFloat())
+        val width = Math.min(determineWidth(strikesOverlay?.parameters?.intervalDuration
+                ?: 0), parentWidth.toFloat())
 
         val colorHandler = strikesOverlay?.colorHandler
 
@@ -141,7 +142,8 @@ class LegendView @JvmOverloads constructor(
                 canvas.drawRect(legendColorRect, foregroundPaint)
 
                 val isLastValue = index == numberOfColors - 1
-                val text = "%c %dmin".format(if (isLastValue) '>' else '<', (index + (if (isLastValue) 0 else 1)) * minutesPerColor)
+                val minuteUnit = context.getString(R.string.legend_minute)
+                val text = "%c %d%s".format(if (isLastValue) '>' else '<', (index + (if (isLastValue) 0 else 1)) * minutesPerColor, minuteUnit)
 
                 canvas.drawText(text, 2 * padding + colorFieldSize, topCoordinate + colorFieldSize / 1.1f, textPaint)
 
@@ -154,7 +156,7 @@ class LegendView @JvmOverloads constructor(
             }
 
             if (hasRaster()) {
-                canvas.drawText("Raster: " + rasterString, width / 2.0f, topCoordinate + colorFieldSize * RASTER_HEIGHT / 1.1f, rasterTextPaint)
+                canvas.drawText(context.getString(R.string.legend_grid) + ": " + rasterString, width / 2.0f, topCoordinate + colorFieldSize * RASTER_HEIGHT / 1.1f, rasterTextPaint)
                 topCoordinate += colorFieldSize * RASTER_HEIGHT + padding
 
                 if (hasCountThreshold()) {
@@ -194,7 +196,14 @@ class LegendView @JvmOverloads constructor(
     }
 
     val rasterString: String
-        get() = strikesOverlay?.rasterParameters?.info ?: "n/a"
+        get() {
+            val minDistance = strikesOverlay?.rasterParameters?.minDistance
+            return if (minDistance != null) {
+                "%.0f %s".format(minDistance, context.getString(R.string.legend_km))
+            } else {
+                "n/a"
+            }
+        }
 
     private fun hasCountThreshold(): Boolean {
         return strikesOverlay?.parameters?.countThreshold ?: 0 > 0

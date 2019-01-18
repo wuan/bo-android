@@ -307,6 +307,7 @@
         <item>30</item>
         <item>60</item>
         <item>120</item>
+    </string-array>
 
     <string name="generic_settings">Všeobecné nastavenia</string>
     <string name="measurement_unit">Jednotkový systém</string>
