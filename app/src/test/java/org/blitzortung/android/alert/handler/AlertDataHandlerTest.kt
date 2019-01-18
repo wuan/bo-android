@@ -1,6 +1,9 @@
 package org.blitzortung.android.alert.handler
 
 import android.location.Location
+import io.mockk.MockKAnnotations
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
@@ -9,10 +12,6 @@ import org.blitzortung.android.util.MeasurementSystem
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.any
-import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
@@ -22,7 +21,7 @@ class AlertDataHandlerTest {
 
     private lateinit var strike: DefaultStrike
 
-    @Mock
+    @MockK
     private lateinit var location: Location
 
     private lateinit var strikeLocation: Location
@@ -39,7 +38,7 @@ class AlertDataHandlerTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockKAnnotations.init(this, relaxed = true)
 
         strike = DefaultStrike(timestamp = now, longitude = 12.0f, latitude = 41.0f, altitude = 0, amplitude = 20.0f)
 
@@ -65,7 +64,7 @@ class AlertDataHandlerTest {
     fun testCheckWithinThresholdTimeSingleSectorAndRange1() {
         parameters = parameters.copy(sectorLabels = arrayOf("foo"))
         strike = strike.copy(timestamp = thresholdTime)
-        `when`(location.distanceTo(any(Location::class.java))).thenReturn(2500f)
+        every { location.distanceTo(any()) } returns 2500f
 
         val result = alertDataHandler.checkStrikes(arrayListOf(strike), location, parameters, now)
 
@@ -79,8 +78,8 @@ class AlertDataHandlerTest {
     @Test
     fun testCheckWithinThresholdTimeFirstSectorAndRange1() {
         strike = strike.copy(timestamp = thresholdTime)
-        `when`(location.distanceTo(any(Location::class.java))).thenReturn(2500f)
-        `when`(location.bearingTo(any(Location::class.java))).thenReturn(90f)
+        every { location.distanceTo(any()) } returns 2500f
+        every { location.bearingTo(any()) } returns 90f
 
         val result = alertDataHandler.checkStrikes(arrayListOf(strike), location, parameters, now)
 
@@ -94,8 +93,8 @@ class AlertDataHandlerTest {
     @Test
     fun testCheckWithinThresholdTimeSecondSectorAndRange1() {
         strike = strike.copy(timestamp = thresholdTime)
-        `when`(location.distanceTo(any(Location::class.java))).thenReturn(2500f)
-        `when`(location.bearingTo(any(Location::class.java))).thenReturn(180f)
+        every { location.distanceTo(any()) } returns 2500f
+        every { location.bearingTo(any()) } returns 180f
 
         val result = alertDataHandler.checkStrikes(arrayListOf(strike), location, parameters, now)
 
@@ -109,7 +108,7 @@ class AlertDataHandlerTest {
     @Test
     fun testCheckWithinThresholdTimeAndOutOfAllRanges() {
         strike = strike.copy(timestamp = thresholdTime)
-        `when`(location.distanceTo(any(Location::class.java))).thenReturn(5000.1f)
+        every { location.distanceTo(any()) } returns 5000.1f
 
         val result = alertDataHandler.checkStrikes(arrayListOf(strike), location, parameters, now)
 
@@ -120,8 +119,8 @@ class AlertDataHandlerTest {
     @Test
     fun testCheckOutOfThresholdTimeAndWithinRange2() {
         strike = strike.copy(timestamp = beforeThresholdTime)
-        `when`(location.distanceTo(any(Location::class.java))).thenReturn(2500.1f)
-        `when`(location.bearingTo(any(Location::class.java))).thenReturn(-90f)
+        every { location.distanceTo(any()) } returns 2500.1f
+        every { location.bearingTo(any()) } returns -90f
 
         val result = alertDataHandler.checkStrikes(listOf(strike), location, parameters, now)
 
@@ -132,7 +131,7 @@ class AlertDataHandlerTest {
     @Test
     fun testCheckOutOfThresholdTimeAndAllRanges() {
         strike = strike.copy(timestamp = beforeThresholdTime)
-        `when`(location.distanceTo(any(Location::class.java))).thenReturn(5000.1f)
+        every { location.distanceTo(any()) } returns 5000.1f
 
         val result = alertDataHandler.checkStrikes(listOf(strike), location, parameters, now)
 

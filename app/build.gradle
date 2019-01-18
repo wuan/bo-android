@@ -44,7 +44,6 @@ dependencies {
     implementation "org.jetbrains.anko:anko-appcompat-v7:$anko_version" // For appcompat-v7 bindings
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.assertj:assertj-core:3.11.1'
-    testImplementation 'com.nhaarman:mockito-kotlin:1.5.0'
     testImplementation 'io.mockk:mockk:1.9.kotlin12'
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
