@@ -339,6 +339,7 @@
     <string name="service_url_summary">Cette url remplace l\'url par défaut</string>
     <string name="set_manual_location">Définir manuellemnt l\'emplacement</string>
     <string name="error_indicator">Indicateur d\'erreur</string>
+    <string name="app_log">Logs de l\'application</string>
     <string name="share_log">Envoyer par mail …</string>
     <string name="share_unavailable">L\'envoi par mail est désactivé</string>
 </resources>

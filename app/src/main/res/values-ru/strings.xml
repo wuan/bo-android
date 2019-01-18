@@ -341,6 +341,7 @@
     <string name="service_url_summary">Установите адрес стороннего сервера данных</string>
     <string name="set_manual_location">Установить месторасположение вручную</string>
     <string name="error_indicator">Ошибка индикатора</string>
+    <string name="app_log">Лог приложения</string>
     <string name="share_log">Отправить по email …</string>
     <string name="share_unavailable">Обмен по E-mail не доступен.</string>
     <string name="timeout_warning">Нет ответа сети.\nПожалуйста, проверьте подключение к сети</string>

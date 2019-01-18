@@ -345,6 +345,7 @@
     <string name="service_url_summary">Reemplaza al servidor URL por defecto si se activa</string>
     <string name="set_manual_location">Poner manualmente la ubicación</string>
     <string name="error_indicator">Indicador de error</string>
+    <string name="app_log">Registro de la aplicación</string>
     <string name="share_log">Enviar correo electrónico…</string>
     <string name="share_unavailable">No es posible compartir por correo electrónico</string>
 </resources>

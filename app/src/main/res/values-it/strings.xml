@@ -336,6 +336,7 @@
     <string name="service_url_summary">Se impostato, sovrascrive l’URL predefinito del servizio</string>
     <string name="set_manual_location">imposta posizione manualmente</string>
     <string name="error_indicator">indicatore errore</string>
+    <string name="app_log">Log dell’applicazione</string>
     <string name="share_log">Invia email…</string>
     <string name="share_unavailable">La condivisione tramite email non è disponibile.</string>
 </resources>
