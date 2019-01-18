@@ -10,7 +10,7 @@ android {
         compileSdkVersion "Google Inc.:Google APIs:24"
         applicationId "org.blitzortung.android.app"
         minSdkVersion 9
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 207
         versionName "1.6.4"
         multiDexEnabled true
