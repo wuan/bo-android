@@ -10,10 +10,10 @@
     </plurals>
     <plurals name="minute">
         <item quantity="one">1 минута</item>
-        <item quantity="other">%d минут(ы)</item>
+        <item quantity="other">%d минут</item>
     </plurals>
 
-    <string name="info">Информация</string>
+    <string name="info">О программе</string>
     <string name="info_text">Адрес проекта:\n\thttps://github.com/wuan/bo-android\n\nВизуализация данных о молниях,
         которая\nпредоставлена\n<b>Blitzortung.org</b>,\nпроекту по пеленгации молний в реальном времении. Пожалуйста,
         посетите\n\thttp://blitzortung.org/\nдля подробностей или чтобы узнать\nкак принять участие.\n\n
@@ -249,7 +249,7 @@
 
     <item name="alarm_notification_id" type="id" />
 
-    <string name="notification_distance_limit">Преде расстояния для уведомления</string>
+    <string name="notification_distance_limit">Предел расстояния для уведомления</string>
     <string name="notification_distance_limit_summary">Если выбрано: показать уведомления если замечена молния
         зоне выбранного расстояния
     </string>
