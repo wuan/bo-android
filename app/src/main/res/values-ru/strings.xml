@@ -24,6 +24,9 @@
         Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="legend">Обозначение</string>
+    <string name="legend_grid">Квадрат</string>
+    <string name="legend_minute"> мин.</string>
+    <string name="legend_km">км</string>
     <string name="total_time">всего времени</string>
     <string name="activity">активность</string>
     <string name="during">в прошлом</string>
@@ -250,11 +253,11 @@
     <item name="alarm_notification_id" type="id" />
 
     <string name="notification_distance_limit">Предел расстояния для уведомления</string>
-    <string name="notification_distance_limit_summary">Если выбрано: показать уведомления если замечена молния
+    <string name="notification_distance_limit_summary">Если выбрано: показать уведомления если замечена молния в
         зоне выбранного расстояния
     </string>
     <string name="signaling_distance_limit">Предел расстояния для сигнала</string>
-    <string name="signaling_distance_limit_summary">Если выбрано: звуковое уведомление если замечена молния
+    <string name="signaling_distance_limit_summary">Если выбрано: звуковое уведомление если замечена молния в
         зоне выбранного расстояния
     </string>
 
