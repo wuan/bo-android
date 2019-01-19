@@ -5,11 +5,10 @@ apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
 
 android {
-    buildToolsVersion '27.0.3'
     defaultConfig {
         compileSdkVersion "Google Inc.:Google APIs:24"
         applicationId "org.blitzortung.android.app"
-        minSdkVersion 9
+        minSdkVersion 15
         targetSdkVersion 26
         versionCode 207
         versionName "1.6.4"
@@ -32,19 +31,19 @@ android {
 }
 
 jacoco {
-    toolVersion = "0.8.1"
+    toolVersion = "0.8.2"
 }
 
-def anko_version = '0.10.5'
+def anko_version = '0.10.8'
 
 dependencies {
-    implementation 'com.android.support:appcompat-v7:24.2.1'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "org.jetbrains.anko:anko-sdk23:$anko_version" // sdk19, sdk21, sdk23 are also available
     implementation "org.jetbrains.anko:anko-appcompat-v7:$anko_version" // For appcompat-v7 bindings
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.assertj:assertj-core:3.11.1'
-    testImplementation 'io.mockk:mockk:1.9.kotlin12'
+    testImplementation 'io.mockk:mockk:1.9'
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     testImplementation 'org.robolectric:robolectric:3.4.2'
