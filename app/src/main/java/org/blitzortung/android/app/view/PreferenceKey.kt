@@ -19,6 +19,8 @@
 package org.blitzortung.android.app.view
 
 import android.content.SharedPreferences
+import android.util.Log
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import java.util.*
 
 enum class PreferenceKey(val key: String) {
@@ -32,7 +34,6 @@ enum class PreferenceKey(val key: String) {
     COLOR_SCHEME("color_scheme"),
     QUERY_PERIOD("query_period"),
     BACKGROUND_QUERY_PERIOD("background_query_period"),
-    SHOW_PARTICIPANTS("show_participants"),
     SHOW_LOCATION("location"),
     OWN_LOCATION_SIZE("own_location_size"),
     ALERT_ENABLED("alarm_enabled"),
@@ -50,7 +51,9 @@ enum class PreferenceKey(val key: String) {
     LOCATION_MODE("location_mode"),
     LOCATION_LONGITUDE("location_longitude"),
     LOCATION_LATITUDE("location_latitude"),
-    KEEP_ZOOM_GOTO_OWN_LOCATION("keep_zoom_goto_own_location");
+    KEEP_ZOOM_GOTO_OWN_LOCATION("keep_zoom_goto_own_location"),
+    OSMDROID_BASEPATH("osmdroid.basePath"),
+    OSMDROID_CACHEPATH("osmdroid.cachePath");
 
     override fun toString(): String {
         return key
@@ -71,7 +74,11 @@ enum class PreferenceKey(val key: String) {
         }
 
         fun fromString(string: String): PreferenceKey {
-            return stringToValueMap[string]!!
+            val preferenceKey = stringToValueMap[string]
+            if (preferenceKey == null) {
+                Log.e(LOG_TAG, "no preferenceKey for $string")
+            }
+            return preferenceKey!!
         }
     }
 }

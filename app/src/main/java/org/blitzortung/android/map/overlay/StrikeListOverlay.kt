@@ -22,40 +22,39 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Paint.Style
 import android.util.Log
-import android.view.ViewGroup
-import com.google.android.maps.GeoPoint
-import com.google.android.maps.MapView
-import com.google.android.maps.Overlay
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Strike
-import org.blitzortung.android.map.OwnMapActivity
-import org.blitzortung.android.map.OwnMapView
+import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.components.LayerOverlayComponent
-import org.blitzortung.android.map.createStrikePopUp
 import org.blitzortung.android.map.overlay.color.ColorHandler
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Overlay
 
-class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandler: StrikeColorHandler): Overlay(), LayerOverlay {
+class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: StrikeColorHandler) : Overlay(), LayerOverlay, MapListener {
     private val strikeList = mutableListOf<StrikeOverlay>()
 
     private val layerOverlayComponent: LayerOverlayComponent
-    private var zoomLevel: Int = 0
+    private var zoomLevel: Double = 0.0
     var rasterParameters: RasterParameters? = null
     var referenceTime: Long = 0
     var parameters = Parameters()
 
     init {
-        layerOverlayComponent = LayerOverlayComponent(mapActivity.resources.getString(R.string.strikes_layer))
+        layerOverlayComponent = LayerOverlayComponent(mapFragment.resources.getString(R.string.strikes_layer))
     }
 
-    override fun draw(canvas: Canvas?, mapView: com.google.android.maps.MapView?, shadow: Boolean) {
+    override fun draw(canvas: Canvas?, mapView: MapView?, shadow: Boolean) {
         if (!shadow) {
-            super.draw(canvas, mapView, false)
+            //super.draw(canvas, mapView, false)
 
-            if(canvas == null || mapView == null) {
+            if (canvas == null || mapView == null) {
                 return
             }
 
@@ -69,7 +68,7 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
 
             paint.style = Style.FILL
             strikeList.forEach {
-                it.draw(canvas, mapView, false, paint)
+                it.draw(canvas, mapView, paint)
             }
         }
     }
@@ -120,13 +119,12 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
     }
 
     fun updateZoomLevel(zoomLevel: Int) {
-        if (hasRasterParameters() || zoomLevel != this.zoomLevel) {
-            this.zoomLevel = zoomLevel
-            refresh()
-        }
+
     }
 
-    override fun onTap(point: GeoPoint, map: MapView): Boolean {
+    // TODO handle later, see https://stackoverflow.com/questions/12991175/osmdroid-ontap-example#13054048
+    /*override
+    fun onTap(point: GeoPoint, map: MapView): Boolean {
         Log.d(Main.LOG_TAG, "Tapped on StrikeList")
 
         val strikeTapped = strikeList.firstOrNull { it.pointIsInside(point, map.projection) }
@@ -146,7 +144,7 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
         }
 
         return false
-    }
+    }*/
 
     fun refresh() {
         val currentSection = -1
@@ -175,7 +173,7 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
 
     // VisibleForTesting
     protected fun updateAndReturnDrawable(item: StrikeOverlay, section: Int, colorHandler: ColorHandler): LightningShape {
-        val projection = mapActivity.mapView.projection
+        val projection = mapFragment.mapView!!.projection
         val color = colorHandler.getColor(section)
         val textColor = colorHandler.textColor
 
@@ -183,6 +181,22 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
 
         return item.shape!!
     }
+
+    override fun onScroll(event: ScrollEvent?): Boolean {
+        return false
+    }
+
+    override fun onZoom(event: ZoomEvent?): Boolean {
+        if (event != null) {
+            val zoomLevel = event.zoomLevel
+            if (hasRasterParameters() || zoomLevel != this.zoomLevel) {
+                this.zoomLevel = zoomLevel
+                refresh()
+            }
+        }
+        return false;
+    }
+
 
     fun hasRasterParameters(): Boolean {
         return rasterParameters != null
@@ -201,12 +215,6 @@ class StrikeListOverlay(private val mapActivity: OwnMapActivity, val colorHandle
 
     override val name: String
         get() = layerOverlayComponent.name
-
-    override var enabled: Boolean
-        get() = layerOverlayComponent.enabled
-        set(value) {
-            layerOverlayComponent.enabled = value
-        }
 
     override var visible: Boolean
         get() = layerOverlayComponent.visible

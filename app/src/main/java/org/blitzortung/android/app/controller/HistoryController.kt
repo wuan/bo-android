@@ -23,7 +23,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
-import kotlinx.android.synthetic.main.map_overlay.*
+import kotlinx.android.synthetic.main.main.*
 import org.blitzortung.android.app.*
 import org.blitzortung.android.data.DataChannel
 import org.blitzortung.android.data.DataHandler

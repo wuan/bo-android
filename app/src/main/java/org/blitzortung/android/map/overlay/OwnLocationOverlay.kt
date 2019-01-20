@@ -21,25 +21,33 @@ package org.blitzortung.android.map.overlay
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Canvas
+import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
-import com.google.android.maps.ItemizedOverlay
+import android.util.Log
 import org.blitzortung.android.app.BOApplication
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.app.view.getAndConvert
 import org.blitzortung.android.location.LocationEvent
-import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.components.LayerOverlayComponent
 import org.blitzortung.android.util.TabletAwareView
+import org.osmdroid.api.IMapView
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.ItemizedOverlay
 
-class OwnLocationOverlay(context: Context, private val mapView: OwnMapView) :
-        ItemizedOverlay<OwnLocationOverlayItem>(OwnLocationOverlay.DEFAULT_DRAWABLE),
+class OwnLocationOverlay(
+        context: Context,
+        private val mapView: MapView
+) : ItemizedOverlay<OwnLocationOverlayItem>(OwnLocationOverlay.DEFAULT_DRAWABLE),
         SharedPreferences.OnSharedPreferenceChangeListener,
-        LayerOverlay {
-
+        LayerOverlay, MapListener {
     private val layerOverlayComponent: LayerOverlayComponent
 
     private var item: OwnLocationOverlayItem? = null
@@ -48,12 +56,12 @@ class OwnLocationOverlay(context: Context, private val mapView: OwnMapView) :
 
     private val sizeFactor: Float
 
-    private var zoomLevel: Int = 0
+    private var zoomLevel: Double = 0.0
 
     val locationEventConsumer: (LocationEvent) -> Unit = { event ->
         val location = event.location
 
-        if (enabled) {
+        if (isEnabled) {
             item = location?.run { OwnLocationOverlayItem(location) }
 
             populate()
@@ -68,18 +76,7 @@ class OwnLocationOverlay(context: Context, private val mapView: OwnMapView) :
 
         populate()
 
-        mapView.addZoomListener { newZoomLevel ->
-            if (newZoomLevel != zoomLevel) {
-                zoomLevel = newZoomLevel
-                refresh()
-            }
-        }
-
-        zoomLevel = mapView.zoomLevel
-
-        mapView.overlays.add(this)
-
-        sizeFactor = ViewHelper.pxFromDp(mapView, 1.0f) * TabletAwareView.sizeFactor(context)
+        sizeFactor = ViewHelper.pxFromDp(context, 1.0f) * TabletAwareView.sizeFactor(context)
 
         val preferences = BOApplication.sharedPreferences
         preferences.registerOnSharedPreferenceChangeListener(this)
@@ -89,17 +86,17 @@ class OwnLocationOverlay(context: Context, private val mapView: OwnMapView) :
         refresh()
     }
 
-    override fun draw(canvas: Canvas?, mapView: com.google.android.maps.MapView?, shadow: Boolean) {
+    override fun draw(canvas: Canvas?, mapView: MapView?, shadow: Boolean) {
         if (!shadow) {
             super.draw(canvas, mapView, false)
         }
     }
 
     private fun refresh() {
-        item?.run { setMarker(ShapeDrawable(OwnLocationShape(sizeFactor * zoomLevel * symbolSize))) }
+        item?.run { setMarker(ShapeDrawable(OwnLocationShape((sizeFactor * zoomLevel * symbolSize).toFloat()))) }
 
         //Redraw when the OwnLocation is refreshed
-        mapView.postInvalidate()
+        mapView.invalidate()
     }
 
     override fun createItem(i: Int): OwnLocationOverlayItem {
@@ -111,15 +108,19 @@ class OwnLocationOverlay(context: Context, private val mapView: OwnMapView) :
     }
 
     fun enableOwnLocation() {
-        enabled = true
+        setEnabled(true)
         refresh()
     }
 
     fun disableOwnLocation() {
-        enabled = false
         item = null
-
+        setEnabled(false)
         refresh()
+    }
+
+    override fun onSnapToItem(x: Int, y: Int, snapPoint: Point?, mapView: IMapView?): Boolean {
+        Log.v(LOG_TAG, "OwnLocationOverlay.onSnapToItem($x, $y, $snapPoint, $mapView)")
+        return false
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
@@ -135,21 +136,30 @@ class OwnLocationOverlay(context: Context, private val mapView: OwnMapView) :
             } else {
                 disableOwnLocation()
             }
-        } else if(key == PreferenceKey.OWN_LOCATION_SIZE) {
+        } else if (key == PreferenceKey.OWN_LOCATION_SIZE) {
             symbolSize = sharedPreferences.getAndConvert(PreferenceKey.OWN_LOCATION_SIZE, 100) {
                 it.toFloat() / 100
             }
         }
     }
 
+    override fun onScroll(event: ScrollEvent?): Boolean {
+        return false;
+    }
+
+    override fun onZoom(event: ZoomEvent?): Boolean {
+        if (event != null) {
+            val zoomLevel = event.zoomLevel
+            if (zoomLevel != this.zoomLevel) {
+                this.zoomLevel = zoomLevel
+                refresh()
+            }
+        }
+        return false;
+    }
+
     override val name: String
         get() = layerOverlayComponent.name
-
-    override var enabled: Boolean
-        get() = layerOverlayComponent.enabled
-        set(value) {
-            layerOverlayComponent.enabled = value
-        }
 
     override var visible: Boolean
         get() = layerOverlayComponent.visible

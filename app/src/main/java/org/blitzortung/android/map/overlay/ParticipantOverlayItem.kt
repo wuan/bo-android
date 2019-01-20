@@ -18,13 +18,14 @@
 
 package org.blitzortung.android.map.overlay
 
-import com.google.android.maps.OverlayItem
-
 import org.blitzortung.android.data.Coordsys
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Station.State
+import org.osmdroid.views.overlay.OverlayItem
 
-class ParticipantOverlayItem(station: Station) : OverlayItem(Coordsys.toMapCoords(station.longitude, station.latitude), station.name, "") {
+class ParticipantOverlayItem(
+        station: Station
+) : OverlayItem(station.name, "", Coordsys.toMapCoords(station.longitude, station.latitude)) {
 
     val lastDataTime: Long
 

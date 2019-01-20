@@ -3,12 +3,12 @@ package org.blitzortung.android.map.overlay
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Point
-import com.google.android.maps.GeoPoint
-import com.google.android.maps.MapView
-import com.google.android.maps.Projection
 import org.blitzortung.android.data.Coordsys
 import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Strike
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.Projection
 
 class StrikeOverlay(strike: Strike) {
     val timestamp: Long = strike.timestamp
@@ -17,29 +17,29 @@ class StrikeOverlay(strike: Strike) {
 
     var shape: LightningShape? = null
 
-    fun draw(canvas: Canvas, mapView: MapView, shadow: Boolean, paint: Paint) {
+    fun draw(canvas: Canvas, mapView: MapView, paint: Paint) {
         shape?.run {
             draw(canvas, mapView, paint)
         }
     }
 
-    fun updateShape(rasterParameters: RasterParameters?, projection: Projection, color: Int, textColor: Int, zoomLevel: Int) {
+    fun updateShape(rasterParameters: RasterParameters?, projection: Projection, color: Int, textColor: Int, zoomLevel: Double) {
         var shape: LightningShape? = shape
         if (rasterParameters != null) {
             if (shape !is RasterShape) {
                 shape = RasterShape(center)
             }
 
-            val lonDelta = rasterParameters.longitudeDelta / 2.0f * 1e6f
-            val latDelta = rasterParameters.latitudeDelta / 2.0f * 1e6f
+            val lonDelta = rasterParameters.longitudeDelta / 2.0f
+            val latDelta = rasterParameters.latitudeDelta / 2.0f
 
             projection.toPixels(center, centerPoint)
             projection.toPixels(GeoPoint(
-                    (center.latitudeE6 + latDelta).toInt(),
-                    (center.longitudeE6 - lonDelta).toInt()), topLeft)
+                    center.latitude + latDelta,
+                    center.longitude - lonDelta), topLeft)
             projection.toPixels(GeoPoint(
-                    (center.latitudeE6 - latDelta).toInt(),
-                    (center.longitudeE6 + lonDelta).toInt()), bottomRight)
+                    center.latitude - latDelta,
+                    center.longitude + lonDelta), bottomRight)
             topLeft.offset(-centerPoint.x, -centerPoint.y)
             bottomRight.offset(-centerPoint.x, -centerPoint.y)
             if (shape is RasterShape) {
@@ -50,7 +50,7 @@ class StrikeOverlay(strike: Strike) {
                 shape = StrikeShape(center)
             }
             if (shape is StrikeShape) {
-                shape.update((zoomLevel + 1).toFloat(), color)
+                shape.update((zoomLevel + 1.0).toFloat(), color)
             }
         }
         this.shape = shape

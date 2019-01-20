@@ -73,13 +73,6 @@
             android:selectable="true"
             android:summary="@string/color_scheme_summary"
             android:title="@string/color_scheme" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:enabled="true"
-            android:key="show_participants"
-            android:selectable="true"
-            android:summary="@string/show_participants_summary"
-            android:title="@string/show_participants" />
         <PreferenceScreen
             android:key="own_location_settings"
             android:summary="@string/own_location_summary"

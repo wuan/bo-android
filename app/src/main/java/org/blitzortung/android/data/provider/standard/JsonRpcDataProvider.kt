@@ -44,12 +44,10 @@ class JsonRpcDataProvider(
 ) : DataProvider(preferences, PreferenceKey.SERVICE_URL) {
 
     private lateinit var serviceUrl: String
-    private val dataBuilder: DataBuilder
+    private val dataBuilder: DataBuilder = DataBuilder()
     private var nextId = 0
 
     init {
-        dataBuilder = DataBuilder()
-
         Log.v(Main.LOG_TAG, "JsonRpcDataProvider($serviceUrl)")
     }
 
@@ -218,8 +216,8 @@ class JsonRpcDataProvider(
     }
 
     companion object {
-        private val DATE_TIME_FORMATTER = SimpleDateFormat("yyyyMMdd'T'HH:mm:ss")
-        private const val DEFAULT_SERVICE_URL = "http://bo-service.tryb.de/"
+        private val DATE_TIME_FORMATTER = SimpleDateFormat("yyyyMMdd'T'HH:mm:ss", Locale.US)
+        private const val DEFAULT_SERVICE_URL = "https://bo-service.tryb.de/"
 
         init {
             val tz = TimeZone.getTimeZone("UTC")

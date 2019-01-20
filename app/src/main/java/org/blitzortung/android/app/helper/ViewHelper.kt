@@ -18,17 +18,18 @@
 
 package org.blitzortung.android.app.helper
 
+import android.content.Context
 import android.view.View
 
 object ViewHelper {
 
-    fun pxFromSp(view: View, sp: Float): Float {
-        val displayMetrics = view.context.resources.displayMetrics
+    fun pxFromSp(context: Context, sp: Float): Float {
+        val displayMetrics = context.resources.displayMetrics
         return sp * displayMetrics.scaledDensity
     }
 
-    fun pxFromDp(view: View, dp: Float): Float {
-        val displayMetrics = view.context.resources.displayMetrics
+    fun pxFromDp(context: Context, dp: Float): Float {
+        val displayMetrics = context.resources.displayMetrics
         return dp * displayMetrics.density
     }
 }

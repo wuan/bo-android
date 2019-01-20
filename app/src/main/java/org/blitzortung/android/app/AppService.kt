@@ -29,7 +29,6 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
-import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.DataChannel
@@ -53,7 +52,6 @@ class AppService protected constructor(private val handler: Handler, private val
         private set
 
     private var lastParameters: Parameters? = null
-    private var updateParticipants: Boolean = false
     var isEnabled: Boolean = false
         private set
 
@@ -108,7 +106,6 @@ class AppService protected constructor(private val handler: Handler, private val
         onSharedPreferenceChanged(preferences, PreferenceKey.QUERY_PERIOD)
         onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED)
         onSharedPreferenceChanged(preferences, PreferenceKey.BACKGROUND_QUERY_PERIOD)
-        onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_PARTICIPANTS)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -181,10 +178,6 @@ class AppService protected constructor(private val handler: Handler, private val
 
             if (updatePeriod.shouldUpdate(currentTime, period)) {
                 updateTargets.add(DataChannel.STRIKES)
-
-                if (updateParticipants && updatePeriod.isNthUpdate(10)) {
-                    updateTargets.add(DataChannel.PARTICIPANTS)
-                }
             }
 
             if (!updateTargets.isEmpty()) {
@@ -233,8 +226,6 @@ class AppService protected constructor(private val handler: Handler, private val
                 discardAlarm()
                 configureServiceMode()
             }
-
-            PreferenceKey.SHOW_PARTICIPANTS -> updateParticipants = sharedPreferences.get(key, true)
         }
     }
 

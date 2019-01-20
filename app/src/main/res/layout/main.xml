@@ -1,18 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <org.blitzortung.android.map.OwnMapView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/mapview"
+    <LinearLayout
+        android:id="@+id/map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" />
+
+    <TableRow
+        android:id="@+id/upper_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/translucent_background">
+
+        <org.blitzortung.android.app.view.ScaledTextView
+            android:id="@+id/status"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_weight="1"
+            android:text=""
+            android:textColor="@color/text_foreground"
+            android:textSize="14sp"
+            local:tablet_scaleable="true" />
+
+        <org.blitzortung.android.app.view.ScaledTextView
+            android:id="@+id/warning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text=""
+            android:textColor="@color/text_foreground"
+            android:textSize="14sp"
+            local:tablet_scaleable="true" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_horizontal|fill_vertical">
+
+            <ImageView
+                android:id="@+id/error_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@android:drawable/stat_notify_error"
+                android:contentDescription="@string/error_indicator" />
+
+            <ProgressBar
+                android:id="@+id/progress"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true" />
+
+        </RelativeLayout>
+
+    </TableRow>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/map_overlay"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:apiKey="0H7fqZDUCcfqpS1Z7CUqxVNKRduP-E1DNEhXx1A"
-        android:clickable="true"
-        android:focusable="true" />
+        android:layout_below="@+id/upper_row">
 
-    <include
-        android:id="@+id/cell2"
-        layout="@layout/map_overlay" />
+        <org.blitzortung.android.app.view.LegendView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/legend_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            local:tablet_scaleable="true"/>
 
+        <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/menu"
+            android:layout_width="45sp"
+            android:layout_height="45sp"
+            android:background="@color/translucent_background"
+            android:src="@android:drawable/ic_menu_more"
+            android:visibility="gone" />
+
+        <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/historyRew"
+            android:layout_width="45sp"
+            android:layout_height="45sp"
+            android:background="@color/translucent_background"
+            android:src="@android:drawable/ic_media_rew"
+            android:visibility="gone" />
+
+        <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/historyFfwd"
+            android:layout_width="45sp"
+            android:layout_height="45sp"
+            android:background="@color/translucent_background"
+            android:src="@android:drawable/ic_media_ff"
+            android:visibility="gone" />
+
+        <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/goRealtime"
+            android:layout_width="45sp"
+            android:layout_height="45sp"
+            android:background="@color/translucent_background"
+            android:src="@android:drawable/ic_media_next"
+            android:visibility="gone" />
+
+        <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/toggleExtendedMode"
+            android:layout_width="45sp"
+            android:layout_height="45sp"
+            android:background="@color/translucent_background"
+            android:enabled="false"
+            android:src="@android:drawable/ic_menu_view"
+            android:visibility="gone" />
+
+        <org.blitzortung.android.app.view.AlertView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/alert_view"
+            android:layout_width="90sp"
+            android:layout_height="90sp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            local:tablet_scaleable="true"/>
+
+        <org.blitzortung.android.app.view.HistogramView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/histogram_view"
+            android:layout_width="100sp"
+            android:layout_height="70sp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            local:tablet_scaleable="true"/>
+
+    </RelativeLayout>
 </RelativeLayout>

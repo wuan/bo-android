@@ -21,9 +21,9 @@ package org.blitzortung.android.map.overlay
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Point
-import com.google.android.maps.GeoPoint
-import com.google.android.maps.MapView
-import com.google.android.maps.Projection
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.Projection
 
 class StrikeShape(private val center: GeoPoint) : LightningShape {
     override fun isPointInside(tappedGeoPoint: GeoPoint, projection: Projection): Boolean {

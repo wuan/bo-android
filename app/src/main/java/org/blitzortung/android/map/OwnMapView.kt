@@ -28,34 +28,38 @@ import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import com.google.android.maps.MapView
 import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.location.LocationHandler
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.CustomZoomButtonsController
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Overlay
+import org.osmdroid.views.overlay.ScaleBarOverlay
+import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 import java.util.*
 
 
-class OwnMapView : MapView {
-
-    private val zoomListeners = HashSet<(Int) -> Unit>()
+class OwnMapView(context: Context) : MapView(context) {
 
     private val gestureDetector: GestureDetector = GestureDetector(context, GestureListener())
 
-    private var oldPixelSize = -1f
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
-
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle)
+    init {
+        minZoomLevel = 2.0
+        maxZoomLevel = 8.0
+    }
 
     inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
         override fun onDoubleTap(event: MotionEvent): Boolean {
 
             this@OwnMapView.removeView(popup)
 
-            controller.animateTo(getPoint(event))
             controller.zoomIn()
+            controller.animateTo(getPoint(event))
             return true
         }
 
@@ -63,8 +67,8 @@ class OwnMapView : MapView {
 
         override fun onLongPress(event: MotionEvent) {
             val point = getPoint(event)
-            val longitude = point.longitudeE6 / 1e6
-            val latitude = point.latitudeE6 / 1e6
+            val longitude = point.longitude
+            val latitude = point.latitude
             Log.v(Main.LOG_TAG, "GestureListener.onLongPress() $point")
             val context = this@OwnMapView.context
             val locationText = context.resources.getString(R.string.set_manual_location)
@@ -94,56 +98,17 @@ class OwnMapView : MapView {
         }
     }
 
-    override fun dispatchDraw(canvas: Canvas) {
-        super.dispatchDraw(canvas)
-
-        detectAndHandleZoomAction()
-    }
-
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         val result = try {
             super.onTouchEvent(event)
         } catch (e: ArrayIndexOutOfBoundsException) {
-            Log.e(Main.LOG_TAG, "OwnMapView.onTouchEvent() catched out of bounds exception")
+            Log.e(LOG_TAG, "OwnMapView.onTouchEvent() catched out of bounds exception")
             false
         }
 
         val localResult = gestureDetector.onTouchEvent(event)
 
         return result || localResult
-    }
-
-    protected fun detectAndHandleZoomAction() {
-        if (projection != null) {
-            val pixelSize = projection.metersToEquatorPixels(1000.0f)
-
-            if (pixelSize != oldPixelSize) {
-                notifyZoomListeners()
-                oldPixelSize = pixelSize
-            }
-        }
-    }
-
-    fun addZoomListener(zoomListener: (Int) -> Unit) {
-        zoomListeners.add(zoomListener)
-    }
-
-    fun notifyZoomListeners() {
-        for (zoomListener in zoomListeners) {
-            zoomListener.invoke(zoomLevel)
-        }
-    }
-
-    fun calculateTargetZoomLevel(widthInMeters: Float): Int {
-        val equatorLength = 40075004.0 // in meters
-        val widthInPixels = Math.min(height, width).toDouble()
-        var metersPerPixel = equatorLength / 256
-        var zoomLevel = 1
-        while ((metersPerPixel * widthInPixels) > widthInMeters) {
-            metersPerPixel /= 2.0
-            ++zoomLevel
-        }
-        return zoomLevel - 1
     }
 
     val popup: View by lazy { LayoutInflater.from(context).inflate(R.layout.popup, this, false) }

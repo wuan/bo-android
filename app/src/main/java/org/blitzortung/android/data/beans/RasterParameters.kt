@@ -21,9 +21,9 @@ package org.blitzortung.android.data.beans
 import android.graphics.Point
 import android.graphics.RectF
 import android.util.Log
-import com.google.android.maps.Projection
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.data.Coordsys
+import org.osmdroid.views.Projection
 
 data class RasterParameters(
         val longitudeStart: Float,
