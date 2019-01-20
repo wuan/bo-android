@@ -13,8 +13,7 @@ built from these sources visualizes lightning data provided by the blitzortung.o
 We are still looking forward to volunteers preparing a translation for the following languages:
 
   * Dutch
-  * Croatian
-  
+
 Translations to other languages are welcome as well. Please contact us via `blitzortung at tryb.de`
 
 
