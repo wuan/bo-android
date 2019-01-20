@@ -21,11 +21,19 @@ package org.blitzortung.android.app
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val bootIntent = Intent(context, AppService::class.java)
-        bootIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startService(bootIntent)
+        if (intent.action == "android.intent.action.BOOT_COMPLETED") {
+            Log.v(LOG_TAG, "BootReceiver.onReceive() intent action: ${intent.action}")
+
+            val bootIntent = Intent(context, AppService::class.java)
+            bootIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startService(bootIntent)
+        } else {
+            Log.v(LOG_TAG, "BootReceiver.onReceive() invalid intent action: ${intent.action}")
+        }
     }
 }
