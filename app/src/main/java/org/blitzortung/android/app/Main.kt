@@ -26,9 +26,13 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.LocationManager
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.IBinder
+import android.os.PowerManager
 import android.preference.PreferenceManager
 import android.provider.Settings
+import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AlertDialog
 import android.text.format.DateFormat
 import android.util.AndroidRuntimeException
@@ -39,9 +43,7 @@ import android.view.ViewConfiguration
 import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.Toast
-import com.google.android.maps.GeoPoint
-import kotlinx.android.synthetic.main.map_overlay.*
-import kotlinx.android.synthetic.main.overlay_top.*
+import kotlinx.android.synthetic.main.main.*
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.VersionComponent
@@ -56,26 +58,24 @@ import org.blitzortung.android.data.provider.result.RequestStartedEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.result.StatusEvent
 import org.blitzortung.android.dialogs.QuickSettingsDialog
-import org.blitzortung.android.map.OwnMapActivity
-import org.blitzortung.android.map.OwnMapView
+import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.overlay.FadeOverlay
 import org.blitzortung.android.map.overlay.OwnLocationOverlay
-import org.blitzortung.android.map.overlay.ParticipantsOverlay
 import org.blitzortung.android.map.overlay.StrikeListOverlay
-import org.blitzortung.android.map.overlay.color.ParticipantColorHandler
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.blitzortung.android.util.LogUtil
 import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
 import org.jetbrains.anko.intentFor
+import org.osmdroid.config.Configuration
+import org.osmdroid.util.GeoPoint
 
-class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
+class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private lateinit var statusComponent: StatusComponent
     private lateinit var versionComponent: VersionComponent
 
     private lateinit var strikeColorHandler: StrikeColorHandler
     private lateinit var strikeListOverlay: StrikeListOverlay
-    private lateinit var participantsOverlay: ParticipantsOverlay
     private lateinit var ownLocationOverlay: OwnLocationOverlay
     private lateinit var fadeOverlay: FadeOverlay
 
@@ -91,7 +91,7 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     private val preferences = BOApplication.sharedPreferences
 
-    private var serviceConnection: ServiceConnection? = null
+    private lateinit var serviceConnection: ServiceConnection
 
     private var currentResult: ResultEvent? = null
 
@@ -136,27 +136,25 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
                 alert_view.setColorHandler(strikeColorHandler, strikeListOverlay.parameters.intervalDuration)
 
                 strikeListOverlay.refresh()
+                mapFragment.mapView.invalidate()
 
                 legend_view.requestLayout()
 
                 if (!event.containsRealtimeData()) {
                     setHistoricStatusString()
                 }
-
-                event.stations?.run {
-                    participantsOverlay.setParticipants(this)
-                    participantsOverlay.refresh()
-                }
             }
 
             statusComponent.stopProgress()
 
-            mapView.invalidate()
+            //mapView.invalidate()
             legend_view.invalidate()
         } else if (event is StatusEvent) {
             setStatusString(event.status)
         }
     }
+
+    private lateinit var mapFragment: MapFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         try {
@@ -165,40 +163,25 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
             Log.e(Main.LOG_TAG, e.toString())
             Toast.makeText(baseContext, "bad android version", Toast.LENGTH_LONG).show()
         }
+        setContentView(R.layout.main)
+
+        Configuration.getInstance().setUserAgentValue(getPackageName());
+
+        if (supportFragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG) == null) {
+            mapFragment = MapFragment()
+            supportFragmentManager.beginTransaction().add(R.id.map_view, mapFragment, MAP_FRAGMENT_TAG).commit()
+        }
 
         Log.v(LOG_TAG, "Main.onCreate()")
 
         versionComponent = VersionComponent(this.applicationContext)
 
-        setContentView(if (isDebugBuild) R.layout.main_debug else R.layout.main)
-
-        val mapView = findViewById(R.id.mapview) as OwnMapView
-        mapView.setBuiltInZoomControls(true)
-        this.mapView = mapView
-
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
         preferences.registerOnSharedPreferenceChangeListener(this)
 
         strikeColorHandler = StrikeColorHandler(preferences)
-        strikeListOverlay = StrikeListOverlay(this, strikeColorHandler)
-        participantsOverlay = ParticipantsOverlay(this, ParticipantColorHandler(preferences))
-
-        mapView.addZoomListener { zoomLevel ->
-            strikeListOverlay.updateZoomLevel(zoomLevel)
-            participantsOverlay.updateZoomLevel(zoomLevel)
-        }
-
-        fadeOverlay = FadeOverlay(strikeColorHandler)
-        ownLocationOverlay = OwnLocationOverlay(this, mapView)
-
-        addOverlay(fadeOverlay)
-        addOverlay(strikeListOverlay)
-        addOverlay(participantsOverlay)
-        addOverlay(ownLocationOverlay)
-        updateOverlays()
 
         statusComponent = StatusComponent(this)
-        setHistoricStatusString()
 
         hideActionBar()
 
@@ -211,11 +194,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         //setupDetailModeButton()
 
         buttonColumnHandler.updateButtonColumn()
-
-        setupCustomViews()
-
-        onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
-                PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.SHOW_PARTICIPANTS)
 
         createAndBindToDataService()
 
@@ -314,34 +292,18 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private fun animateToLocationAndVisibleSize(longitude: Double, latitude: Double, diameter: Float?) {
         Log.d(Main.LOG_TAG, "Main.animateAndZoomTo() %.4f, %.4f, %.0fkm".format(longitude, latitude, diameter))
 
-        val mapView = mapView
+        val mapView = mapFragment.mapView
         val controller = mapView.controller
 
-        val startZoomLevel = mapView.zoomLevel
         //If no diameter is provided, we keep the current zoomLevel
-        val targetZoomLevel = if (diameter is Float)
-            mapView.calculateTargetZoomLevel(diameter * 1000f)
-        else
-            startZoomLevel
+        val targetZoomLevel = if (diameter != null) {
+            mapFragment.calculateTargetZoomLevel(diameter * 1000f) * 1.0
+        } else {
+            mapView.zoomLevelDouble
+        }
 
-        controller.animateTo(GeoPoint((latitude * 1e6).toInt(), (longitude * 1e6).toInt()), {
-            if (startZoomLevel != targetZoomLevel) {
-                val zoomOut = targetZoomLevel - startZoomLevel < 0
-                val zoomCount = Math.abs(targetZoomLevel - startZoomLevel)
-                val handler = Handler()
-                var delay: Long = 0
-                for (i in 0..zoomCount - 1) {
-                    handler.postDelayed({
-                        if (zoomOut) {
-                            controller.zoomOut()
-                        } else {
-                            controller.zoomIn()
-                        }
-                    }, delay)
-                    delay += 150
-                }
-            }
-        })
+        controller.zoomTo(targetZoomLevel)
+        controller.animateTo(GeoPoint(latitude, longitude));
     }
 
     val isDebugBuild: Boolean
@@ -361,10 +323,29 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onStart() {
         super.onStart()
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestLocationPermissions(preferences)
-            requestWakeupPermissions(preferences, baseContext)
-        }
+        mapFragment = supportFragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG) as MapFragment
+
+        strikeListOverlay = StrikeListOverlay(mapFragment, strikeColorHandler)
+        strikeListOverlay.isEnabled = true
+        setHistoricStatusString()
+        mapFragment.mapView.addMapListener(strikeListOverlay)
+
+
+        fadeOverlay = FadeOverlay(strikeColorHandler)
+
+        ownLocationOverlay = OwnLocationOverlay(this, mapFragment.mapView)
+        ownLocationOverlay.setEnabled(true)
+        mapFragment.mapView.addMapListener(ownLocationOverlay)
+
+        onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
+                PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP)
+
+        val overlays = mapFragment.mapView.overlays
+        Log.v(LOG_TAG, "Main.onStart() # of overlays ${overlays.size}")
+
+        overlays.addAll(listOf(fadeOverlay, strikeListOverlay, ownLocationOverlay))
+
+        setupCustomViews()
 
         Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
     }
@@ -400,6 +381,12 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     override fun onResume() {
         super.onResume()
 
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestLocationPermissions(preferences)
+            requestStoragePermissions()
+            requestWakeupPermissions(preferences, baseContext)
+        }
+
         enableDataUpdates()
 
         Log.d(Main.LOG_TAG, "Main.onResume() ${LogUtil.timestamp} service: " + appService)
@@ -415,6 +402,10 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     override fun onStop() {
         super.onStop()
+
+        mapFragment.mapView.overlays.removeAll(listOf(fadeOverlay, ownLocationOverlay, strikeListOverlay))
+        mapFragment.mapView.removeMapListener(ownLocationOverlay)
+        mapFragment.mapView.removeMapListener(strikeListOverlay)
 
         Log.v(Main.LOG_TAG, "Main.onStop() ${LogUtil.timestamp}")
     }
@@ -450,10 +441,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         unbindService(serviceConnection)
     }
 
-    override fun isRouteDisplayed(): Boolean {
-        return false
-    }
-
     private fun reloadData() {
         appService?.run { this.reloadData() }
     }
@@ -469,7 +456,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         clearData = false
 
         strikeListOverlay.clear()
-        participantsOverlay.clear()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -504,6 +490,14 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
         if (permission is String && checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(permission), LocationProviderRelation.byProviderName[locationProviderName]?.ordinal
                     ?: Int.MIN_VALUE)
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private fun requestStoragePermissions() {
+        val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+        if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(permission), 50)
         }
     }
 
@@ -586,22 +580,8 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
     private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
-            PreferenceKey.MAP_TYPE -> {
-                val mapTypeString = sharedPreferences.get(key, "SATELLITE")
-                mapView.isSatellite = mapTypeString == "SATELLITE"
-                strikeListOverlay.refresh()
-                participantsOverlay.refresh()
-            }
-
-            PreferenceKey.SHOW_PARTICIPANTS -> {
-                val showParticipants = sharedPreferences.get(key, true)
-                participantsOverlay.enabled = showParticipants
-                updateOverlays()
-            }
-
             PreferenceKey.COLOR_SCHEME -> {
                 strikeListOverlay.refresh()
-                participantsOverlay.refresh()
             }
 
             PreferenceKey.MAP_FADE -> {
@@ -668,5 +648,6 @@ class Main : OwnMapActivity(), OnSharedPreferenceChangeListener {
 
     companion object {
         val LOG_TAG = "BO_ANDROID"
+        val MAP_FRAGMENT_TAG = "org.blitzortung.MAP_FRAGMENT_TAG"
     }
 }

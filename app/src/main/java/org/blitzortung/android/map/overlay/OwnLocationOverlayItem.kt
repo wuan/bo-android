@@ -20,8 +20,9 @@ package org.blitzortung.android.map.overlay
 
 import android.location.Location
 
-import com.google.android.maps.OverlayItem
-
 import org.blitzortung.android.data.Coordsys
+import org.osmdroid.views.overlay.OverlayItem
 
-class OwnLocationOverlayItem(location: Location) : OverlayItem(Coordsys.toMapCoords(location.longitude.toFloat(), location.latitude.toFloat()), "", "")
+class OwnLocationOverlayItem(
+        location: Location
+) : OverlayItem("own location", "", Coordsys.toMapCoords(location.longitude.toFloat(), location.latitude.toFloat()))

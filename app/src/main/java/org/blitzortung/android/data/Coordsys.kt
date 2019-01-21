@@ -18,7 +18,8 @@
 
 package org.blitzortung.android.data
 
-import com.google.android.maps.GeoPoint
+import org.osmdroid.util.GeoPoint
+
 
 object Coordsys {
 

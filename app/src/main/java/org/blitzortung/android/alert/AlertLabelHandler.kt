@@ -33,8 +33,8 @@ class AlertLabelHandler(
 
         if (result != null && result.closestStrikeDistance < Float.POSITIVE_INFINITY) {
             textColorResource = when(result.closestStrikeDistance) {
-                in 0..20 -> R.color.Red
-                in 20..50 -> R.color.Yellow
+                in 0.0..20.0 -> R.color.Red
+                in 20.0..50.0 -> R.color.Yellow
                 else -> R.color.Green
             }
             warningText = "%.0f%s %s".format(

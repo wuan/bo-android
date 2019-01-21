@@ -23,7 +23,8 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.helper.ViewHelper
+import org.blitzortung.android.app.helper.ViewHelper.pxFromDp
+import org.blitzortung.android.app.helper.ViewHelper.pxFromSp
 
 open class TabletAwareView(
         context: Context,
@@ -40,8 +41,8 @@ open class TabletAwareView(
 
         val scaleForTablet = a.getBoolean(R.styleable.View_tablet_scaleable, false) && isTablet(context)
 
-        padding = ViewHelper.pxFromDp(this, padding(scaleForTablet))
-        textSize = ViewHelper.pxFromSp(this, textSize(scaleForTablet))
+        padding = pxFromDp(this.context, padding(scaleForTablet))
+        textSize = pxFromSp(this.context, textSize(scaleForTablet))
         sizeFactor = sizeFactor(scaleForTablet)
 
         a.recycle()

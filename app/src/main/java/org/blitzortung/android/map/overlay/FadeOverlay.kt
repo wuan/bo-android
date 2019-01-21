@@ -20,9 +20,9 @@ package org.blitzortung.android.map.overlay
 
 import android.graphics.Canvas
 import android.graphics.Paint
-import com.google.android.maps.MapView
-import com.google.android.maps.Overlay
 import org.blitzortung.android.map.overlay.color.ColorHandler
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Overlay
 
 class FadeOverlay(private val colorHandler: ColorHandler) : Overlay() {
 

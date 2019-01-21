@@ -23,9 +23,9 @@ import android.graphics.Paint
 import android.graphics.Paint.Align
 import android.graphics.Point
 import android.graphics.RectF
-import com.google.android.maps.GeoPoint
-import com.google.android.maps.MapView
-import com.google.android.maps.Projection
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.Projection
 
 class RasterShape(private val center: GeoPoint) : LightningShape {
 

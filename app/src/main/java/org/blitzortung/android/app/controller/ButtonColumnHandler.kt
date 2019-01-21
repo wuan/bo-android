@@ -20,7 +20,7 @@ package org.blitzortung.android.app.controller
 
 import android.view.View
 import android.widget.RelativeLayout
-import org.blitzortung.android.app.helper.ViewHelper
+import org.blitzortung.android.app.helper.ViewHelper.pxFromSp
 
 class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) {
 
@@ -50,8 +50,8 @@ class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) 
             if (view.visibility == View.VISIBLE) {
                 val lp = RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
-                lp.width = ViewHelper.pxFromSp(view, buttonSize).toInt()
-                lp.height = ViewHelper.pxFromSp(view, buttonSize).toInt()
+                lp.width = pxFromSp(view.context, buttonSize).toInt()
+                lp.height = pxFromSp(view.context, buttonSize).toInt()
                 lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 1)
                 if (previousIndex < 0) {
                     lp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 1)

@@ -43,6 +43,6 @@ class BOApplication : Application() {
         lateinit var wakeLock: PowerManager.WakeLock
 
 
-        val WAKE_LOCK_TAG = "boAndroidWakeLock"
+        val WAKE_LOCK_TAG = "boAndroid:WakeLock"
     }
 }
