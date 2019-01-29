@@ -25,4 +25,4 @@ import org.osmdroid.views.overlay.OverlayItem
 
 class OwnLocationOverlayItem(
         location: Location
-) : OverlayItem("own location", "", Coordsys.toMapCoords(location.longitude.toFloat(), location.latitude.toFloat()))
+) : OverlayItem("own location", "", Coordsys.toMapCoords(location.longitude, location.latitude))

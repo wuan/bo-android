@@ -26,32 +26,32 @@ import org.blitzortung.android.data.Coordsys
 import org.osmdroid.views.Projection
 
 data class RasterParameters(
-        val longitudeStart: Float,
-        val latitudeStart: Float,
-        val longitudeDelta: Float,
-        val latitudeDelta: Float,
+        val longitudeStart: Double,
+        val latitudeStart: Double,
+        val longitudeDelta: Double,
+        val latitudeDelta: Double,
         val longitudeBins: Int,
         val latitudeBins: Int,
         val minDistance: Float? = null) {
 
-    val rectCenterLongitude: Float
-        get() = longitudeStart + longitudeDelta * longitudeBins / 2f
+    val rectCenterLongitude: Double
+        get() = longitudeStart + longitudeDelta * longitudeBins / 2.0
 
-    val rectCenterLatitude: Float
-        get() = latitudeStart - latitudeDelta * latitudeBins / 2f
+    val rectCenterLatitude: Double
+        get() = latitudeStart - latitudeDelta * latitudeBins / 2.0
 
-    fun getCenterLongitude(offset: Int): Float {
-        return longitudeStart + longitudeDelta * (offset + 0.5f)
+    fun getCenterLongitude(offset: Int): Double {
+        return longitudeStart + longitudeDelta * (offset + 0.5)
     }
 
-    fun getCenterLatitude(offset: Int): Float {
-        return latitudeStart - latitudeDelta * (offset + 0.5f)
+    fun getCenterLatitude(offset: Int): Double {
+        return latitudeStart - latitudeDelta * (offset + 0.5)
     }
 
-    val rectLongitudeDelta: Float
+    val rectLongitudeDelta: Double
         get() = longitudeDelta * longitudeBins
 
-    val rectLatitudeDelta: Float
+    val rectLatitudeDelta: Double
         get() = latitudeDelta * latitudeBins
 
     fun getRect(projection: Projection): RectF {

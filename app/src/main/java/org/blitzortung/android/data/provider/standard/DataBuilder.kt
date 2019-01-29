@@ -30,9 +30,9 @@ internal class DataBuilder {
         try {
             return DefaultStrike(
                     timestamp = referenceTimestamp - 1000 * jsonArray.getInt(0),
-                    longitude = jsonArray.getDouble(1).toFloat(),
-                    latitude = jsonArray.getDouble(2).toFloat(),
-                    lateralError = jsonArray.getDouble(3).toFloat(),
+                    longitude = jsonArray.getDouble(1),
+                    latitude = jsonArray.getDouble(2),
+                    lateralError = jsonArray.getDouble(3),
                     altitude = 0,
                     amplitude = jsonArray.getDouble(4).toFloat(),
                     stationCount = jsonArray.getInt(5).toShort())
@@ -45,10 +45,10 @@ internal class DataBuilder {
     @Throws(JSONException::class)
     fun createRasterParameters(response: JSONObject, minDistance: Float): RasterParameters {
         return RasterParameters(
-                longitudeStart = response.getDouble("x0").toFloat(),
-                latitudeStart = response.getDouble("y1").toFloat(),
-                longitudeDelta = response.getDouble("xd").toFloat(),
-                latitudeDelta = response.getDouble("yd").toFloat(),
+                longitudeStart = response.getDouble("x0"),
+                latitudeStart = response.getDouble("y1"),
+                longitudeDelta = response.getDouble("xd"),
+                latitudeDelta = response.getDouble("yd"),
                 longitudeBins = response.getInt("xc"),
                 latitudeBins = response.getInt("yc"),
                 minDistance = minDistance)
@@ -65,18 +65,18 @@ internal class DataBuilder {
     }
 
     fun createStation(jsonArray: JSONArray): Station {
-        var name : String
-        var longitude : Float
-        var latitude : Float
+        val name : String
+        val longitude : Double
+        val latitude : Double
         var offlineSince = Station.OFFLINE_SINCE_NOT_SET
         try {
             name = jsonArray.getString(1)
-            longitude = jsonArray.getDouble(3).toFloat()
-            latitude = jsonArray.getDouble(4).toFloat()
+            longitude = jsonArray.getDouble(3)
+            latitude = jsonArray.getDouble(4)
             if (jsonArray.length() >= 6) {
 
                 val offlineSinceString = jsonArray.getString(5)
-                if (offlineSinceString.length > 0) {
+                if (offlineSinceString.isNotEmpty()) {
                     offlineSince = TimeFormat.parseTimeWithMilliseconds(offlineSinceString)
                 }
             }

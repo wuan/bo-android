@@ -15,7 +15,7 @@ fun createStrikePopUp(popUp: View, strikeOverlay: StrikeOverlay): View {
     if (strikeOverlay.shape is RasterShape) {
         result += ", #%d".format(strikeOverlay.multiplicity)
     } else if (strikeOverlay.shape is StrikeShape) {
-        result += " (%.4f %.4f)".format(strikeOverlay.center.longitudeE6 / 1e6, strikeOverlay.center.latitudeE6 / 1e6)
+        result += " (%.4f %.4f)".format(strikeOverlay.center.longitude, strikeOverlay.center.latitude)
     }
 
     with(popUp.findViewById(R.id.popup_text) as TextView) {

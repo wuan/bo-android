@@ -22,8 +22,8 @@ import java.io.Serializable
 
 data class RasterElement(
         override val timestamp: Long,
-        override val longitude: Float,
-        override val latitude: Float,
+        override val longitude: Double,
+        override val latitude: Double,
         override val multiplicity: Int) : Strike, Serializable {
 
     companion object {

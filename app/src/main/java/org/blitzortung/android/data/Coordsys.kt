@@ -23,8 +23,8 @@ import org.osmdroid.util.GeoPoint
 
 object Coordsys {
 
-    fun toMapCoords(longitude: Float, latitude: Float): GeoPoint {
-        return GeoPoint((latitude * 1e6).toInt(), (longitude * 1e6).toInt())
+    fun toMapCoords(longitude: Double, latitude: Double): GeoPoint {
+        return GeoPoint(latitude, longitude)
     }
 
 }

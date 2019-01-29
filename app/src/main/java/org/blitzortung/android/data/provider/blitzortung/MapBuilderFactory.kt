@@ -30,9 +30,9 @@ class MapBuilderFactory constructor(private val strikeLineSplitter: (String) -> 
     fun createAbstractStrikeMapBuilder(): MapBuilder<Strike> {
         return object : MapBuilder<Strike>(strikeLineSplitter) {
 
-            var longitude: Float = 0.toFloat()
-            var latitude: Float = 0.toFloat()
-            var amplitude: Float = 0.toFloat()
+            var longitude: Double = 0.0
+            var latitude: Double = 0.0
+            var amplitude: Float = 0f
             private var timestamp: Long = 0
             private var lateralError: Int = 0
             private var altitude: Int = 0
@@ -43,18 +43,18 @@ class MapBuilderFactory constructor(private val strikeLineSplitter: (String) -> 
             }
 
             override fun setBuilderMap(keyValueBuilderMap: MutableMap<String, (Array<String>) -> Unit>) {
-                keyValueBuilderMap.put("pos", { values ->
-                    longitude = java.lang.Float.valueOf(values[1])
-                    latitude = java.lang.Float.parseFloat(values[0])
-                    altitude = Integer.parseInt(values[2])
-                })
-                keyValueBuilderMap.put("str", { values -> amplitude = java.lang.Float.parseFloat(values[0]) })
-                keyValueBuilderMap.put("dev", { values -> lateralError = Integer.parseInt(values[0]) })
-                keyValueBuilderMap.put("sta", { values -> stationCount = values.size.toShort() })
+                keyValueBuilderMap.put("pos") { values ->
+                    longitude = values[1].toDouble()
+                    latitude = values[0].toDouble()
+                    altitude = values[2].toInt()
+                }
+                keyValueBuilderMap.put("str") { values -> amplitude = java.lang.Float.parseFloat(values[0]) }
+                keyValueBuilderMap.put("dev") { values -> lateralError = Integer.parseInt(values[0]) }
+                keyValueBuilderMap.put("sta") { values -> stationCount = values.size.toShort() }
             }
 
             override fun build(): Strike {
-                return DefaultStrike(timestamp, longitude, latitude, altitude, amplitude, stationCount, lateralError.toFloat())
+                return DefaultStrike(timestamp, longitude, latitude, altitude, amplitude, stationCount, lateralError.toDouble())
             }
         }
     }
@@ -63,23 +63,23 @@ class MapBuilderFactory constructor(private val strikeLineSplitter: (String) -> 
         return object : MapBuilder<Station>(stationLineSplitter) {
 
             private var name: String = "n/a"
-            private var longitude: Float = 0.toFloat()
-            private var latitude: Float = 0.toFloat()
+            private var longitude: Double = 0.0
+            private var latitude: Double = 0.0
             private var offlineSince: Long = 0
 
             override fun prepare(fields: Array<String>) {
             }
 
             override fun setBuilderMap(keyValueBuilderMap: MutableMap<String, (Array<String>) -> Unit>) {
-                keyValueBuilderMap.put("city", { values -> name = values[0].replace("\"", "") })
-                keyValueBuilderMap.put("pos", { values ->
-                    longitude = java.lang.Float.parseFloat(values[1])
-                    latitude = java.lang.Float.parseFloat(values[0])
-                })
-                keyValueBuilderMap.put("last_signal", { values ->
+                keyValueBuilderMap.put("city") { values -> name = values[0].replace("\"", "") }
+                keyValueBuilderMap.put("pos") { values ->
+                    longitude = values[1].toDouble()
+                    latitude = values[0].toDouble()
+                }
+                keyValueBuilderMap.put("last_signal") { values ->
                     val dateString = values[0].replace("\"", "").replace("-", "").replace(" ", "T")
                     offlineSince = TimeFormat.parseTime(dateString)
-                })
+                }
             }
 
             override fun build(): Station {

@@ -18,7 +18,12 @@
 
 package org.blitzortung.android.data.beans
 
-class Station(override val longitude: Float, override val latitude: Float, val name: String, val offlineSince: Long) : Location {
+class Station(
+        override val longitude: Double,
+        override val latitude: Double,
+        val name: String,
+        val offlineSince: Long
+) : Location {
 
     val state: State
         get() {

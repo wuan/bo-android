@@ -19,7 +19,7 @@
 package org.blitzortung.android.data.beans
 
 interface Location {
-    val longitude: Float
-    val latitude: Float
+    val longitude: Double
+    val latitude: Double
 }
 
