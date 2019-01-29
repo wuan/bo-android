@@ -21,12 +21,12 @@ package org.blitzortung.android.map.overlay
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Point
-import org.osmdroid.util.GeoPoint
+import org.osmdroid.api.IGeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.Projection
 
-class StrikeShape(private val center: GeoPoint) : LightningShape {
-    override fun isPointInside(tappedGeoPoint: GeoPoint, projection: Projection): Boolean {
+class StrikeShape(private val center: IGeoPoint) : LightningShape {
+    override fun isPointInside(tappedGeoPoint: IGeoPoint, projection: Projection): Boolean {
         val shapeCenter = Point()
         projection.toPixels(center, shapeCenter)
 
@@ -44,13 +44,12 @@ class StrikeShape(private val center: GeoPoint) : LightningShape {
         mapView.projection.toPixels(center, centerPoint)
 
         //Only draw it when its visible
-        if(canvas.quickReject(
-                centerPoint.x - size / 2,
-                centerPoint.y - size / 2,
-                centerPoint.x + size / 2,
-                centerPoint.y + size /2,
-                Canvas.EdgeType.BW)) {
-
+        if (canvas.quickReject(
+                        centerPoint.x - size / 2,
+                        centerPoint.y - size / 2,
+                        centerPoint.x + size / 2,
+                        centerPoint.y + size / 2,
+                        Canvas.EdgeType.BW)) {
             return
         }
 

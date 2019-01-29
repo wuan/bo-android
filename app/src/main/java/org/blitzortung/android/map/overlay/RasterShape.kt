@@ -23,11 +23,11 @@ import android.graphics.Paint
 import android.graphics.Paint.Align
 import android.graphics.Point
 import android.graphics.RectF
-import org.osmdroid.util.GeoPoint
+import org.osmdroid.api.IGeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.Projection
 
-class RasterShape(private val center: GeoPoint) : LightningShape {
+class RasterShape(private val center: IGeoPoint) : LightningShape {
 
     private val size: RectF
     private var color: Int = 0
@@ -50,7 +50,7 @@ class RasterShape(private val center: GeoPoint) : LightningShape {
                 centerPoint.y + size.bottom)
 
         //Only draw visible Raster-Items
-        if(canvas.quickReject(rect, Canvas.EdgeType.BW)){
+        if (canvas.quickReject(rect, Canvas.EdgeType.BW)) {
             return
         }
 
@@ -72,7 +72,7 @@ class RasterShape(private val center: GeoPoint) : LightningShape {
         }
     }
 
-    override fun isPointInside(tappedGeoPoint: GeoPoint, projection: Projection): Boolean {
+    override fun isPointInside(tappedGeoPoint: IGeoPoint, projection: Projection): Boolean {
         val shapeCenter = Point()
         projection.toPixels(center, shapeCenter)
 

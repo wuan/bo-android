@@ -6,6 +6,7 @@ import android.graphics.Point
 import org.blitzortung.android.data.Coordsys
 import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Strike
+import org.osmdroid.api.IGeoPoint
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.Projection
@@ -56,7 +57,7 @@ class StrikeOverlay(strike: Strike) {
         this.shape = shape
     }
 
-    fun pointIsInside(point: GeoPoint, projection: Projection): Boolean {
+    fun pointIsInside(point: IGeoPoint, projection: Projection): Boolean {
         return shape?.isPointInside(point, projection)
                 ?: false
     }

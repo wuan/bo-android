@@ -22,13 +22,17 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Paint.Style
 import android.util.Log
+import android.view.MotionEvent
+import android.view.ViewGroup
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.map.MapFragment
+import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.components.LayerOverlayComponent
+import org.blitzortung.android.map.createStrikePopUp
 import org.blitzortung.android.map.overlay.color.ColorHandler
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.osmdroid.events.MapListener
@@ -52,8 +56,6 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
 
     override fun draw(canvas: Canvas?, mapView: MapView?, shadow: Boolean) {
         if (!shadow) {
-            //super.draw(canvas, mapView, false)
-
             if (canvas == null || mapView == null) {
                 return
             }
@@ -118,33 +120,29 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
         updateTotalNumberOfStrikes()
     }
 
-    fun updateZoomLevel(zoomLevel: Int) {
+    override fun onSingleTapUp(e: MotionEvent?, mapView: MapView?): Boolean {
+        if (e != null && mapView != null) {
+            Log.d(Main.LOG_TAG, "Tapped on StrikeList")
+            val point = mapView.projection.fromPixels(e.x.toInt(), e.y.toInt())
 
-    }
+            val strikeTapped = strikeList.firstOrNull { it.pointIsInside(point, mapView.projection) }
 
-    // TODO handle later, see https://stackoverflow.com/questions/12991175/osmdroid-ontap-example#13054048
-    /*override
-    fun onTap(point: GeoPoint, map: MapView): Boolean {
-        Log.d(Main.LOG_TAG, "Tapped on StrikeList")
+            val popup = (mapView as OwnMapView).popup
+            mapView.removeView(popup)
 
-        val strikeTapped = strikeList.firstOrNull { it.pointIsInside(point, map.projection) }
+            if (strikeTapped != null) {
+                val newPopup = createStrikePopUp(popup, strikeTapped)
 
-        val popup = (map as OwnMapView).popup
-        map.removeView(popup)
+                val mapParams = MapView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                        point, 0, 0, MapView.LayoutParams.BOTTOM_CENTER)
 
-        if(strikeTapped != null) {
-            val newPopup = createStrikePopUp(popup, strikeTapped)
+                mapView.addView(newPopup, mapParams)
 
-            val mapParams = MapView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
-                    point, 0, 0, MapView.LayoutParams.BOTTOM_CENTER)
-
-            map.addView(newPopup, mapParams)
-
-            return true
+                return true
+            }
         }
-
         return false
-    }*/
+    }
 
     fun refresh() {
         val currentSection = -1
@@ -173,7 +171,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
 
     // VisibleForTesting
     protected fun updateAndReturnDrawable(item: StrikeOverlay, section: Int, colorHandler: ColorHandler): LightningShape {
-        val projection = mapFragment.mapView!!.projection
+        val projection = mapFragment.mapView.projection
         val color = colorHandler.getColor(section)
         val textColor = colorHandler.textColor
 
