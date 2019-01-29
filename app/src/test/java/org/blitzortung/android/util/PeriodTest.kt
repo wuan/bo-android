@@ -10,7 +10,7 @@ class PeriodTest {
 
     private val currentPeriod = 60
 
-    lateinit private var period: Period
+    private lateinit var period: Period
 
     @Before
     fun setUp() {

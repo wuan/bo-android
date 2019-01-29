@@ -29,10 +29,6 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
     private val preferences = BOApplication.sharedPreferences
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mapView = OwnMapView(inflater.context)
 

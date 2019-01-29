@@ -13,7 +13,7 @@ import org.robolectric.annotation.Config
 @Config(manifest = Config.NONE)
 class VersionComponentTest {
 
-    lateinit private var versionComponent: VersionComponent
+    private lateinit var versionComponent: VersionComponent
 
     @Before
     fun setUp() {

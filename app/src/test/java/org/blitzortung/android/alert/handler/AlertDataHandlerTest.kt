@@ -69,7 +69,7 @@ class AlertDataHandlerTest {
         val result = alertDataHandler.checkStrikes(arrayListOf(strike), location, parameters, now)
 
         val sector = result.sectorWithClosestStrike
-        assertThat(sector).isNotNull()
+        assertThat(sector).isNotNull
         assertThat(sector).isEqualTo(sectorWithStrike(result))
 
         assertSectorAndRange(result, "foo", 2.5f, thresholdTime)
@@ -84,7 +84,7 @@ class AlertDataHandlerTest {
         val result = alertDataHandler.checkStrikes(arrayListOf(strike), location, parameters, now)
 
         val sector = result.sectorWithClosestStrike
-        assertThat(sector).isNotNull()
+        assertThat(sector).isNotNull
         assertThat(sector).isEqualTo(sectorWithStrike(result))
 
         assertSectorAndRange(result, "S", 2.5f, thresholdTime)
@@ -99,7 +99,7 @@ class AlertDataHandlerTest {
         val result = alertDataHandler.checkStrikes(arrayListOf(strike), location, parameters, now)
 
         val sector = result.sectorWithClosestStrike
-        assertThat(sector).isNotNull()
+        assertThat(sector).isNotNull
         assertThat(sector).isEqualTo(sectorWithStrike(result))
 
         assertSectorAndRange(result, "S", 2.5f, thresholdTime)
@@ -141,11 +141,11 @@ class AlertDataHandlerTest {
 
     private fun assertSectorAndRange(result: AlertResult, expectedSectorLabel: String, expectedRange: Float, expectedTime: Long) {
         val sectorWithStrike = sectorWithStrike(result)
-        assertThat(sectorWithStrike).isNotNull()
+        assertThat(sectorWithStrike).isNotNull
         if (sectorWithStrike != null) {
             assertThat(sectorWithStrike.label).isEqualTo(expectedSectorLabel)
             val rangeWithStrike = sectorWithStrike.ranges.filter { it.strikeCount > 0 }.firstOrNull()
-            assertThat(rangeWithStrike).isNotNull()
+            assertThat(rangeWithStrike).isNotNull
             if (rangeWithStrike != null) {
                 assertThat(rangeWithStrike.strikeCount).isEqualTo(1)
                 assertThat(rangeWithStrike.rangeMaximum).isEqualTo(expectedRange)

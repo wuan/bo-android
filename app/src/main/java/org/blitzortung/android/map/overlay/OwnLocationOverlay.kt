@@ -108,13 +108,13 @@ class OwnLocationOverlay(
     }
 
     fun enableOwnLocation() {
-        setEnabled(true)
+        isEnabled = true
         refresh()
     }
 
     fun disableOwnLocation() {
         item = null
-        setEnabled(false)
+        isEnabled = false
         refresh()
     }
 
@@ -144,7 +144,7 @@ class OwnLocationOverlay(
     }
 
     override fun onScroll(event: ScrollEvent?): Boolean {
-        return false;
+        return false
     }
 
     override fun onZoom(event: ZoomEvent?): Boolean {
@@ -155,7 +155,7 @@ class OwnLocationOverlay(
                 refresh()
             }
         }
-        return false;
+        return false
     }
 
     override val name: String

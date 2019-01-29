@@ -165,7 +165,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         }
         setContentView(R.layout.main)
 
-        Configuration.getInstance().setUserAgentValue(getPackageName());
+        Configuration.getInstance().userAgentValue = packageName
 
         if (supportFragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG) == null) {
             mapFragment = MapFragment()
@@ -303,7 +303,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         }
 
         controller.zoomTo(targetZoomLevel)
-        controller.animateTo(GeoPoint(latitude, longitude));
+        controller.animateTo(GeoPoint(latitude, longitude))
     }
 
     val isDebugBuild: Boolean
@@ -334,7 +334,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         fadeOverlay = FadeOverlay(strikeColorHandler)
 
         ownLocationOverlay = OwnLocationOverlay(this, mapFragment.mapView)
-        ownLocationOverlay.setEnabled(true)
+        ownLocationOverlay.isEnabled = true
         mapFragment.mapView.addMapListener(ownLocationOverlay)
 
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
@@ -521,7 +521,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
                                 Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
                                 val intent = Intent()
-                                intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                                intent.action = Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS
                                 try {
                                     context.startActivity(intent)
                                 } catch (e: AndroidRuntimeException) {

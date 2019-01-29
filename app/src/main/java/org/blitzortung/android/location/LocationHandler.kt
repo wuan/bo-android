@@ -89,7 +89,7 @@ open class LocationHandler(
 
                 val newProvider = providerFactory(sharedPreferences.get(key, LocationManager.PASSIVE_PROVIDER))
 
-                if (provider?.type != newProvider.type || !(provider?.isRunning ?: false)) {
+                if (provider?.type != newProvider.type || provider?.isRunning != true) {
                     enableNewProvider(newProvider)
                 }
             }

@@ -21,7 +21,7 @@ fun createStrikePopUp(popUp: View, strikeOverlay: StrikeOverlay): View {
     with(popUp.findViewById(R.id.popup_text) as TextView) {
         setBackgroundColor(-2013265920)
         setPadding(5, 5, 5, 5)
-        setText(result)
+        text = result
     }
 
     return popUp

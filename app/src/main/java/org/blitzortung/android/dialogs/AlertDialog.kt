@@ -41,7 +41,7 @@ class AlertDialog(context: Context, private val colorHandler: ColorHandler) : an
     override fun onStart() {
         super.onStart()
 
-        alertView = findViewById(R.id.alarm_diagram) as AlertView
+        alertView = findViewById(R.id.alarm_diagram)
         alertView.enableDescriptionText()
 
         setTitle(context.getString(R.string.alarms))

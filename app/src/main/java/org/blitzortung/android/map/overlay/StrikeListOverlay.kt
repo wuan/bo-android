@@ -192,7 +192,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
                 refresh()
             }
         }
-        return false;
+        return false
     }
 
 

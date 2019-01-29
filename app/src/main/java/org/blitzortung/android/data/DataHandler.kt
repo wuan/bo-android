@@ -65,7 +65,7 @@ class DataHandler @JvmOverloads constructor(
 
     private var enabled = false
 
-    lateinit private var parametersController: ParametersController
+    private lateinit var parametersController: ParametersController
 
     private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
         override fun addedFirstConsumer() {
