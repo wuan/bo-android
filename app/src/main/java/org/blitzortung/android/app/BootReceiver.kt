@@ -21,6 +21,7 @@ package org.blitzortung.android.app
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 
@@ -32,7 +33,11 @@ class BootReceiver : BroadcastReceiver() {
             val bootIntent = Intent(context, AppService::class.java)
             bootIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             try {
-                context.startService(bootIntent)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(bootIntent);
+                } else {
+                    context.startService(bootIntent);
+                }
             } catch (e: Exception) {
                 Log.e(LOG_TAG, "BootReceiver.onReceive() start service failed after boot completed", e)
             }

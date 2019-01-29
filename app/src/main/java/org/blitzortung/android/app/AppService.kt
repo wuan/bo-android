@@ -21,9 +21,11 @@ package org.blitzortung.android.app
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.Build
 import android.os.Handler
@@ -225,8 +227,19 @@ class AppService protected constructor(private val handler: Handler, private val
                 Log.v(Main.LOG_TAG, "AppService.onSharedPreferenceChanged() backgroundPeriod=%d".format(backgroundPeriod))
                 discardAlarm()
                 configureServiceMode()
+                configureBootReceiver(backgroundPeriod > 0)
             }
         }
+    }
+
+    private fun configureBootReceiver(enable: Boolean) {
+        val receiver = ComponentName(this, BootReceiver::class.java)
+
+        packageManager.setComponentEnabledSetting(
+                receiver,
+                if (enable) PackageManager.COMPONENT_ENABLED_STATE_ENABLED else PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                PackageManager.DONT_KILL_APP
+        )
     }
 
     fun configureServiceMode() {
