@@ -40,7 +40,7 @@ class AlertDataHandlerTest {
     fun setUp() {
         MockKAnnotations.init(this, relaxed = true)
 
-        strike = DefaultStrike(timestamp = now, longitude = 12.0f, latitude = 41.0f, altitude = 0, amplitude = 20.0f)
+        strike = DefaultStrike(timestamp = now, longitude = 12.0, latitude = 41.0, altitude = 0, amplitude = 20.0f)
 
         strikeLocation = Location("")
         strikeLocation.longitude = strike.longitude.toDouble()
