@@ -31,7 +31,11 @@ class BootReceiver : BroadcastReceiver() {
 
             val bootIntent = Intent(context, AppService::class.java)
             bootIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startService(bootIntent)
+            try {
+                context.startService(bootIntent)
+            } catch (e: Exception) {
+                Log.e(LOG_TAG, "BootReceiver.onReceive() start service failed after boot completed", e)
+            }
         } else {
             Log.v(LOG_TAG, "BootReceiver.onReceive() invalid intent action: ${intent.action}")
         }
