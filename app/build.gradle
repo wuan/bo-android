@@ -10,8 +10,8 @@ android {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 213
-        versionName "2.0.0"
+        versionCode 214
+        versionName "2.0.1"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
