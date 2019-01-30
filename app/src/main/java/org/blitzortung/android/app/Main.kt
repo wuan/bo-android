@@ -322,6 +322,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     override fun onStart() {
         super.onStart()
+        Log.v(LOG_TAG, "Main.onStart()")
 
         mapFragment = supportFragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG) as MapFragment
 
@@ -380,12 +381,15 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     override fun onResume() {
         super.onResume()
+        Log.v(LOG_TAG, "Main.onResume()")
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestLocationPermissions(preferences)
             requestStoragePermissions()
             requestWakeupPermissions(preferences, baseContext)
         }
+
+        mapFragment.updateForgroundColor(strikeColorHandler.lineColor)
 
         enableDataUpdates()
 
@@ -394,6 +398,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     override fun onPause() {
         super.onPause()
+        Log.v(LOG_TAG, "Main.onPause()")
 
         disableDataUpdates()
 
@@ -402,6 +407,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     override fun onStop() {
         super.onStop()
+        Log.v(LOG_TAG, "Main.onStop()")
 
         mapFragment.mapView.overlays.removeAll(listOf(fadeOverlay, ownLocationOverlay, strikeListOverlay))
         mapFragment.mapView.removeMapListener(ownLocationOverlay)

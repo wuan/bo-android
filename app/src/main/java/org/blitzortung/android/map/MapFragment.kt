@@ -5,10 +5,13 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.SharedPreferences
+import android.graphics.Paint
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.*
 import org.blitzortung.android.app.BOApplication
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
@@ -25,7 +28,6 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
     lateinit var mapView: OwnMapView
         private set
     private lateinit var mScaleBarOverlay: ScaleBarOverlay
-    private lateinit var mCopyrightOverlay: CopyrightOverlay
 
     private val preferences = BOApplication.sharedPreferences
 
@@ -45,12 +47,6 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
         mPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-        //Copyright overlay
-        mCopyrightOverlay = CopyrightOverlay(context)
-        mCopyrightOverlay.setOffset(0, (55 * dm.density).toInt())
-        mapView.overlays.add(this.mCopyrightOverlay)
-
-        //map scale
         mScaleBarOverlay = ScaleBarOverlay(mapView)
         mScaleBarOverlay.setScaleBarOffset(dm.widthPixels / 2, 20)
         mScaleBarOverlay.setCentred(true)
@@ -87,6 +83,12 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
         setHasOptionsMenu(true)
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE)
+    }
+
+    fun updateForgroundColor(fgcolor: Int) {
+        mScaleBarOverlay.barPaint = mScaleBarOverlay.barPaint.apply { color = fgcolor }
+        mScaleBarOverlay.textPaint = mScaleBarOverlay.textPaint.apply { color = fgcolor }
+        mapView.postInvalidate()
     }
 
     override fun onPause() {
