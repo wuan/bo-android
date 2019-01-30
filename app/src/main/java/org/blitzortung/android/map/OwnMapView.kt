@@ -99,16 +99,7 @@ class OwnMapView(context: Context) : MapView(context) {
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        val result = try {
-            super.onTouchEvent(event)
-        } catch (e: ArrayIndexOutOfBoundsException) {
-            Log.e(LOG_TAG, "OwnMapView.onTouchEvent() catched out of bounds exception")
-            false
-        }
-
-        val localResult = gestureDetector.onTouchEvent(event)
-
-        return result || localResult
+        return gestureDetector.onTouchEvent(event)
     }
 
     val popup: View by lazy { LayoutInflater.from(context).inflate(R.layout.popup, this, false) }
