@@ -2,6 +2,30 @@
 
 ## English
 
+### Version 1.5.18:
+ - improved exception handling
+
+### Version 1.5.17:
+ - updated dependencies
+
+### Version 1.5.16
+ - fix location integration
+
+### Version 1.5.15:
+ - more robust data retrieval
+
+### Version 1.5.14:
+ - italian translation
+
+### Version 1.5.13
+ - improve battery usage of background operation
+
+### Version 1.5.12:
+ - improve AlertHandler lifecycle handling
+
+### Version 1.5.11:
+ - improve app service operation
+
 ### Version 1.5.10:
  - fixed background query time offset
  - avoid invalidation of location
