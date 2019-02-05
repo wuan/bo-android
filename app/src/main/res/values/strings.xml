@@ -363,4 +363,5 @@
     <string name="own_location_size_summary" >Set the size of the own location symbol</string>
     <string name="keep_zoom_goto_own_location_summary" >Setting to keep the current zoom when centering the own location</string>
     <string name="keep_zoom_goto_own_location_title" >Keep zoom</string>
+    <string name="notification_channel_name" translatable="false">Storm Alarms</string>
 </resources>
