@@ -20,16 +20,15 @@ package org.blitzortung.android.app.controller
 
 
 import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.NotificationManager.IMPORTANCE_LOW
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.support.annotation.RequiresApi
-
+import android.util.Log
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.util.isAtLeast
 
@@ -40,19 +39,18 @@ open class NotificationHandler(private val context: Context) {
     init {
         notificationService = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        if (isAtLeast(Build.VERSION_CODES.O)) {
+        if (isAtLeast(25)) {
             createNotificationChannel()
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun sendNotification(notificationText: String) {
         if (notificationService != null) {
             val intent = Intent(context, Main::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
 
-            val notification = if (isAtLeast(Build.VERSION_CODES.JELLY_BEAN)) {
+            val notification = if (isAtLeast(25)) {
                 createNotification(contentIntent, notificationText)
             } else if (isAtLeast(Build.VERSION_CODES.JELLY_BEAN)) {
                 createJellyBeanNotification(contentIntent, notificationText)
@@ -64,16 +62,20 @@ open class NotificationHandler(private val context: Context) {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    @RequiresApi(25)
     private fun createNotification(contentIntent: PendingIntent?, notificationText: String): Notification? {
-        return Notification.Builder(context, CHANNEL_ID)
+        val builder = Notification.Builder(context)
                 .setSmallIcon(R.drawable.icon)
                 .setContentTitle(context.resources.getText(R.string.app_name))
                 .setContentText(notificationText)
                 .setContentIntent(contentIntent)
                 .setAutoCancel(true)
                 .setWhen(System.currentTimeMillis())
-                .setShowWhen(true).build()
+                .setShowWhen(true)
+        val method = builder.javaClass.getDeclaredMethod("setChannelId", String::class.java)
+        method.invoke(builder, CHANNEL_ID)
+        return builder
+                .build()
     }
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -96,17 +98,16 @@ open class NotificationHandler(private val context: Context) {
     private fun createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = context.getString(R.string.notification_channel_name)
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                setImportance(IMPORTANCE_LOW)
-            }
-            // Register the channel with the system
-            val notificationManager: NotificationManager =
-                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
+        val name = context.getString(R.string.notification_channel_name)
+        val importance = NotificationManager.IMPORTANCE_LOW
+        val notificationChannelClass = Class.forName("android.app.NotificationChannel")
+        val constructor = notificationChannelClass.getDeclaredConstructor(String::class.java, java.lang.CharSequence::class.java, Int::class.java)
+        val channel = constructor.newInstance(CHANNEL_ID, name, importance)
+        // Register the channel with the system
+        val notificationManager: NotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val method = notificationManager.javaClass.getDeclaredMethod("createNotificationChannel", notificationChannelClass)
+        method.invoke(notificationManager, channel)
     }
 
     private fun createLegacyNotification(contentIntent: PendingIntent?, notificationText: String): Notification {
