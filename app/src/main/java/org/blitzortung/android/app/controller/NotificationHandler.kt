@@ -20,7 +20,9 @@ package org.blitzortung.android.app.controller
 
 
 import android.app.Notification
+import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.NotificationManager.IMPORTANCE_LOW
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -37,8 +39,13 @@ open class NotificationHandler(private val context: Context) {
 
     init {
         notificationService = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (isAtLeast(Build.VERSION_CODES.O)) {
+            createNotificationChannel()
+        }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun sendNotification(notificationText: String) {
         if (notificationService != null) {
             val intent = Intent(context, Main::class.java)
@@ -47,6 +54,8 @@ open class NotificationHandler(private val context: Context) {
 
             val notification = if (isAtLeast(Build.VERSION_CODES.JELLY_BEAN)) {
                 createNotification(contentIntent, notificationText)
+            } else if (isAtLeast(Build.VERSION_CODES.JELLY_BEAN)) {
+                createJellyBeanNotification(contentIntent, notificationText)
             } else {
                 createLegacyNotification(contentIntent, notificationText)
             }
@@ -55,8 +64,20 @@ open class NotificationHandler(private val context: Context) {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotification(contentIntent: PendingIntent?, notificationText: String): Notification? {
+        return Notification.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.icon)
+                .setContentTitle(context.resources.getText(R.string.app_name))
+                .setContentText(notificationText)
+                .setContentIntent(contentIntent)
+                .setAutoCancel(true)
+                .setWhen(System.currentTimeMillis())
+                .setShowWhen(true).build()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+    private fun createJellyBeanNotification(contentIntent: PendingIntent?, notificationText: String): Notification? {
         val builder = Notification.Builder(context)
                 .setSmallIcon(R.drawable.icon)
                 .setContentTitle(context.resources.getText(R.string.app_name))
@@ -72,11 +93,31 @@ open class NotificationHandler(private val context: Context) {
         return builder.build()
     }
 
+    private fun createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = context.getString(R.string.notification_channel_name)
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                setImportance(IMPORTANCE_LOW)
+            }
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
     private fun createLegacyNotification(contentIntent: PendingIntent?, notificationText: String): Notification {
         val notification = Notification(R.drawable.icon, notificationText, System.currentTimeMillis())
         val setLatestEventInfo = Notification::class.java.getDeclaredMethod("setLatestEventInfo", Context::class.java, CharSequence::class.java, CharSequence::class.java, PendingIntent::class.java)
         setLatestEventInfo.invoke(notification, context, context.resources.getText(R.string.app_name), notificationText, contentIntent)
         return notification
+    }
+
+    companion object {
+        const val CHANNEL_ID = "channel"
     }
 
 }
