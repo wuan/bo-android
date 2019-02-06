@@ -43,9 +43,9 @@
     <string name="password_summary">Passwort von blitzortung.org Teilnehmern</string>
     <string name="map_settings">Karteneinstellungen</string>
     <string name="map_mode">Kartenmodus</string>
-    <string name="map_mode_summary">Satellitenbild oder Landkarte</string>
+    <string name="map_mode_summary">Dunkle oder helle Landkarte</string>
     <string name="map_fade">Karte verblassen</string>
-    <string name="map_fade_summary">Karten verblassen um die Sichtbarkeit der Daten zu verbessern</string>
+    <string name="map_fade_summary">Karte verblassen um die Sichtbarkeit der Daten zu verbessern</string>
 
     <string-array name="color_schemes">
         <item>Blitzortung.org</item>
@@ -62,8 +62,8 @@
     <string name="color_scheme_summary">Farbschema für die Darstellung der Daten</string>
 
     <string-array name="map_modes">
-        <item>Satellitenbild</item>
-        <item>Landkarte</item>
+        <item>Dunkle Landkarte</item>
+        <item>Helle Landkarte</item>
     </string-array>
     <string-array name="map_mode_values">
         <item>SATELLITE</item>
