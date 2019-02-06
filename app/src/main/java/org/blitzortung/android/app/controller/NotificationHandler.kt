@@ -50,7 +50,7 @@ open class NotificationHandler(private val context: Context) {
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
 
-            val notification = if (isAtLeast(25)) {
+            val notification = if (isAtLeast(OREO_VERSION_CODE)) {
                 createNotification(contentIntent, notificationText)
             } else if (isAtLeast(Build.VERSION_CODES.JELLY_BEAN)) {
                 createJellyBeanNotification(contentIntent, notificationText)
@@ -62,7 +62,7 @@ open class NotificationHandler(private val context: Context) {
         }
     }
 
-    @RequiresApi(25)
+    @RequiresApi(OREO_VERSION_CODE)
     private fun createNotification(contentIntent: PendingIntent?, notificationText: String): Notification? {
         val builder = Notification.Builder(context)
                 .setSmallIcon(R.drawable.icon)
@@ -119,6 +119,7 @@ open class NotificationHandler(private val context: Context) {
 
     companion object {
         const val CHANNEL_ID = "channel"
+        const val OREO_VERSION_CODE = 26
     }
 
 }
