@@ -39,7 +39,7 @@ open class NotificationHandler(private val context: Context) {
     init {
         notificationService = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        if (isAtLeast(25)) {
+        if (isAtLeast(OREO_VERSION_CODE)) {
             createNotificationChannel()
         }
     }
@@ -95,6 +95,7 @@ open class NotificationHandler(private val context: Context) {
         return builder.build()
     }
 
+    @RequiresApi(OREO_VERSION_CODE)
     private fun createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
