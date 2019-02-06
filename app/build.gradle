@@ -11,7 +11,7 @@ android {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 9
         targetSdkVersion 26
-        versionCode 218
+        versionCode 221
         versionName "1.6.5"
         multiDexEnabled true
     }
@@ -32,7 +32,7 @@ android {
 }
 
 jacoco {
-    toolVersion = "0.8.2"
+    toolVersion = "0.8.3"
 }
 
 def anko_version = '0.10.5'
