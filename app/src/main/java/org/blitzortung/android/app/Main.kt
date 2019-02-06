@@ -20,12 +20,14 @@ package org.blitzortung.android.app
 
 import android.Manifest
 import android.annotation.TargetApi
+import android.app.PendingIntent.getActivity
 import android.content.*
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
@@ -523,14 +525,13 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     val dialogClickListener = DialogInterface.OnClickListener { _, which ->
                         when (which) {
                             DialogInterface.BUTTON_POSITIVE -> {
-                                Toast.makeText(baseContext, R.string.background_query_toast, Toast.LENGTH_LONG).show()
-
                                 Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
                                 val intent = Intent()
                                 intent.action = Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS
                                 try {
-                                    context.startActivity(intent)
+                                    startActivity(intent)
                                 } catch (e: AndroidRuntimeException) {
+                                    Toast.makeText(baseContext, R.string.background_query_toast, Toast.LENGTH_LONG).show()
                                     Log.e(LOG_TAG, "requestWakeupPermissions() could not open battery optimization settings", e)
                                 }
                             }
