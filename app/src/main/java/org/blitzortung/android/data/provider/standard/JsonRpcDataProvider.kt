@@ -192,7 +192,6 @@ class JsonRpcDataProvider(
                     "JsonRpcDataProvider: read %d bytes (%d new strikes)".format(client.lastNumberOfTransferredBytes, resultVar.strikes?.size))
             return resultVar
         }
-
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
@@ -217,7 +216,7 @@ class JsonRpcDataProvider(
 
     companion object {
         private val DATE_TIME_FORMATTER = SimpleDateFormat("yyyyMMdd'T'HH:mm:ss", Locale.US)
-        private const val DEFAULT_SERVICE_URL = "https://bo-service.tryb.de/"
+        private const val DEFAULT_SERVICE_URL = "http://bo-service.tryb.de/"
 
         init {
             val tz = TimeZone.getTimeZone("UTC")
