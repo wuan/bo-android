@@ -42,6 +42,6 @@ data class AlertResult(
         get() = sectorWithClosestStrike?.label ?: "n/a"
 
     override fun toString(): String {
-        return "%s %.1f %s".format(bearingName, closestStrikeDistance, parameters.measurementSystem.unitName)
+        return "%s %.1f %s".format(bearingName, closestStrikeDistance, parameters.measurementSystem)
     }
 }

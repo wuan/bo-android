@@ -25,8 +25,8 @@
     </string>
     <string name="legend">Обозначение</string>
     <string name="legend_grid">Квадрат</string>
-    <string name="legend_minute"> мин.</string>
-    <string name="legend_km">км</string>
+    <string name="unit_minute"> мин.</string>
+    <string name="unit_km">км</string>
     <string name="total_time">всего времени</string>
     <string name="activity">активность</string>
     <string name="during">в прошлом</string>

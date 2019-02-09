@@ -264,7 +264,7 @@ class AlertHandler(
         val notificationLatestTimestamp = alertDataHandler.getLatestTimstampWithin(notificationDistanceLimit, alertResult)
         if (notificationLatestTimestamp > notificationLastTimestamp) {
             Log.d(Main.LOG_TAG, "AlertHandler.handleAlertNotification() notification ${notificationLatestTimestamp / 1000}")
-            notificationHandler.sendNotification(context.resources.getString(R.string.activity) + ": " + alertDataHandler.getTextMessage(alertResult, notificationDistanceLimit))
+            notificationHandler.sendNotification(context.resources.getString(R.string.activity) + ": " + alertDataHandler.getTextMessage(alertResult, notificationDistanceLimit, context.resources))
             notificationLastTimestamp = notificationLatestTimestamp
         } else {
             Log.d(Main.LOG_TAG, "AlertHandler.handleAlertNotification() skipped - ${notificationLatestTimestamp - notificationLastTimestamp}")

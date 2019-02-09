@@ -19,6 +19,7 @@
 package org.blitzortung.android.app.view
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.*
 import android.graphics.Paint.Align
 import android.graphics.Paint.Style
@@ -191,7 +192,8 @@ class AlertView @JvmOverloads constructor(
                         val text = "%.0f".format(rangeSteps[radiusIndex])
                         temporaryCanvas.drawText(text, center + (radiusIndex + 0.85f) * radiusIncrement, center + textHeight / 3f, textStyle)
                         if (radiusIndex == rangeStepCount - 1) {
-                            temporaryCanvas.drawText(alertParameters.measurementSystem.unitName, center + (radiusIndex + 0.85f) * radiusIncrement, center + textHeight * 1.33f, textStyle)
+                            val distanceUnit = resources.getString(alertParameters.measurementSystem.unitNameString)
+                            temporaryCanvas.drawText(distanceUnit, center + (radiusIndex + 0.85f) * radiusIncrement, center + textHeight * 1.33f, textStyle)
                         }
                     }
                 }

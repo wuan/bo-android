@@ -39,7 +39,7 @@ class AlertLabelHandler(
             }
             warningText = "%.0f%s %s".format(
                     result.closestStrikeDistance,
-                    result.parameters.measurementSystem.unitName,
+                    resources.getString(result.parameters.measurementSystem.unitNameString),
                     result.bearingName)
         }
 

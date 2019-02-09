@@ -31,8 +31,8 @@
     <string name="project_email" translatable="false">blitzortung@tryb.de</string>
     <string name="legend">Legend</string>
     <string name="legend_grid">Grid</string>
-    <string name="legend_minute">min</string>
-    <string name="legend_km">km</string>
+    <string name="unit_minute">min</string>
+    <string name="unit_km">km</string>
     <string name="total_time">total time</string>
     <string name="activity">activity</string>
     <string name="during">during the past</string>
@@ -364,4 +364,6 @@
     <string name="keep_zoom_goto_own_location_summary" >Setting to keep the current zoom when centering the own location</string>
     <string name="keep_zoom_goto_own_location_title" >Keep zoom</string>
     <string name="notification_channel_name" translatable="false">Storm Alarms</string>
+    <string name="not_available">n/a</string>
+    <string name="unit_miles">mi.</string>
 </resources>

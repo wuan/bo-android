@@ -1,6 +1,6 @@
 /*
 
-   Copyright 2015 Andreas Würl
+   Copyright 2019 Andreas Würl
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@
 
 package org.blitzortung.android.util
 
-enum class MeasurementSystem(val unitName: String, private val factor: Float) {
-    METRIC("km", 1000.0f),
-    IMPERIAL("mi.", 1609.344f);
+import org.blitzortung.android.app.R
+
+enum class MeasurementSystem(val unitNameString: Int, private val factor: Float) {
+    METRIC(R.string.unit_km, 1000.0f),
+    IMPERIAL(R.string.unit_miles, 1609.344f);
 
     fun calculateDistance(meters: Float): Float {
         return meters / factor

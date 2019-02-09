@@ -18,6 +18,7 @@
 
 package org.blitzortung.android.alert.handler
 
+import android.content.res.Resources
 import android.location.Location
 import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
@@ -77,11 +78,11 @@ open class AlertDataHandler internal constructor(
         })
     }
 
-    fun getTextMessage(alertResult: AlertResult, notificationDistanceLimit: Float): String {
+    fun getTextMessage(alertResult: AlertResult, notificationDistanceLimit: Float, resources: Resources): String {
         return alertResult.sectorsByDistance
                 .filter { it.key <= notificationDistanceLimit }
                 .map {
-                    "%s %.0f%s".format(it.value.label, it.key, alertResult.parameters.measurementSystem.unitName)
+                    "%s %.0f%s".format(it.value.label, it.key, resources.getString(alertResult.parameters.measurementSystem.unitNameString))
                 }.joinToString()
     }
 

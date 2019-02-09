@@ -1,6 +1,7 @@
 package org.blitzortung.android.util
 
 import org.assertj.core.api.Assertions.assertThat
+import org.blitzortung.android.app.R
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -18,7 +19,7 @@ class MeasurementSystemTest {
 
     @Test
     fun testMetricUnitName() {
-        assertThat(MeasurementSystem.METRIC.unitName).isEqualTo("km")
+        assertThat(MeasurementSystem.METRIC.unitNameString).isEqualTo(R.string.unit_km)
     }
 
     @Test
@@ -29,6 +30,6 @@ class MeasurementSystemTest {
 
     @Test
     fun testImperialUnitName() {
-        assertThat(MeasurementSystem.IMPERIAL.unitName).isEqualTo("mi.")
+        assertThat(MeasurementSystem.IMPERIAL.unitNameString).isEqualTo(R.string.unit_miles)
     }
 }

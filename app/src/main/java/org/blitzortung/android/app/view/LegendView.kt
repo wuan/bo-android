@@ -142,7 +142,7 @@ class LegendView @JvmOverloads constructor(
                 canvas.drawRect(legendColorRect, foregroundPaint)
 
                 val isLastValue = index == numberOfColors - 1
-                val minuteUnit = context.getString(R.string.legend_minute)
+                val minuteUnit = context.getString(R.string.unit_minute)
                 val text = "%c %d%s".format(if (isLastValue) '>' else '<', (index + (if (isLastValue) 0 else 1)) * minutesPerColor, minuteUnit)
 
                 canvas.drawText(text, 2 * padding + colorFieldSize, topCoordinate + colorFieldSize / 1.1f, textPaint)
@@ -199,9 +199,9 @@ class LegendView @JvmOverloads constructor(
         get() {
             val minDistance = strikesOverlay?.rasterParameters?.minDistance
             return if (minDistance != null) {
-                "%.0f %s".format(minDistance, context.getString(R.string.legend_km))
+                "%.0f %s".format(minDistance, context.getString(R.string.unit_km))
             } else {
-                "n/a"
+                context.getString(R.string.not_available)
             }
         }
 
