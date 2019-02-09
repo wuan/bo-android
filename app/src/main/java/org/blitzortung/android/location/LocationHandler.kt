@@ -22,6 +22,7 @@ import android.content.*
 import android.location.Location
 import android.location.LocationManager
 import android.util.Log
+import android.widget.Toast
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
@@ -109,7 +110,8 @@ open class LocationHandler(
         //Now start the new provider if it is enabled
         this.provider = newProvider.apply {
             if (!this.isEnabled) {
-                context.longToast(context.resources.getText(R.string.location_provider_disabled).toString().format(newProvider.type))
+                val message = context.resources.getString(R.string.location_provider_disabled).format(newProvider.type)
+                context.longToast(message)
             } else {
                 start()
             }
