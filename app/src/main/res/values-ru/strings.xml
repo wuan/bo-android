@@ -356,4 +356,6 @@
     <string name="own_location_size_summary" >Установите размер символа Вашего месторасположения</string>
     <string name="keep_zoom_goto_own_location_summary" >Установка сохранения Вашего текущего масштаба при центрировании собственного местоположения</string>
     <string name="keep_zoom_goto_own_location_title" >Сохранить масштаб</string>
+    <string name="not_available">н/д</string>
+    <string name="unit_miles">миль</string>
 </resources>
