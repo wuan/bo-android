@@ -2,6 +2,8 @@
 <resources>
 
   <string name="app_name">Blitzortung Lightning Monitor</string>
+    <string name="ok" translatable="false">@android:string/ok</string>
+    <string name="cancel" translatable="false">@android:string/cancel</string>
 
     <plurals name="strike">
         <item quantity="zero">Нет молний</item>
@@ -23,6 +25,8 @@
         Italian by Michele Locati (michele@locati.it)\n
         Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string>
+    <string name="copyright" translatable="false">В© 2011вЂ“2019, Andreas WГјrl</string>
+    <string name="project_email" translatable="false">blitzortung@tryb.de</string>
     <string name="legend">Обозначение</string>
     <string name="legend_grid">Квадрат</string>
     <string name="unit_minute"> мин.</string>
@@ -356,4 +360,7 @@
     <string name="own_location_size_summary" >Установите размер символа Вашего месторасположения</string>
     <string name="keep_zoom_goto_own_location_summary" >Установка сохранения Вашего текущего масштаба при центрировании собственного местоположения</string>
     <string name="keep_zoom_goto_own_location_title" >Сохранить масштаб</string>
+    <string name="notification_channel_name" translatable="false">Storm Alarms</string>
+    <string name="not_available">н/д</string>
+    <string name="unit_miles">миль</string>
 </resources>
