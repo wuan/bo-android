@@ -19,6 +19,8 @@ abstract class ManagerLocationProvider(
 
     protected val locationManager = context.locationManager
 
+    abstract val isPermissionGranted: Boolean
+
     protected open val minTime: Long
         get() = if (isInBackground) 120000 else 20000
 
@@ -107,8 +109,9 @@ abstract class ManagerLocationProvider(
         } catch (securityException: SecurityException) {
             Toast.makeText(context, "could not enable location manager $type", Toast.LENGTH_LONG).show()
             Log.e(LOG_TAG, "could not enable location manager $type", securityException)
+        } catch (runtimeException: RuntimeException) {
+            Toast.makeText(context, "could not reconfigure location manager $type ", Toast.LENGTH_LONG).show()
+            Log.e(LOG_TAG, "could not reconfigure location manager $type", runtimeException)
         }
     }
-
-    abstract val isPermissionGranted: Boolean
 }
