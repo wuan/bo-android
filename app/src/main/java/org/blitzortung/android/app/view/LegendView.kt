@@ -180,7 +180,7 @@ class LegendView @JvmOverloads constructor(
                 index++
             }
 
-            return "n/a"
+            return context.getString(R.string.not_available)
         }
 
     fun setAlpha(alpha: Int) {

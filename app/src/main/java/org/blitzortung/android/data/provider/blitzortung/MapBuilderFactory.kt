@@ -22,10 +22,13 @@ import org.blitzortung.android.data.beans.DefaultStrike
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.util.TimeFormat
+import org.blitzortung.android.app.R
+import android.content.Context
+
 import java.util.*
 import java.util.regex.Pattern
 
-class MapBuilderFactory constructor(private val strikeLineSplitter: (String) -> Array<String> = ::lineSplitter, private val stationLineSplitter: (String) -> Array<String> = ::stationLineSplitter) {
+class MapBuilderFactory constructor(private val context: Context, private val strikeLineSplitter: (String) -> Array<String> = ::lineSplitter, private val stationLineSplitter: (String) -> Array<String> = ::stationLineSplitter) {
 
     fun createAbstractStrikeMapBuilder(): MapBuilder<Strike> {
         return object : MapBuilder<Strike>(strikeLineSplitter) {
@@ -62,7 +65,7 @@ class MapBuilderFactory constructor(private val strikeLineSplitter: (String) -> 
     fun createStationMapBuilder(): MapBuilder<Station> {
         return object : MapBuilder<Station>(stationLineSplitter) {
 
-            private var name: String = "n/a"
+            private var name: String = context.getString(R.string.not_available)
             private var longitude: Double = 0.0
             private var latitude: Double = 0.0
             private var offlineSince: Long = 0

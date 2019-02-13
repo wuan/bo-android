@@ -19,9 +19,12 @@
 package org.blitzortung.android.alert
 
 import org.blitzortung.android.alert.data.AlertSector
+import org.blitzortung.android.app.R
+import android.content.Context
 
 data class AlertResult(
-        val sectors: List<AlertSector>,
+	private val context: Context,
+	val sectors: List<AlertSector>,
         val parameters: AlertParameters,
         val referenceTime: Long
 ) {
@@ -39,7 +42,7 @@ data class AlertResult(
         get() = sectorWithClosestStrike?.closestStrikeDistance ?: Float.POSITIVE_INFINITY
 
     val bearingName: String
-        get() = sectorWithClosestStrike?.label ?: "n/a"
+        get() = sectorWithClosestStrike?.label ?: context.getString(R.string.not_available)
 
     override fun toString(): String {
         return "%s %.1f %s".format(bearingName, closestStrikeDistance, parameters.measurementSystem)
