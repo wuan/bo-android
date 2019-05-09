@@ -45,8 +45,8 @@ dependencies {
     implementation "org.jetbrains.anko:anko:$anko_version"
     implementation 'org.osmdroid:osmdroid-android:6.0.3'
     testImplementation 'junit:junit:4.12'
-    testImplementation 'org.assertj:assertj-core:3.11.1'
-    testImplementation 'io.mockk:mockk:1.9'
+    testImplementation 'org.assertj:assertj-core:3.12.2'
+    testImplementation 'io.mockk:mockk:1.9.3'
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     testImplementation 'org.robolectric:robolectric:3.8'
