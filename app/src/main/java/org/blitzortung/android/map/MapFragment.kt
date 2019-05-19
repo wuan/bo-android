@@ -5,21 +5,17 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.SharedPreferences
-import android.graphics.Paint
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.*
-import org.blitzortung.android.app.BOApplication
-import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.jetbrains.anko.defaultSharedPreferences
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
-import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.ScaleBarOverlay
 
 class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
@@ -28,8 +24,6 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
     lateinit var mapView: OwnMapView
         private set
     private lateinit var mScaleBarOverlay: ScaleBarOverlay
-
-    private val preferences = BOApplication.sharedPreferences
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mapView = OwnMapView(inflater.context)
@@ -43,6 +37,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         val context = this.activity!!
         val dm = context.resources.displayMetrics
 
+        val preferences = context!!.defaultSharedPreferences
         preferences.registerOnSharedPreferenceChangeListener(this)
 
         mPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)

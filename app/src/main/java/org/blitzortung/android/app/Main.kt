@@ -20,14 +20,12 @@ package org.blitzortung.android.app
 
 import android.Manifest
 import android.annotation.TargetApi
-import android.app.PendingIntent.getActivity
 import android.content.*
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.LocationManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
@@ -45,6 +43,7 @@ import android.view.ViewConfiguration
 import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.Toast
+import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.main.*
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertHandler
@@ -55,11 +54,13 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.app.view.put
+import org.blitzortung.android.data.DataHandler
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.RequestStartedEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.result.StatusEvent
 import org.blitzortung.android.dialogs.QuickSettingsDialog
+import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.overlay.FadeOverlay
 import org.blitzortung.android.map.overlay.OwnLocationOverlay
@@ -71,6 +72,7 @@ import org.blitzortung.android.util.isAtLeast
 import org.jetbrains.anko.intentFor
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
+import javax.inject.Inject
 
 class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private lateinit var statusComponent: StatusComponent
@@ -85,20 +87,27 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private lateinit var buttonColumnHandler: ButtonColumnHandler<ImageButton, ButtonGroup>
 
     private lateinit var historyController: HistoryController
+
     private var appService: AppService? = null
 
-    private val locationHandler = BOApplication.locationHandler
-    private val alertHandler = BOApplication.alertHandler
-    private val dataHandler = BOApplication.dataHandler
+    @Inject
+    internal lateinit var locationHandler : LocationHandler
 
-    private val preferences = BOApplication.sharedPreferences
+    @Inject
+    internal lateinit var alertHandler : AlertHandler
+
+    @Inject
+    internal lateinit var dataHandler: DataHandler
+
+    @Inject
+    internal lateinit var preferences: SharedPreferences
 
     private lateinit var serviceConnection: ServiceConnection
 
     private var currentResult: ResultEvent? = null
 
     private val keepZoomOnGotoOwnLocation: Boolean
-        inline get() = BOApplication.sharedPreferences.get(PreferenceKey.KEEP_ZOOM_GOTO_OWN_LOCATION, false)
+        inline get() = preferences.get(PreferenceKey.KEEP_ZOOM_GOTO_OWN_LOCATION, false)
 
     val dataEventConsumer: (DataEvent) -> Unit = { event ->
         if (event is RequestStartedEvent) {
@@ -159,6 +168,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private lateinit var mapFragment: MapFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         try {
             super.onCreate(savedInstanceState)
         } catch (e: NoClassDefFoundError) {
@@ -189,7 +199,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         buttonColumnHandler = ButtonColumnHandler(if (TabletAwareView.isTablet(this)) 75f else 55f)
         configureMenuAccess()
-        historyController = HistoryController(this, buttonColumnHandler)
+        historyController = HistoryController(this, buttonColumnHandler, dataHandler)
 
         buttonColumnHandler.addAllElements(historyController.getButtons(), ButtonGroup.DATA_UPDATING)
 
@@ -537,7 +547,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                             }
 
                             DialogInterface.BUTTON_NEGATIVE -> {
-                                val preferences = BOApplication.sharedPreferences
                                 preferences.edit().apply {
                                     putString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), 0.toString())
                                     apply()
@@ -643,7 +652,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun showPopupMenu(anchor: View) {
-        val popupMenu = MainPopupMenu(this, anchor)
+        val popupMenu = MainPopupMenu(this, anchor, preferences, dataHandler, alertHandler)
         popupMenu.showPopupMenu()
     }
 

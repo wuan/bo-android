@@ -19,7 +19,6 @@
 package org.blitzortung.android.app.view
 
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.*
 import android.graphics.Paint.Align
 import android.graphics.Paint.Style
@@ -31,14 +30,16 @@ import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.data.AlertSector
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.event.AlertResultEvent
-import org.blitzortung.android.app.BOApplication
+import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
+import org.blitzortung.android.data.DataHandler
 import org.blitzortung.android.dialogs.AlertDialog
 import org.blitzortung.android.dialogs.AlertDialogColorHandler
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.overlay.color.ColorHandler
 import org.blitzortung.android.util.TabletAwareView
+import org.jetbrains.anko.defaultSharedPreferences
 
 class AlertView @JvmOverloads constructor(
         context: Context,
@@ -94,9 +95,13 @@ class AlertView @JvmOverloads constructor(
         }
 
         background.color = 0xffb0b0b0.toInt()
+    }
+
+    fun enableLongClickListener(dataHandler: DataHandler, alertHandler: AlertHandler) {
+        val sharedPreferences = context.defaultSharedPreferences
 
         setOnLongClickListener {
-            AlertDialog(context, AlertDialogColorHandler(BOApplication.sharedPreferences))
+            AlertDialog(context, AlertDialogColorHandler(sharedPreferences), dataHandler, alertHandler)
                     .show()
 
             true

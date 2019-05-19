@@ -1,48 +1,40 @@
 package org.blitzortung.android.app
 
+import android.app.Activity
 import android.app.Application
-import android.content.SharedPreferences
+import android.app.Service
 import android.content.pm.PackageInfo
-import android.os.PowerManager
-import org.blitzortung.android.alert.handler.AlertHandler
-import org.blitzortung.android.data.DataHandler
-import org.blitzortung.android.location.LocationHandler
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.powerManager
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasActivityInjector
+import dagger.android.HasServiceInjector
+import org.blitzortung.android.dagger.component.DaggerAppComponent
+import org.blitzortung.android.dagger.module.AppModule
+import javax.inject.Inject
 
-class BOApplication : Application() {
+class BOApplication : Application(), HasActivityInjector, HasServiceInjector {
+
+    @Inject
+    lateinit var serviceInjector: DispatchingAndroidInjector<Service>
+
+    override fun serviceInjector(): AndroidInjector<Service> = serviceInjector
+
+    @Inject
+    lateinit var activityInjector: DispatchingAndroidInjector<Activity>
+
+    override fun activityInjector(): AndroidInjector<Activity> = activityInjector
+
     override fun onCreate() {
         super.onCreate()
 
-        sharedPreferences = applicationContext.defaultSharedPreferences
-
-        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG)
-
-        dataHandler = DataHandler(applicationContext, wakeLock, "-${getPackageInfo().versionCode}")
-
-        locationHandler = LocationHandler(applicationContext, sharedPreferences)
-
-        alertHandler = AlertHandler(locationHandler, sharedPreferences, this)
+        DaggerAppComponent
+                .builder()
+                .appModule(AppModule(this))
+                .build()
+                .inject(this)
     }
 
-    private fun getPackageInfo(): PackageInfo = packageManager.getPackageInfo(packageName, 0)
-
     companion object {
-        lateinit var locationHandler: LocationHandler
-            private set
-
-        lateinit var sharedPreferences: SharedPreferences
-            private set
-
-        lateinit var alertHandler: AlertHandler
-            private set
-
-        lateinit var dataHandler: DataHandler
-            private set
-
-        lateinit var wakeLock: PowerManager.WakeLock
-
-
         val WAKE_LOCK_TAG = "boAndroid:WakeLock"
     }
 }

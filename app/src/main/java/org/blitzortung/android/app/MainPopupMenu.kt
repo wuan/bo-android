@@ -2,24 +2,38 @@ package org.blitzortung.android.app
 
 import android.app.Dialog
 import android.content.Context
+import android.content.SharedPreferences
 import android.support.v7.widget.PopupMenu
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.VersionComponent
+import org.blitzortung.android.data.DataHandler
 import org.blitzortung.android.dialogs.AlertDialog
 import org.blitzortung.android.dialogs.AlertDialogColorHandler
 import org.blitzortung.android.dialogs.InfoDialog
 import org.blitzortung.android.dialogs.LogDialog
 import org.jetbrains.anko.startActivity
 
-class MainPopupMenu(context: Context, anchor: View) : PopupMenu(context, anchor) {
+class MainPopupMenu(
+        context: Context,
+        anchor: View,
+        preferences: SharedPreferences,
+        dataHandler: DataHandler,
+        alertHandler: AlertHandler
+) : PopupMenu(context, anchor) {
 
     init {
-        setOnMenuItemClickListener(ClickListener(context))
+        setOnMenuItemClickListener(ClickListener(context, preferences, dataHandler, alertHandler))
     }
 
-    class ClickListener(private val context: Context) : OnMenuItemClickListener {
+    class ClickListener(
+            private val context: Context,
+            private val preferences: SharedPreferences,
+            private val dataHandler: DataHandler,
+            private val alertHandler: AlertHandler
+    ) : OnMenuItemClickListener {
         override fun onMenuItemClick(item: MenuItem?): Boolean {
             val versionComponent = VersionComponent(context)
             if (item?.itemId == R.id.menu_preferences) {
@@ -28,7 +42,7 @@ class MainPopupMenu(context: Context, anchor: View) : PopupMenu(context, anchor)
                 val dialog = when (item?.itemId) {
                     R.id.menu_info -> InfoDialog(context, versionComponent)
 
-                    R.id.menu_alarms -> AlertDialog(context, AlertDialogColorHandler(BOApplication.sharedPreferences))
+                    R.id.menu_alarms -> AlertDialog(context, AlertDialogColorHandler(preferences), dataHandler, alertHandler )
 
                     R.id.menu_log -> LogDialog(context, versionComponent)
 

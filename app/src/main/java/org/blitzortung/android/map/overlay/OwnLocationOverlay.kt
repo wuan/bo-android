@@ -35,6 +35,7 @@ import org.blitzortung.android.app.view.getAndConvert
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.components.LayerOverlayComponent
 import org.blitzortung.android.util.TabletAwareView
+import org.jetbrains.anko.defaultSharedPreferences
 import org.osmdroid.api.IMapView
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
@@ -78,7 +79,7 @@ class OwnLocationOverlay(
 
         sizeFactor = ViewHelper.pxFromDp(context, 1.0f) * TabletAwareView.sizeFactor(context)
 
-        val preferences = BOApplication.sharedPreferences
+        val preferences = context.defaultSharedPreferences
         preferences.registerOnSharedPreferenceChangeListener(this)
         onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_LOCATION)
         onSharedPreferenceChanged(preferences, PreferenceKey.OWN_LOCATION_SIZE)

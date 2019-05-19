@@ -9,9 +9,11 @@ class TimestampIteratorTest {
     fun checkNormalOperation() {
 
         assertThat(TimestampIterator(1000, 10001, 12999))
+                .toIterable()
                 .containsExactly(10000L, 11000L, 12000L)
 
         assertThat(TimestampIterator(999, 9990, 12987))
+                .toIterable()
                 .containsExactly(9990L, 10989L, 11988L, 12987L)
     }
 

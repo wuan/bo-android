@@ -25,9 +25,10 @@ import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.data.AlertSector
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.util.MeasurementSystem
+import javax.inject.Inject
 
-open class AlertDataHandler internal constructor(
-        private val aggregatingAlertDataMapper: AggregatingAlertDataMapper = AggregatingAlertDataMapper()
+open class AlertDataHandler @Inject internal constructor(
+        private val aggregatingAlertDataMapper: AggregatingAlertDataMapper
 ) {
 
     private val strikeLocation: Location = Location("")
