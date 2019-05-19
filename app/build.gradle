@@ -11,7 +11,7 @@ android {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 227
+        versionCode 228
         versionName "2.0.5"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -37,6 +37,7 @@ jacoco {
 }
 
 def anko_version = '0.10.8'
+def dagger_version = '2.22.1'
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -44,14 +45,14 @@ dependencies {
     implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.android.support:support-media-compat:28.0.0'
     implementation "org.jetbrains.anko:anko:$anko_version"
-    implementation 'org.osmdroid:osmdroid-android:6.0.3'
+    implementation 'org.osmdroid:osmdroid-android:6.1.0'
 
     // Dagger2
-    implementation 'com.google.dagger:dagger:2.19'
-    implementation 'com.google.dagger:dagger-android:2.19'
-    implementation 'com.google.dagger:dagger-android-support:2.19'
-    kapt 'com.google.dagger:dagger-android-processor:2.19'
-    kapt 'com.google.dagger:dagger-compiler:2.19'
+    implementation "com.google.dagger:dagger:$dagger_version"
+    implementation "com.google.dagger:dagger-android:$dagger_version"
+    implementation "com.google.dagger:dagger-android-support:$dagger_version"
+    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
     compileOnly 'javax.annotation:jsr250-api:1.0'
 
     testImplementation 'junit:junit:4.12'
@@ -59,7 +60,7 @@ dependencies {
     testImplementation 'io.mockk:mockk:1.9.3'
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    testImplementation 'org.robolectric:robolectric:3.8'
+    testImplementation 'org.robolectric:robolectric:4.2.1'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
