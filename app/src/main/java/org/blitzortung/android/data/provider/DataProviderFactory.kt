@@ -21,8 +21,11 @@ package org.blitzortung.android.data.provider
 import android.content.SharedPreferences
 import org.blitzortung.android.data.provider.blitzortung.BlitzortungHttpDataProvider
 import org.blitzortung.android.data.provider.standard.JsonRpcDataProvider
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class DataProviderFactory {
+@Singleton
+class DataProviderFactory @Inject constructor() {
     fun getDataProviderForType(providerType: DataProviderType, sharedPreferences: SharedPreferences, agentSuffix: String): DataProvider {
         return when (providerType) {
             DataProviderType.RPC -> JsonRpcDataProvider(sharedPreferences, agentSuffix)

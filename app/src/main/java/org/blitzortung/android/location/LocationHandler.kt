@@ -31,8 +31,9 @@ import org.blitzortung.android.location.provider.LocationProvider
 import org.blitzortung.android.location.provider.createLocationProvider
 import org.blitzortung.android.protocol.ConsumerContainer
 import org.jetbrains.anko.longToast
+import javax.inject.Inject
 
-open class LocationHandler(
+open class LocationHandler @Inject constructor(
         private val context: Context,
         sharedPreferences: SharedPreferences
 )

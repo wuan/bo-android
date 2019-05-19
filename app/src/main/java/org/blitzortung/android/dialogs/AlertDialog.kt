@@ -22,15 +22,18 @@ import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
 import org.blitzortung.android.alert.handler.AlertHandler
-import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.AlertView
+import org.blitzortung.android.data.DataHandler
 import org.blitzortung.android.map.overlay.color.ColorHandler
 
-class AlertDialog(context: Context, private val colorHandler: ColorHandler) : android.app.AlertDialog(context) {
+class AlertDialog(
+        context: Context,
+        private val colorHandler: ColorHandler,
+        private val dataHandler: DataHandler,
+        private val alertHandler: AlertHandler
+) : android.app.AlertDialog(context) {
     private lateinit var alertView: AlertView
-
-    private val alertHandler: AlertHandler = BOApplication.alertHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,11 +45,12 @@ class AlertDialog(context: Context, private val colorHandler: ColorHandler) : an
         super.onStart()
 
         alertView = findViewById(R.id.alarm_diagram)
+        alertView.enableLongClickListener(dataHandler, alertHandler)
         alertView.enableDescriptionText()
 
         setTitle(context.getString(R.string.alarms))
 
-        alertView.setColorHandler(colorHandler, BOApplication.dataHandler.intervalDuration)
+        alertView.setColorHandler(colorHandler, dataHandler.intervalDuration)
         colorHandler.updateTarget()
 
         alertHandler.requestUpdates(alertView.alertEventConsumer)

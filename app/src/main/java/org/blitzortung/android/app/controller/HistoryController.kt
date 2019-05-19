@@ -24,17 +24,22 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
 import kotlinx.android.synthetic.main.main.*
-import org.blitzortung.android.app.*
+import org.blitzortung.android.app.AppService
+import org.blitzortung.android.app.ButtonGroup
+import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.R
 import org.blitzortung.android.data.DataChannel
 import org.blitzortung.android.data.DataHandler
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.Event
 
-class HistoryController(private val activity: Activity, private val buttonHandler: ButtonColumnHandler<ImageButton, ButtonGroup>) {
+class HistoryController(
+        private val activity: Activity,
+        private val buttonHandler: ButtonColumnHandler<ImageButton, ButtonGroup>,
+        private val dataHandler: DataHandler
+) {
 
     private var appService: AppService? = null
-
-    private val dataHandler: DataHandler = BOApplication.dataHandler
 
     private val buttons: MutableCollection<ImageButton> = arrayListOf()
 

@@ -41,6 +41,7 @@ import org.blitzortung.android.app.controller.NotificationHandler
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.data.DataHandler
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.location.LocationEvent
@@ -51,15 +52,19 @@ import org.blitzortung.android.util.MeasurementSystem
 import org.blitzortung.android.util.isAtLeast
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
-class AlertHandler(
+@Singleton
+class AlertHandler @Inject constructor(
         private val locationHandler: LocationHandler,
+        private val dataHandler: DataHandler,
         preferences: SharedPreferences,
         private val context: Context,
-        private val vibrator: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator,
-        private val notificationHandler: NotificationHandler = NotificationHandler(context),
-        private val alertDataHandler: AlertDataHandler = AlertDataHandler()
+        private val vibrator: Vibrator,
+        private val notificationHandler: NotificationHandler,
+        private val alertDataHandler: AlertDataHandler
 
 ) : OnSharedPreferenceChangeListener {
     var alertParameters: AlertParameters
@@ -73,8 +78,6 @@ class AlertHandler(
             Log.d(Main.LOG_TAG, "AlertHandler: removed last alert consumer")
         }
     }
-
-    private val dataHandler = BOApplication.dataHandler
 
     private var lastStrikes: Collection<Strike>? = null
 

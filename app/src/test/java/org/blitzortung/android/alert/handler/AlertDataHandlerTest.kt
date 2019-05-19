@@ -57,7 +57,7 @@ class AlertDataHandlerTest {
         thresholdTime = now - parameters.alarmInterval
         beforeThresholdTime = thresholdTime - 1
 
-        alertDataHandler = AlertDataHandler()
+        alertDataHandler = AlertDataHandler(AggregatingAlertDataMapper())
     }
 
     @Test

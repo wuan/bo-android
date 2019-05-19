@@ -40,21 +40,27 @@ import org.blitzortung.android.data.provider.result.RequestStartedEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.ConsumerContainer
 import org.blitzortung.android.util.isAtLeast
+import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
+import javax.inject.Inject
+import javax.inject.Named
+import javax.inject.Singleton
 
-class DataHandler @JvmOverloads constructor(
+@Singleton
+class DataHandler @Inject constructor(
         private val context: Context,
         private val wakeLock: PowerManager.WakeLock,
+        @Named("agentSuffix")
         private val agentSuffix: String,
         private val dataProviderFactory: DataProviderFactory = DataProviderFactory()
 ) : OnSharedPreferenceChangeListener {
 
-    private val sharedPreferences = BOApplication.sharedPreferences
+    private val sharedPreferences = context.defaultSharedPreferences
 
     private val lock = ReentrantLock()
 

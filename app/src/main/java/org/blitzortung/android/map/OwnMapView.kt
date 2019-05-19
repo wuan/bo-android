@@ -34,6 +34,7 @@ import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.location.LocationHandler
+import org.jetbrains.anko.defaultSharedPreferences
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
@@ -76,7 +77,7 @@ class OwnMapView(context: Context) : MapView(context) {
             val dialogClickListener = DialogInterface.OnClickListener { dialog, which ->
                 when (which) {
                     DialogInterface.BUTTON_POSITIVE -> {
-                        val preferences = BOApplication.sharedPreferences
+                        val preferences = context.defaultSharedPreferences
                         preferences.edit().apply {
                             putString(PreferenceKey.LOCATION_LONGITUDE.toString(), longitude.toString())
                             putString(PreferenceKey.LOCATION_LATITUDE.toString(), latitude.toString())

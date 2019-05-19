@@ -26,11 +26,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.os.Binder
-import android.os.Build
-import android.os.Handler
-import android.os.IBinder
+import android.os.*
 import android.util.Log
+import dagger.android.AndroidInjection
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.DataChannel
@@ -44,6 +42,7 @@ import org.blitzortung.android.util.LogUtil
 import org.blitzortung.android.util.Period
 import org.blitzortung.android.util.isAtLeast
 import java.util.*
+import javax.inject.Inject
 
 class AppService protected constructor(private val handler: Handler, private val updatePeriod: Period) : Service(), Runnable, SharedPreferences.OnSharedPreferenceChangeListener {
     private val binder = DataServiceBinder()
@@ -60,15 +59,21 @@ class AppService protected constructor(private val handler: Handler, private val
     var showHistoricData: Boolean = false
         private set
 
-    private val dataHandler: DataHandler = BOApplication.dataHandler
-    private val locationHandler: LocationHandler = BOApplication.locationHandler
+    @Inject
+    internal lateinit var dataHandler: DataHandler
 
-    private val preferences = BOApplication.sharedPreferences
+    @Inject
+    internal lateinit var locationHandler: LocationHandler
+
+    @Inject
+    internal lateinit var preferences: SharedPreferences
 
     private var alertEnabled: Boolean = false
     private var alarmManager: AlarmManager? = null
     private var pendingIntent: PendingIntent? = null
-    private val wakeLock = BOApplication.wakeLock
+
+    @Inject
+    internal lateinit var wakeLock : PowerManager.WakeLock
 
     private val dataEventConsumer = { event: DataEvent ->
         if (event is ResultEvent) {
@@ -98,6 +103,7 @@ class AppService protected constructor(private val handler: Handler, private val
     }
 
     override fun onCreate() {
+        AndroidInjection.inject(this)
         Log.i(Main.LOG_TAG, "AppService.onCreate() ${LogUtil.timestamp}")
         super.onCreate()
 

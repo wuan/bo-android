@@ -29,6 +29,7 @@ import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.jetbrains.anko.defaultSharedPreferences
 
 class QuickSettingsDialog : DialogFragment() {
 
@@ -36,7 +37,7 @@ class QuickSettingsDialog : DialogFragment() {
         val builder = Builder(activity)
         val layoutInflater = activity.layoutInflater
 
-        val preferences = BOApplication.sharedPreferences
+        val preferences = context.defaultSharedPreferences
 
         val regionValues = resources.getStringArray(R.array.regions_values)
         val currentRegionValue = preferences.get(PreferenceKey.REGION, regionValues[0])

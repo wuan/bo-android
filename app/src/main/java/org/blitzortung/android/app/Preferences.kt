@@ -25,26 +25,30 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.preference.PreferenceActivity
 import android.provider.Settings
+import dagger.android.AndroidInjection
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.location.LocationHandler
 import org.jetbrains.anko.locationManager
+import javax.inject.Inject
 
 class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
 
+    @Inject
+    internal lateinit var preferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
         addPreferencesFromResource(R.xml.preferences)
 
-        val prefs = BOApplication.sharedPreferences
-        prefs.registerOnSharedPreferenceChangeListener(this)
+        preferences.registerOnSharedPreferenceChangeListener(this)
 
-        configureDataSourcePreferences(prefs)
-        configureLocationProviderPreferences(prefs)
-        configureOwnLocationSizePreference(prefs)
+        configureDataSourcePreferences(preferences)
+        configureLocationProviderPreferences(preferences)
+        configureOwnLocationSizePreference(preferences)
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
@@ -60,7 +64,7 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
             PreferenceKey.LOCATION_MODE -> {
                 val provider = configureLocationProviderPreferences(sharedPreferences)
 
-                if(provider != LocationHandler.MANUAL_PROVIDER && !this.locationManager.isProviderEnabled(provider)) {
+                if (provider != LocationHandler.MANUAL_PROVIDER && !this.locationManager.isProviderEnabled(provider)) {
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 }
             }
@@ -69,7 +73,8 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
                 configureOwnLocationSizePreference(sharedPreferences)
             }
 
-            else -> {}
+            else -> {
+            }
         }
     }
 
@@ -89,7 +94,7 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
         return providerType
     }
 
-    private fun configureLocationProviderPreferences(sharedPreferences: SharedPreferences) : String {
+    private fun configureLocationProviderPreferences(sharedPreferences: SharedPreferences): String {
         val locationProvider = sharedPreferences.get(PreferenceKey.LOCATION_MODE, LocationManager.NETWORK_PROVIDER)
         enableManualLocationMode(locationProvider == LocationHandler.MANUAL_PROVIDER)
 
