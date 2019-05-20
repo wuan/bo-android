@@ -37,7 +37,7 @@ class QuickSettingsDialog : DialogFragment() {
         val builder = Builder(activity)
         val layoutInflater = activity.layoutInflater
 
-        val preferences = context.defaultSharedPreferences
+        val preferences = activity.defaultSharedPreferences
 
         val regionValues = resources.getStringArray(R.array.regions_values)
         val currentRegionValue = preferences.get(PreferenceKey.REGION, regionValues[0])
