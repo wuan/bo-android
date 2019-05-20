@@ -51,7 +51,7 @@ class OwnMapView(context: Context) : MapView(context) {
 
     init {
         minZoomLevel = 2.0
-        maxZoomLevel = 12.0
+        maxZoomLevel = 14.0
     }
 
     inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
