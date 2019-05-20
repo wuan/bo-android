@@ -50,17 +50,17 @@ open class LocationHandler @Inject constructor(
     private val consumerContainer = object : ConsumerContainer<LocationEvent>() {
         override fun addedFirstConsumer() {
             provider?.run {
-                if (!isRunning) {
+                //if (!isRunning) {
                     start()
-                }
+                //}
             }
         }
 
         override fun removedLastConsumer() {
             provider?.run {
-                if (isRunning) {
+                //if (isRunning) {
                     shutdown()
-                }
+                //}
             }
         }
     }
@@ -147,8 +147,9 @@ open class LocationHandler @Inject constructor(
     private fun updateProvider() {
         provider?.run {
             //Reconfigure the Provider only, when its running
-            if(isRunning)
+            if (isRunning) {
                 reconfigureProvider(this@LocationHandler.backgroundMode)
+            }
         }
     }
 

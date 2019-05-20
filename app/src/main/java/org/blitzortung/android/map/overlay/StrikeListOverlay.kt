@@ -45,13 +45,14 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
     private val strikeList = mutableListOf<StrikeOverlay>()
 
     private val layerOverlayComponent: LayerOverlayComponent
-    private var zoomLevel: Double = 0.0
+    private var zoomLevel: Double
     var rasterParameters: RasterParameters? = null
     var referenceTime: Long = 0
     var parameters = Parameters()
 
     init {
         layerOverlayComponent = LayerOverlayComponent(mapFragment.resources.getString(R.string.strikes_layer))
+        zoomLevel = mapFragment.mapView.zoomLevelDouble
     }
 
     override fun draw(canvas: Canvas?, mapView: MapView?, shadow: Boolean) {

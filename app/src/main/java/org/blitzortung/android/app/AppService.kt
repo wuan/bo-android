@@ -264,6 +264,7 @@ class AppService protected constructor(private val handler: Handler, private val
                 discardAlarm()
             }
         } else {
+            locationHandler.disableBackgroundMode()
             discardAlarm()
             if (dataHandler.isRealtime) {
                 logElements += "realtime_data"
@@ -283,7 +284,6 @@ class AppService protected constructor(private val handler: Handler, private val
                     dataHandler.updateData()
                 }
             }
-            locationHandler.disableBackgroundMode()
             locationHandler.start()
         }
         Log.v(Main.LOG_TAG, "AppService.configureServiceMode() ${logElements.joinToString(", ")}")

@@ -51,7 +51,7 @@ class StrikeOverlay(strike: Strike) {
                 shape = StrikeShape(center)
             }
             if (shape is StrikeShape) {
-                shape.update((zoomLevel + 1.0).toFloat(), color)
+                shape.update(2 * (zoomLevel + 1.0).toFloat(), color)
             }
         }
         this.shape = shape
