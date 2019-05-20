@@ -165,7 +165,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         when (key) {
             PreferenceKey.MAP_TYPE -> {
                 val mapTypeString = sharedPreferences.get(key, "SATELLITE")
-                mapView.setTileSource(if (mapTypeString == "SATELLITE") TileSourceFactory.USGS_SAT else TileSourceFactory.MAPNIK)
+                mapView.setTileSource(if (mapTypeString == "SATELLITE") TileSourceFactory.DEFAULT_TILE_SOURCE else TileSourceFactory.MAPNIK)
             }
         }
     }
