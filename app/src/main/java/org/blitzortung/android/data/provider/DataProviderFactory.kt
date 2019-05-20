@@ -18,21 +18,18 @@
 
 package org.blitzortung.android.data.provider
 
-import android.content.SharedPreferences
 import org.blitzortung.android.data.provider.blitzortung.BlitzortungHttpDataProvider
 import org.blitzortung.android.data.provider.standard.JsonRpcDataProvider
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DataProviderFactory @Inject constructor() {
-    fun getDataProviderForType(providerType: DataProviderType, sharedPreferences: SharedPreferences, agentSuffix: String): DataProvider {
-        return when (providerType) {
-            DataProviderType.RPC -> JsonRpcDataProvider(sharedPreferences, agentSuffix)
+class DataProviderFactory @Inject constructor(defaultProvider: JsonRpcDataProvider, blitzortungProvider: BlitzortungHttpDataProvider) {
 
-            DataProviderType.HTTP -> BlitzortungHttpDataProvider(sharedPreferences)
+    val dataProvidersByType: Map<DataProviderType, DataProvider> = listOf<DataProvider>(defaultProvider, blitzortungProvider).groupBy { it.type }.mapValues { it.value.first() };
 
-            else -> throw IllegalStateException("unhandled data provider type '$providerType'")
-        }
+    fun getDataProviderForType(providerType: DataProviderType): DataProvider {
+        return dataProvidersByType[providerType]
+                ?: throw IllegalStateException("unhandled data provider type '$providerType'")
     }
 }

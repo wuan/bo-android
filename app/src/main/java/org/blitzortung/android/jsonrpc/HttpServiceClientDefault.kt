@@ -26,24 +26,22 @@ import java.net.URI
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.zip.GZIPInputStream
+import javax.inject.Inject
+import javax.inject.Named
 
-class HttpServiceClientDefault internal constructor(uriString: String, agentSuffix: String) : HttpServiceClient {
+class HttpServiceClientDefault @Inject constructor(
+        @Named("agentSuffix") agentSuffix: String
+) : HttpServiceClient {
 
-    private val url: URL
-    private val userAgentString: String
+    private val userAgentString: String = "bo-android" + agentSuffix
     override var socketTimeout = 0
     override var connectionTimeout = 0
-
-    init {
-        url = URI(uriString).toURL()
-        userAgentString = "bo-android" + agentSuffix
-    }
 
     override fun shutdown() {
     }
 
-    override fun doRequest(data: String): String {
-        val connection = url.openConnection() as HttpURLConnection
+    override fun doRequest(baseUrl: URL, data: String): String {
+        val connection = baseUrl.openConnection() as HttpURLConnection
 
         connection.requestMethod = "POST"
 
@@ -62,7 +60,9 @@ class HttpServiceClientDefault internal constructor(uriString: String, agentSuff
         var inputStream = connection.inputStream
 
         when (connection.contentEncoding) {
-            "gzip" -> { inputStream = GZIPInputStream(inputStream) }
+            "gzip" -> {
+                inputStream = GZIPInputStream(inputStream)
+            }
         }
 
         Log.v(Main.LOG_TAG, "HttpServiceClient contentEncoding: ${connection.contentEncoding}")

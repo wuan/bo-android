@@ -283,8 +283,8 @@ class AppService protected constructor(private val handler: Handler, private val
                     dataHandler.updateData()
                 }
             }
-            locationHandler.start()
             locationHandler.disableBackgroundMode()
+            locationHandler.start()
         }
         Log.v(Main.LOG_TAG, "AppService.configureServiceMode() ${logElements.joinToString(", ")}")
     }

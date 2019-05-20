@@ -13,7 +13,7 @@ import java.lang.RuntimeException
 
 abstract class ManagerLocationProvider(
         protected val context: Context,
-        protected var isInBackground: Boolean = true,
+        protected var isInBackground: Boolean,
         locationUpdate: (Location?) -> Unit,
         override val type: String
 ) : LocationProvider(locationUpdate), LocationListener {
@@ -27,6 +27,7 @@ abstract class ManagerLocationProvider(
         get() = if (isInBackground) 200f else 50f
 
     override fun start() {
+        Log.v(Main.LOG_TAG, "ManagerLocationProvider.start()")
         //Don't start the LocationProvider if we dont have any permissions
         if (!this.isPermissionGranted) {
             Log.d(Main.LOG_TAG, "Tried to start provider '$type' without permission granted")
@@ -52,6 +53,7 @@ abstract class ManagerLocationProvider(
 
     @Throws(SecurityException::class)
     private fun enableLocationManager() {
+        Log.v(Main.LOG_TAG, "enableLocationmanager() $type")
         locationManager.requestLocationUpdates(type, minTime, minDistance, this)
 
         //Now try to get the last known location from the current provider

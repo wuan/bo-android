@@ -20,10 +20,15 @@ package org.blitzortung.android.jsonrpc
 
 import org.json.JSONArray
 import org.json.JSONObject
+import java.net.URL
+import javax.inject.Inject
 
-class JsonRpcClient(client: HttpServiceClient) : HttpServiceClient by client {
+class JsonRpcClient @Inject constructor(client: HttpServiceClientDefault) : HttpServiceClient by client {
 
-    constructor(uri: String, agentSuffix: String) : this(HttpServiceClientDefault(uri, agentSuffix))
+    init {
+        connectionTimeout = 40000
+        socketTimeout = 40000
+    }
 
     private val id = 0
 
@@ -48,8 +53,8 @@ class JsonRpcClient(client: HttpServiceClient) : HttpServiceClient by client {
         return requestObject.toString()
     }
 
-    fun call(methodName: String, vararg parameters: Any): JSONObject {
-        val response = doRequest(buildRequest(methodName, parameters))
+    fun call(baseUrl: URL, methodName: String, vararg parameters: Any): JSONObject {
+        val response = doRequest(baseUrl, buildRequest(methodName, parameters))
 
         lastNumberOfTransferredBytes = response.length
 

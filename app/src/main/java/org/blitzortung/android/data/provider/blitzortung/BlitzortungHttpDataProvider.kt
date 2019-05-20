@@ -21,12 +21,14 @@ package org.blitzortung.android.data.provider.blitzortung
 import android.content.SharedPreferences
 import android.util.Log
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.data.provider.DataProvider
+import org.blitzortung.android.data.provider.DataProvider.DataRetriever
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.result.ResultEvent
 import java.io.BufferedReader
@@ -36,12 +38,13 @@ import java.io.InputStreamReader
 import java.net.*
 import java.util.*
 import java.util.zip.GZIPInputStream
+import javax.inject.Inject
 
-class BlitzortungHttpDataProvider @JvmOverloads constructor(
+class BlitzortungHttpDataProvider @Inject constructor(
         preferences: SharedPreferences,
-        private val urlFormatter: UrlFormatter = UrlFormatter(),
+        private val urlFormatter: UrlFormatter,
         mapBuilderFactory: MapBuilderFactory = MapBuilderFactory()
-) : DataProvider(preferences, PreferenceKey.USERNAME, PreferenceKey.PASSWORD) {
+) : OnSharedPreferenceChangeListener, DataProvider {
 
     private val strikeMapBuilder: MapBuilder<Strike>
     private val stationMapBuilder: MapBuilder<Station>
@@ -55,6 +58,8 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
     init {
         strikeMapBuilder = mapBuilderFactory.createAbstractStrikeMapBuilder()
         stationMapBuilder = mapBuilderFactory.createStationMapBuilder()
+        preferences.registerOnSharedPreferenceChangeListener(this)
+        onSharedPreferenceChanged(preferences, PreferenceKey.USERNAME, PreferenceKey.PASSWORD )
     }
 
     private fun readFromUrl(type: Type, region: Int, intervalTime: Calendar? = null): BufferedReader? {
@@ -64,8 +69,6 @@ class BlitzortungHttpDataProvider @JvmOverloads constructor(
         val reader: BufferedReader
 
         val urlString = urlFormatter.getUrlFor(type, region, intervalTime, useGzipCompression)
-
-
 
         try {
             val url: URL

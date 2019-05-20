@@ -21,12 +21,14 @@ package org.blitzortung.android.data.provider.standard
 import android.content.SharedPreferences
 import android.util.Log
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.data.provider.DataProvider
+import org.blitzortung.android.data.provider.DataProvider.DataRetriever
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.jsonrpc.JsonRpcClient
@@ -34,33 +36,27 @@ import org.blitzortung.android.util.TimeFormat
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.net.URI
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
-class JsonRpcDataProvider(
+class JsonRpcDataProvider @Inject constructor(
         preferences: SharedPreferences,
-        private val agentSuffix: String
-) : DataProvider(preferences, PreferenceKey.SERVICE_URL) {
+        private val client: JsonRpcClient
+) : OnSharedPreferenceChangeListener, DataProvider {
 
-    private lateinit var serviceUrl: String
+    private lateinit var serviceUrl: URL
     private val dataBuilder: DataBuilder = DataBuilder()
     private var nextId = 0
 
     init {
+        onSharedPreferenceChanged(preferences, PreferenceKey.SERVICE_URL)
         Log.v(Main.LOG_TAG, "JsonRpcDataProvider($serviceUrl)")
     }
 
     override val type: DataProviderType = DataProviderType.RPC
-
-    private fun setUpClient(): JsonRpcClient {
-        val client = JsonRpcClient(serviceUrl, agentSuffix)
-
-        return client.apply {
-            connectionTimeout = 40000
-            socketTimeout = 40000
-        }
-    }
 
     override fun reset() {
         nextId = 0
@@ -117,11 +113,7 @@ class JsonRpcDataProvider(
     }
 
     override fun <T> retrieveData(retrieve: DataRetriever.() -> T): T {
-        val client = setUpClient()
-
         val t = Retriever(client).retrieve()
-
-        client.shutdown()
 
         return t
     }
@@ -132,7 +124,7 @@ class JsonRpcDataProvider(
             val stations = ArrayList<Station>()
 
             try {
-                val response = client.call("get_stations")
+                val response = client.call(serviceUrl, "get_stations")
                 val stationsArray = response.get("stations") as JSONArray
 
                 for (i in 0..stationsArray.length() - 1) {
@@ -157,7 +149,7 @@ class JsonRpcDataProvider(
             val region = parameters.region
 
             try {
-                val response = client.call("get_strikes_grid", intervalDuration, rasterBaselength, intervalOffset, region, countThreshold)
+                val response = client.call(serviceUrl, "get_strikes_grid", intervalDuration, rasterBaselength, intervalOffset, region, countThreshold)
                 val minDistance = rasterBaselength / 1000f
                 resultVar = addRasterData(response, resultVar, minDistance)
                 resultVar = addStrikesHistogram(response, resultVar)
@@ -180,7 +172,7 @@ class JsonRpcDataProvider(
             resultVar = resultVar.copy(incrementalData = (nextId != 0))
 
             try {
-                val response = client.call("get_strikes", intervalDuration, if (intervalOffset < 0) intervalOffset else nextId)
+                val response = client.call(serviceUrl, "get_strikes", intervalDuration, if (intervalOffset < 0) intervalOffset else nextId)
 
                 resultVar = addStrikes(response, resultVar)
                 resultVar = addStrikesHistogram(response, resultVar)
@@ -198,25 +190,24 @@ class JsonRpcDataProvider(
         @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
             PreferenceKey.SERVICE_URL -> {
-                val serviceUrl = toCheckedUrl(sharedPreferences.get(PreferenceKey.SERVICE_URL, DEFAULT_SERVICE_URL))
-                this.serviceUrl = if (serviceUrl.isNotBlank()) serviceUrl.trim() else DEFAULT_SERVICE_URL
+                val serviceUrl : String = sharedPreferences.get(PreferenceKey.SERVICE_URL, DEFAULT_SERVICE_URL.toString())
+                this.serviceUrl = toCheckedUrl(if (serviceUrl.isNotBlank()) serviceUrl.trim() else DEFAULT_SERVICE_URL.toString())
             }
         }
     }
 
-    private fun toCheckedUrl(serviceUrl: String): String {
+    private fun toCheckedUrl(serviceUrl: String): URL {
         try {
-            URL(serviceUrl)
+            return URL(serviceUrl)
         } catch (e: Exception) {
             Log.e(Main.LOG_TAG, "JsonRpcDataProvider.tocheckedUrl($serviceUrl) invalid")
             return DEFAULT_SERVICE_URL
         }
-        return serviceUrl
     }
 
     companion object {
         private val DATE_TIME_FORMATTER = SimpleDateFormat("yyyyMMdd'T'HH:mm:ss", Locale.US)
-        private const val DEFAULT_SERVICE_URL = "http://bo-service.tryb.de/"
+        private val DEFAULT_SERVICE_URL = URI("http://bo-service.tryb.de/").toURL()
 
         init {
             val tz = TimeZone.getTimeZone("UTC")

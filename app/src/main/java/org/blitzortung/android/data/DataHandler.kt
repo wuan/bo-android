@@ -26,7 +26,6 @@ import android.os.PowerManager
 import android.util.Log
 import android.widget.Toast
 import org.blitzortung.android.app.AppService
-import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
@@ -48,16 +47,13 @@ import java.net.SocketTimeoutException
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 class DataHandler @Inject constructor(
         private val context: Context,
         private val wakeLock: PowerManager.WakeLock,
-        @Named("agentSuffix")
-        private val agentSuffix: String,
-        private val dataProviderFactory: DataProviderFactory = DataProviderFactory()
+        private val dataProviderFactory: DataProviderFactory
 ) : OnSharedPreferenceChangeListener {
 
     private val sharedPreferences = context.defaultSharedPreferences
@@ -100,7 +96,7 @@ class DataHandler @Inject constructor(
     init {
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
-        onSharedPreferencesChanged(sharedPreferences, PreferenceKey.DATA_SOURCE, PreferenceKey.USERNAME, PreferenceKey.PASSWORD, PreferenceKey.RASTER_SIZE, PreferenceKey.COUNT_THRESHOLD, PreferenceKey.REGION, PreferenceKey.INTERVAL_DURATION, PreferenceKey.HISTORIC_TIMESTEP)
+        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.DATA_SOURCE, PreferenceKey.USERNAME, PreferenceKey.PASSWORD, PreferenceKey.RASTER_SIZE, PreferenceKey.COUNT_THRESHOLD, PreferenceKey.REGION, PreferenceKey.INTERVAL_DURATION, PreferenceKey.HISTORIC_TIMESTEP)
 
         updateProviderSpecifics()
 
@@ -175,8 +171,7 @@ class DataHandler @Inject constructor(
             PreferenceKey.DATA_SOURCE, PreferenceKey.SERVICE_URL -> {
                 val providerTypeString = sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.RPC.toString())
                 val providerType = DataProviderType.valueOf(providerTypeString.toUpperCase())
-                val dataProvider = dataProviderFactory.getDataProviderForType(providerType, sharedPreferences, agentSuffix)
-                this.dataProvider?.run { unregister() }
+                val dataProvider = dataProviderFactory.getDataProviderForType(providerType)
                 this.dataProvider = dataProvider
 
                 updateProviderSpecifics()

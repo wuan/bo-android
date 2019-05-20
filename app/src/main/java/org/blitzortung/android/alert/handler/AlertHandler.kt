@@ -34,7 +34,6 @@ import org.blitzortung.android.alert.data.AlertSignal
 import org.blitzortung.android.alert.event.AlertCancelEvent
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.event.AlertResultEvent
-import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.controller.NotificationHandler
@@ -101,7 +100,7 @@ class AlertHandler @Inject constructor(
 
 
     val locationEventConsumer: (LocationEvent) -> Unit = { event ->
-        Log.v(Main.LOG_TAG, "AlertHandler: received location ${event.location} (was $currentLocation)")
+        Log.v(Main.LOG_TAG, "AlertHandler.locationEventConsumer ${event.location} (was $currentLocation)")
 
         this.currentLocation = event.location
         checkStrikes(lastStrikes)
@@ -109,7 +108,7 @@ class AlertHandler @Inject constructor(
 
     val dataEventConsumer: (Event) -> Unit = { event ->
         if (event is ResultEvent) {
-            Log.v(Main.LOG_TAG, "AlertHandler: received data $event")
+            Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer $event")
             if (!event.failed && event.containsRealtimeData()) {
                 checkStrikes(if (event.incrementalData) event.totalStrikes else event.strikes)
             } else {
@@ -126,7 +125,7 @@ class AlertHandler @Inject constructor(
         alertParameters = AlertParameters(alarmInterval, rangeSteps, sectorLabels, MeasurementSystem.METRIC)
 
         preferences.registerOnSharedPreferenceChangeListener(this)
-        onSharedPreferencesChanged(preferences, PreferenceKey.ALERT_ENABLED, PreferenceKey.MEASUREMENT_UNIT,
+        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED, PreferenceKey.MEASUREMENT_UNIT,
                 PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT,
                 PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME, PreferenceKey.ALERT_VIBRATION_SIGNAL,
                 PreferenceKey.ALERT_SOUND_SIGNAL)

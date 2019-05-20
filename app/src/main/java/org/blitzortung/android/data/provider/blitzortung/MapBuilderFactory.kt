@@ -24,8 +24,15 @@ import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.util.TimeFormat
 import java.util.*
 import java.util.regex.Pattern
+import javax.inject.Inject
 
-class MapBuilderFactory constructor(private val strikeLineSplitter: (String) -> Array<String> = ::lineSplitter, private val stationLineSplitter: (String) -> Array<String> = ::stationLineSplitter) {
+class MapBuilderFactory constructor(
+        private val strikeLineSplitter: (String) -> Array<String>,
+        private val stationLineSplitter: (String) -> Array<String>
+) {
+
+    @Inject
+    constructor(): this(::lineSplitter, ::stationLineSplitter)
 
     fun createAbstractStrikeMapBuilder(): MapBuilder<Strike> {
         return object : MapBuilder<Strike>(strikeLineSplitter) {

@@ -18,32 +18,17 @@
 
 package org.blitzortung.android.data.provider
 
-import android.content.SharedPreferences
-import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
-import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.provider.result.ResultEvent
 
-abstract class DataProvider(
-        protected val preferences : SharedPreferences,
-        vararg keys: PreferenceKey
-) : OnSharedPreferenceChangeListener {
+interface DataProvider {
 
-    init {
-        preferences.registerOnSharedPreferenceChangeListener(this)
-        onSharedPreferencesChanged(preferences, *keys)
-    }
+    val type: DataProviderType
 
-    abstract val type: DataProviderType
+    fun reset()
 
-    abstract fun reset()
-
-    abstract fun <T> retrieveData(retrieve: DataRetriever.() -> T): T
-
-    fun unregister() {
-        preferences.unregisterOnSharedPreferenceChangeListener(this)
-    }
+    fun <T> retrieveData(retrieve: DataRetriever.() -> T): T
 
     interface DataRetriever {
         fun getStrikes(parameters: Parameters, result: ResultEvent): ResultEvent

@@ -84,6 +84,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private lateinit var fadeOverlay: FadeOverlay
 
     private var clearData: Boolean = false
+
     private lateinit var buttonColumnHandler: ButtonColumnHandler<ImageButton, ButtonGroup>
 
     private lateinit var historyController: HistoryController
@@ -169,6 +170,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
+
         try {
             super.onCreate(savedInstanceState)
         } catch (e: NoClassDefFoundError) {
@@ -224,10 +226,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 appService = (iBinder as AppService.DataServiceBinder).service
                 Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + appService)
 
-                enableDataUpdates()
+                historyController.setAppService(appService)
             }
 
             override fun onServiceDisconnected(componentName: ComponentName) {
+                historyController.setAppService(null)
             }
         }
 
@@ -250,7 +253,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     val currentLocation = alertHandler.currentLocation
                     if (currentLocation != null) {
                         val diameter = if (!keepZoomOnGotoOwnLocation) {
-                            var radius = determineTargetZoomRadius(alertHandler)
+                            val radius = determineTargetZoomRadius(alertHandler)
 
                             //Calculate the new diameter
                             1.5f * 2f * radius
@@ -263,6 +266,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     }
                 }
             }
+            enableLongClickListener(dataHandler, alertHandler)
         }
 
         with(histogram_view) {
@@ -343,7 +347,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         setHistoricStatusString()
         mapFragment.mapView.addMapListener(strikeListOverlay)
 
-
         fadeOverlay = FadeOverlay(strikeColorHandler)
 
         ownLocationOverlay = OwnLocationOverlay(this, mapFragment.mapView)
@@ -361,28 +364,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         setupCustomViews()
 
         Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
-    }
-
-    private fun enableDataUpdates() {
-        appService?.let { appService ->
-            with(locationHandler) {
-                requestUpdates(ownLocationOverlay.locationEventConsumer)
-                requestUpdates(alert_view.locationEventConsumer)
-            }
-
-            with(alertHandler) {
-                requestUpdates(alert_view.alertEventConsumer)
-                requestUpdates(statusComponent.alertEventConsumer)
-            }
-
-            with(dataHandler) {
-                requestUpdates(dataEventConsumer)
-                requestUpdates(historyController.dataConsumer)
-                requestUpdates(histogram_view.dataConsumer)
-            }
-
-            historyController.setAppService(appService)
-        }
     }
 
     override fun onRestart() {
@@ -408,6 +389,24 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         Log.d(Main.LOG_TAG, "Main.onResume() ${LogUtil.timestamp} service: " + appService)
     }
 
+    private fun enableDataUpdates() {
+        with(locationHandler) {
+            requestUpdates(ownLocationOverlay.locationEventConsumer)
+            requestUpdates(alert_view.locationEventConsumer)
+        }
+
+        with(alertHandler) {
+            requestUpdates(alert_view.alertEventConsumer)
+            requestUpdates(statusComponent.alertEventConsumer)
+        }
+
+        with(dataHandler) {
+            requestUpdates(dataEventConsumer)
+            requestUpdates(historyController.dataConsumer)
+            requestUpdates(histogram_view.dataConsumer)
+        }
+    }
+
     override fun onPause() {
         super.onPause()
         Log.v(LOG_TAG, "Main.onPause()")
@@ -415,17 +414,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         disableDataUpdates()
 
         Log.v(Main.LOG_TAG, "Main.onPause() ${LogUtil.timestamp}")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.v(LOG_TAG, "Main.onStop()")
-
-        mapFragment.mapView.overlays.removeAll(listOf(fadeOverlay, ownLocationOverlay, strikeListOverlay))
-        mapFragment.mapView.removeMapListener(ownLocationOverlay)
-        mapFragment.mapView.removeMapListener(strikeListOverlay)
-
-        Log.v(Main.LOG_TAG, "Main.onStop() ${LogUtil.timestamp}")
     }
 
     private fun disableDataUpdates() {
@@ -444,17 +432,22 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             removeUpdates(historyController.dataConsumer)
             removeUpdates(histogram_view.dataConsumer)
         }
+    }
 
-        appService?.apply {
-            Log.v(LOG_TAG, "Main.stopDataUpdates() remove listeners")
+    override fun onStop() {
+        super.onStop()
+        Log.v(LOG_TAG, "Main.onStop()")
 
-            historyController.setAppService(null)
-        } ?: Log.i(LOG_TAG, "Main.stopDataUpdates()")
+        mapFragment.mapView.overlays.removeAll(listOf(fadeOverlay, ownLocationOverlay, strikeListOverlay))
+        mapFragment.mapView.removeMapListener(ownLocationOverlay)
+        mapFragment.mapView.removeMapListener(strikeListOverlay)
+
+        Log.v(Main.LOG_TAG, "Main.onStop() ${LogUtil.timestamp}")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.i(LOG_TAG, "Main: onDestroy() ${LogUtil.timestamp} unbind service")
+        Log.i(LOG_TAG, "Main.onDestroy()")
 
         unbindService(serviceConnection)
     }

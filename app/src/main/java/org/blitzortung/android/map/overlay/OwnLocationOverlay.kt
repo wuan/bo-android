@@ -24,9 +24,6 @@ import android.graphics.Canvas
 import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
-import android.util.Log
-import org.blitzortung.android.app.BOApplication
-import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.app.view.PreferenceKey
@@ -57,7 +54,11 @@ class OwnLocationOverlay(
 
     private val sizeFactor: Float
 
-    private var zoomLevel: Double = 0.0
+    private var zoomLevel: Double
+
+    init {
+        zoomLevel = mapView.zoomLevelDouble
+    }
 
     val locationEventConsumer: (LocationEvent) -> Unit = { event ->
         val location = event.location
@@ -67,6 +68,7 @@ class OwnLocationOverlay(
 
             populate()
             refresh()
+            mapView.postInvalidate()
         }
     }
 
@@ -95,9 +97,6 @@ class OwnLocationOverlay(
 
     private fun refresh() {
         item?.run { setMarker(ShapeDrawable(OwnLocationShape((sizeFactor * zoomLevel * symbolSize).toFloat()))) }
-
-        //Redraw when the OwnLocation is refreshed
-        mapView.invalidate()
     }
 
     override fun createItem(i: Int): OwnLocationOverlayItem {
@@ -120,7 +119,6 @@ class OwnLocationOverlay(
     }
 
     override fun onSnapToItem(x: Int, y: Int, snapPoint: Point?, mapView: IMapView?): Boolean {
-        Log.v(LOG_TAG, "OwnLocationOverlay.onSnapToItem($x, $y, $snapPoint, $mapView)")
         return false
     }
 

@@ -41,11 +41,8 @@ open class LocationHandler @Inject constructor(
 
     private var backgroundMode = true
         set(value) {
-            val shouldUpdateProvider = field != value
             field = value
-            if (shouldUpdateProvider) {
-                updateProvider()
-            }
+            updateProvider()
         }
 
     private var provider: LocationProvider? = null
@@ -91,8 +88,10 @@ open class LocationHandler @Inject constructor(
 
                 val newProvider = providerFactory(sharedPreferences.get(key, LocationManager.PASSIVE_PROVIDER))
 
-                if (provider?.type != newProvider.type || provider?.isRunning != true) {
+                if (provider?.type != newProvider.type && provider?.isRunning == true) {
                     enableNewProvider(newProvider)
+                } else {
+                    provider = newProvider
                 }
             }
         }

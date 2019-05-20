@@ -53,7 +53,8 @@ class AlertView @JvmOverloads constructor(
     private val textStyle = Paint(Paint.ANTI_ALIAS_FLAG)
     private val warnText = Paint(Paint.ANTI_ALIAS_FLAG)
     private val transfer = Paint()
-    private val alarmNotAvailableTextLines: Array<String>
+    private val alarmNotAvailableTextLines: Array<String> = context.getString(R.string.alarms_not_available)
+            .split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
     private var colorHandler: ColorHandler? = null
     private var intervalDuration: Int = 0
     private var temporaryBitmap: Bitmap? = null
@@ -81,9 +82,6 @@ class AlertView @JvmOverloads constructor(
     }
 
     init {
-        alarmNotAvailableTextLines = context.getString(R.string.alarms_not_available)
-                .split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-
         with(lines) {
             color = 0xff404040.toInt()
             style = Style.STROKE
