@@ -6,14 +6,16 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.support.v4.content.PermissionChecker
+import javax.inject.Singleton
 
+@Singleton
 class GPSLocationProvider(context: Context,
                           backgroundMode: Boolean,
                           locationUpdate: (Location?) -> Unit)
 : ManagerLocationProvider(context, backgroundMode, locationUpdate, LocationManager.GPS_PROVIDER) {
 
     override val minTime: Long
-        get() = if(isInBackground) 1200 else 1000
+        get() = if(isInBackground) 60000 else 1000
 
     override val isPermissionGranted: Boolean
         get() = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED

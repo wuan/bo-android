@@ -3,6 +3,7 @@ package org.blitzortung.android.location.provider
 import android.location.Location
 import android.util.Log
 import org.blitzortung.android.app.Main
+import java.lang.Double.isNaN
 
 abstract class LocationProvider(protected val locationUpdate: (Location?) -> Unit) {
     var isRunning: Boolean = false
@@ -18,10 +19,11 @@ abstract class LocationProvider(protected val locationUpdate: (Location?) -> Uni
 
     protected val Location?.isValid: Boolean
         get() {
-            if(this == null)
+            if(this == null) {
                 return false
+            }
 
-            return !java.lang.Double.isNaN(longitude) && !java.lang.Double.isNaN(latitude)
+            return !isNaN(longitude) && !isNaN(latitude)
         }
 
     open fun start() {

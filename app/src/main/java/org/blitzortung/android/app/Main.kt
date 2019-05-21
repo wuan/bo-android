@@ -249,21 +249,19 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             setBackgroundColor(Color.TRANSPARENT)
             setAlpha(200)
             setOnClickListener {
-                if (alertHandler.alertEnabled) {
-                    val currentLocation = alertHandler.currentLocation
-                    if (currentLocation != null) {
-                        val diameter = if (!keepZoomOnGotoOwnLocation) {
-                            val radius = determineTargetZoomRadius(alertHandler)
+                val currentLocation = locationHandler.location
+                if (currentLocation != null) {
+                    val diameter = if (!keepZoomOnGotoOwnLocation) {
+                        val radius = determineTargetZoomRadius(alertHandler)
 
-                            //Calculate the new diameter
-                            1.5f * 2f * radius
-                        } else {
-                            //User doesn't want to zoom, so we do not provide a diameter
-                            null
-                        }
-
-                        animateToLocationAndVisibleSize(currentLocation.longitude, currentLocation.latitude, diameter)
+                        //Calculate the new diameter
+                        1.5f * 2f * radius
+                    } else {
+                        //User doesn't want to zoom, so we do not provide a diameter
+                        null
                     }
+
+                    animateToLocationAndVisibleSize(currentLocation.longitude, currentLocation.latitude, diameter)
                 }
             }
             enableLongClickListener(dataHandler, alertHandler)

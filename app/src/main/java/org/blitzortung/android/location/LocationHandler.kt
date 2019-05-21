@@ -22,7 +22,6 @@ import android.content.*
 import android.location.Location
 import android.location.LocationManager
 import android.util.Log
-import android.widget.Toast
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
@@ -32,12 +31,22 @@ import org.blitzortung.android.location.provider.createLocationProvider
 import org.blitzortung.android.protocol.ConsumerContainer
 import org.jetbrains.anko.longToast
 import javax.inject.Inject
+import javax.inject.Singleton
 
-open class LocationHandler @Inject constructor(
+@Singleton
+class LocationHandler @Inject constructor(
         private val context: Context,
         sharedPreferences: SharedPreferences
-)
-: SharedPreferences.OnSharedPreferenceChangeListener {
+) : SharedPreferences.OnSharedPreferenceChangeListener {
+
+    init {
+        Log.v(Main.LOG_TAG, "LocationHandler() init")
+    }
+
+    var location: Location? = null
+        private set(value) {
+            field = value
+        }
 
     private var backgroundMode = true
         set(value) {
@@ -50,17 +59,17 @@ open class LocationHandler @Inject constructor(
     private val consumerContainer = object : ConsumerContainer<LocationEvent>() {
         override fun addedFirstConsumer() {
             provider?.run {
-                //if (!isRunning) {
+                if (!isRunning) {
                     start()
-                //}
+                }
             }
         }
 
         override fun removedLastConsumer() {
             provider?.run {
-                //if (isRunning) {
+                if (isRunning) {
                     shutdown()
-                //}
+                }
             }
         }
     }
@@ -120,9 +129,15 @@ open class LocationHandler @Inject constructor(
 
     private fun sendLocationUpdate(location: Location?) {
         val location = location?.takeIf { it.isValid }
+        this.location = location
 
         Log.i(Main.LOG_TAG, "LocationHandler.sendLocationUpdate() location $location")
-        consumerContainer.storeAndBroadcast(LocationEvent(location))
+        val event = LocationEvent(location)
+        if (location != null) {
+            consumerContainer.storeAndBroadcast(event)
+        } else {
+            consumerContainer.broadcast(event)
+        }
     }
 
     fun requestUpdates(locationConsumer: (LocationEvent) -> Unit) {

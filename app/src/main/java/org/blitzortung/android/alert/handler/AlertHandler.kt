@@ -82,9 +82,6 @@ class AlertHandler @Inject constructor(
 
     private var alertSignal: AlertSignal = AlertSignal()
 
-    var currentLocation: Location? = null
-        private set
-
     var alertEnabled: Boolean = false
         private set
 
@@ -100,18 +97,20 @@ class AlertHandler @Inject constructor(
 
 
     val locationEventConsumer: (LocationEvent) -> Unit = { event ->
-        Log.v(Main.LOG_TAG, "AlertHandler.locationEventConsumer ${event.location} (was $currentLocation)")
+        Log.v(Main.LOG_TAG, "AlertHandler.locationEventConsumer ${event.location}")
 
-        this.currentLocation = event.location
-        checkStrikes(lastStrikes)
+        checkStrikes(lastStrikes, event.location)
     }
 
     val dataEventConsumer: (Event) -> Unit = { event ->
         if (event is ResultEvent) {
             Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer $event")
             if (!event.failed && event.containsRealtimeData()) {
-                checkStrikes(if (event.incrementalData) event.totalStrikes else event.strikes)
+                checkStrikes(if (event.incrementalData) event.totalStrikes else event.strikes, locationHandler.location)
             } else {
+                if (event.containsRealtimeData()) {
+                    lastStrikes = null
+                }
                 broadcastResult(null)
             }
         }
@@ -188,31 +187,24 @@ class AlertHandler @Inject constructor(
             locationHandler.removeUpdates(locationEventConsumer)
             dataHandler.removeInternalUpdates(dataEventConsumer)
 
-            currentLocation = null
             lastStrikes = null
 
             broadcastResult(null)
         }
     }
 
-    fun checkStrikes(strikes: Collection<Strike>?) {
-        //Do the checkStrikes stuff in another thread
+    fun checkStrikes(strikes: Collection<Strike>?, location: Location?) {
+        lastStrikes = strikes
         doAsync {
-            Log.v(Main.LOG_TAG, "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${currentLocation != null}")
-            val alertResult = checkStrikes(strikes, currentLocation)
-
+            Log.v(Main.LOG_TAG, "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${locationHandler.location != null}")
+            val alertResult = if (alertEnabled && location != null && strikes != null) {
+                alertDataHandler.checkStrikes(strikes, location, alertParameters)
+            } else {
+                null
+            }
             uiThread {
                 processResult(alertResult)
             }
-        }
-    }
-
-    fun checkStrikes(strikes: Collection<Strike>?, location: Location?): AlertResult? {
-        lastStrikes = strikes
-        return if (alertEnabled && location != null && strikes != null) {
-            alertDataHandler.checkStrikes(strikes, location, alertParameters)
-        } else {
-            null
         }
     }
 

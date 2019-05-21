@@ -6,7 +6,9 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.support.v4.content.PermissionChecker
+import javax.inject.Singleton
 
+@Singleton
 class PassiveLocationProvider(context: Context,
                               backgroundMode: Boolean,
                               locationUpdate: (Location?) -> Unit)

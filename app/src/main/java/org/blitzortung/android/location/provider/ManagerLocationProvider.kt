@@ -54,6 +54,7 @@ abstract class ManagerLocationProvider(
     @Throws(SecurityException::class)
     private fun enableLocationManager() {
         Log.v(Main.LOG_TAG, "enableLocationmanager() $type")
+        updateToLastKnown()
         locationManager.requestLocationUpdates(type, minTime, minDistance, this)
 
         //Now try to get the last known location from the current provider
@@ -106,6 +107,7 @@ abstract class ManagerLocationProvider(
 
         locationManager.removeUpdates(this)
         try {
+            updateToLastKnown()
             locationManager.requestLocationUpdates(type, minTime, minDistance, this)
         } catch (securityException: SecurityException) {
             Toast.makeText(context, "could not enable location manager $type", Toast.LENGTH_LONG).show()
@@ -113,6 +115,14 @@ abstract class ManagerLocationProvider(
         } catch (runtimeException: RuntimeException) {
             Toast.makeText(context, "could not reconfigure location manager $type ", Toast.LENGTH_LONG).show()
             Log.e(LOG_TAG, "could not reconfigure location manager $type", runtimeException)
+        }
+    }
+
+    private fun updateToLastKnown() {
+        val location = locationManager.getLastKnownLocation(type)
+        Log.v(LOG_TAG, "ManagerLocationProvider: last known $location")
+        if (location != null) {
+            onLocationChanged(location)
         }
     }
 
