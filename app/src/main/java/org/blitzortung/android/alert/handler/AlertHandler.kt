@@ -106,9 +106,11 @@ class AlertHandler @Inject constructor(
         if (event is ResultEvent) {
             Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer $event")
             if (!event.failed && event.containsRealtimeData()) {
+                Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer ####")
                 checkStrikes(if (event.incrementalData) event.totalStrikes else event.strikes, locationHandler.location)
             } else {
-                if (event.containsRealtimeData()) {
+                Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer #### ${event.containsRealtimeData()} ${event.parameters.isRealtime()}")
+                if (!event.containsRealtimeData()) {
                     lastStrikes = null
                 }
                 broadcastResult(null)
@@ -195,17 +197,15 @@ class AlertHandler @Inject constructor(
 
     fun checkStrikes(strikes: Collection<Strike>?, location: Location?) {
         lastStrikes = strikes
-        doAsync {
-            Log.v(Main.LOG_TAG, "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${locationHandler.location != null}")
-            val alertResult = if (alertEnabled && location != null && strikes != null) {
-                alertDataHandler.checkStrikes(strikes, location, alertParameters)
-            } else {
-                null
-            }
-            uiThread {
-                processResult(alertResult)
-            }
+
+        Log.v(Main.LOG_TAG, "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${locationHandler.location != null}")
+        val alertResult = if (alertEnabled && location != null && strikes != null) {
+            alertDataHandler.checkStrikes(strikes, location, alertParameters)
+        } else {
+            null
         }
+
+        processResult(alertResult)
     }
 
     val maxDistance: Float

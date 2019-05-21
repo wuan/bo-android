@@ -38,7 +38,7 @@ data class ResultEvent(
 ) : DataEvent {
 
     fun containsRealtimeData(): Boolean {
-        return parameters.intervalOffset == 0
+        return parameters.isRealtime()
     }
 
     override fun toString(): String {
