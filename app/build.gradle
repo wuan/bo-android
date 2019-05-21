@@ -30,6 +30,9 @@ android {
         abortOnError false
         checkReleaseBuilds false
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 jacoco {
