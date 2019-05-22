@@ -377,7 +377,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         super.onResume()
         Log.v(LOG_TAG, "Main.onResume()")
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestLocationPermissions(preferences)
             requestStoragePermissions()
             requestWakeupPermissions(preferences, baseContext)
