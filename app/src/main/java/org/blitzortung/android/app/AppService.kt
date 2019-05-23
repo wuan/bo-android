@@ -43,8 +43,13 @@ import org.blitzortung.android.util.Period
 import org.blitzortung.android.util.isAtLeast
 import java.util.*
 import javax.inject.Inject
+import android.app.NotificationManager
+import android.app.NotificationChannel
+import android.support.v4.app.NotificationCompat
+import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 
-class AppService protected constructor(private val handler: Handler, private val updatePeriod: Period) : Service(), Runnable, SharedPreferences.OnSharedPreferenceChangeListener {
+
+class AppService protected constructor(private val handler: Handler, private val updatePeriod: Period) : Service(), Runnable, OnSharedPreferenceChangeListener {
     private val binder = DataServiceBinder()
 
     var period: Int = 0
@@ -111,9 +116,9 @@ class AppService protected constructor(private val handler: Handler, private val
 
         dataHandler.requestInternalUpdates(dataEventConsumer)
 
-        onSharedPreferenceChanged(preferences, PreferenceKey.QUERY_PERIOD)
-        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED)
-        onSharedPreferenceChanged(preferences, PreferenceKey.BACKGROUND_QUERY_PERIOD)
+        onSharedPreferenceChanged(preferences, PreferenceKey.QUERY_PERIOD, PreferenceKey.ALERT_ENABLED, PreferenceKey.BACKGROUND_QUERY_PERIOD)
+
+
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -129,6 +134,8 @@ class AppService protected constructor(private val handler: Handler, private val
                 Log.v(Main.LOG_TAG, "AppService.onStartCommand() ${LogUtil.timestamp} skip with held wake lock " + wakeLock)
             }
         }
+
+        startService()
 
         return Service.START_STICKY
     }
@@ -160,6 +167,23 @@ class AppService protected constructor(private val handler: Handler, private val
                     Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() failed", e)
                 }
             }
+        }
+    }
+
+    fun startService() {
+        if (Build.VERSION.SDK_INT >= 26) {
+            val CHANNEL_ID = "my_channel_01"
+            val channel = NotificationChannel(CHANNEL_ID,
+                    "Channel human readable title",
+                    NotificationManager.IMPORTANCE_DEFAULT)
+
+            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
+
+            val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle("")
+                    .setContentText("").build()
+
+            startForeground(1, notification)
         }
     }
 
