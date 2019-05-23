@@ -179,7 +179,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         }
         setContentView(R.layout.main)
 
+        val packageName = packageName
+        Log.v(LOG_TAG, "package name: $packageName")
         Configuration.getInstance().userAgentValue = packageName
+        Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
 
         if (supportFragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG) == null) {
             mapFragment = MapFragment()

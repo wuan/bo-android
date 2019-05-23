@@ -22,12 +22,21 @@ import android.content.SharedPreferences
 
 open class StrikeColorHandler(preferences: SharedPreferences) : ColorHandler(preferences) {
 
+    private val streetmapColors = mutableMapOf<IntArray, IntArray>()
+
     override fun getColors(target: ColorTarget): IntArray {
         val strikeColors = colorScheme.strikeColors
         return when (target) {
             ColorTarget.SATELLITE -> strikeColors
-            ColorTarget.STREETMAP -> modifyBrightness(strikeColors, 0.8f)
+            ColorTarget.STREETMAP -> getCachedStreetmapStrikeColors(strikeColors)
         }
+    }
+
+    private fun getCachedStreetmapStrikeColors(strikeColors: IntArray): IntArray {
+        if (!streetmapColors.containsKey(strikeColors)) {
+            streetmapColors[strikeColors] = modifyBrightness(strikeColors, 0.8f)
+        }
+        return streetmapColors[strikeColors]!!
     }
 
     override fun getTextColor(target: ColorTarget): Int {

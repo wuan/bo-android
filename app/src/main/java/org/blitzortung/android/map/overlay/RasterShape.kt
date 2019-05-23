@@ -107,6 +107,6 @@ class RasterShape(private val center: IGeoPoint) : LightningShape {
     }
 
     companion object {
-        private val MIN_SIZE = 1.5f
+        private const val MIN_SIZE = 1.5f
     }
 }
