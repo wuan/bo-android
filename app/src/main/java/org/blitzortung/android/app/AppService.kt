@@ -117,8 +117,6 @@ class AppService protected constructor(private val handler: Handler, private val
         dataHandler.requestInternalUpdates(dataEventConsumer)
 
         onSharedPreferenceChanged(preferences, PreferenceKey.QUERY_PERIOD, PreferenceKey.ALERT_ENABLED, PreferenceKey.BACKGROUND_QUERY_PERIOD)
-
-
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -135,9 +133,7 @@ class AppService protected constructor(private val handler: Handler, private val
             }
         }
 
-        startService()
-
-        return Service.START_STICKY
+        return START_STICKY
     }
 
     private fun acquireWakeLock(): Boolean {
@@ -157,7 +153,7 @@ class AppService protected constructor(private val handler: Handler, private val
         }
     }
 
-    fun releaseWakeLock() {
+    private fun releaseWakeLock() {
         synchronized(wakeLock) {
             if (wakeLock.isHeld) {
                 try {
@@ -167,23 +163,6 @@ class AppService protected constructor(private val handler: Handler, private val
                     Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() failed", e)
                 }
             }
-        }
-    }
-
-    fun startService() {
-        if (Build.VERSION.SDK_INT >= 26) {
-            val CHANNEL_ID = "my_channel_01"
-            val channel = NotificationChannel(CHANNEL_ID,
-                    "Channel human readable title",
-                    NotificationManager.IMPORTANCE_DEFAULT)
-
-            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
-
-            val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentTitle("")
-                    .setContentText("").build()
-
-            startForeground(1, notification)
         }
     }
 
@@ -240,7 +219,7 @@ class AppService protected constructor(private val handler: Handler, private val
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString))
     }
 
-    private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
             PreferenceKey.ALERT_ENABLED -> {
