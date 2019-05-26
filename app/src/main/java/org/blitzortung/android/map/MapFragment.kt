@@ -7,7 +7,9 @@ import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.*
+import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
@@ -37,7 +39,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         val context = this.activity!!
         val dm = context.resources.displayMetrics
 
-        val preferences = context!!.defaultSharedPreferences
+        val preferences = context.defaultSharedPreferences
         preferences.registerOnSharedPreferenceChangeListener(this)
 
         mPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -77,7 +79,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         }
 
         setHasOptionsMenu(true)
-        onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE)
+        onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_SCALE)
     }
 
     fun updateForgroundColor(fgcolor: Int) {
@@ -166,6 +168,11 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
             PreferenceKey.MAP_TYPE -> {
                 val mapTypeString = sharedPreferences.get(key, "SATELLITE")
                 mapView.setTileSource(if (mapTypeString == "SATELLITE") TileSourceFactory.DEFAULT_TILE_SOURCE else TileSourceFactory.MAPNIK)
+            }
+            PreferenceKey.MAP_SCALE -> {
+                val scaleFactor = sharedPreferences.get(key, 100) / 100f
+                Log.v(Main.LOG_TAG, "MapFragment scale $scaleFactor")
+                mapView.tilesScaleFactor = scaleFactor
             }
         }
     }

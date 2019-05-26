@@ -366,4 +366,6 @@
     <string name="notification_channel_name" translatable="false">Storm Alarms</string>
     <string name="not_available">n/a</string>
     <string name="unit_miles">mi.</string>
+    <string name="map_scale">Map scale</string>
+    <string name="map_scale_summary">Select scaling [%] of map tiles</string>
 </resources>

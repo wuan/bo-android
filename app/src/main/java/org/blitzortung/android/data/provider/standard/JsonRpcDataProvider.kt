@@ -207,7 +207,7 @@ class JsonRpcDataProvider @Inject constructor(
 
     companion object {
         private val DATE_TIME_FORMATTER = SimpleDateFormat("yyyyMMdd'T'HH:mm:ss", Locale.US)
-        private val DEFAULT_SERVICE_URL = URI("http://bo-data.tryb.de/").toURL()
+        private val DEFAULT_SERVICE_URL = URI("http://bo-service.tryb.de/").toURL()
 
         init {
             val tz = TimeZone.getTimeZone("UTC")

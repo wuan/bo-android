@@ -43,7 +43,7 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
         //Initial value is the default value.
         //When there is a value presisted, it will be set afterwards through onSetInitialValue
         currentValue = defaultValue
-        minimumValue = attrs.getAttributeIntValue(null, "min", 0)
+        minimumValue = attrs.getAttributeIntValue(ATTRIBUTE_NAMESPACE, "min", 0)
 
         //If there is a minimum value, we always add the minimum-value to the slider
         //E. g. max of 400 with min 20 value. if we were at 400, we would get 400 + 20

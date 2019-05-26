@@ -356,4 +356,6 @@
     <string name="open_battery_optimiziation">Bitte deaktivieren Sie die Akku-Optimierung für diese App wenn die Hintergrundabfrage aktiv ist. Drücken Sie auf Abbrechen um die Hintergrundabfrage zu deaktiveren oder auf OK um zur Einstellung der Batterieoptimierung zu gelangen.</string>
     <string name="app_log" translatable="false">Diagnose der App</string>
     <string name="legend_grid">Raster</string>
+    <string name="map_scale">Kartenskalierung</string>
+    <string name="map_scale_summary">Skalierung der Kartenkacheln [%]</string>
 </resources>

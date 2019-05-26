@@ -30,6 +30,7 @@ enum class PreferenceKey(val key: String) {
     RASTER_SIZE("raster_size"),
     COUNT_THRESHOLD("count_threshold"),
     MAP_TYPE("map_mode"),
+    MAP_SCALE("map_scale"),
     MAP_FADE("map_fade"),
     COLOR_SCHEME("color_scheme"),
     QUERY_PERIOD("query_period"),
