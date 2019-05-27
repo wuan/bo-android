@@ -66,7 +66,7 @@ class HistoryController(
     }
 
     private fun setupHistoryRewindButton() {
-        addButtonWithOnClickAction(activity.historyRew, { v ->
+        addButtonWithOnClickAction(activity.historyRew) { v ->
             if (dataHandler.rewInterval()) {
                 activity.historyFfwd.visibility = View.VISIBLE
                 activity.goRealtime.visibility = View.VISIBLE
@@ -76,11 +76,11 @@ class HistoryController(
                 val toast = Toast.makeText(activity.baseContext, activity.resources.getText(R.string.historic_timestep_limit_reached), Toast.LENGTH_SHORT)
                 toast.show()
             }
-        })
+        }
     }
 
     private fun setupHistoryForwardButton() {
-        addButtonWithOnClickAction(activity.historyFfwd, { v ->
+        addButtonWithOnClickAction(activity.historyFfwd) { v ->
             if (dataHandler.ffwdInterval()) {
                 if (dataHandler.isRealtime) {
                     configureForRealtimeOperation()
@@ -88,15 +88,15 @@ class HistoryController(
                     dataHandler.updateData()
                 }
             }
-        })
+        }
     }
 
     private fun setupGoRealtimeButton() {
-        addButtonWithOnClickAction(activity.goRealtime, { v ->
+        addButtonWithOnClickAction(activity.goRealtime) { v ->
             if (dataHandler.goRealtime()) {
                 configureForRealtimeOperation()
             }
-        })
+        }
     }
 
     private fun addButtonWithOnClickAction(button: ImageButton, action: (View) -> Unit): ImageButton {

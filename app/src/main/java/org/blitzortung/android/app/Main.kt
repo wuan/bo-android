@@ -113,7 +113,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     val dataEventConsumer: (DataEvent) -> Unit = { event ->
         if (event is RequestStartedEvent) {
-            Log.d(Main.LOG_TAG, "Main.onDataUpdate() received request started event")
+            Log.d(LOG_TAG, "Main.onDataUpdate() received request started event")
             statusComponent.startProgress()
         } else if (event is ResultEvent) {
 
@@ -121,7 +121,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             if (!event.failed) {
                 currentResult = event
 
-                Log.d(Main.LOG_TAG, "Main.onDataUpdate() " + event)
+                Log.d(LOG_TAG, "Main.onDataUpdate() " + event)
 
                 val resultParameters = event.parameters
 
@@ -175,7 +175,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         try {
             super.onCreate(savedInstanceState)
         } catch (e: NoClassDefFoundError) {
-            Log.e(Main.LOG_TAG, e.toString())
+            Log.e(LOG_TAG, e.toString())
             Toast.makeText(baseContext, "bad android version", Toast.LENGTH_LONG).show()
         }
         setContentView(R.layout.main)
@@ -183,7 +183,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         val packageName = packageName
         Log.v(LOG_TAG, "package name: $packageName")
         Configuration.getInstance().userAgentValue = packageName
-        Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
 
         if (supportFragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG) == null) {
             mapFragment = MapFragment()
@@ -228,17 +227,18 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         serviceConnection = object : ServiceConnection {
             override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
                 appService = (iBinder as AppService.DataServiceBinder).service
-                Log.i(Main.LOG_TAG, "Main.ServiceConnection.onServiceConnected() " + appService)
+                Log.i(LOG_TAG, "Main.ServiceConnection.onServiceConnected() $componentName -> $appService")
 
                 historyController.setAppService(appService)
             }
 
             override fun onServiceDisconnected(componentName: ComponentName) {
+                Log.i(LOG_TAG, "Main.ServiceConnection.onServiceDisconnected() $componentName")
                 historyController.setAppService(null)
             }
         }
 
-        bindService(serviceIntent, serviceConnection, 0)
+        bindService(serviceIntent, serviceConnection, Context.BIND_IMPORTANT)
     }
 
     private fun setupCustomViews() {
@@ -278,7 +278,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 if (currentResult != null) {
                     val rasterParameters = currentResult.rasterParameters
                     if (rasterParameters != null) {
-                        animateToLocationAndVisibleSize(rasterParameters.rectCenterLongitude.toDouble(), rasterParameters.rectCenterLatitude.toDouble(), 5000f)
+                        animateToLocationAndVisibleSize(rasterParameters.rectCenterLongitude, rasterParameters.rectCenterLatitude, 5000f)
                     } else {
                         animateToLocationAndVisibleSize(0.0, 0.0, 20000f)
                     }
@@ -308,10 +308,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun animateToLocationAndVisibleSize(longitude: Double, latitude: Double, diameter: Float?) {
-        Log.d(Main.LOG_TAG, "Main.animateAndZoomTo() %.4f, %.4f, %.0fkm".format(longitude, latitude, diameter))
+        Log.d(LOG_TAG, "Main.animateAndZoomTo() %.4f, %.4f, %.0fkm".format(longitude, latitude, diameter))
 
         val mapView = mapFragment.mapView
-        val controller = mapView.controller
 
         //If no diameter is provided, we keep the current zoomLevel
         val targetZoomLevel = if (diameter != null) {
@@ -320,7 +319,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             mapView.zoomLevelDouble
         }
 
-        controller.animateTo(GeoPoint(latitude, longitude), targetZoomLevel, OwnMapView.DEFAULT_ZOOM_SPEED)
+        mapView.controller.animateTo(GeoPoint(latitude, longitude), targetZoomLevel, OwnMapView.DEFAULT_ZOOM_SPEED)
     }
 
     val isDebugBuild: Boolean
@@ -364,13 +363,13 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         setupCustomViews()
 
-        Log.d(Main.LOG_TAG, "Main.onStart() service: " + appService)
+        Log.d(LOG_TAG, "Main.onStart() service: " + appService)
     }
 
     override fun onRestart() {
         super.onRestart()
 
-        Log.d(Main.LOG_TAG, "Main.onRestart() ${LogUtil.timestamp} service: " + appService)
+        Log.d(LOG_TAG, "Main.onRestart() ${LogUtil.timestamp} service: " + appService)
     }
 
     override fun onResume() {
@@ -387,7 +386,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         enableDataUpdates()
 
-        Log.d(Main.LOG_TAG, "Main.onResume() ${LogUtil.timestamp} service: " + appService)
+        Log.d(LOG_TAG, "Main.onResume() ${LogUtil.timestamp} service: " + appService)
     }
 
     private fun enableDataUpdates() {
@@ -414,7 +413,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         disableDataUpdates()
 
-        Log.v(Main.LOG_TAG, "Main.onPause() ${LogUtil.timestamp}")
+        Log.v(LOG_TAG, "Main.onPause() ${LogUtil.timestamp}")
     }
 
     private fun disableDataUpdates() {
@@ -443,7 +442,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         mapFragment.mapView.removeMapListener(ownLocationOverlay)
         mapFragment.mapView.removeMapListener(strikeListOverlay)
 
-        Log.v(Main.LOG_TAG, "Main.onStop() ${LogUtil.timestamp}")
+        Log.v(LOG_TAG, "Main.onStop() ${LogUtil.timestamp}")
     }
 
     override fun onDestroy() {
@@ -464,7 +463,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun clearData() {
-        Log.v(Main.LOG_TAG, "Main.clearData()")
+        Log.v(LOG_TAG, "Main.clearData()")
         clearData = false
 
         strikeListOverlay.clear()
@@ -572,7 +571,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
-            Log.v(Main.LOG_TAG, "Main.onKeyUp(KEYCODE_MENU)")
+            Log.v(LOG_TAG, "Main.onKeyUp(KEYCODE_MENU)")
             showPopupMenu(upper_row)
             return true
         }
