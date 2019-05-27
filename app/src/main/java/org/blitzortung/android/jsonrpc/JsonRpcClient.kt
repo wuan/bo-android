@@ -22,7 +22,9 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URL
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class JsonRpcClient @Inject constructor(client: HttpServiceClientDefault) : HttpServiceClient by client {
 
     init {

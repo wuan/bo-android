@@ -59,8 +59,7 @@ class OwnMapView(context: Context) : MapView(context) {
 
             this@OwnMapView.removeView(popup)
 
-            controller.zoomIn()
-            controller.animateTo(getPoint(event))
+            controller.animateTo(getPoint(event), zoomLevelDouble + 1.0, DEFAULT_ZOOM_SPEED)
             return true
         }
 
@@ -105,4 +104,7 @@ class OwnMapView(context: Context) : MapView(context) {
 
     val popup: View by lazy { LayoutInflater.from(context).inflate(R.layout.popup, this, false) }
 
+    companion object {
+        const val DEFAULT_ZOOM_SPEED = 700L
+    }
 }

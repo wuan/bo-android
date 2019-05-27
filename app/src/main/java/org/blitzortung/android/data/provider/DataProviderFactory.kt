@@ -19,6 +19,7 @@
 package org.blitzortung.android.data.provider
 
 import org.blitzortung.android.data.provider.blitzortung.BlitzortungHttpDataProvider
+import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.standard.JsonRpcDataProvider
 import javax.inject.Inject
 import javax.inject.Singleton

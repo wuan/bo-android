@@ -62,6 +62,7 @@ import org.blitzortung.android.data.provider.result.StatusEvent
 import org.blitzortung.android.dialogs.QuickSettingsDialog
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.map.MapFragment
+import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.overlay.FadeOverlay
 import org.blitzortung.android.map.overlay.OwnLocationOverlay
 import org.blitzortung.android.map.overlay.StrikeListOverlay
@@ -319,8 +320,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             mapView.zoomLevelDouble
         }
 
-        controller.zoomTo(targetZoomLevel)
-        controller.animateTo(GeoPoint(latitude, longitude))
+        controller.animateTo(GeoPoint(latitude, longitude), targetZoomLevel, OwnMapView.DEFAULT_ZOOM_SPEED)
     }
 
     val isDebugBuild: Boolean

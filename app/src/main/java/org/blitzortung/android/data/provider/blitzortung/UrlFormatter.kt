@@ -21,7 +21,9 @@ package org.blitzortung.android.data.provider.blitzortung
 import android.text.format.DateFormat
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class UrlFormatter @Inject constructor() {
     fun getUrlFor(type: BlitzortungHttpDataProvider.Type, region: Int, intervalTime: Calendar?, useGzipCompression: Boolean): String {
 

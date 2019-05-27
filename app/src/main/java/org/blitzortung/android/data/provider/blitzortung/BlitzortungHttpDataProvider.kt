@@ -27,8 +27,8 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
-import org.blitzortung.android.data.provider.DataProvider
-import org.blitzortung.android.data.provider.DataProvider.DataRetriever
+import org.blitzortung.android.data.provider.data.DataProvider
+import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.result.ResultEvent
 import java.io.BufferedReader
@@ -39,11 +39,13 @@ import java.net.*
 import java.util.*
 import java.util.zip.GZIPInputStream
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class BlitzortungHttpDataProvider @Inject constructor(
         preferences: SharedPreferences,
         private val urlFormatter: UrlFormatter,
-        mapBuilderFactory: MapBuilderFactory = MapBuilderFactory()
+        mapBuilderFactory: MapBuilderFactory
 ) : OnSharedPreferenceChangeListener, DataProvider {
 
     private val strikeMapBuilder: MapBuilder<Strike>

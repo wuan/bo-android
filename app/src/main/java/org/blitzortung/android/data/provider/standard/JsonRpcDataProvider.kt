@@ -27,8 +27,8 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
-import org.blitzortung.android.data.provider.DataProvider
-import org.blitzortung.android.data.provider.DataProvider.DataRetriever
+import org.blitzortung.android.data.provider.data.DataProvider
+import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.jsonrpc.JsonRpcClient
@@ -41,7 +41,9 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class JsonRpcDataProvider @Inject constructor(
         preferences: SharedPreferences,
         private val client: JsonRpcClient

@@ -16,10 +16,11 @@
 
 */
 
-package org.blitzortung.android.data.provider
+package org.blitzortung.android.data.provider.data
 
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Station
+import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.result.ResultEvent
 
 interface DataProvider {

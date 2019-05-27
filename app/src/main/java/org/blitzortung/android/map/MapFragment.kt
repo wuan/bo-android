@@ -3,7 +3,6 @@ package org.blitzortung.android.map
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -139,10 +138,9 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
                 val builder = AlertDialog.Builder(activity)
                         .setTitle(R.string.app_name).setMessage(R.string.about_message)
                         .setIcon(R.drawable.icon)
-                        .setPositiveButton(android.R.string.ok, DialogInterface.OnClickListener { dialog, whichButton ->
-                            //
+                        .setPositiveButton(android.R.string.ok
+                        ) { dialog, whichButton ->
                         }
-                        )
                 builder.create().show()
                 return true
             }
