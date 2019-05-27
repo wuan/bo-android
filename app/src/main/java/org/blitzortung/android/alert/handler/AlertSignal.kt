@@ -12,8 +12,11 @@ import android.util.Log
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.PreferenceKey.ALERT_SOUND_SIGNAL
+import org.blitzortung.android.app.view.PreferenceKey.ALERT_VIBRATION_SIGNAL
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.util.isAtLeast
+import org.jetbrains.anko.defaultSharedPreferences
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,6 +26,12 @@ class AlertSignal @Inject constructor(
         private val vibrator: Vibrator
 ) : OnSharedPreferenceChangeListener {
 
+    init {
+        val preferences = context.defaultSharedPreferences
+        preferences.registerOnSharedPreferenceChangeListener(this)
+        onSharedPreferenceChanged(preferences, ALERT_VIBRATION_SIGNAL, ALERT_SOUND_SIGNAL)
+    }
+
     private var soundSignal: Uri? = null;
 
     private var vibrationDuration = 0L;
@@ -31,12 +40,12 @@ class AlertSignal @Inject constructor(
 
         @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
-            PreferenceKey.ALERT_VIBRATION_SIGNAL -> {
+            ALERT_VIBRATION_SIGNAL -> {
                 vibrationDuration = sharedPreferences.get(key, 3) * 10L
                 Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() vibrationDuration = $vibrationDuration")
             }
 
-            PreferenceKey.ALERT_SOUND_SIGNAL -> {
+            ALERT_SOUND_SIGNAL -> {
                 val signalUri = sharedPreferences.get(key, "")
                 soundSignal = if (!signalUri.isEmpty()) Uri.parse(signalUri) else null
                 Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() soundSignal = $soundSignal")
