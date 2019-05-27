@@ -50,8 +50,8 @@ class OwnMapView(context: Context) : MapView(context) {
     private val gestureDetector: GestureDetector = GestureDetector(context, GestureListener())
 
     init {
-        minZoomLevel = 2.0
-        maxZoomLevel = 14.0
+        minZoomLevel = 1.5
+        maxZoomLevel = 15.0
     }
 
     inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
@@ -105,6 +105,6 @@ class OwnMapView(context: Context) : MapView(context) {
     val popup: View by lazy { LayoutInflater.from(context).inflate(R.layout.popup, this, false) }
 
     companion object {
-        const val DEFAULT_ZOOM_SPEED = 700L
+        const val DEFAULT_ZOOM_SPEED = 500L
     }
 }
