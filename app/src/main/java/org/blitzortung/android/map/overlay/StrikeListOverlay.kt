@@ -123,7 +123,6 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
 
     override fun onSingleTapUp(e: MotionEvent?, mapView: MapView?): Boolean {
         if (e != null && mapView != null) {
-            Log.d(Main.LOG_TAG, "Tapped on StrikeList")
             val point = mapView.projection.fromPixels(e.x.toInt(), e.y.toInt())
 
             val strikeTapped = strikeList.firstOrNull { it.pointIsInside(point, mapView.projection) }

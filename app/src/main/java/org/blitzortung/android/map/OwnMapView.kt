@@ -20,29 +20,19 @@ package org.blitzortung.android.map
 
 import android.content.Context
 import android.content.DialogInterface
-import android.graphics.Canvas
+import android.graphics.Point
 import android.support.v7.app.AlertDialog
-import android.util.AttributeSet
 import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.app.Main
-import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.location.LocationHandler
 import org.jetbrains.anko.defaultSharedPreferences
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Overlay
-import org.osmdroid.views.overlay.ScaleBarOverlay
-import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
-import java.util.*
 
 
 class OwnMapView(context: Context) : MapView(context) {
@@ -55,11 +45,15 @@ class OwnMapView(context: Context) : MapView(context) {
     }
 
     inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
+
+        private val point : Point = Point()
+
         override fun onDoubleTap(event: MotionEvent): Boolean {
 
             this@OwnMapView.removeView(popup)
-
-            controller.animateTo(getPoint(event), zoomLevelDouble + 1.0, DEFAULT_ZOOM_SPEED)
+            val geoPoint = this.getPoint(event)
+            this@OwnMapView.projection.toPixels(geoPoint, point)
+            controller.zoomInFixing(point.x, point.y, DEFAULT_ZOOM_SPEED)
             return true
         }
 

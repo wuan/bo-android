@@ -29,15 +29,11 @@ import org.osmdroid.views.Projection
 
 class RasterShape(private val center: IGeoPoint) : LightningShape {
 
-    private val size: RectF
+    private val size: RectF = RectF()
     private var color: Int = 0
     private var alpha: Int = 0
     private var multiplicity: Int = 0
     private var textColor: Int = 0
-
-    init {
-        size = RectF()
-    }
 
     override fun draw(canvas: Canvas, mapView: MapView, paint: Paint) {
         val centerPoint = Point()
