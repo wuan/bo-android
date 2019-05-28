@@ -19,7 +19,7 @@
 package org.blitzortung.android.map.overlay.color
 
 enum class ColorScheme(val strikeColors: IntArray) {
-    BLITZORTUNG(intArrayOf(0xffffffff.toInt(), 0xffffffb0.toInt(), 0xffffea80.toInt(), 0xfff0b060.toInt(), 0xffd06040.toInt(), 0xffc03030.toInt())),
+    BLITZORTUNG(intArrayOf(0xffffffff.toInt(), 0xffffffb0.toInt(), 0xffffe079.toInt(), 0xfff0b060.toInt(), 0xffe07959.toInt(), 0xffd05950.toInt())),
     RAINBOW(intArrayOf(0xffff0000.toInt(), 0xffff9900.toInt(), 0xffffff00.toInt(), 0xff99ff22.toInt(), 0xff00ffff.toInt(), 0xff6699ff.toInt())),
     TEMPERATURE(intArrayOf(0xffff5030.toInt(), 0xffe78060.toInt(), 0xffe0b0c0.toInt(), 0xffc0c0f0.toInt(), 0xff5080f0.toInt(), 0xff4060ff.toInt()));
 }

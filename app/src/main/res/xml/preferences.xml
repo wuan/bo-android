@@ -55,7 +55,7 @@
             android:summary="@string/map_mode_summary"
             android:title="@string/map_mode" />
         <org.blitzortung.android.preferences.SlidePreferences
-            android:defaultValue="75"
+            android:defaultValue="70"
             android:key="map_scale"
             android:min="25"
             android:max="150"
@@ -65,7 +65,7 @@
             android:text="%"
             android:title="@string/map_scale" />
         <org.blitzortung.android.preferences.SlidePreferences
-            android:defaultValue="50"
+            android:defaultValue="55"
             android:key="map_fade"
             android:max="90"
             android:persistent="true"
