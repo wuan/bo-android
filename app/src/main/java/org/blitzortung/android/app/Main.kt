@@ -93,10 +93,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private var appService: AppService? = null
 
     @Inject
-    internal lateinit var locationHandler : LocationHandler
+    internal lateinit var locationHandler: LocationHandler
 
     @Inject
-    internal lateinit var alertHandler : AlertHandler
+    internal lateinit var alertHandler: AlertHandler
 
     @Inject
     internal lateinit var dataHandler: DataHandler
@@ -499,16 +499,30 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         }
 
         if (permission is String && checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(permission), LocationProviderRelation.byProviderName[locationProviderName]?.ordinal
+            val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal
                     ?: Int.MIN_VALUE)
+            requestPermission(permission, requestCode, R.string.location_permission_required)
         }
     }
 
     @TargetApi(Build.VERSION_CODES.M)
     private fun requestStoragePermissions() {
         val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
-        if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(permission), 50)
+        val permissionRequiredStringId = R.string.storage_permission_required
+        requestPermission(permission, 50, permissionRequiredStringId)
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private fun requestPermission(permission: String, requestCode: Int, permissionRequiredStringId: Int) {
+        val shouldShowPermissionRationale = shouldShowRequestPermissionRationale(permission)
+        val permissionStatus = checkSelfPermission(permission)
+        Log.v(LOG_TAG, "Main.requestPermission() permission: $permission, status: $status, shouldRequest: $shouldShowPermissionRationale")
+        if (!shouldShowPermissionRationale && permissionStatus != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(permission), requestCode)
+        } else {
+            if (shouldShowPermissionRationale) {
+                Toast.makeText(baseContext, permissionRequiredStringId, Toast.LENGTH_LONG).show()
+            }
         }
     }
 

@@ -368,4 +368,6 @@
     <string name="unit_miles">mi.</string>
     <string name="map_scale">Map scale</string>
     <string name="map_scale_summary">Select scaling [%] of map tiles</string>
+    <string name="storage_permission_required">Please grant storage permission to allow storage of map images.</string>
+    <string name="location_permission_required">Location permission is required to get your location.</string>
 </resources>
