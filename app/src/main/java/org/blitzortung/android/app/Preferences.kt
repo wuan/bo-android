@@ -35,7 +35,7 @@ import javax.inject.Inject
 
 class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
 
-    @Inject
+    @set:Inject
     internal lateinit var preferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {

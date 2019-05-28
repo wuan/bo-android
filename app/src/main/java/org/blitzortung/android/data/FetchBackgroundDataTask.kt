@@ -35,7 +35,7 @@ internal class FetchBackgroundDataTask(
 
     override fun doInBackground(vararg taskParametersArray: TaskParameters): ResultEvent? {
         if (isAtLeast(Build.VERSION_CODES.N)) {
-            wakeLock.acquire(DataHandler.WAKELOCK_TIMEOUT)
+            wakeLock.acquire(ServiceDataHandler.WAKELOCK_TIMEOUT)
         } else {
             wakeLock.acquire()
         }

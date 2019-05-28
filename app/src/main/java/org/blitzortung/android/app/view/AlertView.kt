@@ -33,7 +33,7 @@ import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
-import org.blitzortung.android.data.DataHandler
+import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.dialogs.AlertDialog
 import org.blitzortung.android.dialogs.AlertDialogColorHandler
 import org.blitzortung.android.location.LocationEvent
@@ -95,7 +95,7 @@ class AlertView @JvmOverloads constructor(
         background.color = 0xffb0b0b0.toInt()
     }
 
-    fun enableLongClickListener(dataHandler: DataHandler, alertHandler: AlertHandler) {
+    fun enableLongClickListener(dataHandler: MainDataHandler, alertHandler: AlertHandler) {
         val sharedPreferences = context.defaultSharedPreferences
 
         setOnLongClickListener {

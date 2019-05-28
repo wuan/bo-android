@@ -22,7 +22,6 @@ import android.util.Log
 import org.blitzortung.android.app.Main
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
-import java.net.URI
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.zip.GZIPInputStream
@@ -33,7 +32,7 @@ class HttpServiceClientDefault @Inject constructor(
         @Named("agentSuffix") agentSuffix: String
 ) : HttpServiceClient {
 
-    private val userAgentString: String = "bo-android" + agentSuffix
+    private val userAgentString: String = "bo-android$agentSuffix"
     override var socketTimeout = 0
     override var connectionTimeout = 0
 
@@ -64,8 +63,6 @@ class HttpServiceClientDefault @Inject constructor(
                 inputStream = GZIPInputStream(inputStream)
             }
         }
-
-        Log.v(Main.LOG_TAG, "HttpServiceClient contentEncoding: ${connection.contentEncoding}")
 
         return InputStreamReader(inputStream, "UTF-8").use { it.readText() }
     }

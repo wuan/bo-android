@@ -23,7 +23,6 @@ import android.content.SharedPreferences
 import android.os.PowerManager
 import android.util.Log
 import android.widget.Toast
-import org.blitzortung.android.app.AppService
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
@@ -33,25 +32,21 @@ import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.DataEvent
-import org.blitzortung.android.data.provider.result.RequestStartedEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.ConsumerContainer
-import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
-import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DataHandler @Inject constructor(
+class ServiceDataHandler @Inject constructor(
         private val context: Context,
         private val wakeLock: PowerManager.WakeLock,
-        private val dataProviderFactory: DataProviderFactory
+        private val dataProviderFactory: DataProviderFactory,
+        private val preferences: SharedPreferences
 ) : OnSharedPreferenceChangeListener {
-
-    private val sharedPreferences = context.defaultSharedPreferences
 
     private val lock = ReentrantLock()
 
@@ -60,23 +55,19 @@ class DataHandler @Inject constructor(
     var parameters = Parameters()
         private set
 
-    private var enabled = false
-
     private lateinit var parametersController: ParametersController
 
     private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
         override fun addedFirstConsumer() {
-            Log.d(Main.LOG_TAG, "DataHandler: added first data consumer")
-            AppService.instance?.configureServiceMode()
+            Log.d(Main.LOG_TAG, "ServiceDataHandler: added first data consumer")
         }
 
         override fun removedLastConsumer() {
-            Log.d(Main.LOG_TAG, "DataHandler: removed last data consumer")
-            AppService.instance?.configureServiceMode()
+            Log.d(Main.LOG_TAG, "ServiceDataHandler: removed last data consumer")
         }
     }
 
-    private val internalDataConsumer: (DataEvent) -> Unit = { dataEvent ->
+    private val dataConsumer: (DataEvent) -> Unit = { dataEvent ->
         if (dataEvent is ResultEvent && dataEvent.flags.storeResult) {
             dataConsumerContainer.storeAndBroadcast(dataEvent)
         } else {
@@ -84,23 +75,17 @@ class DataHandler @Inject constructor(
         }
     }
 
-    private val internalDataConsumerContainer = ConsumerContainer<DataEvent>()
-
     private var dataMode = DataMode()
 
     init {
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        this.preferences.registerOnSharedPreferenceChangeListener(this)
 
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.DATA_SOURCE, PreferenceKey.USERNAME, PreferenceKey.PASSWORD, PreferenceKey.RASTER_SIZE, PreferenceKey.COUNT_THRESHOLD, PreferenceKey.REGION, PreferenceKey.INTERVAL_DURATION, PreferenceKey.HISTORIC_TIMESTEP)
+        onSharedPreferenceChanged(this.preferences, PreferenceKey.DATA_SOURCE, PreferenceKey.USERNAME, PreferenceKey.PASSWORD, PreferenceKey.RASTER_SIZE, PreferenceKey.COUNT_THRESHOLD, PreferenceKey.REGION, PreferenceKey.INTERVAL_DURATION, PreferenceKey.HISTORIC_TIMESTEP, PreferenceKey.QUERY_PERIOD)
 
         updateProviderSpecifics()
-
-        internalDataConsumerContainer.addConsumer(internalDataConsumer)
-
-        enabled = true
     }
 
-    fun updateDataInBackground() {
+    fun updateData() {
         FetchBackgroundDataTask(
                 dataMode,
                 dataProvider!!,
@@ -108,14 +93,6 @@ class DataHandler @Inject constructor(
                 { sendEvent(it) },
                 ::toast,
                 wakeLock).execute(TaskParameters(parameters = parameters, updateParticipants = false))
-    }
-
-    fun requestInternalUpdates(dataConsumer: (DataEvent) -> Unit) {
-        internalDataConsumerContainer.addConsumer(dataConsumer)
-    }
-
-    fun removeInternalUpdates(dataConsumer: (DataEvent) -> Unit) {
-        internalDataConsumerContainer.removeConsumer(dataConsumer)
     }
 
     fun requestUpdates(dataConsumer: (DataEvent) -> Unit) {
@@ -129,27 +106,15 @@ class DataHandler @Inject constructor(
     val hasConsumers: Boolean
         get() = dataConsumerContainer.isEmpty
 
-    fun updateData(updateTargets: Set<DataChannel> = DEFAULT_DATA_CHANNELS) {
-        if (enabled) {
-            sendEvent(REQUEST_STARTED_EVENT)
-
-            var updateParticipants = false
-            if (updateTargets.contains(DataChannel.PARTICIPANTS)) {
-                if (dataProvider!!.type == DataProviderType.HTTP || !dataMode.raster) {
-                    updateParticipants = true
-                }
-            }
-            Log.d(Main.LOG_TAG, "DataHandler.updateData() $activeParameters")
-            FetchDataTask(
-                    dataMode,
-                    dataProvider!!,
-                    lock,
-                    { sendEvent(it) },
-                    ::toast
-            ).execute(TaskParameters(parameters = activeParameters, updateParticipants = updateParticipants))
-        } else {
-            Log.d(Main.LOG_TAG, "DataHandler.updateData() disabled")
-        }
+    fun updateData(updateTargets: Set<DataChannel> = setOf(DataChannel.STRIKES)) {
+        Log.d(Main.LOG_TAG, "ServiceDataHandler.updateData() $activeParameters")
+        FetchDataTask(
+                dataMode,
+                dataProvider!!,
+                lock,
+                { sendEvent(it) },
+                ::toast
+        ).execute(TaskParameters(parameters = activeParameters))
     }
 
     val activeParameters: Parameters
@@ -167,9 +132,9 @@ class DataHandler @Inject constructor(
 
     private fun sendEvent(dataEvent: DataEvent) {
         if (dataEvent is ResultEvent && dataEvent.flags.storeResult) {
-            internalDataConsumerContainer.storeAndBroadcast(dataEvent)
+            dataConsumerContainer.storeAndBroadcast(dataEvent)
         } else {
-            internalDataConsumerContainer.broadcast(dataEvent)
+            dataConsumerContainer.broadcast(dataEvent)
         }
     }
 
@@ -241,43 +206,6 @@ class DataHandler @Inject constructor(
         }
     }
 
-    fun toggleExtendedMode() {
-        dataMode = dataMode.copy(raster = dataMode.raster.xor(true))
-
-        if (!isRealtime) {
-            val dataChannels = HashSet<DataChannel>()
-            dataChannels.add(DataChannel.STRIKES)
-            updateData(dataChannels)
-        }
-    }
-
-    val intervalDuration: Int
-        get() = parameters.intervalDuration
-
-    fun ffwdInterval(): Boolean {
-        return updateParameters({ parametersController.ffwdInterval(it) })
-    }
-
-    fun rewInterval(): Boolean {
-        return updateParameters({ parametersController.rewInterval(it) })
-    }
-
-    fun goRealtime(): Boolean {
-        return updateParameters({ parametersController.goRealtime(it) })
-    }
-
-    fun updateParameters(updater: (Parameters) -> Parameters): Boolean {
-        val oldParameters = parameters
-        parameters = updater.invoke(parameters)
-        return parameters != oldParameters
-    }
-
-    val isRealtime: Boolean
-        get() = parameters.isRealtime()
-
-    fun broadcastEvent(event: DataEvent) {
-        internalDataConsumerContainer.broadcast(event)
-    }
 
     private fun toast(stringResource: Int) {
         doAsync {
@@ -288,8 +216,6 @@ class DataHandler @Inject constructor(
     }
 
     companion object {
-        val REQUEST_STARTED_EVENT = RequestStartedEvent()
-        val DEFAULT_DATA_CHANNELS = setOf(DataChannel.STRIKES)
         const val WAKELOCK_TIMEOUT = 5000L
     }
 }

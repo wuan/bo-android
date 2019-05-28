@@ -48,8 +48,8 @@ class LocationHandler @Inject constructor(
             field = value
         }
 
-    private var backgroundMode = true
-        set(value) {
+    var backgroundMode = true
+        private set(value) {
             field = value
             updateProvider()
         }

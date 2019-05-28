@@ -20,15 +20,16 @@ package org.blitzortung.android.app
 
 import android.Manifest
 import android.annotation.TargetApi
-import android.content.*
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
 import android.os.PowerManager
 import android.preference.PreferenceManager
 import android.provider.Settings
@@ -50,11 +51,12 @@ import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
+import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.app.view.put
-import org.blitzortung.android.data.DataHandler
+import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.RequestStartedEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
@@ -76,6 +78,7 @@ import org.osmdroid.util.GeoPoint
 import javax.inject.Inject
 
 class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
+    private var backgroundAlerts: Boolean = false
     private lateinit var statusComponent: StatusComponent
     private lateinit var versionComponent: VersionComponent
 
@@ -90,21 +93,17 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     private lateinit var historyController: HistoryController
 
-    private var appService: AppService? = null
-
-    @Inject
+    @set:Inject
     internal lateinit var locationHandler: LocationHandler
 
-    @Inject
+    @set:Inject
     internal lateinit var alertHandler: AlertHandler
 
-    @Inject
-    internal lateinit var dataHandler: DataHandler
+    @set:Inject
+    internal lateinit var dataHandler: MainDataHandler
 
-    @Inject
+    @set:Inject
     internal lateinit var preferences: SharedPreferences
-
-    private lateinit var serviceConnection: ServiceConnection
 
     private var currentResult: ResultEvent? = null
 
@@ -160,7 +159,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
             statusComponent.stopProgress()
 
-            //mapView.invalidate()
             legend_view.invalidate()
         } else if (event is StatusEvent) {
             setStatusString(event.status)
@@ -178,11 +176,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             Log.e(LOG_TAG, e.toString())
             Toast.makeText(baseContext, "bad android version", Toast.LENGTH_LONG).show()
         }
-        setContentView(R.layout.main)
 
-        val packageName = packageName
-        Log.v(LOG_TAG, "package name: $packageName")
         Configuration.getInstance().userAgentValue = packageName
+
+        setContentView(R.layout.main)
 
         if (supportFragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG) == null) {
             mapFragment = MapFragment()
@@ -195,6 +192,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
         preferences.registerOnSharedPreferenceChangeListener(this)
+
 
         strikeColorHandler = StrikeColorHandler(preferences)
 
@@ -212,33 +210,20 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         buttonColumnHandler.updateButtonColumn()
 
-        createAndBindToDataService()
-
         if (versionComponent.state == VersionComponent.State.FIRST_RUN) {
             openQuickSettingsDialog()
         }
     }
 
-    private fun createAndBindToDataService() {
-        val serviceIntent = intentFor<AppService>()
+    private val serviceIntent: Intent
+            get() = intentFor<AppService>()
 
+    private fun startService() {
         startService(serviceIntent)
+    }
 
-        serviceConnection = object : ServiceConnection {
-            override fun onServiceConnected(componentName: ComponentName, iBinder: IBinder) {
-                appService = (iBinder as AppService.DataServiceBinder).service
-                Log.i(LOG_TAG, "Main.ServiceConnection.onServiceConnected() $componentName -> $appService")
-
-                historyController.setAppService(appService)
-            }
-
-            override fun onServiceDisconnected(componentName: ComponentName) {
-                Log.i(LOG_TAG, "Main.ServiceConnection.onServiceDisconnected() $componentName")
-                historyController.setAppService(null)
-            }
-        }
-
-        bindService(serviceIntent, serviceConnection, Context.BIND_IMPORTANT)
+    private fun stopService() {
+        stopService(serviceIntent)
     }
 
     private fun setupCustomViews() {
@@ -338,7 +323,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     override fun onStart() {
         super.onStart()
-        Log.v(LOG_TAG, "Main.onStart()")
+        Log.d(LOG_TAG, "Main.onStart()")
 
         mapFragment = supportFragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG) as MapFragment
 
@@ -354,26 +339,26 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         mapFragment.mapView.addMapListener(ownLocationOverlay)
 
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
-                PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP)
+                PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.BACKGROUND_QUERY_PERIOD)
 
         val overlays = mapFragment.mapView.overlays
-        Log.v(LOG_TAG, "Main.onStart() # of overlays ${overlays.size}")
 
         overlays.addAll(listOf(fadeOverlay, strikeListOverlay, ownLocationOverlay))
 
         setupCustomViews()
-
-        Log.d(LOG_TAG, "Main.onStart() service: " + appService)
     }
 
     override fun onRestart() {
         super.onRestart()
 
-        Log.d(LOG_TAG, "Main.onRestart() ${LogUtil.timestamp} service: " + appService)
+        Log.d(LOG_TAG, "Main.onRestart()")
     }
 
     override fun onResume() {
         super.onResume()
+
+        stopService()
+
         Log.v(LOG_TAG, "Main.onResume()")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -386,7 +371,13 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         enableDataUpdates()
 
-        Log.d(LOG_TAG, "Main.onResume() ${LogUtil.timestamp} service: " + appService)
+        if (locationHandler.backgroundMode) {
+            locationHandler.shutdown()
+            locationHandler.disableBackgroundMode()
+        }
+        locationHandler.start()
+
+        dataHandler.start()
     }
 
     private fun enableDataUpdates() {
@@ -402,6 +393,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         with(dataHandler) {
             requestUpdates(dataEventConsumer)
+            requestUpdates(alertHandler.dataEventConsumer)
             requestUpdates(historyController.dataConsumer)
             requestUpdates(histogram_view.dataConsumer)
         }
@@ -413,7 +405,20 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         disableDataUpdates()
 
+        if (backgroundAlerts) {
+            startService()
+            if (!locationHandler.backgroundMode) {
+                locationHandler.shutdown()
+                locationHandler.enableBackgroundMode()
+                locationHandler.start()
+            }
+        } else {
+            locationHandler.shutdown()
+        }
+
         Log.v(LOG_TAG, "Main.onPause() ${LogUtil.timestamp}")
+
+        dataHandler.stop()
     }
 
     private fun disableDataUpdates() {
@@ -429,6 +434,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         with(dataHandler) {
             removeUpdates(dataEventConsumer)
+            requestUpdates(alertHandler.dataEventConsumer)
             removeUpdates(historyController.dataConsumer)
             removeUpdates(histogram_view.dataConsumer)
         }
@@ -441,19 +447,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         mapFragment.mapView.overlays.removeAll(listOf(fadeOverlay, ownLocationOverlay, strikeListOverlay))
         mapFragment.mapView.removeMapListener(ownLocationOverlay)
         mapFragment.mapView.removeMapListener(strikeListOverlay)
-
-        Log.v(LOG_TAG, "Main.onStop() ${LogUtil.timestamp}")
     }
 
     override fun onDestroy() {
         super.onDestroy()
         Log.i(LOG_TAG, "Main.onDestroy()")
-
-        unbindService(serviceConnection)
-    }
-
-    private fun reloadData() {
-        appService?.run { this.reloadData() }
     }
 
     private fun clearDataIfRequested() {
@@ -528,10 +526,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     @TargetApi(Build.VERSION_CODES.M)
     private fun requestWakeupPermissions(sharedPreferences: SharedPreferences, context: Context) {
-        val backgroundPeriod = sharedPreferences.get(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0").toInt()
-        Log.v(LOG_TAG, "requestWakeupPermissions() background period: $backgroundPeriod")
+        Log.v(LOG_TAG, "requestWakeupPermissions() background alerts: $backgroundAlerts")
 
-        if (backgroundPeriod > 0) {
+        if (backgroundAlerts) {
             val pm = context.getSystemService(Context.POWER_SERVICE)
             if (pm is PowerManager) {
                 val packageName = context.packageName
@@ -592,15 +589,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         return super.onKeyUp(keyCode, event)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString))
-    }
-
-    private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, vararg keys: PreferenceKey) {
-        keys.forEach { onSharedPreferenceChanged(sharedPreferences, it) }
-    }
-
-    private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
             PreferenceKey.COLOR_SCHEME -> {
@@ -621,6 +610,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 } else {
                     window.clearFlags(flag)
                 }
+            }
+
+            PreferenceKey.BACKGROUND_QUERY_PERIOD -> {
+                backgroundAlerts = sharedPreferences.get(key, "0").toInt() > 0
             }
         }
     }

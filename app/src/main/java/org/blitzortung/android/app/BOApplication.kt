@@ -3,23 +3,23 @@ package org.blitzortung.android.app
 import android.app.Activity
 import android.app.Application
 import android.app.Service
-import android.content.pm.PackageInfo
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
 import dagger.android.HasServiceInjector
 import org.blitzortung.android.dagger.component.DaggerAppComponent
 import org.blitzortung.android.dagger.module.AppModule
+import org.blitzortung.android.dagger.module.ServiceModule
 import javax.inject.Inject
 
 class BOApplication : Application(), HasActivityInjector, HasServiceInjector {
 
-    @Inject
+    @set:Inject
     lateinit var serviceInjector: DispatchingAndroidInjector<Service>
 
     override fun serviceInjector(): AndroidInjector<Service> = serviceInjector
 
-    @Inject
+    @set:Inject
     lateinit var activityInjector: DispatchingAndroidInjector<Activity>
 
     override fun activityInjector(): AndroidInjector<Activity> = activityInjector
@@ -30,6 +30,7 @@ class BOApplication : Application(), HasActivityInjector, HasServiceInjector {
         DaggerAppComponent
                 .builder()
                 .appModule(AppModule(this))
+                .serviceModule(ServiceModule(this))
                 .build()
                 .inject(this)
     }

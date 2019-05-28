@@ -33,7 +33,6 @@ import org.blitzortung.android.app.controller.NotificationHandler
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
-import org.blitzortung.android.data.DataHandler
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.location.LocationEvent
@@ -48,7 +47,6 @@ import javax.inject.Singleton
 @Singleton
 class AlertHandler @Inject constructor(
         private val locationHandler: LocationHandler,
-        private val dataHandler: DataHandler,
         preferences: SharedPreferences,
         private val context: Context,
         private val notificationHandler: NotificationHandler,
@@ -56,6 +54,7 @@ class AlertHandler @Inject constructor(
         private val alertSignal: AlertSignal
 
 ) : OnSharedPreferenceChangeListener {
+
     var alertParameters: AlertParameters
 
     val alertConsumerContainer: ConsumerContainer<AlertEvent> = object : ConsumerContainer<AlertEvent>() {
@@ -90,14 +89,16 @@ class AlertHandler @Inject constructor(
         checkStrikes(lastStrikes, event.location)
     }
 
+    init {
+        locationHandler.requestUpdates(locationEventConsumer)
+    }
+
     val dataEventConsumer: (Event) -> Unit = { event ->
         if (event is ResultEvent) {
             Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer $event")
             if (!event.failed && event.containsRealtimeData()) {
-                Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer ####")
                 checkStrikes(if (event.incrementalData) event.totalStrikes else event.strikes, locationHandler.location)
             } else {
-                Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer #### ${event.containsRealtimeData()} ${event.parameters.isRealtime()}")
                 if (!event.containsRealtimeData()) {
                     lastStrikes = null
                 }
@@ -130,7 +131,6 @@ class AlertHandler @Inject constructor(
             PreferenceKey.ALERT_ENABLED -> {
                 alertEnabled = sharedPreferences.get(key, false)
                 Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() alertEnabled = $alertEnabled")
-                updateAlertState()
             }
 
             PreferenceKey.MEASUREMENT_UNIT -> {
@@ -154,22 +154,6 @@ class AlertHandler @Inject constructor(
                 signalingThresholdTime = sharedPreferences.get(key, "25").toLong() * 1000 * 60
                 Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() signalingThresholdTime = $signalingThresholdTime")
             }
-        }
-    }
-
-    private fun updateAlertState() {
-        if (alertEnabled) {
-            Log.v(Main.LOG_TAG, "AlertHandler.refresh() enable updates")
-            locationHandler.requestUpdates(locationEventConsumer)
-            dataHandler.requestInternalUpdates(dataEventConsumer)
-        } else {
-            Log.v(Main.LOG_TAG, "AlertHandler.refresh() disable updates")
-            locationHandler.removeUpdates(locationEventConsumer)
-            dataHandler.removeInternalUpdates(dataEventConsumer)
-
-            lastStrikes = null
-
-            broadcastResult(null)
         }
     }
 
@@ -203,9 +187,6 @@ class AlertHandler @Inject constructor(
             if (alertResult.closestStrikeDistance <= notificationDistanceLimit) {
                 alertNotification(alertResult)
             }
-            Log.v(Main.LOG_TAG, "AlertHandler.processExistingResult() broadcast result $alertResult")
-        } else {
-            Log.v(Main.LOG_TAG, "AlertHandler.processResult() no result ")
         }
         broadcastResult(alertResult)
     }

@@ -9,7 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.VersionComponent
-import org.blitzortung.android.data.DataHandler
+import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.dialogs.AlertDialog
 import org.blitzortung.android.dialogs.AlertDialogColorHandler
 import org.blitzortung.android.dialogs.InfoDialog
@@ -20,7 +20,7 @@ class MainPopupMenu(
         context: Context,
         anchor: View,
         preferences: SharedPreferences,
-        dataHandler: DataHandler,
+        dataHandler: MainDataHandler,
         alertHandler: AlertHandler
 ) : PopupMenu(context, anchor) {
 
@@ -31,7 +31,7 @@ class MainPopupMenu(
     class ClickListener(
             private val context: Context,
             private val preferences: SharedPreferences,
-            private val dataHandler: DataHandler,
+            private val dataHandler: MainDataHandler,
             private val alertHandler: AlertHandler
     ) : OnMenuItemClickListener {
         override fun onMenuItemClick(item: MenuItem?): Boolean {

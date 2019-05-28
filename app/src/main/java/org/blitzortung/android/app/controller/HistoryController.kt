@@ -19,27 +19,22 @@
 package org.blitzortung.android.app.controller
 
 import android.app.Activity
-import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
 import kotlinx.android.synthetic.main.main.*
-import org.blitzortung.android.app.AppService
 import org.blitzortung.android.app.ButtonGroup
-import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.DataChannel
-import org.blitzortung.android.data.DataHandler
+import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.Event
 
 class HistoryController(
         private val activity: Activity,
         private val buttonHandler: ButtonColumnHandler<ImageButton, ButtonGroup>,
-        private val dataHandler: DataHandler
+        private val dataHandler: MainDataHandler
 ) {
-
-    private var appService: AppService? = null
 
     private val buttons: MutableCollection<ImageButton> = arrayListOf()
 
@@ -111,7 +106,8 @@ class HistoryController(
         activity.historyFfwd.visibility = View.INVISIBLE
         activity.goRealtime.visibility = View.INVISIBLE
         updateButtonColumn()
-        appService?.restart()
+
+        dataHandler.restart()
     }
 
     private fun updateButtonColumn() {
@@ -124,10 +120,5 @@ class HistoryController(
 
     private fun updateData() {
         dataHandler.updateData(setOf(DataChannel.STRIKES))
-    }
-
-    fun setAppService(appService: AppService?) {
-        Log.v(Main.LOG_TAG, "HistoryController.setAppService($appService)")
-        this.appService = appService
     }
 }

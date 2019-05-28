@@ -15,7 +15,9 @@ import javax.inject.Inject
 import javax.inject.Named
 
 @Module
-class AppModule @Inject constructor(private val application: Application) {
+class AppModule @Inject constructor(
+        private val application: Application
+) {
 
     @Provides
     fun provideContext(): Context = application
