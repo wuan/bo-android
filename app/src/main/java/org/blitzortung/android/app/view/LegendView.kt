@@ -85,7 +85,7 @@ class LegendView @JvmOverloads constructor(
             innerWidth = Math.max(innerWidth, regionTextPaint.measureText(regionName))
         }
 
-        return padding + innerWidth + padding
+        return padding + innerWidth + padding + 10
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
