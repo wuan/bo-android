@@ -34,33 +34,23 @@ class LegendView @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyle: Int = 0
 ) : TabletAwareView(context, attrs, defStyle) {
-    private val colorFieldSize: Float
-    private val textPaint: Paint
+    private val colorFieldSize: Float = textSize
+    private val textPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = -1
+        textSize = this@LegendView.textSize
+    }
     private val rasterTextPaint: Paint
     private val regionTextPaint: Paint
     private val countThresholdTextPaint: Paint
-    private val backgroundPaint: Paint
-    private val foregroundPaint: Paint
-    private val backgroundRect: RectF
-    private val legendColorRect: RectF
+    private val backgroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = context.resources.getColor(R.color.translucent_background)
+    }
+    private val foregroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val backgroundRect: RectF = RectF()
+    private val legendColorRect: RectF = RectF()
     var strikesOverlay: StrikeListOverlay? = null
 
     init {
-        colorFieldSize = textSize
-
-        foregroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-
-        backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = context.resources.getColor(R.color.translucent_background)
-        }
-
-        backgroundRect = RectF()
-        legendColorRect = RectF()
-
-        textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = -1
-            textSize = this@LegendView.textSize
-        }
 
         rasterTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = -1
@@ -84,7 +74,12 @@ class LegendView @JvmOverloads constructor(
     }
 
     private fun determineWidth(intervalDuration: Int): Float {
-        var innerWidth = colorFieldSize + padding + textPaint.measureText(if (intervalDuration > 100) "< 100min" else "< 10min")
+        val numberOfColors = strikesOverlay?.colorHandler?.numberOfColors ?: 1
+        var innerWidth = colorFieldSize + padding + textPaint.measureText(
+                LEGEND_FORMAT.format(
+                        '<',
+                        intervalDuration / numberOfColors * (numberOfColors - 1),
+                        context.resources.getString(R.string.unit_minute)))
 
         if (hasRegion()) {
             innerWidth = Math.max(innerWidth, regionTextPaint.measureText(regionName))
@@ -136,14 +131,14 @@ class LegendView @JvmOverloads constructor(
 
             var topCoordinate = padding
 
-            for (index in 0..numberOfColors - 1) {
+            for (index in 0 until numberOfColors) {
                 foregroundPaint.color = colorHandler.getColor(index)
                 legendColorRect.set(padding, topCoordinate, padding + colorFieldSize, topCoordinate + colorFieldSize)
                 canvas.drawRect(legendColorRect, foregroundPaint)
 
                 val isLastValue = index == numberOfColors - 1
                 val minuteUnit = context.getString(R.string.unit_minute)
-                val text = "%c %d%s".format(if (isLastValue) '>' else '<', (index + (if (isLastValue) 0 else 1)) * minutesPerColor, minuteUnit)
+                val text = LEGEND_FORMAT.format(if (isLastValue) '>' else '<', (index + (if (isLastValue) 0 else 1)) * minutesPerColor, minuteUnit)
 
                 canvas.drawText(text, 2 * padding + colorFieldSize, topCoordinate + colorFieldSize / 1.1f, textPaint)
 
@@ -213,5 +208,6 @@ class LegendView @JvmOverloads constructor(
         const val REGION_HEIGHT = 1.1f
         const val RASTER_HEIGHT = 0.8f
         const val COUNT_THRESHOLD_HEIGHT = 0.8f
+        const val LEGEND_FORMAT = "%c %d%s"
     }
 }
