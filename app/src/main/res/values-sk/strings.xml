@@ -236,6 +236,8 @@
         <item>10 minút</item>
         <item>15 minút</item>
         <item>30 minút</item>
+        <item>60 minút</item>
+        <item>120 minút</item>
     </string-array>
     <string-array name="background_query_period_values">
         <item>0</item>
@@ -245,6 +247,8 @@
         <item>600</item>
         <item>900</item>
         <item>1800</item>
+        <item>3600</item>
+        <item>3600</item>
     </string-array>
 
     <item name="alarm_notification_id" type="id" />

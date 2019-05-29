@@ -239,6 +239,8 @@
         <item>10 min</item>
         <item>15 min</item>
         <item>30 min</item>
+        <item>60 min</item>
+        <item>120 min</item>
     </string-array>
     <string-array name="background_query_period_values">
         <item>0</item>
@@ -248,6 +250,8 @@
         <item>600</item>
         <item>900</item>
         <item>1800</item>
+        <item>3600</item>
+        <item>7200</item>
     </string-array>
 
     <string name="notification_distance_limit">Radiuslimit Benachrichtigung</string>
