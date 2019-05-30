@@ -119,7 +119,11 @@ abstract class ManagerLocationProvider(
     }
 
     private fun updateToLastKnown() {
-        val location = locationManager.getLastKnownLocation(type)
+        val location = try {
+            locationManager.getLastKnownLocation(type)
+        } catch (securityException: SecurityException) {
+            null
+        }
         Log.v(LOG_TAG, "ManagerLocationProvider: last known $location")
         if (location != null) {
             onLocationChanged(location)

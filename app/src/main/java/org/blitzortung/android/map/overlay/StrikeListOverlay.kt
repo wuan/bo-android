@@ -127,18 +127,20 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
 
             val strikeTapped = strikeList.firstOrNull { it.pointIsInside(point, mapView.projection) }
 
-            val popup = (mapView as OwnMapView).popup
-            mapView.removeView(popup)
+            if (mapView is OwnMapView) {
+                val popup = mapView.popup
+                mapView.removeView(popup)
 
-            if (strikeTapped != null) {
-                val newPopup = createStrikePopUp(popup, strikeTapped)
+                if (strikeTapped != null) {
+                    val newPopup = createStrikePopUp(popup, strikeTapped)
 
-                val mapParams = MapView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
-                        point, 0, 0, MapView.LayoutParams.BOTTOM_CENTER)
+                    val mapParams = MapView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                            point, 0, 0, MapView.LayoutParams.BOTTOM_CENTER)
 
-                mapView.addView(newPopup, mapParams)
+                    mapView.addView(newPopup, mapParams)
 
-                return true
+                    return true
+                }
             }
         }
         return false

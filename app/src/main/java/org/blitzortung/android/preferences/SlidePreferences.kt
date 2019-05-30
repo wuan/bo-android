@@ -32,8 +32,8 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
     private val unitSuffix: String
     private val defaultValue: Int
     private val maximumValue: Int
-    private var valueText: TextView? = null
-    private var slider: SeekBar? = null
+    private lateinit var valueText: TextView
+    private lateinit var slider: SeekBar
     private var currentValue: Int
     private var minimumValue: Int
 
@@ -60,7 +60,7 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
         valueText.gravity = Gravity.CENTER_HORIZONTAL
         valueText.textSize = 32f
         //Set initial text
-        valueText.text =  "$currentValue $unitSuffix"
+        valueText.text = "$currentValue $unitSuffix"
         val params = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT)
@@ -82,9 +82,9 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
     override fun onBindDialogView(v: View) {
         super.onBindDialogView(v)
 
-        slider!!.max = maximumValue
+        slider.max = maximumValue
         //We need to adapt the value of the SeekBar to our Minimum-Value
-        slider!!.progress = currentValue - minimumValue
+        slider.progress = currentValue - minimumValue
     }
 
     override fun onSetInitialValue(should_restore: Boolean, defaultValue: Any?) {
@@ -99,19 +99,20 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
 
     override fun onProgressChanged(seekBar: SeekBar, seekBarValue: Int, fromTouch: Boolean) {
         //Ignore events that wasn't done by the user
-        if(!fromTouch)
+        if (!fromTouch) {
             return
+        }
 
         //We need to adapt the value of the SeekBar to our Minimum-Value
         currentValue = seekBarValue + minimumValue
 
-        valueText!!.text = "$currentValue $unitSuffix"
+        valueText.text = "$currentValue $unitSuffix"
 
         callChangeListener(currentValue)
     }
 
     override fun onDialogClosed(positiveResult: Boolean) {
-        if(positiveResult) {
+        if (positiveResult) {
             if (shouldPersist())
                 persistInt(currentValue)
         } else {

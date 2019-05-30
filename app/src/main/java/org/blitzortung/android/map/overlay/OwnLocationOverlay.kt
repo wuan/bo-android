@@ -75,8 +75,6 @@ class OwnLocationOverlay(
     init {
         layerOverlayComponent = LayerOverlayComponent(context.resources.getString(R.string.own_location_layer))
 
-        item = null
-
         populate()
 
         sizeFactor = ViewHelper.pxFromDp(context, 1.0f) * TabletAwareView.sizeFactor(context)
