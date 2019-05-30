@@ -196,7 +196,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         strikeColorHandler = StrikeColorHandler(preferences)
 
-        statusComponent = StatusComponent(this)
+        statusComponent = StatusComponent(
+                findViewById(R.id.warning),
+                findViewById(R.id.status),
+                findViewById(R.id.progress),
+                findViewById(R.id.error_indicator),
+                resources)
 
         hideActionBar()
 

@@ -86,13 +86,15 @@ class ServiceDataHandler @Inject constructor(
     }
 
     fun updateData() {
-        FetchBackgroundDataTask(
-                dataMode,
-                dataProvider!!,
-                lock,
-                { sendEvent(it) },
-                ::toast,
-                wakeLock).execute(TaskParameters(parameters = parameters, updateParticipants = false))
+        dataProvider?.let { dataProvider ->
+            FetchBackgroundDataTask(
+                    dataMode,
+                    dataProvider,
+                    lock,
+                    { sendEvent(it) },
+                    ::toast,
+                    wakeLock).execute(TaskParameters(parameters = parameters, updateParticipants = false))
+        }
     }
 
     fun requestUpdates(dataConsumer: (DataEvent) -> Unit) {

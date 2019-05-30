@@ -18,7 +18,7 @@
 
 package org.blitzortung.android.app.view.components
 
-import android.app.Activity
+import android.content.res.Resources
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -27,36 +27,24 @@ import org.blitzortung.android.alert.AlertLabel
 import org.blitzortung.android.alert.AlertLabelHandler
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.event.AlertResultEvent
-import org.blitzortung.android.app.R
 
-class StatusComponent(activity: Activity) : AlertLabel {
+class StatusComponent(
+        private val warning: TextView,
+        private val status: TextView,
+        private val progressBar: ProgressBar,
+        private val errorIndicator: ImageView,
+        resources: Resources
+) : AlertLabel {
 
     private val alertLabelHandler: AlertLabelHandler
 
     val alertEventConsumer: (AlertEvent) -> Unit
 
-    private val status: TextView
-
-    private val warning: TextView
-
-    private val progressBar: ProgressBar
-
-    private val errorIndicator: ImageView
-
     init {
-        status = activity.findViewById(R.id.status) as TextView
+        progressBar.visibility = View.INVISIBLE
+        errorIndicator.visibility = View.INVISIBLE
 
-        warning = activity.findViewById(R.id.warning) as TextView
-
-        progressBar = (activity.findViewById(R.id.progress) as ProgressBar).apply {
-            visibility = View.INVISIBLE
-        }
-
-        errorIndicator = (activity.findViewById(R.id.error_indicator) as ImageView).apply {
-            visibility = View.INVISIBLE
-        }
-
-        alertLabelHandler = AlertLabelHandler(this, activity.resources)
+        alertLabelHandler = AlertLabelHandler(this, resources)
 
         alertEventConsumer = { event ->
             alertLabelHandler.apply(
@@ -68,13 +56,17 @@ class StatusComponent(activity: Activity) : AlertLabel {
     }
 
     fun startProgress() {
-        progressBar.visibility = View.VISIBLE
-        progressBar.progress = 0
+        progressBar.apply {
+            visibility = View.VISIBLE
+            progress = 0
+        }
     }
 
     fun stopProgress() {
-        progressBar.visibility = View.INVISIBLE
-        progressBar.progress = progressBar.max
+        progressBar.apply {
+            visibility = View.INVISIBLE
+            progress = progressBar.max
+        }
     }
 
     fun indicateError(indicateError: Boolean) {

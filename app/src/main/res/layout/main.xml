@@ -63,20 +63,20 @@
 
     </TableRow>
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:id="@+id/map_overlay"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@+id/upper_row">
 
-        <org.blitzortung.android.app.view.LegendView xmlns:android="http://schemas.android.com/apk/res/android"
+        <org.blitzortung.android.app.view.LegendView
             android:id="@+id/legend_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             local:tablet_scaleable="true"/>
 
-        <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+        <ImageButton
             android:id="@+id/menu"
             android:layout_width="45sp"
             android:layout_height="45sp"
@@ -84,7 +84,7 @@
             android:src="@android:drawable/ic_menu_more"
             android:visibility="gone" />
 
-        <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+        <ImageButton
             android:id="@+id/historyRew"
             android:layout_width="45sp"
             android:layout_height="45sp"
@@ -92,7 +92,7 @@
             android:src="@android:drawable/ic_media_rew"
             android:visibility="gone" />
 
-        <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+        <ImageButton
             android:id="@+id/historyFfwd"
             android:layout_width="45sp"
             android:layout_height="45sp"
@@ -100,7 +100,7 @@
             android:src="@android:drawable/ic_media_ff"
             android:visibility="gone" />
 
-        <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+        <ImageButton
             android:id="@+id/goRealtime"
             android:layout_width="45sp"
             android:layout_height="45sp"
@@ -108,7 +108,7 @@
             android:src="@android:drawable/ic_media_next"
             android:visibility="gone" />
 
-        <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+        <ImageButton
             android:id="@+id/toggleExtendedMode"
             android:layout_width="45sp"
             android:layout_height="45sp"
@@ -117,7 +117,7 @@
             android:src="@android:drawable/ic_menu_view"
             android:visibility="gone" />
 
-        <org.blitzortung.android.app.view.AlertView xmlns:android="http://schemas.android.com/apk/res/android"
+        <org.blitzortung.android.app.view.AlertView
             android:id="@+id/alert_view"
             android:layout_width="90sp"
             android:layout_height="90sp"
@@ -126,7 +126,7 @@
             android:layout_alignParentStart="true"
             local:tablet_scaleable="true"/>
 
-        <org.blitzortung.android.app.view.HistogramView xmlns:android="http://schemas.android.com/apk/res/android"
+        <org.blitzortung.android.app.view.HistogramView
             android:id="@+id/histogram_view"
             android:layout_width="100sp"
             android:layout_height="70sp"

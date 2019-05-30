@@ -133,7 +133,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
             return true
         }
 
-        when (item!!.itemId) {
+        when (item?.itemId) {
             MENU_ABOUT -> {
                 val builder = AlertDialog.Builder(activity)
                         .setTitle(R.string.app_name).setMessage(R.string.about_message)
@@ -145,6 +145,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
                 return true
             }
         }
+
         return super.onOptionsItemSelected(item)
     }
 
