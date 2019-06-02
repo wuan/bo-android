@@ -83,7 +83,7 @@ class AlertHandler @Inject constructor(
 
     private var signalingLastTimestamp: Long = 0
 
-    private val locationEventConsumer: (LocationEvent) -> Unit = { event ->
+    internal val locationEventConsumer: (LocationEvent) -> Unit = { event ->
         Log.v(Main.LOG_TAG, "AlertHandler.locationEventConsumer ${event.location}")
 
         checkStrikes(lastStrikes, event.location)

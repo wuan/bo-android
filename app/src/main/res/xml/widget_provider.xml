@@ -2,6 +2,9 @@
 
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:initialLayout="@layout/widget"
-    android:minHeight="120dp"
-    android:minWidth="150dp"
-    android:updatePeriodMillis="4320000"/>
+    android:previewImage="@drawable/abc_vector_test"
+    android:minHeight="20dp"
+    android:minWidth="20dp"
+    android:updatePeriodMillis="10000"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"/>
