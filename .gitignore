@@ -2,6 +2,7 @@
 *.iml
 /build
 /app/build
+/app/release
 /app/*.apk
 /.gradle
 /local.properties
