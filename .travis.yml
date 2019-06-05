@@ -21,4 +21,4 @@ android:
     - sys-img-x86-android-28
 
 after_success:
-  - ./gradlew jacocoTestReportDebug coveralls
+  - ./gradlew coveralls

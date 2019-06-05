@@ -17,6 +17,9 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -41,6 +44,10 @@ junitJacoco {
     excludes // type String List
     includeNoLocationClasses = false // type boolean
     includeInstrumentationCoverageInMergedReport = false // type boolean
+}
+
+coveralls {
+    jacocoReportPath 'build/reports/jacoco/debug/jacoco.xml'
 }
 
 def anko_version = '0.10.8'
