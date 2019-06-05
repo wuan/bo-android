@@ -44,7 +44,7 @@ junitJacoco {
 }
 
 coveralls {
-    jacocoReportPath 'build/reports/jacocoCombined/debug/jacoco.xml'
+    jacocoReportPath 'build/reports/jacoco/release/jacoco.xml'
 }
 
 def anko_version = '0.10.8'
