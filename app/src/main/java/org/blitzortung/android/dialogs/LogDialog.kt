@@ -78,12 +78,16 @@ class LogDialog(
         return versionComponent.run { "Version $versionName ($versionCode)" }
     }
 
-    fun composeEmail(logText: String) {
+    fun composeEmail(body: String) {
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = Uri.parse("mailto:")
         intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(context.resources.getString(R.string.project_email)))
         intent.putExtra(Intent.EXTRA_SUBJECT, context.resources.getString(R.string.app_log_subject))
-        intent.putExtra(Intent.EXTRA_TEXT, logText)
+        intent.putExtra(Intent.EXTRA_TEXT,
+                if (body.length > MAX_LOG_SIZE)
+                    body.substring(body.length - MAX_LOG_SIZE)
+                else
+                    body)
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
         } else {
@@ -102,5 +106,9 @@ class LogDialog(
             return true
         }
         return super.onKeyUp(keyCode, event)
+    }
+
+    companion object {
+        const val MAX_LOG_SIZE = 250000
     }
 }
