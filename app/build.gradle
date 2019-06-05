@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.vanniktech.android.junit.jacoco'
+apply plugin: 'jacoco-android'
 apply plugin: 'com.github.kt3k.coveralls'
 
 android {
@@ -35,16 +35,22 @@ android {
     }
 }
 
-junitJacoco {
-    jacocoVersion = '0.8.3' // type String
-    ignoreProjects = [] // type String array
-    excludes // type String List
-    includeNoLocationClasses = false // type boolean
-    includeInstrumentationCoverageInMergedReport = false // type boolean
+jacoco {
+    toolVersion = '0.8.3'
+}
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+}
+
+jacocoAndroidUnitTestReport {
+    csv.enabled false
+    html.enabled false
+    xml.enabled true
 }
 
 coveralls {
-    jacocoReportPath 'build/reports/jacoco/release/jacoco.xml'
+    jacocoReportPath 'build/reports/jacoco/jacocoTestReleaseUnitTestReport/jacocoTestReleaseUnitTestReport.xml'
 }
 
 def anko_version = '0.10.8'
