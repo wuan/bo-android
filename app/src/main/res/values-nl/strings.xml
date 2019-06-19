@@ -15,10 +15,10 @@
 
     <string name="info">Informatie</string>
     <string name="info_text">Project pagina:\n\thttps://github.com/wuan/bo-android\n\n
-        Gevisualiseerde informatie is afkomstig van het <b>Blitzortung.org</b> realtime lighting community project.\n
+        Visualisatie informatie afkomstig van <b>Blitzortung.org</b> realtime lighting community project.\n
         \n
-        Kijk op \n\thttp://blitzortung.org/\nvoor meer informatie over het project\nof hoe je kunt deelnemen aan het vastleggen van bliksems.\n\n
-        Vertalingen:\\
+        Kijk op \n\thttp://blitzortung.org/\nvoor meer informatie over het project\nen hoe je deel kunt nemen aan het vastleggen van onweer.\n\n
+        Vertalingen:\n\n
         Kroatisch: Igor Dobrača (idobraca@rovinj.net)\n
         Tsjechish: Jakub Mareček (jakubmarecek715@gmail.com)\n
         Nederlands: Jeroen Boersma (jeroenboersma@gmail.com)\n
@@ -32,8 +32,8 @@
     <string name="activity">activiteit</string>
     <string name="during">in het verleden</string>
     <string name="minute">minuut</string>
-    <string name="alarms">Waarschuwingen</string>
-    <string name="alarms_not_available">Waarschuwingen uitgeschakeld\nof\nLocatie informatie niet beschikbaar</string>
+    <string name="alarms">Meldingen</string>
+    <string name="alarms_not_available">Meldingen uitgeschakeld\nof\nlocatie informatie niet beschikbaar</string>
     <string name="layers">Lagen</string>
     <string name="preferences">Instellingen</string>
     <string name="user_settings">Gebruiker instellingen</string>
@@ -42,10 +42,10 @@
     <string name="password">Wachtwoord</string>
     <string name="password_summary">Wachtwoord voor blitzortung.org</string>
     <string name="map_settings">Kaart instellingen</string>
-    <string name="map_mode">Kaart modus</string>
+    <string name="map_mode">Kaart mode</string>
     <string name="map_mode_summary">Donker of lichte kaart</string>
     <string name="map_fade">Kaart vervagen</string>
-    <string name="map_fade_summary">Vervaag kaart in de achtergrond om de zichtbaarheid van informatie te vergroten</string>
+    <string name="map_fade_summary">Vervaag kaart achtergrond om de zichtbaarheid van informatie te vergroten</string>
 
     <string-array name="color_schemes">
         <item>Blitzortung.org</item>
@@ -59,7 +59,7 @@
     </string-array>
 
     <string name="color_scheme">Kleurenschema</string>
-    <string name="color_scheme_summary">Kleurenschema voor weergegeven informatie</string>
+    <string name="color_scheme_summary">Kleurenschema voor weergegave informatie</string>
 
     <string-array name="map_modes">
         <item>Donkere kaart</item>
@@ -70,12 +70,12 @@
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Deelnemer locaties tonen</string>
-    <string name="show_participants_summary">toon locaties van alle meet stationen op de kaart (enkel zichtbaar voor de Blitzortung.org informatie)
+    <string name="show_participants">Deelnemers locatie tonen</string>
+    <string name="show_participants_summary">toon locaties van alle meetstations op kaart (enkel zichtbaar voor de Blitzortung.org informatie)
     </string>
-    <string name="show_location">Toon eigen locatie</string>
-    <string name="show_location_summary">Toon symbool voor eigen locatie op de kaart</string>
-    <string name="data_settings">Informatie overdraging</string>
+    <string name="show_location">Eigen locatie tonen</string>
+    <string name="show_location_summary">Toon symbool op kaart voor eigen locatie</string>
+    <string name="data_settings">Informatie overdracht</string>
     <string name="region">Regio</string>
     <string name="region_summary">selecteer Europa, Noord Amerika of Oceanië</string>
 
@@ -99,7 +99,7 @@
     </string-array>
 
     <string name="interval_duration">Tijd interval</string>
-    <string name="interval_duration_summary">Tijd interval waarmee de onweer informatie wordt getoond</string>
+    <string name="interval_duration_summary">Interval waarmee onweer informatie wordt getoond</string>
 
     <string-array name="interval_durations">
         <item>30 min</item>
@@ -118,7 +118,7 @@
 
     <string name="historic_timestep_limit_reached">24 uurs limiet bereikt</string>
     <string name="historic_timestep">Historische tijdinterval</string>
-    <string name="historic_timestep_summary">Tijd stapgrootte wanneer je door de historische informatie bladerd</string>
+    <string name="historic_timestep_summary">Stapgrootte voor bladeren door historische informatie</string>
 
     <string-array name="historic_timesteps">
         <item>15 min</item>
@@ -152,7 +152,7 @@
     </string-array>
 
     <string name="raster_size">Raster grootte</string>
-    <string name="raster_size_summary">Grootte voor raster kwadranten</string>
+    <string name="raster_size_summary">Grootte van raster kwadranten</string>
 
     <string-array name="raster_sizes">
         <item>5 km</item>
@@ -169,8 +169,8 @@
         <item>100000</item>
     </string-array>
 
-    <string name="count_threshold">Bliksem grens</string>
-    <string name="count_threshold_summary">minimum aantal bliksems per kwadrant in het raster</string>
+    <string name="count_threshold">Drempel bliksem</string>
+    <string name="count_threshold_summary">minimum aan bliksems per rasterkwadrant</string>
 
     <string-array name="count_thresholds">
         <item>uitgeschakeld</item>
@@ -190,7 +190,7 @@
     </string-array>
 
     <string name="data_source">Informatiebron</string>
-    <string name="data_source_summary">geintegreerde informatiebron of toegang tot blitzortung.org (enkel voor stations)
+    <string name="data_source_summary">geïntegreerde informatiebron of toegang tot blitzortung.org (enkel voor stations)
     </string>
 
     <string-array name="data_sources">
@@ -202,7 +202,7 @@
         <item>HTTP</item>
     </string-array>
 
-    <string name="location_settings">Location settings</string>
+    <string name="location_settings">Locatie instellingen</string>
     <string-array name="location_modes">
         <item>Passief</item>
         <item>Netwerk gebasseerd</item>
@@ -215,20 +215,19 @@
         <item>gps</item>
         <item>manual</item>
     </string-array>
-    <string name="location_mode">locatie modus</string>
-    <string name="location_mode_summary">Selecteer welke methode gebruikt wordt om de huidige locatie te bepalen</string>
+    <string name="location_mode">locatie mode</string>
+    <string name="location_mode_summary">Selecteer methode welke gebruikt wordt om huidige locatie te bepalen</string>
     <string name="longitude">lengtegraad</string>
     <string name="location_longitude_summary">handmatige ingave van lengtegraad</string>
     <string name="latitude">breedtegraad</string>
     <string name="location_latitude_summary">handmatige ingave van de breedtegraad</string>
     <string name="alarm_settings">Meldingen instelling</string>
     <string name="alarm_enabled">Meldingen ingeschakeld</string>
-    <string name="alarm_enabled_summary">controleer onweer activiteit in de buurt van de huidige locatie</string>
+    <string name="alarm_enabled_summary">controleer onweer activiteit in de buurt van huidige locatie</string>
     <string name="background_query_period">Verversperiode in achtergrond</string>
-    <string name="background_query_period_summary">wanneer geselecteerd; verversperiode in de achtergrond waarmee de meldingen worden gecontrolleerd als de app niet actief is
-    </string>
-    <string name="background_query_toast">Schakel achtergrond batterij optimalisatie uit voor deze app om volledig gebruik te maken van Melding- en Signalering in de achtergrond.</string>
-    <string name="open_battery_optimiziation">Schakel batterij optimalisatie uit voor deze app wanneer verversen in achtergrond aan staat. Annuleer om verversen uit te zetten en OK om door te gaan om batterij optimalisatie aan te passen.</string>
+    <string name="background_query_period_summary">wanneer geselecteerd; verversperiode in achtergrond waarmee meldingen worden gecontrolleerd wanneer de app niet actief is</string>
+    <string name="background_query_toast">Schakel batterij optimalisatie uit voor deze app om volledig gebruik te kunnen maken van Melding- en Signaleringen in achtergrond.</string>
+    <string name="open_battery_optimiziation">Schakel batterij optimalisatie uit voor deze app wanneer je gebruik wilt maken van verversen in achtergrond. Annuleer om verversen uit te zetten en OK om door te gaan en batterij optimalisatie aan te passen.</string>
 
     <string-array name="background_query_periods">
         <item>uit</item>
@@ -254,9 +253,9 @@
     </string-array>
 
     <string name="notification_distance_limit">Notificatie afstandslimiet</string>
-    <string name="notification_distance_limit_summary">wanneer geselecteerd; toon notificatie wanneer activiteit gedetecteerd wordt binnen de geselecteerde afstand</string>
+    <string name="notification_distance_limit_summary">wanneer geselecteerd; toon notificatie wanneer activiteit gedetecteerd is binnen geselecteerde afstand</string>
     <string name="signaling_distance_limit">Signalering afstandslimiet</string>
-    <string name="signaling_distance_limit_summary">wanneer geselecteerd; geluidsignaal wanneer activiteit gedetecteerd wordt binnen de geselecteerde afstand</string>
+    <string name="signaling_distance_limit_summary">wanneer geselecteerd; geluidsignaal wanneer activiteit gedetecteerd wordt binnen geselecteerde afstand</string>
 
     <string-array name="direction_names">
         <item>Z</item>
@@ -292,7 +291,7 @@
     </string-array>
 
     <string name="signaling_threshold_time">Waarschuwing tijdslimiet</string>
-    <string name="signaling_threshold_time_summary">Voorkom waarschuwing binnen het geselecteerde tijdslimiet</string>
+    <string name="signaling_threshold_time_summary">Voorkom waarschuwing binnen geselecteerd tijdlimiet</string>
 
     <string-array name="signaling_threshold_times">
         <item>uit</item>
@@ -312,7 +311,7 @@
     </string-array>
     <string name="generic_settings">Generieke instellingen</string>
     <string name="measurement_unit">Meet eenheid</string>
-    <string name="measurement_unit_summary">keuze uit kilometer en mile voor afstanden</string>
+    <string name="measurement_unit_summary">keuze uit kilometer en miles voor afstanden</string>
     <string-array name="measurement_units">
         <item>metrisch</item>
         <item>imperial</item>
@@ -321,42 +320,42 @@
         <item>METRIC</item>
         <item>IMPERIAL</item>
     </string-array>
-    <string name="do_not_sleep">Geen slaapstand</string>
+    <string name="do_not_sleep">Slaapstand uitschakelen</string>
     <string name="do_not_sleep_summary">Schakel het scherm niet uit wanneer de applicatie actief is</string>
     <string name="participants_layer">Deelnemer locatie</string>
     <string name="own_location_layer">Eigen locatie</string>
     <string name="strikes_layer">Bliksems</string>
-    <string name="data_settings_summary">gedetaileerde instellingen om controle te hebben op de informatiebron en overdracht</string>
-    <string name="map_settings_summary">Kaart modus en weergave gerelateerde instellingen</string>
-    <string name="location_settings_summary">Locatie detectie modus</string>
+    <string name="data_settings_summary">gedetaileerde instellingen om controle te hebben op informatie- bronnen en overdracht</string>
+    <string name="map_settings_summary">Kaart mode en weergave gerelateerde instellingen</string>
+    <string name="location_settings_summary">Locatie detectie mode</string>
     <string name="alarm_settings_summary">Meldingen activeren, achtergrondservice en radius</string>
     <string name="alarm_signal_settings">Meldingsignaal instellingen</string>
     <string name="alarm_audio_signal">Melding geluidsignaal</string>
     <string name="alarm_vibration_signal">Melding vibratieduur</string>
-    <string name="alarm_audio_signal_summary">kies een geluid notificatie voor meldingen</string>
-    <string name="alarm_vibration_signal_summary">kies de duur van vibratie voor een melding</string>
+    <string name="alarm_audio_signal_summary">kies een geluid signaal voor meldingen</string>
+    <string name="alarm_vibration_signal_summary">kies vibratieduur voor een melding</string>
     <string name="location_provider_not_available">locatie provider \'%s\' is niet beschikbaar</string>
     <string name="location_provider_disabled">locatie provider \'%s\' is uitgeschakeld</string>
     <string name="service_url">Service URL</string>
-    <string name="service_url_summary">Overschrijft de standaard service URL wanneer ingesteld</string>
+    <string name="service_url_summary">Overschrijft de standaard service URL wanneer deze is ingesteld</string>
     <string name="set_manual_location">Manuele locatie instellen</string>
     <string name="error_indicator">Fout indicator</string>
     <string name="share_log">Stuur email …</string>
     <string name="share_unavailable">E-mail delen is niet beschikbaar.</string>
-    <string name="timeout_warning">Netwerk timeout.\nProbeer je netwerkverbinding.</string>
-    <string name="connection_warning">Kan niet verbinden.\nControleer je netwerk verbinding.</string>
-    <string name="provider_warning">Gebruik Blitzortung.org niet als informatiebron tijdens hoge onweer activiteit, de prestatie van de kaartweergave zal afnemen.</string>
+    <string name="timeout_warning">Netwerk time-out.\nControleer je netwerkverbinding.</string>
+    <string name="connection_warning">Kan niet verbinden.\nControleer je netwerkverbinding.</string>
+    <string name="provider_warning">Gebruik Blitzortung.org niet als informatiebron bij hoge activiteit, dit beinvloed prestaties van kaartweergave negatief.</string>
     <string name="own_location_summary" >Eigen locatie weergave instellingen</string>
     <string name="own_location" >Eigen locatie</string>
-    <string name="own_location_size" >Eigen locatie symbool grootte</string>
+    <string name="own_location_size" >Locatie symbool grootte</string>
     <string name="own_location_size_summary" >Stel de grootte van het locatiesymbool in</string>
-    <string name="keep_zoom_goto_own_location_summary" >Instelling om huidige zoom niveau te behouden wanneer je centreerd op je eigen locatie</string>
-    <string name="keep_zoom_goto_own_location_title" >Behoudt zoom</string>
+    <string name="keep_zoom_goto_own_location_summary" >Instelling huidige zoom niveau behouden wanneer je centreerd naar je eigen locatie</string>
+    <string name="keep_zoom_goto_own_location_title" >Zoom behouden</string>
     <string name="notification_channel_name" translatable="false">Storm Meldingen</string>
     <string name="not_available">n/b</string>
     <string name="unit_miles">mi.</string>
-    <string name="map_scale">Map schaal</string>
+    <string name="map_scale">Schaal kaart</string>
     <string name="map_scale_summary">Selecteer schaling [%] voor kaart</string>
-    <string name="storage_permission_required">Geef toegang to opslag om de kaart te kunnen tonen.</string>
-    <string name="location_permission_required">Locatie delen is nodig om je huidige locatie op te halen.</string>
+    <string name="storage_permission_required">Geef toegang tot opslag om kaart te tonen.</string>
+    <string name="location_permission_required">Locatie delen is nodig om je huidige locatie te bepalen.</string>
 </resources>
