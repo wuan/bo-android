@@ -11,11 +11,25 @@ The Android App *Blitzortung Lightning Monitor built from these sources visualiz
      alt="Get it on Google Play"
      height="80">](https://play.google.com/store/apps/details?id=org.blitzortung.android.app)
 
+## Available translations
+
+ * Czech
+ * Dutch
+ * English
+ * French
+ * German
+ * Hungarian
+ * Italian
+ * Polish
+ * Slovak
+ * Russian
+ * Spanish
+
 ## Translation offers are welcome
 
 We are still looking forward to volunteers preparing a translation for the following languages:
 
-  * Dutch
+ * yours?
 
 Translations to other languages are welcome as well. Please contact us via `blitzortung at tryb.de`
 
