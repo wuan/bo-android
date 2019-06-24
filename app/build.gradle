@@ -11,8 +11,8 @@ android {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 241
-        versionName "2.0.12"
+        versionCode 242
+        versionName "2.0.13"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -47,6 +47,8 @@ jacocoAndroidUnitTestReport {
     csv.enabled false
     html.enabled false
     xml.enabled true
+    excludes += ['**/AutoValue_*.*',
+                 '**/*JavascriptBridge.class']
 }
 
 coveralls {

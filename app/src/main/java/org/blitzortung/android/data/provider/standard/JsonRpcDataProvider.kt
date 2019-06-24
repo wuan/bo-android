@@ -54,7 +54,9 @@ class JsonRpcDataProvider @Inject constructor(
     private var nextId = 0
 
     init {
+        preferences.registerOnSharedPreferenceChangeListener(this)
         onSharedPreferenceChanged(preferences, PreferenceKey.SERVICE_URL)
+
         Log.v(Main.LOG_TAG, "JsonRpcDataProvider($serviceUrl)")
     }
 
