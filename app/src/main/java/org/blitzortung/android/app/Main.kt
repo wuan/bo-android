@@ -33,8 +33,8 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.preference.PreferenceManager
 import android.provider.Settings
-import android.support.v4.app.FragmentActivity
-import android.support.v7.app.AlertDialog
+import androidx.fragment.app.FragmentActivity
+import androidx.appcompat.app.AlertDialog
 import android.text.format.DateFormat
 import android.util.AndroidRuntimeException
 import android.util.Log
