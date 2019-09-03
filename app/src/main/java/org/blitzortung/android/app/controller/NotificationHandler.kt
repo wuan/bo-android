@@ -27,7 +27,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.support.annotation.RequiresApi
+import androidx.annotation.RequiresApi
 
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R

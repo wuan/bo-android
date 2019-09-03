@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import org.blitzortung.android.app.R
 import org.blitzortung.android.util.TabletAwareView
 
-class ScaledTextView(context: Context, attrs: AttributeSet?) : android.support.v7.widget.AppCompatTextView(context, attrs) {
+class ScaledTextView(context: Context, attrs: AttributeSet?) : androidx.appcompat.widget.AppCompatTextView(context, attrs) {
 
     init {
         val a = context.obtainStyledAttributes(attrs, R.styleable.View, 0, 0)

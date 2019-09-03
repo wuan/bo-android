@@ -55,7 +55,7 @@ class AlertView @JvmOverloads constructor(
     private val transfer = Paint()
     private val alarmNotAvailableTextLines: Array<String> = context.getString(R.string.alarms_not_available)
             .split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-    private var colorHandler: ColorHandler? = null
+    private lateinit var colorHandler: ColorHandler
     private var intervalDuration: Int = 0
     private var temporaryBitmap: Bitmap? = null
     private var temporaryCanvas: Canvas? = null
@@ -132,7 +132,8 @@ class AlertView @JvmOverloads constructor(
 
         val alertResult = alertResult
         val temporaryCanvas = temporaryCanvas
-        if (temporaryCanvas != null) {
+        val temporaryBitmap = temporaryBitmap
+        if (temporaryBitmap != null && temporaryCanvas != null) {
             if (alertResult != null && intervalDuration != 0) {
                 val alertParameters = alertResult.parameters
                 val rangeSteps = alertParameters.rangeSteps
@@ -141,13 +142,13 @@ class AlertView @JvmOverloads constructor(
                 val sectorWidth = (360 / alertParameters.sectorLabels.size).toFloat()
 
                 with(lines) {
-                    color = colorHandler!!.lineColor
+                    color = colorHandler.lineColor
                     strokeWidth = (size / 150).toFloat()
                 }
 
                 with(textStyle) {
                     textAlign = Align.CENTER
-                    color = colorHandler!!.textColor
+                    color = colorHandler.textColor
                 }
 
                 val actualTime = System.currentTimeMillis()
@@ -166,7 +167,7 @@ class AlertView @JvmOverloads constructor(
 
                         val drawColor = alertSectorRange.strikeCount > 0
                         if (drawColor) {
-                            val color = colorHandler!!.getColor(actualTime, alertSectorRange.latestStrikeTimestamp, intervalDuration)
+                            val color = colorHandler.getColor(actualTime, alertSectorRange.latestStrikeTimestamp, intervalDuration)
                             sectorPaint.color = color
                         }
                         arcArea.set(leftTop, leftTop, bottomRight, bottomRight)
@@ -210,8 +211,8 @@ class AlertView @JvmOverloads constructor(
                     }
                 }
             }
+            canvas.drawBitmap(temporaryBitmap, 0f, 0f, transfer)
         }
-        canvas.drawBitmap(temporaryBitmap, 0f, 0f, transfer)
     }
 
     private fun drawAlertOrLocationMissingMessage(center: Float, canvas: Canvas) {
@@ -236,7 +237,7 @@ class AlertView @JvmOverloads constructor(
 
     private fun drawOwnLocationSymbol(center: Float, radius: Float, size: Int, temporaryCanvas: Canvas) {
         with(lines) {
-            color = colorHandler!!.lineColor
+            color = colorHandler.lineColor
             strokeWidth = (size / 80).toFloat()
         }
 
@@ -261,10 +262,11 @@ class AlertView @JvmOverloads constructor(
 
     private fun prepareTemporaryBitmap(size: Int) {
         if (temporaryBitmap == null) {
-            temporaryBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+            val temporaryBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+            this.temporaryBitmap = temporaryBitmap
             temporaryCanvas = Canvas(temporaryBitmap)
         }
-        background.color = colorHandler!!.backgroundColor
+        background.color = colorHandler.backgroundColor
         background.xfermode = XFERMODE_CLEAR
         temporaryCanvas!!.drawPaint(background)
 

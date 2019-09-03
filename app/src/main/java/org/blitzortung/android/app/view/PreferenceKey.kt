@@ -90,11 +90,11 @@ internal inline fun <reified T> SharedPreferences.get(prefKey: PreferenceKey, de
 
     //Set<String> is not possible because of type erasure, so for Set<String> we still need to use the old way
     val value: Any = when(default) {
-        is Long -> this.getLong(key, default)
-        is Int -> this.getInt(key, default)
+        is Long -> getLong(key, default)
+        is Int -> getInt(key, default)
         is Boolean -> this.getBoolean(key, default)
-        is String -> this.getString(key, default)
-        is Float -> this.getFloat(key, default)
+        is String -> getString(key, default) ?: default
+        is Float -> getFloat(key, default)
         else -> throw IllegalArgumentException("Type ${T::class} cannot be retrieved from a SharedPreference")
     }
 
@@ -111,11 +111,11 @@ internal inline fun <reified T, V> SharedPreferences.getAndConvert(prefKey: Pref
  */
 internal inline fun <reified T> SharedPreferences.Editor.put(key: String, value: T) {
     when(value) {
-        is String -> this.putString(key, value)
-        is Int -> this.putInt(key, value)
-        is Boolean -> this.putBoolean(key, value)
-        is Float -> this.putFloat(key, value)
-        is Long -> this.putLong(key, value)
+        is String -> putString(key, value)
+        is Int -> putInt(key, value)
+        is Boolean -> putBoolean(key, value)
+        is Float -> putFloat(key, value)
+        is Long -> putLong(key, value)
         else -> throw IllegalArgumentException("Type ${T::class} cannoted be put inside a SharedPreference")
     }
 }
