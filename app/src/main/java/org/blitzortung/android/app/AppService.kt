@@ -165,10 +165,6 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         Log.v(Main.LOG_TAG, "AppService.onDestroy() ${LogUtil.timestamp}")
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString))
-    }
-
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {

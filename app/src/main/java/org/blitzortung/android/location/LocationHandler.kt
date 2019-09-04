@@ -24,6 +24,7 @@ import android.location.LocationManager
 import android.util.Log
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
+import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.location.provider.LocationProvider
@@ -37,7 +38,7 @@ import javax.inject.Singleton
 class LocationHandler @Inject constructor(
         private val context: Context,
         sharedPreferences: SharedPreferences
-) : SharedPreferences.OnSharedPreferenceChangeListener {
+) : OnSharedPreferenceChangeListener {
 
     init {
         Log.v(Main.LOG_TAG, "LocationHandler() init")
@@ -83,11 +84,7 @@ class LocationHandler @Inject constructor(
         context.registerReceiver(LocationProviderChangedReceiver(), iFilter)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString))
-    }
-
-    private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
             PreferenceKey.LOCATION_MODE -> {

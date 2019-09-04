@@ -177,7 +177,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             Toast.makeText(baseContext, "bad android version", Toast.LENGTH_LONG).show()
         }
 
-        Configuration.getInstance().userAgentValue = packageName
+        Configuration.getInstance().osmdroidTileCache?.also {
+            Log.v(LOG_TAG, "osmdroid tiles $it, size: ${it.length()}")
+        }
+        Configuration.getInstance().load(this, preferences)
 
         setContentView(R.layout.main)
 
@@ -424,6 +427,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         Log.v(LOG_TAG, "Main.onPause() ${LogUtil.timestamp}")
 
         dataHandler.stop()
+
+        Configuration.getInstance().save(this, preferences)
     }
 
     private fun disableDataUpdates() {
