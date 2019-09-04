@@ -4,18 +4,15 @@ import android.content.SharedPreferences
 import android.location.Location
 import android.util.Log
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.getAndConvert
 import org.blitzortung.android.location.LocationHandler
 
-class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sharedPreferences: SharedPreferences) : LocationProvider(locationUpdate), SharedPreferences.OnSharedPreferenceChangeListener {
+class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sharedPreferences: SharedPreferences) : LocationProvider(locationUpdate), OnSharedPreferenceChangeListener {
     override val isEnabled: Boolean = true
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(key))
-    }
-
-    private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         val doubleConverter = fun (x: String): Double? {
             try {
                 return x.toDouble()

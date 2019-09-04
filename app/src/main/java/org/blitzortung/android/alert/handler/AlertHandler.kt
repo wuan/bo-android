@@ -121,10 +121,6 @@ class AlertHandler @Inject constructor(
                 PreferenceKey.ALERT_SOUND_SIGNAL)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString))
-    }
-
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {

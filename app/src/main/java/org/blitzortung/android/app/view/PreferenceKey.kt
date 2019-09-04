@@ -74,12 +74,12 @@ enum class PreferenceKey(val key: String) {
             }
         }
 
-        fun fromString(string: String): PreferenceKey {
+        fun fromString(string: String): PreferenceKey? {
             val preferenceKey = stringToValueMap[string]
             if (preferenceKey == null) {
                 Log.e(LOG_TAG, "no preferenceKey for $string")
             }
-            return preferenceKey!!
+            return preferenceKey
         }
     }
 }
@@ -132,7 +132,8 @@ interface OnSharedPreferenceChangeListener : SharedPreferences.OnSharedPreferenc
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString))
+        val key = PreferenceKey.fromString(keyString)
+        key?.also { onSharedPreferenceChanged(sharedPreferences, it) }
     }
 
     fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey)

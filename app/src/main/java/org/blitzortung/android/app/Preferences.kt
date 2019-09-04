@@ -20,12 +20,12 @@ package org.blitzortung.android.app
 
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.preference.PreferenceActivity
 import android.provider.Settings
 import dagger.android.AndroidInjection
+import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProviderType
@@ -51,11 +51,7 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
         configureOwnLocationSizePreference(preferences)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString))
-    }
-
-    private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         when (key) {
             PreferenceKey.DATA_SOURCE -> {
                 configureDataSourcePreferences(sharedPreferences)

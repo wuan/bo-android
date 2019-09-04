@@ -26,6 +26,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
+import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.app.view.getAndConvert
@@ -44,7 +45,7 @@ class OwnLocationOverlay(
         context: Context,
         private val mapView: MapView
 ) : ItemizedOverlay<OwnLocationOverlayItem>(OwnLocationOverlay.DEFAULT_DRAWABLE),
-        SharedPreferences.OnSharedPreferenceChangeListener,
+        OnSharedPreferenceChangeListener,
         LayerOverlay, MapListener {
     private val layerOverlayComponent: LayerOverlayComponent
 
@@ -120,11 +121,7 @@ class OwnLocationOverlay(
         return false
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.fromString(keyString))
-    }
-
-    private fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         if (key == PreferenceKey.SHOW_LOCATION) {
             val showLocation = sharedPreferences.get(key, false)
 
