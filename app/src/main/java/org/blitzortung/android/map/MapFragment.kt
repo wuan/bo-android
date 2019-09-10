@@ -111,44 +111,6 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         mapView.onResume()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        // Put overlay items first
-        mapView.overlayManager.onCreateOptionsMenu(menu, MENU_LAST_ID, mapView)
-
-        // Put "About" menu item last
-        menu!!.add(0, MENU_ABOUT, Menu.CATEGORY_SECONDARY,
-                R.string.copyright).setIcon(
-                R.drawable.ic_menu_compass)
-
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onPrepareOptionsMenu(pMenu: Menu?) {
-        mapView.overlayManager.onPrepareOptionsMenu(pMenu, MENU_LAST_ID, mapView)
-        super.onPrepareOptionsMenu(pMenu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (mapView.overlayManager.onOptionsItemSelected(item, MENU_LAST_ID, mapView)) {
-            return true
-        }
-
-        when (item?.itemId) {
-            MENU_ABOUT -> {
-                val builder = AlertDialog.Builder(activity)
-                        .setTitle(R.string.app_name).setMessage(R.string.about_message)
-                        .setIcon(R.drawable.icon)
-                        .setPositiveButton(android.R.string.ok
-                        ) { dialog, whichButton ->
-                        }
-                builder.create().show()
-                return true
-            }
-        }
-
-        return super.onOptionsItemSelected(item)
-    }
-
     fun calculateTargetZoomLevel(widthInMeters: Float): Double {
         val equatorLength = 40075004.0 // in meters
         val widthInPixels = Math.min(mapView.height, mapView.width).toDouble()
@@ -180,11 +142,6 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         // ===========================================================
         // Constants
         // ===========================================================
-
-        private val MENU_SAMPLES = Menu.FIRST + 1
-        private val MENU_ABOUT = MENU_SAMPLES + 1
-
-        private val MENU_LAST_ID = MENU_ABOUT + 1 // Always set to last unused id
 
         const val PREFS_NAME = "org.andnav.osm.prefs"
         const val PREFS_TILE_SOURCE = "tilesource"

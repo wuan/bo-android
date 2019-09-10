@@ -4,7 +4,7 @@
 
 ### Version 2.0
 
-  - new OSM based map scheme (requires external storage permission)
+  - new OSM based map scheme
   - improved handling of missing permissions
   - ability to scale map tiles
   - fix Blitzortung.org data access

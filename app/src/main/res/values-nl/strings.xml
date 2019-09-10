@@ -356,6 +356,5 @@
     <string name="unit_miles">mi.</string>
     <string name="map_scale">Schaal kaart</string>
     <string name="map_scale_summary">Selecteer schaling [%] voor kaart</string>
-    <string name="storage_permission_required">Geef toegang tot opslag om kaart te tonen.</string>
     <string name="location_permission_required">Locatie delen is nodig om je huidige locatie te bepalen.</string>
 </resources>

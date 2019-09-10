@@ -371,7 +371,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestLocationPermissions(preferences)
-            requestStoragePermissions()
             requestWakeupPermissions(preferences, baseContext)
         }
 
@@ -511,13 +510,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     ?: Int.MIN_VALUE)
             requestPermission(permission, requestCode, R.string.location_permission_required)
         }
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    private fun requestStoragePermissions() {
-        val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
-        val permissionRequiredStringId = R.string.storage_permission_required
-        requestPermission(permission, 50, permissionRequiredStringId)
     }
 
     @TargetApi(Build.VERSION_CODES.M)

@@ -365,6 +365,5 @@
     <string name="unit_miles">миль</string>
     <string name="map_scale">Масштаб карты</string>
     <string name="map_scale_summary">Выберите процент масштабирования тайлов карты</string>
-    <string name="storage_permission_required">Пожалуйста, предоставьте разрешение на доступ к памяти, чтобы разрешить хранение изображений карты.</string>
     <string name="location_permission_required">Требуется разрешение определения Вашего месторасположения.</string>
 </resources>

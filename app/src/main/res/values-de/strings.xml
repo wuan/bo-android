@@ -363,6 +363,5 @@
     <string name="legend_grid">Raster</string>
     <string name="map_scale">Kartenskalierung</string>
     <string name="map_scale_summary">Skalierung der Kartenkacheln [%]</string>
-    <string name="storage_permission_required">Bitte erteilen sie die Berechtigung auf Dateien zuzugreifen um die Kartendaten speichern zu können.</string>
     <string name="location_permission_required">Die Berechtigung ist für die Ortsbestimmung erforderlich.</string>
 </resources>

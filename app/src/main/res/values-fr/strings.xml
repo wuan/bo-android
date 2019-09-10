@@ -353,6 +353,5 @@
     <string name="timeout_warning">Délai d\'attente réseau.[…]</string>
     <string name="legend_grid">Grille</string>
     <string name="map_scale">Échelle de la carte</string>
-    <string name="storage_permission_required">Veuillez accorder une autorisation de stockage pour permettre le stockage des images de la carte.</string>
     <string name="own_location">Votre emplacement</string>
 </resources>

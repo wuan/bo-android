@@ -11,8 +11,8 @@ android {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 15
         targetSdkVersion 29
-        versionCode 244
-        versionName "2.0.14"
+        versionCode 245
+        versionName "2.0.15"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -61,11 +61,12 @@ def dagger_version = '2.24'
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.media:media:1.0.1'
+    implementation 'androidx.media:media:1.1.0'
     implementation "org.jetbrains.anko:anko:$anko_version"
     implementation 'org.osmdroid:osmdroid-android:6.1.0'
+    implementation 'com.android.support:multidex:1.0.3'
 
     // Dagger2
     implementation "com.google.dagger:dagger:$dagger_version"
