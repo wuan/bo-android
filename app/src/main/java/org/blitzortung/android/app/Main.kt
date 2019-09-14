@@ -74,6 +74,7 @@ import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
 import org.jetbrains.anko.intentFor
 import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
 import javax.inject.Inject
 
@@ -170,6 +171,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
 
+        Log.v(LOG_TAG, "Main.onCreate()")
+
         try {
             super.onCreate(savedInstanceState)
         } catch (e: NoClassDefFoundError) {
@@ -177,10 +180,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             Toast.makeText(baseContext, "bad android version", Toast.LENGTH_LONG).show()
         }
 
-        Configuration.getInstance().osmdroidTileCache?.also {
-            Log.v(LOG_TAG, "osmdroid tiles $it, size: ${it.length()}")
-        }
-        Configuration.getInstance().load(this, preferences)
+        versionComponent = VersionComponent(this.applicationContext)
+
+        initializeOsmDroid()
 
         setContentView(R.layout.main)
 
@@ -189,13 +191,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             supportFragmentManager.beginTransaction().add(R.id.map_view, mapFragment, MAP_FRAGMENT_TAG).commit()
         }
 
-        Log.v(LOG_TAG, "Main.onCreate()")
-
-        versionComponent = VersionComponent(this.applicationContext)
-
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
         preferences.registerOnSharedPreferenceChangeListener(this)
-
 
         strikeColorHandler = StrikeColorHandler(preferences)
 
@@ -220,6 +217,20 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         if (versionComponent.state == VersionComponent.State.FIRST_RUN) {
             openQuickSettingsDialog()
+        }
+    }
+
+    private fun initializeOsmDroid() {
+        val osmDroidConfig = Configuration.getInstance()
+        osmDroidConfig.load(this, preferences)
+        Log.v(LOG_TAG, "Main.onCreate() osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}")
+        if (versionComponent.state == VersionComponent.State.FIRST_RUN_AFTER_UPDATE && !StorageUtils.isWritable(osmDroidConfig.osmdroidBasePath)) {
+            preferences.edit().remove("osmdroid.basePath").apply()
+            osmDroidConfig.load(this, preferences)
+            Log.v(LOG_TAG, "Main.onCreate() updated osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}")
+            if (!StorageUtils.isWritable(osmDroidConfig.osmdroidTileCache)) {
+                Toast.makeText(baseContext, R.string.osmdroid_storage_warning, Toast.LENGTH_LONG).show()
+            }
         }
     }
 
