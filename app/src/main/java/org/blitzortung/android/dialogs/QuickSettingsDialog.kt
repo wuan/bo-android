@@ -21,11 +21,10 @@ package org.blitzortung.android.dialogs
 import android.annotation.SuppressLint
 import android.app.AlertDialog.Builder
 import android.app.Dialog
-import android.app.DialogFragment
 import android.content.DialogInterface
 import android.os.Bundle
 import android.widget.Spinner
-import org.blitzortung.android.app.BOApplication
+import androidx.fragment.app.DialogFragment
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
@@ -35,9 +34,9 @@ class QuickSettingsDialog : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = Builder(activity)
-        val layoutInflater = activity.layoutInflater
+        val layoutInflater = activity!!.layoutInflater
 
-        val preferences = activity.defaultSharedPreferences
+        val preferences = activity!!.defaultSharedPreferences
 
         val regionValues = resources.getStringArray(R.array.regions_values)
         val currentRegionValue = preferences.get(PreferenceKey.REGION, regionValues[0])
@@ -76,7 +75,7 @@ class QuickSettingsDialog : DialogFragment() {
         val queryPeriodSpinner = view.findViewById(R.id.selected_query_period) as Spinner
         queryPeriodSpinner.setSelection(selectedQueryPeriod)
 
-        builder.setView(view).setPositiveButton(R.string.ok, { dialog: DialogInterface, i: Int ->
+        builder.setView(view).setPositiveButton(R.string.ok) { dialog: DialogInterface, i: Int ->
             val regionValue = regionValues[selectedRegionList.selectedItemPosition]
             val rasterSizeValue = rasterSizeValues[rasterSizeSpinner.selectedItemPosition]
             val countThresholdValue = countThresholdValues[countThresholdSpinner.selectedItemPosition]
@@ -89,7 +88,7 @@ class QuickSettingsDialog : DialogFragment() {
                     .putString(PreferenceKey.COUNT_THRESHOLD.toString(), countThresholdValue)
                     .putString(PreferenceKey.INTERVAL_DURATION.toString(), intervalDurationValue)
                     .putString(PreferenceKey.QUERY_PERIOD.toString(), queryPeriodValue).apply()
-        }).setNegativeButton(R.string.cancel, { dialog: DialogInterface, i: Int -> })
+        }.setNegativeButton(R.string.cancel, { dialog: DialogInterface, i: Int -> })
 
         return builder.create()
     }

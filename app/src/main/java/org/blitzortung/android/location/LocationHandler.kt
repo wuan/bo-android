@@ -45,9 +45,7 @@ class LocationHandler @Inject constructor(
     }
 
     var location: Location? = null
-        private set(value) {
-            field = value
-        }
+        private set
 
     var backgroundMode = true
         private set(value) {
@@ -80,7 +78,7 @@ class LocationHandler @Inject constructor(
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.LOCATION_MODE)
 
         //We need to know when a LocationProvider is enabled/disabled
-        val iFilter = IntentFilter(android.location.LocationManager.PROVIDERS_CHANGED_ACTION)
+        val iFilter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
         context.registerReceiver(LocationProviderChangedReceiver(), iFilter)
     }
 

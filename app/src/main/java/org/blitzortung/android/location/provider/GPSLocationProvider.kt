@@ -18,5 +18,5 @@ class GPSLocationProvider(context: Context,
         get() = if(isInBackground) 60000 else 1000
 
     override val isPermissionGranted: Boolean
-        get() = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        get() = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED
 }

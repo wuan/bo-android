@@ -32,9 +32,9 @@ class AlertSignal @Inject constructor(
         onSharedPreferenceChanged(preferences, ALERT_VIBRATION_SIGNAL, ALERT_SOUND_SIGNAL)
     }
 
-    private var soundSignal: Uri? = null;
+    private var soundSignal: Uri? = null
 
-    private var vibrationDuration = 0L;
+    private var vibrationDuration = 0L
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
 

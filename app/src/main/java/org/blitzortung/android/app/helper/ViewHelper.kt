@@ -19,7 +19,6 @@
 package org.blitzortung.android.app.helper
 
 import android.content.Context
-import android.view.View
 
 object ViewHelper {
 

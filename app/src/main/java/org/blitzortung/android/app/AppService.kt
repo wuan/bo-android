@@ -36,9 +36,7 @@ import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.ServiceDataHandler
-import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.provider.result.DataEvent
-import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.util.LogUtil
 import org.blitzortung.android.util.isAtLeast
@@ -77,7 +75,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     @set:Inject
     internal lateinit var wakeLock: PowerManager.WakeLock
 
-    private val dataEventConsumer = { event: DataEvent ->
+    private val dataEventConsumer = { _: DataEvent ->
         releaseWakeLock()
     }
 
@@ -225,7 +223,8 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
 
             val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager?
             if (alarmManager != null) {
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 0, (backgroundPeriod * 1000).toLong(), pendingIntent)
+                val period = (backgroundPeriod * 1000).toLong()
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, period, period, pendingIntent)
             } else {
                 Log.e(Main.LOG_TAG, "AppService.createAlarm() failed")
             }

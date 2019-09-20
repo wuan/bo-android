@@ -96,7 +96,9 @@ class OwnMapView(context: Context) : MapView(context) {
         return gestureDetector.onTouchEvent(event)
     }
 
-
+    override fun performClick(): Boolean {
+        return super.performClick()
+    }
 
     val popup: View by lazy { LayoutInflater.from(context).inflate(R.layout.popup, this, false) }
 

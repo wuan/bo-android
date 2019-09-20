@@ -27,7 +27,7 @@ import javax.inject.Singleton
 @Singleton
 class DataProviderFactory @Inject constructor(defaultProvider: JsonRpcDataProvider, blitzortungProvider: BlitzortungHttpDataProvider) {
 
-    val dataProvidersByType: Map<DataProviderType, DataProvider> = listOf<DataProvider>(defaultProvider, blitzortungProvider).groupBy { it.type }.mapValues { it.value.first() };
+    val dataProvidersByType: Map<DataProviderType, DataProvider> = listOf<DataProvider>(defaultProvider, blitzortungProvider).groupBy { it.type }.mapValues { it.value.first() }
 
     fun getDataProviderForType(providerType: DataProviderType): DataProvider {
         return dataProvidersByType[providerType]

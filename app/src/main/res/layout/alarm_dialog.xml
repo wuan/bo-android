@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:padding="10dp">
 
-    <org.blitzortung.android.app.view.AlertView xmlns:android="http://schemas.android.com/apk/res/android"
+    <org.blitzortung.android.app.view.AlertView
         android:id="@+id/alarm_diagram"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />

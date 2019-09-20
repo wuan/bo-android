@@ -15,5 +15,5 @@ class PassiveLocationProvider(context: Context,
 : ManagerLocationProvider(context, backgroundMode, locationUpdate, LocationManager.PASSIVE_PROVIDER) {
 
     override val isPermissionGranted: Boolean
-        get() = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        get() = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED
 }

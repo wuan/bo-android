@@ -15,5 +15,5 @@ class NetworkLocationProvider(context: Context,
 : ManagerLocationProvider(context, backgroundMode, locationUpdate, LocationManager.NETWORK_PROVIDER) {
 
     override val isPermissionGranted: Boolean
-        get() = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        get() = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PermissionChecker.PERMISSION_GRANTED
 }

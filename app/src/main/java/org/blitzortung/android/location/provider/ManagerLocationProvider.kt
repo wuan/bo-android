@@ -27,16 +27,16 @@ abstract class ManagerLocationProvider(
         get() = if (isInBackground) 200f else 50f
 
     override fun start() {
-        Log.v(Main.LOG_TAG, "ManagerLocationProvider.start()")
+        Log.v(LOG_TAG, "ManagerLocationProvider.start()")
         //Don't start the LocationProvider if we dont have any permissions
         if (!this.isPermissionGranted) {
-            Log.d(Main.LOG_TAG, "Tried to start provider '$type' without permission granted")
+            Log.d(LOG_TAG, "Tried to start provider '$type' without permission granted")
             return
         }
 
         super.start()
 
-        Log.v(Main.LOG_TAG, "ManagerLocationProvider.start() background: $isInBackground, type: $type, minTime: $minTime, minDistance: $minDistance")
+        Log.v(LOG_TAG, "ManagerLocationProvider.start() background: $isInBackground, type: $type, minTime: $minTime, minDistance: $minDistance")
         if (locationManager.allProviders.contains(type)) {
             try {
                 enableLocationManager()
@@ -47,13 +47,13 @@ abstract class ManagerLocationProvider(
         } else {
             val message = "location provider $type is not available"
             Toast.makeText(context, "Warning:\n$message", Toast.LENGTH_LONG).show()
-            Log.w(Main.LOG_TAG, message)
+            Log.w(LOG_TAG, message)
         }
     }
 
     @Throws(SecurityException::class)
     private fun enableLocationManager() {
-        Log.v(Main.LOG_TAG, "enableLocationmanager() $type")
+        Log.v(LOG_TAG, "enableLocationmanager() $type")
         updateToLastKnown()
         locationManager.requestLocationUpdates(type, minTime, minDistance, this)
 
@@ -98,12 +98,12 @@ abstract class ManagerLocationProvider(
         this.isInBackground = isInBackground
 
         if (!isRunning) {
-            Log.w(Main.LOG_TAG, "Provider MUST NOT be reconfigured when its not running")
+            Log.w(LOG_TAG, "Provider MUST NOT be reconfigured when its not running")
 
             return
         }
 
-        Log.d(Main.LOG_TAG, "ManagerLocationProvider: Reconfigure provider, background: ${this.isInBackground}")
+        Log.d(LOG_TAG, "ManagerLocationProvider: Reconfigure provider, background: ${this.isInBackground}")
 
         locationManager.removeUpdates(this)
         try {

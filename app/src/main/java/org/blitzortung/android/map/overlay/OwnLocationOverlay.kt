@@ -44,7 +44,7 @@ import org.osmdroid.views.overlay.ItemizedOverlay
 class OwnLocationOverlay(
         context: Context,
         private val mapView: MapView
-) : ItemizedOverlay<OwnLocationOverlayItem>(OwnLocationOverlay.DEFAULT_DRAWABLE),
+) : ItemizedOverlay<OwnLocationOverlayItem>(DEFAULT_DRAWABLE),
         OnSharedPreferenceChangeListener,
         LayerOverlay, MapListener {
     private val layerOverlayComponent: LayerOverlayComponent

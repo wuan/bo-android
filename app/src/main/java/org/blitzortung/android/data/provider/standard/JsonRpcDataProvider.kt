@@ -116,11 +116,7 @@ class JsonRpcDataProvider @Inject constructor(
         return resultVar
     }
 
-    override fun <T> retrieveData(retrieve: DataRetriever.() -> T): T {
-        val t = Retriever(client).retrieve()
-
-        return t
-    }
+    override fun <T> retrieveData(retrieve: DataRetriever.() -> T): T = Retriever(client).retrieve()
 
 
     private inner class Retriever(val client: JsonRpcClient) : DataRetriever {

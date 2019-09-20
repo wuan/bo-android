@@ -33,8 +33,6 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.preference.PreferenceManager
 import android.provider.Settings
-import androidx.fragment.app.FragmentActivity
-import androidx.appcompat.app.AlertDialog
 import android.text.format.DateFormat
 import android.util.AndroidRuntimeException
 import android.util.Log
@@ -44,6 +42,8 @@ import android.view.ViewConfiguration
 import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.FragmentActivity
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.main.*
 import org.blitzortung.android.alert.event.AlertResultEvent
@@ -277,7 +277,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         with(histogram_view) {
             setStrikesOverlay(strikeListOverlay)
-            setOnClickListener { _ ->
+            setOnClickListener {
                 val currentResult = currentResult
                 if (currentResult != null) {
                     val rasterParameters = currentResult.rasterParameters
@@ -305,10 +305,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun openQuickSettingsDialog() {
-        if (isAtLeast(Build.VERSION_CODES.HONEYCOMB)) {
-            val dialog = QuickSettingsDialog()
-            dialog.show(fragmentManager, "QuickSettingsDialog")
-        }
+        val dialog = QuickSettingsDialog()
+        dialog.show(supportFragmentManager, "QuickSettingsDialog")
     }
 
     private fun animateToLocationAndVisibleSize(longitude: Double, latitude: Double, diameter: Float?) {
@@ -588,8 +586,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         GPS(LocationManager.GPS_PROVIDER), PASSIVE(LocationManager.PASSIVE_PROVIDER), NETWORK(LocationManager.NETWORK_PROVIDER);
 
         companion object {
-            val byProviderName: Map<String, LocationProviderRelation> = LocationProviderRelation.values().groupBy { it.providerName }.mapValues { it.value.first() }
-            val byOrdinal: Map<Int, LocationProviderRelation> = LocationProviderRelation.values().groupBy { it.ordinal }.mapValues { it.value.first() }
+            val byProviderName: Map<String, LocationProviderRelation> = values().groupBy { it.providerName }.mapValues { it.value.first() }
+            val byOrdinal: Map<Int, LocationProviderRelation> = values().groupBy { it.ordinal }.mapValues { it.value.first() }
         }
     }
 

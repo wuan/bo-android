@@ -76,7 +76,7 @@ class AlertView @JvmOverloads constructor(
     val locationEventConsumer: (LocationEvent) -> Unit = { locationEvent ->
         Log.v(Main.LOG_TAG, "AlertView received location ${locationEvent.location}")
         location = locationEvent.location
-        val visibility = if (location != null) View.VISIBLE else View.INVISIBLE
+        val visibility = if (location != null) VISIBLE else INVISIBLE
         setVisibility(visibility)
         invalidate()
     }
@@ -89,7 +89,7 @@ class AlertView @JvmOverloads constructor(
 
         with(textStyle) {
             color = 0xff404040.toInt()
-            textSize = 0.8f * this@AlertView.textSize * TabletAwareView.textSizeFactor(context)
+            textSize = 0.8f * this@AlertView.textSize * textSizeFactor(context)
         }
 
         background.color = 0xffb0b0b0.toInt()
@@ -111,14 +111,14 @@ class AlertView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val getSize = fun(spec: Int) = View.MeasureSpec.getSize(spec)
+        val getSize = fun(spec: Int) = MeasureSpec.getSize(spec)
 
         val parentWidth = getSize(widthMeasureSpec) * sizeFactor
         val parentHeight = getSize(heightMeasureSpec) * sizeFactor
 
         val size = Math.min(parentWidth.toInt(), parentHeight.toInt())
 
-        super.onMeasure(View.MeasureSpec.makeMeasureSpec(size, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(size, View.MeasureSpec.EXACTLY))
+        super.onMeasure(MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY))
     }
 
     override fun onDraw(canvas: Canvas) {

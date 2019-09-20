@@ -69,13 +69,13 @@ class HistogramView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val getSize = fun(spec: Int) = View.MeasureSpec.getSize(spec)
+        val getSize = fun(spec: Int) = MeasureSpec.getSize(spec)
 
         val parentWidth = getSize(widthMeasureSpec) * sizeFactor
         val parentHeight = getSize(heightMeasureSpec) * sizeFactor
 
-        super.onMeasure(View.MeasureSpec.makeMeasureSpec(parentWidth.toInt(), View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(parentHeight.toInt(), View.MeasureSpec.EXACTLY))
+        super.onMeasure(MeasureSpec.makeMeasureSpec(parentWidth.toInt(), MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(parentHeight.toInt(), MeasureSpec.EXACTLY))
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -126,7 +126,7 @@ class HistogramView @JvmOverloads constructor(
 
     private fun updateHistogram(dataEvent: ResultEvent) {
         if (dataEvent.failed) {
-            visibility = View.INVISIBLE
+            visibility = INVISIBLE
             histogram = null
         } else {
             val histogram = dataEvent.histogram
@@ -139,7 +139,7 @@ class HistogramView @JvmOverloads constructor(
                 viewShouldBeVisible = createHistogram(dataEvent)
             }
 
-            visibility = if (viewShouldBeVisible) View.VISIBLE else View.INVISIBLE
+            visibility = if (viewShouldBeVisible) VISIBLE else INVISIBLE
 
             if (viewShouldBeVisible) {
                 invalidate()

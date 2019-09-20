@@ -89,7 +89,7 @@ class LegendView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val getSize = fun(spec: Int) = View.MeasureSpec.getSize(spec)
+        val getSize = fun(spec: Int) = MeasureSpec.getSize(spec)
 
         val parentWidth = getSize(widthMeasureSpec)
         val parentHeight = getSize(heightMeasureSpec)
@@ -116,7 +116,7 @@ class LegendView @JvmOverloads constructor(
             }
         }
 
-        super.onMeasure(View.MeasureSpec.makeMeasureSpec(width.toInt(), View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(height.toInt(), View.MeasureSpec.EXACTLY))
+        super.onMeasure(MeasureSpec.makeMeasureSpec(width.toInt(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height.toInt(), MeasureSpec.EXACTLY))
     }
 
     override fun onDraw(canvas: Canvas) {

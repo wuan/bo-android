@@ -5,11 +5,11 @@
 
     <plurals name="strike">
         <item quantity="zero">Нет молний</item>
-        <item quantity="one">1 молния</item>
+        <item quantity="one">%d молния</item>
         <item quantity="other">%d молний</item>
     </plurals>
     <plurals name="minute">
-        <item quantity="one">1 минута</item>
+        <item quantity="one">%d минута</item>
         <item quantity="other">%d минут</item>
     </plurals>
 

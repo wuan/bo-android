@@ -66,8 +66,8 @@ open class AlertDataHandler @Inject internal constructor(
     }
 
     private fun calculateDistanceTo(location: Location, strike: Strike, measurementSystem: MeasurementSystem): Float {
-        strikeLocation.longitude = strike.longitude.toDouble()
-        strikeLocation.latitude = strike.latitude.toDouble()
+        strikeLocation.longitude = strike.longitude
+        strikeLocation.latitude = strike.latitude
         val distanceInMeters = location.distanceTo(strikeLocation)
         return measurementSystem.calculateDistance(distanceInMeters)
     }
@@ -121,8 +121,8 @@ open class AlertDataHandler @Inject internal constructor(
     }
 
     private fun calculateBearingToStrike(location: Location, strikeLocation: Location, strike: Strike): Float {
-        strikeLocation.longitude = strike.longitude.toDouble()
-        strikeLocation.latitude = strike.latitude.toDouble()
+        strikeLocation.longitude = strike.longitude
+        strikeLocation.latitude = strike.latitude
         return location.bearingTo(strikeLocation)
     }
 
