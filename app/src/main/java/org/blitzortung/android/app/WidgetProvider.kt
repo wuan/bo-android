@@ -21,29 +21,50 @@ package org.blitzortung.android.app
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.util.Log
 import android.widget.RemoteViews
 import org.blitzortung.android.app.view.AlertView
+import org.blitzortung.android.map.overlay.color.StrikeColorHandler
+import org.jetbrains.anko.defaultSharedPreferences
 
 class WidgetProvider : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        for (i in 0..appWidgetIds.size - 1) {
+        for (i in 0 until appWidgetIds.size) {
             val appWidgetId = appWidgetIds[i]
-            updateAppWidget(context)
+            updateAppWidget(context, appWidgetManager, appWidgetId)
         }
     }
 
-    private fun updateAppWidget(context: Context) {
-
+    private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
+        Log.v(Main.LOG_TAG, "updateAppWidget $appWidgetId")
         val alertView = AlertView(context)
-        alertView.measure(150, 150)
-        alertView.layout(0, 0, 150, 150)
-        alertView.isDrawingCacheEnabled = true
-        val bitmap = alertView.drawingCache
+        val size = 150
+        alertView.measure(size, size)
+        alertView.layout(0, 0, size, size)
+        val preferences = context.defaultSharedPreferences
+        val colorHandler = StrikeColorHandler(preferences)
+        alertView.setColorHandler(colorHandler, 10)
 
-        val remoteViews = RemoteViews(context.packageName,
-                R.layout.widget)
-        remoteViews.setImageViewBitmap(R.layout.widget, bitmap)
+        val temporaryBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val temporaryCanvas = Canvas(temporaryBitmap)
+        val background = Paint()
+        background.color = colorHandler.backgroundColor
+        background.xfermode = AlertView.XFERMODE_CLEAR
+        temporaryCanvas.drawPaint(background)
+        val foreground = Paint()
+        foreground.color = colorHandler.lineColor
+        temporaryCanvas.drawLine(0f, 0f, size.toFloat(), size.toFloat(), foreground);
+
+        background.xfermode = AlertView.XFERMODE_SRC
+        alertView.draw(temporaryCanvas)
+        val remoteViews = RemoteViews(context.packageName, R.layout.widget)
+        remoteViews.setImageViewBitmap(R.layout.widget, temporaryBitmap)
+
+        appWidgetManager.updateAppWidget(appWidgetId, remoteViews)
 
     }
 }

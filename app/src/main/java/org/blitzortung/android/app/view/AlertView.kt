@@ -289,8 +289,8 @@ class AlertView @JvmOverloads constructor(
     companion object {
         private val TEXT_MINIMUM_SIZE = 300
         private val DEFAULT_FONT_SIZE = 20
-        private val XFERMODE_CLEAR = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
-        private val XFERMODE_SRC = PorterDuffXfermode(PorterDuff.Mode.SRC)
+        public val XFERMODE_CLEAR = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+        public val XFERMODE_SRC = PorterDuffXfermode(PorterDuff.Mode.SRC)
     }
 
 }

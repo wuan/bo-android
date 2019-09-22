@@ -40,13 +40,13 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <!--<receiver android:name=".WidgetProvider">
+        <receiver android:name=".WidgetProvider">
             <meta-data android:name="android.appwidget.provider"
                        android:resource="@xml/widget_provider" />
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-        </receiver>-->
+        </receiver>
     </application>
 
 </manifest>

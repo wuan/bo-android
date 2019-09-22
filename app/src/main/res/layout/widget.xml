@@ -6,6 +6,10 @@
     android:orientation="vertical"
     android:padding="10dp">
 
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="foobar"/>
     <ImageView
         android:id="@+id/alarm_diagram"
         android:layout_width="fill_parent"
