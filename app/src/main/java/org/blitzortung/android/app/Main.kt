@@ -19,6 +19,7 @@
 package org.blitzortung.android.app
 
 import android.Manifest
+import android.Manifest.permission.*
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.DialogInterface
@@ -28,6 +29,7 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.LocationManager
+import android.location.LocationManager.*
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
@@ -507,11 +509,15 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     @TargetApi(Build.VERSION_CODES.M)
     private fun requestLocationPermissions(sharedPreferences: SharedPreferences) {
-        val locationProviderName = sharedPreferences.get(PreferenceKey.LOCATION_MODE, LocationManager.PASSIVE_PROVIDER)
-        val permission = when (locationProviderName) {
-            LocationManager.PASSIVE_PROVIDER, LocationManager.GPS_PROVIDER -> Manifest.permission.ACCESS_FINE_LOCATION
-            LocationManager.NETWORK_PROVIDER -> Manifest.permission.ACCESS_COARSE_LOCATION
-            else -> null
+        val locationProviderName = sharedPreferences.get(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER)
+        val permission = if (isAtLeast(Build.VERSION_CODES.Q)) {
+            ACCESS_BACKGROUND_LOCATION
+        } else {
+            when (locationProviderName) {
+                PASSIVE_PROVIDER, GPS_PROVIDER -> ACCESS_FINE_LOCATION
+                NETWORK_PROVIDER -> ACCESS_COARSE_LOCATION
+                else -> null
+            }
         }
 
         if (permission is String && checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
@@ -583,7 +589,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private enum class LocationProviderRelation(val providerName: String) {
-        GPS(LocationManager.GPS_PROVIDER), PASSIVE(LocationManager.PASSIVE_PROVIDER), NETWORK(LocationManager.NETWORK_PROVIDER);
+        GPS(GPS_PROVIDER), PASSIVE(PASSIVE_PROVIDER), NETWORK(NETWORK_PROVIDER);
 
         companion object {
             val byProviderName: Map<String, LocationProviderRelation> = values().groupBy { it.providerName }.mapValues { it.value.first() }
