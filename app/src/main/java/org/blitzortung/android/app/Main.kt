@@ -18,7 +18,6 @@
 
 package org.blitzortung.android.app
 
-import android.Manifest
 import android.Manifest.permission.*
 import android.annotation.TargetApi
 import android.content.Context
@@ -28,7 +27,6 @@ import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.location.LocationManager
 import android.location.LocationManager.*
 import android.os.Build
 import android.os.Bundle
@@ -237,7 +235,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private val serviceIntent: Intent
-            get() = intentFor<AppService>()
+        get() = intentFor<AppService>()
 
     private fun startService() {
         startService(serviceIntent)
@@ -488,7 +486,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        Log.v(LOG_TAG, "Main.onRequestPermissionsResult() $requestCode - $permissions - $grantResults")
+        Log.v(LOG_TAG, "Main.onRequestPermissionsResult() $requestCode - ${permissions.joinToString(",", "[", "]")} - ${grantResults.map { it.toString() }.joinToString(",", "[", "]")}")
         val providerRelation = LocationProviderRelation.byOrdinal[requestCode]
         if (providerRelation != null) {
             val providerName = providerRelation.providerName
@@ -497,43 +495,58 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 val editor = preferences.edit()
                 editor.put(PreferenceKey.LOCATION_MODE, providerName)
                 editor.apply()
+                locationHandler.update(preferences)
             } else {
                 Log.i(LOG_TAG, "$providerName permission was NOT granted.")
+                locationHandler.shutdown()
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
-
-        locationHandler.update(preferences)
     }
 
     @TargetApi(Build.VERSION_CODES.M)
     private fun requestLocationPermissions(sharedPreferences: SharedPreferences) {
         val locationProviderName = sharedPreferences.get(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER)
-        val permission = if (isAtLeast(Build.VERSION_CODES.Q)) {
-            ACCESS_BACKGROUND_LOCATION
-        } else {
-            when (locationProviderName) {
-                PASSIVE_PROVIDER, GPS_PROVIDER -> ACCESS_FINE_LOCATION
-                NETWORK_PROVIDER -> ACCESS_COARSE_LOCATION
-                else -> null
-            }
-        }
+        val permission =
+                when (locationProviderName) {
+                    PASSIVE_PROVIDER, GPS_PROVIDER -> ACCESS_FINE_LOCATION
+                    NETWORK_PROVIDER -> ACCESS_COARSE_LOCATION
+                    else -> null
+                }
 
-        if (permission is String && checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+        if (permission != null) {
+            val requiresBackgroundPermission = if (isAtLeast(Build.VERSION_CODES.Q)) {
+                checkSelfPermission(ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED
+            } else {
+                false
+            }
+
+            val requiresPermission = checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED
+
             val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal
-                    ?: Int.MIN_VALUE)
-            requestPermission(permission, requestCode, R.string.location_permission_required)
+                    ?: Int.MAX_VALUE)
+            if (requiresPermission) {
+                requestPermission(if (requiresBackgroundPermission) {
+                    arrayOf(permission, ACCESS_BACKGROUND_LOCATION)
+                } else {
+                    arrayOf(permission)
+                }, requestCode, R.string.location_permission_required)
+            } else {
+                if (requiresBackgroundPermission) {
+                    requestPermission(arrayOf(ACCESS_BACKGROUND_LOCATION), requestCode, R.string.location_permission_required)
+                }
+            }
         }
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    private fun requestPermission(permission: String, requestCode: Int, permissionRequiredStringId: Int) {
-        val shouldShowPermissionRationale = shouldShowRequestPermissionRationale(permission)
-        val permissionStatus = checkSelfPermission(permission)
-        Log.v(LOG_TAG, "Main.requestPermission() permission: $permission, status: $status, shouldRequest: $shouldShowPermissionRationale")
+    private fun requestPermission(permission: Array<String>, requestCode: Int, permissionRequiredStringId: Int) {
+        val shouldShowPermissionRationale = shouldShowRequestPermissionRationale(permission[0])
+        val permissionStatus = checkSelfPermission(permission[0])
+        Log.v(LOG_TAG, "Main.requestPermission() permission: $permission, status: $permissionStatus, shouldRequest: ${!shouldShowPermissionRationale}")
         if (!shouldShowPermissionRationale && permissionStatus != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(permission), requestCode)
+            requestPermissions(permission, requestCode)
         } else {
             if (shouldShowPermissionRationale) {
                 Toast.makeText(baseContext, permissionRequiredStringId, Toast.LENGTH_LONG).show()

@@ -11,8 +11,8 @@ android {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 15
         targetSdkVersion 29
-        versionCode 248
-        versionName "2.0.16"
+        versionCode 249
+        versionName "2.0.17"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -65,7 +65,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.media:media:1.1.0'
     implementation "org.jetbrains.anko:anko:$anko_version"
-    implementation 'org.osmdroid:osmdroid-android:6.1.2'
+    implementation 'org.osmdroid:osmdroid-android:6.1.4'
     implementation 'com.android.support:multidex:1.0.3'
 
     // Dagger2
