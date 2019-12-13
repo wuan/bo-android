@@ -62,7 +62,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
             }
 
             val paint = Paint()
-            if (hasRasterParameters()) {
+            if (hasRasterParameters() && parameters.region > 0) {
                 paint.color = colorHandler.lineColor
                 paint.style = Style.STROKE
 

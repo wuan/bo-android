@@ -11,6 +11,7 @@
   - fix notifications for newer devices
   - improve location detection
   - use Dagger2 for internal dependency injection
+  - global data mode
 
 ### Version 1.5.18
 

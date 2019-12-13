@@ -27,9 +27,9 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
+import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
-import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.jsonrpc.JsonRpcClient
 import org.blitzortung.android.util.TimeFormat
@@ -71,7 +71,7 @@ class JsonRpcDataProvider @Inject constructor(
         val strikes = ArrayList<Strike>()
         val referenceTimestamp = getReferenceTimestamp(response)
         val strikesArray = response.get("s") as JSONArray
-        for (i in 0..strikesArray.length() - 1) {
+        for (i in 0 until strikesArray.length()) {
             strikes.add(dataBuilder.createDefaultStrike(referenceTimestamp, strikesArray.getJSONArray(i)))
         }
         if (response.has("next")) {
@@ -86,7 +86,7 @@ class JsonRpcDataProvider @Inject constructor(
 
         val strikesArray = response.get("r") as JSONArray
         val strikes = ArrayList<Strike>()
-        for (i in 0..strikesArray.length() - 1) {
+        for (i in 0 until strikesArray.length()) {
             strikes.add(dataBuilder.createRasterElement(rasterParameters, referenceTimestamp, strikesArray.getJSONArray(i)))
         }
 
@@ -107,7 +107,7 @@ class JsonRpcDataProvider @Inject constructor(
 
             val histogram = IntArray(histogramArray.length())
 
-            for (i in 0..histogramArray.length() - 1) {
+            for (i in 0 until histogramArray.length()) {
                 histogram[i] = histogramArray.getInt(i)
             }
             resultVar = resultVar.copy(histogram = histogram)
@@ -127,7 +127,7 @@ class JsonRpcDataProvider @Inject constructor(
                 val response = client.call(serviceUrl, "get_stations")
                 val stationsArray = response.get("stations") as JSONArray
 
-                for (i in 0..stationsArray.length() - 1) {
+                for (i in 0 until stationsArray.length()) {
                     stations.add(dataBuilder.createStation(stationsArray.getJSONArray(i)))
                 }
             } catch (e: Exception) {
@@ -149,7 +149,14 @@ class JsonRpcDataProvider @Inject constructor(
             val region = parameters.region
 
             try {
-                val response = client.call(serviceUrl, "get_strikes_grid", intervalDuration, rasterBaselength, intervalOffset, region, countThreshold)
+                val response = if (region == 0) {
+                    with(client.call(serviceUrl, "get_global_strikes_grid", intervalDuration, rasterBaselength, intervalOffset, countThreshold)) {
+                        put("y1", 0.0)
+                        put("x0", 0.0)
+                    }
+                } else {
+                    client.call(serviceUrl, "get_strikes_grid", intervalDuration, rasterBaselength, intervalOffset, region, countThreshold)
+                }
                 val minDistance = rasterBaselength / 1000f
                 resultVar = addRasterData(response, resultVar, minDistance)
                 resultVar = addStrikesHistogram(response, resultVar)
@@ -190,18 +197,18 @@ class JsonRpcDataProvider @Inject constructor(
         @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
             PreferenceKey.SERVICE_URL -> {
-                val serviceUrl : String = sharedPreferences.get(PreferenceKey.SERVICE_URL, DEFAULT_SERVICE_URL.toString())
+                val serviceUrl: String = sharedPreferences.get(PreferenceKey.SERVICE_URL, DEFAULT_SERVICE_URL.toString())
                 this.serviceUrl = toCheckedUrl(if (serviceUrl.isNotBlank()) serviceUrl.trim() else DEFAULT_SERVICE_URL.toString())
             }
         }
     }
 
     private fun toCheckedUrl(serviceUrl: String): URL {
-        try {
-            return URL(serviceUrl)
+        return try {
+            URL(serviceUrl)
         } catch (e: Exception) {
             Log.e(Main.LOG_TAG, "JsonRpcDataProvider.tocheckedUrl($serviceUrl) invalid")
-            return DEFAULT_SERVICE_URL
+            DEFAULT_SERVICE_URL
         }
     }
 
