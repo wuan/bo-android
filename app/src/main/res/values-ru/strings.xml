@@ -81,6 +81,7 @@
     <string name="region_summary">Выберите Европу, Северную Америку или Океанию</string>
 
     <string-array name="regions">
+        <item>Global</item>
         <item>Европа</item>
         <item>С. Америка</item>
         <item>Ц. Америка</item>
@@ -90,6 +91,7 @@
         <item>Африка</item>
     </string-array>
     <string-array name="regions_values">
+        <item>0</item>
         <item>1</item>
         <item>3</item>
         <item>7</item>

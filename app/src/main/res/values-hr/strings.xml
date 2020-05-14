@@ -82,6 +82,7 @@
     <string name="region_summary">Odabir geografskog područja\n(Europa, Sjeverna Amerika, Oceanija, ..)</string>
 
     <string-array name="regions">
+        <item>Global</item>
         <item>Europa</item>
         <item>Sjeverna Amerika</item>
         <item>Srednja Amerika</item>
@@ -91,6 +92,7 @@
         <item>Afrika</item>
     </string-array>
     <string-array name="regions_values">
+        <item>0</item>
         <item>1</item>
         <item>3</item>
         <item>7</item>

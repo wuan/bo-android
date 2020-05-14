@@ -16,6 +16,7 @@ import org.jetbrains.anko.defaultSharedPreferences
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
+import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.ScaleBarOverlay
 
 class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
@@ -23,6 +24,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
     private lateinit var mPrefs: SharedPreferences
     lateinit var mapView: OwnMapView
         private set
+    private lateinit var mCopyrightOverlay: CopyrightOverlay
     private lateinit var mScaleBarOverlay: ScaleBarOverlay
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -42,8 +44,11 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
         mPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
+        mCopyrightOverlay = CopyrightOverlay(context)
+        mCopyrightOverlay.setTextSize(7)
+        mapView.overlays.add(mCopyrightOverlay)
         mScaleBarOverlay = ScaleBarOverlay(mapView)
-        mScaleBarOverlay.setScaleBarOffset(dm.widthPixels / 2, 20)
+        mScaleBarOverlay.setScaleBarOffset(dm.widthPixels / 2, 15)
         mScaleBarOverlay.setCentred(true)
         mScaleBarOverlay.setAlignBottom(true)
         val centered = mScaleBarOverlay.javaClass.getDeclaredField("centred")
