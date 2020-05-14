@@ -51,7 +51,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
 
     private var isEnabled = false
 
-    var backgroundPeriod: Int = 0
+    private var backgroundPeriod: Int = 0
         private set
 
     @set:Inject
@@ -107,10 +107,10 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
 
         if (intent != null && RETRIEVE_DATA_ACTION == intent.action) {
             if (acquireWakeLock()) {
-                Log.v(Main.LOG_TAG, "AppService.onStartCommand() with wake lock " + wakeLock)
+                Log.v(Main.LOG_TAG, "AppService.onStartCommand() with wake lock $wakeLock")
                 dataHandler.updateData()
             } else {
-                Log.v(Main.LOG_TAG, "AppService.onStartCommand() skip with held wake lock " + wakeLock)
+                Log.v(Main.LOG_TAG, "AppService.onStartCommand() skip with held wake lock $wakeLock")
             }
         } else {
             Log.v(Main.LOG_TAG, "AppService.onStartCommand() intent ${intent?.action}")
@@ -122,15 +122,15 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
 
     private fun acquireWakeLock(): Boolean {
         synchronized(wakeLock) {
-            if (!wakeLock.isHeld) {
+            return if (!wakeLock.isHeld) {
                 if (isAtLeast(Build.VERSION_CODES.N)) {
                     wakeLock.acquire(WAKELOCK_TIMEOUT)
                 } else {
                     wakeLock.acquire()
                 }
-                return true
+                true
             } else {
-                return false
+                false
             }
         }
     }
@@ -149,7 +149,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     }
 
     override fun onBind(intent: Intent): IBinder? {
-        Log.i(Main.LOG_TAG, "AppService.onBind() " + intent)
+        Log.i(Main.LOG_TAG, "AppService.onBind() $intent")
 
         return null
     }
@@ -192,7 +192,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         )
     }
 
-    fun configureServiceMode() {
+    private fun configureServiceMode() {
         if (isEnabled) {
             val logElements = mutableListOf<String>()
             discardAlarm()

@@ -52,7 +52,7 @@ class HistoryController(
         setRealtimeData(true)
     }
 
-    fun setRealtimeData(realtimeData: Boolean) {
+    private fun setRealtimeData(realtimeData: Boolean) {
         activity.historyRew.visibility = View.VISIBLE
         val historyButtonsVisibility = if (realtimeData) View.INVISIBLE else View.VISIBLE
         activity.historyFfwd.visibility = historyButtonsVisibility

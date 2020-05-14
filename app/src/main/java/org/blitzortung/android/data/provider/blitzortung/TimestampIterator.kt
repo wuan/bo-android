@@ -26,7 +26,7 @@ class TimestampIterator(
 
     private var currentTime: Long = roundTime(startTime)
 
-    fun roundTime(time: Long): Long {
+    private fun roundTime(time: Long): Long {
         return time / intervalLength * intervalLength
     }
 

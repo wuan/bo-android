@@ -78,7 +78,7 @@ class LogDialog(
         return versionComponent.run { "Version $versionName ($versionCode)" }
     }
 
-    fun composeEmail(body: String) {
+    private fun composeEmail(body: String) {
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = Uri.parse("mailto:")
         intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(context.resources.getString(R.string.project_email)))

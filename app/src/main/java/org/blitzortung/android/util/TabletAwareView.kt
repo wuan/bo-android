@@ -56,11 +56,10 @@ open class TabletAwareView(
 
     companion object {
         fun isTablet(context: Context): Boolean {
-
-            if (isAtLeast(Build.VERSION_CODES.HONEYCOMB_MR2)) {
-                return context.resources.configuration.smallestScreenWidthDp >= 600
+            return if (isAtLeast(Build.VERSION_CODES.HONEYCOMB_MR2)) {
+                context.resources.configuration.smallestScreenWidthDp >= 600
             } else {
-                return false
+                false
             }
         }
 

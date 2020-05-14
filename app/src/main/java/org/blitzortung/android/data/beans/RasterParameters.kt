@@ -20,8 +20,6 @@ package org.blitzortung.android.data.beans
 
 import android.graphics.Point
 import android.graphics.RectF
-import android.util.Log
-import org.blitzortung.android.app.Main
 import org.blitzortung.android.data.Coordsys
 import org.osmdroid.views.Projection
 
@@ -48,10 +46,10 @@ data class RasterParameters(
         return latitudeStart - latitudeDelta * (offset + 0.5)
     }
 
-    val rectLongitudeDelta: Double
+    private val rectLongitudeDelta: Double
         get() = longitudeDelta * longitudeBins
 
-    val rectLatitudeDelta: Double
+    private val rectLatitudeDelta: Double
         get() = latitudeDelta * latitudeBins
 
     fun getRect(projection: Projection): RectF {

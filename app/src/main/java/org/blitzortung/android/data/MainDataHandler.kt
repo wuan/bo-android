@@ -23,6 +23,8 @@ import android.content.SharedPreferences
 import android.os.Handler
 import android.util.Log
 import android.widget.Toast
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
@@ -37,8 +39,6 @@ import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.result.StatusEvent
 import org.blitzortung.android.protocol.ConsumerContainer
 import org.blitzortung.android.util.Period
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import javax.inject.Inject
@@ -117,20 +117,20 @@ class MainDataHandler @Inject constructor(
                     lock,
                     { sendEvent(it) },
                     ::toast
-            ).execute(TaskParameters(parameters = activeParameters, updateParticipants = updateParticipants))
+            ).execute(parameters = activeParameters)
         }
     }
 
-    val activeParameters: Parameters
+    private val activeParameters: Parameters
         get() {
-            if (dataMode.raster) {
-                return parameters
+            return if (dataMode.raster) {
+                parameters
             } else {
                 var parameters = parameters
                 if (!dataMode.region) {
                     parameters = parameters.copy(region = 0)
                 }
-                return parameters.copy(rasterBaselength = 0, countThreshold = 0)
+                parameters.copy(rasterBaselength = 0, countThreshold = 0)
             }
         }
 
@@ -146,7 +146,7 @@ class MainDataHandler @Inject constructor(
         when (key) {
             PreferenceKey.DATA_SOURCE, PreferenceKey.SERVICE_URL -> {
                 val providerTypeString = sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.RPC.toString())
-                val providerType = DataProviderType.valueOf(providerTypeString.toUpperCase())
+                val providerType = DataProviderType.valueOf(providerTypeString.toUpperCase(Locale.getDefault()))
                 val dataProvider = dataProviderFactory.getDataProviderForType(providerType)
                 this.dataProvider = dataProvider
 
@@ -155,6 +155,9 @@ class MainDataHandler @Inject constructor(
                 if (providerTypeString == DataProviderType.HTTP.toString()) {
                     showBlitzortungProviderWarning()
                 }
+
+                Log.v(Main.LOG_TAG, "MainDataHandler update data source: $providerType")
+
                 updateData()
             }
 
@@ -186,7 +189,6 @@ class MainDataHandler @Inject constructor(
                 updateData()
             }
 
-
             PreferenceKey.QUERY_PERIOD -> {
                 period = Integer.parseInt(sharedPreferences.get(key, "60"))
                 Log.v(Main.LOG_TAG, "MainDataHandler query $period")
@@ -197,21 +199,14 @@ class MainDataHandler @Inject constructor(
         }
     }
 
-    private fun showBlitzortungProviderWarning() {
-        doAsync {
-            uiThread {
-                Toast.makeText(context, R.string.provider_warning, Toast.LENGTH_LONG).show()
-            }
-        }
-    }
+    private fun showBlitzortungProviderWarning() =
+            Toast.makeText(context, R.string.provider_warning, Toast.LENGTH_LONG).show()
 
     private fun updateProviderSpecifics() {
-
         val providerType = dataProvider!!.type
 
         dataMode = when (providerType) {
             DataProviderType.RPC -> DataMode(raster = true, region = false)
-
             DataProviderType.HTTP -> DataMode(raster = false, region = true)
         }
     }
@@ -241,7 +236,7 @@ class MainDataHandler @Inject constructor(
         return updateParameters { parametersController.goRealtime(it) }
     }
 
-    fun updateParameters(updater: (Parameters) -> Parameters): Boolean {
+    private fun updateParameters(updater: (Parameters) -> Parameters): Boolean {
         val oldParameters = parameters
         parameters = updater.invoke(parameters)
         return parameters != oldParameters
@@ -250,15 +245,11 @@ class MainDataHandler @Inject constructor(
     val isRealtime: Boolean
         get() = parameters.isRealtime()
 
-    private fun toast(stringResource: Int) {
-        doAsync {
-            uiThread {
-                Toast.makeText(context, stringResource, Toast.LENGTH_LONG).show()
-            }
-        }
+    private suspend fun toast(stringResource: Int) = withContext(Dispatchers.Main) {
+        Toast.makeText(context, stringResource, Toast.LENGTH_LONG).show()
     }
 
-    fun broadcastEvent(event: DataEvent) {
+    private fun broadcastEvent(event: DataEvent) {
         dataConsumerContainer.broadcast(event)
     }
 
@@ -270,7 +261,7 @@ class MainDataHandler @Inject constructor(
             updateTargets.add(DataChannel.STRIKES)
         }
 
-        if (!updateTargets.isEmpty()) {
+        if (updateTargets.isNotEmpty()) {
             updateData(updateTargets)
         }
 

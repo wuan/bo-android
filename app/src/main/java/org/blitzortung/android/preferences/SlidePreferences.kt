@@ -130,7 +130,7 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
     }
 
     companion object {
-        private val ATTRIBUTE_NAMESPACE = "http://schemas.android.com/apk/res/android"
+        private const val ATTRIBUTE_NAMESPACE = "http://schemas.android.com/apk/res/android"
     }
 }
 

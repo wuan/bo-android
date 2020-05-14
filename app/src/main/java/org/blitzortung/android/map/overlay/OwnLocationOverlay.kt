@@ -24,6 +24,7 @@ import android.graphics.Canvas
 import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
+import android.preference.PreferenceManager
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
@@ -33,7 +34,6 @@ import org.blitzortung.android.app.view.getAndConvert
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.components.LayerOverlayComponent
 import org.blitzortung.android.util.TabletAwareView
-import org.jetbrains.anko.defaultSharedPreferences
 import org.osmdroid.api.IMapView
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
@@ -47,7 +47,7 @@ class OwnLocationOverlay(
 ) : ItemizedOverlay<OwnLocationOverlayItem>(DEFAULT_DRAWABLE),
         OnSharedPreferenceChangeListener,
         LayerOverlay, MapListener {
-    private val layerOverlayComponent: LayerOverlayComponent
+    private val layerOverlayComponent: LayerOverlayComponent = LayerOverlayComponent(context.resources.getString(R.string.own_location_layer))
 
     private var item: OwnLocationOverlayItem? = null
 
@@ -74,13 +74,12 @@ class OwnLocationOverlay(
     }
 
     init {
-        layerOverlayComponent = LayerOverlayComponent(context.resources.getString(R.string.own_location_layer))
 
         populate()
 
         sizeFactor = ViewHelper.pxFromDp(context, 1.0f) * TabletAwareView.sizeFactor(context)
 
-        val preferences = context.defaultSharedPreferences
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         preferences.registerOnSharedPreferenceChangeListener(this)
         onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_LOCATION)
         onSharedPreferenceChanged(preferences, PreferenceKey.OWN_LOCATION_SIZE)
@@ -106,12 +105,12 @@ class OwnLocationOverlay(
         return if (item == null) 0 else 1
     }
 
-    fun enableOwnLocation() {
+    private fun enableOwnLocation() {
         isEnabled = true
         refresh()
     }
 
-    fun disableOwnLocation() {
+    private fun disableOwnLocation() {
         item = null
         isEnabled = false
         refresh()

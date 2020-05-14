@@ -21,6 +21,7 @@ package org.blitzortung.android.map
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Point
+import android.preference.PreferenceManager
 import androidx.appcompat.app.AlertDialog
 import android.util.Log
 import android.view.GestureDetector
@@ -31,7 +32,6 @@ import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.location.LocationHandler
-import org.jetbrains.anko.defaultSharedPreferences
 import org.osmdroid.views.MapView
 
 
@@ -70,7 +70,7 @@ class OwnMapView(context: Context) : MapView(context) {
             val dialogClickListener = DialogInterface.OnClickListener { _, which ->
                 when (which) {
                     DialogInterface.BUTTON_POSITIVE -> {
-                        val preferences = context.defaultSharedPreferences
+                        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
                         preferences.edit().apply {
                             putString(PreferenceKey.LOCATION_LONGITUDE.toString(), longitude.toString())
                             putString(PreferenceKey.LOCATION_LATITUDE.toString(), latitude.toString())

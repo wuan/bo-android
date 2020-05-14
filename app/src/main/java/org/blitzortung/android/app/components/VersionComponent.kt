@@ -56,6 +56,6 @@ class VersionComponent(context: Context) {
     }
 
     companion object {
-        internal val CONFIGURED_VERSION_CODE = "configured_version_code"
+        internal const val CONFIGURED_VERSION_CODE = "configured_version_code"
     }
 }

@@ -34,6 +34,7 @@ android {
         unitTests.returnDefaultValues = true
     }
     buildToolsVersion = '29.0.2'
+    useLibrary 'android.test.base'
 }
 
 jacoco {
@@ -56,7 +57,6 @@ coveralls {
     jacocoReportPath 'build/reports/jacoco/jacocoTestReleaseUnitTestReport/jacocoTestReleaseUnitTestReport.xml'
 }
 
-def anko_version = '0.10.8'
 def dagger_version = '2.27'
 
 dependencies {
@@ -64,7 +64,8 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.media:media:1.1.0'
-    implementation "org.jetbrains.anko:anko:$anko_version"
+    implementation 'androidx.core:core-ktx:1.2.0'
+    implementation "androidx.work:work-runtime-ktx:2.3.4"
     implementation 'org.osmdroid:osmdroid-android:6.1.6'
     implementation 'com.android.support:multidex:1.0.3'
 
@@ -82,6 +83,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     testImplementation 'org.robolectric:robolectric:4.3.1'
+    testImplementation 'androidx.test:core:1.2.0'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }

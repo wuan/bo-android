@@ -52,14 +52,14 @@ class MapBuilderFactory constructor(
             }
 
             override fun setBuilderMap(keyValueBuilderMap: MutableMap<String, (Array<String>) -> Unit>) {
-                keyValueBuilderMap.put("pos") { values ->
+                keyValueBuilderMap["pos"] = { values ->
                     longitude = values[1].toDouble()
                     latitude = values[0].toDouble()
                     altitude = values[2].toInt()
                 }
-                keyValueBuilderMap.put("str") { values -> amplitude = java.lang.Float.parseFloat(values[0]) }
-                keyValueBuilderMap.put("dev") { values -> lateralError = Integer.parseInt(values[0]) }
-                keyValueBuilderMap.put("sta") { values -> stationCount = values.size.toShort() }
+                keyValueBuilderMap["str"] = { values -> amplitude = java.lang.Float.parseFloat(values[0]) }
+                keyValueBuilderMap["dev"] = { values -> lateralError = Integer.parseInt(values[0]) }
+                keyValueBuilderMap["sta"] = { values -> stationCount = values.size.toShort() }
             }
 
             override fun build(): Strike {
@@ -80,12 +80,12 @@ class MapBuilderFactory constructor(
             }
 
             override fun setBuilderMap(keyValueBuilderMap: MutableMap<String, (Array<String>) -> Unit>) {
-                keyValueBuilderMap.put("city") { values -> name = values[0].replace("\"", "") }
-                keyValueBuilderMap.put("pos") { values ->
+                keyValueBuilderMap["city"] = { values -> name = values[0].replace("\"", "") }
+                keyValueBuilderMap["pos"] = { values ->
                     longitude = values[1].toDouble()
                     latitude = values[0].toDouble()
                 }
-                keyValueBuilderMap.put("last_signal") { values ->
+                keyValueBuilderMap["last_signal"] = { values ->
                     val dateString = values[0].replace("\"", "").replace("-", "").replace(" ", "T")
                     offlineSince = TimeFormat.parseTime(dateString)
                 }
@@ -99,7 +99,7 @@ class MapBuilderFactory constructor(
 }
 
 fun lineSplitter(text: String): Array<String> {
-    return text.split(" ".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
+    return text.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 }
 
 fun stationLineSplitter(text: String): Array<String> {
@@ -108,8 +108,11 @@ fun stationLineSplitter(text: String): Array<String> {
     val regexMatcher = regex.matcher(text)
     while (regexMatcher.find()) {
         if (regexMatcher.group(0) != null) {
-            matchList.add(regexMatcher.group(1))
+            val element = regexMatcher.group(1)
+            if (element != null) {
+                matchList.add(element)
+            }
         }
     }
-    return matchList.toArray<String>(arrayOfNulls<String>(matchList.size))
+    return matchList.toArray(arrayOfNulls<String>(matchList.size))
 }

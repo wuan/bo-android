@@ -27,6 +27,6 @@ data class RasterElement(
         override val multiplicity: Int) : Strike, Serializable {
 
     companion object {
-        private val serialVersionUID = 6765788323616893614L
+        private const val serialVersionUID = 6765788323616893614L
     }
 }

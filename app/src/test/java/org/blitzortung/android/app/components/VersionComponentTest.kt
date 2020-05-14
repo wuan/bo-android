@@ -1,6 +1,7 @@
 package org.blitzortung.android.app.components
 
 import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -17,7 +18,7 @@ class VersionComponentTest {
 
     @Before
     fun setUp() {
-        versionComponent = VersionComponent(RuntimeEnvironment.application)
+        versionComponent = VersionComponent(ApplicationProvider.getApplicationContext())
     }
 
     @Test

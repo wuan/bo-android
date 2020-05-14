@@ -29,10 +29,10 @@ class UrlFormatter @Inject constructor() {
 
         val localPath: String
 
-        if (type === BlitzortungHttpDataProvider.Type.STRIKES) {
-            localPath = "Strokes/" + DateFormat.format("yyyy/MM/dd/kk/mm", intervalTime!!) + ".log"
+        localPath = if (type === BlitzortungHttpDataProvider.Type.STRIKES) {
+            "Strokes/" + DateFormat.format("yyyy/MM/dd/kk/mm", intervalTime!!) + ".log"
         } else {
-            localPath = type.name.toLowerCase() + ".txt"
+            type.name.toLowerCase(Locale.getDefault()) + ".txt"
         }
 
         val urlFormatString = "http://data.blitzortung.org/Data_%d/Protected/%s%s"

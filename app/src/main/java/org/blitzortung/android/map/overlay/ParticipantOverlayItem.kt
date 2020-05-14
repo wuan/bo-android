@@ -27,13 +27,12 @@ class ParticipantOverlayItem(
         station: Station
 ) : OverlayItem(station.name, "", Coordsys.toMapCoords(station.longitude, station.latitude)) {
 
-    val lastDataTime: Long
+    private val lastDataTime: Long = station.offlineSince
 
-    val participantState: State
+    private val participantState: State
 
     init {
 
-        lastDataTime = station.offlineSince
         participantState = station.state
     }
 }

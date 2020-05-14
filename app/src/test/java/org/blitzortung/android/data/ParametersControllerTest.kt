@@ -37,21 +37,21 @@ class ParametersControllerTest {
 
     @Test
     fun testRewindInterval() {
-        assertThat(update({ controller.rewInterval(it) })).isTrue()
+        assertThat(update { controller.rewInterval(it) }).isTrue()
         assertThat(parameters.intervalOffset).isEqualTo(-15)
 
-        assertThat(update({ controller.rewInterval(it) })).isTrue()
+        assertThat(update { controller.rewInterval(it) }).isTrue()
         assertThat(parameters.intervalOffset).isEqualTo(-30)
 
-        for (i in 0..23 * 4 - 2 - 1 - 1) {
-            assertThat(update({ controller.rewInterval(it) })).isTrue()
+        for (i in 0 until 23 * 4 - 2 - 1) {
+            assertThat(update { controller.rewInterval(it) }).isTrue()
         }
         assertThat(parameters.intervalOffset).isEqualTo(-23 * 60 + 15)
 
-        assertThat(update({ controller.rewInterval(it) })).isTrue()
+        assertThat(update { controller.rewInterval(it) }).isTrue()
         assertThat(parameters.intervalOffset).isEqualTo(-23 * 60)
 
-        assertThat(update({ controller.rewInterval(it) })).isFalse()
+        assertThat(update { controller.rewInterval(it) }).isFalse()
         assertThat(parameters.intervalOffset).isEqualTo(-23 * 60)
     }
 
@@ -59,39 +59,39 @@ class ParametersControllerTest {
     fun testRewindIntervalWithAlignment() {
         controller = ParametersController.withOffsetIncrement(45)
 
-        assertThat(update({ controller.rewInterval(it) })).isTrue()
+        assertThat(update { controller.rewInterval(it) }).isTrue()
         assertThat(parameters.intervalOffset).isEqualTo(-45)
 
-        assertThat(update({ controller.rewInterval(it) })).isTrue()
+        assertThat(update { controller.rewInterval(it) }).isTrue()
         assertThat(parameters.intervalOffset).isEqualTo(-90)
 
-        for (i in 0..23 / 3 * 4 - 1) {
-            assertThat(update({ controller.rewInterval(it) })).isTrue()
+        for (i in 0 until 23 / 3 * 4) {
+            assertThat(update { controller.rewInterval(it) }).isTrue()
         }
         assertThat(parameters.intervalOffset).isEqualTo(-23 * 60 + 30)
 
-        assertThat(update({ controller.rewInterval(it) })).isFalse()
+        assertThat(update { controller.rewInterval(it) }).isFalse()
         assertThat(parameters.intervalOffset).isEqualTo(-23 * 60 + 30)
     }
 
     @Test
     fun testFastforwardInterval() {
-        update({ controller.rewInterval(it) })
+        update { controller.rewInterval(it) }
 
-        assertThat(update({ controller.ffwdInterval(it) })).isTrue()
+        assertThat(update { controller.ffwdInterval(it) }).isTrue()
         assertThat(parameters.intervalOffset).isEqualTo(0)
 
-        assertThat(update({ controller.ffwdInterval(it) })).isFalse()
+        assertThat(update { controller.ffwdInterval(it) }).isFalse()
         assertThat(parameters.intervalOffset).isEqualTo(0)
     }
 
     @Test
     fun testGoRealtime() {
-        assertThat(update({ controller.goRealtime(it) })).isFalse()
+        assertThat(update { controller.goRealtime(it) }).isFalse()
 
-        update({ controller.rewInterval(it) })
+        update { controller.rewInterval(it) }
 
-        assertThat(update({ controller.goRealtime(it) })).isTrue()
+        assertThat(update { controller.goRealtime(it) }).isTrue()
         assertThat(parameters.intervalOffset).isEqualTo(0)
     }
 }

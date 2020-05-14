@@ -3,13 +3,11 @@ package org.blitzortung.android.location.provider
 import android.content.Context
 import android.location.Location
 import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
-import org.jetbrains.anko.locationManager
-import java.lang.RuntimeException
 
 abstract class ManagerLocationProvider(
         protected val context: Context,
@@ -18,7 +16,7 @@ abstract class ManagerLocationProvider(
         override val type: String
 ) : LocationProvider(locationUpdate), LocationListener {
 
-    protected val locationManager = context.locationManager
+    private val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
     protected open val minTime: Long
         get() = if (isInBackground) 120000 else 20000

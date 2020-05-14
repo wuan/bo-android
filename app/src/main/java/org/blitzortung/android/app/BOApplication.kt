@@ -22,12 +22,12 @@ class BOApplication : MultiDexApplication(), HasAndroidInjector {
         DaggerAppComponent
                 .builder()
                 .appModule(AppModule(this))
-                .serviceModule(ServiceModule(this))
+                .serviceModule(ServiceModule())
                 .build()
                 .inject(this)
     }
 
     companion object {
-        val WAKE_LOCK_TAG = "boAndroid:WakeLock"
+        const val WAKE_LOCK_TAG = "boAndroid:WakeLock"
     }
 }

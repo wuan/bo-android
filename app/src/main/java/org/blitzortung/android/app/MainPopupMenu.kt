@@ -2,11 +2,12 @@ package org.blitzortung.android.app
 
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
-import androidx.appcompat.widget.PopupMenu
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.widget.PopupMenu
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.data.MainDataHandler
@@ -14,7 +15,6 @@ import org.blitzortung.android.dialogs.AlertDialog
 import org.blitzortung.android.dialogs.AlertDialogColorHandler
 import org.blitzortung.android.dialogs.InfoDialog
 import org.blitzortung.android.dialogs.LogDialog
-import org.jetbrains.anko.startActivity
 
 class MainPopupMenu(
         context: Context,
@@ -37,7 +37,7 @@ class MainPopupMenu(
         override fun onMenuItemClick(item: MenuItem?): Boolean {
             val versionComponent = VersionComponent(context)
             if (item?.itemId == R.id.menu_preferences) {
-                context.startActivity<Preferences>()
+                context.startActivity(Intent(context, Preferences::class.java))
             } else {
                 val dialog = when (item?.itemId) {
                     R.id.menu_info -> InfoDialog(context, versionComponent)

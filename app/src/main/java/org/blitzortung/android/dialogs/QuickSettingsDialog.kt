@@ -23,12 +23,12 @@ import android.app.AlertDialog.Builder
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.widget.Spinner
 import androidx.fragment.app.DialogFragment
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
-import org.jetbrains.anko.defaultSharedPreferences
 
 class QuickSettingsDialog : DialogFragment() {
 
@@ -36,7 +36,7 @@ class QuickSettingsDialog : DialogFragment() {
         val builder = Builder(activity)
         val layoutInflater = activity!!.layoutInflater
 
-        val preferences = activity!!.defaultSharedPreferences
+        val preferences = PreferenceManager.getDefaultSharedPreferences(activity)
 
         val regionValues = resources.getStringArray(R.array.regions_values)
         val currentRegionValue = preferences.get(PreferenceKey.REGION, regionValues[0])

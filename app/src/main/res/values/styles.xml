@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="TranslucentBackground">
+        <item name="android:color">@color/translucent_background</item>
+    </style>
+
+    <style name="AppTheme" parent="Base.V7.Theme.AppCompat" />
+</resources>

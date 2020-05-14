@@ -40,18 +40,19 @@ import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Overlay
+import kotlin.math.max
+import kotlin.math.min
 
 class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: StrikeColorHandler) : Overlay(), LayerOverlay, MapListener {
     private val strikeList = mutableListOf<StrikeOverlay>()
 
-    private val layerOverlayComponent: LayerOverlayComponent
+    private val layerOverlayComponent: LayerOverlayComponent = LayerOverlayComponent(mapFragment.resources.getString(R.string.strikes_layer))
     private var zoomLevel: Double
     var rasterParameters: RasterParameters? = null
     var referenceTime: Long = 0
     var parameters = Parameters()
 
     init {
-        layerOverlayComponent = LayerOverlayComponent(mapFragment.resources.getString(R.string.strikes_layer))
         zoomLevel = mapFragment.mapView.zoomLevelDouble
     }
 
@@ -89,16 +90,16 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
             val rect = currentRasterParameters.getRect(mapView.projection)
 
             if (rect.left >= clipBounds.left && rect.left <= clipBounds.right) {
-                canvas.drawLine(rect.left, Math.max(rect.top, clipBounds.top.toFloat()), rect.left, Math.min(rect.bottom, clipBounds.bottom.toFloat()), paint)
+                canvas.drawLine(rect.left, max(rect.top, clipBounds.top.toFloat()), rect.left, min(rect.bottom, clipBounds.bottom.toFloat()), paint)
             }
             if (rect.right >= clipBounds.left && rect.right <= clipBounds.right) {
-                canvas.drawLine(rect.right, Math.max(rect.top, clipBounds.top.toFloat()), rect.right, Math.min(rect.bottom, clipBounds.bottom.toFloat()), paint)
+                canvas.drawLine(rect.right, max(rect.top, clipBounds.top.toFloat()), rect.right, min(rect.bottom, clipBounds.bottom.toFloat()), paint)
             }
             if (rect.bottom <= clipBounds.bottom && rect.bottom >= clipBounds.top) {
-                canvas.drawLine(Math.max(rect.left, clipBounds.left.toFloat()), rect.bottom, Math.min(rect.right, clipBounds.right.toFloat()), rect.bottom, paint)
+                canvas.drawLine(max(rect.left, clipBounds.left.toFloat()), rect.bottom, min(rect.right, clipBounds.right.toFloat()), rect.bottom, paint)
             }
             if (rect.top <= clipBounds.bottom && rect.top >= clipBounds.top) {
-                canvas.drawLine(Math.max(rect.left, clipBounds.left.toFloat()), rect.top, Math.min(rect.right, clipBounds.right.toFloat()), rect.top, paint)
+                canvas.drawLine(max(rect.left, clipBounds.left.toFloat()), rect.top, min(rect.right, clipBounds.right.toFloat()), rect.top, paint)
             }
         }
     }
@@ -171,8 +172,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
         }
     }
 
-    // VisibleForTesting
-    protected fun updateAndReturnDrawable(item: StrikeOverlay, section: Int, colorHandler: ColorHandler): LightningShape {
+    private fun updateAndReturnDrawable(item: StrikeOverlay, section: Int, colorHandler: ColorHandler): LightningShape {
         val projection = mapFragment.mapView.projection
         val color = colorHandler.getColor(section)
         val textColor = colorHandler.textColor

@@ -27,19 +27,23 @@ class Station(
 
     val state: State
         get() {
-            if (offlineSince == OFFLINE_SINCE_NOT_SET) {
-                return State.ON
+            return if (offlineSince == OFFLINE_SINCE_NOT_SET) {
+                State.ON
             } else {
                 val now = System.currentTimeMillis()
 
                 val minutesAgo = (now - offlineSince) / 1000 / 60
 
-                if (minutesAgo > 24 * 60) {
-                    return State.OFF
-                } else if (minutesAgo > 15) {
-                    return State.DELAYED
-                } else {
-                    return State.ON
+                when {
+                    minutesAgo > 24 * 60 -> {
+                        State.OFF
+                    }
+                    minutesAgo > 15 -> {
+                        State.DELAYED
+                    }
+                    else -> {
+                        State.ON
+                    }
                 }
             }
         }
@@ -49,6 +53,6 @@ class Station(
     }
 
     companion object {
-        val OFFLINE_SINCE_NOT_SET: Long = -1
+        const val OFFLINE_SINCE_NOT_SET: Long = -1
     }
 }

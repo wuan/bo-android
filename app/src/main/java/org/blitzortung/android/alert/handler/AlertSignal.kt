@@ -8,6 +8,7 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Vibrator
+import android.preference.PreferenceManager
 import android.util.Log
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
@@ -16,7 +17,6 @@ import org.blitzortung.android.app.view.PreferenceKey.ALERT_SOUND_SIGNAL
 import org.blitzortung.android.app.view.PreferenceKey.ALERT_VIBRATION_SIGNAL
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.util.isAtLeast
-import org.jetbrains.anko.defaultSharedPreferences
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,7 +27,7 @@ class AlertSignal @Inject constructor(
 ) : OnSharedPreferenceChangeListener {
 
     init {
-        val preferences = context.defaultSharedPreferences
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         preferences.registerOnSharedPreferenceChangeListener(this)
         onSharedPreferenceChanged(preferences, ALERT_VIBRATION_SIGNAL, ALERT_SOUND_SIGNAL)
     }
@@ -47,7 +47,7 @@ class AlertSignal @Inject constructor(
 
             ALERT_SOUND_SIGNAL -> {
                 val signalUri = sharedPreferences.get(key, "")
-                soundSignal = if (!signalUri.isEmpty()) Uri.parse(signalUri) else null
+                soundSignal = if (signalUri.isNotEmpty()) Uri.parse(signalUri) else null
                 Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() soundSignal = $soundSignal")
             }
         }

@@ -6,11 +6,10 @@ import android.content.SharedPreferences
 import android.content.pm.PackageInfo
 import android.os.PowerManager
 import android.os.Vibrator
+import android.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
 import org.blitzortung.android.app.BOApplication
-import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.powerManager
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -23,10 +22,10 @@ class AppModule @Inject constructor(
     fun provideContext(): Context = application
 
     @Provides
-    fun provideSharedPrefs(): SharedPreferences = application.defaultSharedPreferences
+    fun provideSharedPrefs(): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(application)
 
     @Provides
-    fun wakeLock() : PowerManager.WakeLock = application.powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, BOApplication.WAKE_LOCK_TAG)
+    fun wakeLock(): PowerManager.WakeLock = (application.getSystemService(Context.POWER_SERVICE) as PowerManager).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, BOApplication.WAKE_LOCK_TAG)
 
     @Provides
     fun packageInfo(): PackageInfo = application.packageManager.getPackageInfo(application.packageName, 0)

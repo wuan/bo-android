@@ -22,6 +22,7 @@ import android.content.*
 import android.location.Location
 import android.location.LocationManager
 import android.util.Log
+import android.widget.Toast
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
@@ -30,7 +31,6 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.location.provider.LocationProvider
 import org.blitzortung.android.location.provider.createLocationProvider
 import org.blitzortung.android.protocol.ConsumerContainer
-import org.jetbrains.anko.longToast
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -115,7 +115,7 @@ class LocationHandler @Inject constructor(
         this.provider = newProvider.apply {
             if (!this.isEnabled) {
                 val message = context.resources.getString(R.string.location_provider_disabled).format(newProvider.type)
-                context.longToast(message)
+                Toast.makeText(context, message, Toast.LENGTH_LONG)
             } else {
                 start()
             }
@@ -202,7 +202,7 @@ class LocationHandler @Inject constructor(
     }
 
     companion object {
-        val MANUAL_PROVIDER = "manual"
+        const val MANUAL_PROVIDER = "manual"
     }
 
 }

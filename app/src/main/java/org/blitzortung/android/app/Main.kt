@@ -72,7 +72,6 @@ import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.blitzortung.android.util.LogUtil
 import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
-import org.jetbrains.anko.intentFor
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
@@ -113,57 +112,61 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         inline get() = preferences.get(PreferenceKey.KEEP_ZOOM_GOTO_OWN_LOCATION, false)
 
     private val dataEventConsumer: (DataEvent) -> Unit = { event ->
-        if (event is RequestStartedEvent) {
-            Log.d(LOG_TAG, "Main.onDataUpdate() received request started event")
-            statusComponent.startProgress()
-        } else if (event is ResultEvent) {
-
-            statusComponent.indicateError(event.failed)
-            if (!event.failed) {
-                currentResult = event
-
-                Log.d(LOG_TAG, "Main.onDataUpdate() " + event)
-
-                val resultParameters = event.parameters
-
-                clearDataIfRequested()
-
-                val initializeOverlay = strikeListOverlay.parameters != resultParameters
-                with(strikeListOverlay) {
-                    parameters = resultParameters
-                    rasterParameters = event.rasterParameters
-                    referenceTime = event.referenceTime
-                }
-
-                if (event.incrementalData && !initializeOverlay) {
-                    strikeListOverlay.expireStrikes()
-                } else {
-                    strikeListOverlay.clear()
-                }
-
-                if (initializeOverlay && event.totalStrikes != null) {
-                    strikeListOverlay.addStrikes(event.totalStrikes)
-                } else if (event.strikes != null) {
-                    strikeListOverlay.addStrikes(event.strikes)
-                }
-
-                alert_view.setColorHandler(strikeColorHandler, strikeListOverlay.parameters.intervalDuration)
-
-                strikeListOverlay.refresh()
-                mapFragment.mapView.invalidate()
-
-                legend_view.requestLayout()
-
-                if (!event.containsRealtimeData()) {
-                    setHistoricStatusString()
-                }
+        when (event) {
+            is RequestStartedEvent -> {
+                Log.d(LOG_TAG, "Main.onDataUpdate() received request started event")
+                statusComponent.startProgress()
             }
+            is ResultEvent -> {
 
-            statusComponent.stopProgress()
+                statusComponent.indicateError(event.failed)
+                if (!event.failed) {
+                    currentResult = event
 
-            legend_view.invalidate()
-        } else if (event is StatusEvent) {
-            setStatusString(event.status)
+                    Log.d(LOG_TAG, "Main.onDataUpdate() $event")
+
+                    val resultParameters = event.parameters
+
+                    clearDataIfRequested()
+
+                    val initializeOverlay = strikeListOverlay.parameters != resultParameters
+                    with(strikeListOverlay) {
+                        parameters = resultParameters
+                        rasterParameters = event.rasterParameters
+                        referenceTime = event.referenceTime
+                    }
+
+                    if (event.incrementalData && !initializeOverlay) {
+                        strikeListOverlay.expireStrikes()
+                    } else {
+                        strikeListOverlay.clear()
+                    }
+
+                    if (initializeOverlay && event.totalStrikes != null) {
+                        strikeListOverlay.addStrikes(event.totalStrikes)
+                    } else if (event.strikes != null) {
+                        strikeListOverlay.addStrikes(event.strikes)
+                    }
+
+                    alert_view.setColorHandler(strikeColorHandler, strikeListOverlay.parameters.intervalDuration)
+
+                    strikeListOverlay.refresh()
+                    mapFragment.mapView.invalidate()
+
+                    legend_view.requestLayout()
+
+                    if (!event.containsRealtimeData()) {
+                        setHistoricStatusString()
+                    }
+                }
+
+                statusComponent.stopProgress()
+
+                legend_view.invalidate()
+            }
+            is StatusEvent -> {
+                setStatusString(event.status)
+            }
         }
     }
 
@@ -236,7 +239,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private val serviceIntent: Intent
-        get() = intentFor<AppService>()
+        get() = Intent(this, AppService::class.java)
 
     private fun startService() {
         startService(serviceIntent)
@@ -485,7 +488,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        Log.v(LOG_TAG, "Main.onRequestPermissionsResult() $requestCode - ${permissions.joinToString(",", "[", "]")} - ${grantResults.map { it.toString() }.joinToString(",", "[", "]")}")
+        Log.v(LOG_TAG, "Main.onRequestPermissionsResult() $requestCode - ${permissions.joinToString(",", "[", "]")} - ${grantResults.joinToString(",", "[", "]") { it.toString() }}")
         val providerRelation = LocationProviderRelation.byOrdinal[requestCode]
         if (providerRelation != null) {
             val providerName = providerRelation.providerName
@@ -647,14 +650,14 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         }
     }
 
-    protected fun setHistoricStatusString() {
+    private fun setHistoricStatusString() {
         if (!strikeListOverlay.hasRealtimeData()) {
             val timeString = DateFormat.format("@ kk:mm", strikeListOverlay.referenceTime) as String
             setStatusString(timeString)
         }
     }
 
-    protected fun setStatusString(runStatus: String) {
+    private fun setStatusString(runStatus: String) {
         val numberOfStrikes = strikeListOverlay.totalNumberOfStrikes
         var statusText = resources.getQuantityString(R.plurals.strike, numberOfStrikes, numberOfStrikes)
         statusText += "/"
@@ -692,7 +695,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     companion object {
-        val LOG_TAG = "BO_ANDROID"
-        val MAP_FRAGMENT_TAG = "org.blitzortung.MAP_FRAGMENT_TAG"
+        const val LOG_TAG = "BO_ANDROID"
+        const val MAP_FRAGMENT_TAG = "org.blitzortung.MAP_FRAGMENT_TAG"
     }
 }

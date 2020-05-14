@@ -49,7 +49,7 @@ open class ConsumerContainer<P> {
         sendCurrentPayloadTo(consumer)
     }
 
-    protected fun sendCurrentPayloadTo(consumer: (P) -> Unit) {
+    private fun sendCurrentPayloadTo(consumer: (P) -> Unit) {
         currentPayload?.let { currentPayload ->
             consumer.invoke(currentPayload)
         }
