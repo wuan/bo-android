@@ -217,7 +217,8 @@ class AlertHandler @Inject constructor(
         alertConsumerContainer.removeConsumer(alertEventConsumer)
     }
 
-    val alertEvent: AlertEvent = alertConsumerContainer.currentPayload ?: ALERT_CANCEL_EVENT
+    val alertEvent: AlertEvent
+        get() = alertConsumerContainer.currentPayload ?: ALERT_CANCEL_EVENT
 
     companion object {
         val ALERT_CANCEL_EVENT = AlertCancelEvent()

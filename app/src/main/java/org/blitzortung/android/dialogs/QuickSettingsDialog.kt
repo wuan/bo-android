@@ -75,7 +75,7 @@ class QuickSettingsDialog : DialogFragment() {
         val queryPeriodSpinner = view.findViewById(R.id.selected_query_period) as Spinner
         queryPeriodSpinner.setSelection(selectedQueryPeriod)
 
-        builder.setView(view).setPositiveButton(R.string.ok) { dialog: DialogInterface, i: Int ->
+        builder.setView(view).setPositiveButton(R.string.ok) { _: DialogInterface, _: Int ->
             val regionValue = regionValues[selectedRegionList.selectedItemPosition]
             val rasterSizeValue = rasterSizeValues[rasterSizeSpinner.selectedItemPosition]
             val countThresholdValue = countThresholdValues[countThresholdSpinner.selectedItemPosition]
@@ -88,7 +88,7 @@ class QuickSettingsDialog : DialogFragment() {
                     .putString(PreferenceKey.COUNT_THRESHOLD.toString(), countThresholdValue)
                     .putString(PreferenceKey.INTERVAL_DURATION.toString(), intervalDurationValue)
                     .putString(PreferenceKey.QUERY_PERIOD.toString(), queryPeriodValue).apply()
-        }.setNegativeButton(R.string.cancel, { dialog: DialogInterface, i: Int -> })
+        }.setNegativeButton(R.string.cancel) { _: DialogInterface, _: Int -> }
 
         return builder.create()
     }

@@ -67,7 +67,7 @@ class OwnMapView(context: Context) : MapView(context) {
             val context = this@OwnMapView.context
             val locationText = context.resources.getString(R.string.set_manual_location)
 
-            val dialogClickListener = DialogInterface.OnClickListener { dialog, which ->
+            val dialogClickListener = DialogInterface.OnClickListener { _, which ->
                 when (which) {
                     DialogInterface.BUTTON_POSITIVE -> {
                         val preferences = context.defaultSharedPreferences

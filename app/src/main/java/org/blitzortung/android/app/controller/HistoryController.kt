@@ -61,7 +61,7 @@ class HistoryController(
     }
 
     private fun setupHistoryRewindButton() {
-        addButtonWithOnClickAction(activity.historyRew) { v ->
+        addButtonWithOnClickAction(activity.historyRew) {
             if (dataHandler.rewInterval()) {
                 activity.historyFfwd.visibility = View.VISIBLE
                 activity.goRealtime.visibility = View.VISIBLE
@@ -75,7 +75,7 @@ class HistoryController(
     }
 
     private fun setupHistoryForwardButton() {
-        addButtonWithOnClickAction(activity.historyFfwd) { v ->
+        addButtonWithOnClickAction(activity.historyFfwd) {
             if (dataHandler.ffwdInterval()) {
                 if (dataHandler.isRealtime) {
                     configureForRealtimeOperation()
@@ -87,7 +87,7 @@ class HistoryController(
     }
 
     private fun setupGoRealtimeButton() {
-        addButtonWithOnClickAction(activity.goRealtime) { v ->
+        addButtonWithOnClickAction(activity.goRealtime) {
             if (dataHandler.goRealtime()) {
                 configureForRealtimeOperation()
             }

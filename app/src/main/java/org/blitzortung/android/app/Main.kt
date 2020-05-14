@@ -77,6 +77,7 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private var backgroundAlerts: Boolean = false
@@ -111,7 +112,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private val keepZoomOnGotoOwnLocation: Boolean
         inline get() = preferences.get(PreferenceKey.KEEP_ZOOM_GOTO_OWN_LOCATION, false)
 
-    val dataEventConsumer: (DataEvent) -> Unit = { event ->
+    private val dataEventConsumer: (DataEvent) -> Unit = { event ->
         if (event is RequestStartedEvent) {
             Log.d(LOG_TAG, "Main.onDataUpdate() received request started event")
             statusComponent.startProgress()
@@ -298,7 +299,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         if (alertEvent is AlertResultEvent) {
             val alertResult = alertEvent.alertResult
             if (alertResult != null) {
-                radius = Math.max(Math.min(alertResult.closestStrikeDistance * 1.2f, radius), 50f)
+                radius = (alertResult.closestStrikeDistance * 1.2f).coerceIn(50f, radius)
             }
         }
         return radius
@@ -380,7 +381,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestLocationPermissions(preferences)
-            requestWakeupPermissions(preferences, baseContext)
+            requestWakeupPermissions(baseContext)
         }
 
         mapFragment.updateForgroundColor(strikeColorHandler.lineColor)
@@ -555,7 +556,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    private fun requestWakeupPermissions(sharedPreferences: SharedPreferences, context: Context) {
+    private fun requestWakeupPermissions(context: Context) {
         Log.v(LOG_TAG, "requestWakeupPermissions() background alerts: $backgroundAlerts")
 
         if (backgroundAlerts) {
@@ -627,7 +628,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             }
 
             PreferenceKey.MAP_FADE -> {
-                val alphaValue = Math.round(255.0f / 100.0f * sharedPreferences.get(key, 40))
+                val alphaValue = (255.0f / 100.0f * sharedPreferences.get(key, 40)).roundToInt()
                 fadeOverlay.setAlpha(alphaValue)
             }
 
