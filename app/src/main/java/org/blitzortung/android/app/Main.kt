@@ -261,10 +261,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 val currentLocation = locationHandler.location
                 if (currentLocation != null) {
                     val diameter = if (!keepZoomOnGotoOwnLocation) {
-                        val radius = determineTargetZoomRadius(alertHandler)
-
-                        //Calculate the new diameter
-                        1.5f * 2f * radius
+                        // Calculate the new diameter
+                        1.5f * determineTargetZoomRadius(alertHandler)
                     } else {
                         //User doesn't want to zoom, so we do not provide a diameter
                         null
