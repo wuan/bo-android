@@ -35,6 +35,9 @@ class TimestampIterator(
     }
 
     override fun next(): Long {
+        if (!this.hasNext()) {
+            throw NoSuchElementException()
+        }
         val currentTimeCopy = currentTime
         currentTime += intervalLength
         return currentTimeCopy

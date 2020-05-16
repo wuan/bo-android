@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.media.AudioAttributes
 import android.media.AudioManager
+import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
@@ -65,17 +66,21 @@ class AlertSignal @Inject constructor(
     private fun playSoundIfEnabled() {
         soundSignal?.let { signal ->
             RingtoneManager.getRingtone(context, signal)?.let { ringtone ->
-                if (!ringtone.isPlaying) {
-                    if (isAtLeast(Build.VERSION_CODES.LOLLIPOP)) {
-                        ringtone.audioAttributes = AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_NOTIFICATION).build()
-                    } else {
-                        @Suppress("DEPRECATION")
-                        ringtone.streamType = AudioManager.STREAM_NOTIFICATION
-                    }
-                    ringtone.play()
-                }
-                Log.v(Main.LOG_TAG, "playing " + ringtone.getTitle(context))
+                playRingtone(ringtone)
             }
         }
+    }
+
+    private fun playRingtone(ringtone: Ringtone): Int {
+        if (!ringtone.isPlaying) {
+            if (isAtLeast(Build.VERSION_CODES.LOLLIPOP)) {
+                ringtone.audioAttributes = AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_NOTIFICATION).build()
+            } else {
+                @Suppress("DEPRECATION")
+                ringtone.streamType = AudioManager.STREAM_NOTIFICATION
+            }
+            ringtone.play()
+        }
+        return Log.v(Main.LOG_TAG, "playing " + ringtone.getTitle(context))
     }
 }
