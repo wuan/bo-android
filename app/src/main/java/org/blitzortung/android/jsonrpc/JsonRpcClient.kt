@@ -37,15 +37,13 @@ class JsonRpcClient @Inject constructor(client: HttpServiceClientDefault) : Http
     var lastNumberOfTransferredBytes: Int = 0
         private set
 
-    // VisibleForTesting
-    protected fun buildParameters(parameters: Array<out Any>): JSONArray {
+    private fun buildParameters(parameters: Array<out Any>): JSONArray {
         val parameterArray = JSONArray()
         parameters.forEach { parameterArray.put(it) }
         return parameterArray
     }
 
-    // VisibleForTesting
-    protected fun buildRequest(methodName: String, parameters: Array<out Any>): String {
+    private fun buildRequest(methodName: String, parameters: Array<out Any>): String {
         val requestObject = JSONObject()
 
         requestObject.put("id", id)
@@ -60,15 +58,15 @@ class JsonRpcClient @Inject constructor(client: HttpServiceClientDefault) : Http
 
         lastNumberOfTransferredBytes = response.length
 
-        if (response.startsWith("[")) {
-            return JSONArray(response).getJSONObject(0)
+        return if (response.startsWith("[")) {
+            JSONArray(response).getJSONObject(0)
         } else {
             val responseObject = JSONObject(response)
 
             if (responseObject.has("fault")) {
                 throw JsonRpcException("remote Exception '%s' #%s ".format(responseObject.get("faultString"), responseObject.get("faultCode")))
             }
-            return responseObject
+            responseObject
         }
     }
 }

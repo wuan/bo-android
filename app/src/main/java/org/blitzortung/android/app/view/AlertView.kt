@@ -23,9 +23,9 @@ import android.graphics.*
 import android.graphics.Paint.Align
 import android.graphics.Paint.Style
 import android.location.Location
+import android.preference.PreferenceManager
 import android.util.AttributeSet
 import android.util.Log
-import android.view.View
 import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.data.AlertSector
 import org.blitzortung.android.alert.event.AlertEvent
@@ -39,7 +39,10 @@ import org.blitzortung.android.dialogs.AlertDialogColorHandler
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.overlay.color.ColorHandler
 import org.blitzortung.android.util.TabletAwareView
-import org.jetbrains.anko.defaultSharedPreferences
+import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.sin
 
 class AlertView @JvmOverloads constructor(
         context: Context,
@@ -65,10 +68,10 @@ class AlertView @JvmOverloads constructor(
 
     val alertEventConsumer: (AlertEvent?) -> Unit = { event ->
         Log.v(Main.LOG_TAG, "AlertView alertEventConsumer received $event")
-        if (event is AlertResultEvent) {
-            alertResult = event.alertResult
+        alertResult = if (event is AlertResultEvent) {
+            event.alertResult
         } else {
-            alertResult = null
+            null
         }
         invalidate()
     }
@@ -96,7 +99,8 @@ class AlertView @JvmOverloads constructor(
     }
 
     fun enableLongClickListener(dataHandler: MainDataHandler, alertHandler: AlertHandler) {
-        val sharedPreferences = context.defaultSharedPreferences
+
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
         setOnLongClickListener {
             AlertDialog(context, AlertDialogColorHandler(sharedPreferences), dataHandler, alertHandler)
@@ -116,13 +120,13 @@ class AlertView @JvmOverloads constructor(
         val parentWidth = getSize(widthMeasureSpec) * sizeFactor
         val parentHeight = getSize(heightMeasureSpec) * sizeFactor
 
-        val size = Math.min(parentWidth.toInt(), parentHeight.toInt())
+        val size = min(parentWidth.toInt(), parentHeight.toInt())
 
         super.onMeasure(MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY))
     }
 
     override fun onDraw(canvas: Canvas) {
-        val size = Math.max(width, height)
+        val size = max(width, height)
         val pad = 4
 
         val center = size / 2.0f
@@ -177,7 +181,7 @@ class AlertView @JvmOverloads constructor(
 
                 for (alertSector in alertResult.sectors) {
                     val bearing = alertSector.minimumSectorBearing.toDouble()
-                    temporaryCanvas.drawLine(center, center, center + (radius * Math.sin(bearing / 180.0f * Math.PI)).toFloat(), center + (radius * -Math.cos(bearing / 180.0f * Math.PI)).toFloat(), lines)
+                    temporaryCanvas.drawLine(center, center, center + (radius * sin(bearing / 180.0f * Math.PI)).toFloat(), center + (radius * -cos(bearing / 180.0f * Math.PI)).toFloat(), lines)
 
                     if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
                         drawSectorLabel(center, radiusIncrement, alertSector, bearing + sectorWidth / 2.0)
@@ -186,7 +190,7 @@ class AlertView @JvmOverloads constructor(
 
                 textStyle.textAlign = Align.RIGHT
                 val textHeight = textStyle.getFontMetrics(null)
-                for (radiusIndex in 0..rangeStepCount - 1) {
+                for (radiusIndex in 0 until rangeStepCount) {
                     val leftTop = center - (radiusIndex + 1) * radiusIncrement
                     val bottomRight = center + (radiusIndex + 1) * radiusIncrement
                     arcArea.set(leftTop, leftTop, bottomRight, bottomRight)
@@ -256,7 +260,7 @@ class AlertView @JvmOverloads constructor(
         if (bearing != 90.0) {
             val text = sector.label
             val textRadius = (sector.ranges.size - 0.5f) * radiusIncrement
-            temporaryCanvas!!.drawText(text, center + (textRadius * Math.sin(bearing / 180.0 * Math.PI)).toFloat(), center + (textRadius * -Math.cos(bearing / 180.0 * Math.PI)).toFloat() + textStyle.getFontMetrics(null) / 3f, textStyle)
+            temporaryCanvas!!.drawText(text, center + (textRadius * sin(bearing / 180.0 * Math.PI)).toFloat(), center + (textRadius * -cos(bearing / 180.0 * Math.PI)).toFloat() + textStyle.getFontMetrics(null) / 3f, textStyle)
         }
     }
 
@@ -287,8 +291,8 @@ class AlertView @JvmOverloads constructor(
     }
 
     companion object {
-        private val TEXT_MINIMUM_SIZE = 300
-        private val DEFAULT_FONT_SIZE = 20
+        private const val TEXT_MINIMUM_SIZE = 300
+        private const val DEFAULT_FONT_SIZE = 20
         private val XFERMODE_CLEAR = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
         private val XFERMODE_SRC = PorterDuffXfermode(PorterDuff.Mode.SRC)
     }

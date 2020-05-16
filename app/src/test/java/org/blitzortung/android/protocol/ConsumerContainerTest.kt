@@ -7,7 +7,7 @@ import org.junit.Test
 
 class ConsumerContainerTest {
 
-    lateinit var testConsumerContainer: TestConsumerContainer
+    private lateinit var testConsumerContainer: TestConsumerContainer
 
     @Before
     fun setUp() {

@@ -144,7 +144,7 @@ class AlertDataHandlerTest {
         assertThat(sectorWithStrike).isNotNull
         if (sectorWithStrike != null) {
             assertThat(sectorWithStrike.label).isEqualTo(expectedSectorLabel)
-            val rangeWithStrike = sectorWithStrike.ranges.filter { it.strikeCount > 0 }.firstOrNull()
+            val rangeWithStrike = sectorWithStrike.ranges.firstOrNull { it.strikeCount > 0 }
             assertThat(rangeWithStrike).isNotNull
             if (rangeWithStrike != null) {
                 assertThat(rangeWithStrike.strikeCount).isEqualTo(1)
@@ -154,7 +154,7 @@ class AlertDataHandlerTest {
         }
     }
 
-    private fun sectorWithStrike(result: AlertResult) = result.sectors.filter { !it.ranges.filter { it.strikeCount > 0 }.isEmpty() }.firstOrNull()
+    private fun sectorWithStrike(result: AlertResult) = result.sectors.firstOrNull { !it.ranges.none { range -> range.strikeCount > 0 } }
 
-    private fun rangeWithStrike(result: AlertResult) = result.sectors.flatMap { it.ranges }.filter { it.strikeCount > 0 }.firstOrNull()
+    private fun rangeWithStrike(result: AlertResult) = result.sectors.flatMap { it.ranges }.firstOrNull { it.strikeCount > 0 }
 }

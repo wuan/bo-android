@@ -23,6 +23,8 @@ import android.content.SharedPreferences
 import android.os.PowerManager
 import android.util.Log
 import android.widget.Toast
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
@@ -34,8 +36,6 @@ import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.ConsumerContainer
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
 import java.util.concurrent.locks.ReentrantLock
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -67,14 +67,6 @@ class ServiceDataHandler @Inject constructor(
         }
     }
 
-    private val dataConsumer: (DataEvent) -> Unit = { dataEvent ->
-        if (dataEvent is ResultEvent && dataEvent.flags.storeResult) {
-            dataConsumerContainer.storeAndBroadcast(dataEvent)
-        } else {
-            dataConsumerContainer.broadcast(dataEvent)
-        }
-    }
-
     private var dataMode = DataMode()
 
     init {
@@ -93,7 +85,7 @@ class ServiceDataHandler @Inject constructor(
                     lock,
                     { sendEvent(it) },
                     ::toast,
-                    wakeLock).execute(TaskParameters(parameters = parameters, updateParticipants = false))
+                    wakeLock).execute(activeParameters)
         }
     }
 
@@ -105,30 +97,16 @@ class ServiceDataHandler @Inject constructor(
         dataConsumerContainer.removeConsumer(dataConsumer)
     }
 
-    val hasConsumers: Boolean
-        get() = dataConsumerContainer.isEmpty
-
-    fun updateData(updateTargets: Set<DataChannel> = setOf(DataChannel.STRIKES)) {
-        Log.d(Main.LOG_TAG, "ServiceDataHandler.updateData() $activeParameters")
-        FetchDataTask(
-                dataMode,
-                dataProvider!!,
-                lock,
-                { sendEvent(it) },
-                ::toast
-        ).execute(TaskParameters(parameters = activeParameters))
-    }
-
-    val activeParameters: Parameters
+    private val activeParameters: Parameters
         get() {
-            if (dataMode.raster) {
-                return parameters
+            return if (dataMode.raster) {
+                parameters
             } else {
                 var parameters = parameters
                 if (!dataMode.region) {
                     parameters = parameters.copy(region = 0)
                 }
-                return parameters.copy(rasterBaselength = 0, countThreshold = 0)
+                parameters.copy(rasterBaselength = 0, countThreshold = 0)
             }
         }
 
@@ -190,11 +168,7 @@ class ServiceDataHandler @Inject constructor(
     }
 
     private fun showBlitzortungProviderWarning() {
-        doAsync {
-            uiThread {
-                Toast.makeText(context, R.string.provider_warning, Toast.LENGTH_LONG).show()
-            }
-        }
+        Toast.makeText(context, R.string.provider_warning, Toast.LENGTH_LONG).show()
     }
 
     private fun updateProviderSpecifics() {
@@ -209,12 +183,8 @@ class ServiceDataHandler @Inject constructor(
     }
 
 
-    private fun toast(stringResource: Int) {
-        doAsync {
-            uiThread {
-                Toast.makeText(context, stringResource, Toast.LENGTH_LONG).show()
-            }
-        }
+    private suspend fun toast(stringResource: Int) = withContext(Dispatchers.Main) {
+        Toast.makeText(context, stringResource, Toast.LENGTH_LONG).show()
     }
 
     companion object {

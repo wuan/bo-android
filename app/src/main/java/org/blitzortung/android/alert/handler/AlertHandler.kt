@@ -55,9 +55,9 @@ class AlertHandler @Inject constructor(
 
 ) : OnSharedPreferenceChangeListener {
 
-    var alertParameters: AlertParameters
+    private var alertParameters: AlertParameters
 
-    val alertConsumerContainer: ConsumerContainer<AlertEvent> = object : ConsumerContainer<AlertEvent>() {
+    private val alertConsumerContainer: ConsumerContainer<AlertEvent> = object : ConsumerContainer<AlertEvent>() {
         override fun addedFirstConsumer() {
             Log.d(Main.LOG_TAG, "AlertHandler: added first alert consumer")
         }
@@ -69,7 +69,7 @@ class AlertHandler @Inject constructor(
 
     private var lastStrikes: Collection<Strike>? = null
 
-    var alertEnabled: Boolean = false
+    private var alertEnabled: Boolean = false
         private set
 
     private var notificationDistanceLimit: Float = 0.0f
@@ -83,7 +83,7 @@ class AlertHandler @Inject constructor(
     private var signalingLastTimestamp: Long = 0
 
 
-    val locationEventConsumer: (LocationEvent) -> Unit = { event ->
+    private val locationEventConsumer: (LocationEvent) -> Unit = { event ->
         Log.v(Main.LOG_TAG, "AlertHandler.locationEventConsumer ${event.location}")
 
         checkStrikes(lastStrikes, event.location)

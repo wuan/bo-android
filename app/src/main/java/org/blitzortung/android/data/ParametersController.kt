@@ -28,7 +28,7 @@ class ParametersController private constructor(private val offsetIncrement: Int)
         return updateInterval(parameters, offsetIncrement)
     }
 
-    fun updateInterval(parameters: Parameters, offsetIncrement: Int): Parameters {
+    private fun updateInterval(parameters: Parameters, offsetIncrement: Int): Parameters {
         var intervalOffset = parameters.intervalOffset + offsetIncrement
         val intervalDuration = parameters.intervalDuration
 
@@ -51,7 +51,7 @@ class ParametersController private constructor(private val offsetIncrement: Int)
 
     companion object {
 
-        private val MAX_RANGE = 24 * 60
+        private const val MAX_RANGE = 24 * 60
 
         fun withOffsetIncrement(offsetIncrement: Int): ParametersController {
             return ParametersController(offsetIncrement)

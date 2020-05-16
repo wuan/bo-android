@@ -26,6 +26,8 @@ import android.graphics.RectF
 import org.osmdroid.api.IGeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.Projection
+import kotlin.math.max
+import kotlin.math.min
 
 class RasterShape(private val center: IGeoPoint) : LightningShape {
 
@@ -80,10 +82,10 @@ class RasterShape(private val center: IGeoPoint) : LightningShape {
     }
 
     fun update(topLeft: Point, bottomRight: Point, color: Int, multiplicity: Int, textColor: Int) {
-        val x1 = Math.min(topLeft.x.toFloat(), -MIN_SIZE)
-        val y1 = Math.min(topLeft.y.toFloat(), -MIN_SIZE)
-        val x2 = Math.max(bottomRight.x.toFloat(), MIN_SIZE)
-        val y2 = Math.max(bottomRight.y.toFloat(), MIN_SIZE)
+        val x1 = min(topLeft.x.toFloat(), -MIN_SIZE)
+        val y1 = min(topLeft.y.toFloat(), -MIN_SIZE)
+        val x2 = max(bottomRight.x.toFloat(), MIN_SIZE)
+        val y2 = max(bottomRight.y.toFloat(), MIN_SIZE)
         size.set(x1, y1, x2, y2)
 
         this.multiplicity = multiplicity
@@ -99,7 +101,7 @@ class RasterShape(private val center: IGeoPoint) : LightningShape {
     }
 
     private fun coerceToRange(value: Float, lowerBound: Float, upperBound: Float): Float {
-        return Math.min(Math.max(value, lowerBound), upperBound)
+        return value.coerceIn(lowerBound, upperBound)
     }
 
     companion object {

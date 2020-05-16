@@ -26,6 +26,7 @@ import org.blitzortung.android.alert.data.AlertSector
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.util.MeasurementSystem
 import javax.inject.Inject
+import kotlin.math.max
 
 open class AlertDataHandler @Inject internal constructor(
         private val aggregatingAlertDataMapper: AggregatingAlertDataMapper
@@ -53,8 +54,8 @@ open class AlertDataHandler @Inject internal constructor(
         return AlertResult(sectors.map { aggregatingAlertDataMapper.mapSector(it) }, parameters, referenceTime)
     }
 
-    internal fun checkStrike(sector: AggregatingAlertSector, strike: Strike, measurementSystem: MeasurementSystem,
-            location: Location, thresholdTime: Long) {
+    private fun checkStrike(sector: AggregatingAlertSector, strike: Strike, measurementSystem: MeasurementSystem,
+                            location: Location, thresholdTime: Long) {
         val distance = calculateDistanceTo(location, strike, measurementSystem)
 
         sector.ranges.find { distance <= it.rangeMaximum }?.let {
@@ -75,7 +76,7 @@ open class AlertDataHandler @Inject internal constructor(
     fun getLatestTimstampWithin(distanceLimit: Float, alertResult: AlertResult): Long {
         return alertResult.sectors.fold(0L, {
             latestTimestamp, sector ->
-            Math.max(latestTimestamp, getLatestTimestampWithin(distanceLimit, sector))
+            max(latestTimestamp, getLatestTimestampWithin(distanceLimit, sector))
         })
     }
 
@@ -87,7 +88,7 @@ open class AlertDataHandler @Inject internal constructor(
                 }.joinToString()
     }
 
-    internal fun getLatestTimestampWithin(distanceLimit: Float, sector: AlertSector): Long {
+    private fun getLatestTimestampWithin(distanceLimit: Float, sector: AlertSector): Long {
         return sector.ranges
                 .filter { distanceLimit <= it.rangeMaximum }
                 .map { it.latestStrikeTimestamp }

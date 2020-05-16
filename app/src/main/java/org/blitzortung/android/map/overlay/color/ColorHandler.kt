@@ -22,6 +22,8 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import kotlin.math.max
+import kotlin.math.min
 
 abstract class ColorHandler(private val preferences: SharedPreferences) {
 
@@ -40,10 +42,10 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
     }
 
     private fun getColorTarget(): ColorTarget {
-        try {
-            return ColorTarget.valueOf(preferences.get(PreferenceKey.MAP_TYPE, "SATELLITE"))
+        return try {
+            ColorTarget.valueOf(preferences.get(PreferenceKey.MAP_TYPE, "SATELLITE"))
         } catch (e: IllegalArgumentException) {
-            return ColorTarget.SATELLITE
+            ColorTarget.SATELLITE
         }
     }
 
@@ -54,7 +56,7 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
 
     fun getColorSection(referenceTime: Long, eventTime: Long, intervalDuration: Int): Int {
         val minutesPerColor = intervalDuration / colors.size
-        var section = if (minutesPerColor > 0) ((referenceTime - eventTime) / 1000 / 60 / minutesPerColor).toInt() else 0
+        val section = if (minutesPerColor > 0) ((referenceTime - eventTime) / 1000 / 60 / minutesPerColor).toInt() else 0
         return limitToValidRange(section)
     }
 
@@ -67,7 +69,7 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
     }
 
     private fun limitToValidRange(index: Int): Int {
-        return Math.max(Math.min(index, colors.size - 1), 0)
+        return max(min(index, colors.size - 1), 0)
     }
 
     val textColor: Int

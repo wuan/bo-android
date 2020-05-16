@@ -24,7 +24,6 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.util.Log
-import android.view.View
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.provider.result.ResultEvent
@@ -39,7 +38,7 @@ class HistogramView @JvmOverloads constructor(
 ) : TabletAwareView(context, attrs, defStyle) {
 
     private val backgroundPaint: Paint
-    private val foregroundPaint: Paint
+    private val foregroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val textPaint: Paint
     private val defaultForegroundColor: Int
     private val backgroundRect: RectF
@@ -53,7 +52,6 @@ class HistogramView @JvmOverloads constructor(
     }
 
     init {
-        foregroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
         backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         backgroundPaint.color = context.resources.getColor(R.color.translucent_background)
@@ -81,7 +79,7 @@ class HistogramView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         val strikesOverlay = strikesOverlay
         val histogram = histogram
-        if (strikesOverlay != null && histogram != null && histogram.size > 0) {
+        if (strikesOverlay != null && histogram != null && histogram.isNotEmpty()) {
             val colorHandler = strikesOverlay.colorHandler
             val minutesPerColor = strikesOverlay.parameters.intervalDuration / colorHandler.numberOfColors
             val minutesPerBin = 5
@@ -107,7 +105,7 @@ class HistogramView @JvmOverloads constructor(
             val yd = (height - 2 * padding - textSize) / ymax
 
             foregroundPaint.strokeWidth = 2f
-            for (i in 0..histogram.size - 1 - 1) {
+            for (i in 0 until histogram.size - 1) {
                 foregroundPaint.color = colorHandler.getColor((histogram.size - 1 - i) / ratio)
                 canvas.drawLine(x0 + xd * i, y0 - yd * histogram[i], x0 + xd * (i + 1), y0 - yd * histogram[i + 1], foregroundPaint)
             }
@@ -131,7 +129,7 @@ class HistogramView @JvmOverloads constructor(
         } else {
             val histogram = dataEvent.histogram
 
-            var viewShouldBeVisible = histogram != null && histogram.size > 0
+            var viewShouldBeVisible = histogram != null && histogram.isNotEmpty()
 
             this.histogram = histogram
 
@@ -162,7 +160,7 @@ class HistogramView @JvmOverloads constructor(
 
             result.totalStrikes.forEach { strike ->
                 val binIndex = (binCount - 1) - ((referenceTime - strike.timestamp) / 1000 / 60 / binInterval).toInt()
-                if (binIndex in 0 .. binCount - 1)
+                if (binIndex in 0 until binCount)
                     histogram[binIndex]++
             }
             this.histogram = histogram

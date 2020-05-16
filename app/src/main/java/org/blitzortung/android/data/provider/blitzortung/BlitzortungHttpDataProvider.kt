@@ -40,6 +40,7 @@ import java.util.*
 import java.util.zip.GZIPInputStream
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.max
 
 @Singleton
 class BlitzortungHttpDataProvider @Inject constructor(
@@ -48,8 +49,8 @@ class BlitzortungHttpDataProvider @Inject constructor(
         mapBuilderFactory: MapBuilderFactory
 ) : OnSharedPreferenceChangeListener, DataProvider {
 
-    private val strikeMapBuilder: MapBuilder<Strike>
-    private val stationMapBuilder: MapBuilder<Station>
+    private val strikeMapBuilder: MapBuilder<Strike> = mapBuilderFactory.createAbstractStrikeMapBuilder()
+    private val stationMapBuilder: MapBuilder<Station> = mapBuilderFactory.createStationMapBuilder()
     private var latestTime: Long = 0
     private var strikes: List<Strike> = emptyList()
     private var parameters: Parameters? = null
@@ -58,8 +59,6 @@ class BlitzortungHttpDataProvider @Inject constructor(
     private lateinit var password: String
 
     init {
-        strikeMapBuilder = mapBuilderFactory.createAbstractStrikeMapBuilder()
-        stationMapBuilder = mapBuilderFactory.createStationMapBuilder()
         preferences.registerOnSharedPreferenceChangeListener(this)
         onSharedPreferenceChanged(preferences, PreferenceKey.USERNAME, PreferenceKey.PASSWORD )
     }
@@ -73,8 +72,7 @@ class BlitzortungHttpDataProvider @Inject constructor(
         val urlString = urlFormatter.getUrlFor(type, region, intervalTime, useGzipCompression)
 
         try {
-            val url: URL
-            url = URL(urlString)
+            val url = URL(urlString)
             val connection = url.openConnection()
             connection.connectTimeout = 40000
             connection.readTimeout = 40000
@@ -168,7 +166,7 @@ class BlitzortungHttpDataProvider @Inject constructor(
             val millisecondsPerMinute = 60 * 1000L
             val endTime = System.currentTimeMillis() + intervalOffset * millisecondsPerMinute
             val startTime = endTime - intervalDuration * millisecondsPerMinute
-            val intervalSequence = createTimestampSequence(10 * millisecondsPerMinute, Math.max(startTime, latestTime), endTime)
+            val intervalSequence = createTimestampSequence(10 * millisecondsPerMinute, max(startTime, latestTime), endTime)
 
             Authenticator.setDefault(MyAuthenticator())
 
@@ -177,7 +175,7 @@ class BlitzortungHttpDataProvider @Inject constructor(
                         intervalTime.timeInMillis = it
 
                         return@map readFromUrl(Type.STRIKES, region, intervalTime)
-                    }, { strikeMapBuilder.buildFromLine(it) })
+                    }) { strikeMapBuilder.buildFromLine(it) }
 
             if (latestTime > 0L) {
                 resultVar = resultVar.copy(incrementalData = true)

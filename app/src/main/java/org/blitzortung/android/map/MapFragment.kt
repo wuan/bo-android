@@ -3,6 +3,7 @@ package org.blitzortung.android.map
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,12 +13,12 @@ import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
-import org.jetbrains.anko.defaultSharedPreferences
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.ScaleBarOverlay
+import kotlin.math.min
 
 class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
@@ -39,7 +40,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         val context = this.activity!!
         val dm = context.resources.displayMetrics
 
-        val preferences = context.defaultSharedPreferences
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         preferences.registerOnSharedPreferenceChangeListener(this)
 
         mPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -117,7 +118,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
     fun calculateTargetZoomLevel(widthInMeters: Float): Double {
         val equatorLength = 40075004.0 // in meters
-        val widthInPixels = Math.min(mapView.height, mapView.width).toDouble()
+        val widthInPixels = min(mapView.height, mapView.width).toDouble()
         var metersPerPixel = equatorLength / 256
         var zoomLevel = 0.0
         while ((metersPerPixel * widthInPixels) > widthInMeters) {

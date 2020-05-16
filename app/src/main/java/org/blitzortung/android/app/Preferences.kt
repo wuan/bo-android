@@ -18,6 +18,7 @@
 
 package org.blitzortung.android.app
 
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.location.LocationManager
@@ -30,7 +31,6 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.location.LocationHandler
-import org.jetbrains.anko.locationManager
 import javax.inject.Inject
 
 class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
@@ -59,8 +59,9 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
 
             PreferenceKey.LOCATION_MODE -> {
                 val provider = configureLocationProviderPreferences(sharedPreferences)
-
-                if (provider != LocationHandler.MANUAL_PROVIDER && !this.locationManager.isProviderEnabled(provider)) {
+                getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                if (provider != LocationHandler.MANUAL_PROVIDER &&
+                        !(getSystemService(Context.LOCATION_SERVICE) as LocationManager).isProviderEnabled(provider)) {
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 }
             }

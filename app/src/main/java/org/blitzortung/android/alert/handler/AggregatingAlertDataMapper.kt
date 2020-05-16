@@ -17,7 +17,7 @@ internal class AggregatingAlertDataMapper @Inject constructor() {
         }
     }
 
-    fun mapSectorRange(aggregatingAlertSectorRange: AggregatingAlertSectorRange): AlertSectorRange {
+    private fun mapSectorRange(aggregatingAlertSectorRange: AggregatingAlertSectorRange): AlertSectorRange {
         with(aggregatingAlertSectorRange) {
             return AlertSectorRange(
                     rangeMinimum = rangeMinimum,

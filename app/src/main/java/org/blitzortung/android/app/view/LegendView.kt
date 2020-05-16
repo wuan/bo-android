@@ -24,10 +24,11 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.view.View
 import org.blitzortung.android.app.R
 import org.blitzortung.android.map.overlay.StrikeListOverlay
 import org.blitzortung.android.util.TabletAwareView
+import kotlin.math.max
+import kotlin.math.min
 
 class LegendView @JvmOverloads constructor(
         context: Context,
@@ -82,7 +83,7 @@ class LegendView @JvmOverloads constructor(
                         context.resources.getString(R.string.unit_minute)))
 
         if (hasRegion()) {
-            innerWidth = Math.max(innerWidth, regionTextPaint.measureText(regionName))
+            innerWidth = max(innerWidth, regionTextPaint.measureText(regionName))
         }
 
         return padding + innerWidth + padding
@@ -94,14 +95,14 @@ class LegendView @JvmOverloads constructor(
         val parentWidth = getSize(widthMeasureSpec)
         val parentHeight = getSize(heightMeasureSpec)
 
-        val width = Math.min(determineWidth(strikesOverlay?.parameters?.intervalDuration
+        val width = min(determineWidth(strikesOverlay?.parameters?.intervalDuration
                 ?: 0), parentWidth.toFloat())
 
         val colorHandler = strikesOverlay?.colorHandler
 
         var height = 0.0f
         if (colorHandler != null) {
-            height = Math.min((colorFieldSize + padding) * colorHandler.colors.size + padding, parentHeight.toFloat())
+            height = min((colorFieldSize + padding) * colorHandler.colors.size + padding, parentHeight.toFloat())
 
             if (hasRegion()) {
                 height += colorFieldSize * REGION_HEIGHT + padding
@@ -156,7 +157,7 @@ class LegendView @JvmOverloads constructor(
 
                 if (hasCountThreshold()) {
                     val countThreshold = strikesOverlay.parameters.countThreshold
-                    canvas.drawText("# > " + countThreshold, width / 2.0f, topCoordinate + colorFieldSize * COUNT_THRESHOLD_HEIGHT / 1.1f, countThresholdTextPaint)
+                    canvas.drawText("# > $countThreshold", width / 2.0f, topCoordinate + colorFieldSize * COUNT_THRESHOLD_HEIGHT / 1.1f, countThresholdTextPaint)
                     topCoordinate += colorFieldSize * COUNT_THRESHOLD_HEIGHT + padding
                 }
             }
@@ -167,12 +168,10 @@ class LegendView @JvmOverloads constructor(
         get() {
             val regionNumber = strikesOverlay!!.parameters.region
 
-            var index = 0
-            for (region_number in resources.getStringArray(R.array.regions_values)) {
+            for ((index, region_number) in resources.getStringArray(R.array.regions_values).withIndex()) {
                 if (regionNumber == Integer.parseInt(region_number)) {
                     return resources.getStringArray(R.array.regions)[index]
                 }
-                index++
             }
 
             return resources.getString(R.string.not_available)
@@ -190,7 +189,7 @@ class LegendView @JvmOverloads constructor(
         return strikesOverlay?.parameters?.region ?: 0 != 0
     }
 
-    val rasterString: String
+    private val rasterString: String
         get() {
             val minDistance = strikesOverlay?.rasterParameters?.minDistance
             return if (minDistance != null) {

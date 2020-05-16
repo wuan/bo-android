@@ -10,7 +10,6 @@ import javax.inject.Singleton
 
 @Module
 class ServiceModule @Inject constructor(
-        private val application: Application
 ) {
 
     @Provides

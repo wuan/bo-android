@@ -38,10 +38,9 @@ open class NotificationHandler @Inject constructor(
         private val context: Context
 ) {
 
-    private val notificationService: NotificationManager
+    private val notificationService: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     init {
-        notificationService = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         if (isAtLeast(Build.VERSION_CODES.O)) {
             createNotificationChannel()
@@ -53,12 +52,16 @@ open class NotificationHandler @Inject constructor(
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
 
-        val notification = if (isAtLeast(Build.VERSION_CODES.O)) {
-            createNotification(contentIntent, notificationText)
-        } else if (isAtLeast(Build.VERSION_CODES.JELLY_BEAN)) {
-            createJellyBeanNotification(contentIntent, notificationText)
-        } else {
-            createLegacyNotification(contentIntent, notificationText)
+        val notification = when {
+            isAtLeast(Build.VERSION_CODES.O) -> {
+                createNotification(contentIntent, notificationText)
+            }
+            isAtLeast(Build.VERSION_CODES.JELLY_BEAN) -> {
+                createJellyBeanNotification(contentIntent, notificationText)
+            }
+            else -> {
+                createLegacyNotification(contentIntent, notificationText)
+            }
         }
 
         notificationService.notify(R.id.alarm_notification_id, notification)

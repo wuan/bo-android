@@ -25,11 +25,10 @@ import android.graphics.drawable.shapes.Shape
 
 class ParticipantShape : Shape() {
 
-    private val rect: RectF
+    private val rect: RectF = RectF()
     private var color: Int = 0
 
     init {
-        rect = RectF()
         color = 0
     }
 

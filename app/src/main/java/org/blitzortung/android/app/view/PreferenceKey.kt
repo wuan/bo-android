@@ -52,9 +52,7 @@ enum class PreferenceKey(val key: String) {
     LOCATION_MODE("location_mode"),
     LOCATION_LONGITUDE("location_longitude"),
     LOCATION_LATITUDE("location_latitude"),
-    KEEP_ZOOM_GOTO_OWN_LOCATION("keep_zoom_goto_own_location"),
-    OSMDROID_BASEPATH("osmdroid.basePath"),
-    OSMDROID_CACHEPATH("osmdroid.cachePath");
+    KEEP_ZOOM_GOTO_OWN_LOCATION("keep_zoom_goto_own_location");
 
     override fun toString(): String {
         return key

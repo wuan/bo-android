@@ -1,67 +1,64 @@
 package org.blitzortung.android.data
 
-import android.os.AsyncTask
+import kotlinx.coroutines.*
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.ResultEvent
 import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.util.concurrent.locks.Lock
+import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.KSuspendFunction1
 
 internal open class FetchDataTask(
         private val dataMode: DataMode,
         private val dataProvider: DataProvider,
         private val lock: Lock,
         private val resultConsumer: (ResultEvent) -> Unit,
-        private val toast: (Int) -> Unit
-) : AsyncTask<TaskParameters, Int, ResultEvent>() {
+        private val toast: KSuspendFunction1<Int, Unit>
+) : CoroutineScope {
+    private var job: Job = Job()
 
-    override fun onPostExecute(result: ResultEvent?) {
-        if (result != null) {
-            resultConsumer.invoke(result)
-        }
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
+
+    fun cancel() {
+        job.cancel()
     }
 
-    override fun doInBackground(vararg taskParametersArray: TaskParameters): ResultEvent? {
-        val taskParameters = taskParametersArray[0]
-        val parameters = taskParameters.parameters
-        val flags = taskParameters.flags
+    fun execute(parameters: Parameters, flags: Flags = Flags()) = launch {
+        onPostExecute(doInBackground(parameters, flags))
+    }
 
+    protected open suspend fun doInBackground(parameters: Parameters, flags: Flags): ResultEvent? = withContext(Dispatchers.IO) {
         if (lock.tryLock()) {
             try {
                 var result = ResultEvent(referenceTime = System.currentTimeMillis(), parameters = parameters, flags = flags)
 
                 dataProvider.retrieveData {
-                    if (dataMode.raster) {
-                        result = getStrikesGrid(parameters, result)
+                    result = if (dataMode.raster) {
+                        getStrikesGrid(parameters, result)
                     } else {
-                        result = getStrikes(parameters, result)
+                        getStrikes(parameters, result)
                     }
-
-                    /*if (taskParameters.updateParticipants) {
-                        result.copy(stations = getStations(parameters.region))
-                    }*/
                 }
 
-                /*if (taskParameters.updateParticipants) {
-                    result.copy(stations = dataProvider!!.getStations(parameters.region))
-                }*/
-
-                return result
+                result
             } catch (e: RuntimeException) {
                 e.printStackTrace()
 
                 handleErrorUserFeedback(e)
 
-                return ResultEvent(failed = true, referenceTime = System.currentTimeMillis(), parameters = parameters, flags = flags)
+                ResultEvent(failed = true, referenceTime = System.currentTimeMillis(), parameters = parameters, flags = flags)
             } finally {
                 lock.unlock()
             }
+        } else {
+            null
         }
-        return null
     }
 
-    private fun handleErrorUserFeedback(e: RuntimeException) {
+    private suspend fun handleErrorUserFeedback(e: RuntimeException) {
         val warningToastStringResource = when (e.cause) {
             is SocketTimeoutException ->
                 R.string.timeout_warning
@@ -74,6 +71,12 @@ internal open class FetchDataTask(
 
         if (warningToastStringResource != null) {
             toast.invoke(warningToastStringResource)
+        }
+    }
+
+    open fun onPostExecute(result: ResultEvent?) {
+        if (result != null) {
+            resultConsumer.invoke(result)
         }
     }
 }
