@@ -4,6 +4,7 @@ import android.content.Context
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
@@ -71,6 +72,12 @@ abstract class ManagerLocationProvider(
             sendLocationUpdate(location)
         }
     }
+
+    override fun onProviderDisabled(provider: String) = Unit
+
+    override fun onProviderEnabled(provider: String) = Unit
+
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
 
     override val isEnabled: Boolean
         get() = locationManager.isProviderEnabled(type)
