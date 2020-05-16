@@ -4,7 +4,6 @@ import android.content.Context
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
@@ -39,8 +38,8 @@ abstract class ManagerLocationProvider(
             try {
                 enableLocationManager()
             } catch (securityException: SecurityException) {
-                Toast.makeText(context, "could not enable location manager $type", Toast.LENGTH_LONG).show()
-                Log.e(LOG_TAG, "could not enable location manager $type", securityException)
+                Toast.makeText(context, failedToEnableMessage, Toast.LENGTH_LONG).show()
+                Log.e(LOG_TAG, failedToEnableMessage, securityException)
             }
         } else {
             val message = "location provider $type is not available"
@@ -73,15 +72,6 @@ abstract class ManagerLocationProvider(
         }
     }
 
-    override fun onProviderDisabled(provider: String) {
-    }
-
-    override fun onProviderEnabled(provider: String) {
-    }
-
-    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-    }
-
     override val isEnabled: Boolean
         get() = locationManager.isProviderEnabled(type)
 
@@ -108,13 +98,19 @@ abstract class ManagerLocationProvider(
             updateToLastKnown()
             locationManager.requestLocationUpdates(type, minTime, minDistance, this)
         } catch (securityException: SecurityException) {
-            Toast.makeText(context, "could not enable location manager $type", Toast.LENGTH_LONG).show()
-            Log.e(LOG_TAG, "could not enable location manager $type", securityException)
+            Toast.makeText(context, failedToEnableMessage, Toast.LENGTH_LONG).show()
+            Log.e(LOG_TAG, failedToEnableMessage, securityException)
         } catch (runtimeException: RuntimeException) {
-            Toast.makeText(context, "could not reconfigure location manager $type ", Toast.LENGTH_LONG).show()
-            Log.e(LOG_TAG, "could not reconfigure location manager $type", runtimeException)
+            Toast.makeText(context, failedToReconfigureMessage, Toast.LENGTH_LONG).show()
+            Log.e(LOG_TAG, failedToReconfigureMessage, runtimeException)
         }
     }
+
+    private val failedToReconfigureMessage
+        get() = "could not reconfigure location manager $type "
+
+    private val failedToEnableMessage
+        get() = "could not enable location manager $type"
 
     private fun updateToLastKnown() {
         val location = try {

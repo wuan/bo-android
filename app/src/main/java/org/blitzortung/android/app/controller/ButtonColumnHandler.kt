@@ -25,7 +25,6 @@ import org.blitzortung.android.app.helper.ViewHelper.pxFromSp
 class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) {
 
     data class GroupedView<V, G>(val view: V, val groups: Set<G>) {
-        constructor(view: V, vararg groups: G) : this(view, groups.toSet())
     }
 
     private val elements: MutableList<GroupedView<V, G>>
@@ -35,11 +34,11 @@ class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) 
     }
 
     fun addElement(element: V, vararg groups: G) {
-        elements.add(GroupedView(element, *groups))
+        elements.add(GroupedView(element, groups.toSet()))
     }
 
     fun addAllElements(elements: Collection<V>, vararg groups: G) {
-        this.elements.addAll(elements.map { GroupedView(it, *groups) })
+        this.elements.addAll(elements.map { GroupedView(it, groups.toSet()) })
     }
 
     fun updateButtonColumn() {
