@@ -221,7 +221,7 @@ class AlertView @JvmOverloads constructor(
 
     private fun drawAlertOrLocationMissingMessage(center: Float, canvas: Canvas) {
         with(warnText) {
-            color = 0xffa00000.toInt()
+            color = resources.getColor(R.color.text_warning)
             textAlign = Align.CENTER
             textSize = DEFAULT_FONT_SIZE.toFloat()
 
