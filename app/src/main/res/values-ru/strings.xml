@@ -78,10 +78,10 @@
     <string name="show_location_summary">Включить символ для собственного местоположения на карте</string>
     <string name="data_settings">Передача данных</string>
     <string name="region">Регион</string>
-    <string name="region_summary">Выберите Европу, Северную Америку или Океанию</string>
+    <string name="region_summary">Выберите регион предоставления данных</string>
 
     <string-array name="regions">
-        <item>Global</item>
+        <item>Весь мир</item>
         <item>Европа</item>
         <item>С. Америка</item>
         <item>Ц. Америка</item>
