@@ -163,7 +163,7 @@ class MainDataHandler @Inject constructor(
             }
 
             PreferenceKey.RASTER_SIZE -> {
-                val rasterBaselengthString = sharedPreferences.get(key, DEFAULT_RASTER_BASELENGTH.toString())
+                val rasterBaselengthString = sharedPreferences.get(key, AUTO_RASTER_BASELENGTH)
                 if (rasterBaselengthString == AUTO_RASTER_BASELENGTH) {
                     autoRaster = true
                     parameters = parameters.copy(rasterBaselength = DEFAULT_RASTER_BASELENGTH)
@@ -192,7 +192,7 @@ class MainDataHandler @Inject constructor(
             }
 
             PreferenceKey.REGION -> {
-                val region = Integer.parseInt(sharedPreferences.get(key, "1"))
+                val region = Integer.parseInt(sharedPreferences.get(key, "0"))
                 parameters = parameters.copy(region = region)
                 updateData()
             }

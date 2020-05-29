@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <ListPreference
-        android:defaultValue="1"
+        android:defaultValue="0"
         android:enabled="true"
         android:entries="@array/regions"
         android:entryValues="@array/regions_values"
@@ -11,7 +11,7 @@
         android:summary="@string/region_summary"
         android:title="@string/region" />
     <ListPreference
-        android:defaultValue="10000"
+        android:defaultValue="auto"
         android:enabled="true"
         android:entries="@array/raster_sizes"
         android:entryValues="@array/raster_size_values"
