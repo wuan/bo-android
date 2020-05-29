@@ -32,11 +32,11 @@ data class RasterParameters(
         val latitudeBins: Int,
         val minDistance: Float? = null) {
 
-    val rectCenterLongitude: Double
-        get() = longitudeStart + longitudeDelta * longitudeBins / 2.0
+    val isGlobal: Boolean = (longitudeStart == 0.0 && latitudeStart == 0.0)
 
-    val rectCenterLatitude: Double
-        get() = latitudeStart - latitudeDelta * latitudeBins / 2.0
+    val rectCenterLongitude: Double = longitudeStart + longitudeDelta * longitudeBins / 2.0
+
+    val rectCenterLatitude: Double = latitudeStart - latitudeDelta * latitudeBins / 2.0
 
     fun getCenterLongitude(offset: Int): Double {
         return longitudeStart + longitudeDelta * (offset + 0.5)
@@ -46,11 +46,9 @@ data class RasterParameters(
         return latitudeStart - latitudeDelta * (offset + 0.5)
     }
 
-    private val rectLongitudeDelta: Double
-        get() = longitudeDelta * longitudeBins
+    private val rectLongitudeDelta: Double = longitudeDelta * longitudeBins
 
-    private val rectLatitudeDelta: Double
-        get() = latitudeDelta * latitudeBins
+    private val rectLatitudeDelta: Double = latitudeDelta * latitudeBins
 
     fun getRect(projection: Projection): RectF {
         var leftTop = Point()

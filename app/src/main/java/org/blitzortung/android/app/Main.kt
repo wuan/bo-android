@@ -287,7 +287,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 if (currentResult != null) {
                     val rasterParameters = currentResult.rasterParameters
                     if (rasterParameters != null) {
-                        animateToLocationAndVisibleSize(rasterParameters.rectCenterLongitude, rasterParameters.rectCenterLatitude, 5000f)
+                        if (rasterParameters.isGlobal) {
+                            animateToLocationAndVisibleSize(-30.0, 0.0, 40000f)
+                        } else {
+                            animateToLocationAndVisibleSize(rasterParameters.rectCenterLongitude, rasterParameters.rectCenterLatitude, 5000f)
+                        }
                     } else {
                         animateToLocationAndVisibleSize(0.0, 0.0, 20000f)
                     }
