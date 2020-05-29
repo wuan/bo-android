@@ -9,17 +9,15 @@ import org.blitzortung.android.app.Main
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.util.isAtLeast
-import java.util.concurrent.locks.Lock
 import kotlin.reflect.KSuspendFunction1
 
 internal class FetchBackgroundDataTask(
         dataMode: DataMode,
         dataProvider: DataProvider,
-        lock: Lock,
         resultConsumer: (ResultEvent) -> Unit,
         toast: KSuspendFunction1<Int, Unit>,
         private val wakeLock: PowerManager.WakeLock
-) : FetchDataTask(dataMode, dataProvider, lock, resultConsumer, toast) {
+) : FetchDataTask(dataMode, dataProvider, resultConsumer, toast) {
 
     override fun onPostExecute(result: ResultEvent?) {
         super.onPostExecute(result)

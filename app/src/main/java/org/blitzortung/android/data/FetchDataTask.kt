@@ -6,14 +6,12 @@ import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.ResultEvent
 import java.net.SocketException
 import java.net.SocketTimeoutException
-import java.util.concurrent.locks.Lock
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KSuspendFunction1
 
 internal open class FetchDataTask(
         private val dataMode: DataMode,
         private val dataProvider: DataProvider,
-        private val lock: Lock,
         private val resultConsumer: (ResultEvent) -> Unit,
         private val toast: KSuspendFunction1<Int, Unit>
 ) : CoroutineScope {
@@ -31,29 +29,25 @@ internal open class FetchDataTask(
     }
 
     protected open suspend fun doInBackground(parameters: Parameters, flags: Flags): ResultEvent? = withContext(Dispatchers.IO) {
-        if (lock.tryLock()) {
-            try {
-                var result = ResultEvent(referenceTime = System.currentTimeMillis(), parameters = parameters, flags = flags)
+        try {
+            var result = ResultEvent(referenceTime = System.currentTimeMillis(), parameters = parameters, flags = flags)
 
-                dataProvider.retrieveData {
-                    result = if (dataMode.raster) {
-                        getStrikesGrid(parameters, result)
-                    } else {
-                        getStrikes(parameters, result)
-                    }
+            dataProvider.retrieveData {
+                result = if (dataMode.raster) {
+                    getStrikesGrid(parameters, result)
+                } else {
+                    getStrikes(parameters, result)
                 }
-
-                result
-            } catch (e: RuntimeException) {
-                e.printStackTrace()
-
-                handleErrorUserFeedback(e)
-
-                ResultEvent(failed = true, referenceTime = System.currentTimeMillis(), parameters = parameters, flags = flags)
-            } finally {
-                lock.unlock()
             }
-        } else {
+
+            result
+        } catch (e: RuntimeException) {
+            e.printStackTrace()
+
+            handleErrorUserFeedback(e)
+
+            ResultEvent(failed = true, referenceTime = System.currentTimeMillis(), parameters = parameters, flags = flags)
+
             null
         }
     }

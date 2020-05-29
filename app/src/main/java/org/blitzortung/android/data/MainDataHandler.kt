@@ -40,7 +40,6 @@ import org.blitzortung.android.data.provider.result.StatusEvent
 import org.blitzortung.android.protocol.ConsumerContainer
 import org.blitzortung.android.util.Period
 import java.util.*
-import java.util.concurrent.locks.ReentrantLock
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -57,8 +56,6 @@ class MainDataHandler @Inject constructor(
     private var updatesEnabled = false
 
     private var period: Int = 0
-
-    private val lock = ReentrantLock()
 
     private var dataProvider: DataProvider? = null
 
@@ -114,7 +111,6 @@ class MainDataHandler @Inject constructor(
             FetchDataTask(
                     dataMode,
                     dataProvider!!,
-                    lock,
                     { sendEvent(it) },
                     ::toast
             ).execute(parameters = activeParameters)
