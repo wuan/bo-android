@@ -131,8 +131,8 @@ class ServiceDataHandler @Inject constructor(
             }
 
             PreferenceKey.RASTER_SIZE -> {
-                val rasterBaselength = Integer.parseInt(sharedPreferences.get(key, "10000"))
-                parameters = parameters.copy(rasterBaselength = rasterBaselength)
+                val rasterBaselength = sharedPreferences.get(key, DEFAULT_RASTER_BASELENGTH.toString())
+                parameters = parameters.copy(rasterBaselength = if (rasterBaselength == AUTO_RASTER_BASELENGTH) DEFAULT_RASTER_BASELENGTH else rasterBaselength.toInt())
                 updateData()
             }
 

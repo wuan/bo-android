@@ -10,6 +10,7 @@ import android.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
 import org.blitzortung.android.app.BOApplication
+import org.blitzortung.android.app.R
 import javax.inject.Inject
 import javax.inject.Named
 
