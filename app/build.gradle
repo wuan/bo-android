@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.hiya.jacoco-android'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'jacoco-android'
 apply plugin: 'com.github.kt3k.coveralls'
 
 android {
@@ -21,6 +21,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+            testCoverageEnabled true
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -38,7 +41,7 @@ android {
 }
 
 jacoco {
-    toolVersion = '0.8.4'
+    toolVersion = '0.8.5'
 }
 
 tasks.withType(Test) {
@@ -64,7 +67,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.media:media:1.1.0'
-    implementation 'androidx.core:core-ktx:1.2.0'
+    implementation 'androidx.core:core-ktx:1.3.0'
     implementation "androidx.work:work-runtime-ktx:2.3.4"
     implementation 'org.osmdroid:osmdroid-android:6.1.6'
     implementation 'com.android.support:multidex:1.0.3'
