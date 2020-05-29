@@ -60,7 +60,7 @@ coveralls {
     jacocoReportPath 'build/reports/jacoco/jacocoTestReleaseUnitTestReport/jacocoTestReleaseUnitTestReport.xml'
 }
 
-def dagger_version = '2.27'
+def dagger_version = '2.28'
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
