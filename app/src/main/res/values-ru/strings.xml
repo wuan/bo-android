@@ -158,7 +158,7 @@
     <string name="raster_size_summary">Размер области представления данных</string>
 
     <string-array name="raster_sizes">
-        <item>auto</item>
+        <item>Авто</item>
         <item>5 км</item>
         <item>10 км</item>
         <item>25 км</item>
