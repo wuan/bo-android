@@ -36,7 +36,6 @@ import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.ConsumerContainer
-import java.util.concurrent.locks.ReentrantLock
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -47,8 +46,6 @@ class ServiceDataHandler @Inject constructor(
         private val dataProviderFactory: DataProviderFactory,
         private val preferences: SharedPreferences
 ) : OnSharedPreferenceChangeListener {
-
-    private val lock = ReentrantLock()
 
     private var dataProvider: DataProvider? = null
 
@@ -82,7 +79,6 @@ class ServiceDataHandler @Inject constructor(
             FetchBackgroundDataTask(
                     dataMode,
                     dataProvider,
-                    lock,
                     { sendEvent(it) },
                     ::toast,
                     wakeLock).execute(activeParameters)
@@ -135,8 +131,8 @@ class ServiceDataHandler @Inject constructor(
             }
 
             PreferenceKey.RASTER_SIZE -> {
-                val rasterBaselength = Integer.parseInt(sharedPreferences.get(key, "10000"))
-                parameters = parameters.copy(rasterBaselength = rasterBaselength)
+                val rasterBaselength = sharedPreferences.get(key, DEFAULT_RASTER_BASELENGTH.toString())
+                parameters = parameters.copy(rasterBaselength = if (rasterBaselength == AUTO_RASTER_BASELENGTH) DEFAULT_RASTER_BASELENGTH else rasterBaselength.toInt())
                 updateData()
             }
 

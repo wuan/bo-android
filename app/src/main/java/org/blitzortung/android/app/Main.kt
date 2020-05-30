@@ -73,6 +73,9 @@ import org.blitzortung.android.util.LogUtil
 import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
 import org.osmdroid.config.Configuration
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
 import javax.inject.Inject
@@ -284,7 +287,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 if (currentResult != null) {
                     val rasterParameters = currentResult.rasterParameters
                     if (rasterParameters != null) {
-                        animateToLocationAndVisibleSize(rasterParameters.rectCenterLongitude, rasterParameters.rectCenterLatitude, 5000f)
+                        if (rasterParameters.isGlobal) {
+                            animateToLocationAndVisibleSize(-30.0, 0.0, 40000f)
+                        } else {
+                            animateToLocationAndVisibleSize(rasterParameters.rectCenterLongitude, rasterParameters.rectCenterLatitude, 5000f)
+                        }
                     } else {
                         animateToLocationAndVisibleSize(0.0, 0.0, 20000f)
                     }
@@ -350,6 +357,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         strikeListOverlay.isEnabled = true
         setHistoricStatusString()
         mapFragment.mapView.addMapListener(strikeListOverlay)
+        mapFragment.mapView.addMapListener(dataHandler)
 
         fadeOverlay = FadeOverlay(strikeColorHandler)
 
@@ -467,6 +475,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         mapFragment.mapView.overlays.removeAll(listOf(fadeOverlay, ownLocationOverlay, strikeListOverlay))
         mapFragment.mapView.removeMapListener(ownLocationOverlay)
         mapFragment.mapView.removeMapListener(strikeListOverlay)
+        mapFragment.mapView.removeMapListener(dataHandler)
     }
 
     override fun onDestroy() {

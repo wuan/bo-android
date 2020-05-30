@@ -39,8 +39,10 @@ import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.result.StatusEvent
 import org.blitzortung.android.protocol.ConsumerContainer
 import org.blitzortung.android.util.Period
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import java.util.*
-import java.util.concurrent.locks.ReentrantLock
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -51,19 +53,19 @@ class MainDataHandler @Inject constructor(
         private val preferences: SharedPreferences,
         private val handler: Handler,
         private val updatePeriod: Period
-) : OnSharedPreferenceChangeListener, Runnable {
+) : OnSharedPreferenceChangeListener, Runnable, MapListener {
 
 
     private var updatesEnabled = false
 
     private var period: Int = 0
 
-    private val lock = ReentrantLock()
-
     private var dataProvider: DataProvider? = null
 
     var parameters = Parameters()
         private set
+
+    private var autoRaster = false
 
     private lateinit var parametersController: ParametersController
 
@@ -114,7 +116,6 @@ class MainDataHandler @Inject constructor(
             FetchDataTask(
                     dataMode,
                     dataProvider!!,
-                    lock,
                     { sendEvent(it) },
                     ::toast
             ).execute(parameters = activeParameters)
@@ -162,8 +163,15 @@ class MainDataHandler @Inject constructor(
             }
 
             PreferenceKey.RASTER_SIZE -> {
-                val rasterBaselength = Integer.parseInt(sharedPreferences.get(key, "10000"))
-                parameters = parameters.copy(rasterBaselength = rasterBaselength)
+                val rasterBaselengthString = sharedPreferences.get(key, AUTO_RASTER_BASELENGTH)
+                if (rasterBaselengthString == AUTO_RASTER_BASELENGTH) {
+                    autoRaster = true
+                    parameters = parameters.copy(rasterBaselength = DEFAULT_RASTER_BASELENGTH)
+                } else {
+                    val rasterBaselength = Integer.parseInt(rasterBaselengthString)
+                    autoRaster = false
+                    parameters = parameters.copy(rasterBaselength = rasterBaselength)
+                }
                 updateData()
             }
 
@@ -184,7 +192,7 @@ class MainDataHandler @Inject constructor(
             }
 
             PreferenceKey.REGION -> {
-                val region = Integer.parseInt(sharedPreferences.get(key, "1"))
+                val region = Integer.parseInt(sharedPreferences.get(key, "0"))
                 parameters = parameters.copy(region = region)
                 updateData()
             }
@@ -292,4 +300,35 @@ class MainDataHandler @Inject constructor(
         val REQUEST_STARTED_EVENT = RequestStartedEvent()
         val DEFAULT_DATA_CHANNELS = setOf(DataChannel.STRIKES)
     }
+
+    override fun onScroll(event: ScrollEvent?): Boolean {
+        return false
+    }
+
+    override fun onZoom(event: ZoomEvent?): Boolean {
+        return if (event != null && autoRaster) {
+            val zoomLevel = event.zoomLevel.toInt()
+            val rasterBaselength = when {
+                zoomLevel >= 8 -> 5000
+                zoomLevel in 6..7 -> 10000
+                zoomLevel in 4..5 -> 25000
+                zoomLevel in 2..3 -> 50000
+                else -> 100000
+            }
+            Log.v(Main.LOG_TAG, "zoom level: $zoomLevel -> raster $rasterBaselength")
+            if (parameters.rasterBaselength != rasterBaselength) {
+                parameters = parameters.copy(rasterBaselength = rasterBaselength)
+                updateData()
+                true
+            } else {
+                false
+            }
+        } else {
+            false
+        }
+    }
 }
+
+internal const val DEFAULT_RASTER_BASELENGTH = 10000
+internal const val AUTO_RASTER_BASELENGTH = "auto"
+

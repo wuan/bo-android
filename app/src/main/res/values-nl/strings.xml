@@ -157,6 +157,7 @@
     <string name="raster_size_summary">Grootte van raster kwadranten</string>
 
     <string-array name="raster_sizes">
+        <item>auto</item>
         <item>5 km</item>
         <item>10 km</item>
         <item>25 km</item>
@@ -164,6 +165,7 @@
         <item>100 km</item>
     </string-array>
     <string-array name="raster_size_values">
+        <item>auto</item>
         <item>5000</item>
         <item>10000</item>
         <item>25000</item>
