@@ -62,7 +62,7 @@ class VersionComponentTest {
     }
 
     companion object {
-        val CURRENT_VERSION_CODE = 257
+        val CURRENT_VERSION_CODE = 258
         val CURRENT_VERSION_NAME = "2.1-beta2"
     }
 }

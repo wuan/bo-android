@@ -317,9 +317,9 @@ class MainDataHandler @Inject constructor(
     private fun autoRasterSizeUpdate(zoomLevel: Double): Boolean {
         val rasterBaselength = when {
             zoomLevel >= 8f -> 5000
-            zoomLevel in 5f..8f -> 10000
-            zoomLevel in 3f..5f -> 25000
-            zoomLevel in 1f..3f -> 50000
+            zoomLevel in 4.5f..8f -> 10000
+            zoomLevel in 3f..4.5f -> 25000
+            zoomLevel in 2f..3f -> 50000
             else -> 100000
         }
         Log.v(Main.LOG_TAG, "zoom level: $zoomLevel -> raster $rasterBaselength")
