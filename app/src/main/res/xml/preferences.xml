@@ -31,7 +31,7 @@
         android:summary="@string/interval_duration_summary"
         android:title="@string/interval_duration" />
     <ListPreference
-        android:defaultValue="1"
+        android:defaultValue="0"
         android:enabled="true"
         android:entries="@array/count_thresholds"
         android:entryValues="@array/count_threshold_values"

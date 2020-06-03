@@ -47,7 +47,7 @@ class QuickSettingsDialog : DialogFragment() {
         val selectedRasterSize = getSelectedIndex(rasterSizeValues, currentRasterSizeValue)
 
         val countThresholdValues = resources.getStringArray(R.array.count_threshold_values)
-        val currentCountThresholdValue = preferences.get(PreferenceKey.COUNT_THRESHOLD, countThresholdValues[1])
+        val currentCountThresholdValue = preferences.get(PreferenceKey.COUNT_THRESHOLD, countThresholdValues[0])
         val selectedCountThreshold = getSelectedIndex(countThresholdValues, currentCountThresholdValue)
 
         val queryPeriodValues = resources.getStringArray(R.array.query_period_values)
