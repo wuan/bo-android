@@ -231,7 +231,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             openQuickSettingsDialog()
         }
         if (versionComponent.state == VersionComponent.State.FIRST_RUN_AFTER_UPDATE) {
-            changeLogComponent.showChangeLog()
+            changeLogComponent.showChangeLogDialog(this)
         }
     }
 

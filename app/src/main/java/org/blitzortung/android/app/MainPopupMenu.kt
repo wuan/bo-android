@@ -44,14 +44,11 @@ class MainPopupMenu(
                 val dialog = when (item?.itemId) {
                     R.id.menu_info -> InfoDialog(context, buildVersion)
 
-                    R.id.menu_alarms -> AlertDialog(context, AlertDialogColorHandler(preferences), dataHandler, alertHandler )
+                    R.id.menu_alarms -> AlertDialog(context, AlertDialogColorHandler(preferences), dataHandler, alertHandler)
 
                     R.id.menu_log -> LogDialog(context, buildVersion)
 
-                    R.id.menu_changelog -> {
-                        changeLogComponent.showChangeLog()
-                        null
-                    }
+                    R.id.menu_changelog -> changeLogComponent.getChangeLogDialog(context)
 
                     else -> null
                 }

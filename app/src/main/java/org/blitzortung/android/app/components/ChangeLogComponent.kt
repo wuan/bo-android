@@ -1,16 +1,17 @@
 package org.blitzortung.android.app.components
 
+import android.app.AlertDialog
 import android.content.Context
-import com.michaelflisar.changelog.ChangelogBuilder
+import de.cketti.library.changelog.ChangeLog
 import javax.inject.Inject
 
 class ChangeLogComponent @Inject constructor(
-        private val context: Context
 ) {
-    fun showChangeLog(): Unit {
-        ChangelogBuilder()
-                .withManagedShowOnStart(false)
-                .buildAndStartActivity(context, true)
+    fun getChangeLogDialog(context: Context): AlertDialog? {
+        return ChangeLog(context).fullLogDialog
+    }
 
+    fun showChangeLogDialog(context: Context) {
+        getChangeLogDialog(context)?.show()
     }
 }
