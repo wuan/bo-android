@@ -28,12 +28,12 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.components.VersionComponent
+import org.blitzortung.android.app.components.BuildVersion
 import org.blitzortung.android.dialogs.log.LogProvider
 
 class LogDialog(
         context: Context,
-        private val versionComponent: VersionComponent,
+        private val buildVersion: BuildVersion,
         private val logProvider: LogProvider = LogProvider()
 ) : android.app.AlertDialog(context) {
 
@@ -75,7 +75,7 @@ class LogDialog(
     }
 
     private fun getVersionString(): String {
-        return versionComponent.run { "Version $versionName ($versionCode)" }
+        return buildVersion.run { "Version $versionName ($versionCode)" }
     }
 
     private fun composeEmail(body: String) {

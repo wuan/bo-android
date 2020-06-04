@@ -348,4 +348,5 @@
     <string name="app_log">Log dell’applicazione</string>
     <string name="share_log">Invia email…</string>
     <string name="share_unavailable">La condivisione tramite email non è disponibile.</string>
+    <string name="changelog">Change log</string>
 </resources>

@@ -357,4 +357,5 @@
     <string name="app_log">Registro de la aplicación</string>
     <string name="share_log">Enviar correo electrónico…</string>
     <string name="share_unavailable">No es posible compartir por correo electrónico</string>
+    <string name="changelog">Change log</string>
 </resources>

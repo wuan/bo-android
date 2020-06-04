@@ -356,4 +356,5 @@
     <string name="own_location_size_summary">Određivanje veličine simbola vlastite lokacije</string>
     <string name="keep_zoom_goto_own_location_summary">Zadrži trenutno zumiranje pri centriranju vlastite lokacije</string>
     <string name="keep_zoom_goto_own_location_title">Zadrži zumiranje</string>
+    <string name="changelog">Change log</string>
 </resources>
