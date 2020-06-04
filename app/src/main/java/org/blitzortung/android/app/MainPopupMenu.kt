@@ -9,7 +9,8 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
 import org.blitzortung.android.alert.handler.AlertHandler
-import org.blitzortung.android.app.components.VersionComponent
+import org.blitzortung.android.app.components.BuildVersion
+import org.blitzortung.android.app.components.ChangeLogComponent
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.dialogs.AlertDialog
 import org.blitzortung.android.dialogs.AlertDialogColorHandler
@@ -21,30 +22,36 @@ class MainPopupMenu(
         anchor: View,
         preferences: SharedPreferences,
         dataHandler: MainDataHandler,
-        alertHandler: AlertHandler
+        alertHandler: AlertHandler,
+        private val buildVersion: BuildVersion,
+        private val changeLogComponent: ChangeLogComponent
 ) : PopupMenu(context, anchor) {
 
     init {
         setOnMenuItemClickListener(ClickListener(context, preferences, dataHandler, alertHandler))
     }
 
-    class ClickListener(
+    inner class ClickListener(
             private val context: Context,
             private val preferences: SharedPreferences,
             private val dataHandler: MainDataHandler,
             private val alertHandler: AlertHandler
     ) : OnMenuItemClickListener {
         override fun onMenuItemClick(item: MenuItem?): Boolean {
-            val versionComponent = VersionComponent(context)
             if (item?.itemId == R.id.menu_preferences) {
                 context.startActivity(Intent(context, Preferences::class.java))
             } else {
                 val dialog = when (item?.itemId) {
-                    R.id.menu_info -> InfoDialog(context, versionComponent)
+                    R.id.menu_info -> InfoDialog(context, buildVersion)
 
                     R.id.menu_alarms -> AlertDialog(context, AlertDialogColorHandler(preferences), dataHandler, alertHandler )
 
-                    R.id.menu_log -> LogDialog(context, versionComponent)
+                    R.id.menu_log -> LogDialog(context, buildVersion)
+
+                    R.id.menu_changelog -> {
+                        changeLogComponent.showChangeLog()
+                        null
+                    }
 
                     else -> null
                 }

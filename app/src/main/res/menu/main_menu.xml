@@ -22,6 +22,11 @@
         android:title="@string/app_log" />
 
     <item
+        android:id="@+id/menu_changelog"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        android:title="@string/changelog" />
+
+    <item
         android:id="@+id/menu_info"
         android:icon="@android:drawable/ic_menu_info_details"
         android:title="@string/info" />

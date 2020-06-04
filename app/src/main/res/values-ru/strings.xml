@@ -370,4 +370,5 @@
     <string name="map_scale">Масштаб карты</string>
     <string name="map_scale_summary">Выберите процент масштабирования тайлов карты</string>
     <string name="location_permission_required">Требуется разрешение определения Вашего месторасположения.</string>
+    <string name="changelog">Change log</string>
 </resources>

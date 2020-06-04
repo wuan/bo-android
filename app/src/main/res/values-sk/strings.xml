@@ -361,4 +361,5 @@
     <string name="own_location_size_summary" >Nastavte veľkosť vlastného symbolu polohy</string>
     <string name="keep_zoom_goto_own_location_summary" >Nastavenie pre udržanie aktuálneho priblíženia pri centrovaní na vlastnú polohu</string>
     <string name="keep_zoom_goto_own_location_title" >Udržať priblíženie</string>
+    <string name="changelog">Change log</string>
 </resources>

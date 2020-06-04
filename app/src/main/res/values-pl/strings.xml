@@ -329,4 +329,5 @@
     <string name="service_url">Alternatywny adres URL </string>
     <string name="service_url_summary">Zmienia domyślny adres URL bazy danych</string>
     <string name="set_manual_location">Ustawiono ręczną pozycję</string>
+    <string name="changelog">Change log</string>
 </resources>

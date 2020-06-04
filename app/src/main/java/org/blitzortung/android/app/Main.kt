@@ -48,6 +48,8 @@ import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.main.*
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertHandler
+import org.blitzortung.android.app.components.BuildVersion
+import org.blitzortung.android.app.components.ChangeLogComponent
 import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
@@ -73,9 +75,6 @@ import org.blitzortung.android.util.LogUtil
 import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
 import org.osmdroid.config.Configuration
-import org.osmdroid.events.MapListener
-import org.osmdroid.events.ScrollEvent
-import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
 import javax.inject.Inject
@@ -84,7 +83,6 @@ import kotlin.math.roundToInt
 class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private var backgroundAlerts: Boolean = false
     private lateinit var statusComponent: StatusComponent
-    private lateinit var versionComponent: VersionComponent
 
     private lateinit var strikeColorHandler: StrikeColorHandler
     private lateinit var strikeListOverlay: StrikeListOverlay
@@ -108,6 +106,15 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     @set:Inject
     internal lateinit var preferences: SharedPreferences
+
+    @set:Inject
+    internal lateinit var versionComponent: VersionComponent
+
+    @set:Inject
+    internal lateinit var buildVersion: BuildVersion
+
+    @set:Inject
+    internal lateinit var changeLogComponent: ChangeLogComponent
 
     private var currentResult: ResultEvent? = null
 
@@ -187,8 +194,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             Toast.makeText(baseContext, "bad android version", Toast.LENGTH_LONG).show()
         }
 
-        versionComponent = VersionComponent(this.applicationContext)
-
         initializeOsmDroid()
 
         setContentView(R.layout.main)
@@ -224,6 +229,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         if (versionComponent.state == VersionComponent.State.FIRST_RUN) {
             openQuickSettingsDialog()
+        }
+        if (versionComponent.state == VersionComponent.State.FIRST_RUN_AFTER_UPDATE) {
+            changeLogComponent.showChangeLog()
         }
     }
 
@@ -693,7 +701,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun showPopupMenu(anchor: View) {
-        val popupMenu = MainPopupMenu(this, anchor, preferences, dataHandler, alertHandler)
+        val popupMenu = MainPopupMenu(this, anchor, preferences, dataHandler, alertHandler, buildVersion, changeLogComponent)
         popupMenu.showPopupMenu()
     }
 

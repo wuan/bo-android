@@ -355,10 +355,10 @@
     <string name="own_location_size_summary" >Stel de grootte van het locatiesymbool in</string>
     <string name="keep_zoom_goto_own_location_summary" >Instelling huidige zoom niveau behouden wanneer je centreerd naar je eigen locatie</string>
     <string name="keep_zoom_goto_own_location_title" >Zoom behouden</string>
-    <string name="notification_channel_name" translatable="false">Storm Meldingen</string>
     <string name="not_available">n/b</string>
     <string name="unit_miles">mi.</string>
     <string name="map_scale">Schaal kaart</string>
     <string name="map_scale_summary">Selecteer schaling [%] voor kaart</string>
     <string name="location_permission_required">Locatie delen is nodig om je huidige locatie te bepalen.</string>
+    <string name="changelog">Change log</string>
 </resources>

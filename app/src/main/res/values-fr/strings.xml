@@ -358,4 +358,5 @@
     <string name="legend_grid">Grille</string>
     <string name="map_scale">Échelle de la carte</string>
     <string name="own_location">Votre emplacement</string>
+    <string name="changelog">Change log</string>
 </resources>

@@ -379,4 +379,5 @@
     <string name="map_scale_summary">Select scaling [%] of map tiles</string>
     <string name="location_permission_required">Location permission is required to get your location.</string>
     <string name="osmdroid_storage_warning">Cannot find writable storage for map. Please report.</string>
+    <string name="changelog">Change log</string>
 </resources>
