@@ -11,8 +11,8 @@ android {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 259
-        versionName '2.2-beta2'
+        versionCode 260
+        versionName '2.1-beta3'
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
