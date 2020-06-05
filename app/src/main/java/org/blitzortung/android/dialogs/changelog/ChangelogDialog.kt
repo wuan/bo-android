@@ -90,7 +90,7 @@ class ChangeLogAdapter(
         return when (viewType) {
             Type.HEADER.ordinal -> HeaderView(inflater.inflate(R.layout.changelog_header, parent, false))
             Type.ENTRY.ordinal -> EntryView(inflater.inflate(R.layout.changelog_entry, parent, false))
-            else -> throw RuntimeException(String.format("Type not handled: %s", viewType))
+            else -> throw IllegalArgumentException("Type not handled: $viewType")
         }
     }
 
