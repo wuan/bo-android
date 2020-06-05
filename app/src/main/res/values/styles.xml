@@ -5,4 +5,17 @@
     </style>
 
     <style name="AppTheme" parent="Base.V7.Theme.AppCompat" />
+
+    <style name="ChangelogHeader">
+        <item name="android:textAppearance">@android:style/TextAppearance.Medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+    <style name="ChangelogEntry">
+        <item name="android:textAppearance">@android:style/TextAppearance.Small</item>
+    </style>
+
 </resources>

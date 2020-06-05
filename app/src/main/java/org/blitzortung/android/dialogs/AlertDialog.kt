@@ -48,8 +48,6 @@ class AlertDialog(
         alertView.enableLongClickListener(dataHandler, alertHandler)
         alertView.enableDescriptionText()
 
-        setTitle(context.getString(R.string.alarms))
-
         alertView.setColorHandler(colorHandler, dataHandler.intervalDuration)
         colorHandler.updateTarget()
 

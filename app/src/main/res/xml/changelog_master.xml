@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
-    <release version="v2.1" versioncode="259">
-        <change>Global data mode</change>
-        <change>Automatic raster size</change>
-        <change>Change log</change>
-        <change>Internal improvements</change>
+    <release versionName="2.1" versionCode="259">
+        <feature>Global data mode</feature>
+        <feature>Automatic raster size</feature>
+        <feature>Change log</feature>
+        <improvement>Internal improvements</improvement>
     </release>
-    <release version="v2.0" versioncode="250">
-        <change>OSM based map scheme</change>
-        <change>Customize map tile scaling</change>
-        <change>Improved handling of missing permissions</change>
-        <change>Fix Blitzortung.org data access</change>
-        <change>Fix notifications for newer devices</change>
-        <change>Improve location detection</change>
-        <change>Use Dagger2 for internal dependency injection</change>
+    <release versionName="2.0" versionCode="250">
+        <feature>OSM based map scheme</feature>
+        <feature>Customize map tile scaling</feature>
+        <improvment>Improved handling of missing permissions</improvment>
+        <bugfix>Fix Blitzortung.org data access</bugfix>
+        <bugfix>Fix notifications for newer devices</bugfix>
+        <bugfix>Improve location detection</bugfix>
+        <improvement>Use Dagger2 for dependency injection</improvement>
     </release>
 </changelog>

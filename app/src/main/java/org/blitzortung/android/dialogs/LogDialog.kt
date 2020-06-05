@@ -46,8 +46,6 @@ class LogDialog(
     override fun onStart() {
         super.onStart()
 
-        setTitle(context.resources.getText(R.string.app_log))
-
         val versionText = getVersionString()
         val deviceText = getDeviceString()
         val logLines = logProvider.getLogLines()

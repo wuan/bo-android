@@ -2,13 +2,13 @@ package org.blitzortung.android.app.components
 
 import android.app.AlertDialog
 import android.content.Context
-import de.cketti.library.changelog.ChangeLog
+import org.blitzortung.android.dialogs.changelog.ChangelogDialog
 import javax.inject.Inject
 
 class ChangeLogComponent @Inject constructor(
 ) {
     fun getChangeLogDialog(context: Context): AlertDialog? {
-        return ChangeLog(context).fullLogDialog
+        return ChangelogDialog(context)
     }
 
     fun showChangeLogDialog(context: Context) {
