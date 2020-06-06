@@ -1,11 +1,14 @@
 package org.blitzortung.android.data
 
+import android.util.Log
 import kotlinx.coroutines.*
+import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.ResultEvent
 import java.net.SocketException
 import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KSuspendFunction1
 
@@ -47,8 +50,6 @@ internal open class FetchDataTask(
             handleErrorUserFeedback(e)
 
             ResultEvent(failed = true, referenceTime = System.currentTimeMillis(), parameters = parameters, flags = flags)
-
-            null
         }
     }
 
@@ -57,14 +58,16 @@ internal open class FetchDataTask(
             is SocketTimeoutException ->
                 R.string.timeout_warning
 
-            is SocketException ->
+            is SocketException, is UnknownHostException->
                 R.string.connection_warning
 
             else -> null
         }
 
         if (warningToastStringResource != null) {
-            toast.invoke(warningToastStringResource)
+            withContext(Dispatchers.Main) {
+                toast.invoke(warningToastStringResource)
+            }
         }
     }
 
