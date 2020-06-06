@@ -59,6 +59,7 @@ import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.app.view.put
 import org.blitzortung.android.data.MainDataHandler
+import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.RequestStartedEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
@@ -293,15 +294,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             setOnClickListener {
                 val currentResult = currentResult
                 if (currentResult != null) {
+                    val parameters = currentResult.parameters
                     val rasterParameters = currentResult.rasterParameters
-                    if (rasterParameters != null) {
-                        if (rasterParameters.isGlobal) {
-                            animateToLocationAndVisibleSize(-30.0, 0.0, 40000f)
-                        } else {
-                            animateToLocationAndVisibleSize(rasterParameters.rectCenterLongitude, rasterParameters.rectCenterLatitude, 5000f)
-                        }
+                    if (!parameters.isGlobal && rasterParameters != null) {
+                        animateToLocationAndVisibleSize(rasterParameters.rectCenterLongitude, rasterParameters.rectCenterLatitude, if (parameters.region == LOCAL_REGION) 1800f else 5000f)
                     } else {
-                        animateToLocationAndVisibleSize(0.0, 0.0, 20000f)
+                        animateToLocationAndVisibleSize(-30.0, 0.0, 40000f)
                     }
                 }
             }
@@ -418,6 +416,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         with(locationHandler) {
             requestUpdates(ownLocationOverlay.locationEventConsumer)
             requestUpdates(alert_view.locationEventConsumer)
+            requestUpdates(dataHandler.locationEventConsumer)
         }
 
         with(alertHandler) {
@@ -461,6 +460,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         with(locationHandler) {
             removeUpdates(ownLocationOverlay.locationEventConsumer)
             removeUpdates(alert_view.locationEventConsumer)
+            removeUpdates(dataHandler.locationEventConsumer)
         }
 
         with(alertHandler) {

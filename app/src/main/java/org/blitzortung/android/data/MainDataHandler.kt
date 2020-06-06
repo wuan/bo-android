@@ -20,8 +20,10 @@ package org.blitzortung.android.data
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.location.Location
 import android.os.Handler
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -32,11 +34,13 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
+import org.blitzortung.android.data.provider.LocalData
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.RequestStartedEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.result.StatusEvent
+import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.protocol.ConsumerContainer
 import org.blitzortung.android.util.Period
 import org.osmdroid.events.MapListener
@@ -52,9 +56,11 @@ class MainDataHandler @Inject constructor(
         private val dataProviderFactory: DataProviderFactory,
         private val preferences: SharedPreferences,
         private val handler: Handler,
+        private val localData: LocalData,
         private val updatePeriod: Period
 ) : OnSharedPreferenceChangeListener, Runnable, MapListener {
 
+    private var location: Location? = null
 
     private var updatesEnabled = false
 
@@ -77,6 +83,11 @@ class MainDataHandler @Inject constructor(
         override fun removedLastConsumer() {
             Log.d(Main.LOG_TAG, "MainDataHandler: removed last data consumer")
         }
+    }
+
+    val locationEventConsumer: (LocationEvent) -> Unit = { locationEvent ->
+        Log.v(Main.LOG_TAG, "AlertView received location ${locationEvent.location}")
+        location = locationEvent.location
     }
 
     private var dataMode = DataMode()
@@ -113,19 +124,15 @@ class MainDataHandler @Inject constructor(
                 }
             }
             Log.d(Main.LOG_TAG, "MainDataHandler.updateData() $activeParameters")
-            FetchDataTask(
-                    dataMode,
-                    dataProvider!!,
-                    { sendEvent(it) },
-                    ::toast
-            ).execute(parameters = activeParameters)
+            FetchDataTask(dataMode, dataProvider!!, { sendEvent(it) }, ::toast)
+                    .execute(parameters = activeParameters)
         }
     }
 
     private val activeParameters: Parameters
         get() {
             return if (dataMode.raster) {
-                parameters
+                localData.updateParameters(parameters, location)
             } else {
                 var parameters = parameters
                 if (!dataMode.region) {
