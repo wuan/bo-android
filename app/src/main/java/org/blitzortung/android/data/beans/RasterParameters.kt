@@ -32,8 +32,6 @@ data class RasterParameters(
         val latitudeBins: Int,
         val minDistance: Float? = null) {
 
-    val isGlobal: Boolean = (longitudeStart == 0.0 && latitudeStart == 0.0)
-
     val rectCenterLongitude: Double = longitudeStart + longitudeDelta * longitudeBins / 2.0
 
     val rectCenterLatitude: Double = latitudeStart - latitudeDelta * latitudeBins / 2.0

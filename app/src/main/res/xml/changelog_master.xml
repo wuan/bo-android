@@ -2,6 +2,7 @@
 <changelog>
     <release versionName="2.1" versionCode="259">
         <feature>Global data mode</feature>
+        <feature>Local data mode</feature>
         <feature>Automatic raster size</feature>
         <feature>Change log</feature>
         <improvement>Internal improvements</improvement>

@@ -44,7 +44,7 @@ internal class FetchBackgroundDataTask(
 
         Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquire wakelock $wakeLock")
 
-        val updatedParameters = parameters.copy(intervalDuration = 10, intervalOffset = 0)
+        val updatedParameters = parameters.copy(intervalDuration = 10, intervalOffset = 0, countThreshold = 0, rasterBaselength = 5000)
         val updatedFlags = flags.copy(storeResult = false)
 
         super.doInBackground(updatedParameters, updatedFlags)

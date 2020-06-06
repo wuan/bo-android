@@ -20,6 +20,7 @@ package org.blitzortung.android.data
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.location.Location
 import android.os.PowerManager
 import android.util.Log
 import android.widget.Toast
@@ -32,9 +33,12 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
+import org.blitzortung.android.data.provider.LOCAL_REGION
+import org.blitzortung.android.data.provider.LocalData
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.protocol.ConsumerContainer
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -44,8 +48,11 @@ class ServiceDataHandler @Inject constructor(
         private val context: Context,
         private val wakeLock: PowerManager.WakeLock,
         private val dataProviderFactory: DataProviderFactory,
-        private val preferences: SharedPreferences
+        private val preferences: SharedPreferences,
+        private val localData: LocalData
 ) : OnSharedPreferenceChangeListener {
+
+    private var location: Location? = null
 
     private var dataProvider: DataProvider? = null
 
@@ -64,6 +71,11 @@ class ServiceDataHandler @Inject constructor(
         }
     }
 
+    val locationEventConsumer: (LocationEvent) -> Unit = { locationEvent ->
+        Log.v(Main.LOG_TAG, "AlertView received location ${locationEvent.location}")
+        location = locationEvent.location
+    }
+
     private var dataMode = DataMode()
 
     init {
@@ -76,12 +88,8 @@ class ServiceDataHandler @Inject constructor(
 
     fun updateData() {
         dataProvider?.let { dataProvider ->
-            FetchBackgroundDataTask(
-                    dataMode,
-                    dataProvider,
-                    { sendEvent(it) },
-                    ::toast,
-                    wakeLock).execute(activeParameters)
+            FetchBackgroundDataTask(dataMode, dataProvider, { sendEvent(it) }, ::toast, wakeLock)
+                    .execute(activeParameters)
         }
     }
 
@@ -96,7 +104,7 @@ class ServiceDataHandler @Inject constructor(
     private val activeParameters: Parameters
         get() {
             return if (dataMode.raster) {
-                parameters
+                localData.updateParameters(this.parameters.copy(region = LOCAL_REGION), location)
             } else {
                 var parameters = parameters
                 if (!dataMode.region) {

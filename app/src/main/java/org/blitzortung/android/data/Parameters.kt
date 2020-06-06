@@ -18,14 +18,27 @@
 
 package org.blitzortung.android.data
 
+import org.blitzortung.android.data.provider.GLOBAL_REGION
+import org.blitzortung.android.data.provider.LOCAL_REGION
+
 data class Parameters(
         val region: Int = -1,
         val rasterBaselength: Int = 0,
         override val intervalDuration: Int = 0,
         override val intervalOffset: Int = 0,
-        val countThreshold: Int = 0
+        val countThreshold: Int = 0,
+        val localReference: LocalReference? = null
 ) : TimeIntervalWithOffset {
+
+    val isGlobal: Boolean = region == GLOBAL_REGION
+
+    val isLocal: Boolean = region == LOCAL_REGION
 
     fun isRealtime(): Boolean = intervalOffset == 0
 
 }
+
+data class LocalReference(
+        val x: Int,
+        val y: Int
+)

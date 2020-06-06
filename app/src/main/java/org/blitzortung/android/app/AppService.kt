@@ -90,6 +90,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
 
         dataHandler.requestUpdates(dataEventConsumer)
         dataHandler.requestUpdates(alertHandler.dataEventConsumer)
+        locationHandler.requestUpdates(dataHandler.locationEventConsumer)
 
         isEnabled = true
 
@@ -157,6 +158,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     override fun onDestroy() {
         super.onDestroy()
 
+        locationHandler.removeUpdates(dataHandler.locationEventConsumer)
         dataHandler.removeUpdates(dataEventConsumer)
         dataHandler.removeUpdates(alertHandler.dataEventConsumer)
 

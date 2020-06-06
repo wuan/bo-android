@@ -42,9 +42,10 @@ class AlertDataHandlerTest {
 
         strike = DefaultStrike(timestamp = now, longitude = 12.0, latitude = 41.0, altitude = 0, amplitude = 20.0f)
 
-        strikeLocation = Location("")
-        strikeLocation.longitude = strike.longitude
-        strikeLocation.latitude = strike.latitude
+        strikeLocation = Location("").apply {
+            longitude = strike.longitude
+            latitude = strike.latitude
+        }
 
         parameters = AlertParameters(
                 alarmInterval = 10 * 60 * 1000,
