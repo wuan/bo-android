@@ -85,6 +85,7 @@
     <string name="region_summary">wybierz region</string>
 
     <string-array name="regions">
+        <item>Local</item>
         <item>Global</item>
         <item>Europa</item>
         <item>Ameryka północna</item>
@@ -95,6 +96,7 @@
         <item>Afryka</item>
     </string-array>
     <string-array name="regions_values">
+        <item>-1</item>
         <item>0</item>
         <item>1</item>
         <item>3</item>
