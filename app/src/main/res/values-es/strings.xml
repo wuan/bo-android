@@ -14,21 +14,21 @@
 
     <string name="info">Information</string>
     <string name="info_text">Web del proyecto:\n
-        \thttps://github.com/wuan/bo-android\n
-        \n
-        Los datos visualizados son\n
-        proporcionados por el\n
-        <b>Blitzortung.org</b>\n
-        proyecto comunitario de rayos en tiempo real. Por favor dirigirse a\n
-        \thttp://blitzortung.org/\npara información adicional o como participar.\n
-        \n
-        Traducción checa por: Jakub Mareček (jakubmarecek715@gmail.com)\n
-		Traducción croata por: Igor Dobrača (idobraca@rovinj.net)\n
-        Traducción francés por: Frédéric France (frederic.france@free.fr)\n
-		Traducción italiana por: Michele Locati (mlocati@gmail.com)\n
-        Traducción Holandes: Jeroen Boersma (jeroenboersma@gmail.com)\n
-		Traducción polaca por: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
-        Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
+\thttps://github.com/wuan/bo-android\n
+\n
+Los datos visualizados son\n
+proporcionados por el\n
+<b>Blitzortung.org</b>\n
+proyecto comunitario de rayos en tiempo real. Por favor dirigirse a\n
+\thttp://blitzortung.org/\npara información adicional o como participar.\n
+\n
+Traducción checa por: Jakub Mareček (jakubmarecek715@gmail.com)\n
+Traducción croata por: Igor Dobrača (idobraca@rovinj.net)\n
+Traducción francés por: Frédéric France (frederic.france@free.fr)\n
+Traducción italiana por: Michele Locati (mlocati@gmail.com)\n
+Traducción Holandes: Jeroen Boersma (jeroenboersma@gmail.com)\n
+Traducción polaca por: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="legend">Leyenda</string>
     <string name="total_time">Tiempo total</string>

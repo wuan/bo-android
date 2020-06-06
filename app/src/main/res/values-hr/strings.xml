@@ -15,19 +15,19 @@
 
     <string name="info">Informacije</string>
     <string name="info_text">Web sjedište projekta:\nhttps://github.com/wuan/bo-android\n\n
-        Vizualizaciju podataka o munjama omogućuje\n
-        <b>Blitzortung.org</b>,\n
-        projekt prikaza munja u stvarnom vremenu.\n
-        Za više informacija ili uključenje u projekt:\n
-        http://blitzortung.org/\n\n
-        Prevoditelji:\n
-        Češki: Jakub Mareček (jakubmarecek715@gmail.com)\n
-        Francuzi: Frédéric France (frederic.france@free.fr)\n
-        Holland: Jeroen Boersma (jeroenboersma@gmail.com)\n
-        Poljski: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
-        Talijanski: Michele Locati (michele@locati.it)\n
-        Hrvatski: Igor Dobrača (idobraca@rovinj.net)\n
-        Ruski: Ivan Karev (karev.ivan@gmail.com)\n
+Vizualizaciju podataka o munjama omogućuje\n
+<b>Blitzortung.org</b>,\n
+projekt prikaza munja u stvarnom vremenu.\n
+Za više informacija ili uključenje u projekt:\n
+http://blitzortung.org/\n\n
+<u>Prevoditelji:</u>\n
+Češki: Jakub Mareček (jakubmarecek715@gmail.com)\n
+Francuzi: Frédéric France (frederic.france@free.fr)\n
+Holland: Jeroen Boersma (jeroenboersma@gmail.com)\n
+Poljski: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+Talijanski: Michele Locati (michele@locati.it)\n
+Hrvatski: Igor Dobrača (idobraca@rovinj.net)\n
+Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
 
     <string name="legend">Legenda</string>

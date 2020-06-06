@@ -22,6 +22,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.view.KeyEvent
+import android.view.MotionEvent
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.components.BuildVersion
 import org.blitzortung.android.app.components.VersionComponent
@@ -32,6 +33,7 @@ class InfoDialog(context: Context, buildVersion: BuildVersion) : AlertDialog(con
         setTitle("" + context.resources.getText(R.string.app_name) + " V" + buildVersion.versionName + " (" + buildVersion.versionCode + ")")
         @SuppressLint("InflateParams") val infoDialogView = layoutInflater.inflate(R.layout.info_dialog, null, false)
         setView(infoDialogView)
+        setCancelable(true)
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {

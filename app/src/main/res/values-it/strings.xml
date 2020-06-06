@@ -14,19 +14,19 @@
 
     <string name="info">Informazioni</string>
     <string name="info_text">
-        Sito web del progetto:\n
-        \thttps://github.com/wuan/bo-android\n
-        \n
-        I dati sui fulmini visualizzati in tempo reale sono forniti dalla community del progetto <b>Blitzortung.org</b>.\n
-        Visitare la pagina web http://blitzortung.org/ per ulteriori informazioni o per partecipare al progetto.\n
-        \n
-        Traduzione ceca di: Jakub Mareček (jakubmarecek715@gmail.com)\n
-        Traduzione francese di: Frédéric France (frederic.france@free.fr)\n
-        Traduzione polacca di: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
-        Traduzione italiana di: Michele Locati (mlocati@gmail.com)\n
-        Traduzione olandese di: Jeroen Boersma (jeroenboersma@gmail.com)\n
-        Traduzione croato di: Igor Dobrača (idobraca@rovinj.net)\n
-        Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
+Sito web del progetto:\n
+\thttps://github.com/wuan/bo-android\n
+\n
+I dati sui fulmini visualizzati in tempo reale sono forniti dalla community del progetto <b>Blitzortung.org</b>.\n
+Visitare la pagina web http://blitzortung.org/ per ulteriori informazioni o per partecipare al progetto.\n
+\n
+Traduzione ceca di: Jakub Mareček (jakubmarecek715@gmail.com)\n
+Traduzione francese di: Frédéric France (frederic.france@free.fr)\n
+Traduzione polacca di: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+Traduzione italiana di: Michele Locati (mlocati@gmail.com)\n
+Traduzione olandese di: Jeroen Boersma (jeroenboersma@gmail.com)\n
+Traduzione croato di: Igor Dobrača (idobraca@rovinj.net)\n
+Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="legend">Legenda</string>
     <string name="total_time">tempo totale</string>

@@ -329,7 +329,6 @@ class MainDataHandler @Inject constructor(
             zoomLevel in 2f..3f -> 50000
             else -> 100000
         }
-        Log.v(Main.LOG_TAG, "zoom level: $zoomLevel -> raster $rasterBaselength")
         return if (parameters.rasterBaselength != rasterBaselength) {
             parameters = parameters.copy(rasterBaselength = rasterBaselength)
             updateData()

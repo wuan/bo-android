@@ -13,20 +13,14 @@
     </plurals>
 
     <string name="info">Information</string>
-    <string name="info_text">Projektseite:\n\thttps://github.com/wuan/bo-android\n\n
-        Diese Software visualisiert Blitzdaten des Gemeinschaftsprojekts <b>blitzortung.org</b>.\n
-        \n
-        Weitere Informationen über das Projekt, oder wie Sie
-        daran teilnehmen können, finden Sie unter:\n
-        \thttp://blitzortung.org\n
-        \n
-        Französich: Frédéric France (frederic.france@free.fr)\n
-        Italienisch: Michele Locati (mlocati@gmail.com)\n
-        Kroatisch: Igor Dobrača (idobraca@rovinj.net)\n
-        Niederländisch: Jeroen Boersma (jeroenboersma@gmail.com)\n
-		Polnisch: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
-        Russisch: Ivan Karev (karev.ivan@gmail.com)\n
-        Tschechisch: Jakub Mareček (jakubmarecek715@gmail.com)\n
+    <string name="info_text">Projektseite:\n\t\t\thttps://github.com/wuan/bo-android\n\nDiese Software
+visualisiert Blitzdaten des Gemeinschaftsprojekts <b>blitzortung.org</b>.\n\nWeitere
+Informationen über das Projekt, oder wie Sie daran teilnehmen können, finden Sie
+unter\n\t\t\thttp://blitzortung.org\n\n<u>Übersetzungen:</u>\nFranzösich: Frédéric France
+(frederic.france@free.fr)\nItalienisch: Michele Locati (mlocati@gmail.com)\nKroatisch:
+Igor Dobrača (idobraca@rovinj.net)\nNiederländisch: Jeroen Boersma
+(jeroenboersma@gmail.com)\nPolnisch: Jakub Świątkiewicz (kuba.dex@gmail.com)\nRussisch:
+Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@gmail.com)\n
     </string>
     <string name="legend">Legende</string>
     <string name="total_time">Gesamtzeit</string>

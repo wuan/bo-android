@@ -15,17 +15,17 @@
 
     <string name="info">Informatie</string>
     <string name="info_text">Project pagina:\n\thttps://github.com/wuan/bo-android\n\n
-        Visualisatie informatie afkomstig van <b>Blitzortung.org</b> realtime lighting community project.\n
-        \n
-        Kijk op \n\thttp://blitzortung.org/\nvoor meer informatie over het project\nen hoe je deel kunt nemen aan het vastleggen van onweer.\n\n
-        Vertalingen:\n\n
-        Kroatisch: Igor Dobrača (idobraca@rovinj.net)\n
-        Tsjechish: Jakub Mareček (jakubmarecek715@gmail.com)\n
-        Nederlands: Jeroen Boersma (jeroenboersma@gmail.com)\n
-        Frans: Frédéric France (frederic.france@free.fr)\n
-        Pools: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
-        Italiaans: Michele Locati (michele@locati.it)\n
-        Russisch: Ivan Karev (karev.ivan@gmail.com)\n
+Visualisatie informatie afkomstig van <b>Blitzortung.org</b> realtime lighting community project.\n
+\n
+Kijk op \n\thttp://blitzortung.org/\nvoor meer informatie over het project\nen hoe je deel kunt nemen aan het vastleggen van onweer.\n\n
+<u>Vertalingen:</u>\n
+Kroatisch: Igor Dobrača (idobraca@rovinj.net)\n
+Tsjechish: Jakub Mareček (jakubmarecek715@gmail.com)\n
+Nederlands: Jeroen Boersma (jeroenboersma@gmail.com)\n
+Frans: Frédéric France (frederic.france@free.fr)\n
+Pools: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+Italiaans: Michele Locati (michele@locati.it)\n
+Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="legend">Legenda</string>
     <string name="total_time">totale tijd</string>

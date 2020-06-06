@@ -3,6 +3,7 @@ package org.blitzortung.android.dialogs.changelog
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -13,6 +14,10 @@ import org.blitzortung.android.app.R
 class ChangelogDialog(
         context: Context
 ) : android.app.AlertDialog(context) {
+
+    init {
+        setCancelable(true)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

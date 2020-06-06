@@ -17,16 +17,16 @@
 
     <string name="info">Information</string>
     <string name="info_text">Project home:\n\thttps://github.com/wuan/bo-android\n\nVisualized lightning data
-        is\nprovided by the\n<b>Blitzortung.org</b>\nrealtime lighning community project. Please refer
-        to\n\thttp://blitzortung.org/\nfor further information or how\nto participate.\n\n
-        Translations:\\
-        Croatian by Igor Dobrača (idobraca@rovinj.net)\n
-        Czech by Jakub Mareček (jakubmarecek715@gmail.com)\n
-        Dutch by Jeroen Boersma (jeroenboersma@gmail.com)\n
-        French by Frédéric France (frederic.france@free.fr)\n
-        Polish by Jakub Świątkiewicz (kuba.dex@gmail.com)\n
-        Italian by Michele Locati (michele@locati.it)\n
-        Russian by Ivan Karev (karev.ivan@gmail.com)\n
+is provided by the <b>Blitzortung.org</b> realtime lighning community project.\nPlease refer
+to\n\thttp://blitzortung.org/\nfor further information or how to participate.\n\n
+<u>Translations:</u>\n
+Croatian by Igor Dobrača (idobraca@rovinj.net)\n
+Czech by Jakub Mareček (jakubmarecek715@gmail.com)\n
+Dutch by Jeroen Boersma (jeroenboersma@gmail.com)\n
+French by Frédéric France (frederic.france@free.fr)\n
+Polish by Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+Italian by Michele Locati (michele@locati.it)\n
+Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="copyright" translatable="false">© 2011–2020, Andreas Würl</string>
     <string name="project_email" translatable="false">blitzortung@tryb.de</string>

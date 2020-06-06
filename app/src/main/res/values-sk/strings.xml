@@ -15,18 +15,18 @@
 
     <string name="info">Informácie</string>
     <string name="info_text">Web projektu:\n
-        \thttps://github.com/wuan/bo-android\n\n
-        Zobrazované údaje sú poskytované projektom\n<b>Blitzortung.org</b>Sieť pre detekciu bleskových výbojov a búrok v reálnom čase.
-	\nPre viac informácii si pozrite stránku\n
-        \thttp://blitzortung.org/\n\n
-        Český preklad: Jakub Mareček (jakubmarecek715@gmail.com)\n
-        Francúzsky preklad: Frédéric France (frederic.france@free.fr)\n
-	Poľsky preklad: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
-        Holandsky preklad: Jeroen Boersma (jeroenboersma@gmail.com)\n
-        Taliansky preklad: Michele Locati (mlocati@gmail.com)\n
-        Chorvátsky preklad: Igor Dobrača (idobraca@rovinj.net)\n
-	Slovenský preklad: Martin Šturcel (martin@sturcel.sk)\n
-        Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
+\thttps://github.com/wuan/bo-android\n\n
+Zobrazované údaje sú poskytované projektom\n<b>Blitzortung.org</b>Sieť pre detekciu bleskových výbojov a búrok v reálnom čase.
+\nPre viac informácii si pozrite stránku\n
+\thttp://blitzortung.org/\n\n
+Český preklad: Jakub Mareček (jakubmarecek715@gmail.com)\n
+Francúzsky preklad: Frédéric France (frederic.france@free.fr)\n
+Poľsky preklad: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
+Holandsky preklad: Jeroen Boersma (jeroenboersma@gmail.com)\n
+Taliansky preklad: Michele Locati (mlocati@gmail.com)\n
+Chorvátsky preklad: Igor Dobrača (idobraca@rovinj.net)\n
+Slovenský preklad: Martin Šturcel (martin@sturcel.sk)\n
+Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="legend">Legenda</string>
     <string name="total_time">celkový čas</string>
