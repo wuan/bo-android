@@ -31,6 +31,11 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mapView = OwnMapView(inflater.context)
 
+        mapView.tileProvider.tileCache.apply {
+            protectedTileComputers.clear();
+            setAutoEnsureCapacity(false)
+        };
+
         return mapView
     }
 
