@@ -12,7 +12,6 @@ import javax.inject.Singleton
 @Module
 class ServiceModule @Inject constructor(
 ) {
-
     @Provides
     @Singleton
     fun provideHandler(): Handler = Handler()

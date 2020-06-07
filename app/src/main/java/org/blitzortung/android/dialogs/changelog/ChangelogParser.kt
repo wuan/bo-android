@@ -33,19 +33,18 @@ class ChangelogParser {
 
     private fun parseRelease(parser: XmlPullParser) : Release {
         val changes = mutableListOf<Change>()
-        val name = parser.name
         val versionName = parser.getAttributeValue(null, "versionName")
         val versionCode = parser.getAttributeValue(null, "versionCode").toInt()
 
         iterate(parser) {
-            val name = it.name
+            val elementName = it.name
             it.next()
-            val text = it.text
+            val containedText = it.text
             it.nextTag()
-            val element = when (name) {
-                "bugfix" -> Bugfix(text)
-                "feature" -> Feature(text)
-                "improvement" -> Improvement(text)
+            val element = when (elementName) {
+                "bugfix" -> Bugfix(containedText)
+                "feature" -> Feature(containedText)
+                "improvement" -> Improvement(containedText)
                 else -> null
             }
             if (element != null) {

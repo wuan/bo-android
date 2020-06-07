@@ -29,7 +29,6 @@ class AlertDialogColorHandler(preferences: SharedPreferences) : StrikeColorHandl
         return when (target) {
             ColorTarget.SATELLITE -> 0xFF000000
             ColorTarget.STREETMAP -> 0xFFFFFFFF
-            else -> 0xFF000000
         }.toInt()
     }
 
@@ -37,7 +36,6 @@ class AlertDialogColorHandler(preferences: SharedPreferences) : StrikeColorHandl
         return when (target) {
             ColorTarget.SATELLITE -> 0xff555555
             ColorTarget.STREETMAP -> 0xff888888
-            else -> 0xff555555
         }.toInt()
     }
 
@@ -45,7 +43,6 @@ class AlertDialogColorHandler(preferences: SharedPreferences) : StrikeColorHandl
         return when (target) {
             ColorTarget.SATELLITE -> 0xff888888
             ColorTarget.STREETMAP -> 0xff555555
-            else -> 0xff888888
         }.toInt()
     }
 }

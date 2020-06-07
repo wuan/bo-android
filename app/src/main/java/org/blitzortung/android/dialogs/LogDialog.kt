@@ -58,7 +58,7 @@ class LogDialog(
         }
 
         with(findViewById<Button>(R.id.log_send_email)) {
-            setOnClickListener { view -> composeEmail(logText) }
+            setOnClickListener { composeEmail(logText) }
         }
     }
 
