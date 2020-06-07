@@ -22,7 +22,6 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -49,8 +48,10 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         Log.d(Main.LOG_TAG, "AppService() create")
     }
 
+    @Volatile
     private var isEnabled = false
 
+    @Volatile
     private var backgroundPeriod: Int = 0
         private set
 
@@ -69,8 +70,10 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     @set:Inject
     internal lateinit var alarmManager: AlarmManager
 
+    @Volatile
     private var alertEnabled: Boolean = false
 
+    @Volatile
     private var pendingIntent: PendingIntent? = null
 
     @set:Inject
@@ -159,6 +162,10 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     override fun onDestroy() {
         super.onDestroy()
 
+        isEnabled = false
+
+        discardAlarm()
+
         locationHandler.removeUpdates(dataHandler.locationEventConsumer)
         dataHandler.removeUpdates(dataEventConsumer)
         dataHandler.removeUpdates(alertHandler.dataEventConsumer)
@@ -218,25 +225,29 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     }
 
     private fun createAlarm() {
-        if (backgroundPeriod > 0 && pendingIntent == null) {
-            Log.v(Main.LOG_TAG, "AppService.createAlarm() with backgroundPeriod=%d".format(backgroundPeriod))
-            val intent = Intent(this, AppService::class.java)
-            intent.action = RETRIEVE_DATA_ACTION
-            pendingIntent = PendingIntent.getService(this, 0, intent, 0)
+        synchronized(alarmManager) {
+            if (backgroundPeriod > 0 && pendingIntent == null) {
+                Log.v(Main.LOG_TAG, "AppService.createAlarm() with backgroundPeriod=%d".format(backgroundPeriod))
+                val intent = Intent(this, AppService::class.java)
+                intent.action = RETRIEVE_DATA_ACTION
+                pendingIntent = PendingIntent.getService(this, 0, intent, 0)
 
-            val period = (backgroundPeriod * 1000).toLong()
-            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, period, period, pendingIntent)
+                val period = (backgroundPeriod * 1000).toLong()
+                alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, period, period, pendingIntent)
+            }
         }
     }
 
     private fun discardAlarm() {
-        pendingIntent?.let {pendingIntent ->
-            Log.v(Main.LOG_TAG, "AppService.discardAlarm()")
-            try {
-                alarmManager.cancel(pendingIntent)
-                pendingIntent.cancel()
-            } finally {
-                this.pendingIntent = null
+        synchronized(alarmManager) {
+            pendingIntent?.let { pendingIntent ->
+                Log.v(Main.LOG_TAG, "AppService.discardAlarm()")
+                try {
+                    alarmManager.cancel(pendingIntent)
+                    pendingIntent.cancel()
+                } finally {
+                    this.pendingIntent = null
+                }
             }
         }
     }
