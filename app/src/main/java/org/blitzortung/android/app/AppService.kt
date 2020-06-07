@@ -66,9 +66,10 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     @set:Inject
     internal lateinit var preferences: SharedPreferences
 
-    private var alertEnabled: Boolean = false
+    @set:Inject
+    internal lateinit var alarmManager: AlarmManager
 
-    private var alarmManager: AlarmManager? = null
+    private var alertEnabled: Boolean = false
 
     private var pendingIntent: PendingIntent? = null
 
@@ -217,31 +218,26 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     }
 
     private fun createAlarm() {
-        if (alarmManager == null && backgroundPeriod > 0) {
+        if (backgroundPeriod > 0 && pendingIntent == null) {
             Log.v(Main.LOG_TAG, "AppService.createAlarm() with backgroundPeriod=%d".format(backgroundPeriod))
             val intent = Intent(this, AppService::class.java)
             intent.action = RETRIEVE_DATA_ACTION
             pendingIntent = PendingIntent.getService(this, 0, intent, 0)
 
-            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager?
-            if (alarmManager != null) {
-                val period = (backgroundPeriod * 1000).toLong()
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, period, period, pendingIntent)
-            } else {
-                Log.e(Main.LOG_TAG, "AppService.createAlarm() failed")
-            }
-            this.alarmManager = alarmManager
+            val period = (backgroundPeriod * 1000).toLong()
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, period, period, pendingIntent)
         }
     }
 
     private fun discardAlarm() {
-        alarmManager?.let { alarmManager ->
+        pendingIntent?.let {pendingIntent ->
             Log.v(Main.LOG_TAG, "AppService.discardAlarm()")
-            alarmManager.cancel(pendingIntent)
-            pendingIntent!!.cancel()
-
-            pendingIntent = null
-            this.alarmManager = null
+            try {
+                alarmManager.cancel(pendingIntent)
+                pendingIntent.cancel()
+            } finally {
+                this.pendingIntent = null
+            }
         }
     }
 

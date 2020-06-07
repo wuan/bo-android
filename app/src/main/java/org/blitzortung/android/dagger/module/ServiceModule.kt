@@ -1,6 +1,7 @@
 package org.blitzortung.android.dagger.module
 
-import android.app.Application
+import android.app.AlarmManager
+import android.content.Context
 import android.os.Handler
 import dagger.Module
 import dagger.Provides
@@ -19,4 +20,8 @@ class ServiceModule @Inject constructor(
     @Provides
     @Singleton
     fun providePeriod(): Period = Period()
+
+    @Provides
+    @Singleton
+    fun provideAlarmManager(context: Context): AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 }
