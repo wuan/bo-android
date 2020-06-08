@@ -19,7 +19,6 @@
 package org.blitzortung.android.data
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.location.Location
 import android.os.PowerManager
 import android.util.Log
@@ -27,10 +26,6 @@ import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.blitzortung.android.app.Main
-import org.blitzortung.android.app.R
-import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.LOCAL_REGION
@@ -47,19 +42,16 @@ import javax.inject.Singleton
 class ServiceDataHandler @Inject constructor(
         private val context: Context,
         private val wakeLock: PowerManager.WakeLock,
-        private val dataProviderFactory: DataProviderFactory,
-        private val preferences: SharedPreferences,
+        dataProviderFactory: DataProviderFactory,
         private val localData: LocalData
-) : OnSharedPreferenceChangeListener {
+) {
 
     private var location: Location? = null
 
     private var dataProvider: DataProvider? = null
 
-    var parameters = Parameters()
-        private set
-
-    private lateinit var parametersController: ParametersController
+    private val parameters = Parameters(region = LOCAL_REGION, rasterBaselength = 5000,
+            intervalOffset = 0, intervalDuration = 10, countThreshold = 0)
 
     private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
         override fun addedFirstConsumer() {
@@ -79,11 +71,8 @@ class ServiceDataHandler @Inject constructor(
     private var dataMode = DataMode()
 
     init {
-        this.preferences.registerOnSharedPreferenceChangeListener(this)
-
-        onSharedPreferenceChanged(this.preferences, PreferenceKey.DATA_SOURCE, PreferenceKey.USERNAME, PreferenceKey.PASSWORD, PreferenceKey.RASTER_SIZE, PreferenceKey.COUNT_THRESHOLD, PreferenceKey.REGION, PreferenceKey.INTERVAL_DURATION, PreferenceKey.HISTORIC_TIMESTEP, PreferenceKey.QUERY_PERIOD)
-
-        updateProviderSpecifics()
+        dataProvider = dataProviderFactory.getDataProviderForType(DataProviderType.RPC)
+        dataMode = DataMode(raster = true, region = false)
     }
 
     fun updateData() {
@@ -102,90 +91,11 @@ class ServiceDataHandler @Inject constructor(
     }
 
     private val activeParameters: Parameters
-        get() {
-            return if (dataMode.raster) {
-                localData.updateParameters(this.parameters.copy(region = LOCAL_REGION), location)
-            } else {
-                var parameters = parameters
-                if (!dataMode.region) {
-                    parameters = parameters.copy(region = 0)
-                }
-                parameters.copy(rasterBaselength = 0, countThreshold = 0)
-            }
-        }
+        get() = localData.updateParameters(parameters.copy(region = LOCAL_REGION), location)
 
     private fun sendEvent(dataEvent: DataEvent) {
-        if (dataEvent is ResultEvent && dataEvent.flags.storeResult) {
-            dataConsumerContainer.storeAndBroadcast(dataEvent)
-        } else {
-            dataConsumerContainer.broadcast(dataEvent)
-        }
+        dataConsumerContainer.broadcast(dataEvent)
     }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
-        when (key) {
-            PreferenceKey.DATA_SOURCE, PreferenceKey.SERVICE_URL -> {
-                val providerTypeString = sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.RPC.toString())
-                val providerType = DataProviderType.valueOf(providerTypeString.toUpperCase())
-                val dataProvider = dataProviderFactory.getDataProviderForType(providerType)
-                this.dataProvider = dataProvider
-
-                updateProviderSpecifics()
-
-                if (providerTypeString == DataProviderType.HTTP.toString()) {
-                    showBlitzortungProviderWarning()
-                }
-                updateData()
-            }
-
-            PreferenceKey.RASTER_SIZE -> {
-                val rasterBaselength = sharedPreferences.get(key, DEFAULT_RASTER_BASELENGTH.toString())
-                parameters = parameters.copy(rasterBaselength = if (rasterBaselength == AUTO_RASTER_BASELENGTH) DEFAULT_RASTER_BASELENGTH else rasterBaselength.toInt())
-                updateData()
-            }
-
-            PreferenceKey.COUNT_THRESHOLD -> {
-                val countThreshold = Integer.parseInt(sharedPreferences.get(key, "1"))
-                parameters = parameters.copy(countThreshold = countThreshold)
-                updateData()
-            }
-
-            PreferenceKey.INTERVAL_DURATION -> {
-                parameters = parameters.copy(intervalDuration = Integer.parseInt(sharedPreferences.get(key, "60")))
-                updateData()
-            }
-
-            PreferenceKey.HISTORIC_TIMESTEP -> {
-                parametersController = ParametersController.withOffsetIncrement(
-                        sharedPreferences.get(key, "30").toInt())
-            }
-
-            PreferenceKey.REGION -> {
-                val region = Integer.parseInt(sharedPreferences.get(key, "1"))
-                parameters = parameters.copy(region = region)
-                updateData()
-            }
-
-            else -> {
-            }
-        }
-    }
-
-    private fun showBlitzortungProviderWarning() {
-        Toast.makeText(context, R.string.provider_warning, Toast.LENGTH_LONG).show()
-    }
-
-    private fun updateProviderSpecifics() {
-
-        val providerType = dataProvider!!.type
-
-        dataMode = when (providerType) {
-            DataProviderType.RPC -> DataMode(raster = true, region = false)
-
-            DataProviderType.HTTP -> DataMode(raster = false, region = true)
-        }
-    }
-
 
     private suspend fun toast(stringResource: Int) = withContext(Dispatchers.Main) {
         Toast.makeText(context, stringResource, Toast.LENGTH_LONG).show()

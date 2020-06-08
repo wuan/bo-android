@@ -53,7 +53,6 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
 
     @Volatile
     private var backgroundPeriod: Int = 0
-        private set
 
     @set:Inject
     internal lateinit var dataHandler: ServiceDataHandler
@@ -70,14 +69,17 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     @set:Inject
     internal lateinit var alarmManager: AlarmManager
 
+    @set:Inject
+    internal lateinit var wakeLock: PowerManager.WakeLock
+
     @Volatile
     private var alertEnabled: Boolean = false
 
     @Volatile
     private var pendingIntent: PendingIntent? = null
 
-    @set:Inject
-    internal lateinit var wakeLock: PowerManager.WakeLock
+    @Volatile
+    private var lastUpdateTime: Long = 0
 
     private val dataEventConsumer = { _: DataEvent ->
         releaseWakeLock()
@@ -89,8 +91,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         super.onCreate()
 
         preferences.registerOnSharedPreferenceChangeListener(this)
-
-        onSharedPreferenceChanged(preferences, PreferenceKey.QUERY_PERIOD, PreferenceKey.ALERT_ENABLED, PreferenceKey.BACKGROUND_QUERY_PERIOD)
+        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED, PreferenceKey.BACKGROUND_QUERY_PERIOD)
 
         dataHandler.requestUpdates(dataEventConsumer)
         dataHandler.requestUpdates(alertHandler.dataEventConsumer)
@@ -111,11 +112,17 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         }
 
         if (intent != null && RETRIEVE_DATA_ACTION == intent.action) {
-            if (acquireWakeLock()) {
-                Log.v(Main.LOG_TAG, "AppService.onStartCommand() with wake lock $wakeLock")
-                dataHandler.updateData()
+            val currentTimeSeconds = System.currentTimeMillis() / 1000
+            if (currentTimeSeconds > lastUpdateTime + 0.6 * backgroundPeriod) {
+                if (acquireWakeLock()) {
+                    Log.v(Main.LOG_TAG, "AppService.onStartCommand() with wake lock $wakeLock")
+                    lastUpdateTime = currentTimeSeconds
+                    dataHandler.updateData()
+                } else {
+                    Log.v(Main.LOG_TAG, "AppService.onStartCommand() skip with held wake lock $wakeLock")
+                }
             } else {
-                Log.v(Main.LOG_TAG, "AppService.onStartCommand() skip with held wake lock $wakeLock")
+                Log.v(Main.LOG_TAG, "AppService.onStartCommand() skip with insufficient time passed $currentTimeSeconds - $lastUpdateTime = ${currentTimeSeconds - lastUpdateTime}")
             }
         } else {
             Log.v(Main.LOG_TAG, "AppService.onStartCommand() intent ${intent?.action}")
@@ -162,6 +169,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     override fun onDestroy() {
         super.onDestroy()
 
+        preferences.unregisterOnSharedPreferenceChangeListener(this)
         isEnabled = false
 
         discardAlarm()
@@ -171,25 +179,6 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         dataHandler.removeUpdates(alertHandler.dataEventConsumer)
 
         Log.v(Main.LOG_TAG, "AppService.onDestroy() ${LogUtil.timestamp}")
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
-        @Suppress("NON_EXHAUSTIVE_WHEN")
-        when (key) {
-            PreferenceKey.ALERT_ENABLED -> {
-                alertEnabled = sharedPreferences.get(key, false)
-                Log.v(Main.LOG_TAG, "AppService.onSharedPreferenceChanged() alertEnabled=$alertEnabled")
-
-                configureServiceMode()
-            }
-
-            PreferenceKey.BACKGROUND_QUERY_PERIOD -> {
-                backgroundPeriod = Integer.parseInt(sharedPreferences.get(key, "0"))
-                Log.v(Main.LOG_TAG, "AppService.onSharedPreferenceChanged() backgroundPeriod=$backgroundPeriod")
-
-                configureServiceMode()
-            }
-        }
     }
 
     private fun configureBootReceiver(enable: Boolean) {
@@ -202,10 +191,9 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         )
     }
 
-    private fun configureServiceMode() {
+    private fun configureServiceMode(forceUpdate: Boolean = false) {
         if (isEnabled) {
             val logElements = mutableListOf<String>()
-            discardAlarm()
             if (alertEnabled && backgroundPeriod > 0) {
                 logElements += "enable_bg"
                 if (!locationHandler.backgroundMode) {
@@ -213,6 +201,9 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
                     locationHandler.enableBackgroundMode()
                 }
                 locationHandler.start()
+                if (forceUpdate) {
+                    discardAlarm()
+                }
                 createAlarm()
                 configureBootReceiver(backgroundPeriod > 0)
             } else {
@@ -221,6 +212,8 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
                 discardAlarm()
             }
             Log.v(Main.LOG_TAG, "AppService.configureServiceMode() ${logElements.joinToString(", ")}")
+        } else {
+            discardAlarm()
         }
     }
 
@@ -248,6 +241,25 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
                 } finally {
                     this.pendingIntent = null
                 }
+            }
+        }
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+        @Suppress("NON_EXHAUSTIVE_WHEN")
+        when (key) {
+            PreferenceKey.ALERT_ENABLED -> {
+                alertEnabled = sharedPreferences.get(key, false)
+                Log.v(Main.LOG_TAG, "AppService.onSharedPreferenceChanged() alertEnabled=$alertEnabled")
+
+                configureServiceMode()
+            }
+
+            PreferenceKey.BACKGROUND_QUERY_PERIOD -> {
+                backgroundPeriod = Integer.parseInt(sharedPreferences.get(key, "0"))
+                Log.v(Main.LOG_TAG, "AppService.onSharedPreferenceChanged() backgroundPeriod=$backgroundPeriod")
+
+                configureServiceMode(true)
             }
         }
     }
