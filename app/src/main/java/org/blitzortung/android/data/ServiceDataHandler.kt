@@ -76,6 +76,7 @@ class ServiceDataHandler @Inject constructor(
 
     fun updateData() {
         dataProvider?.let { dataProvider ->
+            Log.v(Main.LOG_TAG, "ServiceDataHandler.updateData() $activeParameters $wakeLock")
             FetchBackgroundDataTask(dataMode, dataProvider, { sendEvent(it) }, ::toast, wakeLock)
                     .execute(activeParameters)
         }
