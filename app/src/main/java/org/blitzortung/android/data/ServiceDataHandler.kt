@@ -68,11 +68,10 @@ class ServiceDataHandler @Inject constructor(
         location = locationEvent.location
     }
 
-    private var dataMode = DataMode()
+    private val dataMode = DataMode(raster = true, region = false)
 
     init {
         dataProvider = dataProviderFactory.getDataProviderForType(DataProviderType.RPC)
-        dataMode = DataMode(raster = true, region = false)
     }
 
     fun updateData() {
