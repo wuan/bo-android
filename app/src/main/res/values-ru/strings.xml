@@ -81,7 +81,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="region_summary">Выберите регион предоставления данных</string>
 
     <string-array name="regions">
-        <item>Local</item>
+        <item>Домашний регион</item>
         <item>Весь мир</item>
         <item>Европа</item>
         <item>С. Америка</item>
@@ -372,5 +372,5 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="map_scale">Масштаб карты</string>
     <string name="map_scale_summary">Выберите процент масштабирования тайлов карты</string>
     <string name="location_permission_required">Требуется разрешение определения Вашего месторасположения.</string>
-    <string name="changelog">Change log</string>
+    <string name="changelog">Список изменений</string>
 </resources>
