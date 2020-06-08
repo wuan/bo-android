@@ -94,7 +94,6 @@ class MainDataHandler @Inject constructor(
 
     init {
         this.preferences.registerOnSharedPreferenceChangeListener(this)
-
         onSharedPreferenceChanged(this.preferences, PreferenceKey.DATA_SOURCE, PreferenceKey.USERNAME, PreferenceKey.PASSWORD, PreferenceKey.RASTER_SIZE, PreferenceKey.COUNT_THRESHOLD, PreferenceKey.REGION, PreferenceKey.INTERVAL_DURATION, PreferenceKey.HISTORIC_TIMESTEP, PreferenceKey.QUERY_PERIOD)
 
         updateProviderSpecifics()
@@ -183,7 +182,7 @@ class MainDataHandler @Inject constructor(
             }
 
             PreferenceKey.COUNT_THRESHOLD -> {
-                val countThreshold = Integer.parseInt(sharedPreferences.get(key, "1"))
+                val countThreshold = Integer.parseInt(sharedPreferences.get(key, "0"))
                 parameters = parameters.copy(countThreshold = countThreshold)
                 updateData()
             }
