@@ -62,6 +62,7 @@ class MainDataHandler @Inject constructor(
 
     private var location: Location? = null
 
+    @Volatile
     private var updatesEnabled = false
 
     private var period: Int = 0
@@ -93,11 +94,10 @@ class MainDataHandler @Inject constructor(
     private var dataMode = DataMode()
 
     init {
-        this.preferences.registerOnSharedPreferenceChangeListener(this)
+        preferences.registerOnSharedPreferenceChangeListener(this)
+
+        updatesEnabled = false
         onSharedPreferenceChanged(this.preferences, PreferenceKey.DATA_SOURCE, PreferenceKey.USERNAME, PreferenceKey.PASSWORD, PreferenceKey.RASTER_SIZE, PreferenceKey.COUNT_THRESHOLD, PreferenceKey.REGION, PreferenceKey.INTERVAL_DURATION, PreferenceKey.HISTORIC_TIMESTEP, PreferenceKey.QUERY_PERIOD)
-
-        updateProviderSpecifics()
-
         updatesEnabled = true
     }
 
