@@ -240,7 +240,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         val osmDroidConfig = Configuration.getInstance()
         osmDroidConfig.load(this, preferences)
         Log.v(LOG_TAG, "Main.onCreate() osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}")
-        if (versionComponent.state == VersionComponent.State.FIRST_RUN_AFTER_UPDATE && !StorageUtils.isWritable(osmDroidConfig.osmdroidBasePath)) {
+        if (!StorageUtils.isWritable(osmDroidConfig.osmdroidBasePath)) {
             preferences.edit().remove("osmdroid.basePath").apply()
             osmDroidConfig.load(this, preferences)
             Log.v(LOG_TAG, "Main.onCreate() updated osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}")
