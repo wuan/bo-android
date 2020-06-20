@@ -12,8 +12,8 @@ android {
         minSdkVersion 15
         targetSdkVersion 29
         versionCode 270
-        versionName '2.1.0'
-        multiDexEnabled true
+        versionName '2.1.1'
+        multiDexEnabled false
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -71,8 +71,6 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation "androidx.work:work-runtime-ktx:2.3.4"
     implementation 'org.osmdroid:osmdroid-android:6.1.6'
-    implementation 'com.android.support:multidex:1.0.3'
-    implementation 'androidx.multidex:multidex:2.0.1'
 
     // Dagger2
     implementation "com.google.dagger:dagger:$dagger_version"

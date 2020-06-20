@@ -1,6 +1,6 @@
 package org.blitzortung.android.app
 
-import androidx.multidex.MultiDexApplication
+import android.app.Application
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
@@ -9,7 +9,7 @@ import org.blitzortung.android.dagger.module.AppModule
 import org.blitzortung.android.dagger.module.ServiceModule
 import javax.inject.Inject
 
-class BOApplication : MultiDexApplication(), HasAndroidInjector {
+class BOApplication : Application(), HasAndroidInjector {
 
     @set:Inject
     lateinit var androidInjector: DispatchingAndroidInjector<Any>
