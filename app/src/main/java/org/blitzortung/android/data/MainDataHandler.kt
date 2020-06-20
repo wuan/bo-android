@@ -329,6 +329,7 @@ class MainDataHandler @Inject constructor(
             else -> 100000
         }
         return if (parameters.rasterBaselength != rasterBaselength) {
+            Log.v(Main.LOG_TAG, "MainDataHandler.autoRasterSizeUpdate() $zoomLevel : ${parameters.rasterBaselength} -> $rasterBaselength")
             parameters = parameters.copy(rasterBaselength = rasterBaselength)
             updateData()
             true
