@@ -70,6 +70,7 @@ class JsonRpcDataProvider @Inject constructor(
 
     @Throws(JSONException::class)
     private fun addStrikes(response: JSONObject, result: ResultEvent): ResultEvent {
+        val isIncremental = nextId != 0
         val strikes = ArrayList<Strike>()
         val referenceTimestamp = getReferenceTimestamp(response)
         val strikesArray = response.get("s") as JSONArray
@@ -79,7 +80,7 @@ class JsonRpcDataProvider @Inject constructor(
         if (response.has("next")) {
             nextId = response.get("next") as Int
         }
-        return result.copy(strikes = strikes)
+        return result.copy(strikes = strikes, updated = if (isIncremental) strikes.size else -1)
     }
 
     private fun addRasterData(response: JSONObject, result: ResultEvent, minDistance: Float): ResultEvent {
@@ -92,7 +93,7 @@ class JsonRpcDataProvider @Inject constructor(
             strikes.add(dataBuilder.createRasterElement(rasterParameters, referenceTimestamp, strikesArray.getJSONArray(i)))
         }
 
-        return result.copy(strikes = strikes, rasterParameters = rasterParameters, incrementalData = false, referenceTime = referenceTimestamp)
+        return result.copy(strikes = strikes, rasterParameters = rasterParameters, referenceTime = referenceTimestamp)
     }
 
     @Throws(JSONException::class)
@@ -181,7 +182,6 @@ class JsonRpcDataProvider @Inject constructor(
             if (intervalOffset < 0) {
                 nextId = 0
             }
-            resultVar = resultVar.copy(incrementalData = (nextId != 0))
 
             try {
                 val response = client.call(serviceUrl, "get_strikes", intervalDuration, if (intervalOffset < 0) intervalOffset else nextId)

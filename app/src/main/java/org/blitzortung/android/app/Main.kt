@@ -148,16 +148,20 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                         referenceTime = event.referenceTime
                     }
 
-                    if (event.incrementalData && !initializeOverlay) {
+                    if (event.updated >= 0 && !initializeOverlay) {
                         strikeListOverlay.expireStrikes()
                     } else {
                         strikeListOverlay.clear()
                     }
 
-                    if (initializeOverlay && event.totalStrikes != null) {
-                        strikeListOverlay.addStrikes(event.totalStrikes)
-                    } else if (event.strikes != null) {
-                        strikeListOverlay.addStrikes(event.strikes)
+                    if (event.strikes != null) {
+                        val strikes = if (event.updated > 0 && !initializeOverlay) {
+                            val size = event.strikes.size
+                            event.strikes.subList(size - event.updated, size)
+                        } else {
+                            event.strikes
+                        }
+                        strikeListOverlay.addStrikes(strikes)
                     }
 
                     alert_view.setColorHandler(strikeColorHandler, strikeListOverlay.parameters.intervalDuration)

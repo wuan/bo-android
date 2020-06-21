@@ -23,6 +23,8 @@ import android.location.Location
 import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.data.AlertSector
+import org.blitzortung.android.data.beans.RasterElement
+import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.util.MeasurementSystem
 import javax.inject.Inject
@@ -34,29 +36,29 @@ open class AlertDataHandler @Inject internal constructor(
 
     private val strikeLocation: Location = Location("")
 
-    fun checkStrikes(strikes: Collection<Strike>, location: Location, parameters: AlertParameters,
-            referenceTime: Long = System.currentTimeMillis()): AlertResult {
+    fun checkStrikes(strikes: Strikes, location: Location, parameters: AlertParameters,
+                     referenceTime: Long = System.currentTimeMillis()): AlertResult {
         val sectors = createSectors(parameters)
 
         val thresholdTime = referenceTime - parameters.alarmInterval
 
         val strikeLocation = Location("")
 
-        strikes.forEach { strike ->
+        strikes.strikes.forEach { strike ->
             val bearingToStrike = calculateBearingToStrike(location, strikeLocation, strike)
 
             val alertSector = getRelevantSector(bearingToStrike.toDouble(), sectors)
             alertSector?.let {
-                checkStrike(alertSector, strike, parameters.measurementSystem, location, thresholdTime)
+                checkStrike(alertSector, strike, strikes.rasterParameters, parameters.measurementSystem, location, thresholdTime)
             }
         }
 
         return AlertResult(sectors.map { aggregatingAlertDataMapper.mapSector(it) }, parameters, referenceTime)
     }
 
-    private fun checkStrike(sector: AggregatingAlertSector, strike: Strike, measurementSystem: MeasurementSystem,
+    private fun checkStrike(sector: AggregatingAlertSector, strike: Strike, rasterParameters: RasterParameters?, measurementSystem: MeasurementSystem,
                             location: Location, thresholdTime: Long) {
-        val distance = calculateDistanceTo(location, strike, measurementSystem)
+        val distance = calculateDistanceTo(location, strike, rasterParameters, measurementSystem)
 
         sector.ranges.find { distance <= it.rangeMaximum }?.let {
             it.addStrike(strike)
@@ -66,16 +68,34 @@ open class AlertDataHandler @Inject internal constructor(
         }
     }
 
-    private fun calculateDistanceTo(location: Location, strike: Strike, measurementSystem: MeasurementSystem): Float {
-        strikeLocation.longitude = strike.longitude
-        strikeLocation.latitude = strike.latitude
+    private fun calculateDistanceTo(location: Location, strike: Strike, rasterParameters: RasterParameters?, measurementSystem: MeasurementSystem): Float {
+        if (strike is RasterElement && rasterParameters != null) {
+            strikeLocation.longitude = closestValue(location.longitude, strike.longitude, rasterParameters.longitudeDelta)
+            strikeLocation.latitude = closestValue(location.latitude, strike.latitude, rasterParameters.latitudeDelta)
+        } else {
+            strikeLocation.longitude = strike.longitude
+            strikeLocation.latitude = strike.latitude
+        }
         val distanceInMeters = location.distanceTo(strikeLocation)
         return measurementSystem.calculateDistance(distanceInMeters)
     }
 
+    private fun closestValue(location: Double, target: Double, rasterSize: Double): Double {
+        val delta = rasterSize / 2.0
+        if (location in target - delta..target + delta) {
+            return location
+        } else {
+            if (location < target) {
+                return target - delta
+            } else {
+                return target + delta
+            }
+        }
+
+    }
+
     fun getLatestTimstampWithin(distanceLimit: Float, alertResult: AlertResult): Long {
-        return alertResult.sectors.fold(0L, {
-            latestTimestamp, sector ->
+        return alertResult.sectors.fold(0L, { latestTimestamp, sector ->
             max(latestTimestamp, getLatestTimestampWithin(distanceLimit, sector))
         })
     }

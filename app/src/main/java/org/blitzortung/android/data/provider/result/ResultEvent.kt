@@ -26,12 +26,11 @@ import org.blitzortung.android.data.beans.Strike
 
 data class ResultEvent(
         val strikes: List<Strike>? = null,
-        val totalStrikes: List<Strike>? = null,
         val stations: List<Station>? = null,
         val rasterParameters: RasterParameters? = null,
         val histogram: IntArray? = null,
         val failed: Boolean = false,
-        val incrementalData: Boolean = false,
+        val updated: Int = -1,
         val referenceTime: Long = 0,
         val parameters: Parameters,
         val flags: Flags
@@ -47,13 +46,12 @@ data class ResultEvent(
             sb.append("FailedResult()")
         } else {
             sb.append("Result(")
-            val currentStrikes = strikes
-            sb.append(currentStrikes?.size ?: 0).append(" strikes, ")
+            sb.append(strikes?.size ?: 0).append(" strikes, ")
             sb.append(parameters)
             if (rasterParameters != null) {
                 sb.append(", ").append(rasterParameters)
             }
-            sb.append(", incrementalData=$incrementalData")
+            sb.append(", updated=$updated")
             sb.append(", referenceTime=$referenceTime")
             sb.append(")")
         }
