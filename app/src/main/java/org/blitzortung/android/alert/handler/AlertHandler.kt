@@ -18,10 +18,13 @@
 
 package org.blitzortung.android.alert.handler
 
+import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.location.Location
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.event.AlertCancelEvent

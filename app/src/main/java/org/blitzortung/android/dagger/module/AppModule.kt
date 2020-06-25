@@ -1,6 +1,7 @@
 package org.blitzortung.android.dagger.module
 
 import android.app.Application
+import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageInfo
@@ -34,6 +35,9 @@ class AppModule @Inject constructor(
     @Provides
     @Named("agentSuffix")
     fun agentSuffix(packageInfo: PackageInfo): String = "-${packageInfo.versionCode}"
+
+    @Provides
+    fun notificationManager(): NotificationManager = application.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     @Provides
     fun provideVibrator(): Vibrator = application.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
