@@ -18,13 +18,10 @@
 
 package org.blitzortung.android.alert.handler
 
-import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.location.Location
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.event.AlertCancelEvent
@@ -36,6 +33,7 @@ import org.blitzortung.android.app.controller.NotificationHandler
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.location.LocationEvent
@@ -70,7 +68,7 @@ class AlertHandler @Inject constructor(
         }
     }
 
-    private var lastStrikes: Collection<Strike>? = null
+    private var lastStrikes: Strikes? = null
 
     private var alertEnabled: Boolean = false
         private set
@@ -85,7 +83,6 @@ class AlertHandler @Inject constructor(
 
     private var signalingLastTimestamp: Long = 0
 
-
     private val locationEventConsumer: (LocationEvent) -> Unit = { event ->
         Log.v(Main.LOG_TAG, "AlertHandler.locationEventConsumer ${event.location}")
 
@@ -99,8 +96,9 @@ class AlertHandler @Inject constructor(
     val dataEventConsumer: (Event) -> Unit = { event ->
         if (event is ResultEvent) {
             Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer $event")
-            if (!event.failed && event.containsRealtimeData()) {
-                checkStrikes(if (event.incrementalData) event.totalStrikes else event.strikes, locationHandler.location)
+            if (!event.failed && event.containsRealtimeData() && event.strikes != null) {
+                val strikes = Strikes(event.strikes, event.rasterParameters)
+                checkStrikes(strikes, locationHandler.location)
             } else {
                 if (!event.containsRealtimeData()) {
                     lastStrikes = null
@@ -156,7 +154,7 @@ class AlertHandler @Inject constructor(
         }
     }
 
-    private fun checkStrikes(strikes: Collection<Strike>?, location: Location?) {
+    private fun checkStrikes(strikes: Strikes?, location: Location?) {
         lastStrikes = strikes
 
         Log.v(Main.LOG_TAG, "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${locationHandler.location != null}")
@@ -227,3 +225,8 @@ class AlertHandler @Inject constructor(
         val ALERT_CANCEL_EVENT = AlertCancelEvent()
     }
 }
+
+data class Strikes(
+        val strikes: Collection<Strike>,
+        val rasterParameters: RasterParameters? = null
+)

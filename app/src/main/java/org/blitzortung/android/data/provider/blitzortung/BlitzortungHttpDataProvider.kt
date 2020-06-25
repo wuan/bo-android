@@ -178,11 +178,7 @@ class BlitzortungHttpDataProvider @Inject constructor(
                     }) { strikeMapBuilder.buildFromLine(it) }
 
             if (latestTime > 0L) {
-                resultVar = resultVar.copy(incrementalData = true)
-            }
-
-            if (latestTime > 0L) {
-                resultVar = resultVar.copy(incrementalData = true)
+                resultVar = resultVar.copy(updated = strikes.size)
                 val expireTime = resultVar.referenceTime - (intervalDuration - intervalOffset) * millisecondsPerMinute
                 this@BlitzortungHttpDataProvider.strikes = this@BlitzortungHttpDataProvider.strikes.filter { it.timestamp > expireTime }
                 this@BlitzortungHttpDataProvider.strikes += strikes
@@ -195,7 +191,7 @@ class BlitzortungHttpDataProvider @Inject constructor(
                 Log.v(Main.LOG_TAG, "BlitzortungHttpDataProvider.getStrikes() set latest time to $latestTime")
             }
 
-            resultVar = resultVar.copy(strikes = strikes, totalStrikes = this@BlitzortungHttpDataProvider.strikes, referenceTime = endTime)
+            resultVar = resultVar.copy(strikes = this@BlitzortungHttpDataProvider.strikes, referenceTime = endTime)
 
             return resultVar
         }

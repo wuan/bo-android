@@ -129,42 +129,41 @@ class HistogramView @JvmOverloads constructor(
         } else {
             val histogram = dataEvent.histogram
 
-            var viewShouldBeVisible = histogram != null && histogram.isNotEmpty()
+            var hasHistogram = histogram != null && histogram.isNotEmpty()
 
-            this.histogram = histogram
-
-            if (!viewShouldBeVisible) {
-                viewShouldBeVisible = createHistogram(dataEvent)
+            this.histogram = if (hasHistogram) {
+                histogram
+            } else {
+                createHistogram(dataEvent)
             }
 
-            visibility = if (viewShouldBeVisible) VISIBLE else INVISIBLE
+            visibility = if (hasHistogram) VISIBLE else INVISIBLE
 
-            if (viewShouldBeVisible) {
+            if (hasHistogram) {
                 invalidate()
             }
         }
     }
 
-    private fun createHistogram(result: ResultEvent): Boolean {
+    private fun createHistogram(result: ResultEvent): IntArray {
         result.parameters.let { parameters ->
-            if (result.totalStrikes == null) {
-                return false
+            if (result.strikes == null) {
+                return intArrayOf()
             }
 
-            Log.v(Main.LOG_TAG, "HistogramView create histogram from ${result.totalStrikes.size} total strikes")
+            Log.v(Main.LOG_TAG, "HistogramView create histogram from ${result.strikes.size} total strikes")
             val referenceTime = result.referenceTime
 
             val binInterval = 5
             val binCount = parameters.intervalDuration / binInterval
             val histogram = IntArray(binCount)
 
-            result.totalStrikes.forEach { strike ->
+            result.strikes.forEach { strike ->
                 val binIndex = (binCount - 1) - ((referenceTime - strike.timestamp) / 1000 / 60 / binInterval).toInt()
                 if (binIndex in 0 until binCount)
                     histogram[binIndex]++
             }
-            this.histogram = histogram
-            return true
+            return histogram
         }
     }
 }

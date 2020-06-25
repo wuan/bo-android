@@ -96,12 +96,8 @@ class RasterShape(private val center: IGeoPoint) : LightningShape {
     }
 
     private fun calculateAlphaValue(value: Float, minValue: Int, maxValue: Int, maxAlpha: Int, minAlpha: Int): Int {
-        val targetValue = coerceToRange((value - minValue) / (maxValue - minValue), 0.0f, 1.0f)
+        val targetValue = ((value - minValue) / (maxValue - minValue)).coerceIn(0.0f, 1.0f)
         return minAlpha + ((maxAlpha - minAlpha) * (1.0 - targetValue)).toInt()
-    }
-
-    private fun coerceToRange(value: Float, lowerBound: Float, upperBound: Float): Float {
-        return value.coerceIn(lowerBound, upperBound)
     }
 
     companion object {

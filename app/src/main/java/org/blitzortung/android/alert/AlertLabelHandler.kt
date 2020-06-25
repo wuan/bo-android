@@ -32,15 +32,16 @@ class AlertLabelHandler(
         var textColorResource = R.color.Green
 
         if (result != null && result.closestStrikeDistance < Float.POSITIVE_INFINITY) {
-            textColorResource = when(result.closestStrikeDistance) {
+            textColorResource = when (result.closestStrikeDistance) {
                 in 0.0..20.0 -> R.color.Red
                 in 20.0..50.0 -> R.color.Yellow
                 else -> R.color.Green
             }
-            warningText = "%.0f%s %s".format(
-                    result.closestStrikeDistance,
-                    resources.getString(result.parameters.measurementSystem.unitNameString),
-                    result.bearingName)
+            val distanceUnit = resources.getString(result.parameters.measurementSystem.unitNameString)
+            warningText = "%.0f$distanceUnit".format(result.closestStrikeDistance)
+            if (result.closestStrikeDistance > 0.1) {
+                warningText += " ${result.bearingName}"
+            }
         }
 
         val color = resources.getColor(textColorResource)

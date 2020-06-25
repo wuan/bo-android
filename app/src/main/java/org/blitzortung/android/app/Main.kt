@@ -58,6 +58,7 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.app.view.put
+import org.blitzortung.android.data.DataChannel
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.result.DataEvent
@@ -147,16 +148,20 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                         referenceTime = event.referenceTime
                     }
 
-                    if (event.incrementalData && !initializeOverlay) {
+                    if (event.updated >= 0 && !initializeOverlay) {
                         strikeListOverlay.expireStrikes()
                     } else {
                         strikeListOverlay.clear()
                     }
 
-                    if (initializeOverlay && event.totalStrikes != null) {
-                        strikeListOverlay.addStrikes(event.totalStrikes)
-                    } else if (event.strikes != null) {
-                        strikeListOverlay.addStrikes(event.strikes)
+                    if (event.strikes != null) {
+                        val strikes = if (event.updated > 0 && !initializeOverlay) {
+                            val size = event.strikes.size
+                            event.strikes.subList(size - event.updated, size)
+                        } else {
+                            event.strikes
+                        }
+                        strikeListOverlay.addStrikes(strikes)
                     }
 
                     alert_view.setColorHandler(strikeColorHandler, strikeListOverlay.parameters.intervalDuration)
@@ -247,6 +252,20 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             if (!StorageUtils.isWritable(osmDroidConfig.osmdroidTileCache)) {
                 Toast.makeText(baseContext, R.string.osmdroid_storage_warning, Toast.LENGTH_LONG).show()
             }
+        }
+    }
+
+    private fun setupDetailModeButton() {
+        with(toggleExtendedMode) {
+            isEnabled = true
+            visibility = View.VISIBLE
+
+            setOnClickListener {
+                dataHandler.toggleExtendedMode()
+                dataHandler.updateData(setOf(DataChannel.STRIKES))
+            }
+
+            buttonColumnHandler.addElement(this, ButtonGroup.DATA_UPDATING)
         }
     }
 
