@@ -35,13 +35,11 @@ import org.blitzortung.android.util.isAtLeast
 import javax.inject.Inject
 
 open class NotificationHandler @Inject constructor(
-        private val context: Context
+        private val context: Context,
+        private val notificationManager: NotificationManager
 ) {
 
-    private val notificationService: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
     init {
-
         if (isAtLeast(Build.VERSION_CODES.O)) {
             createNotificationChannel()
         }
@@ -64,7 +62,7 @@ open class NotificationHandler @Inject constructor(
             }
         }
 
-        notificationService.notify(R.id.alarm_notification_id, notification)
+        notificationManager.notify(R.id.alarm_notification_id, notification)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -106,8 +104,6 @@ open class NotificationHandler @Inject constructor(
                 setImportance(IMPORTANCE_LOW)
             }
             // Register the channel with the system
-            val notificationManager: NotificationManager =
-                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
