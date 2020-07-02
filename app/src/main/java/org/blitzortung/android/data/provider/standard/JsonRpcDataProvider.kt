@@ -83,8 +83,8 @@ class JsonRpcDataProvider @Inject constructor(
         return result.copy(strikes = strikes, updated = if (isIncremental) strikes.size else -1)
     }
 
-    private fun addRasterData(response: JSONObject, result: ResultEvent, minDistance: Float): ResultEvent {
-        val rasterParameters = dataBuilder.createRasterParameters(response, minDistance)
+    private fun addRasterData(response: JSONObject, result: ResultEvent, baselength: Int): ResultEvent {
+        val rasterParameters = dataBuilder.createRasterParameters(response, baselength)
         val referenceTimestamp = getReferenceTimestamp(response)
 
         val strikesArray = response.get("r") as JSONArray
@@ -163,8 +163,7 @@ class JsonRpcDataProvider @Inject constructor(
                 } else {
                     client.call(serviceUrl, "get_strikes_grid", intervalDuration, rasterBaselength, intervalOffset, region, countThreshold)
                 }
-                val minDistance = rasterBaselength / 1000f
-                resultVar = addRasterData(response, resultVar, minDistance)
+                resultVar = addRasterData(response, resultVar, rasterBaselength)
                 resultVar = addStrikesHistogram(response, resultVar)
             } catch (e: Exception) {
                 throw RuntimeException(e)

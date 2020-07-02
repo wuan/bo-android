@@ -43,7 +43,7 @@ internal class DataBuilder {
     }
 
     @Throws(JSONException::class)
-    fun createRasterParameters(response: JSONObject, minDistance: Float): RasterParameters {
+    fun createRasterParameters(response: JSONObject, baselength: Int): RasterParameters {
         return RasterParameters(
                 longitudeStart = response.getDouble("x0"),
                 latitudeStart = response.getDouble("y1"),
@@ -51,7 +51,7 @@ internal class DataBuilder {
                 latitudeDelta = response.getDouble("yd"),
                 longitudeBins = response.getInt("xc"),
                 latitudeBins = response.getInt("yc"),
-                minDistance = minDistance)
+                baselength = baselength)
     }
 
     @Throws(JSONException::class)

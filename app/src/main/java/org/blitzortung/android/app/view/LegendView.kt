@@ -191,9 +191,9 @@ class LegendView @JvmOverloads constructor(
 
     private val rasterString: String
         get() {
-            val minDistance = strikesOverlay?.rasterParameters?.minDistance
-            return if (minDistance != null) {
-                "%.0f %s".format(minDistance, context.getString(R.string.unit_km))
+            val baselength = strikesOverlay?.rasterParameters?.baselength
+            return if (baselength != null) {
+                "%.0f %s".format(baselength / 1000.0, context.getString(R.string.unit_km))
             } else {
                 context.getString(R.string.not_available)
             }

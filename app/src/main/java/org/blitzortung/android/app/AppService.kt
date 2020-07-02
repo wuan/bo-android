@@ -87,8 +87,8 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
 
     override fun onCreate() {
         AndroidInjection.inject(this)
-        Log.i(Main.LOG_TAG, "AppService.onCreate() ${LogUtil.timestamp}")
         super.onCreate()
+        Log.i(Main.LOG_TAG, "AppService.onCreate() ${LogUtil.timestamp}")
 
         preferences.registerOnSharedPreferenceChangeListener(this)
         onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED, PreferenceKey.BACKGROUND_QUERY_PERIOD)
