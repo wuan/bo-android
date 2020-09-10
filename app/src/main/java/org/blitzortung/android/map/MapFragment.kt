@@ -18,6 +18,8 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.ScaleBarOverlay
+import org.osmdroid.views.overlay.compass.CompassOverlay
+import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider
 import kotlin.math.min
 
 class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
@@ -27,6 +29,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         private set
     private lateinit var mCopyrightOverlay: CopyrightOverlay
     private lateinit var mScaleBarOverlay: ScaleBarOverlay
+    private lateinit var compassOverlay: CompassOverlay
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mapView = OwnMapView(inflater.context)
@@ -61,6 +64,11 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         centered.isAccessible = true
         centered.setBoolean(mScaleBarOverlay, true)
         mapView.overlays.add(this.mScaleBarOverlay)
+
+        compassOverlay = CompassOverlay(context, InternalCompassOrientationProvider(context), mapView)
+        compassOverlay.enableCompass()
+        compassOverlay.setCompassCenter(mapView.width / 2.0f, mapView.height / 2.0f)
+        mapView.overlays.add(this.compassOverlay)
 
         //built in zoom controls
         mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT)
