@@ -66,27 +66,27 @@ workflows:
           run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
       - git-clone@4: {}
       - cache-pull@2: {}
-#      - install-missing-android-tools@2:
-#          inputs:
-#            - gradlew_path: $PROJECT_LOCATION/gradlew
+      - install-missing-android-tools@2:
+          inputs:
+            - gradlew_path: $PROJECT_LOCATION/gradlew
 #      - change-android-versioncode-and-versionname@1:
 #          inputs:
 #            - build_gradle_path: $PROJECT_LOCATION/$MODULE/build.gradle
-#      - android-lint@0:
-#          inputs:
-#            - project_location: $PROJECT_LOCATION
-#            - module: $MODULE
-#            - variant: $VARIANT
+      - android-lint@0:
+          inputs:
+            - project_location: $PROJECT_LOCATION
+            - module: $MODULE
+            - variant: $VARIANT
       - android-unit-test@1:
           inputs:
             - project_location: $PROJECT_LOCATION
             - module: $MODULE
-#            - variant: $VARIANT
+            - variant: $VARIANT
       - android-build@0:
           inputs:
             - project_location: $PROJECT_LOCATION
             - module: $MODULE
-#            - variant: $VARIANT
+            - variant: $VARIANT
             - build_type: aab
       - sign-apk@1:
           run_if: '{{getenv "BITRISEIO_ANDROID_KEYSTORE_URL" | ne ""}}'
@@ -98,8 +98,6 @@ workflows:
           run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
       - git-clone@4: {}
       - cache-pull@2: {}
-      - script@1:
-          title: Do anything with Script step
       - install-missing-android-tools@2:
           inputs:
             - gradlew_path: $PROJECT_LOCATION/gradlew
