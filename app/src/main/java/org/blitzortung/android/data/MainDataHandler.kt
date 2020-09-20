@@ -261,6 +261,10 @@ class MainDataHandler @Inject constructor(
         return updateParameters { parametersController.goRealtime(it) }
     }
 
+    fun invervalOffset(offset: Int) : Boolean {
+        return updateParameters { parametersController.setOffset(it, offset) }
+    }
+
     private fun updateParameters(updater: (Parameters) -> Parameters): Boolean {
         val oldParameters = parameters
         parameters = updater.invoke(parameters)

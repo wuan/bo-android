@@ -49,8 +49,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:src="@android:drawable/stat_notify_error"
-                android:contentDescription="@string/error_indicator" />
+                android:contentDescription="@string/error_indicator"
+                android:src="@android:drawable/stat_notify_error" />
 
             <ProgressBar
                 android:id="@+id/progress"
@@ -74,7 +74,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            local:tablet_scaleable="true"/>
+            local:tablet_scaleable="true" />
 
         <ImageButton
             android:id="@+id/menu"
@@ -117,23 +117,30 @@
             android:src="@android:drawable/ic_menu_view"
             android:visibility="gone" />
 
+        <org.blitzortung.android.widget.VerticalSeekBar
+            android:id="@+id/timeSlider"
+            android:background="@color/translucent_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
         <org.blitzortung.android.app.view.AlertView
             android:id="@+id/alert_view"
             android:layout_width="90sp"
             android:layout_height="90sp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            local:tablet_scaleable="true"/>
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            local:tablet_scaleable="true" />
 
         <org.blitzortung.android.app.view.HistogramView
             android:id="@+id/histogram_view"
             android:layout_width="100sp"
             android:layout_height="70sp"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            local:tablet_scaleable="true"/>
+            android:layout_alignParentBottom="true"
+            local:tablet_scaleable="true" />
 
     </RelativeLayout>
 </RelativeLayout>

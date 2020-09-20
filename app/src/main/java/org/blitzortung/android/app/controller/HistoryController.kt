@@ -69,11 +69,7 @@ class HistoryController(
                 updateButtonColumn()
                 updateData()
             } else {
-                val toast = Toast.makeText(
-                    context,
-                    context.resources.getText(R.string.historic_timestep_limit_reached),
-                    Toast.LENGTH_SHORT
-                )
+                val toast = Toast.makeText(context, context.resources.getText(R.string.historic_timestep_limit_reached), Toast.LENGTH_SHORT)
                 toast.show()
             }
         }
