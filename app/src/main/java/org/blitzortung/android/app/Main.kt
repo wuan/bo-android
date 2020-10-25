@@ -67,6 +67,7 @@ import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.result.StatusEvent
 import org.blitzortung.android.dialogs.QuickSettingsDialog
 import org.blitzortung.android.location.LocationHandler
+import org.blitzortung.android.map.MapConfigurationProvider
 import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.overlay.FadeOverlay
@@ -242,6 +243,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun initializeOsmDroid() {
+        Configuration.setConfigurationProvider(MapConfigurationProvider(this.applicationContext))
         val osmDroidConfig = Configuration.getInstance()
         osmDroidConfig.load(this, preferences)
         Log.v(LOG_TAG, "Main.onCreate() osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}")
