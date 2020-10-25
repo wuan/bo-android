@@ -21,13 +21,16 @@ package org.blitzortung.android.app.controller
 import android.app.Activity
 import android.content.SharedPreferences
 import android.util.Log
-import android.widget.SeekBar
+import com.google.android.material.slider.Slider
+import com.google.android.material.slider.Slider.OnSliderTouchListener
 import kotlinx.android.synthetic.main.main.*
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
-import org.blitzortung.android.data.*
+import org.blitzortung.android.data.DataChannel
+import org.blitzortung.android.data.MainDataHandler
+import org.blitzortung.android.data.ParametersController
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.Event
 
@@ -36,7 +39,7 @@ class HistorySliderController(
         private val preferences: SharedPreferences,
         private val dataHandler: MainDataHandler
 ) : OnSharedPreferenceChangeListener {
-    private var slider : SeekBar
+    private var slider: Slider
 
     private var intervalDuration: Int = 60
     private var historicTimestep: Int = 30
@@ -44,7 +47,7 @@ class HistorySliderController(
     val dataConsumer = { event: Event ->
         if (event is ResultEvent) {
             Log.v(Main.LOG_TAG, "slider update: ${event.parameters.intervalOffset}")
-            activity.timeSlider.progress = -event.parameters.intervalOffset
+            activity.timeSlider.value = -event.parameters.intervalOffset.toFloat()
         }
     }
 
@@ -58,26 +61,27 @@ class HistorySliderController(
     }
 
     private fun initializeSlider() {
-        slider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                Log.v(Main.LOG_TAG, "update($progress)")
-                update(progress)
+        slider.addOnSliderTouchListener(object : OnSliderTouchListener {
+            override fun onStartTrackingTouch(slider: Slider) {
+                Log.v(Main.LOG_TAG, "onStartTracking(${slider.value})")
+                update(slider.value.toInt())
             }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            override fun onStopTrackingTouch(slider: Slider) {
+                Log.v(Main.LOG_TAG, "onStopTracking(${slider.value})")
+                update(slider.value.toInt())
             }
         })
     }
 
     private fun configureSlider() {
-        slider.max = (ParametersController.MAX_HISTORY_RANGE - intervalDuration)
+        slider.valueFrom = 0.0f
+        slider.valueTo = (ParametersController.MAX_HISTORY_RANGE - intervalDuration).toFloat()
+        slider.stepSize = historicTimestep.toFloat()
     }
 
     private fun update(offset: Int) {
-        if (dataHandler.invervalOffset(offset)) {
+        if (dataHandler.invervalOffset(-offset)) {
             updateData()
         }
         if (offset == 0) {
