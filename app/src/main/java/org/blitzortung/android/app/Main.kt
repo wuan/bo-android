@@ -243,7 +243,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun initializeOsmDroid() {
-        Configuration.setConfigurationProvider(MapConfigurationProvider(this.applicationContext))
+        Configuration.setConfigurationProvider(MapConfigurationProvider(applicationContext))
         val osmDroidConfig = Configuration.getInstance()
         osmDroidConfig.load(this, preferences)
         Log.v(LOG_TAG, "Main.onCreate() osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}")
