@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.hiya.jacoco-android'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.github.kt3k.coveralls'
 
@@ -11,10 +10,13 @@ android {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 15
         targetSdkVersion 29
-        versionCode 275
-        versionName '2.1.4'
+        versionCode 276
+        versionName '2.1.5'
         multiDexEnabled false
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildFeatures {
+        viewBinding true
     }
     buildTypes {
         release {
@@ -26,8 +28,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
     }
     lintOptions {
         abortOnError false
@@ -46,6 +51,7 @@ jacoco {
 
 tasks.withType(Test) {
     jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
 }
 
 jacocoAndroidUnitTestReport {
@@ -60,17 +66,17 @@ coveralls {
     jacocoReportPath 'build/reports/jacoco/jacocoTestReleaseUnitTestReport/jacocoTestReleaseUnitTestReport.xml'
 }
 
-def dagger_version = '2.29.1'
+def dagger_version = '2.33'
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.3.0-alpha02'
+    implementation 'androidx.appcompat:appcompat:1.3.0-beta01'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.media:media:1.2.0'
-    implementation 'androidx.core:core-ktx:1.5.0-alpha04'
+    implementation 'androidx.media:media:1.2.1'
+    implementation 'androidx.core:core-ktx:1.5.0-beta03'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    implementation "androidx.work:work-runtime-ktx:2.4.0"
-    implementation 'org.osmdroid:osmdroid-android:6.1.8'
+    implementation "androidx.work:work-runtime-ktx:2.5.0"
+    implementation 'org.osmdroid:osmdroid-android:6.1.10'
 
     // Dagger2
     implementation "com.google.dagger:dagger:$dagger_version"
@@ -80,9 +86,9 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
     compileOnly 'javax.annotation:jsr250-api:1.0'
 
-    testImplementation 'junit:junit:4.13.1'
-    testImplementation 'org.assertj:assertj-core:3.18.0'
-    testImplementation 'io.mockk:mockk:1.10.2'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.assertj:assertj-core:3.19.0'
+    testImplementation 'io.mockk:mockk:1.11.0'
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     testImplementation 'org.robolectric:robolectric:4.4'

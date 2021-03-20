@@ -18,20 +18,21 @@
 
 package org.blitzortung.android.app.controller
 
-import android.app.Activity
+import android.content.Context
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
-import kotlinx.android.synthetic.main.main.*
 import org.blitzortung.android.app.ButtonGroup
 import org.blitzortung.android.app.R
+import org.blitzortung.android.app.databinding.MainBinding
 import org.blitzortung.android.data.DataChannel
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.Event
 
 class HistoryController(
-        private val activity: Activity,
+        private val context: Context,
+        private val binding: MainBinding,
         private val buttonHandler: ButtonColumnHandler<ImageButton, ButtonGroup>,
         private val dataHandler: MainDataHandler
 ) {
@@ -53,29 +54,29 @@ class HistoryController(
     }
 
     private fun setRealtimeData(realtimeData: Boolean) {
-        activity.historyRew.visibility = View.VISIBLE
+        binding.historyRew.visibility = View.VISIBLE
         val historyButtonsVisibility = if (realtimeData) View.INVISIBLE else View.VISIBLE
-        activity.historyFfwd.visibility = historyButtonsVisibility
-        activity.goRealtime.visibility = historyButtonsVisibility
+        binding.historyFfwd.visibility = historyButtonsVisibility
+        binding.goRealtime.visibility = historyButtonsVisibility
         updateButtonColumn()
     }
 
     private fun setupHistoryRewindButton() {
-        addButtonWithOnClickAction(activity.historyRew) {
+        addButtonWithOnClickAction(binding.historyRew) {
             if (dataHandler.rewInterval()) {
-                activity.historyFfwd.visibility = View.VISIBLE
-                activity.goRealtime.visibility = View.VISIBLE
+                binding.historyFfwd.visibility = View.VISIBLE
+                binding.goRealtime.visibility = View.VISIBLE
                 updateButtonColumn()
                 updateData()
             } else {
-                val toast = Toast.makeText(activity.baseContext, activity.resources.getText(R.string.historic_timestep_limit_reached), Toast.LENGTH_SHORT)
+                val toast = Toast.makeText(context, context.resources.getText(R.string.historic_timestep_limit_reached), Toast.LENGTH_SHORT)
                 toast.show()
             }
         }
     }
 
     private fun setupHistoryForwardButton() {
-        addButtonWithOnClickAction(activity.historyFfwd) {
+        addButtonWithOnClickAction(binding.historyFfwd) {
             if (dataHandler.ffwdInterval()) {
                 if (dataHandler.isRealtime) {
                     configureForRealtimeOperation()
@@ -87,7 +88,7 @@ class HistoryController(
     }
 
     private fun setupGoRealtimeButton() {
-        addButtonWithOnClickAction(activity.goRealtime) {
+        addButtonWithOnClickAction(binding.goRealtime) {
             if (dataHandler.goRealtime()) {
                 configureForRealtimeOperation()
             }
@@ -103,8 +104,8 @@ class HistoryController(
     }
 
     private fun configureForRealtimeOperation() {
-        activity.historyFfwd.visibility = View.INVISIBLE
-        activity.goRealtime.visibility = View.INVISIBLE
+        binding.historyFfwd.visibility = View.INVISIBLE
+        binding.goRealtime.visibility = View.INVISIBLE
         updateButtonColumn()
 
         dataHandler.restart()

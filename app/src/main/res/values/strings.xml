@@ -28,7 +28,7 @@ Polish by Jakub Świątkiewicz (kuba.dex@gmail.com)\n
 Italian by Michele Locati (michele@locati.it)\n
 Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string>
-    <string name="copyright" translatable="false">© 2011–2020, Andreas Würl</string>
+    <string name="copyright" translatable="false">© 2011–2021, Andreas Würl</string>
     <string name="project_email" translatable="false">blitzortung@tryb.de</string>
     <string name="legend">Legend</string>
     <string name="legend_grid">Grid</string>

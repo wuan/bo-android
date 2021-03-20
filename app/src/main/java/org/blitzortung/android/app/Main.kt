@@ -45,7 +45,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 import dagger.android.AndroidInjection
-import kotlinx.android.synthetic.main.main.*
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.BuildVersion
@@ -53,6 +52,7 @@ import org.blitzortung.android.app.components.ChangeLogComponent
 import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
+import org.blitzortung.android.app.databinding.MainBinding
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
@@ -67,7 +67,6 @@ import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.result.StatusEvent
 import org.blitzortung.android.dialogs.QuickSettingsDialog
 import org.blitzortung.android.location.LocationHandler
-import org.blitzortung.android.map.MapConfigurationProvider
 import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.overlay.FadeOverlay
@@ -165,12 +164,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                         strikeListOverlay.addStrikes(strikes)
                     }
 
-                    alert_view.setColorHandler(strikeColorHandler, strikeListOverlay.parameters.intervalDuration)
+                    binding.alertView.setColorHandler(strikeColorHandler, strikeListOverlay.parameters.intervalDuration)
 
                     strikeListOverlay.refresh()
                     mapFragment.mapView.invalidate()
 
-                    legend_view.requestLayout()
+                    binding.legendView.requestLayout()
 
                     if (!event.containsRealtimeData()) {
                         setHistoricStatusString()
@@ -179,7 +178,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
                 statusComponent.stopProgress()
 
-                legend_view.invalidate()
+                binding.legendView.invalidate()
             }
             is StatusEvent -> {
                 setStatusString(event.status)
@@ -189,8 +188,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     private lateinit var mapFragment: MapFragment
 
+    private lateinit var binding: MainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
+        binding = MainBinding.inflate(layoutInflater)
 
         Log.v(LOG_TAG, "Main.onCreate()")
 
@@ -203,7 +205,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         initializeOsmDroid()
 
-        setContentView(R.layout.main)
+        setContentView(binding.root)
 
         if (supportFragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG) == null) {
             mapFragment = MapFragment()
@@ -226,7 +228,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         buttonColumnHandler = ButtonColumnHandler(if (TabletAwareView.isTablet(this)) 75f else 55f)
         configureMenuAccess()
-        historyController = HistoryController(this, buttonColumnHandler, dataHandler)
+        historyController = HistoryController(this, binding, buttonColumnHandler, dataHandler)
 
         buttonColumnHandler.addAllElements(historyController.getButtons(), ButtonGroup.DATA_UPDATING)
 
@@ -243,7 +245,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun initializeOsmDroid() {
-        Configuration.setConfigurationProvider(MapConfigurationProvider(applicationContext))
         val osmDroidConfig = Configuration.getInstance()
         osmDroidConfig.load(this, preferences)
         Log.v(LOG_TAG, "Main.onCreate() osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}")
@@ -258,7 +259,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun setupDetailModeButton() {
-        with(toggleExtendedMode) {
+        with(binding.toggleExtendedMode) {
             isEnabled = true
             visibility = View.VISIBLE
 
@@ -283,13 +284,13 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun setupCustomViews() {
-        with(legend_view) {
+        with(binding.legendView) {
             strikesOverlay = this@Main.strikeListOverlay
             setAlpha(150)
             setOnClickListener { openQuickSettingsDialog() }
         }
 
-        with(alert_view) {
+        with(binding.alertView) {
             setColorHandler(strikeColorHandler, strikeListOverlay.parameters.intervalDuration)
             setBackgroundColor(Color.TRANSPARENT)
             setAlpha(200)
@@ -310,7 +311,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             enableLongClickListener(dataHandler, alertHandler)
         }
 
-        with(histogram_view) {
+        with(binding.histogramView) {
             setStrikesOverlay(strikeListOverlay)
             setOnClickListener {
                 val currentResult = currentResult
@@ -436,12 +437,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private fun enableDataUpdates() {
         with(locationHandler) {
             requestUpdates(ownLocationOverlay.locationEventConsumer)
-            requestUpdates(alert_view.locationEventConsumer)
+            requestUpdates(binding.alertView.locationEventConsumer)
             requestUpdates(dataHandler.locationEventConsumer)
         }
 
         with(alertHandler) {
-            requestUpdates(alert_view.alertEventConsumer)
+            requestUpdates(binding.alertView.alertEventConsumer)
             requestUpdates(statusComponent.alertEventConsumer)
         }
 
@@ -449,7 +450,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             requestUpdates(dataEventConsumer)
             requestUpdates(alertHandler.dataEventConsumer)
             requestUpdates(historyController.dataConsumer)
-            requestUpdates(histogram_view.dataConsumer)
+            requestUpdates(binding.histogramView.dataConsumer)
         }
     }
 
@@ -480,12 +481,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private fun disableDataUpdates() {
         with(locationHandler) {
             removeUpdates(ownLocationOverlay.locationEventConsumer)
-            removeUpdates(alert_view.locationEventConsumer)
+            removeUpdates(binding.alertView.locationEventConsumer)
             removeUpdates(dataHandler.locationEventConsumer)
         }
 
         with(alertHandler) {
-            removeUpdates(alert_view.alertEventConsumer)
+            removeUpdates(binding.alertView.alertEventConsumer)
             removeUpdates(statusComponent.alertEventConsumer)
         }
 
@@ -493,7 +494,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             removeUpdates(dataEventConsumer)
             requestUpdates(alertHandler.dataEventConsumer)
             removeUpdates(historyController.dataConsumer)
-            removeUpdates(histogram_view.dataConsumer)
+            removeUpdates(binding.histogramView.dataConsumer)
         }
     }
 
@@ -557,7 +558,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         if (permission != null) {
             val requiresBackgroundPermission = if (isAtLeast(Build.VERSION_CODES.Q)) {
-                checkSelfPermission(ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED
+                backgroundAlerts && checkSelfPermission(ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED
             } else {
                 false
             }
@@ -653,7 +654,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             Log.v(LOG_TAG, "Main.onKeyUp(KEYCODE_MENU)")
-            showPopupMenu(upper_row)
+            showPopupMenu(binding.upperRow)
             return true
         }
         return super.onKeyUp(keyCode, event)
@@ -712,12 +713,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         if (isAtLeast(Build.VERSION_CODES.LOLLIPOP) ||
                 isAtLeast(Build.VERSION_CODES.ICE_CREAM_SANDWICH) &&
                 !config.hasPermanentMenuKey()) {
-            menu.visibility = View.VISIBLE
-            menu.setOnClickListener {
-                showPopupMenu(menu)
+            binding.menu.visibility = View.VISIBLE
+            binding.menu.setOnClickListener {
+                showPopupMenu(binding.menu)
             }
 
-            buttonColumnHandler.addElement(menu)
+            buttonColumnHandler.addElement(binding.menu)
         }
     }
 
