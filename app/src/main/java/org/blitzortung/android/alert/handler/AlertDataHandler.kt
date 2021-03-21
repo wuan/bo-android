@@ -112,7 +112,7 @@ open class AlertDataHandler @Inject internal constructor(
         return sector.ranges
                 .filter { distanceLimit <= it.rangeMaximum }
                 .map { it.latestStrikeTimestamp }
-                .max() ?: 0L
+                .maxOrNull() ?: 0L
     }
 
     private fun createSectors(alertParameters: AlertParameters): List<AggregatingAlertSector> {
