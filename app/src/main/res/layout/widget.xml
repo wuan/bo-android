@@ -11,4 +11,12 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
+    <TextView
+        android:id="@+id/widget_update_time"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        style="@style/TextAppearance.AppCompat.Headline"
+        android:text="foobar"
+        />
+
 </LinearLayout>
