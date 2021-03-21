@@ -33,7 +33,7 @@ import org.blitzortung.android.protocol.Event
 class HistoryController(
         private val context: Context,
         private val binding: MainBinding,
-        private val buttonHandler: ButtonColumnHandler<ImageButton, ButtonGroup>,
+        private val buttonHandler: ButtonColumnHandler<View, ButtonGroup>,
         private val dataHandler: MainDataHandler
 ) {
 

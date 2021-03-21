@@ -18,6 +18,9 @@
 
 package org.blitzortung.android.data
 
+import android.util.Log
+import org.blitzortung.android.app.Main
+
 class ParametersController private constructor(private val offsetIncrement: Int) {
 
     fun rewInterval(parameters: Parameters): Parameters {
@@ -32,8 +35,8 @@ class ParametersController private constructor(private val offsetIncrement: Int)
         var intervalOffset = parameters.intervalOffset + offsetIncrement
         val intervalDuration = parameters.intervalDuration
 
-        if (intervalOffset < -MAX_RANGE + intervalDuration) {
-            intervalOffset = -MAX_RANGE + intervalDuration
+        if (intervalOffset < -MAX_HISTORY_RANGE + intervalDuration) {
+            intervalOffset = -MAX_HISTORY_RANGE + intervalDuration
         } else if (intervalOffset > 0) {
             intervalOffset = 0
         }
@@ -49,9 +52,17 @@ class ParametersController private constructor(private val offsetIncrement: Int)
         return (value / offsetIncrement) * offsetIncrement
     }
 
+    fun setOffset(parameters: Parameters, offset: Int): Parameters {
+        Log.v(Main.LOG_TAG, "ParametersController.setOffset(${offset})")
+        if (offset in -MAX_HISTORY_RANGE + parameters.intervalDuration..0) {
+            return parameters.copy(intervalOffset = offset)
+        }
+        return parameters
+    }
+
     companion object {
 
-        private const val MAX_RANGE = 24 * 60
+        const val MAX_HISTORY_RANGE = 24 * 60
 
         fun withOffsetIncrement(offsetIncrement: Int): ParametersController {
             return ParametersController(offsetIncrement)

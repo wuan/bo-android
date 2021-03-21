@@ -52,6 +52,7 @@ import org.blitzortung.android.app.components.ChangeLogComponent
 import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
+import org.blitzortung.android.app.controller.HistorySliderController
 import org.blitzortung.android.app.databinding.MainBinding
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
@@ -93,9 +94,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     private var clearData: Boolean = false
 
-    private lateinit var buttonColumnHandler: ButtonColumnHandler<ImageButton, ButtonGroup>
+    private lateinit var buttonColumnHandler: ButtonColumnHandler<View, ButtonGroup>
 
     private lateinit var historyController: HistoryController
+
+    private lateinit var historySliderController: HistorySliderController
 
     @set:Inject
     internal lateinit var locationHandler: LocationHandler
@@ -229,7 +232,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         buttonColumnHandler = ButtonColumnHandler(if (TabletAwareView.isTablet(this)) 75f else 55f)
         configureMenuAccess()
         historyController = HistoryController(this, binding, buttonColumnHandler, dataHandler)
-
+        historySliderController = HistorySliderController(this, preferences, dataHandler)
+        binding.timeSlider.requestLayout()
+        buttonColumnHandler.addElement(binding.timeSlider, ButtonGroup.DATA_UPDATING, heightFactor = 4)
+        Log.v(Main.LOG_TAG, "time slider width ${binding.timeSlider.width}, height ${binding.timeSlider.height}")
         buttonColumnHandler.addAllElements(historyController.getButtons(), ButtonGroup.DATA_UPDATING)
 
         //setupDetailModeButton()
@@ -450,6 +456,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             requestUpdates(dataEventConsumer)
             requestUpdates(alertHandler.dataEventConsumer)
             requestUpdates(historyController.dataConsumer)
+            requestUpdates(historySliderController.dataConsumer)
             requestUpdates(binding.histogramView.dataConsumer)
         }
     }
@@ -493,6 +500,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         with(dataHandler) {
             removeUpdates(dataEventConsumer)
             requestUpdates(alertHandler.dataEventConsumer)
+            removeUpdates(historySliderController.dataConsumer)
             removeUpdates(historyController.dataConsumer)
             removeUpdates(binding.histogramView.dataConsumer)
         }

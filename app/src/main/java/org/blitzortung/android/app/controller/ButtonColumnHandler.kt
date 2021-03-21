@@ -18,13 +18,18 @@
 
 package org.blitzortung.android.app.controller
 
+import android.util.Log
 import android.view.View
 import android.widget.RelativeLayout
+import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.helper.ViewHelper.pxFromSp
 
 class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) {
 
-    data class GroupedView<V, G>(val view: V, val groups: Set<G>) {
+    data class GroupedView<V, G>(
+            val view: V,
+            val groups: Set<G>,
+            val heightFactor: Int = 1) {
     }
 
     private val elements: MutableList<GroupedView<V, G>>
@@ -33,8 +38,8 @@ class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) 
         elements = arrayListOf()
     }
 
-    fun addElement(element: V, vararg groups: G) {
-        elements.add(GroupedView(element, groups.toSet()))
+    fun addElement(element: V, vararg groups: G, heightFactor: Int = 1) {
+        elements.add(GroupedView(element, groups.toSet(), heightFactor))
     }
 
     fun addAllElements(elements: Collection<V>, vararg groups: G) {
@@ -49,8 +54,10 @@ class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) 
             if (view.visibility == View.VISIBLE) {
                 val lp = RelativeLayout.LayoutParams(
                         RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
-                lp.width = pxFromSp(view.context, buttonSize).toInt()
-                lp.height = pxFromSp(view.context, buttonSize).toInt()
+                val unitSize = pxFromSp(view.context, buttonSize).toInt()
+                lp.width = unitSize
+                lp.height = unitSize * element.heightFactor
+                Log.v(Main.LOG_TAG, "update element ${lp.width}x${lp.height}, $unitSize and factor ${element.heightFactor}, element: ${element.view.width}x${element.view.height}")
                 lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 1)
                 if (previousIndex < 0) {
                     lp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 1)

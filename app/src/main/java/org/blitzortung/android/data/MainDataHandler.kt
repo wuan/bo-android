@@ -23,7 +23,6 @@ import android.content.SharedPreferences
 import android.location.Location
 import android.os.Handler
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -248,6 +247,10 @@ class MainDataHandler @Inject constructor(
 
     fun goRealtime(): Boolean {
         return updateParameters { parametersController.goRealtime(it) }
+    }
+
+    fun invervalOffset(offset: Int) : Boolean {
+        return updateParameters { parametersController.setOffset(it, offset) }
     }
 
     private fun updateParameters(updater: (Parameters) -> Parameters): Boolean {

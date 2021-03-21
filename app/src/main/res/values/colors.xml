@@ -7,7 +7,7 @@
     <color name="Green">#0f0</color>
     <color name="White">#fff</color>
 
-    <color name="translucent_background">#7000</color>
+    <color name="translucent_background">#5000</color>
     <color name="text_foreground">#eee</color>
     <color name="text_warning">#f55</color>
 
