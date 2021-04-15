@@ -18,6 +18,7 @@
 
 package org.blitzortung.android.app
 
+import MapConfigurationProvider
 import android.Manifest.permission.*
 import android.annotation.TargetApi
 import android.content.Context
@@ -245,6 +246,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun initializeOsmDroid() {
+        Configuration.setConfigurationProvider(MapConfigurationProvider(applicationContext))
         val osmDroidConfig = Configuration.getInstance()
         osmDroidConfig.load(this, preferences)
         Log.v(LOG_TAG, "Main.onCreate() osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}")

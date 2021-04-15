@@ -225,7 +225,7 @@ class AlertView @JvmOverloads constructor(
             textAlign = Align.CENTER
             textSize = DEFAULT_FONT_SIZE.toFloat()
 
-            val maxWidth = alarmNotAvailableTextLines.map { warnText.measureText(it) }.max()
+            val maxWidth = alarmNotAvailableTextLines.map { warnText.measureText(it) }.maxOrNull()
                     ?: width.toFloat() - 20
             val scale = (width - 20).toFloat() / maxWidth
 
