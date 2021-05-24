@@ -41,7 +41,7 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
-    buildToolsVersion = '29.0.3'
+    buildToolsVersion = '30.0.2'
     useLibrary 'android.test.base'
 }
 
