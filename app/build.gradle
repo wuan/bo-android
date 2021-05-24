@@ -5,11 +5,11 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'com.github.kt3k.coveralls'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     defaultConfig {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 15
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 278
         versionName '2.1.7'
         multiDexEnabled false
