@@ -1,4 +1,6 @@
 language: android
+before_install:
+  - yes | sdkmanager "platforms;android-30"
 android:
   components:
     # Uncomment the lines below if you want to
