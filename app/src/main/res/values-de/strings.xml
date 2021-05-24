@@ -363,6 +363,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="legend_grid">Raster</string>
     <string name="map_scale">Kartenskalierung</string>
     <string name="map_scale_summary">Skalierung der Kartenkacheln [%]</string>
-    <string name="location_permission_required">Für die Ortsbestimmung ist eine Berechtigung erforderlich.</string>
+    <string name="location_permission_required">Für die Ortsbestimmung ist die Berechtigung für den Zugriff auf den Gerätestandort erforderlich.</string>
+    <string name="location_permission_background_required">Für die Ortsbestimmung bei Warnungen im Hintergrund ist die Berechtigung für den Zugriff auf den Gerätestandort im Hintergrund erforderlich.</string>
     <string name="changelog">Änderungsprotokoll</string>
 </resources>

@@ -574,10 +574,13 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     arrayOf(permission, ACCESS_BACKGROUND_LOCATION)
                 } else {
                     arrayOf(permission)
-                }, requestCode, R.string.location_permission_required)
+                },
+                    requestCode,
+                    if (requiresBackgroundPermission) R.string.location_permission_background_required else R.string.location_permission_required
+                )
             } else {
                 if (requiresBackgroundPermission) {
-                    requestPermission(arrayOf(ACCESS_BACKGROUND_LOCATION), requestCode, R.string.location_permission_required)
+                    requestPermission(arrayOf(ACCESS_BACKGROUND_LOCATION), requestCode, R.string.location_permission_background_required)
                 }
             }
         }

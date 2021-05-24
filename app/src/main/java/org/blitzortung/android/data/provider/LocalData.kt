@@ -13,7 +13,7 @@ class LocalData @Inject constructor() {
             if (location != null) {
                 val x = calculateLocalRegion(location.longitude)
                 val y = calculateLocalRegion(location.latitude)
-                parameters.copy(localReference = LocalReference(x.toInt(), y.toInt()))
+                parameters.copy(localReference = LocalReference(x, y))
             } else {
                 parameters.copy(region = GLOBAL_REGION)
             }
