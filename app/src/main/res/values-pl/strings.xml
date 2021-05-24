@@ -49,7 +49,7 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="map_settings">Ustawienia map</string>
     <string name="map_mode">Tryb mapy</string>
     <string name="map_mode_summary">mapa satelitarna lub drogowa</string>
-    <string name="map_fade">Przeźroczystość</string>
+    <string name="map_fade">Przezroczystość</string>
     <string name="map_fade_summary">Dostosuj dla lepszego widoku danych</string>
 
     <string-array name="color_schemes">
@@ -75,11 +75,11 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Pokaż położenia użytkowników</string>
-    <string name="show_participants_summary">pokazuje położenia innych użytkowników (tylko przy wyborze Blitzortung.org jako źródła danych)
+    <string name="show_participants">Pokaż lokalizację użytkowników</string>
+    <string name="show_participants_summary">pokazuje lokalizację innych użytkowników (tylko przy wyborze Blitzortung.org jako źródła danych)
     </string>
     <string name="show_location">Pokaż własną lokalizację</string>
-    <string name="show_location_summary">zaznacza Twoje położenie na mapie</string>
+    <string name="show_location_summary">zaznacza Twoją lokalizację na mapie</string>
     <string name="data_settings">Transmisja danych</string>
     <string name="region">Region</string>
     <string name="region_summary">wybierz region</string>
@@ -108,7 +108,7 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="interval_duration">Zakres danych</string>
-    <string name="interval_duration_summary">Wybierz czas z jakiego będą wyświetlane wyładowania</string>
+    <string name="interval_duration_summary">Wybierz okres z jakiego będą wyświetlane wyładowania</string>
 
     <string-array name="interval_durations">
         <item>30 minut</item>
@@ -125,9 +125,9 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>240</item>
     </string-array>
 
-    <string name="historic_timestep_limit_reached">Osiągnięo 24 godzinny limit</string>
+    <string name="historic_timestep_limit_reached">Osiągnięto 24-godzinny limit</string>
     <string name="historic_timestep">Skok historii</string>
-    <string name="historic_timestep_summary">Skok czasu przy przeglądaniu poprzednich danych</string>
+    <string name="historic_timestep_summary">Skok czasu przy przeglądaniu historycznych danych</string>
 
     <string-array name="historic_timesteps">
         <item>15 minut</item>
@@ -141,7 +141,7 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="query_period">Częstotliwość</string>
-    <string name="query_period_summary">częstotliwość aktualizowania danych</string>
+    <string name="query_period_summary">częstotliwość aktualizacji danych</string>
 
     <string-array name="query_periods">
         <item>20 sekund</item>
@@ -185,7 +185,7 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string-array name="count_thresholds">
         <item>wyłączone</item>
-        <item>1 wyładowania</item>
+        <item>1 wyładowanie</item>
         <item>5 wyładowań</item>
         <item>10 wyładowań</item>
         <item>25 wyładowań</item>
@@ -229,14 +229,14 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_mode">tryb lokalizacji</string>
     <string name="location_mode_summary">Wybierz sposób określania Twojej lokalizacji</string>
     <string name="longitude">długość</string>
-    <string name="location_longitude_summary">ręcznie ustawienie dla długości geograficznej</string>
+    <string name="location_longitude_summary">ręczne ustawienie dla długości geograficznej</string>
     <string name="latitude">szerokość</string>
-    <string name="location_latitude_summary">ręcznie ustawienie dla szerokości geograficznej</string>
+    <string name="location_latitude_summary">ręczne ustawienie dla szerokości geograficznej</string>
     <string name="alarm_settings">Ustawienia alarmu</string>
     <string name="alarm_enabled">Alarm włączony</string>
     <string name="alarm_enabled_summary">sprawdzaj aktywność wyładowań w Twojej okolicy</string>
-    <string name="background_query_period">Częśtotliwość w tle</string>
-    <string name="background_query_period_summary">jeżeli wybrane: częstotliwość aktualizowania danych w tle dla alarmu gdy aplikacja nie jest aktywna</string>
+    <string name="background_query_period">Częstotliwość w tle</string>
+    <string name="background_query_period_summary">jeżeli wybrane: częstotliwość aktualizacji danych w tle dla alarmu gdy aplikacja nie jest aktywna</string>
 
     <string-array name="background_query_periods">
         <item>wyłączone</item>
@@ -317,7 +317,7 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="participants_layer">Lokalizacje użytkowników</string>
     <string name="own_location_layer">Własna lokalizacja</string>
     <string name="strikes_layer">Wyładowania</string>
-    <string name="data_settings_summary">ustawienia kontroli transmisji danych i źródła</string>
+    <string name="data_settings_summary">ustawienia transmisji danych i źródła</string>
     <string name="map_settings_summary">Typ mapy i jej ustawienia</string>
     <string name="location_settings_summary">Tryb określania lokalizacji</string>
     <string name="alarm_settings_summary">Aktywacja alarmu, działania w tle i promieni</string>
@@ -325,7 +325,7 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_audio_signal">dźwięk alarmu</string>
     <string name="alarm_vibration_signal">czas wibracji alarmu</string>
     <string name="alarm_audio_signal_summary">wybierz dźwięk alarmu</string>
-    <string name="alarm_vibration_signal_summary">ustaw długość trwania wibracji alarmu</string>
+    <string name="alarm_vibration_signal_summary">ustaw długość wibracji alarmu</string>
     <string name="location_provider_not_available">lokalizacja \'%s\' jest niedostępna</string>
     <string name="location_provider_disabled">lokalizacja \'%s\' jest wyłączona</string>
     <string name="service_url">Alternatywny adres URL </string>
