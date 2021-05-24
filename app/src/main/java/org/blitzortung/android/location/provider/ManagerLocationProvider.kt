@@ -10,10 +10,10 @@ import android.widget.Toast
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 
 abstract class ManagerLocationProvider(
-        protected val context: Context,
-        protected var isInBackground: Boolean,
-        locationUpdate: (Location?) -> Unit,
-        override val type: String
+    protected val context: Context,
+    protected var isInBackground: Boolean,
+    locationUpdate: (Location?) -> Unit,
+    override val type: String
 ) : LocationProvider(locationUpdate), LocationListener {
 
     private val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -66,11 +66,8 @@ abstract class ManagerLocationProvider(
         }
     }
 
-    override fun onLocationChanged(location: Location?) {
-        //Don't send NULL locations to the listeners
-        if (location is Location) {
-            sendLocationUpdate(location)
-        }
+    override fun onLocationChanged(location: Location) {
+        sendLocationUpdate(location)
     }
 
     override fun onProviderDisabled(provider: String) = Unit
