@@ -371,6 +371,8 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="unit_miles">миль</string>
     <string name="map_scale">Масштаб карты</string>
     <string name="map_scale_summary">Выберите процент масштабирования тайлов карты</string>
-    <string name="location_permission_required">Требуется разрешение определения Вашего месторасположения.</string>
+    <string name="location_permission_required">Разрешение местоположения требуется при использовании источника местоположения устройства.</string>
     <string name="changelog">Список изменений</string>
+    <string name="location_permission_background_required">Разрешение фонового определения местоположения требуется при использовании источника местоположения устройства.</string>
+    <string name="location_permission_background_disclosure">Это приложение использует данные о местоположении, даже когда приложение закрыто или не используется, при использовании фоновых сигналов тревоги с источником местоположения устройства.</string>
 </resources>

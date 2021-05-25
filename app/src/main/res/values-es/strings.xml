@@ -360,4 +360,7 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="share_log">Enviar correo electrónico…</string>
     <string name="share_unavailable">No es posible compartir por correo electrónico</string>
     <string name="changelog">Change log</string>
+    <string name="location_permission_required">Se requiere permiso de ubicación cuando se usa una fuente de ubicación de dispositivo.</string>
+    <string name="location_permission_background_required">Se requiere permiso de ubicación en segundo plano cuando se utiliza una fuente de ubicación de dispositivo.</string>
+    <string name="location_permission_background_disclosure">Esta aplicación usa datos de ubicación incluso cuando la aplicación está cerrada o no está en uso cuando se usan alarmas en segundo plano con una fuente de ubicación del dispositivo.</string>
 </resources>
