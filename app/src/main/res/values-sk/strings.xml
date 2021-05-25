@@ -364,4 +364,7 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="keep_zoom_goto_own_location_summary" >Nastavenie pre udržanie aktuálneho priblíženia pri centrovaní na vlastnú polohu</string>
     <string name="keep_zoom_goto_own_location_title" >Udržať priblíženie</string>
     <string name="changelog">Change log</string>
+    <string name="location_permission_required">Pri použití zdroja polohy zariadenia je potrebné povolenie na umiestnenie.</string>
+    <string name="location_permission_background_required">Pri použití zdroja umiestnenia zariadenia je potrebné povolenie na umiestnenie na pozadí.</string>
+    <string name="location_permission_background_disclosure">Táto aplikácia používa údaje o polohe, aj keď je aplikácia zatvorená alebo sa nepoužíva, keď používate budíky na pozadí so zdrojom polohy zariadenia.</string>
 </resources>

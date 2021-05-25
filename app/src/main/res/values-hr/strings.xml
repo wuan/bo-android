@@ -359,4 +359,7 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="keep_zoom_goto_own_location_summary">Zadrži trenutno zumiranje pri centriranju vlastite lokacije</string>
     <string name="keep_zoom_goto_own_location_title">Zadrži zumiranje</string>
     <string name="changelog">Change log</string>
+    <string name="location_permission_required">Dopuštenje za lokaciju potrebno je kada se koristi izvor lokacije uređaja.</string>
+    <string name="location_permission_background_required">Dopuštenje za pozadinsko mjesto potrebno je kada se koristi izvor lokacije uređaja.</string>
+    <string name="location_permission_background_disclosure">Ova aplikacija upotrebljava podatke o lokaciji čak i kada je aplikacija zatvorena ili se ne koristi kada upotrebljava pozadinske alarme s izvorom lokacije uređaja.</string>
 </resources>

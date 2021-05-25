@@ -570,14 +570,22 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal
                     ?: Int.MAX_VALUE)
             if (requiresPermission) {
-                requestPermission(if (requiresBackgroundPermission) {
-                    arrayOf(permission, ACCESS_BACKGROUND_LOCATION)
-                } else {
-                    arrayOf(permission)
-                },
-                    requestCode,
-                    if (requiresBackgroundPermission) R.string.location_permission_background_required else R.string.location_permission_required
-                )
+                val locationText = resources.getString(R.string.location_permission_background_disclosure)
+                AlertDialog.Builder(this)
+                    .setMessage(locationText)
+                    .setCancelable(false)
+                    .setNeutralButton(android.R.string.ok) { dialog, count ->
+                        requestPermission(
+                            if (requiresBackgroundPermission) {
+                                arrayOf(permission, ACCESS_BACKGROUND_LOCATION)
+                            } else {
+                                arrayOf(permission)
+                            },
+                            requestCode,
+                            if (requiresBackgroundPermission) R.string.location_permission_background_required else R.string.location_permission_required
+                        )
+                    }
+                    .show()
             } else {
                 if (requiresBackgroundPermission) {
                     requestPermission(arrayOf(ACCESS_BACKGROUND_LOCATION), requestCode, R.string.location_permission_background_required)
@@ -616,13 +624,21 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                         when (which) {
                             DialogInterface.BUTTON_POSITIVE -> {
                                 Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
-                                val intent = Intent()
-                                intent.action = Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS
-                                try {
-                                    startActivity(intent)
-                                } catch (e: AndroidRuntimeException) {
-                                    Toast.makeText(baseContext, R.string.background_query_toast, Toast.LENGTH_LONG).show()
-                                    Log.e(LOG_TAG, "requestWakeupPermissions() could not open battery optimization settings", e)
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    val intent = Intent()
+                                    intent.action = Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS
+
+                                    try {
+                                        startActivity(intent)
+                                    } catch (e: AndroidRuntimeException) {
+                                        Toast.makeText(baseContext, R.string.background_query_toast, Toast.LENGTH_LONG)
+                                            .show()
+                                        Log.e(
+                                            LOG_TAG,
+                                            "requestWakeupPermissions() could not open battery optimization settings",
+                                            e
+                                        )
+                                    }
                                 }
                             }
 

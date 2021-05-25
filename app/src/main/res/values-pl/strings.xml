@@ -332,4 +332,7 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="service_url_summary">Zmienia domyślny adres URL bazy danych</string>
     <string name="set_manual_location">Ustawiono ręczną pozycję</string>
     <string name="changelog">Change log</string>
+    <string name="location_permission_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest pozwolenie na lokalizację.</string>
+    <string name="location_permission_background_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest zezwolenie na lokalizację w tle.</string>
+    <string name="location_permission_background_disclosure">Ta aplikacja korzysta z danych o lokalizacji nawet wtedy, gdy jest zamknięta lub nieużywana podczas korzystania z alarmów w tle ze źródłem lokalizacji urządzenia.</string>
 </resources>

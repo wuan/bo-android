@@ -330,4 +330,7 @@ Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_vibration_signal_summary">Vyber délku vibrací signalizace alarmu</string>
     <string name="location_provider_not_available">Poskytovatel polohy \'%s\' není dostupný</string>
     <string name="changelog">Change log</string>
+    <string name="location_permission_required">Při použití zdroje umístění zařízení je vyžadováno oprávnění k poloze.</string>
+    <string name="location_permission_background_required">Při použití zdroje umístění zařízení je vyžadováno oprávnění k umístění na pozadí.</string>
+    <string name="location_permission_background_disclosure">Tato aplikace používá údaje o poloze, i když je aplikace zavřená nebo se nepoužívá při použití alarmů na pozadí se zdrojem polohy zařízení.</string>
 </resources>
