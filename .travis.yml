@@ -1,18 +1,17 @@
 language: android
-before_install:
-  - yes | sdkmanager "platforms;android-30"
+jdk: openjdk11
 android:
   components:
     # Uncomment the lines below if you want to
     # use the latest revision of Android SDK Tools
-    - platform-tools
-    - tools
+    # - platform-tools
+    # - tools
 
     # The BuildTools version used by your project
-    - build-tools-30.0.2
+    # - build-tools-30.0.3
 
     # The SDK version used to compile your project
-    - android-30
+    # - android-30
 
     # Additional components
     - extra-android-m2repository
@@ -21,6 +20,16 @@ android:
     # if you need to run emulator(s) during your tests
     - sys-img-armeabi-v7a-android-30
     - sys-img-x86-android-30
-
+env:
+  global:
+    - TARGET_VERSION=30
+    - ANDROID_BUILD_TOOLS_VERSION=30.0.3
+    - ANDROID_HOME=~/android-sdk
+before_install:
+  - touch $HOME/.android/repositories.cfg
+  - wget "https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip" -O commandlinetools.zip
+  - unzip commandlinetools.zip -d $ANDROID_HOME/
+  - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "platforms;android-${TARGET_VERSION}" --sdk_root=$ANDROID_HOME
+  - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" --sdk_root=$ANDROID_HOME
 after_success:
   - ./gradlew jacocoTestReport coveralls
