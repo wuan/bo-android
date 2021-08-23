@@ -1,56 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Blitzortung Lightning Monitor</string>
+    <string name="app_name">Blitzortung - wykrywanie piorunów</string>
 
     <plurals name="strike">
         <item quantity="zero">brak wyładowań</item>
-        <item quantity="one">%d wyładowanie</item>
+        <item quantity="one">1 wyładowanie</item>
+        <item quantity="few">%d wyładowania</item>
         <item quantity="other">%d wyładowań</item>
     </plurals>
     <plurals name="minute">
-        <item quantity="one">%d minuta</item>
+        <item quantity="one">1 minuta</item>
         <item quantity="other">%d minut</item>
     </plurals>
 
     <string name="info">Informacje</string>
-    <string name="info_text">Strona projektu:\n
-\thttps://github.com/wuan/bo-android\n
-\n
-Dane dostarczane są przez\n
-<b>Blitzortung.org</b>\n
-realtime lighning community project.\n
-Sprawdź na stronie\n
-\thttp://blitzortung.org/\n
-więcej informacji oraz dowiedz się jak zostać uczestnikiem.\n
-\n
-Tłumaczenie na język czeski: Jakub Mareček (jakubmarecek715@gmail.com)\n
-Tłumaczenie francuski: Frédéric France (frederic.france@free.fr)\n
-Tłumaczenie polskie: Jakub Świątkiewicz (kuba.dex@gmail.com)\n
-Tłumaczenie holenderski: Jeroen Boersma (jeroenboersma@gmail.com)\n
-Tłumaczenie włoskie: Michele Locati (mlocati@gmail.com)\n
-Tłumaczenie chorwacki: Igor Dobrača (idobraca@rovinj.net)\n
-Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
+    <string name="info_text">Strona projektu:\n\thttps://github.com/wuan/bo-android\n\nZwizualizowane dane o wyładowaniach są dostarczane przez społecznościowy projekt wyładowań atmosferycznych <b>Blitzortung.org</b> w czasie rzeczywistym.\nSprawdź na http://blitzortung.org/, aby uzyskać więcej informacji lub dowiedzieć się, jak wziąć udział w projekcie.\n\n
+<u>Tłumaczenia:</u>\n
+chorwacki: Igor Dobrača (idobraca@rovinj.net)\n
+czeski: Jakub Mareček (jakubmarecek715@gmail.com)\n
+holenderski: Jeroen Boersma (jeroenboersma@gmail.com)\n
+francuski: Frédéric France (frederic.france@free.fr)\n
+polski: Jakub Świątkiewicz (kuba.dex@gmail.com), Agnieszka Cieślak (aga_04@o2.pl)\n
+włoski: Michele Locati (michele@locati.it)\n
+rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="legend">Legenda</string>
-    <string name="total_time">łączny czas</string>
-    <string name="activity">aktywność</string>
-    <string name="during">w ciągu ostatnich</string>
-    <string name="minute">minut</string>
+    <string name="legend_grid">Siatka</string>
+    <string name="unit_minute">min</string>
+    <string name="unit_km">km</string>
+    <string name="total_time">Czas całkowity</string>
+    <string name="activity">Aktywność</string>
+    <string name="during">w ciągu ostatniej</string>
+    <string name="minute">minuty</string>
     <string name="alarms">Alarmy</string>
-    <string name="alarms_not_available">Alarmy wyłączone\nlub\nbrak informacji o pozycji</string>
+    <string name="alarms_not_available">Alarmy wyłączone\nlub\nbrak informacji o lokalizacji</string>
     <string name="layers">Warstwy</string>
     <string name="preferences">Preferencje</string>
     <string name="user_settings">Ustawienia użytkownika</string>
-    <string name="username">Nazwa</string>
-    <string name="username_summary">nazwa użytkownika blitzortung.org</string>
+    <string name="username">Nazwa użytkownika</string>
+    <string name="username_summary">Nazwa użytkownika uczestnika blitzortung.org</string>
     <string name="password">Hasło</string>
-    <string name="password_summary">hasło użytkownika blitzortung.org</string>
-    <string name="map_settings">Ustawienia map</string>
+    <string name="password_summary">Hasło uczestnika blitzortung.org</string>
+    <string name="map_settings">Ustawienia mapy</string>
     <string name="map_mode">Tryb mapy</string>
-    <string name="map_mode_summary">mapa satelitarna lub drogowa</string>
-    <string name="map_fade">Przezroczystość</string>
-    <string name="map_fade_summary">Dostosuj dla lepszego widoku danych</string>
+    <string name="map_mode_summary">Ciemna lub jasna mapa bazowa</string>
+    <string name="map_fade">Ściemnij mapę</string>
+    <string name="map_fade_summary">Ściemnij tło mapy, aby zwiększyć widoczność danych</string>
 
     <string-array name="color_schemes">
         <item>Blitzortung.org</item>
@@ -64,34 +60,34 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="color_scheme">Schemat kolorów</string>
-    <string name="color_scheme_summary">Schematy kolorów danych</string>
+    <string name="color_scheme_summary">Schemat kolorów wyświetlacza danych</string>
 
     <string-array name="map_modes">
-        <item>Satelitarna</item>
-        <item>Drogowa</item>
+        <item>Ciemna mapa</item>
+        <item>Jasna mapa</item>
     </string-array>
     <string-array name="map_mode_values">
         <item>SATELLITE</item>
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Pokaż lokalizację użytkowników</string>
-    <string name="show_participants_summary">pokazuje lokalizację innych użytkowników (tylko przy wyborze Blitzortung.org jako źródła danych)
+    <string name="show_participants">Pokazuj lokalizacje uczestników</string>
+    <string name="show_participants_summary">Pokazuj lokalizację wszystkich stacji na mapie (tylko ze źródłem danych Blitzortung.org)
     </string>
-    <string name="show_location">Pokaż własną lokalizację</string>
-    <string name="show_location_summary">zaznacza Twoją lokalizację na mapie</string>
+    <string name="show_location">Pokazuj własną lokalizację</string>
+    <string name="show_location_summary">Dołącz symbol własnej lokalizacji na mapie</string>
     <string name="data_settings">Transmisja danych</string>
-    <string name="region">Region</string>
-    <string name="region_summary">wybierz region</string>
+    <string name="region">Obszar</string>
+    <string name="region_summary">Wybierz Europę, Amerykę Północną czy Australię</string>
 
     <string-array name="regions">
-        <item>Local</item>
-        <item>Global</item>
+        <item>Lokalny</item>
+        <item>Globalny</item>
         <item>Europa</item>
-        <item>Ameryka północna</item>
-        <item>Ameryka środkowa</item>
-        <item>Ameryka południowa</item>
-        <item>Oceania</item>
+        <item>Ameryka Północna</item>
+        <item>Ameryka Środkowa</item>
+        <item>Ameryka Południowa</item>
+        <item>Australia i Oceania</item>
         <item>Azja</item>
         <item>Afryka</item>
     </string-array>
@@ -107,15 +103,15 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>6</item>
     </string-array>
 
-    <string name="interval_duration">Zakres danych</string>
-    <string name="interval_duration_summary">Wybierz okres z jakiego będą wyświetlane wyładowania</string>
+    <string name="interval_duration">Przedział czasowy</string>
+    <string name="interval_duration_summary">Przedział czasowy, w którym wyświetlana jest aktywność wyładowań</string>
 
     <string-array name="interval_durations">
-        <item>30 minut</item>
-        <item>60 minut</item>
-        <item>90 minut</item>
-        <item>120 minut</item>
-        <item>240 minut</item>
+        <item>30 min</item>
+        <item>60 min</item>
+        <item>90 min</item>
+        <item>120 min</item>
+        <item>240 min</item>
     </string-array>
     <string-array name="interval_duration_values">
         <item>30</item>
@@ -126,13 +122,13 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="historic_timestep_limit_reached">Osiągnięto 24-godzinny limit</string>
-    <string name="historic_timestep">Skok historii</string>
-    <string name="historic_timestep_summary">Skok czasu przy przeglądaniu historycznych danych</string>
+    <string name="historic_timestep">Krok czasu historii</string>
+    <string name="historic_timestep_summary">Rozmiar kroku czasu podczas przeglądania danych historycznych</string>
 
     <string-array name="historic_timesteps">
-        <item>15 minut</item>
-        <item>30 minut</item>
-        <item>60 minut</item>
+        <item>15 min</item>
+        <item>30 min</item>
+        <item>60 min</item>
     </string-array>
     <string-array name="historic_timestep_values">
         <item>15</item>
@@ -140,16 +136,16 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>60</item>
     </string-array>
 
-    <string name="query_period">Częstotliwość</string>
-    <string name="query_period_summary">częstotliwość aktualizacji danych</string>
+    <string name="query_period">Częstotliwość odpytywania</string>
+    <string name="query_period_summary">Częstotliwość odświeżania danych</string>
 
     <string-array name="query_periods">
-        <item>20 sekund</item>
-        <item>30 sekund</item>
-        <item>1 minut</item>
-        <item>2 minut</item>
-        <item>5 minut</item>
-        <item>10 minut</item>
+        <item>20 s</item>
+        <item>30 s</item>
+        <item>1 min</item>
+        <item>2 min</item>
+        <item>5 min</item>
+        <item>10 min</item>
     </string-array>
     <string-array name="query_period_values">
         <item>20</item>
@@ -161,10 +157,10 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="raster_size">Rozmiar rastra</string>
-    <string name="raster_size_summary">rozmiar siatki danych</string>
+    <string name="raster_size_summary">Rozmiar kwadratów rastra danych</string>
 
     <string-array name="raster_sizes">
-        <item>auto</item>
+        <item>Automatyczny</item>
         <item>5 km</item>
         <item>10 km</item>
         <item>25 km</item>
@@ -180,11 +176,11 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>100000</item>
     </string-array>
 
-    <string name="count_threshold">Wyświetlaj od:</string>
-    <string name="count_threshold_summary">minimalna liczba wyładowań na kwadrat</string>
+    <string name="count_threshold">Próg liczby wyładowań</string>
+    <string name="count_threshold_summary">Minimalna liczba wyładowań na obszar rastra</string>
 
     <string-array name="count_thresholds">
-        <item>wyłączone</item>
+        <item>Wyłączony</item>
         <item>1 wyładowanie</item>
         <item>5 wyładowań</item>
         <item>10 wyładowań</item>
@@ -201,7 +197,7 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="data_source">Źródło danych</string>
-    <string name="data_source_summary">zintegrowane źródło lub dostęp do blitzortung.org (tylko dla stacji)
+    <string name="data_source_summary">Zintegrowane źródło danych lub dostęp do blitzortung.org (tylko dla stacji)
     </string>
 
     <string-array name="data_sources">
@@ -215,10 +211,10 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="location_settings">Ustawienia lokalizacji</string>
     <string-array name="location_modes">
-        <item>Pasywnie</item>
+        <item>Pasywny</item>
         <item>Na podstawie sieci</item>
-        <item>Na podstawie GPS</item>
-        <item>Ręcznie</item>
+        <item>Na podstawie GPS-u</item>
+        <item>Ręczne wprowadzanie</item>
     </string-array>
     <string-array name="location_mode_values">
         <item>passive</item>
@@ -226,28 +222,30 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>gps</item>
         <item>manual</item>
     </string-array>
-    <string name="location_mode">tryb lokalizacji</string>
-    <string name="location_mode_summary">Wybierz sposób określania Twojej lokalizacji</string>
-    <string name="longitude">długość</string>
-    <string name="location_longitude_summary">ręczne ustawienie dla długości geograficznej</string>
-    <string name="latitude">szerokość</string>
-    <string name="location_latitude_summary">ręczne ustawienie dla szerokości geograficznej</string>
+    <string name="location_mode">Tryb lokalizacji</string>
+    <string name="location_mode_summary">Wybierz metodę określania aktualnej lokalizacji</string>
+    <string name="longitude">Długość geograficzna</string>
+    <string name="location_longitude_summary">Ręczne wprowadzanie długości geograficznej</string>
+    <string name="latitude">Szerokość geograficzna</string>
+    <string name="location_latitude_summary">Ręczne wprowadzanie szerokości geograficznej</string>
     <string name="alarm_settings">Ustawienia alarmu</string>
     <string name="alarm_enabled">Alarm włączony</string>
-    <string name="alarm_enabled_summary">sprawdzaj aktywność wyładowań w Twojej okolicy</string>
-    <string name="background_query_period">Częstotliwość w tle</string>
-    <string name="background_query_period_summary">jeżeli wybrane: częstotliwość aktualizacji danych w tle dla alarmu gdy aplikacja nie jest aktywna</string>
+    <string name="alarm_enabled_summary">Sprawdzaj aktywność wyładowań wokół aktualnej lokalizacji</string>
+    <string name="background_query_period">Częstotliwość odpytywania w tle</string>
+    <string name="background_query_period_summary">Częstotliwość odpytywania w tle w celu sprawdzania alarmów, jeśli aplikacja nie jest aktywna</string>
+    <string name="background_query_toast">Wyłącz optymalizację baterii dla tej aplikacji, aby alarmy w tle były w pełni funkcjonalne.</string>
+    <string name="open_battery_optimiziation">Wyłącz optymalizację baterii dla tej aplikacji, gdy włączone jest odpytywanie w tle. Naciśnij ANULUJ, aby wyłączyć odpytywanie, i OK, aby przejść do ustawień optymalizacji baterii.</string>
 
     <string-array name="background_query_periods">
-        <item>wyłączone</item>
-        <item>1 minuta</item>
-        <item>2 minuty</item>
-        <item>5 minut</item>
-        <item>10 minut</item>
-        <item>15 minut</item>
-        <item>30 minut</item>
-        <item>60 minut</item>
-        <item>120 minut</item>
+        <item>Wyłączona</item>
+        <item>1 min</item>
+        <item>2 min</item>
+        <item>5 min</item>
+        <item>10 min</item>
+        <item>15 min</item>
+        <item>30 min</item>
+        <item>60 min</item>
+        <item>120 min</item>
     </string-array>
     <string-array name="background_query_period_values">
         <item>0</item>
@@ -263,10 +261,10 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
 
     <item name="alarm_notification_id" type="id" />
 
-    <string name="notification_distance_limit">Dystans powiadomień</string>
-    <string name="notification_distance_limit_summary">pokazuje powiadomienie jeżeli wykryto wyładowanie w określonym promieniu</string>
-    <string name="signaling_distance_limit">Dystans alarmu</string>
-    <string name="signaling_distance_limit_summary">uruchamia alarm jeżeli wykryto wyładowanie w określonym promieniu</string>
+    <string name="notification_distance_limit">Limit odległości dla powiadomienia</string>
+    <string name="notification_distance_limit_summary">Wyświetlaj powiadomienie, gdy zostanie wykryta aktywność wyładowania w wybranym zakresie</string>
+    <string name="signaling_distance_limit">Limit odległości dla sygnalizacji</string>
+    <string name="signaling_distance_limit_summary">Sygnał alarmowy po wykryciu aktywności wyładowania w wybranym zakresie</string>
 
     <string-array name="direction_names">
         <item>S</item>
@@ -279,7 +277,7 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>SE</item>
     </string-array>
     <string-array name="distance_limits">
-        <item>wyłączone</item>
+        <item>Wyłączony</item>
         <item>10 km/mi.</item>
         <item>25 km/mi.</item>
         <item>50 km/mi.</item>
@@ -301,38 +299,76 @@ Tłumaczenie rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>500</item>
     </string-array>
 
-    <string name="generic_settings">Ogólne ustawienia</string>
-    <string name="measurement_unit">Jednostki miary</string>
-    <string name="measurement_unit_summary">wybierz km lub mile dla jednostek odległości</string>
+    <string name="signaling_threshold_time">Próg czasu dla sygnalizacji</string>
+    <string name="signaling_threshold_time_summary">Wstrzymuj dalsze sygnały alarmowe dla danego zakresu czasu</string>
+
+    <string-array name="signaling_threshold_times">
+        <item>Wyłączony</item>
+        <item>5 min</item>
+        <item>15 min</item>
+        <item>30 min</item>
+        <item>60 min</item>
+        <item>120 min</item>
+    </string-array>
+    <string-array name="signaling_threshold_time_values">
+        <item>0</item>
+        <item>5</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+    </string-array>
+    <string name="generic_settings">Ustawienia ogólne</string>
+    <string name="measurement_unit">System miar</string>
+    <string name="measurement_unit_summary">Wybierz między kilometrami a milami dla odległości</string>
     <string-array name="measurement_units">
-        <item>metryczny</item>
-        <item>imperialny</item>
+        <item>Metryczny</item>
+        <item>Imperialny</item>
     </string-array>
     <string-array name="measurement_unit_values">
         <item>METRIC</item>
         <item>IMPERIAL</item>
     </string-array>
     <string name="do_not_sleep">Nie usypiaj</string>
-    <string name="do_not_sleep_summary">nie usypiaj gdy aplikacja jest otwarta</string>
-    <string name="participants_layer">Lokalizacje użytkowników</string>
+    <string name="do_not_sleep_summary">Nie usypiaj, gdy aplikacja jest otwarta</string>
+    <string name="participants_layer">Lokalizacja uczestników</string>
     <string name="own_location_layer">Własna lokalizacja</string>
     <string name="strikes_layer">Wyładowania</string>
-    <string name="data_settings_summary">ustawienia transmisji danych i źródła</string>
-    <string name="map_settings_summary">Typ mapy i jej ustawienia</string>
+    <string name="data_settings_summary">Szczegółowe ustawienia kontroli transmisji danych i źródła</string>
+    <string name="map_settings_summary">Tryb mapy i ustawienia związane z wyglądem</string>
     <string name="location_settings_summary">Tryb określania lokalizacji</string>
-    <string name="alarm_settings_summary">Aktywacja alarmu, działania w tle i promieni</string>
-    <string name="alarm_signal_settings">Ustawienia alarmu</string>
-    <string name="alarm_audio_signal">dźwięk alarmu</string>
-    <string name="alarm_vibration_signal">czas wibracji alarmu</string>
-    <string name="alarm_audio_signal_summary">wybierz dźwięk alarmu</string>
-    <string name="alarm_vibration_signal_summary">ustaw długość wibracji alarmu</string>
-    <string name="location_provider_not_available">lokalizacja \'%s\' jest niedostępna</string>
-    <string name="location_provider_disabled">lokalizacja \'%s\' jest wyłączona</string>
-    <string name="service_url">Alternatywny adres URL </string>
-    <string name="service_url_summary">Zmienia domyślny adres URL bazy danych</string>
-    <string name="set_manual_location">Ustawiono ręczną pozycję</string>
-    <string name="changelog">Change log</string>
-    <string name="location_permission_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest pozwolenie na lokalizację.</string>
-    <string name="location_permission_background_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest zezwolenie na lokalizację w tle.</string>
-    <string name="location_permission_background_disclosure">Ta aplikacja korzysta z danych o lokalizacji nawet wtedy, gdy jest zamknięta lub nieużywana podczas korzystania z alarmów w tle ze źródłem lokalizacji urządzenia.</string>
+    <string name="alarm_settings_summary">Aktywacja alarmu, obsługa w tle i promienie</string>
+    <string name="alarm_signal_settings">Ustawienia sygnału alarmowego</string>
+    <string name="alarm_audio_signal">Sygnał dźwiękowy alarmu</string>
+    <string name="alarm_vibration_signal">Czas trwania wibracji alarmu</string>
+    <string name="alarm_audio_signal_summary">Wybierz powiadomienie dźwiękowe dla alarmu</string>
+    <string name="alarm_vibration_signal_summary">Wybierz czas trwania wibracji dla alarmu</string>
+    <string name="location_provider_not_available">Dostawca lokalizacji „%s” jest niedostępny</string>
+    <string name="location_provider_disabled">Dostawca lokalizacji „%s” jest wyłączony</string>
+    <string name="service_url">Alternatywny adres URL usługi</string>
+    <string name="service_url_summary">Zastępuje domyślny adres URL usługi</string>
+    <string name="set_manual_location">Ustaw ręcznie lokalizację</string>
+    <string name="error_indicator">Wskaźnik błędu</string>
+    <string name="app_log">Logi aplikacji</string>
+    <string name="share_log">Wyślij e-mail …</string>
+    <string name="share_unavailable">Udostępnianie e-maili jest niedostępne.</string>
+    <string name="timeout_warning">Przekroczenie czasu połączenia.\nSprawdź swoje połączenie sieciowe.</string>
+    <string name="connection_warning">Nie udało się połączyć.\nSprawdź swoje połączenie sieciowe.</string>
+    <string name="provider_warning">Nie używaj dostawcy danych Blitzortung.org podczas intensywnej aktywności wyładowań, ponieważ wydajność wyświetlania mapy ulegnie pogorszeniu.</string>
+    <string name="own_location_summary">Ustawienia wyświetlania własnej lokalizacji</string>
+    <string name="own_location">Własna lokalizacja</string>
+    <string name="own_location_size">Rozmiar symbolu własnej lokalizacji</string>
+    <string name="own_location_size_summary">Ustaw rozmiar symbolu własnej lokalizacji</string>
+    <string name="keep_zoom_goto_own_location_summary">Ustawienie do utrzymania aktualnego powiększenia podczas centrowania własnej lokalizacji</string>
+    <string name="keep_zoom_goto_own_location_title">Utrzymuj powiększenie</string>
+    <string name="notification_channel_name" translatable="false">Storm Alarms</string>
+    <string name="not_available">Niedostępne</string>
+    <string name="unit_miles">mi.</string>
+    <string name="map_scale">Skala mapy</string>
+    <string name="map_scale_summary">Wybierz skalowanie [%] kafelków mapy</string>
+    <string name="location_permission_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest uprawnienie do lokalizacji.</string>
+    <string name="location_permission_background_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest uprawnienie do lokalizacji w tle.</string>
+    <string name="location_permission_background_disclosure">Ta aplikacja korzysta z danych o lokalizacji nawet wtedy, gdy jest zamknięta lub nieużywana, podczas korzystania z alarmów w tle.</string>
+    <string name="osmdroid_storage_warning">Nie można znaleźć miejsca do zapisu mapy. Proszę zgłosić.</string>
+    <string name="changelog">Dziennik zmian</string>
 </resources>
