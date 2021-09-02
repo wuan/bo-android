@@ -10,7 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:text="@string/info_text"
-        android:textColor="#FFF" />
+        android:textColor="#FFF"
+        android:autoLink="web" />
 
     <TextView
         android:id="@+id/copyright_text"
@@ -24,6 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:text="@string/project_email"
-        android:textColor="#FFF" />
+        android:textColor="#FFF"
+        android:autoLink="email" />
 
 </LinearLayout>
