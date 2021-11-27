@@ -1,17 +1,20 @@
-apply plugin: 'com.android.application'
-apply plugin: 'com.hiya.jacoco-android'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'com.github.kt3k.coveralls'
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'jacoco'
+    id 'com.github.kt3k.coveralls' version '2.12.0'
+}
 
 android {
-    compileSdkVersion 30
+    compileSdk 31
+
     defaultConfig {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 15
-        targetSdkVersion 30
-        versionCode 279
-        versionName '2.1.7'
+        targetSdkVersion 31
+        versionCode 280
+        versionName '2.1.8'
         multiDexEnabled false
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -34,47 +37,32 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11
     }
-    lintOptions {
-        abortOnError false
-        checkReleaseBuilds false
-    }
     testOptions {
         unitTests.returnDefaultValues = true
     }
-    buildToolsVersion = '30.0.3'
+    buildToolsVersion = '31.0.0'
     useLibrary 'android.test.base'
-}
-
-jacoco {
-    toolVersion = '0.8.7'
-}
-
-tasks.withType(Test) {
-    jacoco.includeNoLocationClasses = true
-    jacoco.excludes = ['jdk.internal.*']
-}
-
-jacocoAndroidUnitTestReport {
-    csv.enabled false
-    html.enabled false
-    xml.enabled true
-    excludes += ['**/AutoValue_*.*',
-                 '**/*JavascriptBridge.class']
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+    jacoco {
+        version "0.8.7"
+    }
 }
 
 coveralls {
-    jacocoReportPath 'build/reports/jacoco/jacocoTestReleaseUnitTestReport/jacocoTestReleaseUnitTestReport.xml'
+    jacocoReportPath 'build/reports/coverage/androidTest/debug/report.xml'
 }
 
-def dagger_version = '2.38.1'
+def dagger_version = '2.41'
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.4.0-alpha03'
-    implementation 'androidx.media:media:1.4.1'
-    implementation 'androidx.core:core-ktx:1.7.0-alpha01'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.media:media:1.5.0'
+    implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'androidx.work:work-runtime-ktx:2.7.0-alpha05'
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
     implementation 'org.osmdroid:osmdroid-android:6.1.11'
 
     // Dagger2
@@ -85,11 +73,11 @@ dependencies {
     compileOnly 'javax.annotation:jsr250-api:1.0'
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.assertj:assertj-core:3.20.2'
-    testImplementation 'io.mockk:mockk:1.12.0'
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
-    testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    testImplementation 'org.robolectric:robolectric:4.6.1'
+    testImplementation 'org.assertj:assertj-core:3.22.0'
+    testImplementation 'io.mockk:mockk:1.12.3'
+//    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+//    testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    testImplementation 'org.robolectric:robolectric:4.7.3'
     testImplementation 'androidx.test:core:1.4.0'
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
