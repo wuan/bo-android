@@ -45,7 +45,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val context = this.activity!!
+        val context = this.requireActivity()
         val dm = context.resources.displayMetrics
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)

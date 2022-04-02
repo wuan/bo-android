@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/wuan/bo-android.svg?branch=master)](https://travis-ci.org/wuan/bo-android) [![Coverage Status](https://coveralls.io/repos/github/wuan/bo-android/badge.svg?branch=master)](https://coveralls.io/github/wuan/bo-android?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fbab98f82eed4a9e9b0cd4af593dbe73)](https://app.codacy.com/app/wuan/bo-android?utm_source=github.com&utm_medium=referral&utm_content=wuan/bo-android&utm_campaign=Badge_Grade_Dashboard)
+[![Build Status](https://travis-ci.com/wuan/bo-android.svg?branch=master)](https://travis-ci.com/wuan/bo-android) [![Coverage Status](https://coveralls.io/repos/github/wuan/bo-android/badge.svg?branch=master)](https://coveralls.io/github/wuan/bo-android?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fbab98f82eed4a9e9b0cd4af593dbe73)](https://app.codacy.com/app/wuan/bo-android?utm_source=github.com&utm_medium=referral&utm_content=wuan/bo-android&utm_campaign=Badge_Grade_Dashboard)
 
 # About
 
