@@ -122,7 +122,10 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
                     Log.v(Main.LOG_TAG, "AppService.onStartCommand() skip with held wake lock $wakeLock")
                 }
             } else {
-                Log.v(Main.LOG_TAG, "AppService.onStartCommand() skip with insufficient time passed $currentTimeSeconds - $lastUpdateTime = ${currentTimeSeconds - lastUpdateTime}")
+                Log.v(
+                    Main.LOG_TAG,
+                    "AppService.onStartCommand() skip with insufficient time passed $currentTimeSeconds - $lastUpdateTime = ${currentTimeSeconds - lastUpdateTime}"
+                )
             }
         } else {
             Log.v(Main.LOG_TAG, "AppService.onStartCommand() intent ${intent?.action}")
@@ -185,9 +188,9 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         val receiver = ComponentName(this, BootReceiver::class.java)
 
         packageManager.setComponentEnabledSetting(
-                receiver,
-                if (enable) PackageManager.COMPONENT_ENABLED_STATE_ENABLED else PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                PackageManager.DONT_KILL_APP
+            receiver,
+            if (enable) PackageManager.COMPONENT_ENABLED_STATE_ENABLED else PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+            PackageManager.DONT_KILL_APP
         )
     }
 
@@ -223,7 +226,12 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
                 Log.v(Main.LOG_TAG, "AppService.createAlarm() with backgroundPeriod=%d".format(backgroundPeriod))
                 val intent = Intent(this, AppService::class.java)
                 intent.action = RETRIEVE_DATA_ACTION
-                pendingIntent = PendingIntent.getService(this, 0, intent, 0)
+                val flags = if (isAtLeast(Build.VERSION_CODES.M)) {
+                    PendingIntent.FLAG_IMMUTABLE
+                } else {
+                    0
+                }
+                pendingIntent = PendingIntent.getService(this, 0, intent, flags)
 
                 val period = (backgroundPeriod * 1000).toLong()
                 alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, period, period, pendingIntent)
