@@ -8,16 +8,19 @@ import android.content.pm.PackageInfo
 import android.os.PowerManager
 import android.os.Vibrator
 import android.preference.PreferenceManager
+import android.util.Log
 import dagger.Module
 import dagger.Provides
 import org.blitzortung.android.app.BOApplication
+import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import javax.inject.Inject
 import javax.inject.Named
+import javax.inject.Singleton
 
 @Module
 class AppModule @Inject constructor(
-        private val application: Application
+    private val application: Application
 ) {
 
     @Provides
@@ -27,17 +30,24 @@ class AppModule @Inject constructor(
     fun provideSharedPrefs(): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(application)
 
     @Provides
-    fun wakeLock(): PowerManager.WakeLock = (application.getSystemService(Context.POWER_SERVICE) as PowerManager).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, BOApplication.WAKE_LOCK_TAG)
+    fun wakeLock(): PowerManager.WakeLock =
+        (application.getSystemService(Context.POWER_SERVICE) as PowerManager).newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK,
+            BOApplication.WAKE_LOCK_TAG
+        )
 
     @Provides
+    @Singleton
     fun packageInfo(): PackageInfo = application.packageManager.getPackageInfo(application.packageName, 0)
 
     @Provides
     @Named("agentSuffix")
+    @Singleton
     fun agentSuffix(packageInfo: PackageInfo): String = "-${packageInfo.versionCode}"
 
     @Provides
-    fun notificationManager(): NotificationManager = application.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    fun notificationManager(): NotificationManager =
+        application.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     @Provides
     fun provideVibrator(): Vibrator = application.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator

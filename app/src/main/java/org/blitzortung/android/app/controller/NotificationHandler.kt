@@ -35,8 +35,8 @@ import org.blitzortung.android.util.isAtLeast
 import javax.inject.Inject
 
 open class NotificationHandler @Inject constructor(
-        private val context: Context,
-        private val notificationManager: NotificationManager
+    private val context: Context,
+    private val notificationManager: NotificationManager
 ) {
 
     init {
@@ -48,7 +48,12 @@ open class NotificationHandler @Inject constructor(
     fun sendNotification(notificationText: String) {
         val intent = Intent(context, Main::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+        val flags = PendingIntent.FLAG_CANCEL_CURRENT or (if (isAtLeast(Build.VERSION_CODES.M)) {
+            PendingIntent.FLAG_IMMUTABLE
+        } else {
+            0
+        })
+        val contentIntent = PendingIntent.getActivity(context, 0, intent, flags)
 
         val notification = when {
             isAtLeast(Build.VERSION_CODES.O) -> {
@@ -68,27 +73,27 @@ open class NotificationHandler @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotification(contentIntent: PendingIntent?, notificationText: String): Notification? {
         return Notification.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.icon)
-                .setContentTitle(context.resources.getText(R.string.app_name))
-                .setContentText(notificationText)
-                .setContentIntent(contentIntent)
-                .setAutoCancel(true)
-                .setWhen(System.currentTimeMillis())
-                .setShowWhen(true).build()
+            .setSmallIcon(R.drawable.icon)
+            .setContentTitle(context.resources.getText(R.string.app_name))
+            .setContentText(notificationText)
+            .setContentIntent(contentIntent)
+            .setAutoCancel(true)
+            .setWhen(System.currentTimeMillis())
+            .setShowWhen(true).build()
     }
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     private fun createJellyBeanNotification(contentIntent: PendingIntent?, notificationText: String): Notification? {
         val builder = Notification.Builder(context)
-                .setSmallIcon(R.drawable.icon)
-                .setContentTitle(context.resources.getText(R.string.app_name))
-                .setContentText(notificationText)
-                .setContentIntent(contentIntent)
-                .setAutoCancel(true)
+            .setSmallIcon(R.drawable.icon)
+            .setContentTitle(context.resources.getText(R.string.app_name))
+            .setContentText(notificationText)
+            .setContentIntent(contentIntent)
+            .setAutoCancel(true)
 
         if (isAtLeast(Build.VERSION_CODES.JELLY_BEAN_MR1)) {
             builder.setWhen(System.currentTimeMillis())
-                    .setShowWhen(true)
+                .setShowWhen(true)
         }
 
         return builder.build()
@@ -110,8 +115,20 @@ open class NotificationHandler @Inject constructor(
 
     private fun createLegacyNotification(contentIntent: PendingIntent?, notificationText: String): Notification {
         val notification = Notification(R.drawable.icon, notificationText, System.currentTimeMillis())
-        val setLatestEventInfo = Notification::class.java.getDeclaredMethod("setLatestEventInfo", Context::class.java, CharSequence::class.java, CharSequence::class.java, PendingIntent::class.java)
-        setLatestEventInfo.invoke(notification, context, context.resources.getText(R.string.app_name), notificationText, contentIntent)
+        val setLatestEventInfo = Notification::class.java.getDeclaredMethod(
+            "setLatestEventInfo",
+            Context::class.java,
+            CharSequence::class.java,
+            CharSequence::class.java,
+            PendingIntent::class.java
+        )
+        setLatestEventInfo.invoke(
+            notification,
+            context,
+            context.resources.getText(R.string.app_name),
+            notificationText,
+            contentIntent
+        )
         return notification
     }
 
