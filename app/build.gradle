@@ -75,8 +75,6 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.assertj:assertj-core:3.22.0'
     testImplementation 'io.mockk:mockk:1.12.3'
-//    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
-//    testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     testImplementation 'org.robolectric:robolectric:4.7.3'
     testImplementation 'androidx.test:core:1.4.0'
     androidTestImplementation 'androidx.test:runner:1.4.0'
