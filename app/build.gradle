@@ -46,9 +46,10 @@ android {
         abortOnError false
         checkReleaseBuilds false
     }
-    jacoco {
-        version "0.8.7"
+    testCoverage {
+        jacocoVersion '0.8.7'
     }
+    namespace 'org.blitzortung.android.app'
 }
 
 coveralls {
