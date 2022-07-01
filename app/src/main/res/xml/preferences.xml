@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <ListPreference
         android:defaultValue="0"
         android:enabled="true"
@@ -59,6 +61,7 @@
             android:key="map_scale"
             android:min="25"
             android:max="150"
+            step="25"
             android:persistent="true"
             android:selectable="true"
             android:summary="@string/map_scale_summary"

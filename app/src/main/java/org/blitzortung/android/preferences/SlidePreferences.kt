@@ -28,27 +28,20 @@ import android.widget.SeekBar
 import android.widget.TextView
 
 
-class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference(context, attrs), SeekBar.OnSeekBarChangeListener {
-    private val unitSuffix: String
-    private val defaultValue: Int
-    private val maximumValue: Int
+class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference(context, attrs),
+    SeekBar.OnSeekBarChangeListener {
+    private val data: SliderData
     private lateinit var valueText: TextView
     private lateinit var slider: SeekBar
-    private var currentValue: Int
-    private var minimumValue: Int
 
     init {
-        unitSuffix = " " + attrs.getAttributeValue(ATTRIBUTE_NAMESPACE, "text")
-        defaultValue = attrs.getAttributeIntValue(ATTRIBUTE_NAMESPACE, "defaultValue", 30)
-        //Initial value is the default value.
-        //When there is a value presisted, it will be set afterwards through onSetInitialValue
-        currentValue = defaultValue
-        minimumValue = attrs.getAttributeIntValue(ATTRIBUTE_NAMESPACE, "min", 0)
-
-        //If there is a minimum value, we always add the minimum-value to the slider
-        //E. g. max of 400 with min 20 value. if we were at 400, we would get 400 + 20
-        //So always set the max-value of the Seekbar to maxValue - minValue
-        maximumValue = attrs.getAttributeIntValue(ATTRIBUTE_NAMESPACE, "max", 80) - minimumValue
+        data = SliderData(
+            suffix = attrs.getAttributeValue(ATTRIBUTE_NAMESPACE, "text"),
+            default = attrs.getAttributeIntValue(ATTRIBUTE_NAMESPACE, "defaultValue", 30),
+            minimum = attrs.getAttributeIntValue(ATTRIBUTE_NAMESPACE, "min", 0),
+            maximum = attrs.getAttributeIntValue(ATTRIBUTE_NAMESPACE, "max", 80),
+            step = attrs.getAttributeIntValue(null, "step", 1)
+        )
     }
 
     override fun onCreateDialogView(): View {
@@ -60,20 +53,19 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
         valueText.gravity = Gravity.CENTER_HORIZONTAL
         valueText.textSize = 32f
         //Set initial text
-        valueText.text = "$currentValue $unitSuffix"
+        valueText.text = data.text
         val params = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT)
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
         layout.addView(valueText, params)
         this.valueText = valueText
 
         slider = SeekBar(context).apply {
             setOnSeekBarChangeListener(this@SlidePreferences)
             layout.addView(this, params)
-
-            //We need to adapt the value of the SeekBar to our Minimum-Value
-            max = maximumValue
-            progress = currentValue - minimumValue
+            max = data.size
+            progress = data.offset
         }
 
         return layout
@@ -81,43 +73,37 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
 
     override fun onBindDialogView(v: View) {
         super.onBindDialogView(v)
-
-        slider.max = maximumValue
-        //We need to adapt the value of the SeekBar to our Minimum-Value
-        slider.progress = currentValue - minimumValue
+        slider.max = data.size
+        slider.progress = data.offset
     }
 
     override fun onSetInitialValue(should_restore: Boolean, defaultValue: Any?) {
         super.onSetInitialValue(should_restore, defaultValue)
 
         if (should_restore && shouldPersist()) {
-            currentValue = getPersistedInt(this.defaultValue)
+            data.value = getPersistedInt(data.default)
         } else if (defaultValue is Int) {
-            currentValue = defaultValue
+            data.value = defaultValue
         }
     }
 
     override fun onProgressChanged(seekBar: SeekBar, seekBarValue: Int, fromTouch: Boolean) {
-        //Ignore events that wasn't done by the user
         if (!fromTouch) {
             return
         }
 
-        //We need to adapt the value of the SeekBar to our Minimum-Value
-        currentValue = seekBarValue + minimumValue
-
-        valueText.text = "$currentValue $unitSuffix"
-
-        callChangeListener(currentValue)
+        data.offset = seekBarValue
+        valueText.text = data.text
+        callChangeListener(data.value)
     }
+
 
     override fun onDialogClosed(positiveResult: Boolean) {
         if (positiveResult) {
             if (shouldPersist())
-                persistInt(currentValue)
+                persistInt(data.value)
         } else {
-            //Use pressed Cancel, so reset currentValue
-            onSetInitialValue(true, defaultValue)
+            onSetInitialValue(true, data.default)
         }
 
         super.onDialogClosed(positiveResult)
