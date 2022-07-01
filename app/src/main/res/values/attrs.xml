@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <declare-styleable name="View">
-        <attr name="tablet_scaleable" format="boolean"/>
+        <attr name="tablet_scaleable" format="boolean" />
     </declare-styleable>
     <declare-styleable name="org.blitzortung.android.preferences.SlidePreferences">
         <attr name="min" format="integer" />
+        <attr name="step" format="integer" />
     </declare-styleable>
 </resources>
