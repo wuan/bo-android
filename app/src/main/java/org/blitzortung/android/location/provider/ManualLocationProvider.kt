@@ -33,6 +33,7 @@ class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sh
 
                 sendLocationUpdate(location)
             }
+            else -> {}
         }
     }
 

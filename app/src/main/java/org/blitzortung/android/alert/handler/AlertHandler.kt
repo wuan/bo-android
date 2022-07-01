@@ -151,6 +151,7 @@ class AlertHandler @Inject constructor(
                 signalingThresholdTime = sharedPreferences.get(key, "25").toLong() * 1000 * 60
                 Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() signalingThresholdTime = $signalingThresholdTime")
             }
+            else -> {}
         }
     }
 

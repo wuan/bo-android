@@ -705,6 +705,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             PreferenceKey.BACKGROUND_QUERY_PERIOD -> {
                 backgroundAlerts = sharedPreferences.get(key, "0").toInt() > 0
             }
+            else -> {}
         }
     }
 

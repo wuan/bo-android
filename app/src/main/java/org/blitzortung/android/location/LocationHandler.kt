@@ -98,6 +98,7 @@ class LocationHandler @Inject constructor(
                     provider = newProvider
                 }
             }
+            else -> {}
         }
     }
 

@@ -153,6 +153,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
                 Log.v(Main.LOG_TAG, "MapFragment scale $scaleFactor")
                 mapView.tilesScaleFactor = scaleFactor
             }
+            else -> {}
         }
     }
 

@@ -204,6 +204,7 @@ class JsonRpcDataProvider @Inject constructor(
                 val serviceUrl: String = sharedPreferences.get(PreferenceKey.SERVICE_URL, DEFAULT_SERVICE_URL.toString())
                 this.serviceUrl = toCheckedUrl(if (serviceUrl.isNotBlank()) serviceUrl.trim() else DEFAULT_SERVICE_URL.toString())
             }
+            else -> {}
         }
     }
 

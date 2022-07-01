@@ -54,6 +54,7 @@ class AlertSignal @Inject constructor(
                 soundSignal = if (signalUri.isNotEmpty()) Uri.parse(signalUri) else null
                 Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() soundSignal = $soundSignal")
             }
+            else -> {}
         }
     }
 
