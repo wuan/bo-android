@@ -47,7 +47,7 @@ android {
         checkReleaseBuilds false
     }
     testCoverage {
-        jacocoVersion '0.8.7'
+        jacocoVersion '0.8.8'
     }
     namespace 'org.blitzortung.android.app'
 }
@@ -56,15 +56,15 @@ coveralls {
     jacocoReportPath 'build/reports/coverage/androidTest/debug/report.xml'
 }
 
-def dagger_version = '2.41'
+def dagger_version = '2.42'
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'androidx.media:media:1.5.0'
-    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.media:media:1.6.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.work:work-runtime-ktx:2.7.1'
-    implementation 'org.osmdroid:osmdroid-android:6.1.11'
+    implementation 'org.osmdroid:osmdroid-android:6.1.13'
 
     // Dagger2
     implementation "com.google.dagger:dagger:$dagger_version"
@@ -74,9 +74,9 @@ dependencies {
     compileOnly 'javax.annotation:jsr250-api:1.0'
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.assertj:assertj-core:3.22.0'
-    testImplementation 'io.mockk:mockk:1.12.3'
-    testImplementation 'org.robolectric:robolectric:4.7.3'
+    testImplementation 'org.assertj:assertj-core:3.23.1'
+    testImplementation 'io.mockk:mockk:1.12.4'
+    testImplementation 'org.robolectric:robolectric:4.8.1'
     testImplementation 'androidx.test:core:1.4.0'
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
