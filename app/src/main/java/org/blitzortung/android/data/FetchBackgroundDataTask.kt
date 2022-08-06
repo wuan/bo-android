@@ -4,7 +4,8 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.os.PowerManager
 import android.util.Log
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.ResultEvent
@@ -12,11 +13,11 @@ import org.blitzortung.android.util.isAtLeast
 import kotlin.reflect.KSuspendFunction1
 
 internal class FetchBackgroundDataTask(
-        dataMode: DataMode,
-        dataProvider: DataProvider,
-        resultConsumer: (ResultEvent) -> Unit,
-        toast: KSuspendFunction1<Int, Unit>,
-        private val wakeLock: PowerManager.WakeLock
+    dataMode: DataMode,
+    dataProvider: DataProvider,
+    resultConsumer: (ResultEvent) -> Unit,
+    toast: KSuspendFunction1<Int, Unit>,
+    private val wakeLock: PowerManager.WakeLock
 ) : FetchDataTask(dataMode, dataProvider, resultConsumer, toast) {
 
     override fun onPostExecute(result: ResultEvent?) {
@@ -24,29 +25,39 @@ internal class FetchBackgroundDataTask(
         if (wakeLock.isHeld) {
             try {
                 wakeLock.release()
-                Log.v(Main.LOG_TAG, "FetchBackgroundDataTask released wakelock $wakeLock")
+                Log.v(Main.LOG_TAG, "FetchBackgroundDataTask.postExecute() released wakelock $wakeLock")
             } catch (e: RuntimeException) {
-                Log.e(Main.LOG_TAG, "FetchBackgroundDataTask release wakelock failed ", e)
+                Log.e(Main.LOG_TAG, "FetchBackgroundDataTask.postExecute() release wakelock failed ", e)
             }
-
         } else {
-            Log.e(Main.LOG_TAG, "FetchBackgroundDataTask release wakelock not held")
+            Log.e(Main.LOG_TAG, "FetchBackgroundDataTask.postExecute() wakelock not held")
         }
     }
 
     @SuppressLint("WakelockTimeout")
-    override suspend fun doInBackground(parameters: Parameters, flags: Flags): ResultEvent? = withContext(Dispatchers.IO) {
-        if (isAtLeast(Build.VERSION_CODES.N)) {
-            wakeLock.acquire(ServiceDataHandler.WAKELOCK_TIMEOUT)
-        } else {
-            wakeLock.acquire()
+    override suspend fun doInBackground(parameters: Parameters, flags: Flags): ResultEvent? =
+        withContext(Dispatchers.IO) {
+            if (isAtLeast(Build.VERSION_CODES.N)) {
+                wakeLock.acquire(ServiceDataHandler.WAKELOCK_TIMEOUT)
+            } else {
+                wakeLock.acquire()
+            }
+            if (wakeLock.isHeld) {
+                Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquired wakelock $wakeLock")
+
+                val updatedParameters =
+                    parameters.copy(
+                        intervalDuration = 10,
+                        intervalOffset = 0,
+                        countThreshold = 0,
+                        rasterBaselength = 5000
+                    )
+                val updatedFlags = flags.copy(storeResult = false)
+
+                super.doInBackground(updatedParameters, updatedFlags)
+            } else {
+                Log.e(Main.LOG_TAG, "could not acquire wakelock")
+                null // ignore
+            }
         }
-
-        Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquire wakelock $wakeLock")
-
-        val updatedParameters = parameters.copy(intervalDuration = 10, intervalOffset = 0, countThreshold = 0, rasterBaselength = 5000)
-        val updatedFlags = flags.copy(storeResult = false)
-
-        super.doInBackground(updatedParameters, updatedFlags)
-    }
 }

@@ -69,9 +69,6 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     @set:Inject
     internal lateinit var alarmManager: AlarmManager
 
-    @set:Inject
-    internal lateinit var wakeLock: PowerManager.WakeLock
-
     @Volatile
     private var alertEnabled: Boolean = false
 
@@ -79,10 +76,10 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     private var pendingIntent: PendingIntent? = null
 
     @Volatile
-    private var lastUpdateTime: Long = 0
+    private var lastUpdateTime: Long? = null
 
     private val dataEventConsumer = { _: DataEvent ->
-        releaseWakeLock()
+        //releaseWakeLock()
     }
 
     override fun onCreate() {
@@ -113,18 +110,18 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
 
         if (intent != null && RETRIEVE_DATA_ACTION == intent.action) {
             val currentTimeSeconds = System.currentTimeMillis() / 1000
-            if (currentTimeSeconds > lastUpdateTime + 0.6 * backgroundPeriod) {
-                if (acquireWakeLock()) {
-                    Log.v(Main.LOG_TAG, "AppService.onStartCommand() with wake lock $wakeLock")
-                    lastUpdateTime = currentTimeSeconds
-                    dataHandler.updateData()
-                } else {
-                    Log.v(Main.LOG_TAG, "AppService.onStartCommand() skip with held wake lock $wakeLock")
-                }
+
+            val timeDifference = lastUpdateTime?.let {
+                currentTimeSeconds - it;
+            }
+            if (timeDifference == null || timeDifference > 0.6 * backgroundPeriod) {
+                Log.v(Main.LOG_TAG, "AppService.onStartCommand() with time difference ${timeDifference ?: 0} s")
+                lastUpdateTime = currentTimeSeconds
+                dataHandler.updateData()
             } else {
                 Log.v(
                     Main.LOG_TAG,
-                    "AppService.onStartCommand() skip with insufficient time passed $currentTimeSeconds - $lastUpdateTime = ${currentTimeSeconds - lastUpdateTime}"
+                    "AppService.onStartCommand() skip with insufficient time passed: ${currentTimeSeconds - lastUpdateTime!!} s < $backgroundPeriod s"
                 )
             }
         } else {
@@ -132,35 +129,6 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         }
 
         return START_STICKY
-    }
-
-
-    private fun acquireWakeLock(): Boolean {
-        synchronized(wakeLock) {
-            return if (!wakeLock.isHeld) {
-                if (isAtLeast(Build.VERSION_CODES.N)) {
-                    wakeLock.acquire(WAKELOCK_TIMEOUT)
-                } else {
-                    wakeLock.acquire()
-                }
-                true
-            } else {
-                false
-            }
-        }
-    }
-
-    private fun releaseWakeLock() {
-        synchronized(wakeLock) {
-            if (wakeLock.isHeld) {
-                try {
-                    wakeLock.release()
-                    Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() after $wakeLock")
-                } catch (e: Exception) {
-                    Log.v(Main.LOG_TAG, "AppService.releaseWakeLock() failed", e)
-                }
-            }
-        }
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -275,6 +243,5 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
 
     companion object {
         const val RETRIEVE_DATA_ACTION = "retrieveData"
-        const val WAKELOCK_TIMEOUT = 5000L
     }
 }
