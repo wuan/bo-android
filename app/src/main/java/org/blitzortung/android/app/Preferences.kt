@@ -38,6 +38,7 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
     @set:Inject
     internal lateinit var preferences: SharedPreferences
 
+    @Deprecated("Deprecated in Java")
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)

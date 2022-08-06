@@ -42,6 +42,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         return mapView
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 

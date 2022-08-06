@@ -13,8 +13,8 @@ android {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 15
         targetSdkVersion 31
-        versionCode 282
-        versionName '2.1.9'
+        versionCode 283
+        versionName '2.1.10'
         multiDexEnabled false
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -56,7 +56,7 @@ coveralls {
     jacocoReportPath 'build/reports/coverage/androidTest/debug/report.xml'
 }
 
-def dagger_version = '2.42'
+def dagger_version = '2.43.2'
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.2'
@@ -75,7 +75,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.assertj:assertj-core:3.23.1'
-    testImplementation 'io.mockk:mockk:1.12.4'
+    testImplementation 'io.mockk:mockk:1.12.5'
     testImplementation 'org.robolectric:robolectric:4.8.1'
     testImplementation 'androidx.test:core:1.4.0'
     androidTestImplementation 'androidx.test:runner:1.4.0'

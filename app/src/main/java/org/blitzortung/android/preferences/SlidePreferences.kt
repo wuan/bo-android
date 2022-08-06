@@ -44,6 +44,7 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
         )
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateDialogView(): View {
         val layout = LinearLayout(context)
         layout.orientation = LinearLayout.VERTICAL
@@ -71,12 +72,14 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
         return layout
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBindDialogView(v: View) {
         super.onBindDialogView(v)
         slider.max = data.size
         slider.progress = data.offset
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onSetInitialValue(should_restore: Boolean, defaultValue: Any?) {
         super.onSetInitialValue(should_restore, defaultValue)
 
@@ -98,6 +101,7 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
     }
 
 
+    @Deprecated("Deprecated in Java")
     override fun onDialogClosed(positiveResult: Boolean) {
         if (positiveResult) {
             if (shouldPersist())
