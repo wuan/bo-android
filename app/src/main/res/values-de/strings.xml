@@ -348,8 +348,6 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="set_manual_location">Setze benutzerdefinierten Ort</string>
     <string name="share_log">E-Mail senden …</string>
     <string name="share_unavailable">E-Mail kann nicht versendet werden.</string>
-    <string name="timeout_warning">Netzwerk-Zeitüberschreitung.\nBitte überprüfen sie die Internetverbindung.</string>
-    <string name="connection_warning">Kein Netzwerk.\nBitte überprüfen sie die Internetverbindung.</string>
     <string name="provider_warning">Bitte nutzen sie die Blitzortung.org Datenquelle nicht bei hoher Blitzaktivität. Die Dastellung der Karte wird möglicherweise verzögert.</string>
     <string name="own_location_summary" >Einstellungen der Anzeige des Standorts</string>
     <string name="own_location" >Eigener Standort</string>

@@ -209,7 +209,6 @@
             android:selectable="true"
             android:summary="@string/alarm_enabled_summary"
             android:title="@string/alarm_enabled" />
-
         <ListPreference
             android:defaultValue="0"
             android:enabled="true"

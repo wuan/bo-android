@@ -365,8 +365,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="app_log">Application log</string>
     <string name="share_log">Send email …</string>
     <string name="share_unavailable">E-mail sharing is not available.</string>
-    <string name="timeout_warning">Network timeout.\nPlease check your network connectivity.</string>
-    <string name="connection_warning">Could not connect.\nPlease check your network connectivity.</string>
     <string name="provider_warning">Please do not use the Blitzortung.org data provider during high lightning activity, as the map display performance will degrade.</string>
     <string name="own_location_summary" >Own location Display-Settings</string>
     <string name="own_location" >Own location</string>

@@ -348,8 +348,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="error_indicator">Fout indicator</string>
     <string name="share_log">Stuur email …</string>
     <string name="share_unavailable">E-mail delen is niet beschikbaar.</string>
-    <string name="timeout_warning">Netwerk time-out.\nControleer je netwerkverbinding.</string>
-    <string name="connection_warning">Kan niet verbinden.\nControleer je netwerkverbinding.</string>
     <string name="provider_warning">Gebruik Blitzortung.org niet als informatiebron bij hoge activiteit, dit beinvloed prestaties van kaartweergave negatief.</string>
     <string name="own_location_summary" >Eigen locatie weergave instellingen</string>
     <string name="own_location" >Eigen locatie</string>

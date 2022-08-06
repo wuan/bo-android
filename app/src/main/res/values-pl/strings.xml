@@ -352,8 +352,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="app_log">Logi aplikacji</string>
     <string name="share_log">Wyślij e-mail …</string>
     <string name="share_unavailable">Udostępnianie e-maili jest niedostępne.</string>
-    <string name="timeout_warning">Przekroczenie czasu połączenia.\nSprawdź swoje połączenie sieciowe.</string>
-    <string name="connection_warning">Nie udało się połączyć.\nSprawdź swoje połączenie sieciowe.</string>
     <string name="provider_warning">Nie używaj dostawcy danych Blitzortung.org podczas intensywnej aktywności wyładowań, ponieważ wydajność wyświetlania mapy ulegnie pogorszeniu.</string>
     <string name="own_location_summary">Ustawienia wyświetlania własnej lokalizacji</string>
     <string name="own_location">Własna lokalizacja</string>

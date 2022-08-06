@@ -354,8 +354,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="app_log" translatable="false">Application log</string>
     <string name="share_log">*Odoslať email …</string>
     <string name="share_unavailable">Zdieľanie e-mailov nie je k dispozícii.</string>
-    <string name="timeout_warning">Časový limit siete vypršal.\nSkontrolujte pripojenie k internetu.</string>
-    <string name="connection_warning">Nedá sa pripojiť.\nSkontrolujte pripojenie k internetu.</string>
     <string name="provider_warning">Please do not use the Blitzortung.org data provider during high lightning activity, as the map display performance will degrade.</string>
     <string name="own_location_summary" >Nastavenie zobrazovania vlastnej polohy</string>
     <string name="own_location" >Vlastná poloha</string>

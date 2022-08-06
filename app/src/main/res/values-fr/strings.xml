@@ -356,7 +356,6 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="unit_km">km</string>
     <string name="unit_minute">min</string>
     <string name="unit_miles">mi</string>
-    <string name="timeout_warning">Délai d\'attente réseau.[…]</string>
     <string name="legend_grid">Grille</string>
     <string name="map_scale">Échelle de la carte</string>
     <string name="own_location">Votre emplacement</string>

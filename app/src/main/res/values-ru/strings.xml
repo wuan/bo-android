@@ -358,8 +358,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="app_log">Лог приложения</string>
     <string name="share_log">Отправить по email …</string>
     <string name="share_unavailable">Обмен по E-mail не доступен.</string>
-    <string name="timeout_warning">Нет ответа сети.\nПожалуйста, проверьте подключение к сети</string>
-    <string name="connection_warning">Не удалось подключиться.\nПожалуйста, проверьте подключение к сети</string>
     <string name="provider_warning">Пожалуйста, не используйте Blitzortung.org во время высокой активности молний, так как производительность отображения карты будет снижаться.</string>
     <string name="own_location_summary" >Настройки отображения Вашего месторасположения</string>
     <string name="own_location" >Ваше месторасположение</string>

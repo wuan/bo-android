@@ -349,8 +349,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="error_indicator">Indikator pogreške</string>
     <string name="share_log">Pošalji email …</string>
     <string name="share_unavailable">Dijeljenje emaila nije dostupno.</string>
-    <string name="timeout_warning">Predugo čekanje na odgovor mreže.\nMolimo provjerite internet vezu.</string>
-    <string name="connection_warning">Neuspjelo spajanje.\nMolimo provjerite internet vezu.</string>
     <string name="provider_warning">Molimo nemojte koristiti Blitzortung.org kao izvor podataka tijekom učestalih aktivnosti munja jer će doći do degradacije pri prikazu karte.</string>
 	<string name="own_location_summary">Postavke prikaza vlastite lokacije</string>
 	<string name="own_location">Vlastita lokacija</string>
