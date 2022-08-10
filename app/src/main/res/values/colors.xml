@@ -2,6 +2,7 @@
 <resources>
 
     <color name="Red">#f00</color>
+    <color name="RedWarn">#f64</color>
     <color name="Orange">#f80</color>
     <color name="Yellow">#ff0</color>
     <color name="Green">#0f0</color>
@@ -9,6 +10,5 @@
 
     <color name="translucent_background">#7000</color>
     <color name="text_foreground">#eee</color>
-    <color name="text_warning">#f55</color>
 
 </resources>
