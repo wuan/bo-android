@@ -86,7 +86,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private var backgroundAlerts: Boolean = false
     private lateinit var statusComponent: StatusComponent
 
-    private lateinit var strikeColorHandler: StrikeColorHandler
+    @set:Inject
+    internal lateinit var strikeColorHandler: StrikeColorHandler
+
     private lateinit var strikeListOverlay: StrikeListOverlay
     private lateinit var ownLocationOverlay: OwnLocationOverlay
     private lateinit var fadeOverlay: FadeOverlay
@@ -214,8 +216,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
         preferences.registerOnSharedPreferenceChangeListener(this)
-
-        strikeColorHandler = StrikeColorHandler(preferences)
 
         statusComponent = StatusComponent(
                 findViewById(R.id.warning),
