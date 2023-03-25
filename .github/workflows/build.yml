@@ -38,5 +38,11 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: ./gradlew build jacocoTestReport sonar
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: app/build
+          if-no-files-found: "error"
       - name: Generate app bundle.
         run: ./gradlew app:bundleRelease --stacktrace
