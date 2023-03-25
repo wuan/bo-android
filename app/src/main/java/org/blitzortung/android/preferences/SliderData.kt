@@ -11,7 +11,6 @@ class SliderData(
         set(value) {
             field = applyConstraints(value)
         }
-        get() = field
 
     var offset: Int
         set(offset) {

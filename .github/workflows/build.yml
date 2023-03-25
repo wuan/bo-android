@@ -48,4 +48,4 @@ jobs:
           path: app/build
           if-no-files-found: "error"
       - name: Generate app bundle.
-        run: ./gradlew app:bundleRelease --stacktrace
+        run: ./gradlew build app:bundleRelease --stacktrace

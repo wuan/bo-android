@@ -111,7 +111,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
             val currentTimeSeconds = System.currentTimeMillis() / 1000
 
             val timeDifference = lastUpdateTime?.let {
-                currentTimeSeconds - it;
+                currentTimeSeconds - it
             }
             if (timeDifference == null || timeDifference > 0.6 * backgroundPeriod) {
                 Log.v(Main.LOG_TAG, "AppService.onStartCommand() with time difference ${timeDifference ?: 0} s")

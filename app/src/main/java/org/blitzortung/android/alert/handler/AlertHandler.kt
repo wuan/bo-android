@@ -71,7 +71,6 @@ class AlertHandler @Inject constructor(
     private var lastStrikes: Strikes? = null
 
     private var alertEnabled: Boolean = false
-        private set
 
     private var notificationDistanceLimit: Float = 0.0f
 

@@ -163,7 +163,7 @@ class MainDataHandler @Inject constructor(
             PreferenceKey.DATA_SOURCE, PreferenceKey.SERVICE_URL -> {
                 val providerTypeString =
                     sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.RPC.toString())
-                val providerType = DataProviderType.valueOf(providerTypeString.toUpperCase(Locale.getDefault()))
+                val providerType = DataProviderType.valueOf(providerTypeString.uppercase(Locale.getDefault()))
                 val dataProvider = dataProviderFactory.getDataProviderForType(providerType)
                 this.dataProvider = dataProvider
 
