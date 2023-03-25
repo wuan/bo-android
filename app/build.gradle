@@ -129,7 +129,7 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
 
 sonar {
     properties {
-        property "sonar.junit.reportPaths", "build/test-results/testDebugUnitTest/*.xml"
+        property "sonar.junit.reportPaths", "build/test-results/testDebugUnitTest/"
         property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoRootReport/merged.xml"
     }
 }
