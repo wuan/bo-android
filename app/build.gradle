@@ -42,6 +42,10 @@ android {
         unitTests {
             returnDefaultValues = true
             includeAndroidResources = true
+            all {
+                systemProperty 'robolectric.enabledSdks', '33'
+                jvmArgs '-noverify'
+            }
         }
     }
     buildToolsVersion = '33.0.2'
