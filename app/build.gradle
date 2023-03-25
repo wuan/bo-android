@@ -7,14 +7,14 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    compileSdk 33
 
     defaultConfig {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 15
-        targetSdkVersion 31
-        versionCode 284
-        versionName '2.1.11'
+        targetSdkVersion 33
+        versionCode 285
+        versionName '2.1.12'
         multiDexEnabled false
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -56,14 +56,14 @@ coveralls {
     jacocoReportPath 'build/reports/coverage/androidTest/debug/report.xml'
 }
 
-def dagger_version = '2.43.2'
+def dagger_version = '2.45'
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.media:media:1.6.0'
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'androidx.work:work-runtime-ktx:2.7.1'
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.recyclerview:recyclerview:1.3.0'
+    implementation 'androidx.work:work-runtime-ktx:2.8.1'
     implementation 'org.osmdroid:osmdroid-android:6.1.11' // waiting for https://github.com/osmdroid/osmdroid/issues/1822
 
     // Dagger2
@@ -74,12 +74,12 @@ dependencies {
     compileOnly 'javax.annotation:jsr250-api:1.0'
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.assertj:assertj-core:3.23.1'
-    testImplementation 'io.mockk:mockk:1.12.5'
+    testImplementation 'org.assertj:assertj-core:3.24.2'
+    testImplementation 'io.mockk:mockk:1.13.3'
     testImplementation 'org.robolectric:robolectric:4.8.1'
-    testImplementation 'androidx.test:core:1.4.0'
-    androidTestImplementation 'androidx.test:runner:1.4.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    testImplementation 'androidx.test:core:1.5.0'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
 kapt.includeCompileClasspath = false

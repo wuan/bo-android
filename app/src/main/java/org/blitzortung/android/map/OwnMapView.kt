@@ -92,7 +92,7 @@ class OwnMapView(context: Context) : MapView(context) {
         }
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
+    override fun onTouchEvent(event: MotionEvent): Boolean {
         return gestureDetector.onTouchEvent(event)
     }
 
