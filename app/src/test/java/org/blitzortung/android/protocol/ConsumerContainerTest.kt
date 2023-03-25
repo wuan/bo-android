@@ -17,7 +17,7 @@ class ConsumerContainerTest {
 
     @Test
     fun emptyContainerShouldBeEmptyAndHaveSizeZero() {
-        assertThat(testConsumerContainer.isEmpty).isTrue()
+        assertThat(testConsumerContainer.isEmpty).isTrue
         assertThat(testConsumerContainer.size).isEqualTo(0)
     }
 
@@ -25,7 +25,7 @@ class ConsumerContainerTest {
     fun containerWithConsumerShouldBeNotEmptyAndHaveSizeOne() {
         testConsumerContainer.addConsumer { }
 
-        assertThat(testConsumerContainer.isEmpty).isFalse()
+        assertThat(testConsumerContainer.isEmpty).isFalse
         assertThat(testConsumerContainer.size).isEqualTo(1)
     }
 
@@ -121,7 +121,7 @@ class ConsumerContainerTest {
 
         testConsumerContainer.removeConsumer(consumer1)
         assertThat(testConsumerContainer.lastConsumersRemoved.get()).isEqualTo(1)
-        assertThat(testConsumerContainer.isEmpty).isTrue()
+        assertThat(testConsumerContainer.isEmpty).isTrue
     }
 }
 
@@ -132,10 +132,12 @@ class TestConsumerContainer : ConsumerContainer<String>() {
     val lastConsumersRemoved = AtomicInteger()
 
     override fun addedFirstConsumer() {
+        super.addedFirstConsumer()
         firstConsumersAdded.incrementAndGet()
     }
 
     override fun removedLastConsumer() {
+        super.removedLastConsumer()
         lastConsumersRemoved.incrementAndGet()
     }
 }
