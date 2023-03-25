@@ -13,6 +13,6 @@ task clean(type: Delete) {
 sonar {
     properties {
         property "sonar.projectKey", "wuan_bo-android_AYcZZuyTg4e1BA2WvQjK"
-        property "sonar.coverage.jacoco.xmlReportPaths", "app/build/reports/coverage/androidTest/debug/connected/report.xml"
+        property "sonar.coverage.jacoco.xmlReportPaths", "app/build/jacoco/testReleaseUnitTest.exec"
     }
 }
