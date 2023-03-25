@@ -26,15 +26,15 @@ import javax.inject.Singleton
 
 @Singleton
 class DataProviderFactory @Inject constructor(
-        defaultProvider: JsonRpcDataProvider,
-        blitzortungProvider: BlitzortungHttpDataProvider
+    defaultProvider: JsonRpcDataProvider,
+    blitzortungProvider: BlitzortungHttpDataProvider
 ) {
     private val dataProvidersByType: Map<DataProviderType, DataProvider> = listOf<DataProvider>(
-            defaultProvider, blitzortungProvider
+        defaultProvider, blitzortungProvider
     ).groupBy { it.type }.mapValues { it.value.first() }
 
     fun getDataProviderForType(providerType: DataProviderType): DataProvider {
         return dataProvidersByType[providerType]
-                ?: throw IllegalStateException("unhandled data provider type '$providerType'")
+            ?: throw IllegalStateException("unhandled data provider type '$providerType'")
     }
 }

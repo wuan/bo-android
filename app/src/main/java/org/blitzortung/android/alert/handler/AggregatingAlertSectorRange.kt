@@ -21,8 +21,8 @@ package org.blitzortung.android.alert.handler
 import org.blitzortung.android.data.beans.Strike
 
 internal class AggregatingAlertSectorRange(
-        val rangeMinimum: Float,
-        val rangeMaximum: Float
+    val rangeMinimum: Float,
+    val rangeMaximum: Float
 ) {
 
     var strikeCount: Int = 0

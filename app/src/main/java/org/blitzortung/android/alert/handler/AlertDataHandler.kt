@@ -31,13 +31,15 @@ import javax.inject.Inject
 import kotlin.math.max
 
 open class AlertDataHandler @Inject internal constructor(
-        private val aggregatingAlertDataMapper: AggregatingAlertDataMapper
+    private val aggregatingAlertDataMapper: AggregatingAlertDataMapper
 ) {
 
     private val strikeLocation: Location = Location("")
 
-    fun checkStrikes(strikes: Strikes, location: Location, parameters: AlertParameters,
-                     referenceTime: Long = System.currentTimeMillis()): AlertResult {
+    fun checkStrikes(
+        strikes: Strikes, location: Location, parameters: AlertParameters,
+        referenceTime: Long = System.currentTimeMillis()
+    ): AlertResult {
         val sectors = createSectors(parameters)
 
         val thresholdTime = referenceTime - parameters.alarmInterval
@@ -49,15 +51,28 @@ open class AlertDataHandler @Inject internal constructor(
 
             val alertSector = getRelevantSector(bearingToStrike.toDouble(), sectors)
             alertSector?.let {
-                checkStrike(alertSector, strike, strikes.rasterParameters, parameters.measurementSystem, location, thresholdTime)
+                checkStrike(
+                    alertSector,
+                    strike,
+                    strikes.rasterParameters,
+                    parameters.measurementSystem,
+                    location,
+                    thresholdTime
+                )
             }
         }
 
         return AlertResult(sectors.map { aggregatingAlertDataMapper.mapSector(it) }, parameters, referenceTime)
     }
 
-    private fun checkStrike(sector: AggregatingAlertSector, strike: Strike, rasterParameters: RasterParameters?, measurementSystem: MeasurementSystem,
-                            location: Location, thresholdTime: Long) {
+    private fun checkStrike(
+        sector: AggregatingAlertSector,
+        strike: Strike,
+        rasterParameters: RasterParameters?,
+        measurementSystem: MeasurementSystem,
+        location: Location,
+        thresholdTime: Long
+    ) {
         val distance = calculateDistanceTo(location, strike, rasterParameters, measurementSystem)
 
         sector.ranges.find { distance <= it.rangeMaximum }?.let {
@@ -68,9 +83,15 @@ open class AlertDataHandler @Inject internal constructor(
         }
     }
 
-    private fun calculateDistanceTo(location: Location, strike: Strike, rasterParameters: RasterParameters?, measurementSystem: MeasurementSystem): Float {
+    private fun calculateDistanceTo(
+        location: Location,
+        strike: Strike,
+        rasterParameters: RasterParameters?,
+        measurementSystem: MeasurementSystem
+    ): Float {
         if (strike is RasterElement && rasterParameters != null) {
-            strikeLocation.longitude = closestValue(location.longitude, strike.longitude, rasterParameters.longitudeDelta)
+            strikeLocation.longitude =
+                closestValue(location.longitude, strike.longitude, rasterParameters.longitudeDelta)
             strikeLocation.latitude = closestValue(location.latitude, strike.latitude, rasterParameters.latitudeDelta)
         } else {
             strikeLocation.longitude = strike.longitude
@@ -102,17 +123,21 @@ open class AlertDataHandler @Inject internal constructor(
 
     fun getTextMessage(alertResult: AlertResult, notificationDistanceLimit: Float, resources: Resources): String {
         return alertResult.sectorsByDistance
-                .filter { it.key <= notificationDistanceLimit }
-                .map {
-                    "%s %.0f%s".format(it.value.label, it.key, resources.getString(alertResult.parameters.measurementSystem.unitNameString))
-                }.joinToString()
+            .filter { it.key <= notificationDistanceLimit }
+            .map {
+                "%s %.0f%s".format(
+                    it.value.label,
+                    it.key,
+                    resources.getString(alertResult.parameters.measurementSystem.unitNameString)
+                )
+            }.joinToString()
     }
 
     private fun getLatestTimestampWithin(distanceLimit: Float, sector: AlertSector): Long {
         return sector.ranges
-                .filter { distanceLimit <= it.rangeMaximum }
-                .map { it.latestStrikeTimestamp }
-                .maxOrNull() ?: 0L
+            .filter { distanceLimit <= it.rangeMaximum }
+            .map { it.latestStrikeTimestamp }
+            .maxOrNull() ?: 0L
     }
 
     private fun createSectors(alertParameters: AlertParameters): List<AggregatingAlertSector> {
@@ -124,7 +149,12 @@ open class AlertDataHandler @Inject internal constructor(
             var minimumSectorBearing = bearing - sectorWidth / 2.0f
             minimumSectorBearing += (if (minimumSectorBearing < -180f) 360f else 0f)
             val maximumSectorBearing = bearing + sectorWidth / 2.0f
-            val alertSector = AggregatingAlertSector(sectorLabel, minimumSectorBearing, maximumSectorBearing, createRanges(alertParameters))
+            val alertSector = AggregatingAlertSector(
+                sectorLabel,
+                minimumSectorBearing,
+                maximumSectorBearing,
+                createRanges(alertParameters)
+            )
             bearing += sectorWidth
             alertSector
         }
@@ -147,7 +177,10 @@ open class AlertDataHandler @Inject internal constructor(
         return location.bearingTo(strikeLocation)
     }
 
-    private fun getRelevantSector(bearing: Double, sectors: Collection<AggregatingAlertSector>): AggregatingAlertSector? {
+    private fun getRelevantSector(
+        bearing: Double,
+        sectors: Collection<AggregatingAlertSector>
+    ): AggregatingAlertSector? {
         return sectors.firstOrNull { sectorContainsBearing(it, bearing) }
     }
 

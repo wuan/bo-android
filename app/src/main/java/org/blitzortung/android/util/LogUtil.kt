@@ -6,6 +6,6 @@ import java.util.*
 object LogUtil {
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
 
-    val timestamp : String
+    val timestamp: String
         get() = dateFormat.format(Date())
 }

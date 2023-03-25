@@ -47,8 +47,8 @@ import javax.inject.Singleton
 
 @Singleton
 class JsonRpcDataProvider @Inject constructor(
-        preferences: SharedPreferences,
-        private val client: JsonRpcClient
+    preferences: SharedPreferences,
+    private val client: JsonRpcClient
 ) : OnSharedPreferenceChangeListener, DataProvider {
 
     private lateinit var serviceUrl: URL
@@ -90,7 +90,13 @@ class JsonRpcDataProvider @Inject constructor(
         val strikesArray = response.get("r") as JSONArray
         val strikes = ArrayList<Strike>()
         for (i in 0 until strikesArray.length()) {
-            strikes.add(dataBuilder.createRasterElement(rasterParameters, referenceTimestamp, strikesArray.getJSONArray(i)))
+            strikes.add(
+                dataBuilder.createRasterElement(
+                    rasterParameters,
+                    referenceTimestamp,
+                    strikesArray.getJSONArray(i)
+                )
+            )
         }
 
         return result.copy(strikes = strikes, rasterParameters = rasterParameters, referenceTime = referenceTimestamp)
@@ -153,15 +159,41 @@ class JsonRpcDataProvider @Inject constructor(
 
             try {
                 val response = if (region == GLOBAL_REGION) {
-                    with(client.call(serviceUrl, "get_global_strikes_grid", intervalDuration, rasterBaselength, intervalOffset, countThreshold)) {
+                    with(
+                        client.call(
+                            serviceUrl,
+                            "get_global_strikes_grid",
+                            intervalDuration,
+                            rasterBaselength,
+                            intervalOffset,
+                            countThreshold
+                        )
+                    ) {
                         put("y1", 0.0)
                         put("x0", 0.0)
                     }
                 } else if (region == LOCAL_REGION) {
                     val localReference = parameters.localReference!!
-                    client.call(serviceUrl, "get_local_strikes_grid", localReference.x, localReference.y, rasterBaselength, intervalDuration, intervalOffset, countThreshold)
+                    client.call(
+                        serviceUrl,
+                        "get_local_strikes_grid",
+                        localReference.x,
+                        localReference.y,
+                        rasterBaselength,
+                        intervalDuration,
+                        intervalOffset,
+                        countThreshold
+                    )
                 } else {
-                    client.call(serviceUrl, "get_strikes_grid", intervalDuration, rasterBaselength, intervalOffset, region, countThreshold)
+                    client.call(
+                        serviceUrl,
+                        "get_strikes_grid",
+                        intervalDuration,
+                        rasterBaselength,
+                        intervalOffset,
+                        region,
+                        countThreshold
+                    )
                 }
                 resultVar = addRasterData(response, resultVar, rasterBaselength)
                 resultVar = addStrikesHistogram(response, resultVar)
@@ -169,8 +201,14 @@ class JsonRpcDataProvider @Inject constructor(
                 throw RuntimeException(e)
             }
 
-            Log.v(Main.LOG_TAG,
-                    "JsonRpcDataProvider: read %d bytes (%d raster positions, region %d)".format(client.lastNumberOfTransferredBytes, resultVar.strikes?.size, region))
+            Log.v(
+                Main.LOG_TAG,
+                "JsonRpcDataProvider: read %d bytes (%d raster positions, region %d)".format(
+                    client.lastNumberOfTransferredBytes,
+                    resultVar.strikes?.size,
+                    region
+                )
+            )
             return resultVar
         }
 
@@ -183,7 +221,12 @@ class JsonRpcDataProvider @Inject constructor(
             }
 
             try {
-                val response = client.call(serviceUrl, "get_strikes", intervalDuration, if (intervalOffset < 0) intervalOffset else nextId)
+                val response = client.call(
+                    serviceUrl,
+                    "get_strikes",
+                    intervalDuration,
+                    if (intervalOffset < 0) intervalOffset else nextId
+                )
 
                 resultVar = addStrikes(response, resultVar)
                 resultVar = addStrikesHistogram(response, resultVar)
@@ -191,8 +234,13 @@ class JsonRpcDataProvider @Inject constructor(
                 throw RuntimeException(e)
             }
 
-            Log.v(Main.LOG_TAG,
-                    "JsonRpcDataProvider: read %d bytes (%d new strikes)".format(client.lastNumberOfTransferredBytes, resultVar.strikes?.size))
+            Log.v(
+                Main.LOG_TAG,
+                "JsonRpcDataProvider: read %d bytes (%d new strikes)".format(
+                    client.lastNumberOfTransferredBytes,
+                    resultVar.strikes?.size
+                )
+            )
             return resultVar
         }
     }
@@ -201,8 +249,10 @@ class JsonRpcDataProvider @Inject constructor(
         @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
             PreferenceKey.SERVICE_URL -> {
-                val serviceUrl: String = sharedPreferences.get(PreferenceKey.SERVICE_URL, DEFAULT_SERVICE_URL.toString())
-                this.serviceUrl = toCheckedUrl(if (serviceUrl.isNotBlank()) serviceUrl.trim() else DEFAULT_SERVICE_URL.toString())
+                val serviceUrl: String =
+                    sharedPreferences.get(PreferenceKey.SERVICE_URL, DEFAULT_SERVICE_URL.toString())
+                this.serviceUrl =
+                    toCheckedUrl(if (serviceUrl.isNotBlank()) serviceUrl.trim() else DEFAULT_SERVICE_URL.toString())
             }
             else -> {}
         }

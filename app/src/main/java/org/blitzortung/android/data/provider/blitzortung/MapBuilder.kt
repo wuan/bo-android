@@ -24,7 +24,6 @@ import android.text.Html.FROM_HTML_MODE_COMPACT
 import android.util.Log
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.util.isAtLeast
-import java.util.*
 
 abstract class MapBuilder<T> internal constructor(private val lineSplitter: (String) -> Array<String>) {
 

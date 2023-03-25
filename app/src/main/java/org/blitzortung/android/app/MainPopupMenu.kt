@@ -18,13 +18,13 @@ import org.blitzortung.android.dialogs.InfoDialog
 import org.blitzortung.android.dialogs.LogDialog
 
 class MainPopupMenu(
-        context: Context,
-        anchor: View,
-        preferences: SharedPreferences,
-        dataHandler: MainDataHandler,
-        alertHandler: AlertHandler,
-        private val buildVersion: BuildVersion,
-        private val changeLogComponent: ChangeLogComponent
+    context: Context,
+    anchor: View,
+    preferences: SharedPreferences,
+    dataHandler: MainDataHandler,
+    alertHandler: AlertHandler,
+    private val buildVersion: BuildVersion,
+    private val changeLogComponent: ChangeLogComponent
 ) : PopupMenu(context, anchor) {
 
     init {
@@ -32,10 +32,10 @@ class MainPopupMenu(
     }
 
     inner class ClickListener(
-            private val context: Context,
-            private val preferences: SharedPreferences,
-            private val dataHandler: MainDataHandler,
-            private val alertHandler: AlertHandler
+        private val context: Context,
+        private val preferences: SharedPreferences,
+        private val dataHandler: MainDataHandler,
+        private val alertHandler: AlertHandler
     ) : OnMenuItemClickListener {
         override fun onMenuItemClick(item: MenuItem?): Boolean {
             if (item?.itemId == R.id.menu_preferences) {
@@ -44,7 +44,12 @@ class MainPopupMenu(
                 val dialog = when (item?.itemId) {
                     R.id.menu_info -> InfoDialog(context, buildVersion)
 
-                    R.id.menu_alarms -> AlertDialog(context, AlertDialogColorHandler(preferences), dataHandler, alertHandler)
+                    R.id.menu_alarms -> AlertDialog(
+                        context,
+                        AlertDialogColorHandler(preferences),
+                        dataHandler,
+                        alertHandler
+                    )
 
                     R.id.menu_log -> LogDialog(context, buildVersion)
 

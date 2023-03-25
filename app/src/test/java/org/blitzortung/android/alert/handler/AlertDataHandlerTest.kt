@@ -48,10 +48,10 @@ class AlertDataHandlerTest {
         }
 
         parameters = AlertParameters(
-                alarmInterval = 10 * 60 * 1000,
-                rangeSteps = listOf(2.5f, 5f),
-                sectorLabels = listOf("S", "N"),
-                measurementSystem = MeasurementSystem.METRIC
+            alarmInterval = 10 * 60 * 1000,
+            rangeSteps = listOf(2.5f, 5f),
+            sectorLabels = listOf("S", "N"),
+            measurementSystem = MeasurementSystem.METRIC
         )
 
         now = System.currentTimeMillis()
@@ -140,7 +140,12 @@ class AlertDataHandlerTest {
         assertThat(rangeWithStrike(result)).isNull()
     }
 
-    private fun assertSectorAndRange(result: AlertResult, expectedSectorLabel: String, expectedRange: Float, expectedTime: Long) {
+    private fun assertSectorAndRange(
+        result: AlertResult,
+        expectedSectorLabel: String,
+        expectedRange: Float,
+        expectedTime: Long
+    ) {
         val sectorWithStrike = sectorWithStrike(result)
         assertThat(sectorWithStrike).isNotNull
         if (sectorWithStrike != null) {
@@ -155,7 +160,9 @@ class AlertDataHandlerTest {
         }
     }
 
-    private fun sectorWithStrike(result: AlertResult) = result.sectors.firstOrNull { !it.ranges.none { range -> range.strikeCount > 0 } }
+    private fun sectorWithStrike(result: AlertResult) =
+        result.sectors.firstOrNull { !it.ranges.none { range -> range.strikeCount > 0 } }
 
-    private fun rangeWithStrike(result: AlertResult) = result.sectors.flatMap { it.ranges }.firstOrNull { it.strikeCount > 0 }
+    private fun rangeWithStrike(result: AlertResult) =
+        result.sectors.flatMap { it.ranges }.firstOrNull { it.strikeCount > 0 }
 }

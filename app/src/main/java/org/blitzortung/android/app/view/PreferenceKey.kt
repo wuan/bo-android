@@ -21,7 +21,6 @@ package org.blitzortung.android.app.view
 import android.content.SharedPreferences
 import android.util.Log
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
-import java.util.*
 
 enum class PreferenceKey(val key: String) {
     USERNAME("username"),
@@ -87,7 +86,7 @@ internal inline fun <reified T> SharedPreferences.get(prefKey: PreferenceKey, de
     val key = prefKey.toString()
 
     //Set<String> is not possible because of type erasure, so for Set<String> we still need to use the old way
-    val value: Any = when(default) {
+    val value: Any = when (default) {
         is Long -> getLong(key, default)
         is Int -> getInt(key, default)
         is Boolean -> this.getBoolean(key, default)
@@ -99,7 +98,11 @@ internal inline fun <reified T> SharedPreferences.get(prefKey: PreferenceKey, de
     return value as T
 }
 
-internal inline fun <reified T, V> SharedPreferences.getAndConvert(prefKey: PreferenceKey, default: T, convert: (T) -> V): V {
+internal inline fun <reified T, V> SharedPreferences.getAndConvert(
+    prefKey: PreferenceKey,
+    default: T,
+    convert: (T) -> V
+): V {
     val value = this.get(prefKey, default)
     return convert(value)
 }
@@ -108,7 +111,7 @@ internal inline fun <reified T, V> SharedPreferences.getAndConvert(prefKey: Pref
  *  A generic extension function to set a SharedPreference-Value
  */
 internal inline fun <reified T> SharedPreferences.Editor.put(key: String, value: T) {
-    when(value) {
+    when (value) {
         is String -> putString(key, value)
         is Int -> putInt(key, value)
         is Boolean -> putBoolean(key, value)

@@ -1,7 +1,7 @@
 package org.blitzortung.android.protocol
 
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger
@@ -58,8 +58,8 @@ class ConsumerContainerTest {
         assertThatThrownBy {
             testConsumerContainer.addConsumer(null)
         }
-                .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("consumer may not be null")
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage("consumer may not be null")
     }
 
     @Test

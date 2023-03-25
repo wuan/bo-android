@@ -32,7 +32,6 @@ import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.LocalData
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.DataEvent
-import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.protocol.ConsumerContainer
 import javax.inject.Inject
@@ -40,18 +39,20 @@ import javax.inject.Singleton
 
 @Singleton
 class ServiceDataHandler @Inject constructor(
-        private val context: Context,
-        private val wakeLock: PowerManager.WakeLock,
-        dataProviderFactory: DataProviderFactory,
-        private val localData: LocalData
+    private val context: Context,
+    private val wakeLock: PowerManager.WakeLock,
+    dataProviderFactory: DataProviderFactory,
+    private val localData: LocalData
 ) {
 
     private var location: Location? = null
 
     private var dataProvider: DataProvider? = null
 
-    private val parameters = Parameters(region = LOCAL_REGION, rasterBaselength = 5000,
-            intervalOffset = 0, intervalDuration = 10, countThreshold = 0)
+    private val parameters = Parameters(
+        region = LOCAL_REGION, rasterBaselength = 5000,
+        intervalOffset = 0, intervalDuration = 10, countThreshold = 0
+    )
 
     private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
         override fun addedFirstConsumer() {
@@ -78,7 +79,7 @@ class ServiceDataHandler @Inject constructor(
         dataProvider?.let { dataProvider ->
             Log.v(Main.LOG_TAG, "ServiceDataHandler.updateData() $activeParameters $wakeLock")
             FetchBackgroundDataTask(dataMode, dataProvider, { sendEvent(it) }, ::toast, wakeLock)
-                    .execute(activeParameters)
+                .execute(activeParameters)
         }
     }
 

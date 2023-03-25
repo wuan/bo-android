@@ -21,13 +21,14 @@ package org.blitzortung.android.data.beans
 import java.io.Serializable
 
 data class DefaultStrike(
-        override val timestamp: Long = 0,
-        override val longitude: Double = 0.0,
-        override val latitude: Double = 0.0,
-        val altitude: Int = 0,
-        val amplitude: Float = 0f,
-        val stationCount: Short = 0,
-        val lateralError: Double = 0.0) : Strike, Serializable {
+    override val timestamp: Long = 0,
+    override val longitude: Double = 0.0,
+    override val latitude: Double = 0.0,
+    val altitude: Int = 0,
+    val amplitude: Float = 0f,
+    val stationCount: Short = 0,
+    val lateralError: Double = 0.0
+) : Strike, Serializable {
 
     override val multiplicity = 1
 

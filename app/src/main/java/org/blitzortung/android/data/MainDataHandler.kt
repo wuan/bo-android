@@ -23,7 +23,6 @@ import android.content.SharedPreferences
 import android.location.Location
 import android.os.Handler
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -52,12 +51,12 @@ import javax.inject.Singleton
 
 @Singleton
 class MainDataHandler @Inject constructor(
-        private val context: Context,
-        private val dataProviderFactory: DataProviderFactory,
-        private val preferences: SharedPreferences,
-        private val handler: Handler,
-        private val localData: LocalData,
-        private val updatePeriod: Period
+    private val context: Context,
+    private val dataProviderFactory: DataProviderFactory,
+    private val preferences: SharedPreferences,
+    private val handler: Handler,
+    private val localData: LocalData,
+    private val updatePeriod: Period
 ) : OnSharedPreferenceChangeListener, Runnable, MapListener {
 
     private var location: Location? = null
@@ -97,7 +96,18 @@ class MainDataHandler @Inject constructor(
         preferences.registerOnSharedPreferenceChangeListener(this)
 
         updatesEnabled = false
-        onSharedPreferenceChanged(this.preferences, PreferenceKey.DATA_SOURCE, PreferenceKey.USERNAME, PreferenceKey.PASSWORD, PreferenceKey.RASTER_SIZE, PreferenceKey.COUNT_THRESHOLD, PreferenceKey.REGION, PreferenceKey.INTERVAL_DURATION, PreferenceKey.HISTORIC_TIMESTEP, PreferenceKey.QUERY_PERIOD)
+        onSharedPreferenceChanged(
+            this.preferences,
+            PreferenceKey.DATA_SOURCE,
+            PreferenceKey.USERNAME,
+            PreferenceKey.PASSWORD,
+            PreferenceKey.RASTER_SIZE,
+            PreferenceKey.COUNT_THRESHOLD,
+            PreferenceKey.REGION,
+            PreferenceKey.INTERVAL_DURATION,
+            PreferenceKey.HISTORIC_TIMESTEP,
+            PreferenceKey.QUERY_PERIOD
+        )
         updatesEnabled = true
     }
 
@@ -123,8 +133,7 @@ class MainDataHandler @Inject constructor(
                 }
             }
             Log.d(Main.LOG_TAG, "MainDataHandler.updateData() $activeParameters")
-            FetchDataTask(dataMode, dataProvider!!, { sendEvent(it) }, ::toast)
-                    .execute(parameters = activeParameters)
+            FetchDataTask(dataMode, dataProvider!!, { sendEvent(it) }, ::toast).execute(parameters = activeParameters)
         }
     }
 
@@ -152,7 +161,8 @@ class MainDataHandler @Inject constructor(
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
         when (key) {
             PreferenceKey.DATA_SOURCE, PreferenceKey.SERVICE_URL -> {
-                val providerTypeString = sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.RPC.toString())
+                val providerTypeString =
+                    sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.RPC.toString())
                 val providerType = DataProviderType.valueOf(providerTypeString.toUpperCase(Locale.getDefault()))
                 val dataProvider = dataProviderFactory.getDataProviderForType(providerType)
                 this.dataProvider = dataProvider
@@ -194,7 +204,8 @@ class MainDataHandler @Inject constructor(
 
             PreferenceKey.HISTORIC_TIMESTEP -> {
                 parametersController = ParametersController.withOffsetIncrement(
-                        sharedPreferences.get(key, "30").toInt())
+                    sharedPreferences.get(key, "30").toInt()
+                )
             }
 
             PreferenceKey.REGION -> {
@@ -214,7 +225,7 @@ class MainDataHandler @Inject constructor(
     }
 
     private fun showBlitzortungProviderWarning() =
-            Toast.makeText(context, R.string.provider_warning, Toast.LENGTH_LONG).show()
+        Toast.makeText(context, R.string.provider_warning, Toast.LENGTH_LONG).show()
 
     private fun updateProviderSpecifics() {
         val providerType = dataProvider!!.type
@@ -329,7 +340,10 @@ class MainDataHandler @Inject constructor(
             else -> 100000
         }
         return if (parameters.rasterBaselength != rasterBaselength) {
-            Log.v(Main.LOG_TAG, "MainDataHandler.autoRasterSizeUpdate() $zoomLevel : ${parameters.rasterBaselength} -> $rasterBaselength")
+            Log.v(
+                Main.LOG_TAG,
+                "MainDataHandler.autoRasterSizeUpdate() $zoomLevel : ${parameters.rasterBaselength} -> $rasterBaselength"
+            )
             parameters = parameters.copy(rasterBaselength = rasterBaselength)
             updateData()
             true

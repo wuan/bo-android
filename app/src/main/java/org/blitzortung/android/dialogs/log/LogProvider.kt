@@ -20,13 +20,13 @@ package org.blitzortung.android.dialogs.log
 
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.util.*
 
 class LogProvider {
     fun getLogLines(): List<String> {
         val process = Runtime.getRuntime().exec("logcat -d")
         val reader = BufferedReader(
-                InputStreamReader(process.inputStream))
+            InputStreamReader(process.inputStream)
+        )
 
         val lines: ArrayList<String> = arrayListOf()
         reader.use {

@@ -26,8 +26,8 @@ import org.blitzortung.android.app.Main
 import javax.inject.Inject
 
 class VersionComponent @Inject constructor(
-        context: Context,
-        buildVersion: BuildVersion
+    context: Context,
+    buildVersion: BuildVersion
 ) {
 
     var state: State? = null
@@ -59,7 +59,10 @@ class VersionComponent @Inject constructor(
             else -> State.NO_UPDATE
         }
 
-        Log.d(Main.LOG_TAG, "updateVersionStatus() name=$packageName, state=$state, versionCode=$configuredVersionCode/${buildVersion.versionCode}, major=$configuredMajorVersion/${buildVersion.majorVersion} minor=$configuredMinorVersion/${buildVersion.minorVersion}")
+        Log.d(
+            Main.LOG_TAG,
+            "updateVersionStatus() name=$packageName, state=$state, versionCode=$configuredVersionCode/${buildVersion.versionCode}, major=$configuredMajorVersion/${buildVersion.majorVersion} minor=$configuredMinorVersion/${buildVersion.minorVersion}"
+        )
     }
 
     private fun getAndStoreVersion(prefsKey: String, newValue: Int): Int {

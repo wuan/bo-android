@@ -27,9 +27,9 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
+import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
-import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.result.ResultEvent
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
@@ -44,9 +44,9 @@ import kotlin.math.max
 
 @Singleton
 class BlitzortungHttpDataProvider @Inject constructor(
-        preferences: SharedPreferences,
-        private val urlFormatter: UrlFormatter,
-        mapBuilderFactory: MapBuilderFactory
+    preferences: SharedPreferences,
+    private val urlFormatter: UrlFormatter,
+    mapBuilderFactory: MapBuilderFactory
 ) : OnSharedPreferenceChangeListener, DataProvider {
 
     private val strikeMapBuilder: MapBuilder<Strike> = mapBuilderFactory.createAbstractStrikeMapBuilder()
@@ -60,7 +60,7 @@ class BlitzortungHttpDataProvider @Inject constructor(
 
     init {
         preferences.registerOnSharedPreferenceChangeListener(this)
-        onSharedPreferenceChanged(preferences, PreferenceKey.USERNAME, PreferenceKey.PASSWORD )
+        onSharedPreferenceChanged(preferences, PreferenceKey.USERNAME, PreferenceKey.PASSWORD)
     }
 
     private fun readFromUrl(type: Type, region: Int, intervalTime: Calendar? = null): BufferedReader? {
@@ -107,7 +107,11 @@ class BlitzortungHttpDataProvider @Inject constructor(
      * @param parse A Lambda which receives a sequence of lines from a buffered reader and transforms them into a sequence of T
      * @return Returns a list of parsed T's
      */
-    private fun <T : Any> retrieveData(logMessage: String, readerSeq: Sequence<BufferedReader?>, parse: (String) -> T?): List<T> {
+    private fun <T : Any> retrieveData(
+        logMessage: String,
+        readerSeq: Sequence<BufferedReader?>,
+        parse: (String) -> T?
+    ): List<T> {
         var size = 0
 
         val strikeSequence: Sequence<T> = readerSeq.filterNotNull().flatMap { reader ->
@@ -166,11 +170,13 @@ class BlitzortungHttpDataProvider @Inject constructor(
             val millisecondsPerMinute = 60 * 1000L
             val endTime = System.currentTimeMillis() + intervalOffset * millisecondsPerMinute
             val startTime = endTime - intervalDuration * millisecondsPerMinute
-            val intervalSequence = createTimestampSequence(10 * millisecondsPerMinute, max(startTime, latestTime), endTime)
+            val intervalSequence =
+                createTimestampSequence(10 * millisecondsPerMinute, max(startTime, latestTime), endTime)
 
             Authenticator.setDefault(MyAuthenticator())
 
-            val strikes = retrieveData("BlitzortungHttpDataProvider.getStrikes() read %d bytes (%d new strikes) from region $region",
+            val strikes =
+                retrieveData("BlitzortungHttpDataProvider.getStrikes() read %d bytes (%d new strikes) from region $region",
                     intervalSequence.map {
                         intervalTime.timeInMillis = it
 
@@ -180,7 +186,8 @@ class BlitzortungHttpDataProvider @Inject constructor(
             if (latestTime > 0L) {
                 resultVar = resultVar.copy(updated = strikes.size)
                 val expireTime = resultVar.referenceTime - (intervalDuration - intervalOffset) * millisecondsPerMinute
-                this@BlitzortungHttpDataProvider.strikes = this@BlitzortungHttpDataProvider.strikes.filter { it.timestamp > expireTime }
+                this@BlitzortungHttpDataProvider.strikes =
+                    this@BlitzortungHttpDataProvider.strikes.filter { it.timestamp > expireTime }
                 this@BlitzortungHttpDataProvider.strikes += strikes
             } else {
                 this@BlitzortungHttpDataProvider.strikes = strikes
@@ -204,8 +211,10 @@ class BlitzortungHttpDataProvider @Inject constructor(
 
             Authenticator.setDefault(MyAuthenticator())
 
-            return retrieveData("BlitzortungHttpDataProvider.getStations() read %d bytes (%d stations) from region $region",
-                    sequenceOf(readFromUrl(Type.STATIONS, region))) {
+            return retrieveData(
+                "BlitzortungHttpDataProvider.getStations() read %d bytes (%d stations) from region $region",
+                sequenceOf(readFromUrl(Type.STATIONS, region))
+            ) {
                 stationMapBuilder.buildFromLine(it)
             }
         }

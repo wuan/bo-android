@@ -9,11 +9,12 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.getAndConvert
 import org.blitzortung.android.location.LocationHandler
 
-class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sharedPreferences: SharedPreferences) : LocationProvider(locationUpdate), OnSharedPreferenceChangeListener {
+class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sharedPreferences: SharedPreferences) :
+    LocationProvider(locationUpdate), OnSharedPreferenceChangeListener {
     override val isEnabled: Boolean = true
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
-        val doubleConverter = fun (x: String): Double? {
+        val doubleConverter = fun(x: String): Double? {
             try {
                 return x.toDouble()
             } catch (e: NumberFormatException) {
@@ -24,12 +25,14 @@ class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sh
         }
 
         @Suppress("NON_EXHAUSTIVE_WHEN")
-        when(key) {
+        when (key) {
             PreferenceKey.LOCATION_LONGITUDE, PreferenceKey.LOCATION_LATITUDE -> {
                 val location = Location("")
 
-                location.longitude = sharedPreferences.getAndConvert(PreferenceKey.LOCATION_LONGITUDE, "11.0", doubleConverter) ?: 11.0
-                location.latitude = sharedPreferences.getAndConvert(PreferenceKey.LOCATION_LATITUDE, "49.0", doubleConverter) ?: 49.0
+                location.longitude =
+                    sharedPreferences.getAndConvert(PreferenceKey.LOCATION_LONGITUDE, "11.0", doubleConverter) ?: 11.0
+                location.latitude =
+                    sharedPreferences.getAndConvert(PreferenceKey.LOCATION_LATITUDE, "49.0", doubleConverter) ?: 49.0
 
                 sendLocationUpdate(location)
             }
@@ -53,5 +56,6 @@ class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sh
         super.shutdown()
     }
 
-    override fun reconfigureProvider(isInBackground: Boolean) { /* Nothing to do here */ }
+    override fun reconfigureProvider(isInBackground: Boolean) { /* Nothing to do here */
+    }
 }

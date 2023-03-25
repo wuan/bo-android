@@ -8,11 +8,11 @@ internal class AggregatingAlertDataMapper @Inject constructor() {
     fun mapSector(aggregatingAlertSector: AggregatingAlertSector): AlertSector {
         with(aggregatingAlertSector) {
             return AlertSector(
-                    label = label,
-                    minimumSectorBearing = minimumSectorBearing,
-                    maximumSectorBearing = maximumSectorBearing,
-                    closestStrikeDistance = closestStrikeDistance,
-                    ranges = ranges.map { mapSectorRange(it) }
+                label = label,
+                minimumSectorBearing = minimumSectorBearing,
+                maximumSectorBearing = maximumSectorBearing,
+                closestStrikeDistance = closestStrikeDistance,
+                ranges = ranges.map { mapSectorRange(it) }
             )
         }
     }
@@ -20,10 +20,10 @@ internal class AggregatingAlertDataMapper @Inject constructor() {
     private fun mapSectorRange(aggregatingAlertSectorRange: AggregatingAlertSectorRange): AlertSectorRange {
         with(aggregatingAlertSectorRange) {
             return AlertSectorRange(
-                    rangeMinimum = rangeMinimum,
-                    rangeMaximum = rangeMaximum,
-                    latestStrikeTimestamp = latestStrikeTimestamp,
-                    strikeCount = strikeCount
+                rangeMinimum = rangeMinimum,
+                rangeMaximum = rangeMaximum,
+                latestStrikeTimestamp = latestStrikeTimestamp,
+                strikeCount = strikeCount
             )
         }
     }

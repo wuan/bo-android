@@ -32,9 +32,9 @@ import org.blitzortung.android.app.components.BuildVersion
 import org.blitzortung.android.dialogs.log.LogProvider
 
 class LogDialog(
-        context: Context,
-        private val buildVersion: BuildVersion,
-        private val logProvider: LogProvider = LogProvider()
+    context: Context,
+    private val buildVersion: BuildVersion,
+    private val logProvider: LogProvider = LogProvider()
 ) : android.app.AlertDialog(context) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,11 +81,13 @@ class LogDialog(
         intent.data = Uri.parse("mailto:")
         intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(context.resources.getString(R.string.project_email)))
         intent.putExtra(Intent.EXTRA_SUBJECT, context.resources.getString(R.string.app_log_subject))
-        intent.putExtra(Intent.EXTRA_TEXT,
-                if (body.length > MAX_LOG_SIZE)
-                    body.substring(body.length - MAX_LOG_SIZE)
-                else
-                    body)
+        intent.putExtra(
+            Intent.EXTRA_TEXT,
+            if (body.length > MAX_LOG_SIZE)
+                body.substring(body.length - MAX_LOG_SIZE)
+            else
+                body
+        )
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
         } else {

@@ -45,9 +45,9 @@ import kotlin.math.min
 import kotlin.math.sin
 
 class AlertView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyle: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
 ) : TabletAwareView(context, attrs, defStyle) {
     private val arcArea = RectF()
     private val background = Paint()
@@ -57,7 +57,7 @@ class AlertView @JvmOverloads constructor(
     private val warnText = Paint(Paint.ANTI_ALIAS_FLAG)
     private val transfer = Paint()
     private val alarmNotAvailableTextLines: Array<String> = context.getString(R.string.alarms_not_available)
-            .split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        .split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
     private lateinit var colorHandler: ColorHandler
     private var intervalDuration: Int = 0
     private var temporaryBitmap: Bitmap? = null
@@ -104,7 +104,7 @@ class AlertView @JvmOverloads constructor(
 
         setOnLongClickListener {
             AlertDialog(context, AlertDialogColorHandler(sharedPreferences), dataHandler, alertHandler)
-                    .show()
+                .show()
 
             true
         }
@@ -122,7 +122,10 @@ class AlertView @JvmOverloads constructor(
 
         val size = min(parentWidth.toInt(), parentHeight.toInt())
 
-        super.onMeasure(MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY))
+        super.onMeasure(
+            MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY)
+        )
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -171,17 +174,33 @@ class AlertView @JvmOverloads constructor(
 
                         val drawColor = alertSectorRange.strikeCount > 0
                         if (drawColor) {
-                            val color = colorHandler.getColor(actualTime, alertSectorRange.latestStrikeTimestamp, intervalDuration)
+                            val color = colorHandler.getColor(
+                                actualTime,
+                                alertSectorRange.latestStrikeTimestamp,
+                                intervalDuration
+                            )
                             sectorPaint.color = color
                         }
                         arcArea.set(leftTop, leftTop, bottomRight, bottomRight)
-                        temporaryCanvas.drawArc(arcArea, startAngle, sectorWidth, true, if (drawColor) sectorPaint else background)
+                        temporaryCanvas.drawArc(
+                            arcArea,
+                            startAngle,
+                            sectorWidth,
+                            true,
+                            if (drawColor) sectorPaint else background
+                        )
                     }
                 }
 
                 for (alertSector in alertResult.sectors) {
                     val bearing = alertSector.minimumSectorBearing.toDouble()
-                    temporaryCanvas.drawLine(center, center, center + (radius * sin(bearing / 180.0f * Math.PI)).toFloat(), center + (radius * -cos(bearing / 180.0f * Math.PI)).toFloat(), lines)
+                    temporaryCanvas.drawLine(
+                        center,
+                        center,
+                        center + (radius * sin(bearing / 180.0f * Math.PI)).toFloat(),
+                        center + (radius * -cos(bearing / 180.0f * Math.PI)).toFloat(),
+                        lines
+                    )
 
                     if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
                         drawSectorLabel(center, radiusIncrement, alertSector, bearing + sectorWidth / 2.0)
@@ -198,10 +217,20 @@ class AlertView @JvmOverloads constructor(
 
                     if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
                         val text = "%.0f".format(rangeSteps[radiusIndex])
-                        temporaryCanvas.drawText(text, center + (radiusIndex + 0.85f) * radiusIncrement, center + textHeight / 3f, textStyle)
+                        temporaryCanvas.drawText(
+                            text,
+                            center + (radiusIndex + 0.85f) * radiusIncrement,
+                            center + textHeight / 3f,
+                            textStyle
+                        )
                         if (radiusIndex == rangeStepCount - 1) {
                             val distanceUnit = resources.getString(alertParameters.measurementSystem.unitNameString)
-                            temporaryCanvas.drawText(distanceUnit, center + (radiusIndex + 0.85f) * radiusIncrement, center + textHeight * 1.33f, textStyle)
+                            temporaryCanvas.drawText(
+                                distanceUnit,
+                                center + (radiusIndex + 0.85f) * radiusIncrement,
+                                center + textHeight * 1.33f,
+                                textStyle
+                            )
                         }
                     }
                 }
@@ -226,7 +255,7 @@ class AlertView @JvmOverloads constructor(
             textSize = DEFAULT_FONT_SIZE.toFloat()
 
             val maxWidth = alarmNotAvailableTextLines.map { warnText.measureText(it) }.maxOrNull()
-                    ?: width.toFloat() - 20
+                ?: width.toFloat() - 20
             val scale = (width - 20).toFloat() / maxWidth
 
             //Now scale the text so we can use the whole width of the canvas
@@ -235,7 +264,12 @@ class AlertView @JvmOverloads constructor(
 
 
         for (line in alarmNotAvailableTextLines.indices) {
-            canvas.drawText(alarmNotAvailableTextLines[line], center, center + (line - 1) * warnText.getFontMetrics(null), warnText)
+            canvas.drawText(
+                alarmNotAvailableTextLines[line],
+                center,
+                center + (line - 1) * warnText.getFontMetrics(null),
+                warnText
+            )
         }
     }
 
@@ -260,7 +294,12 @@ class AlertView @JvmOverloads constructor(
         if (bearing != 90.0) {
             val text = sector.label
             val textRadius = (sector.ranges.size - 0.5f) * radiusIncrement
-            temporaryCanvas!!.drawText(text, center + (textRadius * sin(bearing / 180.0 * Math.PI)).toFloat(), center + (textRadius * -cos(bearing / 180.0 * Math.PI)).toFloat() + textStyle.getFontMetrics(null) / 3f, textStyle)
+            temporaryCanvas!!.drawText(
+                text,
+                center + (textRadius * sin(bearing / 180.0 * Math.PI)).toFloat(),
+                center + (textRadius * -cos(bearing / 180.0 * Math.PI)).toFloat() + textStyle.getFontMetrics(null) / 3f,
+                textStyle
+            )
         }
     }
 

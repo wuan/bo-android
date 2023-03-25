@@ -64,7 +64,12 @@ class JsonRpcClient @Inject constructor(client: HttpServiceClientDefault) : Http
             val responseObject = JSONObject(response)
 
             if (responseObject.has("fault")) {
-                throw JsonRpcException("remote Exception '%s' #%s ".format(responseObject.get("faultString"), responseObject.get("faultCode")))
+                throw JsonRpcException(
+                    "remote Exception '%s' #%s ".format(
+                        responseObject.get("faultString"),
+                        responseObject.get("faultCode")
+                    )
+                )
             }
             responseObject
         }

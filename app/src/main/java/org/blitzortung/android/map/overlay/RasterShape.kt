@@ -42,10 +42,11 @@ class RasterShape(private val center: IGeoPoint) : LightningShape {
         mapView.projection.toPixels(center, centerPoint)
 
         val rect = RectF(
-                centerPoint.x + size.left,
-                centerPoint.y + size.top,
-                centerPoint.x + size.right,
-                centerPoint.y + size.bottom)
+            centerPoint.x + size.left,
+            centerPoint.y + size.top,
+            centerPoint.x + size.right,
+            centerPoint.y + size.bottom
+        )
 
         //Only draw visible Raster-Items
         if (canvas.quickReject(rect, Canvas.EdgeType.BW)) {
@@ -63,10 +64,11 @@ class RasterShape(private val center: IGeoPoint) : LightningShape {
             paint.textAlign = Align.CENTER
             paint.textSize = textSize
             canvas.drawText(
-                    multiplicity.toString(),
-                    centerPoint.x.toFloat(),
-                    centerPoint.y.toFloat() + textSize / 2,
-                    paint)
+                multiplicity.toString(),
+                centerPoint.x.toFloat(),
+                centerPoint.y.toFloat() + textSize / 2,
+                paint
+            )
         }
     }
 

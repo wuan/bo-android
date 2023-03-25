@@ -23,8 +23,8 @@ import android.content.res.Resources
 import org.blitzortung.android.app.R
 
 class AlertLabelHandler(
-        private val alertLabel: AlertLabel,
-        private val resources: Resources
+    private val alertLabel: AlertLabel,
+    private val resources: Resources
 ) {
     fun apply(result: AlertResult?) {
         var warningText = ""

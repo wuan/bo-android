@@ -25,7 +25,12 @@ import javax.inject.Singleton
 
 @Singleton
 class UrlFormatter @Inject constructor() {
-    fun getUrlFor(type: BlitzortungHttpDataProvider.Type, region: Int, intervalTime: Calendar?, useGzipCompression: Boolean): String {
+    fun getUrlFor(
+        type: BlitzortungHttpDataProvider.Type,
+        region: Int,
+        intervalTime: Calendar?,
+        useGzipCompression: Boolean
+    ): String {
 
         val localPath: String
 

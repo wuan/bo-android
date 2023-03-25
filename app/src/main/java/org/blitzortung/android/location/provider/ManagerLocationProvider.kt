@@ -34,7 +34,10 @@ abstract class ManagerLocationProvider(
 
         super.start()
 
-        Log.v(LOG_TAG, "ManagerLocationProvider.start() background: $isInBackground, type: $type, minTime: $minTime, minDistance: $minDistance")
+        Log.v(
+            LOG_TAG,
+            "ManagerLocationProvider.start() background: $isInBackground, type: $type, minTime: $minTime, minDistance: $minDistance"
+        )
         if (locationManager.allProviders.contains(type)) {
             try {
                 enableLocationManager()

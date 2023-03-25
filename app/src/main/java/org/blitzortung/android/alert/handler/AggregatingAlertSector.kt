@@ -21,10 +21,10 @@ package org.blitzortung.android.alert.handler
 import kotlin.math.min
 
 internal class AggregatingAlertSector(
-        val label: String,
-        val minimumSectorBearing: Float,
-        val maximumSectorBearing: Float,
-        val ranges: List<AggregatingAlertSectorRange>
+    val label: String,
+    val minimumSectorBearing: Float,
+    val maximumSectorBearing: Float,
+    val ranges: List<AggregatingAlertSectorRange>
 ) {
 
     var closestStrikeDistance: Float = Float.POSITIVE_INFINITY

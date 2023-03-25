@@ -18,8 +18,6 @@
 
 package org.blitzortung.android.protocol
 
-import java.util.*
-
 open class ConsumerContainer<P> {
 
     private val consumers: MutableSet<(P) -> Unit>

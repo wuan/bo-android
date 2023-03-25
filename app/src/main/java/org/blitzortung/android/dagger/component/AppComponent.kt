@@ -10,11 +10,13 @@ import org.blitzortung.android.dagger.module.ServiceModule
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [
-    AndroidInjectionModule::class,
-    AppModule::class,
-    ServiceModule::class,
-    ActivityBindingModule::class
-])
+@Component(
+    modules = [
+        AndroidInjectionModule::class,
+        AppModule::class,
+        ServiceModule::class,
+        ActivityBindingModule::class
+    ]
+)
 interface AppComponent : AndroidInjector<BOApplication>
 

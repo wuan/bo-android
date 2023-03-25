@@ -22,15 +22,14 @@ import org.blitzortung.android.data.beans.DefaultStrike
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.util.TimeFormat
-import java.util.*
 import java.util.regex.Pattern
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class MapBuilderFactory constructor(
-        private val strikeLineSplitter: (String) -> Array<String>,
-        private val stationLineSplitter: (String) -> Array<String>
+    private val strikeLineSplitter: (String) -> Array<String>,
+    private val stationLineSplitter: (String) -> Array<String>
 ) {
 
     @Inject
@@ -63,7 +62,15 @@ class MapBuilderFactory constructor(
             }
 
             override fun build(): Strike {
-                return DefaultStrike(timestamp, longitude, latitude, altitude, amplitude, stationCount, lateralError.toDouble())
+                return DefaultStrike(
+                    timestamp,
+                    longitude,
+                    latitude,
+                    altitude,
+                    amplitude,
+                    stationCount,
+                    lateralError.toDouble()
+                )
             }
         }
     }

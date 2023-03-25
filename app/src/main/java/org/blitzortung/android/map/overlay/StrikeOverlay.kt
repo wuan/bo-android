@@ -24,7 +24,13 @@ class StrikeOverlay(strike: Strike) {
         }
     }
 
-    fun updateShape(rasterParameters: RasterParameters?, projection: Projection, color: Int, textColor: Int, zoomLevel: Double) {
+    fun updateShape(
+        rasterParameters: RasterParameters?,
+        projection: Projection,
+        color: Int,
+        textColor: Int,
+        zoomLevel: Double
+    ) {
         var shape: LightningShape? = shape
         if (rasterParameters != null) {
             if (shape !is RasterShape) {
@@ -35,12 +41,18 @@ class StrikeOverlay(strike: Strike) {
             val latDelta = rasterParameters.latitudeDelta / 2.0f
 
             projection.toPixels(center, centerPoint)
-            projection.toPixels(GeoPoint(
+            projection.toPixels(
+                GeoPoint(
                     center.latitude + latDelta,
-                    center.longitude - lonDelta), topLeft)
-            projection.toPixels(GeoPoint(
+                    center.longitude - lonDelta
+                ), topLeft
+            )
+            projection.toPixels(
+                GeoPoint(
                     center.latitude - latDelta,
-                    center.longitude + lonDelta), bottomRight)
+                    center.longitude + lonDelta
+                ), bottomRight
+            )
             topLeft.offset(-centerPoint.x, -centerPoint.y)
             bottomRight.offset(-centerPoint.x, -centerPoint.y)
             if (shape is RasterShape) {
@@ -59,7 +71,7 @@ class StrikeOverlay(strike: Strike) {
 
     fun pointIsInside(point: IGeoPoint, projection: Projection): Boolean {
         return shape?.isPointInside(point, projection)
-                ?: false
+            ?: false
     }
 
     companion object {

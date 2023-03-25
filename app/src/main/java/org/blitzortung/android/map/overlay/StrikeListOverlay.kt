@@ -43,10 +43,12 @@ import org.osmdroid.views.overlay.Overlay
 import kotlin.math.max
 import kotlin.math.min
 
-class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: StrikeColorHandler) : Overlay(), LayerOverlay, MapListener {
+class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: StrikeColorHandler) : Overlay(),
+    LayerOverlay, MapListener {
     private val strikeList = mutableListOf<StrikeOverlay>()
 
-    private val layerOverlayComponent: LayerOverlayComponent = LayerOverlayComponent(mapFragment.resources.getString(R.string.strikes_layer))
+    private val layerOverlayComponent: LayerOverlayComponent =
+        LayerOverlayComponent(mapFragment.resources.getString(R.string.strikes_layer))
     private var zoomLevel: Double
     var rasterParameters: RasterParameters? = null
     var referenceTime: Long = 0
@@ -90,16 +92,40 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
             val rect = currentRasterParameters.getRect(mapView.projection)
 
             if (rect.left >= clipBounds.left && rect.left <= clipBounds.right) {
-                canvas.drawLine(rect.left, max(rect.top, clipBounds.top.toFloat()), rect.left, min(rect.bottom, clipBounds.bottom.toFloat()), paint)
+                canvas.drawLine(
+                    rect.left,
+                    max(rect.top, clipBounds.top.toFloat()),
+                    rect.left,
+                    min(rect.bottom, clipBounds.bottom.toFloat()),
+                    paint
+                )
             }
             if (rect.right >= clipBounds.left && rect.right <= clipBounds.right) {
-                canvas.drawLine(rect.right, max(rect.top, clipBounds.top.toFloat()), rect.right, min(rect.bottom, clipBounds.bottom.toFloat()), paint)
+                canvas.drawLine(
+                    rect.right,
+                    max(rect.top, clipBounds.top.toFloat()),
+                    rect.right,
+                    min(rect.bottom, clipBounds.bottom.toFloat()),
+                    paint
+                )
             }
             if (rect.bottom <= clipBounds.bottom && rect.bottom >= clipBounds.top) {
-                canvas.drawLine(max(rect.left, clipBounds.left.toFloat()), rect.bottom, min(rect.right, clipBounds.right.toFloat()), rect.bottom, paint)
+                canvas.drawLine(
+                    max(rect.left, clipBounds.left.toFloat()),
+                    rect.bottom,
+                    min(rect.right, clipBounds.right.toFloat()),
+                    rect.bottom,
+                    paint
+                )
             }
             if (rect.top <= clipBounds.bottom && rect.top >= clipBounds.top) {
-                canvas.drawLine(max(rect.left, clipBounds.left.toFloat()), rect.top, min(rect.right, clipBounds.right.toFloat()), rect.top, paint)
+                canvas.drawLine(
+                    max(rect.left, clipBounds.left.toFloat()),
+                    rect.top,
+                    min(rect.right, clipBounds.right.toFloat()),
+                    rect.top,
+                    paint
+                )
             }
         }
     }
@@ -111,7 +137,10 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
         val firstTime = strikeList.firstOrNull()?.timestamp
         val difference = firstTime?.let { it - expireTime }
         strikeList.removeAll { it.timestamp < expireTime }
-        Log.v(Main.LOG_TAG, "StrikesListOverlay.expireStrikes() expired ${sizeBefore - strikeList.size} from $sizeBefore (first: $firstTime, difference: $difference, ref: $referenceTime")
+        Log.v(
+            Main.LOG_TAG,
+            "StrikesListOverlay.expireStrikes() expired ${sizeBefore - strikeList.size} from $sizeBefore (first: $firstTime, difference: $difference, ref: $referenceTime"
+        )
 
         updateTotalNumberOfStrikes()
     }
@@ -135,8 +164,10 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
                 if (strikeTapped != null) {
                     val newPopup = createStrikePopUp(popup, strikeTapped)
 
-                    val mapParams = MapView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
-                            point, 0, 0, MapView.LayoutParams.BOTTOM_CENTER)
+                    val mapParams = MapView.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                        point, 0, 0, MapView.LayoutParams.BOTTOM_CENTER
+                    )
 
                     mapView.addView(newPopup, mapParams)
 
@@ -156,11 +187,12 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
 
         for (item in strikeList) {
             val section = colorHandler.getColorSection(
-                    if (hasRealtimeData())
-                        System.currentTimeMillis()
-                    else
-                        referenceTime,
-                    item.timestamp, parameters.intervalDuration)
+                if (hasRealtimeData())
+                    System.currentTimeMillis()
+                else
+                    referenceTime,
+                item.timestamp, parameters.intervalDuration
+            )
 
             if (hasRasterParameters() || currentSection != section) {
                 drawable = updateAndReturnDrawable(item, section, colorHandler)

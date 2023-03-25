@@ -28,10 +28,10 @@ import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.map.overlay.color.ColorHandler
 
 class AlertDialog(
-        context: Context,
-        private val colorHandler: ColorHandler,
-        private val dataHandler: MainDataHandler,
-        private val alertHandler: AlertHandler
+    context: Context,
+    private val colorHandler: ColorHandler,
+    private val dataHandler: MainDataHandler,
+    private val alertHandler: AlertHandler
 ) : android.app.AlertDialog(context) {
     private lateinit var alertView: AlertView
 

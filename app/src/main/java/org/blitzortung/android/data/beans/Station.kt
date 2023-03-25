@@ -19,10 +19,10 @@
 package org.blitzortung.android.data.beans
 
 class Station(
-        override val longitude: Double,
-        override val latitude: Double,
-        val name: String,
-        val offlineSince: Long
+    override val longitude: Double,
+    override val latitude: Double,
+    val name: String,
+    val offlineSince: Long
 ) : Location {
 
     val state: State

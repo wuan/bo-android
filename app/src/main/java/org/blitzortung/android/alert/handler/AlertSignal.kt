@@ -25,9 +25,9 @@ import javax.inject.Singleton
 
 @Singleton
 class AlertSignal @Inject constructor(
-        private val context: Context,
-        private val vibrator: Vibrator,
-        private val notificationManager: NotificationManager
+    private val context: Context,
+    private val vibrator: Vibrator,
+    private val notificationManager: NotificationManager
 ) : OnSharedPreferenceChangeListener {
 
     init {
@@ -81,7 +81,8 @@ class AlertSignal @Inject constructor(
     private fun playRingtone(ringtone: Ringtone): Int {
         if (!ringtone.isPlaying) {
             if (isAtLeast(Build.VERSION_CODES.LOLLIPOP)) {
-                ringtone.audioAttributes = AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_NOTIFICATION).build()
+                ringtone.audioAttributes =
+                    AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_NOTIFICATION).build()
             } else {
                 @Suppress("DEPRECATION")
                 ringtone.streamType = AudioManager.STREAM_NOTIFICATION

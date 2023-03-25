@@ -27,7 +27,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class HttpServiceClientDefault @Inject constructor(
-        @Named("agentSuffix") agentSuffix: String
+    @Named("agentSuffix") agentSuffix: String
 ) : HttpServiceClient {
 
     private val userAgentString: String = "bo-android$agentSuffix"

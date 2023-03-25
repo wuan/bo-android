@@ -1,7 +1,7 @@
 package org.blitzortung.android.util
 
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 
 class TimeFormatTest {
@@ -16,8 +16,8 @@ class TimeFormatTest {
     @Test
     fun testParseTimeWithMillisecondsWithoutMillisecondsInString() {
         assertThatThrownBy { TimeFormat.parseTimeWithMilliseconds("20120901T20:10:05") }
-                .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("Unable to parse millisecond time string '20120901T20:10:05'")
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage("Unable to parse millisecond time string '20120901T20:10:05'")
     }
 
     @Test
@@ -44,7 +44,7 @@ class TimeFormatTest {
     @Test
     fun testParseTimeWithBadString() {
         assertThatThrownBy { TimeFormat.parseTime("20120901T20:10") }
-                .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("Unable to parse time string '20120901T20:10'")
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage("Unable to parse time string '20120901T20:10'")
     }
 }

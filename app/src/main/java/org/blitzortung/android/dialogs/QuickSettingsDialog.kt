@@ -83,11 +83,11 @@ class QuickSettingsDialog : DialogFragment() {
             val queryPeriodValue = queryPeriodValues[queryPeriodSpinner.selectedItemPosition]
 
             preferences.edit()
-                    .putString(PreferenceKey.REGION.toString(), regionValue)
-                    .putString(PreferenceKey.RASTER_SIZE.toString(), rasterSizeValue)
-                    .putString(PreferenceKey.COUNT_THRESHOLD.toString(), countThresholdValue)
-                    .putString(PreferenceKey.INTERVAL_DURATION.toString(), intervalDurationValue)
-                    .putString(PreferenceKey.QUERY_PERIOD.toString(), queryPeriodValue).apply()
+                .putString(PreferenceKey.REGION.toString(), regionValue)
+                .putString(PreferenceKey.RASTER_SIZE.toString(), rasterSizeValue)
+                .putString(PreferenceKey.COUNT_THRESHOLD.toString(), countThresholdValue)
+                .putString(PreferenceKey.INTERVAL_DURATION.toString(), intervalDurationValue)
+                .putString(PreferenceKey.QUERY_PERIOD.toString(), queryPeriodValue).apply()
         }.setNegativeButton(R.string.cancel) { _: DialogInterface, _: Int -> }
 
         return builder.create()

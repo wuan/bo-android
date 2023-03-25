@@ -1,7 +1,5 @@
 package org.blitzortung.android.preferences
 
-import kotlin.math.min
-
 class SliderData(
     private val suffix: String,
     val default: Int,

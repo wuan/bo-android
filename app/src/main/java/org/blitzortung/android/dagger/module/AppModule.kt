@@ -8,12 +8,9 @@ import android.content.pm.PackageInfo
 import android.os.PowerManager
 import android.os.Vibrator
 import android.preference.PreferenceManager
-import android.util.Log
 import dagger.Module
 import dagger.Provides
 import org.blitzortung.android.app.BOApplication
-import org.blitzortung.android.app.Main
-import org.blitzortung.android.app.R
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton

@@ -22,12 +22,12 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Point
 import android.preference.PreferenceManager
-import androidx.appcompat.app.AlertDialog
 import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
@@ -46,7 +46,7 @@ class OwnMapView(context: Context) : MapView(context) {
 
     inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
 
-        private val point : Point = Point()
+        private val point: Point = Point()
 
         override fun onDoubleTap(event: MotionEvent): Boolean {
 
@@ -85,10 +85,10 @@ class OwnMapView(context: Context) : MapView(context) {
             }
 
             AlertDialog.Builder(context)
-                    .setMessage("%s: %.4f %.4f?".format(locationText, longitude, latitude))
-                    .setPositiveButton(android.R.string.yes, dialogClickListener)
-                    .setNegativeButton(android.R.string.no, dialogClickListener)
-                    .show()
+                .setMessage("%s: %.4f %.4f?".format(locationText, longitude, latitude))
+                .setPositiveButton(android.R.string.yes, dialogClickListener)
+                .setNegativeButton(android.R.string.no, dialogClickListener)
+                .show()
         }
     }
 
