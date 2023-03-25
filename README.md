@@ -1,4 +1,5 @@
-[![Build Status](https://app.travis-ci.com/wuan/bo-android.svg?branch=master)](https://app.travis-ci.com/wuan/bo-android)  [![Coverage Status](https://coveralls.io/repos/github/wuan/bo-android/badge.svg?branch=master)](https://coveralls.io/github/wuan/bo-android?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fbab98f82eed4a9e9b0cd4af593dbe73)](https://app.codacy.com/gh/wuan/bo-android)
+[![Lines of Code](https://sonar.tryb.de/api/project_badges/measure?project=wuan_bo-android_AYcZZuyTg4e1BA2WvQjK&metric=ncloc&token=ee89146b4ee29206327218b2a499361405b50fb2)](https://sonar.tryb.de/dashboard?id=wuan_bo-android_AYcZZuyTg4e1BA2WvQjK)
+[![Coverage](https://sonar.tryb.de/api/project_badges/measure?project=wuan_bo-android_AYcZZuyTg4e1BA2WvQjK&metric=coverage&token=ee89146b4ee29206327218b2a499361405b50fb2)](https://sonar.tryb.de/dashboard?id=wuan_bo-android_AYcZZuyTg4e1BA2WvQjK)
 
 # About
 

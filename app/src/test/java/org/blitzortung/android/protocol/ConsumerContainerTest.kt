@@ -39,6 +39,20 @@ class ConsumerContainerTest {
     }
 
     @Test
+    fun consumerShoudNotStoreCurrentBroadcast() {
+        testConsumerContainer.broadcast("foo")
+
+        assertThat(testConsumerContainer.currentPayload).isNull()
+    }
+
+    @Test
+    fun consumerShoudStoreCurrentStoreAndBroadcast() {
+        testConsumerContainer.storeAndBroadcast("foo")
+
+        assertThat(testConsumerContainer.currentPayload).isEqualTo("foo")
+    }
+
+    @Test
     fun consumerShoudReceivePayloadBroadcastEvenIfAlreadyRegistered() {
         var result: String? = null
         val consumer: (String) -> Unit = { string -> result = string }
