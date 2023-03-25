@@ -49,8 +49,8 @@ class AlertDataHandlerTest {
 
         parameters = AlertParameters(
                 alarmInterval = 10 * 60 * 1000,
-                rangeSteps = arrayOf(2.5f, 5f),
-                sectorLabels = arrayOf("S", "N"),
+                rangeSteps = listOf(2.5f, 5f),
+                sectorLabels = listOf("S", "N"),
                 measurementSystem = MeasurementSystem.METRIC
         )
 
@@ -63,7 +63,7 @@ class AlertDataHandlerTest {
 
     @Test
     fun testCheckWithinThresholdTimeSingleSectorAndRange1() {
-        parameters = parameters.copy(sectorLabels = arrayOf("foo"))
+        parameters = parameters.copy(sectorLabels = listOf("foo"))
         strike = strike.copy(timestamp = thresholdTime)
         every { location.distanceTo(any()) } returns 2500f
 
