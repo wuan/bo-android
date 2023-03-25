@@ -38,7 +38,6 @@ android {
         jvmToolchain(11)
     }
     testOptions {
-
         unitTests {
             returnDefaultValues = true
             includeAndroidResources = true
@@ -48,6 +47,7 @@ android {
             }
         }
     }
+
     buildToolsVersion = '33.0.2'
     useLibrary 'android.test.base'
     lint {
@@ -129,6 +129,7 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
 
 sonar {
     properties {
+        property "sonar.junit.reportPaths", "build/test-results/testDebugUnitTest/*.xml"
         property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoRootReport/merged.xml"
     }
 }
