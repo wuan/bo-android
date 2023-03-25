@@ -13,6 +13,5 @@ task clean(type: Delete) {
 sonar {
     properties {
         property "sonar.projectKey", "wuan_bo-android_AYcZZuyTg4e1BA2WvQjK"
-        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoRootReport/merged.xml"
     }
 }

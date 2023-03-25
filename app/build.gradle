@@ -110,7 +110,7 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
 
     reports {
         xml.required.set(true)
-        html.required.set(false)
+        html.required.set(true)
     }
 
     getReports().getXml().setDestination(file("${buildDir}/reports/jacoco/jacocoRootReport/merged.xml"))
@@ -125,4 +125,10 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
     executionData.setFrom(fileTree(dir: project.buildDir, includes: [
             'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
     ]))
+}
+
+sonar {
+    properties {
+        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoRootReport/merged.xml"
+    }
 }
