@@ -3,18 +3,17 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'jacoco'
-    id 'com.github.kt3k.coveralls' version '2.12.0'
 }
 
 android {
-    compileSdk 31
+    compileSdk 33
 
     defaultConfig {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 15
-        targetSdkVersion 31
-        versionCode 284
-        versionName '2.1.11'
+        targetSdkVersion 33
+        versionCode 285
+        versionName '2.1.12'
         multiDexEnabled false
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -27,20 +26,29 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            testCoverageEnabled true
+            // See bug https://github.com/vanniktech/gradle-android-junit-jacoco-plugin/issues/183
+            testCoverageEnabled false
         }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11
+    kotlin {
+        jvmToolchain(11)
     }
     testOptions {
-        unitTests.returnDefaultValues = true
+        unitTests {
+            returnDefaultValues = true
+            includeAndroidResources = true
+            all {
+                systemProperty 'robolectric.enabledSdks', '33'
+                jvmArgs '-noverify'
+            }
+        }
     }
-    buildToolsVersion = '31.0.0'
+
+    buildToolsVersion = '33.0.2'
     useLibrary 'android.test.base'
     lint {
         abortOnError false
@@ -52,19 +60,16 @@ android {
     namespace 'org.blitzortung.android.app'
 }
 
-coveralls {
-    jacocoReportPath 'build/reports/coverage/androidTest/debug/report.xml'
-}
-
-def dagger_version = '2.43.2'
+def dagger_version = '2.45'
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.media:media:1.6.0'
-    implementation 'androidx.core:core-ktx:1.8.0'
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'androidx.work:work-runtime-ktx:2.7.1'
-    implementation 'org.osmdroid:osmdroid-android:6.1.11' // waiting for https://github.com/osmdroid/osmdroid/issues/1822
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.recyclerview:recyclerview:1.3.0'
+    implementation 'androidx.work:work-runtime-ktx:2.8.1'
+    implementation 'org.osmdroid:osmdroid-android:6.1.11'
+    // waiting for https://github.com/osmdroid/osmdroid/issues/1822
 
     // Dagger2
     implementation "com.google.dagger:dagger:$dagger_version"
@@ -74,13 +79,57 @@ dependencies {
     compileOnly 'javax.annotation:jsr250-api:1.0'
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.assertj:assertj-core:3.23.1'
-    testImplementation 'io.mockk:mockk:1.12.5'
-    testImplementation 'org.robolectric:robolectric:4.8.1'
-    testImplementation 'androidx.test:core:1.4.0'
-    androidTestImplementation 'androidx.test:runner:1.4.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    testImplementation 'org.assertj:assertj-core:3.24.2'
+    testImplementation 'io.mockk:mockk:1.13.4'
+    testImplementation 'org.robolectric:robolectric:4.9.2'
+    testImplementation 'androidx.test:core:1.5.0'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
 kapt.includeCompileClasspath = false
 
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
+    testLogging {
+        // Enables easier debugging of tests in Github Actions CI
+        events TestLogEvent.FAILED
+        exceptionFormat TestExceptionFormat.FULL
+        showExceptions true
+        showCauses true
+        showStackTraces true
+    }
+    maxHeapSize = "4g"
+}
+
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+
+    getReports().getXml().setDestination(file("${buildDir}/reports/jacoco/jacocoRootReport/merged.xml"))
+
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*', '**/*$ViewBinder*.*']
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/classes", excludes: fileFilter)
+    def kotlinDebugTree = fileTree(dir: "${project.buildDir}/tmp/kotlin-classes/debug", excludes: fileFilter)
+    def mainSrc = "$project.projectDir/src/main/java"
+
+    sourceDirectories.setFrom(files([mainSrc]))
+    classDirectories.setFrom(files([debugTree, kotlinDebugTree]))
+    executionData.setFrom(fileTree(dir: project.buildDir, includes: [
+            'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
+    ]))
+}
+
+sonar {
+    properties {
+        property "sonar.junit.reportPaths", "build/test-results/testDebugUnitTest/"
+        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoRootReport/merged.xml"
+    }
+}

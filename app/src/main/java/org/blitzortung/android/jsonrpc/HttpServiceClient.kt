@@ -21,7 +21,6 @@ package org.blitzortung.android.jsonrpc
 import java.net.URL
 
 interface HttpServiceClient {
-    fun shutdown()
     fun doRequest(baseUrl: URL, data: String): String
     var socketTimeout: Int
     var connectionTimeout: Int

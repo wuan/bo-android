@@ -7,13 +7,21 @@ import android.preference.PreferenceManager
 import org.blitzortung.android.location.LocationHandler
 
 
-internal fun createLocationProvider(context: Context, backgroundMode: Boolean, updateConsumer: (Location?) -> Unit, providerName: String): LocationProvider {
+internal fun createLocationProvider(
+    context: Context,
+    backgroundMode: Boolean,
+    updateConsumer: (Location?) -> Unit,
+    providerName: String
+): LocationProvider {
 
     return when (providerName) {
         GPS_PROVIDER -> GPSLocationProvider(context, backgroundMode, updateConsumer)
         NETWORK_PROVIDER -> NetworkLocationProvider(context, backgroundMode, updateConsumer)
         PASSIVE_PROVIDER -> PassiveLocationProvider(context, backgroundMode, updateConsumer)
-        LocationHandler.MANUAL_PROVIDER -> ManualLocationProvider(updateConsumer, PreferenceManager.getDefaultSharedPreferences(context))
+        LocationHandler.MANUAL_PROVIDER -> ManualLocationProvider(
+            updateConsumer,
+            PreferenceManager.getDefaultSharedPreferences(context)
+        )
         else -> null
     } ?: throw IllegalArgumentException("Cannot find provider for name $providerName")
 }

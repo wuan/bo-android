@@ -19,9 +19,9 @@
 package org.blitzortung.android.data.provider.blitzortung
 
 class TimestampIterator(
-        private val intervalLength: Long,
-        startTime: Long,
-        private val endTime: Long
+    private val intervalLength: Long,
+    startTime: Long,
+    private val endTime: Long
 ) : Iterator<Long> {
 
     private var currentTime: Long = roundTime(startTime)

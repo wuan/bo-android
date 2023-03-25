@@ -21,14 +21,14 @@ package org.blitzortung.android.alert
 import org.blitzortung.android.alert.data.AlertSector
 
 data class AlertResult(
-        val sectors: List<AlertSector>,
-        val parameters: AlertParameters,
-        val referenceTime: Long
+    val sectors: List<AlertSector>,
+    val parameters: AlertParameters,
+    val referenceTime: Long
 ) {
     val sectorsByDistance: Map<Float, AlertSector> by lazy {
         sectors.filter { it.closestStrikeDistance < Float.POSITIVE_INFINITY }
-                .sortedBy { it.closestStrikeDistance }
-                .associateBy { it.closestStrikeDistance }
+            .sortedBy { it.closestStrikeDistance }
+            .associateBy { it.closestStrikeDistance }
     }
 
     val sectorWithClosestStrike: AlertSector? by lazy {

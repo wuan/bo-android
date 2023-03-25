@@ -25,14 +25,19 @@ import javax.inject.Singleton
 
 @Singleton
 class UrlFormatter @Inject constructor() {
-    fun getUrlFor(type: BlitzortungHttpDataProvider.Type, region: Int, intervalTime: Calendar?, useGzipCompression: Boolean): String {
+    fun getUrlFor(
+        type: BlitzortungHttpDataProvider.Type,
+        region: Int,
+        intervalTime: Calendar?,
+        useGzipCompression: Boolean
+    ): String {
 
         val localPath: String
 
         localPath = if (type === BlitzortungHttpDataProvider.Type.STRIKES) {
             "Strokes/" + DateFormat.format("yyyy/MM/dd/kk/mm", intervalTime!!) + ".log"
         } else {
-            type.name.toLowerCase(Locale.getDefault()) + ".txt"
+            type.name.lowercase(Locale.getDefault()) + ".txt"
         }
 
         val urlFormatString = "http://data.blitzortung.org/Data_%d/Protected/%s%s"

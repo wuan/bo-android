@@ -35,9 +35,9 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         mapView = OwnMapView(inflater.context)
 
         mapView.tileProvider.tileCache.apply {
-            protectedTileComputers.clear();
+            protectedTileComputers.clear()
             setAutoEnsureCapacity(false)
-        };
+        }
 
         return mapView
     }

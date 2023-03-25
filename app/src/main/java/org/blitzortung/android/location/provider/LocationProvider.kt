@@ -19,7 +19,7 @@ abstract class LocationProvider(protected val locationUpdate: (Location?) -> Uni
 
     protected val Location?.isValid: Boolean
         get() {
-            if(this == null) {
+            if (this == null) {
                 return false
             }
 
@@ -29,7 +29,7 @@ abstract class LocationProvider(protected val locationUpdate: (Location?) -> Uni
     open fun start() {
         isRunning = true
 
-        Log.v(Main.LOG_TAG, "LocationProvider.start() type: $type" )
+        Log.v(Main.LOG_TAG, "LocationProvider.start() type: $type")
     }
 
     open fun shutdown() {
@@ -38,7 +38,7 @@ abstract class LocationProvider(protected val locationUpdate: (Location?) -> Uni
         //Invalidate the current location, when the provider is stopped
         sendLocationUpdate(null)
 
-        Log.v(Main.LOG_TAG, "LocationProvider.shutdown() type: $type" )
+        Log.v(Main.LOG_TAG, "LocationProvider.shutdown() type: $type")
     }
 
     abstract fun reconfigureProvider(isInBackground: Boolean)

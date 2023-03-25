@@ -20,11 +20,11 @@ class BOApplication : Application(), HasAndroidInjector {
         super.onCreate()
 
         DaggerAppComponent
-                .builder()
-                .appModule(AppModule(this))
-                .serviceModule(ServiceModule())
-                .build()
-                .inject(this)
+            .builder()
+            .appModule(AppModule(this))
+            .serviceModule(ServiceModule())
+            .build()
+            .inject(this)
     }
 
     companion object {

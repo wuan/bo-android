@@ -22,12 +22,12 @@ import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
 
 data class Parameters(
-        val region: Int = -1,
-        val rasterBaselength: Int = 0,
-        override val intervalDuration: Int = 0,
-        override val intervalOffset: Int = 0,
-        val countThreshold: Int = 0,
-        val localReference: LocalReference? = null
+    val region: Int = -1,
+    val rasterBaselength: Int = 0,
+    override val intervalDuration: Int = 0,
+    override val intervalOffset: Int = 0,
+    val countThreshold: Int = 0,
+    val localReference: LocalReference? = null
 ) : TimeIntervalWithOffset {
 
     val isGlobal: Boolean = region == GLOBAL_REGION
@@ -39,6 +39,6 @@ data class Parameters(
 }
 
 data class LocalReference(
-        val x: Int,
-        val y: Int
+    val x: Int,
+    val y: Int
 )

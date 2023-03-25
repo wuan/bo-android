@@ -31,6 +31,7 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.location.LocationHandler
+import java.util.*
 import javax.inject.Inject
 
 class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
@@ -62,7 +63,8 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
                 val provider = configureLocationProviderPreferences(sharedPreferences)
                 getSystemService(Context.LOCATION_SERVICE) as LocationManager
                 if (provider != LocationHandler.MANUAL_PROVIDER &&
-                        !(getSystemService(Context.LOCATION_SERVICE) as LocationManager).isProviderEnabled(provider)) {
+                    !(getSystemService(Context.LOCATION_SERVICE) as LocationManager).isProviderEnabled(provider)
+                ) {
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 }
             }
@@ -82,7 +84,7 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
 
     private fun configureDataSourcePreferences(sharedPreferences: SharedPreferences): DataProviderType {
         val providerTypeString = sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.HTTP.toString())
-        val providerType = DataProviderType.valueOf(providerTypeString.toUpperCase())
+        val providerType = DataProviderType.valueOf(providerTypeString.uppercase(Locale.getDefault()))
 
         when (providerType) {
             DataProviderType.HTTP -> enableBlitzortungHttpMode()

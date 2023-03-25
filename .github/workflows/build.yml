@@ -1,0 +1,51 @@
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code to specific branch
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+      - name: Cache SonarQube packages
+        uses: actions/cache@v3
+        if: github.ref_name == 'master' && github.event_name == 'push'
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Build and analyze
+        if: github.ref_name == 'master' && github.event_name == 'push'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: ./gradlew build jacocoTestReport sonar
+      - name: Upload build artifacts
+        if: github.ref_name == 'master' && github.event_name == 'push'
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: app/build
+          if-no-files-found: "error"
+      - name: Generate app bundle.
+        run: ./gradlew build app:bundleRelease --stacktrace

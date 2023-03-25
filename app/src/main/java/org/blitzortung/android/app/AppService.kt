@@ -27,7 +27,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.IBinder
-import android.os.PowerManager
 import android.util.Log
 import dagger.android.AndroidInjection
 import org.blitzortung.android.alert.handler.AlertHandler
@@ -112,7 +111,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
             val currentTimeSeconds = System.currentTimeMillis() / 1000
 
             val timeDifference = lastUpdateTime?.let {
-                currentTimeSeconds - it;
+                currentTimeSeconds - it
             }
             if (timeDifference == null || timeDifference > 0.6 * backgroundPeriod) {
                 Log.v(Main.LOG_TAG, "AppService.onStartCommand() with time difference ${timeDifference ?: 0} s")
@@ -222,8 +221,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
-        @Suppress("NON_EXHAUSTIVE_WHEN")
-        when (key) {
+        @Suppress("NON_EXHAUSTIVE_WHEN") when (key) {
             PreferenceKey.ALERT_ENABLED -> {
                 alertEnabled = sharedPreferences.get(key, false)
                 Log.v(Main.LOG_TAG, "AppService.onSharedPreferenceChanged() alertEnabled=$alertEnabled")

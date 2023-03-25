@@ -32,9 +32,9 @@ import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.TabletAwareView
 
 class HistogramView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyle: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
 ) : TabletAwareView(context, attrs, defStyle) {
 
     private val backgroundPaint: Paint
@@ -72,8 +72,10 @@ class HistogramView @JvmOverloads constructor(
         val parentWidth = getSize(widthMeasureSpec) * sizeFactor
         val parentHeight = getSize(heightMeasureSpec) * sizeFactor
 
-        super.onMeasure(MeasureSpec.makeMeasureSpec(parentWidth.toInt(), MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(parentHeight.toInt(), MeasureSpec.EXACTLY))
+        super.onMeasure(
+            MeasureSpec.makeMeasureSpec(parentWidth.toInt(), MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(parentHeight.toInt(), MeasureSpec.EXACTLY)
+        )
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -93,8 +95,11 @@ class HistogramView @JvmOverloads constructor(
 
             val maximumCount = histogram.maxOrNull() ?: 0
 
-            canvas.drawText("%.1f/%s _".format(
-                    maximumCount.toFloat() / minutesPerBin, resources.getString(R.string.unit_minute)), width - 2 * padding, padding + textSize / 1.2f, textPaint)
+            canvas.drawText(
+                "%.1f/%s _".format(
+                    maximumCount.toFloat() / minutesPerBin, resources.getString(R.string.unit_minute)
+                ), width - 2 * padding, padding + textSize / 1.2f, textPaint
+            )
 
             val ymax = if (maximumCount == 0) 1 else maximumCount
 
@@ -107,7 +112,13 @@ class HistogramView @JvmOverloads constructor(
             foregroundPaint.strokeWidth = 2f
             for (i in 0 until histogram.size - 1) {
                 foregroundPaint.color = colorHandler.getColor((histogram.size - 1 - i) / ratio)
-                canvas.drawLine(x0 + xd * i, y0 - yd * histogram[i], x0 + xd * (i + 1), y0 - yd * histogram[i + 1], foregroundPaint)
+                canvas.drawLine(
+                    x0 + xd * i,
+                    y0 - yd * histogram[i],
+                    x0 + xd * (i + 1),
+                    y0 - yd * histogram[i + 1],
+                    foregroundPaint
+                )
             }
 
             foregroundPaint.strokeWidth = 1f

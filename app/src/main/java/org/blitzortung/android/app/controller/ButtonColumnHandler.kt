@@ -24,8 +24,7 @@ import org.blitzortung.android.app.helper.ViewHelper.pxFromSp
 
 class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) {
 
-    data class GroupedView<V, G>(val view: V, val groups: Set<G>) {
-    }
+    data class GroupedView<V, G>(val view: V, val groups: Set<G>)
 
     private val elements: MutableList<GroupedView<V, G>>
 
@@ -48,7 +47,8 @@ class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) 
             val view = element.view
             if (view.visibility == View.VISIBLE) {
                 val lp = RelativeLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
+                    RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT
+                )
                 lp.width = pxFromSp(view.context, buttonSize).toInt()
                 lp.height = pxFromSp(view.context, buttonSize).toInt()
                 lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 1)

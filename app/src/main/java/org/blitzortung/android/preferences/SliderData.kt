@@ -1,7 +1,5 @@
 package org.blitzortung.android.preferences
 
-import kotlin.math.min
-
 class SliderData(
     private val suffix: String,
     val default: Int,
@@ -13,7 +11,6 @@ class SliderData(
         set(value) {
             field = applyConstraints(value)
         }
-        get() = field
 
     var offset: Int
         set(offset) {

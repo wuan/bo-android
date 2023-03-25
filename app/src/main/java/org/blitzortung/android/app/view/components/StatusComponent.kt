@@ -29,11 +29,11 @@ import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.event.AlertResultEvent
 
 class StatusComponent(
-        private val warning: TextView,
-        private val status: TextView,
-        private val progressBar: ProgressBar,
-        private val errorIndicator: ImageView,
-        resources: Resources
+    private val warning: TextView,
+    private val status: TextView,
+    private val progressBar: ProgressBar,
+    private val errorIndicator: ImageView,
+    resources: Resources
 ) : AlertLabel {
 
     private val alertLabelHandler: AlertLabelHandler
@@ -48,10 +48,11 @@ class StatusComponent(
 
         alertEventConsumer = { event ->
             alertLabelHandler.apply(
-                    if (event is AlertResultEvent)
-                        event.alertResult
-                    else
-                        null)
+                if (event is AlertResultEvent)
+                    event.alertResult
+                else
+                    null
+            )
         }
     }
 

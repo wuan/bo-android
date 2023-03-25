@@ -36,8 +36,8 @@ import javax.inject.Singleton
 
 @Singleton
 class LocationHandler @Inject constructor(
-        private val context: Context,
-        sharedPreferences: SharedPreferences
+    private val context: Context,
+    sharedPreferences: SharedPreferences
 ) : OnSharedPreferenceChangeListener {
 
     init {

@@ -45,11 +45,13 @@ class StrikeShape(private val center: IGeoPoint) : LightningShape {
 
         //Only draw it when its visible
         if (canvas.quickReject(
-                        centerPoint.x - size / 2,
-                        centerPoint.y - size / 2,
-                        centerPoint.x + size / 2,
-                        centerPoint.y + size / 2,
-                        Canvas.EdgeType.BW)) {
+                centerPoint.x - size / 2,
+                centerPoint.y - size / 2,
+                centerPoint.x + size / 2,
+                centerPoint.y + size / 2,
+                Canvas.EdgeType.BW
+            )
+        ) {
             return
         }
 
@@ -58,18 +60,20 @@ class StrikeShape(private val center: IGeoPoint) : LightningShape {
         paint.strokeWidth = size / 4
 
         canvas.drawLine(
-                centerPoint.x - size / 2,
-                centerPoint.y.toFloat(),
-                centerPoint.x + size / 2,
-                centerPoint.y.toFloat(),
-                paint)
+            centerPoint.x - size / 2,
+            centerPoint.y.toFloat(),
+            centerPoint.x + size / 2,
+            centerPoint.y.toFloat(),
+            paint
+        )
 
         canvas.drawLine(
-                centerPoint.x.toFloat(),
-                centerPoint.y - size / 2,
-                centerPoint.x.toFloat(),
-                centerPoint.y + size / 2,
-                paint)
+            centerPoint.x.toFloat(),
+            centerPoint.y - size / 2,
+            centerPoint.x.toFloat(),
+            centerPoint.y + size / 2,
+            paint
+        )
     }
 
     fun update(size: Float, color: Int) {

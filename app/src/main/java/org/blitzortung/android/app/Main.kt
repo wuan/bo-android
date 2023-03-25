@@ -218,11 +218,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         strikeColorHandler = StrikeColorHandler(preferences)
 
         statusComponent = StatusComponent(
-                findViewById(R.id.warning),
-                findViewById(R.id.status),
-                findViewById(R.id.progress),
-                findViewById(R.id.error_indicator),
-                resources)
+            findViewById(R.id.warning),
+            findViewById(R.id.status),
+            findViewById(R.id.progress),
+            findViewById(R.id.error_indicator),
+            resources
+        )
 
         hideActionBar()
 
@@ -247,11 +248,17 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private fun initializeOsmDroid() {
         val osmDroidConfig = Configuration.getInstance()
         osmDroidConfig.load(this, preferences)
-        Log.v(LOG_TAG, "Main.onCreate() osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}")
+        Log.v(
+            LOG_TAG,
+            "Main.onCreate() osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}"
+        )
         if (!StorageUtils.isWritable(osmDroidConfig.osmdroidBasePath)) {
             preferences.edit().remove("osmdroid.basePath").apply()
             osmDroidConfig.load(this, preferences)
-            Log.v(LOG_TAG, "Main.onCreate() updated osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}")
+            Log.v(
+                LOG_TAG,
+                "Main.onCreate() updated osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}"
+            )
             if (!StorageUtils.isWritable(osmDroidConfig.osmdroidTileCache)) {
                 Toast.makeText(baseContext, R.string.osmdroid_storage_warning, Toast.LENGTH_LONG).show()
             }
@@ -319,7 +326,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     val parameters = currentResult.parameters
                     val rasterParameters = currentResult.rasterParameters
                     if (!parameters.isGlobal && rasterParameters != null) {
-                        animateToLocationAndVisibleSize(rasterParameters.rectCenterLongitude, rasterParameters.rectCenterLatitude, if (parameters.region == LOCAL_REGION) 1800f else 5000f)
+                        animateToLocationAndVisibleSize(
+                            rasterParameters.rectCenterLongitude,
+                            rasterParameters.rectCenterLatitude,
+                            if (parameters.region == LOCAL_REGION) 1800f else 5000f
+                        )
                     } else {
                         animateToLocationAndVisibleSize(-30.0, 0.0, 40000f)
                     }
@@ -393,8 +404,16 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         ownLocationOverlay.isEnabled = true
         mapFragment.mapView.addMapListener(ownLocationOverlay)
 
-        onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_FADE, PreferenceKey.SHOW_LOCATION,
-                PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT, PreferenceKey.DO_NOT_SLEEP, PreferenceKey.BACKGROUND_QUERY_PERIOD)
+        onSharedPreferenceChanged(
+            preferences,
+            PreferenceKey.MAP_TYPE,
+            PreferenceKey.MAP_FADE,
+            PreferenceKey.SHOW_LOCATION,
+            PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT,
+            PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT,
+            PreferenceKey.DO_NOT_SLEEP,
+            PreferenceKey.BACKGROUND_QUERY_PERIOD
+        )
 
         val overlays = mapFragment.mapView.overlays
 
@@ -527,7 +546,16 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        Log.v(LOG_TAG, "Main.onRequestPermissionsResult() $requestCode - ${permissions.joinToString(",", "[", "]")} - ${grantResults.joinToString(",", "[", "]") { it.toString() }}")
+        Log.v(
+            LOG_TAG,
+            "Main.onRequestPermissionsResult() $requestCode - ${
+                permissions.joinToString(
+                    ",",
+                    "[",
+                    "]"
+                )
+            } - ${grantResults.joinToString(",", "[", "]") { it.toString() }}"
+        )
         val providerRelation = LocationProviderRelation.byOrdinal[requestCode]
         if (providerRelation != null) {
             val providerName = providerRelation.providerName
@@ -550,11 +578,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private fun requestLocationPermissions(sharedPreferences: SharedPreferences) {
         val locationProviderName = sharedPreferences.get(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER)
         val permission =
-                when (locationProviderName) {
-                    PASSIVE_PROVIDER, GPS_PROVIDER -> ACCESS_FINE_LOCATION
-                    NETWORK_PROVIDER -> ACCESS_COARSE_LOCATION
-                    else -> null
-                }
+            when (locationProviderName) {
+                PASSIVE_PROVIDER, GPS_PROVIDER -> ACCESS_FINE_LOCATION
+                NETWORK_PROVIDER -> ACCESS_COARSE_LOCATION
+                else -> null
+            }
 
         if (permission != null) {
             val requiresBackgroundPermission = if (isAtLeast(Build.VERSION_CODES.Q)) {
@@ -566,7 +594,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             val requiresPermission = checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED
 
             val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal
-                    ?: Int.MAX_VALUE)
+                ?: Int.MAX_VALUE)
             if (requiresPermission) {
                 val locationText = resources.getString(R.string.location_permission_background_disclosure)
                 AlertDialog.Builder(this)
@@ -586,7 +614,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     .show()
             } else {
                 if (requiresBackgroundPermission) {
-                    requestPermission(arrayOf(ACCESS_BACKGROUND_LOCATION), requestCode, R.string.location_permission_background_required)
+                    requestPermission(
+                        arrayOf(ACCESS_BACKGROUND_LOCATION),
+                        requestCode,
+                        R.string.location_permission_background_required
+                    )
                 }
             }
         }
@@ -596,7 +628,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private fun requestPermission(permission: Array<String>, requestCode: Int, permissionRequiredStringId: Int) {
         val shouldShowPermissionRationale = shouldShowRequestPermissionRationale(permission[0])
         val permissionStatus = checkSelfPermission(permission[0])
-        Log.v(LOG_TAG, "Main.requestPermission() permission: $permission, status: $permissionStatus, shouldRequest: ${!shouldShowPermissionRationale}")
+        Log.v(
+            LOG_TAG,
+            "Main.requestPermission() permission: $permission, status: $permissionStatus, shouldRequest: ${!shouldShowPermissionRationale}"
+        )
         if (!shouldShowPermissionRationale && permissionStatus != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(permission, requestCode)
         } else {
@@ -650,10 +685,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     }
 
                     AlertDialog.Builder(this)
-                            .setMessage(locationText)
-                            .setPositiveButton(android.R.string.yes, dialogClickListener)
-                            .setNegativeButton(android.R.string.no, dialogClickListener)
-                            .show()
+                        .setMessage(locationText)
+                        .setPositiveButton(android.R.string.yes, dialogClickListener)
+                        .setNegativeButton(android.R.string.no, dialogClickListener)
+                        .show()
                 }
             } else {
                 Log.w(LOG_TAG, "requestWakeupPermissions() could not get PowerManager")
@@ -665,8 +700,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         GPS(GPS_PROVIDER), PASSIVE(PASSIVE_PROVIDER), NETWORK(NETWORK_PROVIDER);
 
         companion object {
-            val byProviderName: Map<String, LocationProviderRelation> = values().groupBy { it.providerName }.mapValues { it.value.first() }
-            val byOrdinal: Map<Int, LocationProviderRelation> = values().groupBy { it.ordinal }.mapValues { it.value.first() }
+            val byProviderName: Map<String, LocationProviderRelation> =
+                values().groupBy { it.providerName }.mapValues { it.value.first() }
+            val byOrdinal: Map<Int, LocationProviderRelation> =
+                values().groupBy { it.ordinal }.mapValues { it.value.first() }
         }
     }
 
@@ -731,8 +768,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         val config = ViewConfiguration.get(this)
 
         if (isAtLeast(Build.VERSION_CODES.LOLLIPOP) ||
-                isAtLeast(Build.VERSION_CODES.ICE_CREAM_SANDWICH) &&
-                !config.hasPermanentMenuKey()) {
+            isAtLeast(Build.VERSION_CODES.ICE_CREAM_SANDWICH) &&
+            !config.hasPermanentMenuKey()
+        ) {
             binding.menu.visibility = View.VISIBLE
             binding.menu.setOnClickListener {
                 showPopupMenu(binding.menu)
@@ -743,7 +781,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun showPopupMenu(anchor: View) {
-        val popupMenu = MainPopupMenu(this, anchor, preferences, dataHandler, alertHandler, buildVersion, changeLogComponent)
+        val popupMenu =
+            MainPopupMenu(this, anchor, preferences, dataHandler, alertHandler, buildVersion, changeLogComponent)
         popupMenu.showPopupMenu()
     }
 

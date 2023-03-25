@@ -1,9 +1,10 @@
 package org.blitzortung.android.protocol
 
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
 import org.junit.Test
+import java.util.concurrent.atomic.AtomicInteger
 
 class ConsumerContainerTest {
 
@@ -16,7 +17,7 @@ class ConsumerContainerTest {
 
     @Test
     fun emptyContainerShouldBeEmptyAndHaveSizeZero() {
-        assertThat(testConsumerContainer.isEmpty).isTrue()
+        assertThat(testConsumerContainer.isEmpty).isTrue
         assertThat(testConsumerContainer.size).isEqualTo(0)
     }
 
@@ -24,7 +25,7 @@ class ConsumerContainerTest {
     fun containerWithConsumerShouldBeNotEmptyAndHaveSizeOne() {
         testConsumerContainer.addConsumer { }
 
-        assertThat(testConsumerContainer.isEmpty).isFalse()
+        assertThat(testConsumerContainer.isEmpty).isFalse
         assertThat(testConsumerContainer.size).isEqualTo(1)
     }
 
@@ -35,6 +36,20 @@ class ConsumerContainerTest {
 
         testConsumerContainer.broadcast("foo")
         assertThat(result).isEqualTo("foo")
+    }
+
+    @Test
+    fun consumerShoudNotStoreCurrentBroadcast() {
+        testConsumerContainer.broadcast("foo")
+
+        assertThat(testConsumerContainer.currentPayload).isNull()
+    }
+
+    @Test
+    fun consumerShoudStoreCurrentStoreAndBroadcast() {
+        testConsumerContainer.storeAndBroadcast("foo")
+
+        assertThat(testConsumerContainer.currentPayload).isEqualTo("foo")
     }
 
     @Test
@@ -57,8 +72,8 @@ class ConsumerContainerTest {
         assertThatThrownBy {
             testConsumerContainer.addConsumer(null)
         }
-                .isInstanceOf(IllegalArgumentException::class.java)
-                .hasMessage("consumer may not be null")
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage("consumer may not be null")
     }
 
     @Test
@@ -81,15 +96,15 @@ class ConsumerContainerTest {
 
     @Test
     fun addingFirstConsumerShouldBeRecorded() {
-        assertThat(testConsumerContainer.firstConsumersAdded).isEqualTo(0)
+        assertThat(testConsumerContainer.firstConsumersAdded.get()).isEqualTo(0)
 
         testConsumerContainer.addConsumer { }
 
-        assertThat(testConsumerContainer.firstConsumersAdded).isEqualTo(1)
+        assertThat(testConsumerContainer.firstConsumersAdded.get()).isEqualTo(1)
 
         testConsumerContainer.addConsumer { }
 
-        assertThat(testConsumerContainer.firstConsumersAdded).isEqualTo(1)
+        assertThat(testConsumerContainer.firstConsumersAdded.get()).isEqualTo(1)
         assertThat(testConsumerContainer.size).isEqualTo(2)
     }
 
@@ -102,31 +117,27 @@ class ConsumerContainerTest {
         assertThat(testConsumerContainer.size).isEqualTo(2)
 
         testConsumerContainer.removeConsumer(consumer2)
-        assertThat(testConsumerContainer.lastConsumersRemoved).isEqualTo(0)
+        assertThat(testConsumerContainer.lastConsumersRemoved.get()).isEqualTo(0)
 
         testConsumerContainer.removeConsumer(consumer1)
-        assertThat(testConsumerContainer.lastConsumersRemoved).isEqualTo(1)
-        assertThat(testConsumerContainer.isEmpty).isTrue()
+        assertThat(testConsumerContainer.lastConsumersRemoved.get()).isEqualTo(1)
+        assertThat(testConsumerContainer.isEmpty).isTrue
     }
 }
 
 class TestConsumerContainer : ConsumerContainer<String>() {
 
-    var firstConsumersAdded = 0
-        private set
+    val firstConsumersAdded = AtomicInteger()
 
-    var lastConsumersRemoved = 0
-        private set
+    val lastConsumersRemoved = AtomicInteger()
 
     override fun addedFirstConsumer() {
-        synchronized(firstConsumersAdded) {
-            firstConsumersAdded++
-        }
+        super.addedFirstConsumer()
+        firstConsumersAdded.incrementAndGet()
     }
 
     override fun removedLastConsumer() {
-        synchronized(lastConsumersRemoved) {
-            lastConsumersRemoved++
-        }
+        super.removedLastConsumer()
+        lastConsumersRemoved.incrementAndGet()
     }
 }

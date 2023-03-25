@@ -8,11 +8,15 @@ import androidx.core.content.PermissionChecker
 import javax.inject.Singleton
 
 @Singleton
-class NetworkLocationProvider(context: Context,
-                              backgroundMode: Boolean,
-                              locationUpdate: (Location?) -> Unit)
-: ManagerLocationProvider(context, backgroundMode, locationUpdate, LocationManager.NETWORK_PROVIDER) {
+class NetworkLocationProvider(
+    context: Context,
+    backgroundMode: Boolean,
+    locationUpdate: (Location?) -> Unit
+) : ManagerLocationProvider(context, backgroundMode, locationUpdate, LocationManager.NETWORK_PROVIDER) {
 
     override val isPermissionGranted: Boolean
-        get() = PermissionChecker.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PermissionChecker.PERMISSION_GRANTED
+        get() = PermissionChecker.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PermissionChecker.PERMISSION_GRANTED
 }

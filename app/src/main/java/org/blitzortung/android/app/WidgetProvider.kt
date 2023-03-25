@@ -41,8 +41,10 @@ class WidgetProvider : AppWidgetProvider() {
         alertView.isDrawingCacheEnabled = true
         val bitmap = alertView.drawingCache
 
-        val remoteViews = RemoteViews(context.packageName,
-                R.layout.widget)
+        val remoteViews = RemoteViews(
+            context.packageName,
+            R.layout.widget
+        )
         remoteViews.setImageViewBitmap(R.layout.widget, bitmap)
 
     }

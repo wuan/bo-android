@@ -3,7 +3,6 @@ package org.blitzortung.android.dialogs.changelog
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -12,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import org.blitzortung.android.app.R
 
 class ChangelogDialog(
-        context: Context
+    context: Context
 ) : android.app.AlertDialog(context) {
 
     init {
@@ -56,35 +55,35 @@ interface ViewItem {
 }
 
 class ReleaseEntry(
-        val versionName: String,
-        val versionCode: Int
+    val versionName: String,
+    val versionCode: Int
 ) : ViewItem {
     override val viewType = ChangeLogAdapter.Type.HEADER
     override val layoutId = R.layout.changelog_header
 }
 
 class ChangeEntry(
-        val description: String
+    val description: String
 ) : ViewItem {
     override val viewType = ChangeLogAdapter.Type.ENTRY
     override val layoutId = R.layout.changelog_entry
 }
 
 class HeaderView(
-        view: View
+    view: View
 ) : RecyclerView.ViewHolder(view) {
     val header = view.findViewById<TextView>(R.id.changelog_header)
 }
 
 class EntryView(
-        view: View
+    view: View
 ) : RecyclerView.ViewHolder(view) {
     val description = view.findViewById<TextView>(R.id.changelog_description)
 }
 
 class ChangeLogAdapter(
-        context: Context,
-        private val items: List<ViewItem>
+    context: Context,
+    private val items: List<ViewItem>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val inflater = LayoutInflater.from(context)

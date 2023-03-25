@@ -31,9 +31,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 class LegendView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyle: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
 ) : TabletAwareView(context, attrs, defStyle) {
     private val colorFieldSize: Float = textSize
     private val textPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -77,10 +77,12 @@ class LegendView @JvmOverloads constructor(
     private fun determineWidth(intervalDuration: Int): Float {
         val numberOfColors = strikesOverlay?.colorHandler?.numberOfColors ?: 1
         var innerWidth = colorFieldSize + padding + textPaint.measureText(
-                LEGEND_FORMAT.format(
-                        '<',
-                        intervalDuration / numberOfColors * (numberOfColors - 1),
-                        context.resources.getString(R.string.unit_minute)))
+            LEGEND_FORMAT.format(
+                '<',
+                intervalDuration / numberOfColors * (numberOfColors - 1),
+                context.resources.getString(R.string.unit_minute)
+            )
+        )
 
         if (hasRegion()) {
             innerWidth = max(innerWidth, regionTextPaint.measureText(regionName))
@@ -95,8 +97,12 @@ class LegendView @JvmOverloads constructor(
         val parentWidth = getSize(widthMeasureSpec)
         val parentHeight = getSize(heightMeasureSpec)
 
-        val width = min(determineWidth(strikesOverlay?.parameters?.intervalDuration
-                ?: 0), parentWidth.toFloat())
+        val width = min(
+            determineWidth(
+                strikesOverlay?.parameters?.intervalDuration
+                    ?: 0
+            ), parentWidth.toFloat()
+        )
 
         val colorHandler = strikesOverlay?.colorHandler
 
@@ -117,7 +123,10 @@ class LegendView @JvmOverloads constructor(
             }
         }
 
-        super.onMeasure(MeasureSpec.makeMeasureSpec(width.toInt(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height.toInt(), MeasureSpec.EXACTLY))
+        super.onMeasure(
+            MeasureSpec.makeMeasureSpec(width.toInt(), MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(height.toInt(), MeasureSpec.EXACTLY)
+        )
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -139,7 +148,11 @@ class LegendView @JvmOverloads constructor(
 
                 val isLastValue = index == numberOfColors - 1
                 val minuteUnit = context.getString(R.string.unit_minute)
-                val text = LEGEND_FORMAT.format(if (isLastValue) '>' else '<', (index + (if (isLastValue) 0 else 1)) * minutesPerColor, minuteUnit)
+                val text = LEGEND_FORMAT.format(
+                    if (isLastValue) '>' else '<',
+                    (index + (if (isLastValue) 0 else 1)) * minutesPerColor,
+                    minuteUnit
+                )
 
                 canvas.drawText(text, 2 * padding + colorFieldSize, topCoordinate + colorFieldSize / 1.1f, textPaint)
 
@@ -147,17 +160,32 @@ class LegendView @JvmOverloads constructor(
             }
 
             if (hasRegion()) {
-                canvas.drawText(regionName, width / 2.0f, topCoordinate + colorFieldSize * REGION_HEIGHT / 1.1f, regionTextPaint)
+                canvas.drawText(
+                    regionName,
+                    width / 2.0f,
+                    topCoordinate + colorFieldSize * REGION_HEIGHT / 1.1f,
+                    regionTextPaint
+                )
                 topCoordinate += colorFieldSize * REGION_HEIGHT + padding
             }
 
             if (hasRaster()) {
-                canvas.drawText(context.getString(R.string.legend_grid) + ": " + rasterString, width / 2.0f, topCoordinate + colorFieldSize * RASTER_HEIGHT / 1.1f, rasterTextPaint)
+                canvas.drawText(
+                    context.getString(R.string.legend_grid) + ": " + rasterString,
+                    width / 2.0f,
+                    topCoordinate + colorFieldSize * RASTER_HEIGHT / 1.1f,
+                    rasterTextPaint
+                )
                 topCoordinate += colorFieldSize * RASTER_HEIGHT + padding
 
                 if (hasCountThreshold()) {
                     val countThreshold = strikesOverlay.parameters.countThreshold
-                    canvas.drawText("# > $countThreshold", width / 2.0f, topCoordinate + colorFieldSize * COUNT_THRESHOLD_HEIGHT / 1.1f, countThresholdTextPaint)
+                    canvas.drawText(
+                        "# > $countThreshold",
+                        width / 2.0f,
+                        topCoordinate + colorFieldSize * COUNT_THRESHOLD_HEIGHT / 1.1f,
+                        countThresholdTextPaint
+                    )
                     topCoordinate += colorFieldSize * COUNT_THRESHOLD_HEIGHT + padding
                 }
             }

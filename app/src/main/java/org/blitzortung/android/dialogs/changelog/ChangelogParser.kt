@@ -11,7 +11,7 @@ class ChangelogParser {
         return parseRoot(parser)
     }
 
-    private fun parseRoot(parser: XmlPullParser) : List<Release> {
+    private fun parseRoot(parser: XmlPullParser): List<Release> {
         val releases = mutableListOf<Release>()
         iterate(parser) {
             when (it.name) {
@@ -31,7 +31,7 @@ class ChangelogParser {
         }
     }
 
-    private fun parseRelease(parser: XmlPullParser) : Release {
+    private fun parseRelease(parser: XmlPullParser): Release {
         val changes = mutableListOf<Change>()
         val versionName = parser.getAttributeValue(null, "versionName")
         val versionCode = parser.getAttributeValue(null, "versionCode").toInt()
@@ -72,9 +72,9 @@ class ChangelogParser {
 }
 
 data class Release(
-        val versionName: String,
-        val versionCode: Int,
-        val changes: List<Change>
+    val versionName: String,
+    val versionCode: Int,
+    val changes: List<Change>
 )
 
 sealed class Change {
@@ -82,13 +82,13 @@ sealed class Change {
 }
 
 data class Bugfix(
-        override val description: String
+    override val description: String
 ) : Change()
 
 data class Feature(
-        override val description: String
+    override val description: String
 ) : Change()
 
 data class Improvement(
-        override val description: String
+    override val description: String
 ) : Change()

@@ -47,12 +47,12 @@ import javax.inject.Singleton
 
 @Singleton
 class AlertHandler @Inject constructor(
-        private val locationHandler: LocationHandler,
-        preferences: SharedPreferences,
-        private val context: Context,
-        private val notificationHandler: NotificationHandler,
-        private val alertDataHandler: AlertDataHandler,
-        private val alertSignal: AlertSignal
+    private val locationHandler: LocationHandler,
+    preferences: SharedPreferences,
+    private val context: Context,
+    private val notificationHandler: NotificationHandler,
+    private val alertDataHandler: AlertDataHandler,
+    private val alertSignal: AlertSignal
 
 ) : OnSharedPreferenceChangeListener {
 
@@ -71,7 +71,6 @@ class AlertHandler @Inject constructor(
     private var lastStrikes: Strikes? = null
 
     private var alertEnabled: Boolean = false
-        private set
 
     private var notificationDistanceLimit: Float = 0.0f
 
@@ -110,16 +109,18 @@ class AlertHandler @Inject constructor(
 
     init {
         Log.d(Main.LOG_TAG, "AlertHandler() create $this")
-        val rangeSteps = arrayOf(10f, 25f, 50f, 100f, 250f, 500f)
+        val rangeSteps = listOf(10f, 25f, 50f, 100f, 250f, 500f)
         val alarmInterval = 10 * 60 * 1000L
-        val sectorLabels = context.resources.getStringArray(R.array.direction_names)
+        val sectorLabels = context.resources.getStringArray(R.array.direction_names).toList()
         alertParameters = AlertParameters(alarmInterval, rangeSteps, sectorLabels, MeasurementSystem.METRIC)
 
         preferences.registerOnSharedPreferenceChangeListener(this)
-        onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED, PreferenceKey.MEASUREMENT_UNIT,
-                PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT,
-                PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME, PreferenceKey.ALERT_VIBRATION_SIGNAL,
-                PreferenceKey.ALERT_SOUND_SIGNAL)
+        onSharedPreferenceChanged(
+            preferences, PreferenceKey.ALERT_ENABLED, PreferenceKey.MEASUREMENT_UNIT,
+            PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT,
+            PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME, PreferenceKey.ALERT_VIBRATION_SIGNAL,
+            PreferenceKey.ALERT_SOUND_SIGNAL
+        )
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
@@ -133,23 +134,36 @@ class AlertHandler @Inject constructor(
             PreferenceKey.MEASUREMENT_UNIT -> {
                 val measurementSystemName = sharedPreferences.get(key, MeasurementSystem.METRIC.toString())
 
-                alertParameters = alertParameters.copy(measurementSystem = MeasurementSystem.valueOf(measurementSystemName))
-                Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() measurementSystem = ${alertParameters.measurementSystem}")
+                alertParameters =
+                    alertParameters.copy(measurementSystem = MeasurementSystem.valueOf(measurementSystemName))
+                Log.v(
+                    Main.LOG_TAG,
+                    "AlertHandler.onSharedPreferenceChanged() measurementSystem = ${alertParameters.measurementSystem}"
+                )
             }
 
             PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT -> {
                 notificationDistanceLimit = sharedPreferences.get(key, "50").toFloat()
-                Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() notificationDistanceLimit = $notificationDistanceLimit")
+                Log.v(
+                    Main.LOG_TAG,
+                    "AlertHandler.onSharedPreferenceChanged() notificationDistanceLimit = $notificationDistanceLimit"
+                )
             }
 
             PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT -> {
                 signalingDistanceLimit = sharedPreferences.get(key, "25").toFloat()
-                Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() signalingDistanceLimit = $signalingDistanceLimit")
+                Log.v(
+                    Main.LOG_TAG,
+                    "AlertHandler.onSharedPreferenceChanged() signalingDistanceLimit = $signalingDistanceLimit"
+                )
             }
 
             PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME -> {
                 signalingThresholdTime = sharedPreferences.get(key, "25").toLong() * 1000 * 60
-                Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() signalingThresholdTime = $signalingThresholdTime")
+                Log.v(
+                    Main.LOG_TAG,
+                    "AlertHandler.onSharedPreferenceChanged() signalingThresholdTime = $signalingThresholdTime"
+                )
             }
             else -> {}
         }
@@ -158,7 +172,10 @@ class AlertHandler @Inject constructor(
     private fun checkStrikes(strikes: Strikes?, location: Location?) {
         lastStrikes = strikes
 
-        Log.v(Main.LOG_TAG, "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${locationHandler.location != null}")
+        Log.v(
+            Main.LOG_TAG,
+            "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${locationHandler.location != null}"
+        )
         val alertResult = if (alertEnabled && location != null && strikes != null) {
             alertDataHandler.checkStrikes(strikes, location, alertParameters)
         } else {
@@ -196,18 +213,31 @@ class AlertHandler @Inject constructor(
             alertSignal.emitSignal()
             signalingLastTimestamp = signalingLatestTimestamp
         } else {
-            Log.d(Main.LOG_TAG, "AlertHandler.alertSignal() skipped - ${(signalingLatestTimestamp - signalingLastTimestamp) / 1000}, threshold: ${signalingThresholdTime / 1000}")
+            Log.d(
+                Main.LOG_TAG,
+                "AlertHandler.alertSignal() skipped - ${(signalingLatestTimestamp - signalingLastTimestamp) / 1000}, threshold: ${signalingThresholdTime / 1000}"
+            )
         }
     }
 
     private fun alertNotification(alertResult: AlertResult) {
-        val notificationLatestTimestamp = alertDataHandler.getLatestTimstampWithin(notificationDistanceLimit, alertResult)
+        val notificationLatestTimestamp =
+            alertDataHandler.getLatestTimstampWithin(notificationDistanceLimit, alertResult)
         if (notificationLatestTimestamp > notificationLastTimestamp) {
             Log.d(Main.LOG_TAG, "AlertHandler.alertNotification() notification ${notificationLatestTimestamp / 1000}")
-            notificationHandler.sendNotification(context.resources.getString(R.string.activity) + ": " + alertDataHandler.getTextMessage(alertResult, notificationDistanceLimit, context.resources))
+            notificationHandler.sendNotification(
+                context.resources.getString(R.string.activity) + ": " + alertDataHandler.getTextMessage(
+                    alertResult,
+                    notificationDistanceLimit,
+                    context.resources
+                )
+            )
             notificationLastTimestamp = notificationLatestTimestamp
         } else {
-            Log.d(Main.LOG_TAG, "AlertHandler.alertNotification() skipped ${notificationLatestTimestamp - notificationLastTimestamp}")
+            Log.d(
+                Main.LOG_TAG,
+                "AlertHandler.alertNotification() skipped ${notificationLatestTimestamp - notificationLastTimestamp}"
+            )
         }
     }
 
@@ -228,6 +258,6 @@ class AlertHandler @Inject constructor(
 }
 
 data class Strikes(
-        val strikes: Collection<Strike>,
-        val rasterParameters: RasterParameters? = null
+    val strikes: Collection<Strike>,
+    val rasterParameters: RasterParameters? = null
 )

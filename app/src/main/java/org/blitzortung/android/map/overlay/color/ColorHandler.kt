@@ -38,7 +38,8 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
 
     fun updateTarget() {
         target = getColorTarget()
-        colorScheme = ColorScheme.valueOf(preferences.get(PreferenceKey.COLOR_SCHEME, ColorScheme.BLITZORTUNG.toString()))
+        colorScheme =
+            ColorScheme.valueOf(preferences.get(PreferenceKey.COLOR_SCHEME, ColorScheme.BLITZORTUNG.toString()))
     }
 
     private fun getColorTarget(): ColorTarget {
@@ -56,7 +57,8 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
 
     fun getColorSection(referenceTime: Long, eventTime: Long, intervalDuration: Int): Int {
         val minutesPerColor = intervalDuration / colors.size
-        val section = if (minutesPerColor > 0) ((referenceTime - eventTime) / 1000 / 60 / minutesPerColor).toInt() else 0
+        val section =
+            if (minutesPerColor > 0) ((referenceTime - eventTime) / 1000 / 60 / minutesPerColor).toInt() else 0
         return limitToValidRange(section)
     }
 

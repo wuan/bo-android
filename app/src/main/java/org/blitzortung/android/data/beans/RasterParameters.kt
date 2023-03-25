@@ -24,13 +24,14 @@ import org.blitzortung.android.data.Coordsys
 import org.osmdroid.views.Projection
 
 data class RasterParameters(
-        val longitudeStart: Double,
-        val latitudeStart: Double,
-        val longitudeDelta: Double,
-        val latitudeDelta: Double,
-        val longitudeBins: Int,
-        val latitudeBins: Int,
-        val baselength: Int? = null) {
+    val longitudeStart: Double,
+    val latitudeStart: Double,
+    val longitudeDelta: Double,
+    val latitudeDelta: Double,
+    val longitudeBins: Int,
+    val latitudeBins: Int,
+    val baselength: Int? = null
+) {
 
     val rectCenterLongitude: Double = longitudeStart + longitudeDelta * longitudeBins / 2.0
 
@@ -51,13 +52,17 @@ data class RasterParameters(
     fun getRect(projection: Projection): RectF {
         var leftTop = Point()
         leftTop = projection.toPixels(
-                Coordsys.toMapCoords(longitudeStart, latitudeStart), leftTop)
+            Coordsys.toMapCoords(longitudeStart, latitudeStart), leftTop
+        )
         var bottomRight = Point()
         val longitudeEnd = longitudeStart + rectLongitudeDelta
         val latitudeEnd = latitudeStart - rectLatitudeDelta
         bottomRight = projection.toPixels(
-                Coordsys.toMapCoords(longitudeEnd,
-                        latitudeEnd), bottomRight)
+            Coordsys.toMapCoords(
+                longitudeEnd,
+                latitudeEnd
+            ), bottomRight
+        )
 
         // Log.d(Main.LOG_TAG, "RasterParameters.getRect() $longitudeStart - $longitudeEnd ($longitudeDelta, #$longitudeBins) $latitudeEnd - $latitudeStart ($latitudeDelta, #$latitudeBins)")
         return RectF(leftTop.x.toFloat(), leftTop.y.toFloat(), bottomRight.x.toFloat(), bottomRight.y.toFloat())

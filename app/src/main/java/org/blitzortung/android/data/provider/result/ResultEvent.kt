@@ -25,15 +25,15 @@ import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
 
 data class ResultEvent(
-        val strikes: List<Strike>? = null,
-        val stations: List<Station>? = null,
-        val rasterParameters: RasterParameters? = null,
-        val histogram: IntArray? = null,
-        val failed: Boolean = false,
-        val updated: Int = -1,
-        val referenceTime: Long = 0,
-        val parameters: Parameters,
-        val flags: Flags
+    val strikes: List<Strike>? = null,
+    val stations: List<Station>? = null,
+    val rasterParameters: RasterParameters? = null,
+    val histogram: IntArray? = null,
+    val failed: Boolean = false,
+    val updated: Int = -1,
+    val referenceTime: Long = 0,
+    val parameters: Parameters,
+    val flags: Flags
 ) : DataEvent {
 
     fun containsRealtimeData(): Boolean {

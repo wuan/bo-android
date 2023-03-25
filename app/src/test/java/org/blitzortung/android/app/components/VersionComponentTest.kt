@@ -75,6 +75,7 @@ class VersionComponentTest {
         assertThat(versionComponent.configuredMinorVersion).isEqualTo(MINOR_VERSION - 1)
         assertThat(versionComponent.state).isEqualTo(VersionComponent.State.FIRST_RUN_AFTER_UPDATE)
     }
+
     companion object {
         val VERSION_CODE = 100
         val MAJOR_VERSION = 1

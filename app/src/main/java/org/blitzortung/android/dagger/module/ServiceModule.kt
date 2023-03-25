@@ -22,5 +22,6 @@ class ServiceModule @Inject constructor(
 
     @Provides
     @Singleton
-    fun provideAlarmManager(context: Context): AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    fun provideAlarmManager(context: Context): AlarmManager =
+        context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 }

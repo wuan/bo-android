@@ -27,15 +27,12 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class HttpServiceClientDefault @Inject constructor(
-        @Named("agentSuffix") agentSuffix: String
+    @Named("agentSuffix") agentSuffix: String
 ) : HttpServiceClient {
 
     private val userAgentString: String = "bo-android$agentSuffix"
     override var socketTimeout = 0
     override var connectionTimeout = 0
-
-    override fun shutdown() {
-    }
 
     override fun doRequest(baseUrl: URL, data: String): String {
         val connection = baseUrl.openConnection() as HttpURLConnection
@@ -61,6 +58,7 @@ class HttpServiceClientDefault @Inject constructor(
                 inputStream = GZIPInputStream(inputStream)
             }
         }
+        connection.disconnect()
 
         return InputStreamReader(inputStream, "UTF-8").use { it.readText() }
     }

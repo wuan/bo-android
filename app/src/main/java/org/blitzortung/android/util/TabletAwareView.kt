@@ -27,9 +27,9 @@ import org.blitzortung.android.app.helper.ViewHelper.pxFromDp
 import org.blitzortung.android.app.helper.ViewHelper.pxFromSp
 
 open class TabletAwareView(
-        context: Context,
-        attrs: AttributeSet?,
-        defStyle: Int
+    context: Context,
+    attrs: AttributeSet?,
+    defStyle: Int
 ) : View(context, attrs, defStyle) {
 
     protected val padding: Float

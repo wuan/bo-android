@@ -24,5 +24,5 @@ import org.blitzortung.android.data.Coordsys
 import org.osmdroid.views.overlay.OverlayItem
 
 class OwnLocationOverlayItem(
-        location: Location
+    location: Location
 ) : OverlayItem("own location", "", Coordsys.toMapCoords(location.longitude, location.latitude))
