@@ -112,7 +112,7 @@ class AlertHandler @Inject constructor(
         Log.d(Main.LOG_TAG, "AlertHandler() create $this")
         val rangeSteps = listOf(10f, 25f, 50f, 100f, 250f, 500f)
         val alarmInterval = 10 * 60 * 1000L
-        val sectorLabels = listOf(*context.resources.getStringArray(R.array.direction_names))
+        val sectorLabels = context.resources.getStringArray(R.array.direction_names).toList()
         alertParameters = AlertParameters(alarmInterval, rangeSteps, sectorLabels, MeasurementSystem.METRIC)
 
         preferences.registerOnSharedPreferenceChangeListener(this)
