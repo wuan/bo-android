@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import java.util.concurrent.atomic.AtomicInteger
 
 class ConsumerContainerTest {
 
@@ -81,15 +82,15 @@ class ConsumerContainerTest {
 
     @Test
     fun addingFirstConsumerShouldBeRecorded() {
-        assertThat(testConsumerContainer.firstConsumersAdded).isEqualTo(0)
+        assertThat(testConsumerContainer.firstConsumersAdded.get()).isEqualTo(0)
 
         testConsumerContainer.addConsumer { }
 
-        assertThat(testConsumerContainer.firstConsumersAdded).isEqualTo(1)
+        assertThat(testConsumerContainer.firstConsumersAdded.get()).isEqualTo(1)
 
         testConsumerContainer.addConsumer { }
 
-        assertThat(testConsumerContainer.firstConsumersAdded).isEqualTo(1)
+        assertThat(testConsumerContainer.firstConsumersAdded.get()).isEqualTo(1)
         assertThat(testConsumerContainer.size).isEqualTo(2)
     }
 
@@ -102,31 +103,25 @@ class ConsumerContainerTest {
         assertThat(testConsumerContainer.size).isEqualTo(2)
 
         testConsumerContainer.removeConsumer(consumer2)
-        assertThat(testConsumerContainer.lastConsumersRemoved).isEqualTo(0)
+        assertThat(testConsumerContainer.lastConsumersRemoved.get()).isEqualTo(0)
 
         testConsumerContainer.removeConsumer(consumer1)
-        assertThat(testConsumerContainer.lastConsumersRemoved).isEqualTo(1)
+        assertThat(testConsumerContainer.lastConsumersRemoved.get()).isEqualTo(1)
         assertThat(testConsumerContainer.isEmpty).isTrue()
     }
 }
 
 class TestConsumerContainer : ConsumerContainer<String>() {
 
-    var firstConsumersAdded = 0
-        private set
+    val firstConsumersAdded = AtomicInteger()
 
-    var lastConsumersRemoved = 0
-        private set
+    val lastConsumersRemoved = AtomicInteger()
 
     override fun addedFirstConsumer() {
-        synchronized(firstConsumersAdded) {
-            firstConsumersAdded++
-        }
+        firstConsumersAdded.incrementAndGet()
     }
 
     override fun removedLastConsumer() {
-        synchronized(lastConsumersRemoved) {
-            lastConsumersRemoved++
-        }
+        lastConsumersRemoved.incrementAndGet()
     }
 }
