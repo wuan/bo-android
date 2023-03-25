@@ -18,7 +18,7 @@
 
 package org.blitzortung.android.protocol
 
-open class ConsumerContainer<P> {
+abstract class ConsumerContainer<P> {
 
     private val consumers: MutableSet<(P) -> Unit>
 
@@ -64,11 +64,9 @@ open class ConsumerContainer<P> {
         }
     }
 
-    open fun addedFirstConsumer() {
-    }
+    abstract fun addedFirstConsumer();
 
-    open fun removedLastConsumer() {
-    }
+    abstract fun removedLastConsumer();
 
     fun storeAndBroadcast(payload: P) {
         currentPayload = payload

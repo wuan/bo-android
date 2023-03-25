@@ -132,12 +132,10 @@ class TestConsumerContainer : ConsumerContainer<String>() {
     val lastConsumersRemoved = AtomicInteger()
 
     override fun addedFirstConsumer() {
-        super.addedFirstConsumer()
         firstConsumersAdded.incrementAndGet()
     }
 
     override fun removedLastConsumer() {
-        super.removedLastConsumer()
         lastConsumersRemoved.incrementAndGet()
     }
 }
