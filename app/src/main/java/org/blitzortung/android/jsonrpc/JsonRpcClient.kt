@@ -65,7 +65,7 @@ class JsonRpcClient @Inject constructor(client: HttpServiceClientDefault) : Http
 
             if (responseObject.has("fault")) {
                 throw JsonRpcException(
-                    "remote Exception '%s' #%s ".format(
+                    "remote Exception '%s' #%s".format(
                         responseObject.get("faultString"),
                         responseObject.get("faultCode")
                     )
