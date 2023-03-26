@@ -27,14 +27,17 @@ import org.blitzortung.android.util.isAtLeast
 
 abstract class MapBuilder<T> internal constructor(private val lineSplitter: (String) -> Array<String>) {
 
-    private val keyValueBuilderMap: Map<String, (Array<String>) -> Unit>
+    protected val keyValueBuilderMap: HashMap<String, (Array<String>) -> Unit> = HashMap()
 
-    init {
-        keyValueBuilderMap = HashMap()
-        setBuilderMap(keyValueBuilderMap)
+    fun buildFromLine(line: String): T? {
+        try {
+            return buildFromLineChecked(line)
+        } catch (e: MapBuilderFailedException) {
+            return null
+        }
     }
 
-    fun buildFromLine(line: String): T {
+    private fun buildFromLineChecked(line: String): T {
         val fields = lineSplitter.invoke(line)
 
         prepare(fields)
@@ -44,18 +47,7 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
             if (parts.size > 1) {
                 val key = parts[0]
                 if (keyValueBuilderMap.containsKey(key)) {
-                    val htmlString = parts[1]
-                    val valueString = if (isAtLeast(Build.VERSION_CODES.N)) {
-                        Html.fromHtml(htmlString, FROM_HTML_MODE_COMPACT).toString()
-                    } else {
-                        try {
-                            Html.fromHtml(htmlString).toString()
-                        } catch (throwable: Throwable) {
-                            Log.w(Main.LOG_TAG, throwable)
-                            break
-                        }
-                    }
-                    val values = valueString.split(SPLIT_PATTERN).dropLastWhile { it.isEmpty() }.toTypedArray()
+                    val values = extractValues(parts[1]) ?: break
                     val function: ((Array<String>) -> Unit)? = keyValueBuilderMap[key]
                     function?.invoke(values)
                 }
@@ -64,9 +56,21 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
         return build()
     }
 
-    protected abstract fun prepare(fields: Array<String>)
+    private fun extractValues(htmlString: String): Array<String>? {
+        val valueString = if (isAtLeast(Build.VERSION_CODES.N)) {
+            Html.fromHtml(htmlString, FROM_HTML_MODE_COMPACT).toString()
+        } else {
+            try {
+                Html.fromHtml(htmlString).toString()
+            } catch (throwable: Throwable) {
+                Log.w(Main.LOG_TAG, throwable)
+                return null
+            }
+        }
+        return valueString.split(SPLIT_PATTERN).dropLastWhile { it.isEmpty() }.toTypedArray()
+    }
 
-    protected abstract fun setBuilderMap(keyValueBuilderMap: MutableMap<String, (Array<String>) -> Unit>)
+    protected abstract fun prepare(fields: Array<String>)
 
     protected abstract fun build(): T
 

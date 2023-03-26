@@ -26,6 +26,8 @@ import java.util.regex.Pattern
 import javax.inject.Inject
 import javax.inject.Singleton
 
+class MapBuilderFailedException(message: String) : Throwable(message)
+
 @Singleton
 class MapBuilderFactory constructor(
     private val strikeLineSplitter: (String) -> Array<String>,
@@ -35,8 +37,12 @@ class MapBuilderFactory constructor(
     @Inject
     constructor() : this(::lineSplitter, ::stationLineSplitter)
 
-    fun createAbstractStrikeMapBuilder(): MapBuilder<Strike> {
+    fun createStrikeMapBuilder(): MapBuilder<Strike> {
         return object : MapBuilder<Strike>(strikeLineSplitter) {
+
+            init {
+                setBuilderMap()
+            }
 
             var longitude: Double = 0.0
             var latitude: Double = 0.0
@@ -47,14 +53,22 @@ class MapBuilderFactory constructor(
             private var stationCount: Short = 0
 
             override fun prepare(fields: Array<String>) {
-                timestamp = TimeFormat.parseTimestampWithMillisecondsFromFields(fields)
+                if (fields.size > 2) {
+                    timestamp = TimeFormat.parseTimestampWithMillisecondsFromFields(fields)
+                } else {
+                    throw MapBuilderFailedException("not enough values for time parsing")
+                }
             }
 
-            override fun setBuilderMap(keyValueBuilderMap: MutableMap<String, (Array<String>) -> Unit>) {
+            fun setBuilderMap() {
                 keyValueBuilderMap["pos"] = { values ->
-                    longitude = values[1].toDouble()
-                    latitude = values[0].toDouble()
-                    altitude = values[2].toInt()
+                    if (values.size >= 3) {
+                        longitude = values[1].toDouble()
+                        latitude = values[0].toDouble()
+                        altitude = values[2].toInt()
+                    } else {
+                        throw MapBuilderFailedException("not enough values for location parsing")
+                    }
                 }
                 keyValueBuilderMap["str"] = { values -> amplitude = java.lang.Float.parseFloat(values[0]) }
                 keyValueBuilderMap["dev"] = { values -> lateralError = Integer.parseInt(values[0]) }
@@ -78,6 +92,10 @@ class MapBuilderFactory constructor(
     fun createStationMapBuilder(): MapBuilder<Station> {
         return object : MapBuilder<Station>(stationLineSplitter) {
 
+            init {
+                setBuilderMap()
+            }
+
             private var name: String = "n/a"
             private var longitude: Double = 0.0
             private var latitude: Double = 0.0
@@ -86,7 +104,7 @@ class MapBuilderFactory constructor(
             override fun prepare(fields: Array<String>) {
             }
 
-            override fun setBuilderMap(keyValueBuilderMap: MutableMap<String, (Array<String>) -> Unit>) {
+            fun setBuilderMap() {
                 keyValueBuilderMap["city"] = { values -> name = values[0].replace("\"", "") }
                 keyValueBuilderMap["pos"] = { values ->
                     longitude = values[1].toDouble()

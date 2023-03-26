@@ -49,7 +49,7 @@ class BlitzortungHttpDataProvider @Inject constructor(
     mapBuilderFactory: MapBuilderFactory
 ) : OnSharedPreferenceChangeListener, DataProvider {
 
-    private val strikeMapBuilder: MapBuilder<Strike> = mapBuilderFactory.createAbstractStrikeMapBuilder()
+    private val strikeMapBuilder: MapBuilder<Strike> = mapBuilderFactory.createStrikeMapBuilder()
     private val stationMapBuilder: MapBuilder<Station> = mapBuilderFactory.createStationMapBuilder()
     private var latestTime: Long = 0
     private var strikes: List<Strike> = emptyList()
