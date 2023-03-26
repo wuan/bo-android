@@ -30,18 +30,13 @@ internal open class FetchDataTask(
     protected open suspend fun doInBackground(parameters: Parameters, flags: Flags): ResultEvent? =
         withContext(Dispatchers.IO) {
             try {
-                var result =
-                    ResultEvent(referenceTime = System.currentTimeMillis(), parameters = parameters, flags = flags)
-
                 dataProvider.retrieveData {
-                    result = if (dataMode.raster) {
-                        getStrikesGrid(parameters, result)
+                    if (dataMode.raster) {
+                        getStrikesGrid(parameters, flags)
                     } else {
-                        getStrikes(parameters, result)
+                        getStrikes(parameters, flags)
                     }
                 }
-
-                result
             } catch (e: RuntimeException) {
                 Log.e(Main.LOG_TAG, "error fetching data", e)
 

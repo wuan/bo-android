@@ -52,7 +52,7 @@ class VersionComponentTest {
 
     @Test
     fun shouldReturnUpdatedStateWhenCalledFirstTimeAfterMajorVersionChange() {
-        val context = RuntimeEnvironment.application
+        val context = RuntimeEnvironment.getApplication()
 
         val preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 
@@ -65,7 +65,7 @@ class VersionComponentTest {
 
     @Test
     fun shouldReturnUpdatedStateWhenCalledFirstTimeAfterMinorVersionChange() {
-        val context = RuntimeEnvironment.application
+        val context = RuntimeEnvironment.getApplication()
 
         val preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 

@@ -24,12 +24,14 @@ import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
+import org.blitzortung.android.data.provider.data.initializeResult
 import org.blitzortung.android.data.provider.result.ResultEvent
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
@@ -153,8 +155,9 @@ class BlitzortungHttpDataProvider @Inject constructor(
     }
 
     private inner class Retriever : DataRetriever {
-        override fun getStrikes(parameters: Parameters, result: ResultEvent): ResultEvent {
-            var resultVar = result
+        override fun getStrikes(parameters: Parameters, flags: Flags): ResultEvent {
+            var result = initializeResult(parameters, flags)
+
             if (parameters != this@BlitzortungHttpDataProvider.parameters) {
                 this@BlitzortungHttpDataProvider.parameters = parameters
                 reset()
@@ -184,8 +187,8 @@ class BlitzortungHttpDataProvider @Inject constructor(
                     }) { strikeMapBuilder.buildFromLine(it) }
 
             if (latestTime > 0L) {
-                resultVar = resultVar.copy(updated = strikes.size)
-                val expireTime = resultVar.referenceTime - (intervalDuration - intervalOffset) * millisecondsPerMinute
+                result = result.copy(updated = strikes.size)
+                val expireTime = result.referenceTime - (intervalDuration - intervalOffset) * millisecondsPerMinute
                 this@BlitzortungHttpDataProvider.strikes =
                     this@BlitzortungHttpDataProvider.strikes.filter { it.timestamp > expireTime }
                 this@BlitzortungHttpDataProvider.strikes += strikes
@@ -198,13 +201,13 @@ class BlitzortungHttpDataProvider @Inject constructor(
                 Log.v(Main.LOG_TAG, "BlitzortungHttpDataProvider.getStrikes() set latest time to $latestTime")
             }
 
-            resultVar = resultVar.copy(strikes = this@BlitzortungHttpDataProvider.strikes, referenceTime = endTime)
+            result = result.copy(strikes = this@BlitzortungHttpDataProvider.strikes, referenceTime = endTime)
 
-            return resultVar
+            return result
         }
 
-        override fun getStrikesGrid(parameters: Parameters, result: ResultEvent): ResultEvent {
-            return result
+        override fun getStrikesGrid(parameters: Parameters, flags: Flags): ResultEvent {
+            return initializeResult(parameters, flags)
         }
 
         override fun getStations(region: Int): List<Station> {

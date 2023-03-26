@@ -24,6 +24,7 @@ import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
@@ -32,6 +33,7 @@ import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
+import org.blitzortung.android.data.provider.data.initializeResult
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.jsonrpc.JsonRpcClient
 import org.blitzortung.android.util.TimeFormat
@@ -146,8 +148,8 @@ class JsonRpcDataProvider @Inject constructor(
             return stations
         }
 
-        override fun getStrikesGrid(parameters: Parameters, result: ResultEvent): ResultEvent {
-            var resultVar = result
+        override fun getStrikesGrid(parameters: Parameters, flags: Flags): ResultEvent {
+            var result = initializeResult(parameters, flags)
 
             nextId = 0
 
@@ -195,8 +197,8 @@ class JsonRpcDataProvider @Inject constructor(
                         countThreshold
                     )
                 }
-                resultVar = addRasterData(response, resultVar, rasterBaselength)
-                resultVar = addStrikesHistogram(response, resultVar)
+                result = addRasterData(response, result, rasterBaselength)
+                result = addStrikesHistogram(response, result)
             } catch (e: Exception) {
                 throw RuntimeException(e)
             }
@@ -205,15 +207,16 @@ class JsonRpcDataProvider @Inject constructor(
                 Main.LOG_TAG,
                 "JsonRpcDataProvider: read %d bytes (%d raster positions, region %d)".format(
                     client.lastNumberOfTransferredBytes,
-                    resultVar.strikes?.size,
+                    result.strikes?.size,
                     region
                 )
             )
-            return resultVar
+            return result
         }
 
-        override fun getStrikes(parameters: Parameters, result: ResultEvent): ResultEvent {
-            var resultVar = result
+        override fun getStrikes(parameters: Parameters, flags: Flags): ResultEvent {
+            var result = initializeResult(parameters, flags)
+
             val intervalDuration = parameters.intervalDuration
             val intervalOffset = parameters.intervalOffset
             if (intervalOffset < 0) {
@@ -228,8 +231,8 @@ class JsonRpcDataProvider @Inject constructor(
                     if (intervalOffset < 0) intervalOffset else nextId
                 )
 
-                resultVar = addStrikes(response, resultVar)
-                resultVar = addStrikesHistogram(response, resultVar)
+                result = addStrikes(response, result)
+                result = addStrikesHistogram(response, result)
             } catch (e: Exception) {
                 throw RuntimeException(e)
             }
@@ -238,10 +241,10 @@ class JsonRpcDataProvider @Inject constructor(
                 Main.LOG_TAG,
                 "JsonRpcDataProvider: read %d bytes (%d new strikes)".format(
                     client.lastNumberOfTransferredBytes,
-                    resultVar.strikes?.size
+                    result.strikes?.size
                 )
             )
-            return resultVar
+            return result
         }
     }
 
