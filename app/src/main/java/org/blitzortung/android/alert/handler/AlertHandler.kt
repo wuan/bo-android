@@ -56,7 +56,8 @@ class AlertHandler @Inject constructor(
 
 ) : OnSharedPreferenceChangeListener {
 
-    private var alertParameters: AlertParameters
+    var alertParameters: AlertParameters
+        private set
 
     private val alertConsumerContainer: ConsumerContainer<AlertEvent> = object : ConsumerContainer<AlertEvent>() {
         override fun addedFirstConsumer() {
@@ -177,7 +178,8 @@ class AlertHandler @Inject constructor(
             "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${locationHandler.location != null}"
         )
         val alertResult = if (alertEnabled && location != null && strikes != null) {
-            alertDataHandler.checkStrikes(strikes, location, alertParameters)
+            val checkStrikes = alertDataHandler.checkStrikes(strikes, location, alertParameters)
+            checkStrikes
         } else {
             null
         }
