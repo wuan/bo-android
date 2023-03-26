@@ -37,7 +37,7 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
         }
     }
 
-    fun buildFromLineChecked(line: String): T {
+    private fun buildFromLineChecked(line: String): T {
         val fields = lineSplitter.invoke(line)
 
         prepare(fields)
@@ -47,24 +47,27 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
             if (parts.size > 1) {
                 val key = parts[0]
                 if (keyValueBuilderMap.containsKey(key)) {
-                    val htmlString = parts[1]
-                    val valueString = if (isAtLeast(Build.VERSION_CODES.N)) {
-                        Html.fromHtml(htmlString, FROM_HTML_MODE_COMPACT).toString()
-                    } else {
-                        try {
-                            Html.fromHtml(htmlString).toString()
-                        } catch (throwable: Throwable) {
-                            Log.w(Main.LOG_TAG, throwable)
-                            break
-                        }
-                    }
-                    val values = valueString.split(SPLIT_PATTERN).dropLastWhile { it.isEmpty() }.toTypedArray()
+                    val values = extractValues(parts[1]) ?: break
                     val function: ((Array<String>) -> Unit)? = keyValueBuilderMap[key]
                     function?.invoke(values)
                 }
             }
         }
         return build()
+    }
+
+    private fun extractValues(htmlString: String): Array<String>? {
+        val valueString = if (isAtLeast(Build.VERSION_CODES.N)) {
+            Html.fromHtml(htmlString, FROM_HTML_MODE_COMPACT).toString()
+        } else {
+            try {
+                Html.fromHtml(htmlString).toString()
+            } catch (throwable: Throwable) {
+                Log.w(Main.LOG_TAG, throwable)
+                return null
+            }
+        }
+        return valueString.split(SPLIT_PATTERN).dropLastWhile { it.isEmpty() }.toTypedArray()
     }
 
     protected abstract fun prepare(fields: Array<String>)
