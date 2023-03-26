@@ -59,6 +59,8 @@ class HttpServiceClientDefault @Inject constructor(
             }
         }
 
+        // Do not disconnect the connection here as it will be potentially reused
+
         return InputStreamReader(inputStream, "UTF-8").use { it.readText() }
     }
 }
