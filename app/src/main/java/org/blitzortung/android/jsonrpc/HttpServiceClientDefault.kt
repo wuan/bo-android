@@ -58,7 +58,6 @@ class HttpServiceClientDefault @Inject constructor(
                 inputStream = GZIPInputStream(inputStream)
             }
         }
-        connection.disconnect()
 
         return InputStreamReader(inputStream, "UTF-8").use { it.readText() }
     }
