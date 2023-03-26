@@ -27,12 +27,7 @@ import org.blitzortung.android.util.isAtLeast
 
 abstract class MapBuilder<T> internal constructor(private val lineSplitter: (String) -> Array<String>) {
 
-    private val keyValueBuilderMap: Map<String, (Array<String>) -> Unit>
-
-    init {
-        keyValueBuilderMap = HashMap()
-        setBuilderMap(keyValueBuilderMap)
-    }
+    protected val keyValueBuilderMap: HashMap<String, (Array<String>) -> Unit> = HashMap()
 
     fun buildFromLine(line: String): T {
         val fields = lineSplitter.invoke(line)
@@ -49,7 +44,9 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
                         Html.fromHtml(htmlString, FROM_HTML_MODE_COMPACT).toString()
                     } else {
                         try {
-                            Html.fromHtml(htmlString).toString()
+                            val fromHtml = Html.fromHtml(htmlString)
+                            if (fromHtml == null) htmlString
+                            else fromHtml.toString()
                         } catch (throwable: Throwable) {
                             Log.w(Main.LOG_TAG, throwable)
                             break
@@ -65,8 +62,6 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
     }
 
     protected abstract fun prepare(fields: Array<String>)
-
-    protected abstract fun setBuilderMap(keyValueBuilderMap: MutableMap<String, (Array<String>) -> Unit>)
 
     protected abstract fun build(): T
 

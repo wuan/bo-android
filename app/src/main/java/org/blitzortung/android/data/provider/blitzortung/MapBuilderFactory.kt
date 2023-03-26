@@ -35,8 +35,12 @@ class MapBuilderFactory constructor(
     @Inject
     constructor() : this(::lineSplitter, ::stationLineSplitter)
 
-    fun createAbstractStrikeMapBuilder(): MapBuilder<Strike> {
+    fun createStrikeMapBuilder(): MapBuilder<Strike> {
         return object : MapBuilder<Strike>(strikeLineSplitter) {
+
+            init {
+                setBuilderMap()
+            }
 
             var longitude: Double = 0.0
             var latitude: Double = 0.0
@@ -50,7 +54,7 @@ class MapBuilderFactory constructor(
                 timestamp = TimeFormat.parseTimestampWithMillisecondsFromFields(fields)
             }
 
-            override fun setBuilderMap(keyValueBuilderMap: MutableMap<String, (Array<String>) -> Unit>) {
+            fun setBuilderMap() {
                 keyValueBuilderMap["pos"] = { values ->
                     longitude = values[1].toDouble()
                     latitude = values[0].toDouble()
@@ -78,6 +82,10 @@ class MapBuilderFactory constructor(
     fun createStationMapBuilder(): MapBuilder<Station> {
         return object : MapBuilder<Station>(stationLineSplitter) {
 
+            init {
+                setBuilderMap()
+            }
+
             private var name: String = "n/a"
             private var longitude: Double = 0.0
             private var latitude: Double = 0.0
@@ -86,7 +94,7 @@ class MapBuilderFactory constructor(
             override fun prepare(fields: Array<String>) {
             }
 
-            override fun setBuilderMap(keyValueBuilderMap: MutableMap<String, (Array<String>) -> Unit>) {
+            fun setBuilderMap() {
                 keyValueBuilderMap["city"] = { values -> name = values[0].replace("\"", "") }
                 keyValueBuilderMap["pos"] = { values ->
                     longitude = values[1].toDouble()

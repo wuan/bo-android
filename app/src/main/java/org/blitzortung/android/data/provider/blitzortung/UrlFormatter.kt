@@ -35,12 +35,12 @@ class UrlFormatter @Inject constructor() {
         val localPath: String
 
         localPath = if (type === BlitzortungHttpDataProvider.Type.STRIKES) {
-            "Strokes/" + DateFormat.format("yyyy/MM/dd/kk/mm", intervalTime!!) + ".log"
+            "Strikes_%d/".format(region) + DateFormat.format("yyyy/MM/dd/kk/mm", intervalTime!!) + ".log"
         } else {
             type.name.lowercase(Locale.getDefault()) + ".txt"
         }
 
-        val urlFormatString = "http://data.blitzortung.org/Data_%d/Protected/%s%s"
-        return urlFormatString.format(region, localPath, if (useGzipCompression) ".gz" else "")
+        val urlFormatString = "http://data.blitzortung.org/Data/Protected/%s%s"
+        return urlFormatString.format(localPath, if (useGzipCompression) ".gz" else "")
     }
 }

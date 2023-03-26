@@ -1,9 +1,13 @@
 package org.blitzortung.android.data.provider.blitzortung
 
 import org.assertj.core.api.Assertions.assertThat
+import org.blitzortung.android.data.beans.DefaultStrike
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import java.time.Instant
 
+@RunWith(RobolectricTestRunner::class)
 class MapBuilderTest {
 
     @Test
@@ -13,9 +17,16 @@ class MapBuilderTest {
 
         val mapBuilderFactory = MapBuilderFactory()
 
-        val strikeMapBuilder = mapBuilderFactory.createAbstractStrikeMapBuilder()
+        val strikeMapBuilder = mapBuilderFactory.createStrikeMapBuilder()
         val strike = strikeMapBuilder.buildFromLine(line)
 
+        assertThat(strike).isInstanceOf(DefaultStrike::class.java)
+        val defaultStrike = strike as DefaultStrike
         assertThat(Instant.ofEpochMilli(strike.timestamp)).isEqualTo(Instant.parse("2019-02-13T06:07:24.748Z"))
+        assertThat(defaultStrike.latitude).isEqualTo(37.714012)
+        assertThat(defaultStrike.longitude).isEqualTo(26.801138)
+        assertThat(defaultStrike.altitude).isEqualTo(0)
+        assertThat(defaultStrike.amplitude)
+        assertThat(strike.multiplicity).isEqualTo(1)
     }
 }

@@ -1,6 +1,7 @@
 package org.blitzortung.android.data.provider.blitzortung
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 
 class TimestampIteratorTest {
@@ -26,5 +27,13 @@ class TimestampIteratorTest {
         val sequence = createTimestampSequence(intervalLength, startTime, endTime)
 
         assertThat(sequence.asIterable()).containsExactly(8000L, 9000L, 10000L, 11000L, 12000L)
+    }
+
+    @Test
+    fun throwsWhenExhausted() {
+        val uut = TimestampIterator(10, 1000, 1000)
+
+        assertThat(uut.next()).isEqualTo(1000)
+        assertThatThrownBy { uut.next() }.isInstanceOf(NoSuchElementException::class.java)
     }
 }
