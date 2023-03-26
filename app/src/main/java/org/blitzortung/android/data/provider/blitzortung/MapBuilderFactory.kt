@@ -26,6 +26,8 @@ import java.util.regex.Pattern
 import javax.inject.Inject
 import javax.inject.Singleton
 
+class MapBuilderFailedException(message: String) : Throwable(message)
+
 @Singleton
 class MapBuilderFactory constructor(
     private val strikeLineSplitter: (String) -> Array<String>,
@@ -51,14 +53,22 @@ class MapBuilderFactory constructor(
             private var stationCount: Short = 0
 
             override fun prepare(fields: Array<String>) {
-                timestamp = TimeFormat.parseTimestampWithMillisecondsFromFields(fields)
+                if (fields.size > 2) {
+                    timestamp = TimeFormat.parseTimestampWithMillisecondsFromFields(fields)
+                } else {
+                    throw MapBuilderFailedException("not enough values for time parsing")
+                }
             }
 
             fun setBuilderMap() {
                 keyValueBuilderMap["pos"] = { values ->
-                    longitude = values[1].toDouble()
-                    latitude = values[0].toDouble()
-                    altitude = values[2].toInt()
+                    if (values.size >= 3) {
+                        longitude = values[1].toDouble()
+                        latitude = values[0].toDouble()
+                        altitude = values[2].toInt()
+                    } else {
+                        throw MapBuilderFailedException("not enough values for location parsing")
+                    }
                 }
                 keyValueBuilderMap["str"] = { values -> amplitude = java.lang.Float.parseFloat(values[0]) }
                 keyValueBuilderMap["dev"] = { values -> lateralError = Integer.parseInt(values[0]) }

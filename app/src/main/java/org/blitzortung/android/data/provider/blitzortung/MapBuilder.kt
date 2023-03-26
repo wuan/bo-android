@@ -29,7 +29,15 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
 
     protected val keyValueBuilderMap: HashMap<String, (Array<String>) -> Unit> = HashMap()
 
-    fun buildFromLine(line: String): T {
+    fun buildFromLine(line: String): T? {
+        try {
+            return buildFromLineChecked(line)
+        } catch (e: MapBuilderFailedException) {
+            return null
+        }
+    }
+
+    fun buildFromLineChecked(line: String): T {
         val fields = lineSplitter.invoke(line)
 
         prepare(fields)
@@ -44,9 +52,7 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
                         Html.fromHtml(htmlString, FROM_HTML_MODE_COMPACT).toString()
                     } else {
                         try {
-                            val fromHtml = Html.fromHtml(htmlString)
-                            if (fromHtml == null) htmlString
-                            else fromHtml.toString()
+                            Html.fromHtml(htmlString).toString()
                         } catch (throwable: Throwable) {
                             Log.w(Main.LOG_TAG, throwable)
                             break
