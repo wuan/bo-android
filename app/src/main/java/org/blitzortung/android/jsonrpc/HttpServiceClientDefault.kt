@@ -39,15 +39,15 @@ class HttpServiceClientDefault @Inject constructor(
 
         connection.requestMethod = "POST"
 
-        val postDataBytes = data.toByteArray(Charset.forName("UTF-8"))
+        val dataBytes = data.toByteArray(Charset.forName("UTF-8"))
 
         connection.setRequestProperty("Content-Type", "text/json")
-        connection.setRequestProperty("Content-Length", postDataBytes.size.toString())
+        connection.setRequestProperty("Content-Length", dataBytes.size.toString())
         connection.setRequestProperty("User-Agent", userAgentString)
         connection.setRequestProperty("Accept-Encoding", "gzip")
 
         connection.doOutput = true
-        connection.outputStream.write(postDataBytes)
+        connection.outputStream.write(dataBytes)
         connection.connectTimeout = connectionTimeout
         connection.readTimeout = socketTimeout
 
