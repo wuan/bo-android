@@ -22,11 +22,13 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
 import java.net.URL
 
 private const val SERVICE_URL = "http://service.url/"
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE)
 class JsonRpcDataProviderTest {
 
     private lateinit var uut: JsonRpcDataProvider

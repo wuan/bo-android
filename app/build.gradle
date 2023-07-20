@@ -42,7 +42,6 @@ android {
             returnDefaultValues = true
             includeAndroidResources = true
             all {
-                systemProperty 'robolectric.enabledSdks', '33'
                 jvmArgs '-noverify'
             }
         }

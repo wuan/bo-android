@@ -29,7 +29,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
-class AlertHandlerTest {
+public class AlertHandlerTest {
     private lateinit var uut: AlertHandler
 
     @MockK
@@ -57,7 +57,7 @@ class AlertHandlerTest {
     }
 
     @Test
-    fun locationHandlerUpdatesEnabled() {
+    public fun locationHandlerUpdatesEnabled() {
         verify { locationHandler.requestUpdates(any()) }
     }
 
