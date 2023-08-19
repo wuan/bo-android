@@ -45,7 +45,7 @@ class VersionComponentTest {
 
     @Test
     fun shouldReturnNoUpdateStateWhenCalledNextTime() {
-        versionComponent = VersionComponent(RuntimeEnvironment.application, buildVersion)
+        versionComponent = VersionComponent(RuntimeEnvironment.getApplication(), buildVersion)
         assertThat(versionComponent.configuredVersionCode).isEqualTo(VERSION_CODE)
         assertThat(versionComponent.state).isEqualTo(VersionComponent.State.NO_UPDATE)
     }
