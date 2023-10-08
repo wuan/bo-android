@@ -22,6 +22,7 @@
             android:layout_height="wrap_content"
             android:entries="@array/regions"
             android:padding="10dp"
+            android:minHeight="48dp"
             android:prompt="@string/region" />
 
         <View
@@ -40,6 +41,7 @@
             android:layout_height="wrap_content"
             android:entries="@array/raster_sizes"
             android:padding="10dp"
+            android:minHeight="48dp"
             android:prompt="@string/raster_size" />
 
         <View
@@ -58,6 +60,7 @@
             android:layout_height="wrap_content"
             android:entries="@array/count_thresholds"
             android:padding="10dp"
+            android:minHeight="48dp"
             android:prompt="@string/count_threshold" />
 
         <View
@@ -76,6 +79,7 @@
             android:layout_height="wrap_content"
             android:entries="@array/interval_durations"
             android:padding="10dp"
+            android:minHeight="48dp"
             android:prompt="@string/interval_duration" />
 
         <View
@@ -94,6 +98,7 @@
             android:layout_height="wrap_content"
             android:entries="@array/query_periods"
             android:padding="10dp"
+            android:minHeight="48dp"
             android:prompt="@string/query_period" />
     </LinearLayout>
 </ScrollView>

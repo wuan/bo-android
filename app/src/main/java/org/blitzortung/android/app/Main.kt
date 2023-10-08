@@ -551,13 +551,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.v(
             LOG_TAG,
-            "Main.onRequestPermissionsResult() $requestCode - ${
-                permissions.joinToString(
-                    ",",
-                    "[",
-                    "]"
-                )
-            } - ${grantResults.joinToString(",", "[", "]") { it.toString() }}"
+            "Main.onRequestPermissionsResult() $requestCode - ${permissions.joinToString()} - ${grantResults.joinToString() { it.toString() }}"
         )
         val providerRelation = LocationProviderRelation.byOrdinal[requestCode]
         if (providerRelation != null) {
@@ -580,12 +574,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     @TargetApi(Build.VERSION_CODES.M)
     private fun requestLocationPermissions(sharedPreferences: SharedPreferences) {
         val locationProviderName = sharedPreferences.get(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER)
-        val permission =
-            when (locationProviderName) {
-                PASSIVE_PROVIDER, GPS_PROVIDER -> ACCESS_FINE_LOCATION
-                NETWORK_PROVIDER -> ACCESS_COARSE_LOCATION
-                else -> null
-            }
+        val permission = when (locationProviderName) {
+            PASSIVE_PROVIDER, GPS_PROVIDER -> ACCESS_FINE_LOCATION
+            NETWORK_PROVIDER -> ACCESS_COARSE_LOCATION
+            else -> null
+        }
 
         if (permission != null) {
             val requiresBackgroundPermission = if (isAtLeast(Build.VERSION_CODES.Q)) {
@@ -598,21 +591,15 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             Log.v(LOG_TAG, "self permission: $checkSelfPermission")
             val requiresPermission = checkSelfPermission != PackageManager.PERMISSION_GRANTED
 
-            val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal
-                ?: Int.MAX_VALUE)
+            val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
             if (requiresPermission) {
                 val locationText = resources.getString(R.string.location_permission_background_disclosure)
-                AlertDialog.Builder(this)
-                    .setMessage(locationText)
-                    .setCancelable(false)
+                AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
                     .setNeutralButton(android.R.string.ok) { dialog, count ->
                         requestPermission(
-                            arrayOf(permission),
-                            requestCode,
-                            R.string.location_permission_required
+                            arrayOf(permission), requestCode, R.string.location_permission_required
                         )
-                    }
-                    .show()
+                    }.show()
             } else {
                 if (requiresBackgroundPermission) {
                     requestPermission(
@@ -693,11 +680,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                         }
                     }
 
-                    AlertDialog.Builder(this)
-                        .setMessage(locationText)
+                    AlertDialog.Builder(this).setMessage(locationText)
                         .setPositiveButton(android.R.string.yes, dialogClickListener)
-                        .setNegativeButton(android.R.string.no, dialogClickListener)
-                        .show()
+                        .setNegativeButton(android.R.string.no, dialogClickListener).show()
                 }
             } else {
                 Log.w(LOG_TAG, "requestWakeupPermissions() could not get PowerManager")
@@ -726,8 +711,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
-        @Suppress("NON_EXHAUSTIVE_WHEN")
-        when (key) {
+        @Suppress("NON_EXHAUSTIVE_WHEN") when (key) {
             PreferenceKey.COLOR_SCHEME -> {
                 strikeListOverlay.refresh()
             }
@@ -777,10 +761,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private fun configureMenuAccess() {
         val config = ViewConfiguration.get(this)
 
-        if (isAtLeast(Build.VERSION_CODES.LOLLIPOP) ||
-            isAtLeast(Build.VERSION_CODES.ICE_CREAM_SANDWICH) &&
-            !config.hasPermanentMenuKey()
-        ) {
+        if (isAtLeast(Build.VERSION_CODES.LOLLIPOP) || isAtLeast(Build.VERSION_CODES.ICE_CREAM_SANDWICH) && !config.hasPermanentMenuKey()) {
             binding.menu.visibility = View.VISIBLE
             binding.menu.setOnClickListener {
                 showPopupMenu(binding.menu)
