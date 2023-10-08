@@ -84,7 +84,7 @@ import javax.inject.Inject
 import kotlin.math.roundToInt
 
 class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
-    private var backgroundAlerts: Boolean = false
+    private var backgroundAlertEnabled: Boolean = false
     private lateinit var statusComponent: StatusComponent
 
     private lateinit var strikeColorHandler: StrikeColorHandler
@@ -482,7 +482,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         disableDataUpdates()
 
-        if (backgroundAlerts) {
+        if (backgroundAlertEnabled) {
             startService()
             if (!locationHandler.backgroundMode) {
                 locationHandler.shutdown()
@@ -582,7 +582,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         if (permission != null) {
             val requiresBackgroundPermission = if (isAtLeast(Build.VERSION_CODES.Q)) {
-                backgroundAlerts && checkSelfPermission(ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED
+                backgroundAlertEnabled && checkSelfPermission(ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED
             } else {
                 false
             }
@@ -631,9 +631,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     @TargetApi(Build.VERSION_CODES.M)
     private fun requestWakeupPermissions(context: Context) {
-        Log.v(LOG_TAG, "requestWakeupPermissions() background alerts: $backgroundAlerts")
+        Log.v(LOG_TAG, "requestWakeupPermissions() background alerts: $backgroundAlertEnabled")
 
-        if (backgroundAlerts) {
+        if (backgroundAlertEnabled) {
             val pm = context.getSystemService(Context.POWER_SERVICE)
             if (pm is PowerManager) {
                 val packageName = context.packageName
@@ -733,7 +733,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             }
 
             PreferenceKey.BACKGROUND_QUERY_PERIOD -> {
-                backgroundAlerts = sharedPreferences.get(key, "0").toInt() > 0
+                backgroundAlertEnabled = sharedPreferences.get(key, "0").toInt() > 0
             }
 
             else -> {}
