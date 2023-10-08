@@ -198,7 +198,8 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
                 } else {
                     0
                 }
-                pendingIntent = PendingIntent.getService(this, 0, intent, flags)
+                val pendingIntent = PendingIntent.getService(this, 0, intent, flags)
+                this.pendingIntent = pendingIntent
 
                 val period = (backgroundPeriod * 1000).toLong()
                 alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, period, period, pendingIntent)

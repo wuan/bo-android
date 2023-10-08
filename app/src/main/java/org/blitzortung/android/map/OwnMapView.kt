@@ -28,6 +28,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.GestureDetectorCompat
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
@@ -37,7 +38,7 @@ import org.osmdroid.views.MapView
 
 class OwnMapView(context: Context) : MapView(context) {
 
-    private val gestureDetector: GestureDetector = GestureDetector(context, GestureListener())
+    private val gestureDetector: GestureDetectorCompat = GestureDetectorCompat(context, GestureListener())
 
     init {
         minZoomLevel = 1.5
@@ -93,7 +94,11 @@ class OwnMapView(context: Context) : MapView(context) {
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        return gestureDetector.onTouchEvent(event)
+        return if (gestureDetector.onTouchEvent(event)) {
+            true
+        } else {
+            super.onTouchEvent(event)
+        }
     }
 
     val popup: View by lazy { LayoutInflater.from(context).inflate(R.layout.popup, this, false) }

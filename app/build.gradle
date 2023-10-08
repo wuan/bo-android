@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 15
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode 287
         versionName '2.1.13'
         multiDexEnabled false
@@ -67,7 +67,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.recyclerview:recyclerview:1.3.1'
     implementation 'androidx.work:work-runtime-ktx:2.8.1'
-    implementation 'org.osmdroid:osmdroid-android:6.1.17'
+    implementation 'org.osmdroid:osmdroid-android:6.1.11'
     // waiting for https://github.com/osmdroid/osmdroid/issues/1822
 
     // Dagger2
@@ -91,7 +91,7 @@ kapt.includeCompileClasspath = false
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
     jacoco.includeNoLocationClasses = true
     jacoco.excludes = ['jdk.internal.*']
     testLogging {
@@ -105,7 +105,8 @@ tasks.withType(Test) {
     maxHeapSize = "4g"
 }
 
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
+tasks.register('jacocoTestReport', JacocoReport) {
+    dependsOn['testDebugUnitTest']
 
     reports {
         xml.required.set(true)
