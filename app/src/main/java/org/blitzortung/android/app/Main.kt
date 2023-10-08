@@ -28,6 +28,7 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.LocationManager.*
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
@@ -129,6 +130,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 Log.d(LOG_TAG, "Main.onDataUpdate() received request started event")
                 statusComponent.startProgress()
             }
+
             is ResultEvent -> {
 
                 statusComponent.indicateError(event.failed)
@@ -180,6 +182,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
                 binding.legendView.invalidate()
             }
+
             is StatusEvent -> {
                 setStatusString(event.status)
             }
@@ -591,7 +594,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 false
             }
 
-            val requiresPermission = checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED
+            val checkSelfPermission = checkSelfPermission(permission)
+            Log.v(LOG_TAG, "self permission: $checkSelfPermission")
+            val requiresPermission = checkSelfPermission != PackageManager.PERMISSION_GRANTED
 
             val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal
                 ?: Int.MAX_VALUE)
@@ -602,13 +607,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     .setCancelable(false)
                     .setNeutralButton(android.R.string.ok) { dialog, count ->
                         requestPermission(
-                            if (requiresBackgroundPermission) {
-                                arrayOf(permission, ACCESS_BACKGROUND_LOCATION)
-                            } else {
-                                arrayOf(permission)
-                            },
+                            arrayOf(permission),
                             requestCode,
-                            if (requiresBackgroundPermission) R.string.location_permission_background_required else R.string.location_permission_required
+                            R.string.location_permission_required
                         )
                     }
                     .show()
@@ -630,7 +631,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         val permissionStatus = checkSelfPermission(permission[0])
         Log.v(
             LOG_TAG,
-            "Main.requestPermission() permission: $permission, status: $permissionStatus, shouldRequest: ${!shouldShowPermissionRationale}"
+            "Main.requestPermission() permission: ${permission.joinToString()}, status: $permissionStatus, shouldRequest: ${!shouldShowPermissionRationale}"
         )
         if (!shouldShowPermissionRationale && permissionStatus != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(permission, requestCode)
@@ -658,8 +659,16 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                             DialogInterface.BUTTON_POSITIVE -> {
                                 Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    val intent = Intent()
-                                    intent.action = Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS
+                                    val allowIgnoreBatteryOptimization =
+                                        context.checkSelfPermission(REQUEST_IGNORE_BATTERY_OPTIMIZATIONS) == PackageManager.PERMISSION_GRANTED
+                                    val intent = if (allowIgnoreBatteryOptimization) {
+                                        Intent(
+                                            Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                                            Uri.parse("package:" + packageName)
+                                        )
+                                    } else {
+                                        Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                                    }
 
                                     try {
                                         startActivity(intent)
@@ -742,6 +751,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             PreferenceKey.BACKGROUND_QUERY_PERIOD -> {
                 backgroundAlerts = sharedPreferences.get(key, "0").toInt() > 0
             }
+
             else -> {}
         }
     }

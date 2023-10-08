@@ -132,8 +132,8 @@ interface OnSharedPreferenceChangeListener : SharedPreferences.OnSharedPreferenc
         keys.forEach { onSharedPreferenceChanged(sharedPreferences, it) }
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String) {
-        val key = PreferenceKey.fromString(keyString)
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String?) {
+        val key = PreferenceKey.fromString(keyString.orEmpty())
         key?.also { onSharedPreferenceChanged(sharedPreferences, it) }
     }
 

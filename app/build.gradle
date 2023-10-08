@@ -6,14 +6,14 @@ plugins {
 }
 
 android {
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 15
-        targetSdkVersion 32
-        versionCode 287
-        versionName '2.1.13'
+        targetSdkVersion 33
+        versionCode 291
+        versionName '2.1.14'
         multiDexEnabled false
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -59,12 +59,12 @@ android {
     namespace 'org.blitzortung.android.app'
 }
 
-def dagger_version = '2.47'
+def dagger_version = '2.48.1'
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.media:media:1.6.0'
-    implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.recyclerview:recyclerview:1.3.1'
     implementation 'androidx.work:work-runtime-ktx:2.8.1'
     implementation 'org.osmdroid:osmdroid-android:6.1.11'
@@ -79,7 +79,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.assertj:assertj-core:3.24.2'
-    testImplementation 'io.mockk:mockk:1.13.5'
+    testImplementation 'io.mockk:mockk:1.13.8'
     testImplementation 'org.robolectric:robolectric:4.10.3'
     testImplementation 'androidx.test:core:1.5.0'
     androidTestImplementation 'androidx.test:runner:1.5.2'
@@ -91,7 +91,7 @@ kapt.includeCompileClasspath = false
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
     jacoco.includeNoLocationClasses = true
     jacoco.excludes = ['jdk.internal.*']
     testLogging {
@@ -105,7 +105,8 @@ tasks.withType(Test) {
     maxHeapSize = "4g"
 }
 
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
+tasks.register('jacocoTestReport', JacocoReport) {
+    dependsOn['testDebugUnitTest']
 
     reports {
         xml.required.set(true)
