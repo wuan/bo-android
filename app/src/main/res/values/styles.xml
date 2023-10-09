@@ -4,8 +4,8 @@
         <item name="android:color">@color/translucent_background</item>
     </style>
 
-    <!-- <style name="AppTheme" parent="Base.V7.Theme.AppCompat" -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
+     <style name="AppTheme" parent="Base.V7.Theme.AppCompat">
+<!--    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">-->
     </style>
 
     <style name="ChangelogHeader">

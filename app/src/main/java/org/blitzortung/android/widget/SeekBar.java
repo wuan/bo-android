@@ -6,17 +6,17 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
-public class VerticalSeekBar extends androidx.appcompat.widget.AppCompatSeekBar {
+public class SeekBar extends androidx.appcompat.widget.AppCompatSeekBar {
 
-    public VerticalSeekBar(Context context) {
+    public SeekBar(Context context) {
         super(context);
     }
 
-    public VerticalSeekBar(Context context, AttributeSet attrs, int defStyle) {
+    public SeekBar(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
-    public VerticalSeekBar(Context context, AttributeSet attrs) {
+    public SeekBar(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

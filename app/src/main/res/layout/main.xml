@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:orientation="horizontal" />
 
-    <TableRow
+    <LinearLayout
         android:id="@+id/upper_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -61,12 +61,13 @@
 
         </RelativeLayout>
 
-    </TableRow>
+    </LinearLayout>
+
 
     <RelativeLayout
         android:id="@+id/map_overlay"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_below="@+id/upper_row">
 
         <org.blitzortung.android.app.view.LegendView
@@ -117,30 +118,32 @@
             android:src="@android:drawable/ic_menu_view"
             android:visibility="gone" />
 
-        <org.blitzortung.android.widget.VerticalSlider
-            android:id="@+id/timeSlider"
-            android:background="@color/translucent_background"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
-
         <org.blitzortung.android.app.view.AlertView
             android:id="@+id/alert_view"
             android:layout_width="90sp"
             android:layout_height="90sp"
-            android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
+            android:layout_above="@+id/seekbar"
             local:tablet_scaleable="true" />
 
         <org.blitzortung.android.app.view.HistogramView
             android:id="@+id/histogram_view"
             android:layout_width="100sp"
             android:layout_height="70sp"
+            android:layout_alignParentRight="true"
+            android:layout_above="@+id/seekbar"
+            local:tablet_scaleable="true" />
+
+        <SeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="48sp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            local:tablet_scaleable="true" />
 
+            android:background="@color/translucent_background" />
     </RelativeLayout>
+
+
 </RelativeLayout>

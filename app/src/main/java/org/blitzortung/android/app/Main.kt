@@ -237,9 +237,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         configureMenuAccess()
         historyController = HistoryController(this, binding, buttonColumnHandler, dataHandler)
         historySliderController = HistorySliderController(this, preferences, dataHandler)
-        binding.timeSlider.requestLayout()
-        buttonColumnHandler.addElement(binding.timeSlider, ButtonGroup.DATA_UPDATING, heightFactor = 4)
-        Log.v(Main.LOG_TAG, "time slider width ${binding.timeSlider.width}, height ${binding.timeSlider.height}")
+//        binding.timeSlider.requestLayout()
+//        buttonColumnHandler.addElement(binding.timeSlider, ButtonGroup.DATA_UPDATING, heightFactor = 4)
+//        Log.v(Main.LOG_TAG, "time slider width ${binding.timeSlider.width}, height ${binding.timeSlider.height}")
         buttonColumnHandler.addAllElements(historyController.getButtons(), ButtonGroup.DATA_UPDATING)
 
         //setupDetailModeButton()

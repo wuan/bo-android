@@ -21,9 +21,6 @@ package org.blitzortung.android.app.controller
 import android.app.Activity
 import android.content.SharedPreferences
 import android.util.Log
-import com.google.android.material.slider.Slider
-import com.google.android.material.slider.Slider.OnSliderTouchListener
-import kotlinx.android.synthetic.main.main.*
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
@@ -39,7 +36,6 @@ class HistorySliderController(
         private val preferences: SharedPreferences,
         private val dataHandler: MainDataHandler
 ) : OnSharedPreferenceChangeListener {
-    private var slider: Slider
 
     private var intervalDuration: Int = 60
     private var historicTimestep: Int = 30
@@ -47,12 +43,12 @@ class HistorySliderController(
     val dataConsumer = { event: Event ->
         if (event is ResultEvent) {
             Log.v(Main.LOG_TAG, "slider update: ${event.parameters.intervalOffset}")
-            activity.timeSlider.value = -event.parameters.intervalOffset.toFloat()
+//            activity.timeSlider.value = -event.parameters.intervalOffset.toFloat()
         }
     }
 
     init {
-        slider = activity.timeSlider
+//        slider = activity.timeSlider
         preferences.registerOnSharedPreferenceChangeListener(this)
 
         onSharedPreferenceChanged(this.preferences, PreferenceKey.DATA_SOURCE, PreferenceKey.USERNAME, PreferenceKey.PASSWORD, PreferenceKey.RASTER_SIZE, PreferenceKey.COUNT_THRESHOLD, PreferenceKey.REGION, PreferenceKey.INTERVAL_DURATION, PreferenceKey.HISTORIC_TIMESTEP, PreferenceKey.QUERY_PERIOD)
@@ -61,23 +57,23 @@ class HistorySliderController(
     }
 
     private fun initializeSlider() {
-        slider.addOnSliderTouchListener(object : OnSliderTouchListener {
-            override fun onStartTrackingTouch(slider: Slider) {
-                Log.v(Main.LOG_TAG, "onStartTracking(${slider.value})")
-                update(slider.value.toInt())
-            }
-
-            override fun onStopTrackingTouch(slider: Slider) {
-                Log.v(Main.LOG_TAG, "onStopTracking(${slider.value})")
-                update(slider.value.toInt())
-            }
-        })
+//        slider.addOnSliderTouchListener(object : OnSliderTouchListener {
+//            override fun onStartTrackingTouch(slider: Slider) {
+//                Log.v(Main.LOG_TAG, "onStartTracking(${slider.value})")
+//                update(slider.value.toInt())
+//            }
+//
+//            override fun onStopTrackingTouch(slider: Slider) {
+//                Log.v(Main.LOG_TAG, "onStopTracking(${slider.value})")
+//                update(slider.value.toInt())
+//            }
+//        })
     }
 
     private fun configureSlider() {
-        slider.valueFrom = 0.0f
-        slider.valueTo = (ParametersController.MAX_HISTORY_RANGE - intervalDuration).toFloat()
-        slider.stepSize = historicTimestep.toFloat()
+//        slider.valueFrom = 0.0f
+//        slider.valueTo = (ParametersController.MAX_HISTORY_RANGE - intervalDuration).toFloat()
+//        slider.stepSize = historicTimestep.toFloat()
     }
 
     private fun update(offset: Int) {

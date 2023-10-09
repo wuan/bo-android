@@ -3,24 +3,22 @@ package org.blitzortung.android.widget;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.material.slider.Slider;
+public class Slider extends View {
 
-public class VerticalSlider extends Slider {
-
-    public VerticalSlider(Context context) {
+    public Slider(Context context) {
         super(context);
     }
 
-    public VerticalSlider(Context context, AttributeSet attrs, int defStyle) {
+    public Slider(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
-    public VerticalSlider(Context context, AttributeSet attrs) {
+    public Slider(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -45,8 +43,6 @@ public class VerticalSlider extends Slider {
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
-        event.setX(y);
-        event.
         return super.onTouchEvent(event);
     }
 }
