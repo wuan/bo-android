@@ -134,13 +134,15 @@
             android:layout_above="@+id/seekbar"
             local:tablet_scaleable="true" />
 
-        <SeekBar
+        <org.blitzortung.android.widget.SeekBar
             android:id="@+id/seekbar"
             android:layout_width="match_parent"
             android:layout_height="48sp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
+            android:max="0"
+            android:min="-1440"
 
             android:background="@color/translucent_background" />
     </RelativeLayout>
