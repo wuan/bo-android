@@ -42,6 +42,8 @@ import android.view.View
 import android.view.ViewConfiguration
 import android.view.WindowManager
 import android.widget.ImageButton
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
@@ -53,7 +55,6 @@ import org.blitzortung.android.app.components.ChangeLogComponent
 import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
-import org.blitzortung.android.app.controller.HistorySliderController
 import org.blitzortung.android.app.databinding.MainBinding
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
@@ -98,8 +99,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private lateinit var buttonColumnHandler: ButtonColumnHandler<ImageButton, ButtonGroup>
 
     private lateinit var historyController: HistoryController
-
-    private lateinit var historySliderController: HistorySliderController
 
     @set:Inject
     internal lateinit var locationHandler: LocationHandler
@@ -176,6 +175,26 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
                     binding.legendView.requestLayout()
                     binding.seekbar.update(event.parameters)
+                    binding.seekbar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+                        override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+                            Log.v(LOG_TAG, "seekbar clicked: ${p1}, ${p2}")
+                            if (p2) {
+                                val changed = dataHandler.setPosition(p1)
+                                Log.v(LOG_TAG, "setPosition: $changed")
+                                if (changed) {
+                                    dataHandler.updateData(setOf(DataChannel.STRIKES))
+                                }
+                            }
+                        }
+
+                        override fun onStartTrackingTouch(p0: SeekBar?) {
+                            Log.v(LOG_TAG, "Seekbar start tracking")
+                        }
+
+                        override fun onStopTrackingTouch(p0: SeekBar?) {
+                            Log.v(LOG_TAG, "Seekbar stop tracking")
+                        }
+                    })
 
                     if (!event.containsRealtimeData()) {
                         setHistoricStatusString()
@@ -237,10 +256,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         buttonColumnHandler = ButtonColumnHandler(if (TabletAwareView.isTablet(this)) 75f else 55f)
         configureMenuAccess()
         historyController = HistoryController(this, binding, buttonColumnHandler, dataHandler)
-        historySliderController = HistorySliderController(this, preferences, dataHandler)
-//        binding.timeSlider.requestLayout()
-//        buttonColumnHandler.addElement(binding.timeSlider, ButtonGroup.DATA_UPDATING, heightFactor = 4)
-//        Log.v(Main.LOG_TAG, "time slider width ${binding.timeSlider.width}, height ${binding.timeSlider.height}")
         buttonColumnHandler.addAllElements(historyController.getButtons(), ButtonGroup.DATA_UPDATING)
 
         //setupDetailModeButton()
@@ -479,7 +494,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             requestUpdates(dataEventConsumer)
             requestUpdates(alertHandler.dataEventConsumer)
             requestUpdates(historyController.dataConsumer)
-            requestUpdates(historySliderController.dataConsumer)
             requestUpdates(binding.histogramView.dataConsumer)
         }
     }
@@ -523,7 +537,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         with(dataHandler) {
             removeUpdates(dataEventConsumer)
             requestUpdates(alertHandler.dataEventConsumer)
-            removeUpdates(historySliderController.dataConsumer)
             removeUpdates(historyController.dataConsumer)
             removeUpdates(binding.histogramView.dataConsumer)
         }

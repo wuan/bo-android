@@ -41,8 +41,6 @@ data class TimeInterval(
         return updateIntervalOffset(timeIncrement)
     }
 
-    val position: Int
-        get() = offset / duration
 
     fun goRealtime(): TimeInterval {
         return copy(offset = 0)

@@ -27,6 +27,7 @@ import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
@@ -264,6 +265,14 @@ class MainDataHandler @Inject constructor(
 
     fun invervalOffset(offset: Int): Boolean {
         return updateParameters { it.withIntervalOffset(offset) }
+    }
+
+    fun setPosition(position: Int): Boolean{
+        val intervalOffsetBefore = parameters.intervalOffset
+        val changed = updateParameters { it.withPosition(position) }
+        Log.v(LOG_TAG, "setPosition: $intervalOffsetBefore -> ${parameters.intervalOffset} : $changed");
+
+        return changed
     }
 
     private fun updateParameters(updater: (Parameters) -> Parameters): Boolean {

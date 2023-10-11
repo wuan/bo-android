@@ -6,7 +6,7 @@ import org.junit.Test
 
 class TimeIntervalTest {
 
-    private lateinit var interval : TimeInterval
+    private lateinit var interval: TimeInterval
 
     @Test
     fun testRewindInterval() {
@@ -76,6 +76,30 @@ class TimeIntervalTest {
         update { it.rewInterval(timeIncrement) }
 
         Assertions.assertThat(update { it.goRealtime() }).isTrue()
+        assertThat(interval.offset).isEqualTo(0)
+    }
+
+    @Test
+    fun testWithOffsetInRange() {
+        interval = TimeInterval()
+
+        update { it.withOffset(-110) }
+        assertThat(interval.offset).isEqualTo(-120)
+    }
+
+    @Test
+    fun testWithOffsetPositive() {
+        interval = TimeInterval()
+
+        update { it.withOffset(110) }
+        assertThat(interval.offset).isEqualTo(0)
+    }
+
+    @Test
+    fun testWithOffsetTooBig() {
+        interval = TimeInterval()
+
+        update { it.withOffset(50000) }
         assertThat(interval.offset).isEqualTo(0)
     }
 

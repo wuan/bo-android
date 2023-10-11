@@ -8,12 +8,15 @@ import android.util.AttributeSet
 import android.util.Log
 import androidx.appcompat.widget.AppCompatSeekBar
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.data.Parameters
 
 class SeekBar : AppCompatSeekBar {
 
     fun update(parameters: Parameters) {
-        max = parameters.position
+        max = parameters.intervalMaxPosition
+        progress = max - parameters.intervalPosition
+        Log.v(LOG_TAG, "update TimeSlider: position ${progress}, max: ${max}")
         invalidate()
     }
 
@@ -29,11 +32,10 @@ class SeekBar : AppCompatSeekBar {
         val cx = height / 2f
         val cy = 10f
         c.drawCircle(cx, cy, 5f, paint)
-        Log.v(Main.LOG_TAG, "${cx}, ${cy}")
-        Log.v(Main.LOG_TAG, "${paint.textSize}")
         paint.textSize = 24f
         val pos = verticalScrollbarPosition
         val progress = this.progress
         c.drawText("Value: $pos, $progress", 150f, 50f, paint)
     }
+
 }

@@ -18,6 +18,8 @@
 
 package org.blitzortung.android.data
 
+import android.util.Log
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.data.TimeInterval.Companion.DEFAULT_OFFSET_INCREMENT
 import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
@@ -49,6 +51,12 @@ data class Parameters(
 
     fun withIntervalOffset(offset: Int): Parameters = copy(interval = interval.withOffset(offset))
 
+    fun withPosition(position: Int): Parameters {
+        val offset = (-intervalMaxPosition + position) * timeIncrement
+        Log.v(LOG_TAG, "withPosition: timeIncrement: ${timeIncrement}, position: ${position}, offset: ${offset}");
+        return copy(interval=interval.withOffset(offset))
+    }
+
     fun goRealtime(): Parameters = copy(interval = interval.goRealtime())
 
     fun withTimeIncrement(timeInrement: Int): Parameters {
@@ -59,8 +67,11 @@ data class Parameters(
         return copy(interval = interval.copy(duration=intervalDuration))
     }
 
-    val position: Int
-        get() = interval.position
+    val intervalPosition: Int
+        get() = if (timeIncrement != 0) -interval.offset / timeIncrement else 0
+
+    val intervalMaxPosition: Int
+        get() = if (timeIncrement != 0) (interval.range - interval.duration) / timeIncrement else 0
 
 }
 
