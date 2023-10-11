@@ -95,7 +95,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     private var clearData: Boolean = false
 
-    private lateinit var buttonColumnHandler: ButtonColumnHandler<View, ButtonGroup>
+    private lateinit var buttonColumnHandler: ButtonColumnHandler<ImageButton, ButtonGroup>
 
     private lateinit var historyController: HistoryController
 
@@ -175,6 +175,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     mapFragment.mapView.invalidate()
 
                     binding.legendView.requestLayout()
+                    binding.seekbar.update(event.parameters)
 
                     if (!event.containsRealtimeData()) {
                         setHistoricStatusString()

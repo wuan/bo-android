@@ -42,7 +42,7 @@ class HistorySliderController(
 
     val dataConsumer = { event: Event ->
         if (event is ResultEvent) {
-            Log.v(Main.LOG_TAG, "slider update: ${event.parameters.intervalOffset}")
+            Log.v(Main.LOG_TAG, "slider update: ${event.parameters.interval.offset}")
 //            activity.timeSlider.value = -event.parameters.intervalOffset.toFloat()
         }
     }

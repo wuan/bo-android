@@ -34,8 +34,8 @@ class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) 
         elements = arrayListOf()
     }
 
-    fun addElement(element: V, vararg groups: G, heightFactor: Int = 1) {
-        elements.add(GroupedView(element, groups.toSet(), heightFactor))
+    fun addElement(element: V, vararg groups: G) {
+        elements.add(GroupedView(element, groups.toSet()))
     }
 
     fun addAllElements(elements: Collection<V>, vararg groups: G) {

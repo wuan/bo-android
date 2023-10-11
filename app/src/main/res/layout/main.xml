@@ -142,7 +142,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:max="0"
-            android:min="-1440"
+            android:tickMark="@drawable/rounded_box"
 
             android:background="@color/translucent_background" />
     </RelativeLayout>

@@ -7,4 +7,7 @@
         <attr name="min" format="integer" />
         <attr name="step" format="integer" />
     </declare-styleable>
+    <declare-styleable name="SeekBarTickMark">
+
+    </declare-styleable>
 </resources>

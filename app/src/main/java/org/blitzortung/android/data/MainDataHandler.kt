@@ -45,7 +45,7 @@ import org.blitzortung.android.util.Period
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -198,12 +198,13 @@ class MainDataHandler @Inject constructor(
             }
 
             PreferenceKey.INTERVAL_DURATION -> {
-                parameters = parameters.copy(intervalDuration = Integer.parseInt(sharedPreferences.get(key, "60")))
+                val intervalDuration = Integer.parseInt(sharedPreferences.get(key, "60"))
+                parameters = parameters.withIntervalDuration(intervalDuration)
                 updateData()
             }
 
             PreferenceKey.HISTORIC_TIMESTEP -> {
-                parametersController = ParametersController.withOffsetIncrement(
+                parameters = parameters.withTimeIncrement(
                     sharedPreferences.get(key, "30").toInt()
                 )
             }
@@ -250,19 +251,19 @@ class MainDataHandler @Inject constructor(
         get() = parameters.intervalDuration
 
     fun ffwdInterval(): Boolean {
-        return updateParameters { parametersController.ffwdInterval(it) }
+        return updateParameters { it.ffwdInterval() }
     }
 
     fun rewInterval(): Boolean {
-        return updateParameters { parametersController.rewInterval(it) }
+        return updateParameters { it.rewInterval() }
     }
 
     fun goRealtime(): Boolean {
-        return updateParameters { parametersController.goRealtime(it) }
+        return updateParameters { it.goRealtime() }
     }
 
-    fun invervalOffset(offset: Int) : Boolean {
-        return updateParameters { parametersController.setOffset(it, offset) }
+    fun invervalOffset(offset: Int): Boolean {
+        return updateParameters { it.withIntervalOffset(offset) }
     }
 
     private fun updateParameters(updater: (Parameters) -> Parameters): Boolean {

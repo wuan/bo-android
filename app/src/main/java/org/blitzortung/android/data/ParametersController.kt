@@ -23,50 +23,9 @@ import org.blitzortung.android.app.Main
 
 class ParametersController private constructor(private val offsetIncrement: Int) {
 
-    fun rewInterval(parameters: Parameters): Parameters {
-        return updateInterval(parameters, -offsetIncrement)
-    }
-
-    fun ffwdInterval(parameters: Parameters): Parameters {
-        return updateInterval(parameters, offsetIncrement)
-    }
-
-    private fun updateInterval(parameters: Parameters, offsetIncrement: Int): Parameters {
-        var intervalOffset = parameters.intervalOffset + offsetIncrement
-        val intervalDuration = parameters.intervalDuration
-
-        if (intervalOffset < -MAX_HISTORY_RANGE + intervalDuration) {
-            intervalOffset = -MAX_HISTORY_RANGE + intervalDuration
-        } else if (intervalOffset > 0) {
-            intervalOffset = 0
-        }
-
-        return parameters.copy(intervalOffset = alignValue(intervalOffset))
-    }
-
-    fun goRealtime(parameters: Parameters): Parameters {
-        return parameters.copy(intervalOffset = 0)
-    }
-
-    private fun alignValue(value: Int): Int {
-        return (value / offsetIncrement) * offsetIncrement
-    }
-
-    fun setOffset(parameters: Parameters, offset: Int): Parameters {
-        Log.v(Main.LOG_TAG, "ParametersController.setOffset(${offset})")
-        if (offset in -MAX_HISTORY_RANGE + parameters.intervalDuration..0) {
-            return parameters.copy(intervalOffset = offset)
-        }
-        return parameters
-    }
-
     companion object {
 
-        const val MAX_HISTORY_RANGE = 24 * 60
 
-        fun withOffsetIncrement(offsetIncrement: Int): ParametersController {
-            return ParametersController(offsetIncrement)
-        }
     }
 
 }

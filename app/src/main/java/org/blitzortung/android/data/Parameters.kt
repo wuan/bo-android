@@ -18,23 +18,49 @@
 
 package org.blitzortung.android.data
 
+import org.blitzortung.android.data.TimeInterval.Companion.DEFAULT_OFFSET_INCREMENT
 import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
 
 data class Parameters(
     val region: Int = -1,
     val rasterBaselength: Int = 0,
-    override val intervalDuration: Int = 0,
-    override val intervalOffset: Int = 0,
+    val interval: TimeInterval = TimeInterval(),
+    val timeIncrement: Int = DEFAULT_OFFSET_INCREMENT,
     val countThreshold: Int = 0,
     val localReference: LocalReference? = null
-) : TimeIntervalWithOffset {
+) {
+
+    val intervalDuration: Int
+        get() = interval.duration
+
+    val intervalOffset: Int
+        get() = interval.offset
 
     val isGlobal: Boolean = region == GLOBAL_REGION
 
     val isLocal: Boolean = region == LOCAL_REGION
 
-    fun isRealtime(): Boolean = intervalOffset == 0
+    fun isRealtime(): Boolean = interval.isRealtime()
+
+    fun rewInterval(): Parameters = copy(interval = interval.rewInterval(timeIncrement))
+
+    fun ffwdInterval(): Parameters = copy(interval = interval.ffwdInterval(timeIncrement))
+
+    fun withIntervalOffset(offset: Int): Parameters = copy(interval = interval.withOffset(offset))
+
+    fun goRealtime(): Parameters = copy(interval = interval.goRealtime())
+
+    fun withTimeIncrement(timeInrement: Int): Parameters {
+        return copy(timeIncrement = timeInrement)
+    }
+
+    fun withIntervalDuration(intervalDuration: Int): Parameters {
+        return copy(interval = interval.copy(duration=intervalDuration))
+    }
+
+    val position: Int
+        get() = interval.position
 
 }
 
