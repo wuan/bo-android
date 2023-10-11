@@ -71,6 +71,7 @@
             android:defaultValue="55"
             android:key="map_fade"
             android:max="90"
+            step="5"
             android:persistent="true"
             android:selectable="true"
             android:summary="@string/map_fade_summary"
