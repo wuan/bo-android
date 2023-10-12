@@ -10,6 +10,7 @@ import org.blitzortung.android.app.view.put
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.LocalReference
 import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.TimeInterval
 import org.blitzortung.android.data.beans.RasterElement
 import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
@@ -53,8 +54,10 @@ class JsonRpcDataProviderTest {
     fun getsGlobalData() {
         val parameters = Parameters(
             region = GLOBAL_REGION,
-            intervalDuration = 60,
-            intervalOffset = 30,
+            interval = TimeInterval(
+                offset = 30,
+                duration = 60
+            ),
             countThreshold = 5,
             rasterBaselength = 5000
         )
@@ -94,8 +97,10 @@ class JsonRpcDataProviderTest {
         val localReference = LocalReference(5,6)
         val parameters = Parameters(
             region = LOCAL_REGION,
-            intervalDuration = 60,
-            intervalOffset = 30,
+            interval = TimeInterval(
+                offset = 30,
+                duration = 60
+            ),
             countThreshold = 5,
             rasterBaselength = 5000,
             localReference = localReference
@@ -140,8 +145,10 @@ class JsonRpcDataProviderTest {
         val localReference = LocalReference(5,6)
         val parameters = Parameters(
             region = 2,
-            intervalDuration = 60,
-            intervalOffset = 30,
+            interval = TimeInterval(
+                offset = 30,
+                duration = 60
+            ),
             countThreshold = 5,
             rasterBaselength = 5000,
             localReference = localReference

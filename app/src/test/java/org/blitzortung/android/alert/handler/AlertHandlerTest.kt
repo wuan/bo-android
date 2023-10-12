@@ -17,6 +17,7 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.put
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.TimeInterval
 import org.blitzortung.android.data.beans.RasterElement
 import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.provider.LOCAL_REGION
@@ -65,7 +66,11 @@ class AlertHandlerTest {
     fun receiveData() {
         val rasterBaselength = 5000
         val parameters = Parameters(
-            intervalOffset = 0, intervalDuration = 60, region = LOCAL_REGION, rasterBaselength = rasterBaselength
+            interval = TimeInterval(
+                offset = 0,
+                duration = 60
+            ),
+            region = LOCAL_REGION, rasterBaselength = rasterBaselength
         )
         uut.dataEventConsumer.invoke(
             ResultEvent(
@@ -100,7 +105,8 @@ class AlertHandlerTest {
         every { alertDataHandler.getLatestTimstampWithin(any(), any()) } returns currentTime
 
         val parameters = Parameters(
-            intervalOffset = 0, intervalDuration = 60, region = LOCAL_REGION, rasterBaselength = rasterBaselength
+            interval = TimeInterval( offset = 0, duration = 60 ),
+            region = LOCAL_REGION, rasterBaselength = rasterBaselength
         )
         uut.dataEventConsumer.invoke(
             ResultEvent(
@@ -137,7 +143,8 @@ class AlertHandlerTest {
         every { alertDataHandler.getLatestTimstampWithin(any(), any()) } returns currentTime
 
         val parameters = Parameters(
-            intervalOffset = 0, intervalDuration = 60, region = LOCAL_REGION, rasterBaselength = rasterBaselength
+            interval = TimeInterval( offset = 0, duration = 60 ),
+            region = LOCAL_REGION, rasterBaselength = rasterBaselength
         )
         uut.dataEventConsumer.invoke(
             ResultEvent(
@@ -171,7 +178,8 @@ class AlertHandlerTest {
         mockAlertResult(currentTime, 0.0f)
 
         val parameters = Parameters(
-            intervalOffset = 0, intervalDuration = 60, region = LOCAL_REGION, rasterBaselength = rasterBaselength
+            interval = TimeInterval( offset = 0, duration = 60 ),
+            region = LOCAL_REGION, rasterBaselength = rasterBaselength
         )
         uut.dataEventConsumer.invoke(
             ResultEvent(
@@ -203,7 +211,8 @@ class AlertHandlerTest {
         val rasterParameters = RasterParameters(10.0, 40.0, 10.0, 10.0, 20, 20, rasterBaselength)
 
         val parameters = Parameters(
-            intervalOffset = 10, intervalDuration = 60, region = LOCAL_REGION, rasterBaselength = rasterBaselength
+            interval = TimeInterval( offset = 0, duration = 60 ),
+            region = LOCAL_REGION, rasterBaselength = rasterBaselength
         )
         uut.dataEventConsumer.invoke(
             ResultEvent(

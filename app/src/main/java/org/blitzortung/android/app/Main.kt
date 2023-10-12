@@ -42,6 +42,8 @@ import android.view.View
 import android.view.ViewConfiguration
 import android.view.WindowManager
 import android.widget.ImageButton
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
@@ -172,6 +174,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     mapFragment.mapView.invalidate()
 
                     binding.legendView.requestLayout()
+                    binding.seekbar.update(event.parameters)
 
                     if (!event.containsRealtimeData()) {
                         setHistoricStatusString()
@@ -233,7 +236,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         buttonColumnHandler = ButtonColumnHandler(if (TabletAwareView.isTablet(this)) 75f else 55f)
         configureMenuAccess()
         historyController = HistoryController(this, binding, buttonColumnHandler, dataHandler)
-
         buttonColumnHandler.addAllElements(historyController.getButtons(), ButtonGroup.DATA_UPDATING)
 
         //setupDetailModeButton()
@@ -246,6 +248,27 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         if (versionComponent.state == VersionComponent.State.FIRST_RUN_AFTER_UPDATE) {
             changeLogComponent.showChangeLogDialog(this)
         }
+
+        binding.seekbar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+                if (p2) {
+                    val changed = dataHandler.setPosition(p1)
+                    if (changed) {
+                        if (dataHandler.isRealtime) {
+                            dataHandler.restart()
+                        } else {
+                            dataHandler.updateData(setOf(DataChannel.STRIKES))
+                        }
+                    }
+                }
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+            }
+        })
     }
 
     private fun initializeOsmDroid() {

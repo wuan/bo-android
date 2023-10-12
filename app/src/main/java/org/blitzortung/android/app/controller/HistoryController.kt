@@ -46,49 +46,17 @@ class HistoryController(
     }
 
     init {
-        setupHistoryRewindButton()
-        setupHistoryForwardButton()
         setupGoRealtimeButton()
-
         setRealtimeData(true)
     }
 
     private fun setRealtimeData(realtimeData: Boolean) {
-        binding.historyRew.visibility = View.VISIBLE
         val historyButtonsVisibility = if (realtimeData) View.INVISIBLE else View.VISIBLE
-        binding.historyFfwd.visibility = historyButtonsVisibility
         binding.goRealtime.visibility = historyButtonsVisibility
+        if (realtimeData) {
+            binding.seekbar.progress = binding.seekbar.max
+        }
         updateButtonColumn()
-    }
-
-    private fun setupHistoryRewindButton() {
-        addButtonWithOnClickAction(binding.historyRew) {
-            if (dataHandler.rewInterval()) {
-                binding.historyFfwd.visibility = View.VISIBLE
-                binding.goRealtime.visibility = View.VISIBLE
-                updateButtonColumn()
-                updateData()
-            } else {
-                val toast = Toast.makeText(
-                    context,
-                    context.resources.getText(R.string.historic_timestep_limit_reached),
-                    Toast.LENGTH_SHORT
-                )
-                toast.show()
-            }
-        }
-    }
-
-    private fun setupHistoryForwardButton() {
-        addButtonWithOnClickAction(binding.historyFfwd) {
-            if (dataHandler.ffwdInterval()) {
-                if (dataHandler.isRealtime) {
-                    configureForRealtimeOperation()
-                } else {
-                    dataHandler.updateData()
-                }
-            }
-        }
     }
 
     private fun setupGoRealtimeButton() {
@@ -108,7 +76,6 @@ class HistoryController(
     }
 
     private fun configureForRealtimeOperation() {
-        binding.historyFfwd.visibility = View.INVISIBLE
         binding.goRealtime.visibility = View.INVISIBLE
         updateButtonColumn()
 

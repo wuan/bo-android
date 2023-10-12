@@ -51,7 +51,8 @@ class ServiceDataHandler @Inject constructor(
 
     private val parameters = Parameters(
         region = LOCAL_REGION, rasterBaselength = 5000,
-        intervalOffset = 0, intervalDuration = 10, countThreshold = 0
+        interval = TimeInterval.BACKGROUND,
+        countThreshold = 0,
     )
 
     private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {

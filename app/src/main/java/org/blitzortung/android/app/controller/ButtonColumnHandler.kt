@@ -18,8 +18,10 @@
 
 package org.blitzortung.android.app.controller
 
+import android.util.Log
 import android.view.View
 import android.widget.RelativeLayout
+import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.helper.ViewHelper.pxFromSp
 
 class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) {

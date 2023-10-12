@@ -27,6 +27,7 @@ import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
@@ -45,7 +46,7 @@ import org.blitzortung.android.util.Period
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -72,8 +73,6 @@ class MainDataHandler @Inject constructor(
         private set
 
     private var autoRaster = false
-
-    private lateinit var parametersController: ParametersController
 
     private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
         override fun addedFirstConsumer() {
@@ -198,12 +197,13 @@ class MainDataHandler @Inject constructor(
             }
 
             PreferenceKey.INTERVAL_DURATION -> {
-                parameters = parameters.copy(intervalDuration = Integer.parseInt(sharedPreferences.get(key, "60")))
+                val intervalDuration = Integer.parseInt(sharedPreferences.get(key, "60"))
+                parameters = parameters.withIntervalDuration(intervalDuration)
                 updateData()
             }
 
             PreferenceKey.HISTORIC_TIMESTEP -> {
-                parametersController = ParametersController.withOffsetIncrement(
+                parameters = parameters.withTimeIncrement(
                     sharedPreferences.get(key, "30").toInt()
                 )
             }
@@ -250,15 +250,27 @@ class MainDataHandler @Inject constructor(
         get() = parameters.intervalDuration
 
     fun ffwdInterval(): Boolean {
-        return updateParameters { parametersController.ffwdInterval(it) }
+        return updateParameters { it.ffwdInterval() }
     }
 
     fun rewInterval(): Boolean {
-        return updateParameters { parametersController.rewInterval(it) }
+        return updateParameters { it.rewInterval() }
     }
 
     fun goRealtime(): Boolean {
-        return updateParameters { parametersController.goRealtime(it) }
+        return updateParameters { it.goRealtime() }
+    }
+
+    fun invervalOffset(offset: Int): Boolean {
+        return updateParameters { it.withIntervalOffset(offset) }
+    }
+
+    fun setPosition(position: Int): Boolean{
+        val intervalOffsetBefore = parameters.intervalOffset
+        val changed = updateParameters { it.withPosition(position) }
+        Log.v(LOG_TAG, "setPosition: $intervalOffsetBefore -> ${parameters.intervalOffset} : $changed");
+
+        return changed
     }
 
     private fun updateParameters(updater: (Parameters) -> Parameters): Boolean {
