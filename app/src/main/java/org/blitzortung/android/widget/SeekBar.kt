@@ -13,29 +13,36 @@ import org.blitzortung.android.data.Parameters
 
 class SeekBar : AppCompatSeekBar {
 
-   val timeAxisPaint : Paint
-   val trianglePath : Path
+    private val timeAxisPaint = Paint()
+    private val trianglePath = Path()
+
     init {
-        timeAxisPaint = Paint()
         timeAxisPaint.color = Color.LTGRAY
         timeAxisPaint.textSize = 24f
         timeAxisPaint.textAlign = Paint.Align.CENTER
-
-        trianglePath = Path()
     }
 
-    var ticksPerHour : Int? = null
+    private var ticksPerHour: Int? = null
 
     fun update(parameters: Parameters) {
+        updatePositionAndRange(parameters)
+        updateSecondaryPosition(parameters)
+        
+        Log.d(LOG_TAG, "update TimeSlider: position ${progress}, max: ${max}")
+        invalidate()
+    }
+
+    private fun updateSecondaryPosition(parameters: Parameters) {
+        secondaryProgress = max - parameters.intervalPosition
+    }
+
+    private fun updatePositionAndRange(parameters: Parameters) {
         ticksPerHour = 60 / parameters.timeIncrement
         val previousMax = max
         max = parameters.intervalMaxPosition
         if (previousMax == 0 && max > 0) {
             progress = parameters.intervalMaxPosition - parameters.intervalPosition
         }
-        secondaryProgress = max - parameters.intervalPosition
-        Log.v(LOG_TAG, "update TimeSlider: position ${progress}, max: ${max}")
-        invalidate()
     }
 
     constructor(context: Context) : super(context)
@@ -46,21 +53,31 @@ class SeekBar : AppCompatSeekBar {
         val border = 43f
         val base = height / 2f
         if (secondaryProgress >= 0 && max > 0) {
-            val distance = 20f
-            val triangleSize = 10f
-            val secondPosition = border + ((width - 2 * border) / max) * secondaryProgress
-            trianglePath.reset()
-            c.drawPath(
-                trianglePath.apply {
-                    moveTo(secondPosition - triangleSize, base - distance - 2*triangleSize)
-                    lineTo(secondPosition + triangleSize, base - distance - 2*triangleSize)
-                    lineTo(secondPosition, base - distance)
-                    close()
-                },
-                timeAxisPaint
-            )
+            drawSecondaryProgress(c, base, border)
         }
 
+        drawAxis(c, base, border)
+
+        super.onDraw(c)
+    }
+
+    private fun drawSecondaryProgress(c: Canvas, base: Float, border: Float) {
+        val distance = 20f
+        val triangleSize = 10f
+        val secondPosition = border + ((width - 2 * border) / max) * secondaryProgress
+        trianglePath.reset()
+        c.drawPath(
+            trianglePath.apply {
+                moveTo(secondPosition - triangleSize, base - distance - 2 * triangleSize)
+                lineTo(secondPosition + triangleSize, base - distance - 2 * triangleSize)
+                lineTo(secondPosition, base - distance)
+                close()
+            },
+            timeAxisPaint
+        )
+    }
+
+    private fun drawAxis(c: Canvas, base: Float, border: Float) {
         for (i in 0..max) {
             val position = border + ((width - 2 * border) / max) * i
 
@@ -75,8 +92,6 @@ class SeekBar : AppCompatSeekBar {
 
             c.drawRect(position - 1, base - tickLength, position + 1, base + tickLength, timeAxisPaint)
         }
-
-        super.onDraw(c)
     }
 
 }
