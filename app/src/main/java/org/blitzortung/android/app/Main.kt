@@ -182,7 +182,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                                 val changed = dataHandler.setPosition(p1)
                                 Log.v(LOG_TAG, "setPosition: $changed")
                                 if (changed) {
-                                    dataHandler.updateData(setOf(DataChannel.STRIKES))
+                                    if (dataHandler.isRealtime) {
+                                        dataHandler.restart()
+                                    } else {
+                                        dataHandler.updateData(setOf(DataChannel.STRIKES))
+
+                                    }
                                 }
                             }
                         }

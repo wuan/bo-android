@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release versionName="2.2" versionCode="293">
+        <feature>Time slider replaces buttons</feature>
+    </release>
     <release versionName="2.1" versionCode="259">
         <feature>Global data mode</feature>
         <feature>Local data mode</feature>
