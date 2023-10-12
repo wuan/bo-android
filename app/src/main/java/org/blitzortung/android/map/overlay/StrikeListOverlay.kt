@@ -27,7 +27,6 @@ import android.view.ViewGroup
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.Parameters
-import org.blitzortung.android.data.ParametersController
 import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.map.MapFragment

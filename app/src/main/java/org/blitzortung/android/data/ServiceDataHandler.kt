@@ -51,10 +51,7 @@ class ServiceDataHandler @Inject constructor(
 
     private val parameters = Parameters(
         region = LOCAL_REGION, rasterBaselength = 5000,
-        interval = TimeInterval(
-            offset = 0,
-            duration = 10
-        ),
+        interval = TimeInterval.BACKGROUND,
         countThreshold = 0,
     )
 

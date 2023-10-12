@@ -41,7 +41,6 @@ data class TimeInterval(
         return updateIntervalOffset(timeIncrement)
     }
 
-
     fun goRealtime(): TimeInterval {
         return copy(offset = 0)
     }
@@ -59,5 +58,6 @@ data class TimeInterval(
         const val DEFAULT_OFFSET = 60
         const val DEFAULT_OFFSET_INCREMENT = 30
         const val MAX_HISTORY_RANGE = 24 * 60
+        val BACKGROUND = TimeInterval(duration = 10, offset = 0)
     }
 }

@@ -74,8 +74,6 @@ class MainDataHandler @Inject constructor(
 
     private var autoRaster = false
 
-    private lateinit var parametersController: ParametersController
-
     private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
         override fun addedFirstConsumer() {
             Log.d(Main.LOG_TAG, "MainDataHandler: added first data consumer")

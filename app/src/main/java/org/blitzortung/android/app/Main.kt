@@ -258,7 +258,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                             dataHandler.restart()
                         } else {
                             dataHandler.updateData(setOf(DataChannel.STRIKES))
-
                         }
                     }
                 }

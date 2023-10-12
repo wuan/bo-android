@@ -47,10 +47,7 @@ internal class FetchBackgroundDataTask(
 
                 val updatedParameters =
                     parameters.copy(
-                        interval = TimeInterval(
-                            duration = 10,
-                            offset = 0,
-                        ),
+                        interval = TimeInterval.BACKGROUND,
                         countThreshold = 0,
                         rasterBaselength = 5000
                     )
