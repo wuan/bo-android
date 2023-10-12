@@ -83,23 +83,8 @@
             android:layout_height="45sp"
             android:background="@color/translucent_background"
             android:src="@android:drawable/ic_menu_more"
-            android:visibility="gone" />
-
-        <ImageButton
-            android:id="@+id/historyRew"
-            android:layout_width="45sp"
-            android:layout_height="45sp"
-            android:background="@color/translucent_background"
-            android:src="@android:drawable/ic_media_rew"
-            android:visibility="gone" />
-
-        <ImageButton
-            android:id="@+id/historyFfwd"
-            android:layout_width="45sp"
-            android:layout_height="45sp"
-            android:background="@color/translucent_background"
-            android:src="@android:drawable/ic_media_ff"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:contentDescription="@string/menu" />
 
         <ImageButton
             android:id="@+id/goRealtime"
@@ -146,6 +131,5 @@
 
             android:background="@color/translucent_background" />
     </RelativeLayout>
-
 
 </RelativeLayout>

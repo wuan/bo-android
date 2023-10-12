@@ -72,7 +72,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         mapView.overlays.add(this.compassOverlay)
 
         //built in zoom controls
-        mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT)
+        mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
 
         //needed for pinch zooms
         mapView.setMultiTouchControls(true)
