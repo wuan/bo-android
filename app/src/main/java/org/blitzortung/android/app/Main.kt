@@ -175,31 +175,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
                     binding.legendView.requestLayout()
                     binding.seekbar.update(event.parameters)
-                    binding.seekbar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-                        override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
-                            Log.v(LOG_TAG, "seekbar clicked: ${p1}, ${p2}")
-                            if (p2) {
-                                val changed = dataHandler.setPosition(p1)
-                                Log.v(LOG_TAG, "setPosition: $changed")
-                                if (changed) {
-                                    if (dataHandler.isRealtime) {
-                                        dataHandler.restart()
-                                    } else {
-                                        dataHandler.updateData(setOf(DataChannel.STRIKES))
-
-                                    }
-                                }
-                            }
-                        }
-
-                        override fun onStartTrackingTouch(p0: SeekBar?) {
-                            Log.v(LOG_TAG, "Seekbar start tracking")
-                        }
-
-                        override fun onStopTrackingTouch(p0: SeekBar?) {
-                            Log.v(LOG_TAG, "Seekbar stop tracking")
-                        }
-                    })
 
                     if (!event.containsRealtimeData()) {
                         setHistoricStatusString()
@@ -273,6 +248,28 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         if (versionComponent.state == VersionComponent.State.FIRST_RUN_AFTER_UPDATE) {
             changeLogComponent.showChangeLogDialog(this)
         }
+
+        binding.seekbar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+                if (p2) {
+                    val changed = dataHandler.setPosition(p1)
+                    if (changed) {
+                        if (dataHandler.isRealtime) {
+                            dataHandler.restart()
+                        } else {
+                            dataHandler.updateData(setOf(DataChannel.STRIKES))
+
+                        }
+                    }
+                }
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+            }
+        })
     }
 
     private fun initializeOsmDroid() {
