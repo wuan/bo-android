@@ -82,9 +82,9 @@
             android:layout_width="45sp"
             android:layout_height="45sp"
             android:background="@color/translucent_background"
+            android:contentDescription="@string/menu"
             android:src="@android:drawable/ic_menu_more"
-            android:visibility="gone"
-            android:contentDescription="@string/menu" />
+            android:visibility="gone" />
 
         <ImageButton
             android:id="@+id/goRealtime"
@@ -107,27 +107,27 @@
             android:id="@+id/alert_view"
             android:layout_width="90sp"
             android:layout_height="90sp"
-            android:layout_alignParentLeft="true"
             android:layout_above="@+id/seekbar"
+            android:layout_alignParentLeft="true"
             local:tablet_scaleable="true" />
 
         <org.blitzortung.android.app.view.HistogramView
             android:id="@+id/histogram_view"
             android:layout_width="100sp"
             android:layout_height="70sp"
-            android:layout_alignParentRight="true"
             android:layout_above="@+id/seekbar"
+            android:layout_alignParentRight="true"
             local:tablet_scaleable="true" />
 
         <org.blitzortung.android.widget.SeekBar
             android:id="@+id/seekbar"
             android:layout_width="match_parent"
-            android:layout_height="48sp"
+            android:layout_height="60dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:max="0"
-            android:background="@color/translucent_background" />
+            android:background="@color/translucent_background"
+            android:max="0" />
     </RelativeLayout>
 
 </RelativeLayout>

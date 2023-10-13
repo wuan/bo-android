@@ -10,6 +10,7 @@ import android.util.Log
 import androidx.appcompat.widget.AppCompatSeekBar
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.util.TabletAwareView
 
 class SeekBar : AppCompatSeekBar {
 
@@ -27,7 +28,7 @@ class SeekBar : AppCompatSeekBar {
     fun update(parameters: Parameters) {
         updatePositionAndRange(parameters)
         updateSecondaryPosition(parameters)
-        
+
         Log.d(LOG_TAG, "update TimeSlider: position ${progress}, max: ${max}")
         invalidate()
     }
@@ -50,7 +51,8 @@ class SeekBar : AppCompatSeekBar {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     override fun onDraw(c: Canvas) {
-        val border = 43f
+        val isTablet = TabletAwareView.isTablet(this.context)
+        val border = width / if (isTablet) 60f else 25f
         val base = height / 2f
         if (secondaryProgress >= 0 && max > 0) {
             drawSecondaryProgress(c, base, border)
@@ -85,9 +87,9 @@ class SeekBar : AppCompatSeekBar {
             val tickLength = if (ticksPerHour != null && (max - i) % ticksPerHour == 0) {
                 val hour = (max - i) / ticksPerHour
                 c.drawText("${hour}", position, base + 38, timeAxisPaint)
-                14f
+                10f
             } else {
-                8f
+                6f
             }
 
             c.drawRect(position - 1, base - tickLength, position + 1, base + tickLength, timeAxisPaint)
