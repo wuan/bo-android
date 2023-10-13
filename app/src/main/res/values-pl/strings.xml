@@ -359,7 +359,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_size_summary">Ustaw rozmiar symbolu własnej lokalizacji</string>
     <string name="keep_zoom_goto_own_location_summary">Ustawienie do utrzymania aktualnego powiększenia podczas centrowania własnej lokalizacji</string>
     <string name="keep_zoom_goto_own_location_title">Utrzymuj powiększenie</string>
-    <string name="notification_channel_name" translatable="false">Storm Alarms</string>
     <string name="not_available">Niedostępne</string>
     <string name="unit_miles">mi.</string>
     <string name="map_scale">Skala mapy</string>
