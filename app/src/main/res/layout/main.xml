@@ -26,7 +26,7 @@
             android:layout_weight="1"
             android:text=""
             android:textColor="@color/text_foreground"
-            android:textSize="14sp"
+            android:textSize="14dp"
             local:tablet_scaleable="true" />
 
         <org.blitzortung.android.app.view.ScaledTextView
@@ -36,7 +36,7 @@
             android:layout_gravity="center_vertical"
             android:text=""
             android:textColor="@color/text_foreground"
-            android:textSize="14sp"
+            android:textSize="14dp"
             local:tablet_scaleable="true" />
 
         <RelativeLayout
@@ -79,8 +79,8 @@
 
         <ImageButton
             android:id="@+id/menu"
-            android:layout_width="45sp"
-            android:layout_height="45sp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:background="@color/translucent_background"
             android:contentDescription="@string/menu"
             android:src="@android:drawable/ic_menu_more"
@@ -88,16 +88,16 @@
 
         <ImageButton
             android:id="@+id/goRealtime"
-            android:layout_width="45sp"
-            android:layout_height="45sp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:background="@color/translucent_background"
             android:src="@android:drawable/ic_media_next"
             android:visibility="gone" />
 
         <ImageButton
             android:id="@+id/toggleExtendedMode"
-            android:layout_width="45sp"
-            android:layout_height="45sp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:background="@color/translucent_background"
             android:enabled="false"
             android:src="@android:drawable/ic_menu_view"
@@ -105,16 +105,16 @@
 
         <org.blitzortung.android.app.view.AlertView
             android:id="@+id/alert_view"
-            android:layout_width="90sp"
-            android:layout_height="90sp"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
             android:layout_above="@+id/seekbar"
             android:layout_alignParentLeft="true"
             local:tablet_scaleable="true" />
 
         <org.blitzortung.android.app.view.HistogramView
             android:id="@+id/histogram_view"
-            android:layout_width="100sp"
-            android:layout_height="70sp"
+            android:layout_width="100dp"
+            android:layout_height="70dp"
             android:layout_above="@+id/seekbar"
             android:layout_alignParentRight="true"
             local:tablet_scaleable="true" />

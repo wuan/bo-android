@@ -15,12 +15,18 @@ import org.blitzortung.android.util.TabletAwareView
 class SeekBar : AppCompatSeekBar {
 
     private val timeAxisPaint = Paint()
+    private val timeAxisLinePaint = Paint()
+    private var pastTimePaint = Paint()
     private val trianglePath = Path()
 
     init {
         timeAxisPaint.color = Color.LTGRAY
         timeAxisPaint.textSize = 24f
         timeAxisPaint.textAlign = Paint.Align.CENTER
+        timeAxisLinePaint.color = Color.LTGRAY
+        timeAxisLinePaint.style = Paint.Style.STROKE
+        timeAxisLinePaint.strokeWidth = 6f
+        pastTimePaint.color = Color.argb(255, 200, 100, 0)
     }
 
     private var ticksPerHour: Int? = null
@@ -58,9 +64,10 @@ class SeekBar : AppCompatSeekBar {
             drawSecondaryProgress(c, base, border)
         }
 
-        drawAxis(c, base, border)
-
         super.onDraw(c)
+
+        drawAxis(c, base, border)
+        drawAxisTics(c, base, border)
     }
 
     private fun drawSecondaryProgress(c: Canvas, base: Float, border: Float) {
@@ -80,6 +87,15 @@ class SeekBar : AppCompatSeekBar {
     }
 
     private fun drawAxis(c: Canvas, base: Float, border: Float) {
+        val axisWidth = 5f
+        c.drawRect(border, base - axisWidth / 2, width - border, base + axisWidth / 2, timeAxisPaint)
+        val position = border + ((width - 2 * border) / max) * progress
+        c.drawRect(position, base - axisWidth / 2, width - border, base + axisWidth / 2, pastTimePaint)
+        c.drawCircle(position, base, 16f, pastTimePaint)
+        c.drawCircle(position, base, 16f, timeAxisLinePaint)
+    }
+
+    private fun drawAxisTics(c: Canvas, base: Float, border: Float) {
         for (i in 0..max) {
             val position = border + ((width - 2 * border) / max) * i
 
