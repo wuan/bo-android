@@ -95,15 +95,17 @@ class AlertHandler @Inject constructor(
 
     val dataEventConsumer: (Event) -> Unit = { event ->
         if (event is ResultEvent) {
-            Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer $event")
-            if (!event.failed && event.containsRealtimeData() && event.strikes != null) {
-                val strikes = Strikes(event.strikes, event.rasterParameters)
-                checkStrikes(strikes, locationHandler.location)
-            } else {
-                if (!event.containsRealtimeData()) {
-                    lastStrikes = null
+            Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer ${event.flags} - $event")
+            if (!event.flags.ignoreForAlerting) {
+                if (!event.failed && event.containsRealtimeData() && event.strikes != null) {
+                    val strikes = Strikes(event.strikes, event.rasterParameters)
+                    checkStrikes(strikes, locationHandler.location)
+                } else {
+                    if (!event.containsRealtimeData()) {
+                        lastStrikes = null
+                    }
+                    broadcastResult(null)
                 }
-                broadcastResult(null)
             }
         }
     }
@@ -166,6 +168,7 @@ class AlertHandler @Inject constructor(
                     "AlertHandler.onSharedPreferenceChanged() signalingThresholdTime = $signalingThresholdTime"
                 )
             }
+
             else -> {}
         }
     }

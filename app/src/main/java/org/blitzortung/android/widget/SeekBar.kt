@@ -36,7 +36,6 @@ class SeekBar : AppCompatSeekBar {
         updatePositionAndRange(parameters, history)
         updateSecondaryPosition(parameters, history)
 
-        Log.d(LOG_TAG, "update TimeSlider: position ${progress}, max: ${max}")
         invalidate()
     }
 

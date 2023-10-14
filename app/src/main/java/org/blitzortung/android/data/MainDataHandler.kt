@@ -143,6 +143,8 @@ class MainDataHandler @Inject constructor(
     }
 
     private fun updateUsingCache() {
+        var flags = Flags()
+
         val parameters = activeParameters
         val cachedResult = cache.get(parameters)
         if (cachedResult != null) {
@@ -151,12 +153,19 @@ class MainDataHandler @Inject constructor(
         } else {
             Log.d(LOG_TAG, "MainDataHandler.updateData() fetch $parameters")
             FetchDataTask(dataMode, dataProvider!!, {
+                if (mode == Mode.ANIMATION) {
+                    flags = flags.copy(storeResult = false)
+                    if (!it.containsRealtimeData()) {
+                        flags = flags.copy(ignoreForAlerting = true)
+                    }
+                }
+                val event = it.copy(flags = flags)
                 if (!it.containsRealtimeData()) {
-                    cache.put(it.parameters, it)
+                    cache.put(event.parameters, event)
                 } else {
                     cache.logStats()
                 }
-                sendEvent(it)
+                sendEvent(event)
             }, ::toast).execute(parameters = parameters, history = history)
         }
     }
@@ -174,7 +183,7 @@ class MainDataHandler @Inject constructor(
             }
         }
 
-    private fun sendEvent(dataEvent: DataEvent, cached: Boolean = false) {
+    private fun sendEvent(dataEvent: DataEvent) {
         if (dataEvent is ResultEvent && dataEvent.flags.storeResult) {
             dataConsumerContainer.storeAndBroadcast(dataEvent)
         } else {
@@ -287,12 +296,12 @@ class MainDataHandler @Inject constructor(
         return updateParameters { it.goRealtime() }
     }
 
-    fun invervalOffset(offset: Int, history: History): Boolean {
-        return updateParameters { it.withIntervalOffset(offset, history) }
-    }
-
     fun setPosition(position: Int): Boolean {
         return updateParameters { it.withPosition(position, history) }
+    }
+
+    fun historySteps(): Int {
+        return parameters.intervalMaxPosition(history)
     }
 
     private fun updateParameters(updater: (Parameters) -> Parameters): Boolean {
@@ -333,6 +342,7 @@ class MainDataHandler @Inject constructor(
                     handler.postDelayed(this, 1000)
                 }
             }
+
             Mode.ANIMATION -> {
                 parameters = parameters.animationStep(history)
                 val delay = if (parameters.isRealtime()) 3000L else 100L

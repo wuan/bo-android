@@ -106,6 +106,9 @@ class HistoryController(
         updateButtonColumn()
 
         dataHandler.restart()
+        val historySteps = dataHandler.historySteps()
+        binding.seekbar.max = historySteps
+        binding.seekbar.progress = historySteps
     }
 
     private fun updateButtonColumn() {
