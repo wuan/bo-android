@@ -143,7 +143,7 @@ class MainDataHandler @Inject constructor(
     }
 
     private fun updateUsingCache() {
-        var flags = Flags()
+        var flags = Flags(mode=mode)
 
         val parameters = activeParameters
         val cachedResult = cache.get(parameters)
@@ -416,9 +416,6 @@ class MainDataHandler @Inject constructor(
         }
     }
 
-    enum class Mode {
-        DATA, ANIMATION
-    }
 
 }
 

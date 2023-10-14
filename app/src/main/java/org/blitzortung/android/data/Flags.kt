@@ -21,6 +21,11 @@ package org.blitzortung.android.data
 import java.io.Serializable
 
 data class Flags(
+    val mode: Mode = Mode.DATA,
     val storeResult: Boolean = true,
     val ignoreForAlerting: Boolean = false,
 ) : Serializable
+
+enum class Mode {
+    DATA, ANIMATION
+}

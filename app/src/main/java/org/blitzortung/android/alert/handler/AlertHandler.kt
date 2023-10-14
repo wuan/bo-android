@@ -33,6 +33,7 @@ import org.blitzortung.android.app.controller.NotificationHandler
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.data.provider.result.ResultEvent
