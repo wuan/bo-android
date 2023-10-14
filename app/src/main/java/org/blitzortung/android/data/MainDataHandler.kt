@@ -67,11 +67,16 @@ class MainDataHandler @Inject constructor(
     @Volatile
     private var updatesEnabled = false
 
+    private var mode = Mode.DATA
+
     private var period: Int = 0
 
     private var dataProvider: DataProvider? = null
 
     var parameters = Parameters()
+        private set
+
+    var history = History()
         private set
 
     private var autoRaster = false
@@ -148,9 +153,11 @@ class MainDataHandler @Inject constructor(
             FetchDataTask(dataMode, dataProvider!!, {
                 if (!it.containsRealtimeData()) {
                     cache.put(it.parameters, it)
+                } else {
+                    cache.logStats()
                 }
                 sendEvent(it)
-            }, ::toast).execute(parameters = parameters)
+            }, ::toast).execute(parameters = parameters, history = history)
         }
     }
 
@@ -221,7 +228,8 @@ class MainDataHandler @Inject constructor(
             }
 
             PreferenceKey.HISTORIC_TIMESTEP -> {
-                parameters = parameters.withTimeIncrement(
+                history = history.copy(
+                    timeIncrement =
                     sharedPreferences.get(key, "30").toInt()
                 )
             }
@@ -268,27 +276,23 @@ class MainDataHandler @Inject constructor(
         get() = parameters.intervalDuration
 
     fun ffwdInterval(): Boolean {
-        return updateParameters { it.ffwdInterval() }
+        return updateParameters { it.ffwdInterval(history) }
     }
 
     fun rewInterval(): Boolean {
-        return updateParameters { it.rewInterval() }
+        return updateParameters { it.rewInterval(history) }
     }
 
     fun goRealtime(): Boolean {
         return updateParameters { it.goRealtime() }
     }
 
-    fun invervalOffset(offset: Int): Boolean {
-        return updateParameters { it.withIntervalOffset(offset) }
+    fun invervalOffset(offset: Int, history: History): Boolean {
+        return updateParameters { it.withIntervalOffset(offset, history) }
     }
 
     fun setPosition(position: Int): Boolean {
-        val intervalOffsetBefore = parameters.intervalOffset
-        val changed = updateParameters { it.withPosition(position) }
-        Log.v(LOG_TAG, "setPosition: $intervalOffsetBefore -> ${parameters.intervalOffset} : $changed");
-
-        return changed
+        return updateParameters { it.withPosition(position, history) }
     }
 
     private fun updateParameters(updater: (Parameters) -> Parameters): Boolean {
@@ -309,33 +313,52 @@ class MainDataHandler @Inject constructor(
     }
 
     override fun run() {
-        val currentTime = Period.currentTime
-        val updateTargets = HashSet<DataChannel>()
+        when (mode) {
+            Mode.DATA -> {
+                val currentTime = Period.currentTime
+                val updateTargets = HashSet<DataChannel>()
 
-        if (updatePeriod.shouldUpdate(currentTime, period)) {
-            updateTargets.add(DataChannel.STRIKES)
-        }
+                if (updatePeriod.shouldUpdate(currentTime, period)) {
+                    updateTargets.add(DataChannel.STRIKES)
+                }
 
-        if (updateTargets.isNotEmpty()) {
-            updateData(updateTargets)
-        }
+                if (updateTargets.isNotEmpty()) {
+                    updateData(updateTargets)
+                }
 
-        if (parameters.isRealtime()) {
-            val statusString = "" + updatePeriod.getCurrentUpdatePeriod(currentTime, period) + "/" + period
-            broadcastEvent(StatusEvent(statusString))
-            // Schedule the next update
-            handler.postDelayed(this, 1000)
+                if (parameters.isRealtime()) {
+                    val statusString = "" + updatePeriod.getCurrentUpdatePeriod(currentTime, period) + "/" + period
+                    broadcastEvent(StatusEvent(statusString))
+                    // Schedule the next update
+                    handler.postDelayed(this, 1000)
+                }
+            }
+            Mode.ANIMATION -> {
+                parameters = parameters.animationStep(history)
+                handler.postDelayed(this, 200)
+                updateUsingCache()
+            }
         }
     }
 
     fun start() {
+        mode = Mode.DATA
         if (isRealtime) {
             handler.post(this)
         }
     }
 
+    fun startAnimation(history: History) {
+        cache.clear()
+        this.history = history
+        mode = Mode.ANIMATION
+        handler.post(this)
+    }
+
     fun restart() {
         updatePeriod.restart()
+        cache.clear()
+        history = History()
         start()
     }
 
@@ -381,6 +404,11 @@ class MainDataHandler @Inject constructor(
             false
         }
     }
+
+    enum class Mode {
+        DATA, ANIMATION
+    }
+
 }
 
 internal const val DEFAULT_RASTER_BASELENGTH = 10000

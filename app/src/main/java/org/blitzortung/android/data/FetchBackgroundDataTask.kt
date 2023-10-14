@@ -35,7 +35,7 @@ internal class FetchBackgroundDataTask(
     }
 
     @SuppressLint("WakelockTimeout")
-    override suspend fun doInBackground(parameters: Parameters, flags: Flags): ResultEvent? =
+    override suspend fun doInBackground(parameters: Parameters, history: History?, flags: Flags): ResultEvent? =
         withContext(Dispatchers.IO) {
             if (isAtLeast(Build.VERSION_CODES.N)) {
                 wakeLock.acquire(ServiceDataHandler.WAKELOCK_TIMEOUT)
@@ -53,7 +53,7 @@ internal class FetchBackgroundDataTask(
                     )
                 val updatedFlags = flags.copy(storeResult = false)
 
-                super.doInBackground(updatedParameters, updatedFlags)
+                super.doInBackground(updatedParameters, history, updatedFlags)
             } else {
                 Log.e(Main.LOG_TAG, "could not acquire wakelock")
                 null // ignore

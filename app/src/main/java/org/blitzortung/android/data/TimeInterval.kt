@@ -18,14 +18,15 @@
 
 package org.blitzortung.android.data
 
+import java.io.Serializable
+
 data class TimeInterval(
     val offset: Int = 0,
     val duration: Int = DEFAULT_OFFSET,
-    val range: Int = MAX_HISTORY_RANGE
-) {
+) : Serializable {
 
-    fun withOffset(offset: Int): TimeInterval {
-        if (offset in -MAX_HISTORY_RANGE + duration..0) {
+    fun withOffset(offset: Int, history: History): TimeInterval {
+        if (offset in -history.range + duration..0) {
             return copy(offset = offset)
         }
         return this
@@ -33,21 +34,34 @@ data class TimeInterval(
 
     fun isRealtime(): Boolean = offset == 0
 
-    fun rewInterval(timeIncrement: Int): TimeInterval {
-        return updateIntervalOffset(-timeIncrement)
+    fun rewInterval(history: History): TimeInterval {
+        return updateIntervalOffset(history, Int::minus)
     }
 
-    fun ffwdInterval(timeIncrement: Int): TimeInterval {
-        return updateIntervalOffset(timeIncrement)
+    fun ffwdInterval(history: History): TimeInterval {
+        return updateIntervalOffset(history, Int::plus)
+    }
+
+    fun animationStep(history: History): TimeInterval {
+        return if (offset == 0) {
+            this.copy(offset = -history.range + duration)
+        } else {
+            updateIntervalOffset(history, Int::plus)
+        }
     }
 
     fun goRealtime(): TimeInterval {
         return copy(offset = 0)
     }
 
-    private fun updateIntervalOffset(offsetIncrement: Int): TimeInterval {
-        val intervalOffset = offset + offsetIncrement
-        return this.copy(offset = alignValue(intervalOffset.coerceIn(-range + duration, 0), offsetIncrement))
+    private fun updateIntervalOffset(history: History, operation: (Int, Int) -> Int): TimeInterval {
+        val intervalOffset = operation.invoke(offset, history.timeIncrement)
+        return this.copy(
+            offset = alignValue(
+                intervalOffset.coerceIn(-history.range + duration, 0),
+                history.timeIncrement
+            )
+        )
     }
 
     private fun alignValue(value: Int, offsetIncrement: Int): Int {
@@ -56,8 +70,6 @@ data class TimeInterval(
 
     companion object {
         const val DEFAULT_OFFSET = 60
-        const val DEFAULT_OFFSET_INCREMENT = 30
-        const val MAX_HISTORY_RANGE = 24 * 60
         val BACKGROUND = TimeInterval(duration = 10, offset = 0)
     }
 }

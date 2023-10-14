@@ -18,12 +18,14 @@
 
 package org.blitzortung.android.data.beans
 
+import java.io.Serializable
+
 class Station(
     override val longitude: Double,
     override val latitude: Double,
     val name: String,
     val offlineSince: Long
-) : Location {
+) : Location, Serializable {
 
     val state: State
         get() {

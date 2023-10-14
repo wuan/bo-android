@@ -25,6 +25,7 @@ import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.Flags
+import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
@@ -148,8 +149,8 @@ class JsonRpcDataProvider @Inject constructor(
             return stations
         }
 
-        override fun getStrikesGrid(parameters: Parameters, flags: Flags): ResultEvent {
-            var result = initializeResult(parameters, flags)
+        override fun getStrikesGrid(parameters: Parameters, history: History?, flags: Flags): ResultEvent {
+            var result = initializeResult(parameters, history, flags)
 
             nextId = 0
 
@@ -214,8 +215,8 @@ class JsonRpcDataProvider @Inject constructor(
             return result
         }
 
-        override fun getStrikes(parameters: Parameters, flags: Flags): ResultEvent {
-            var result = initializeResult(parameters, flags)
+        override fun getStrikes(parameters: Parameters, history: History?, flags: Flags): ResultEvent {
+            var result = initializeResult(parameters, history, flags)
 
             val intervalDuration = parameters.intervalDuration
             val intervalOffset = parameters.intervalOffset

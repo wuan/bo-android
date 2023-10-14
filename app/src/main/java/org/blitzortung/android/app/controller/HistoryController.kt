@@ -21,11 +21,10 @@ package org.blitzortung.android.app.controller
 import android.content.Context
 import android.view.View
 import android.widget.ImageButton
-import android.widget.Toast
 import org.blitzortung.android.app.ButtonGroup
-import org.blitzortung.android.app.R
 import org.blitzortung.android.app.databinding.MainBinding
 import org.blitzortung.android.data.DataChannel
+import org.blitzortung.android.data.History
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.Event
@@ -39,6 +38,8 @@ class HistoryController(
 
     private val buttons: MutableCollection<ImageButton> = arrayListOf()
 
+    private var animationRunning = false
+
     val dataConsumer = { event: Event ->
         if (event is ResultEvent) {
             setRealtimeData(event.containsRealtimeData())
@@ -46,17 +47,42 @@ class HistoryController(
     }
 
     init {
+        setupStartStopAnimationButton()
         setupGoRealtimeButton()
         setRealtimeData(true)
     }
 
     private fun setRealtimeData(realtimeData: Boolean) {
-        val historyButtonsVisibility = if (realtimeData) View.INVISIBLE else View.VISIBLE
+        val historyButtonsVisibility = if (realtimeData || animationRunning) View.INVISIBLE else View.VISIBLE
         binding.goRealtime.visibility = historyButtonsVisibility
         if (realtimeData) {
             binding.seekbar.progress = binding.seekbar.max
         }
         updateButtonColumn()
+    }
+
+    private fun setupStartStopAnimationButton() {
+        addButtonWithOnClickAction(binding.startStopAnimation) {
+            if (animationRunning) {
+                dataHandler.stop()
+                binding.startStopAnimation.setImageResource(android.R.drawable.ic_media_play)
+                dataHandler.goRealtime()
+                configureForRealtimeOperation()
+
+                animationRunning = false
+                setRealtimeData(true)
+                binding.seekbar.isEnabled = true
+            } else {
+                dataHandler.stop()
+                binding.startStopAnimation.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
+                animationRunning = true
+                binding.seekbar.isEnabled = false
+                dataHandler.startAnimation(History(5, 180))
+
+            }
+        }
+
+        binding.startStopAnimation.visibility = View.VISIBLE
     }
 
     private fun setupGoRealtimeButton() {
@@ -94,3 +120,8 @@ class HistoryController(
         dataHandler.updateData(setOf(DataChannel.STRIKES))
     }
 }
+
+data class HistoryRange(
+    val stepSize: Int,
+    val range: Int
+)

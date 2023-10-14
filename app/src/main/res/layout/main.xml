@@ -87,6 +87,14 @@
             android:visibility="gone" />
 
         <ImageButton
+            android:id="@+id/startStopAnimation"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="@color/translucent_background"
+            android:src="@android:drawable/ic_media_play"
+            android:visibility="visible" />
+
+        <ImageButton
             android:id="@+id/goRealtime"
             android:layout_width="45dp"
             android:layout_height="45dp"

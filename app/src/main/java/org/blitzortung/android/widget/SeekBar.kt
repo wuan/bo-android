@@ -9,6 +9,7 @@ import android.util.AttributeSet
 import android.util.Log
 import androidx.appcompat.widget.AppCompatSeekBar
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
+import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.util.TabletAwareView
 
@@ -31,24 +32,24 @@ class SeekBar : AppCompatSeekBar {
 
     private var ticksPerHour: Int? = null
 
-    fun update(parameters: Parameters) {
-        updatePositionAndRange(parameters)
-        updateSecondaryPosition(parameters)
+    fun update(parameters: Parameters, history: History) {
+        updatePositionAndRange(parameters, history)
+        updateSecondaryPosition(parameters, history)
 
         Log.d(LOG_TAG, "update TimeSlider: position ${progress}, max: ${max}")
         invalidate()
     }
 
-    private fun updateSecondaryPosition(parameters: Parameters) {
-        secondaryProgress = max - parameters.intervalPosition
+    private fun updateSecondaryPosition(parameters: Parameters, history: History) {
+        secondaryProgress = max - parameters.intervalPosition(history)
     }
 
-    private fun updatePositionAndRange(parameters: Parameters) {
-        ticksPerHour = 60 / parameters.timeIncrement
+    private fun updatePositionAndRange(parameters: Parameters, history: History) {
+        ticksPerHour = 60 / history.timeIncrement
         val previousMax = max
-        max = parameters.intervalMaxPosition
+        max = parameters.intervalMaxPosition(history)
         if (previousMax == 0 && max > 0) {
-            progress = parameters.intervalMaxPosition - parameters.intervalPosition
+            progress = parameters.intervalMaxPosition(history) - parameters.intervalPosition(history)
         }
     }
 

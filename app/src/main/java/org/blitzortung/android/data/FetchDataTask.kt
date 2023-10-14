@@ -23,18 +23,18 @@ internal open class FetchDataTask(
         job.cancel()
     }
 
-    fun execute(parameters: Parameters, flags: Flags = Flags()) = launch {
-        onPostExecute(doInBackground(parameters, flags))
+    fun execute(parameters: Parameters, history: History? = null, flags: Flags = Flags()) = launch {
+        onPostExecute(doInBackground(parameters, history, flags))
     }
 
-    protected open suspend fun doInBackground(parameters: Parameters, flags: Flags): ResultEvent? =
+    protected open suspend fun doInBackground(parameters: Parameters, history: History?, flags: Flags): ResultEvent? =
         withContext(Dispatchers.IO) {
             try {
                 dataProvider.retrieveData {
                     if (dataMode.raster) {
-                        getStrikesGrid(parameters, flags)
+                        getStrikesGrid(parameters, history, flags)
                     } else {
-                        getStrikes(parameters, flags)
+                        getStrikes(parameters, history, flags)
                     }
                 }
             } catch (e: RuntimeException) {
@@ -44,6 +44,7 @@ internal open class FetchDataTask(
                     failed = true,
                     referenceTime = System.currentTimeMillis(),
                     parameters = parameters,
+                    history = history,
                     flags = flags
                 )
             }

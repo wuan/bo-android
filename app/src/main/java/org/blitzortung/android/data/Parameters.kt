@@ -18,20 +18,17 @@
 
 package org.blitzortung.android.data
 
-import android.util.Log
-import org.blitzortung.android.app.Main.Companion.LOG_TAG
-import org.blitzortung.android.data.TimeInterval.Companion.DEFAULT_OFFSET_INCREMENT
 import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
+import java.io.Serializable
 
 data class Parameters(
     val region: Int = -1,
     val rasterBaselength: Int = 0,
     val interval: TimeInterval = TimeInterval(),
-    val timeIncrement: Int = DEFAULT_OFFSET_INCREMENT,
     val countThreshold: Int = 0,
     val localReference: LocalReference? = null
-) {
+) : Serializable {
 
     val intervalDuration: Int
         get() = interval.duration
@@ -45,33 +42,30 @@ data class Parameters(
 
     fun isRealtime(): Boolean = interval.isRealtime()
 
-    fun rewInterval(): Parameters = copy(interval = interval.rewInterval(timeIncrement))
+    fun rewInterval(history: History): Parameters = copy(interval = interval.rewInterval(history))
 
-    fun ffwdInterval(): Parameters = copy(interval = interval.ffwdInterval(timeIncrement))
+    fun ffwdInterval(history: History): Parameters = copy(interval = interval.ffwdInterval(history))
 
-    fun withIntervalOffset(offset: Int): Parameters = copy(interval = interval.withOffset(offset))
+    fun animationStep(history: History): Parameters = copy(interval = interval.animationStep(history))
 
-    fun withPosition(position: Int): Parameters {
-        val offset = (-intervalMaxPosition + position) * timeIncrement
-        Log.v(LOG_TAG, "withPosition: timeIncrement: ${timeIncrement}, position: ${position}, offset: ${offset}");
-        return copy(interval=interval.withOffset(offset))
+    fun withIntervalOffset(offset: Int, history: History): Parameters = copy(interval = interval.withOffset(offset, history))
+
+    fun withPosition(position: Int, history: History): Parameters {
+        val offset = (-intervalMaxPosition(history) + position) * history.timeIncrement
+        return copy(interval = interval.withOffset(offset, history))
     }
 
     fun goRealtime(): Parameters = copy(interval = interval.goRealtime())
 
-    fun withTimeIncrement(timeInrement: Int): Parameters {
-        return copy(timeIncrement = timeInrement)
-    }
-
     fun withIntervalDuration(intervalDuration: Int): Parameters {
-        return copy(interval = interval.copy(duration=intervalDuration))
+        return copy(interval = interval.copy(duration = intervalDuration))
     }
 
-    val intervalPosition: Int
-        get() = if (timeIncrement != 0) -interval.offset / timeIncrement else 0
+    fun intervalPosition(history: History): Int =
+        if (history.timeIncrement != 0) -interval.offset / history.timeIncrement else 0
 
-    val intervalMaxPosition: Int
-        get() = if (timeIncrement != 0) (interval.range - interval.duration) / timeIncrement else 0
+    fun intervalMaxPosition(history: History): Int =
+        if (history.timeIncrement != 0) (history.range - interval.duration) / history.timeIncrement else 0
 
 }
 
@@ -79,3 +73,13 @@ data class LocalReference(
     val x: Int,
     val y: Int
 )
+
+data class History(
+    val timeIncrement: Int = DEFAULT_OFFSET_INCREMENT,
+    val range: Int = MAX_HISTORY_RANGE
+) : Serializable {
+    companion object {
+        const val DEFAULT_OFFSET_INCREMENT = 30
+        const val MAX_HISTORY_RANGE = 24 * 60
+    }
+}

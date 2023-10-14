@@ -62,6 +62,7 @@ import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.app.view.put
 import org.blitzortung.android.data.DataChannel
+import org.blitzortung.android.data.History
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.result.DataEvent
@@ -174,7 +175,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     mapFragment.mapView.invalidate()
 
                     binding.legendView.requestLayout()
-                    binding.seekbar.update(event.parameters)
+                    binding.seekbar.update(event.parameters, event.history!!)
 
                     if (!event.containsRealtimeData()) {
                         setHistoricStatusString()
@@ -236,7 +237,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         buttonColumnHandler = ButtonColumnHandler(if (TabletAwareView.isTablet(this)) 75f else 55f)
         configureMenuAccess()
         historyController = HistoryController(this, binding, buttonColumnHandler, dataHandler)
-        buttonColumnHandler.addAllElements(historyController.getButtons(), ButtonGroup.DATA_UPDATING)
+        val historyButtons = historyController.getButtons()
+        buttonColumnHandler.addAllElements(historyButtons, ButtonGroup.DATA_UPDATING)
 
         //setupDetailModeButton()
 

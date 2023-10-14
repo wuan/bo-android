@@ -18,6 +18,8 @@
 
 package org.blitzortung.android.data
 
+import java.io.Serializable
+
 data class Flags(
     val storeResult: Boolean = true
-)
+) : Serializable
