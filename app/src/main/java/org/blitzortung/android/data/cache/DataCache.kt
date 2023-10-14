@@ -39,7 +39,7 @@ class DataCache @Inject constructor() {
             Log.v(LOG_TAG, "${it.key} -> ${bytes.size}")
             totalSize += bytes.size
         }
-        Log.v(LOG_TAG, "total size: ${totalSize/1024/1024} MB")
+        Log.v(LOG_TAG, "total size: %.2f MB".format(totalSize/1024f/1024f))
     }
 
     fun clear() {

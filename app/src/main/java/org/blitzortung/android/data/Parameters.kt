@@ -72,7 +72,7 @@ data class Parameters(
 data class LocalReference(
     val x: Int,
     val y: Int
-)
+) : Serializable
 
 data class History(
     val timeIncrement: Int = DEFAULT_OFFSET_INCREMENT,
