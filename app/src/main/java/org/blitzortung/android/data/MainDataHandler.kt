@@ -353,8 +353,7 @@ class MainDataHandler @Inject constructor(
     }
 
     fun start() {
-        mode = Mode.DATA
-        if (isRealtime) {
+        if (isRealtime || mode == Mode.ANIMATION) {
             handler.post(this)
         }
     }
@@ -370,6 +369,7 @@ class MainDataHandler @Inject constructor(
         updatePeriod.restart()
         cache.clear()
         history = History()
+        mode = Mode.DATA
         start()
     }
 
