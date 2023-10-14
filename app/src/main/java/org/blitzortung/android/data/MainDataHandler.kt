@@ -32,6 +32,7 @@ import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.data.cache.DataCache
 import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.LocalData
@@ -56,6 +57,7 @@ class MainDataHandler @Inject constructor(
     private val dataProviderFactory: DataProviderFactory,
     private val preferences: SharedPreferences,
     private val handler: Handler,
+    private val cache: DataCache,
     private val localData: LocalData,
     private val updatePeriod: Period
 ) : OnSharedPreferenceChangeListener, Runnable, MapListener {
@@ -131,8 +133,24 @@ class MainDataHandler @Inject constructor(
                     updateParticipants = true
                 }
             }
-            Log.d(Main.LOG_TAG, "MainDataHandler.updateData() $activeParameters")
-            FetchDataTask(dataMode, dataProvider!!, { sendEvent(it) }, ::toast).execute(parameters = activeParameters)
+            updateUsingCache()
+        }
+    }
+
+    private fun updateUsingCache() {
+        val parameters = activeParameters
+        val cachedResult = cache.get(parameters)
+        if (cachedResult != null) {
+            Log.d(LOG_TAG, "MainDataHandler.updateData() cached $parameters")
+            sendEvent(cachedResult)
+        } else {
+            Log.d(LOG_TAG, "MainDataHandler.updateData() fetch $parameters")
+            FetchDataTask(dataMode, dataProvider!!, {
+                if (!it.containsRealtimeData()) {
+                    cache.put(it.parameters, it)
+                }
+                sendEvent(it)
+            }, ::toast).execute(parameters = parameters)
         }
     }
 
@@ -149,7 +167,7 @@ class MainDataHandler @Inject constructor(
             }
         }
 
-    private fun sendEvent(dataEvent: DataEvent) {
+    private fun sendEvent(dataEvent: DataEvent, cached: Boolean = false) {
         if (dataEvent is ResultEvent && dataEvent.flags.storeResult) {
             dataConsumerContainer.storeAndBroadcast(dataEvent)
         } else {
@@ -265,7 +283,7 @@ class MainDataHandler @Inject constructor(
         return updateParameters { it.withIntervalOffset(offset) }
     }
 
-    fun setPosition(position: Int): Boolean{
+    fun setPosition(position: Int): Boolean {
         val intervalOffsetBefore = parameters.intervalOffset
         val changed = updateParameters { it.withPosition(position) }
         Log.v(LOG_TAG, "setPosition: $intervalOffsetBefore -> ${parameters.intervalOffset} : $changed");
