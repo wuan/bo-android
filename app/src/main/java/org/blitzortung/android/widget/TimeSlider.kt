@@ -6,28 +6,45 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
-import android.util.Log
 import androidx.appcompat.widget.AppCompatSeekBar
-import org.blitzortung.android.app.Main.Companion.LOG_TAG
+import org.blitzortung.android.app.R
 import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.util.TabletAwareView
 
-class SeekBar : AppCompatSeekBar {
+class TimeSlider : AppCompatSeekBar {
 
     private val timeAxisPaint = Paint()
     private val timeAxisLinePaint = Paint()
     private var pastTimePaint = Paint()
+    private var currentTextPaint = Paint()
+    private var legendTextPaint = Paint()
+    private var pastTextPaint = Paint()
+
     private val trianglePath = Path()
 
     init {
         timeAxisPaint.color = Color.LTGRAY
         timeAxisPaint.textSize = 24f
         timeAxisPaint.textAlign = Paint.Align.CENTER
+
         timeAxisLinePaint.color = Color.LTGRAY
         timeAxisLinePaint.style = Paint.Style.STROKE
         timeAxisLinePaint.strokeWidth = 6f
+
         pastTimePaint.color = Color.argb(255, 200, 100, 0)
+
+        currentTextPaint.color = Color.LTGRAY
+        currentTextPaint.textSize = 32f
+        currentTextPaint.textAlign = Paint.Align.RIGHT
+
+        legendTextPaint.color = Color.LTGRAY
+        legendTextPaint.textSize = 32f
+        legendTextPaint.textAlign = Paint.Align.CENTER
+
+        pastTextPaint.color = Color.LTGRAY
+        pastTextPaint.textSize = 32f
+        pastTextPaint.textAlign = Paint.Align.LEFT
     }
 
     private var ticksPerHour: Int? = null
@@ -68,6 +85,11 @@ class SeekBar : AppCompatSeekBar {
 
         drawAxis(c, base, border)
         drawAxisTics(c, base, border)
+
+        val bottomOffset = 10f
+        c.drawText(context.resources.getString(R.string.slider_current), width - border, height - bottomOffset, currentTextPaint)
+        c.drawText(context.resources.getString(R.string.slider_legend), width / 2f, height - bottomOffset, legendTextPaint)
+        c.drawText(context.resources.getString(R.string.slider_past), border, height - bottomOffset, pastTextPaint)
     }
 
     private fun drawSecondaryProgress(c: Canvas, base: Float, border: Float) {

@@ -56,7 +56,7 @@ class HistoryController(
         val historyButtonsVisibility = if (realtimeData || animationRunning) View.INVISIBLE else View.VISIBLE
         binding.goRealtime.visibility = historyButtonsVisibility
         if (realtimeData) {
-            binding.seekbar.progress = binding.seekbar.max
+            binding.timeSlider.progress = binding.timeSlider.max
         }
         updateButtonColumn()
     }
@@ -71,12 +71,12 @@ class HistoryController(
 
                 animationRunning = false
                 setRealtimeData(true)
-                binding.seekbar.isEnabled = true
+                binding.timeSlider.isEnabled = true
             } else {
                 dataHandler.stop()
                 binding.startStopAnimation.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
                 animationRunning = true
-                binding.seekbar.isEnabled = false
+                binding.timeSlider.isEnabled = false
                 dataHandler.startAnimation(History(5, 180))
 
             }
@@ -107,8 +107,8 @@ class HistoryController(
 
         dataHandler.restart()
         val historySteps = dataHandler.historySteps()
-        binding.seekbar.max = historySteps
-        binding.seekbar.progress = historySteps
+        binding.timeSlider.max = historySteps
+        binding.timeSlider.progress = historySteps
     }
 
     private fun updateButtonColumn() {

@@ -175,7 +175,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     mapFragment.mapView.invalidate()
 
                     binding.legendView.requestLayout()
-                    binding.seekbar.update(event.parameters, event.history!!)
+                    binding.timeSlider.update(event.parameters, event.history!!)
 
                     if (event.flags.mode == Mode.ANIMATION || !event.containsRealtimeData()) {
                         setHistoricStatusString()
@@ -251,7 +251,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             changeLogComponent.showChangeLogDialog(this)
         }
 
-        binding.seekbar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+        binding.timeSlider.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
                 if (p2) {
                     val changed = dataHandler.setPosition(p1)
