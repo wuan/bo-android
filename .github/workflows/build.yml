@@ -1,8 +1,8 @@
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -28,20 +28,20 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle
       - name: Cache SonarQube packages
         uses: actions/cache@v3
-        if: github.ref_name == 'master' && github.event_name == 'push'
+        if: github.ref_name == 'main' && github.event_name == 'push'
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
       - name: Build and analyze
-        if: github.ref_name == 'master' && github.event_name == 'push'
+        if: github.ref_name == 'main' && github.event_name == 'push'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: ./gradlew build jacocoTestReport sonar
       - name: Upload build artifacts
-        if: github.ref_name == 'master' && github.event_name == 'push'
+        if: github.ref_name == 'main' && github.event_name == 'push'
         uses: actions/upload-artifact@v3
         with:
           name: build
