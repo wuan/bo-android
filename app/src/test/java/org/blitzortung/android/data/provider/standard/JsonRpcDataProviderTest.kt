@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.put
 import org.blitzortung.android.data.Flags
+import org.blitzortung.android.data.History
 import org.blitzortung.android.data.LocalReference
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.TimeInterval
@@ -61,6 +62,7 @@ class JsonRpcDataProviderTest {
             countThreshold = 5,
             rasterBaselength = 5000
         )
+        val history = History()
         val flags = Flags()
 
         val response = createResponse()
@@ -76,7 +78,7 @@ class JsonRpcDataProviderTest {
             )
         } returns response
 
-        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, flags) }
+        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
         assertThat(result.rasterParameters?.latitudeStart).isEqualTo(0.0)
         assertThat(result.rasterParameters?.longitudeStart).isEqualTo(0.0)
@@ -105,6 +107,7 @@ class JsonRpcDataProviderTest {
             rasterBaselength = 5000,
             localReference = localReference
         )
+        val history = History()
         val flags = Flags()
 
         val response = createResponse()
@@ -124,7 +127,7 @@ class JsonRpcDataProviderTest {
             )
         } returns response
 
-        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, flags) }
+        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
         assertThat(result.rasterParameters?.latitudeStart).isEqualTo(15.0)
         assertThat(result.rasterParameters?.longitudeStart).isEqualTo(10.0)
@@ -153,6 +156,7 @@ class JsonRpcDataProviderTest {
             rasterBaselength = 5000,
             localReference = localReference
         )
+        val history = History()
         val flags = Flags()
 
         val response = createResponse()
@@ -171,7 +175,7 @@ class JsonRpcDataProviderTest {
             )
         } returns response
 
-        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, flags) }
+        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
         assertThat(result.rasterParameters?.latitudeStart).isEqualTo(15.0)
         assertThat(result.rasterParameters?.longitudeStart).isEqualTo(10.0)

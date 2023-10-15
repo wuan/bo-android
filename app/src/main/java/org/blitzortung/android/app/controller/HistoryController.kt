@@ -77,10 +77,7 @@ class HistoryController(
                 binding.startStopAnimation.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
                 animationRunning = true
                 binding.timeSlider.isEnabled = false
-                val history = if (dataHandler.parameters.intervalDuration > 180)
-                    History(10, 360) else
-                    History(5, 180)
-                dataHandler.startAnimation(history)
+                dataHandler.startAnimation(History(5, 120, false))
             }
         }
 

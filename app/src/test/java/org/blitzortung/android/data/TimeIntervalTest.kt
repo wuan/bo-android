@@ -5,75 +5,68 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class TimeIntervalTest {
-
+    private val history = History(30, 120, true)
+    private val historyUnlimited = History(30, 120, false)
     private lateinit var interval: TimeInterval
+
+    @Test
+    fun isRealtime() {
+        interval = TimeInterval()
+
+        assertThat(interval.isRealtime()).isTrue()
+
+        update { it.withOffset(-30, history) }
+
+        assertThat(interval.isRealtime()).isFalse()
+    }
 
     @Test
     fun testRewindInterval() {
         interval = TimeInterval()
-        val timeIncrement = 15
 
-        Assertions.assertThat(update { it.rewInterval(timeIncrement) }).isTrue()
-        assertThat(interval.offset).isEqualTo(-15)
-
-        Assertions.assertThat(update { it.rewInterval(timeIncrement) }).isTrue()
+        assertThat(update { it.rewInterval(history) }).isTrue()
         assertThat(interval.offset).isEqualTo(-30)
 
-        for (i in 0 until 23 * 4 - 2 - 1) {
-            Assertions.assertThat(update { it.rewInterval(timeIncrement) }).isTrue()
-        }
-        assertThat(interval.offset).isEqualTo(-23 * 60 + 15)
+        assertThat(update { it.rewInterval(history) }).isTrue()
+        assertThat(interval.offset).isEqualTo(-60)
 
-        Assertions.assertThat(update { it.rewInterval(timeIncrement) }).isTrue()
-        assertThat(interval.offset).isEqualTo(-23 * 60)
-
-        Assertions.assertThat(update { it.rewInterval(timeIncrement) }).isFalse()
-        assertThat(interval.offset).isEqualTo(-23 * 60)
+        assertThat(update { it.rewInterval(history) }).isFalse()
+        assertThat(interval.offset).isEqualTo(-60)
     }
 
     @Test
     fun testRewindIntervalWithAlignment() {
         interval = TimeInterval()
-        val timeIncrement = 45
+        val history = History(45, 120, true)
 
-        Assertions.assertThat(update { it.rewInterval(timeIncrement) }).isTrue()
+        assertThat(update { it.rewInterval(history) }).isTrue()
         assertThat(interval.offset).isEqualTo(-45)
 
-        Assertions.assertThat(update { it.rewInterval(timeIncrement) }).isTrue()
-        assertThat(interval.offset).isEqualTo(-90)
-
-        for (i in 0 until 23 / 3 * 4) {
-            Assertions.assertThat(update { it.rewInterval(timeIncrement) }).isTrue()
-        }
-        assertThat(interval.offset).isEqualTo(-23 * 60 + 30)
-
-        Assertions.assertThat(update { it.rewInterval(timeIncrement) }).isFalse()
-        assertThat(interval.offset).isEqualTo(-23 * 60 + 30)
+        assertThat(update { it.rewInterval(history) }).isFalse()
+        assertThat(interval.offset).isEqualTo(-45)
     }
 
     @Test
     fun testFastforwardInterval() {
         interval = TimeInterval()
-        val timeIncrement = 30
 
-        update { it.rewInterval(timeIncrement) }
+        update { it.rewInterval(history) }
 
-        Assertions.assertThat(update { it.ffwdInterval(timeIncrement) }).isTrue()
+        Assertions.assertThat(update { it.ffwdInterval(history) }).isTrue()
         assertThat(interval.offset).isEqualTo(0)
 
-        Assertions.assertThat(update { it.ffwdInterval(timeIncrement) }).isFalse()
+        Assertions.assertThat(update { it.ffwdInterval(history) }).isFalse()
         assertThat(interval.offset).isEqualTo(0)
     }
 
     @Test
     fun testGoRealtime() {
         interval = TimeInterval()
-        val timeIncrement = 30
 
         Assertions.assertThat(update { it.goRealtime() }).isFalse()
         assertThat(interval.offset).isEqualTo(0)
 
-        update { it.rewInterval(timeIncrement) }
+        update { it.rewInterval(history) }
 
         Assertions.assertThat(update { it.goRealtime() }).isTrue()
         assertThat(interval.offset).isEqualTo(0)
@@ -83,24 +76,79 @@ class TimeIntervalTest {
     fun testWithOffsetInRange() {
         interval = TimeInterval()
 
-        update { it.withOffset(-110) }
+        update { it.withOffset(-50, history) }
+        assertThat(interval.offset).isEqualTo(-50)
+    }
+
+    fun testWithPositiveOffset() {
+        interval = TimeInterval()
+
+        update { it.withOffset(1, history) }
+        assertThat(interval.offset).isEqualTo(0)
+    }
+
+    @Test
+    fun testWithOffsetInLimitedRange() {
+        interval = TimeInterval()
+
+        update { it.withOffset(-61, history) }
+        assertThat(interval.offset).isEqualTo(0)
+    }
+
+    @Test
+    fun testWithOffsetInUnlimitedRange() {
+        interval = TimeInterval()
+
+        update { it.withOffset(-120, historyUnlimited) }
         assertThat(interval.offset).isEqualTo(-120)
     }
 
     @Test
-    fun testWithOffsetPositive() {
+    fun testWithOffsetOutsideRange() {
         interval = TimeInterval()
 
-        update { it.withOffset(110) }
+        update { it.withOffset(-121, historyUnlimited) }
         assertThat(interval.offset).isEqualTo(0)
     }
 
     @Test
-    fun testWithOffsetTooBig() {
+    fun animationSteps() {
         interval = TimeInterval()
 
-        update { it.withOffset(50000) }
+        update { it.animationStep(history) }
+        assertThat(interval.offset).isEqualTo(-60)
+
+        update { it.animationStep(history) }
+        assertThat(interval.offset).isEqualTo(-30)
+
+        update { it.animationStep(history) }
         assertThat(interval.offset).isEqualTo(0)
+
+        update { it.animationStep(history) }
+        assertThat(interval.offset).isEqualTo(-60)
+    }
+
+    @Test
+    fun animationStepsUnlimited() {
+        interval = TimeInterval()
+
+        update { it.animationStep(historyUnlimited) }
+        assertThat(interval.offset).isEqualTo(-120)
+
+        update { it.animationStep(historyUnlimited) }
+        assertThat(interval.offset).isEqualTo(-90)
+
+        update { it.animationStep(historyUnlimited) }
+        assertThat(interval.offset).isEqualTo(-60)
+
+        update { it.animationStep(historyUnlimited) }
+        assertThat(interval.offset).isEqualTo(-30)
+
+        update { it.animationStep(historyUnlimited) }
+        assertThat(interval.offset).isEqualTo(0)
+
+        update { it.animationStep(historyUnlimited) }
+        assertThat(interval.offset).isEqualTo(-120)
     }
 
     private fun update(updater: (TimeInterval) -> TimeInterval): Boolean {

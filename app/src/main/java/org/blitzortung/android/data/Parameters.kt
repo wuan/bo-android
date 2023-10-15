@@ -42,13 +42,7 @@ data class Parameters(
 
     fun isRealtime(): Boolean = interval.isRealtime()
 
-    fun rewInterval(history: History): Parameters = copy(interval = interval.rewInterval(history))
-
-    fun ffwdInterval(history: History): Parameters = copy(interval = interval.ffwdInterval(history))
-
     fun animationStep(history: History): Parameters = copy(interval = interval.animationStep(history))
-
-    fun withIntervalOffset(offset: Int, history: History): Parameters = copy(interval = interval.withOffset(offset, history))
 
     fun withPosition(position: Int, history: History): Parameters {
         val offset = (-intervalMaxPosition(history) + position) * history.timeIncrement
@@ -62,11 +56,13 @@ data class Parameters(
     }
 
     fun intervalPosition(history: History): Int =
-        if (history.timeIncrement != 0) -interval.offset / history.timeIncrement else 0
+        calculatePosition(history.lowerLimit(interval) - interval.offset, history)
 
     fun intervalMaxPosition(history: History): Int =
-        if (history.timeIncrement != 0) (history.range - interval.duration) / history.timeIncrement else 0
+        calculatePosition(history.lowerLimit(interval), history)
 
+    private fun calculatePosition(value: Int, history: History): Int =
+        if (history.timeIncrement != 0) -value / history.timeIncrement else 0
 }
 
 data class LocalReference(
@@ -76,8 +72,14 @@ data class LocalReference(
 
 data class History(
     val timeIncrement: Int = DEFAULT_OFFSET_INCREMENT,
-    val range: Int = MAX_HISTORY_RANGE
+    val range: Int = MAX_HISTORY_RANGE,
+    val limit: Boolean = true,
 ) : Serializable {
+
+    fun lowerLimit(timeInterval: TimeInterval): Int {
+        return -range + if (limit) timeInterval.duration else 0
+    }
+
     companion object {
         const val DEFAULT_OFFSET_INCREMENT = 30
         const val MAX_HISTORY_RANGE = 24 * 60

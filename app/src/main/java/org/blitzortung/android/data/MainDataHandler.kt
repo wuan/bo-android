@@ -284,14 +284,6 @@ class MainDataHandler @Inject constructor(
     val intervalDuration: Int
         get() = parameters.intervalDuration
 
-    fun ffwdInterval(): Boolean {
-        return updateParameters { it.ffwdInterval(history) }
-    }
-
-    fun rewInterval(): Boolean {
-        return updateParameters { it.rewInterval(history) }
-    }
-
     fun goRealtime(): Boolean {
         return updateParameters { it.goRealtime() }
     }

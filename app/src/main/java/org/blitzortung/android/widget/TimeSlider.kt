@@ -57,7 +57,7 @@ class TimeSlider : AppCompatSeekBar {
     }
 
     private fun updateSecondaryPosition(parameters: Parameters, history: History) {
-        secondaryProgress = max - parameters.intervalPosition(history)
+        secondaryProgress = parameters.intervalPosition(history)
     }
 
     private fun updatePositionAndRange(parameters: Parameters, history: History) {
@@ -65,7 +65,7 @@ class TimeSlider : AppCompatSeekBar {
         val previousMax = max
         max = parameters.intervalMaxPosition(history)
         if (previousMax == 0 && max > 0) {
-            progress = parameters.intervalMaxPosition(history) - parameters.intervalPosition(history)
+            progress = parameters.intervalPosition(history)
         }
     }
 

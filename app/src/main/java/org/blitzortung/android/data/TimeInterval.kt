@@ -22,11 +22,11 @@ import java.io.Serializable
 
 data class TimeInterval(
     val offset: Int = 0,
-    val duration: Int = DEFAULT_OFFSET,
+    val duration: Int = DEFAULT_DURATION,
 ) : Serializable {
 
     fun withOffset(offset: Int, history: History): TimeInterval {
-        if (offset in -history.range + duration..0) {
+        if (offset in history.lowerLimit(this)..0) {
             return copy(offset = offset)
         }
         return this
@@ -44,7 +44,7 @@ data class TimeInterval(
 
     fun animationStep(history: History): TimeInterval {
         return if (offset == 0) {
-            this.copy(offset = -history.range + duration)
+            this.copy(offset = history.lowerLimit(this))
         } else {
             updateIntervalOffset(history, Int::plus)
         }
@@ -58,7 +58,7 @@ data class TimeInterval(
         val intervalOffset = operation.invoke(offset, history.timeIncrement)
         return this.copy(
             offset = alignValue(
-                intervalOffset.coerceIn(-history.range + duration, 0),
+                intervalOffset.coerceIn(history.lowerLimit(this), 0),
                 history.timeIncrement
             )
         )
@@ -69,7 +69,7 @@ data class TimeInterval(
     }
 
     companion object {
-        const val DEFAULT_OFFSET = 60
+        const val DEFAULT_DURATION = 60
         val BACKGROUND = TimeInterval(duration = 10, offset = 0)
     }
 }
