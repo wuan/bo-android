@@ -8,10 +8,8 @@ import android.graphics.Path
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatSeekBar
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
-import org.blitzortung.android.util.TabletAwareView
 
 class TimeSlider : AppCompatSeekBar {
 
@@ -75,28 +73,41 @@ class TimeSlider : AppCompatSeekBar {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     override fun onDraw(c: Canvas) {
-        val isTablet = TabletAwareView.isTablet(this.context)
-        val border = ViewHelper.pxFromDp(context, 30f)
         val base = height / 2f
         if (secondaryProgress >= 0 && max > 0) {
-            drawSecondaryProgress(c, base, border)
+            drawSecondaryProgress(c, base)
         }
 
         super.onDraw(c)
 
-        drawAxis(c, base, border)
-        drawAxisTics(c, base, border)
+        drawAxis(c, base)
+        drawAxisTics(c, base)
 
         val bottomOffset = 10f
-        c.drawText(context.resources.getString(R.string.slider_current), width - border, height - bottomOffset, currentTextPaint)
-        c.drawText(context.resources.getString(R.string.slider_legend), width / 2f, height - bottomOffset, legendTextPaint)
-        c.drawText(context.resources.getString(R.string.slider_past), border, height - bottomOffset, pastTextPaint)
+        c.drawText(
+            context.resources.getString(R.string.slider_current),
+            width - paddingRight.toFloat(),
+            height - bottomOffset,
+            currentTextPaint
+        )
+        c.drawText(
+            context.resources.getString(R.string.slider_legend),
+            width / 2f,
+            height - bottomOffset,
+            legendTextPaint
+        )
+        c.drawText(
+            context.resources.getString(R.string.slider_past),
+            paddingLeft.toFloat(),
+            height - bottomOffset,
+            pastTextPaint
+        )
     }
 
-    private fun drawSecondaryProgress(c: Canvas, base: Float, border: Float) {
+    private fun drawSecondaryProgress(c: Canvas, base: Float) {
         val distance = 20f
         val triangleSize = 10f
-        val secondPosition = border + ((width - 2 * border) / max) * secondaryProgress
+        val secondPosition = calculateX(secondaryProgress)
         trianglePath.reset()
         c.drawPath(
             trianglePath.apply {
@@ -109,18 +120,24 @@ class TimeSlider : AppCompatSeekBar {
         )
     }
 
-    private fun drawAxis(c: Canvas, base: Float, border: Float) {
+    private fun drawAxis(c: Canvas, base: Float) {
         val axisWidth = 5f
-        c.drawRect(border, base - axisWidth / 2, width - border, base + axisWidth / 2, timeAxisPaint)
-        val position = border + ((width - 2 * border) / max) * progress
-        c.drawRect(position, base - axisWidth / 2, width - border, base + axisWidth / 2, pastTimePaint)
+        c.drawRect(
+            paddingLeft.toFloat(),
+            base - axisWidth / 2,
+            width - paddingRight.toFloat(),
+            base + axisWidth / 2,
+            timeAxisPaint
+        )
+        val position = calculateX(progress)
+        c.drawRect(position, base - axisWidth / 2, width - paddingRight.toFloat(), base + axisWidth / 2, pastTimePaint)
         c.drawCircle(position, base, 16f, pastTimePaint)
         c.drawCircle(position, base, 16f, timeAxisLinePaint)
     }
 
-    private fun drawAxisTics(c: Canvas, base: Float, border: Float) {
+    private fun drawAxisTics(c: Canvas, base: Float) {
         for (i in 0..max) {
-            val position = border + ((width - 2 * border) / max) * i
+            val position = calculateX(i)
 
             val ticksPerHour = this.ticksPerHour
             val tickLength = if (ticksPerHour != null && (max - i) % ticksPerHour == 0) {
@@ -133,6 +150,10 @@ class TimeSlider : AppCompatSeekBar {
 
             c.drawRect(position - 1, base - tickLength, position + 1, base + tickLength, timeAxisPaint)
         }
+    }
+
+    private fun calculateX(progress: Int): Float {
+        return paddingLeft.toFloat() + (width - (paddingLeft.toFloat() + paddingRight.toFloat())) / max * progress
     }
 
 }
