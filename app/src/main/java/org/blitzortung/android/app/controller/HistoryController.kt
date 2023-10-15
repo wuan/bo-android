@@ -24,8 +24,8 @@ import android.widget.ImageButton
 import org.blitzortung.android.app.ButtonGroup
 import org.blitzortung.android.app.databinding.MainBinding
 import org.blitzortung.android.data.DataChannel
-import org.blitzortung.android.data.History
 import org.blitzortung.android.data.MainDataHandler
+import org.blitzortung.android.data.Mode
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.Event
 
@@ -77,7 +77,7 @@ class HistoryController(
                 binding.startStopAnimation.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
                 animationRunning = true
                 binding.timeSlider.isEnabled = false
-                dataHandler.startAnimation(History(5, 120, false))
+                dataHandler.startAnimation()
             }
         }
 
@@ -121,9 +121,12 @@ class HistoryController(
     private fun updateData() {
         dataHandler.updateData(setOf(DataChannel.STRIKES))
     }
-}
 
-data class HistoryRange(
-    val stepSize: Int,
-    val range: Int
-)
+    fun onResume() {
+        animationRunning = dataHandler.mode == Mode.ANIMATION
+        if (animationRunning) {
+            binding.startStopAnimation.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
+            binding.timeSlider.isEnabled = false
+        }
+    }
+}

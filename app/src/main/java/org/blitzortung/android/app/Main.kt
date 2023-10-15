@@ -440,7 +440,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT,
             PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT,
             PreferenceKey.DO_NOT_SLEEP,
-            PreferenceKey.BACKGROUND_QUERY_PERIOD
+            PreferenceKey.BACKGROUND_QUERY_PERIOD,
         )
 
         val overlays = mapFragment.mapView.overlays
@@ -476,6 +476,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             locationHandler.shutdown()
             locationHandler.disableBackgroundMode()
         }
+
+        historyController.onResume()
+
         locationHandler.start()
 
         dataHandler.start()

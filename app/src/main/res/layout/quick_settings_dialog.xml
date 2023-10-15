@@ -100,5 +100,24 @@
             android:padding="10dp"
             android:minHeight="48dp"
             android:prompt="@string/query_period" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/animation_interval_duration" />
+
+        <Spinner
+            android:id="@+id/selected_animation_interval_durations"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/animation_interval_durations"
+            android:padding="10dp"
+            android:minHeight="48dp"
+            android:prompt="@string/animation_interval_duration" />
     </LinearLayout>
 </ScrollView>

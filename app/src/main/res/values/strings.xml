@@ -386,4 +386,19 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="slider_current">now</string>
     <string name="slider_past">past</string>
     <string name="slider_legend">[hours]</string>
+    <string name="animation_interval_duration">Animation interval</string>
+    <string-array name="animation_interval_durations">
+        <item>2 h</item>
+        <item>4 h</item>
+        <item>6 h</item>
+        <item>12 h</item>
+        <item>24 h</item>
+    </string-array>
+    <string-array name="animation_interval_duration_values">
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+    </string-array>
 </resources>

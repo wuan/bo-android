@@ -58,6 +58,10 @@ class QuickSettingsDialog : DialogFragment() {
         val currentIntervalDurationValue = preferences.get(PreferenceKey.INTERVAL_DURATION, intervalDurationValues[1])
         val selectedIntervalDuration = getSelectedIndex(intervalDurationValues, currentIntervalDurationValue)
 
+        val animationIntervalDurationValues = resources.getStringArray(R.array.animation_interval_duration_values)
+        val currentAnimationIntervalDurationValue = preferences.get(PreferenceKey.ANIMATION_INTERVAL_DURATION, animationIntervalDurationValues[1])
+        val selectedAnimationInterval = getSelectedIndex(animationIntervalDurationValues, currentAnimationIntervalDurationValue)
+
         @SuppressLint("InflateParams") val view = layoutInflater.inflate(R.layout.quick_settings_dialog, null, false)
 
         val selectedRegionList = view.findViewById(R.id.selected_region) as Spinner
@@ -75,19 +79,24 @@ class QuickSettingsDialog : DialogFragment() {
         val queryPeriodSpinner = view.findViewById(R.id.selected_query_period) as Spinner
         queryPeriodSpinner.setSelection(selectedQueryPeriod)
 
+        val animationIntervalDuration = view.findViewById(R.id.selected_animation_interval_durations) as Spinner
+        animationIntervalDuration.setSelection(selectedAnimationInterval)
+
         builder.setView(view).setPositiveButton(R.string.ok) { _: DialogInterface, _: Int ->
             val regionValue = regionValues[selectedRegionList.selectedItemPosition]
             val rasterSizeValue = rasterSizeValues[rasterSizeSpinner.selectedItemPosition]
             val countThresholdValue = countThresholdValues[countThresholdSpinner.selectedItemPosition]
             val intervalDurationValue = intervalDurationValues[intervalDurationSpinner.selectedItemPosition]
             val queryPeriodValue = queryPeriodValues[queryPeriodSpinner.selectedItemPosition]
+            val animationIntervalValue = animationIntervalDurationValues[animationIntervalDuration.selectedItemPosition]
 
             preferences.edit()
                 .putString(PreferenceKey.REGION.toString(), regionValue)
                 .putString(PreferenceKey.RASTER_SIZE.toString(), rasterSizeValue)
                 .putString(PreferenceKey.COUNT_THRESHOLD.toString(), countThresholdValue)
                 .putString(PreferenceKey.INTERVAL_DURATION.toString(), intervalDurationValue)
-                .putString(PreferenceKey.QUERY_PERIOD.toString(), queryPeriodValue).apply()
+                .putString(PreferenceKey.QUERY_PERIOD.toString(), queryPeriodValue)
+                .putString(PreferenceKey.ANIMATION_INTERVAL_DURATION.toString(), animationIntervalValue).apply()
         }.setNegativeButton(R.string.cancel) { _: DialogInterface, _: Int -> }
 
         return builder.create()

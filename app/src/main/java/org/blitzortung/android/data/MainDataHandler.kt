@@ -67,7 +67,8 @@ class MainDataHandler @Inject constructor(
     @Volatile
     private var updatesEnabled = false
 
-    private var mode = Mode.DATA
+    var mode = Mode.DATA
+        private set
 
     private var period: Int = 0
 
@@ -78,6 +79,8 @@ class MainDataHandler @Inject constructor(
 
     var history = History()
         private set
+
+    private var animationHistory: History? = null
 
     private var autoRaster = false
 
@@ -112,7 +115,8 @@ class MainDataHandler @Inject constructor(
             PreferenceKey.REGION,
             PreferenceKey.INTERVAL_DURATION,
             PreferenceKey.HISTORIC_TIMESTEP,
-            PreferenceKey.QUERY_PERIOD
+            PreferenceKey.QUERY_PERIOD,
+            PreferenceKey.ANIMATION_INTERVAL_DURATION,
         )
         updatesEnabled = true
     }
@@ -143,7 +147,7 @@ class MainDataHandler @Inject constructor(
     }
 
     private fun updateUsingCache() {
-        var flags = Flags(mode=mode)
+        var flags = Flags(mode = mode)
 
         val parameters = activeParameters
         val cachedResult = cache.get(parameters)
@@ -254,6 +258,21 @@ class MainDataHandler @Inject constructor(
                 Log.v(Main.LOG_TAG, "MainDataHandler query $period")
             }
 
+            PreferenceKey.ANIMATION_INTERVAL_DURATION -> {
+                val value = Integer.parseInt(sharedPreferences.get(key, "6"))
+                animationHistory = when (value) {
+                    2 -> History(5, 120, false)
+                    4 -> History(10, 240, false)
+                    12 -> History(20, 720, false)
+                    24 -> History(30, 1440, true)
+                    else -> History(10, 360, false)
+                }
+                if (mode == Mode.ANIMATION) {
+                    history = animationHistory!!
+                    cache.clear()
+                }
+            }
+
             else -> {
             }
         }
@@ -350,9 +369,9 @@ class MainDataHandler @Inject constructor(
         }
     }
 
-    fun startAnimation(history: History) {
+    fun startAnimation() {
         cache.clear()
-        this.history = history
+        this.history = animationHistory!!
         mode = Mode.ANIMATION
         handler.post(this)
     }
