@@ -130,7 +130,9 @@
         <org.blitzortung.android.widget.TimeSlider
             android:id="@+id/time_slider"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="64dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"

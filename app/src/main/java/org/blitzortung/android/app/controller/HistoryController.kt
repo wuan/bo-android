@@ -74,7 +74,7 @@ class HistoryController(
                 binding.timeSlider.isEnabled = true
             } else {
                 dataHandler.stop()
-                binding.startStopAnimation.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
+                binding.startStopAnimation.setImageResource(android.R.drawable.ic_media_pause)
                 animationRunning = true
                 binding.timeSlider.isEnabled = false
                 dataHandler.startAnimation()

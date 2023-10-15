@@ -8,6 +8,7 @@ import android.graphics.Path
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatSeekBar
 import org.blitzortung.android.app.R
+import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.util.TabletAwareView
@@ -75,7 +76,7 @@ class TimeSlider : AppCompatSeekBar {
 
     override fun onDraw(c: Canvas) {
         val isTablet = TabletAwareView.isTablet(this.context)
-        val border = width / if (isTablet) 60f else 25f
+        val border = ViewHelper.pxFromDp(context, 30f)
         val base = height / 2f
         if (secondaryProgress >= 0 && max > 0) {
             drawSecondaryProgress(c, base, border)
