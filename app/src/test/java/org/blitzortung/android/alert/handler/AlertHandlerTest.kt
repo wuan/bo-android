@@ -11,6 +11,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.data.AlertSector
 import org.blitzortung.android.alert.event.AlertCancelEvent
+import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.app.controller.NotificationHandler
 import org.blitzortung.android.app.view.PreferenceKey
@@ -82,6 +83,7 @@ class AlertHandlerTest {
         )
 
         assertThat(uut.alertEvent).isInstanceOf(AlertCancelEvent::class.java)
+
     }
 
     @Test
@@ -211,9 +213,13 @@ class AlertHandlerTest {
         val rasterParameters = RasterParameters(10.0, 40.0, 10.0, 10.0, 20, 20, rasterBaselength)
 
         val parameters = Parameters(
-            interval = TimeInterval( offset = 0, duration = 60 ),
+            interval = TimeInterval( offset = -30, duration = 60 ),
             region = LOCAL_REGION, rasterBaselength = rasterBaselength
         )
+
+        var alertEvent : AlertEvent? = null
+        uut.requestUpdates{ event -> alertEvent = event }
+
         uut.dataEventConsumer.invoke(
             ResultEvent(
                 strikes = strikeList,
@@ -224,6 +230,44 @@ class AlertHandlerTest {
         )
 
         assertThat(uut.alertEvent).isInstanceOf(AlertCancelEvent::class.java)
+        assertThat(alertEvent).isInstanceOf(AlertCancelEvent::class.java)
+    }
+
+    @Test
+    fun receiveNonRealtimeDataWithLocationAndAlertsEnabledShouldDoNothingWhenIgnoreFlagIsSet() {
+        val edit = preferences.edit()
+        edit.put(PreferenceKey.ALERT_ENABLED, true)
+        edit.apply()
+
+        val location = Location("manual")
+        location.longitude = 11.0
+        location.latitude = 45.0
+        every { locationHandler.location } returns location
+
+        val rasterBaselength = 5000
+        val currentTime = System.currentTimeMillis()
+        val strikeList = listOf(RasterElement(currentTime, 11.0, 45.0, 5))
+        val rasterParameters = RasterParameters(10.0, 40.0, 10.0, 10.0, 20, 20, rasterBaselength)
+
+        val parameters = Parameters(
+            interval = TimeInterval( offset = -30, duration = 60 ),
+            region = LOCAL_REGION, rasterBaselength = rasterBaselength
+        )
+
+        var alertEvent : AlertEvent? = null
+        uut.requestUpdates{ event -> alertEvent = event }
+
+        uut.dataEventConsumer.invoke(
+            ResultEvent(
+                strikes = strikeList,
+                rasterParameters = rasterParameters,
+                flags = Flags(ignoreForAlerting = true),
+                parameters = parameters
+            )
+        )
+
+        assertThat(uut.alertEvent).isInstanceOf(AlertCancelEvent::class.java)
+        assertThat(alertEvent).isNull()
     }
 
     private fun mockAlertResult(currentTime: Long, closestDistance: Float) {
