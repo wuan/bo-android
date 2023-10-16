@@ -363,4 +363,9 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="changelog">Change log</string>
     <string name="location_permission_background_required">Achtergrondlocatietoestemming is vereist bij het gebruik van een apparaatlocatiebron.</string>
     <string name="location_permission_background_disclosure">Deze app gebruikt locatiegegevens, zelfs wanneer de app is gesloten of niet in gebruik is, wanneer achtergrondalarmen worden gebruikt met een apparaatlocatiebron.</string>
+    <string name="menu">Menu openen</string>
+    <string name="slider_current">nu</string>
+    <string name="slider_past">Verleden</string>
+    <string name="slider_legend">[Uren]</string>
+    <string name="animation_interval_duration">Animatie-interval</string>
 </resources>

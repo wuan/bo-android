@@ -125,7 +125,7 @@ class HistoryController(
     fun onResume() {
         animationRunning = dataHandler.mode == Mode.ANIMATION
         if (animationRunning) {
-            binding.startStopAnimation.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
+            binding.startStopAnimation.setImageResource(android.R.drawable.ic_media_pause)
             binding.timeSlider.isEnabled = false
         }
     }

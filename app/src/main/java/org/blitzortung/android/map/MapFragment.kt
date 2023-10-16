@@ -65,7 +65,6 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         mScaleBarOverlay.setScaleBarOffset(dm.widthPixels / 2, bottomOffset + ViewHelper.pxFromDp(context, 4f).toInt())
         mScaleBarOverlay.setCentred(true)
         mScaleBarOverlay.setAlignBottom(true)
-        mScaleBarOverlay.setMaxLength(15f)
         mScaleBarOverlay.setEnableAdjustLength(true)
         val centered = mScaleBarOverlay.javaClass.getDeclaredField("centred")
         centered.isAccessible = true
