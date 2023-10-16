@@ -19,9 +19,14 @@
 package org.blitzortung.android.app.view
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.graphics.Paint.Align
 import android.graphics.Paint.Style
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
+import android.graphics.RectF
 import android.location.Location
 import android.preference.PreferenceManager
 import android.util.AttributeSet
@@ -33,6 +38,7 @@ import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
+import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.dialogs.AlertDialog
 import org.blitzortung.android.dialogs.AlertDialogColorHandler
@@ -130,7 +136,7 @@ class AlertView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         val size = max(width, height)
-        val pad = 4
+        val pad = ViewHelper.pxFromDp(context, 5f)
 
         val center = size / 2.0f
         val radius = center - pad
@@ -213,6 +219,9 @@ class AlertView @JvmOverloads constructor(
                     val leftTop = center - (radiusIndex + 1) * radiusIncrement
                     val bottomRight = center + (radiusIndex + 1) * radiusIncrement
                     arcArea.set(leftTop, leftTop, bottomRight, bottomRight)
+                    if (radiusIndex == rangeStepCount - 1) {
+                        lines.strokeWidth = (size / 80).toFloat()
+                    }
                     temporaryCanvas.drawArc(arcArea, 0f, 360f, false, lines)
 
                     if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {

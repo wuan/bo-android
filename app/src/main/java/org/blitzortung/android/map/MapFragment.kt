@@ -55,13 +55,18 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
         mPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
+        val bottomOffset = ViewHelper.pxFromDp(context, 64f + 2f).toInt()
+
         mCopyrightOverlay = CopyrightOverlay(context)
         mCopyrightOverlay.setTextSize(7)
+        mCopyrightOverlay.setOffset(0, bottomOffset)
         mapView.overlays.add(mCopyrightOverlay)
         mScaleBarOverlay = ScaleBarOverlay(mapView)
-        mScaleBarOverlay.setScaleBarOffset(dm.widthPixels / 2, 15)
+        mScaleBarOverlay.setScaleBarOffset(dm.widthPixels / 2, bottomOffset + ViewHelper.pxFromDp(context, 4f).toInt())
         mScaleBarOverlay.setCentred(true)
         mScaleBarOverlay.setAlignBottom(true)
+        mScaleBarOverlay.setMaxLength(15f)
+        mScaleBarOverlay.setEnableAdjustLength(true)
         val centered = mScaleBarOverlay.javaClass.getDeclaredField("centred")
         centered.isAccessible = true
         centered.setBoolean(mScaleBarOverlay, true)

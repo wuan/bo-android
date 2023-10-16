@@ -356,7 +356,7 @@ class MainDataHandler @Inject constructor(
 
             Mode.ANIMATION -> {
                 parameters = parameters.animationStep(history)
-                val delay = if (parameters.isRealtime()) 3000L else 100L
+                val delay = if (parameters.isRealtime()) 3000L else 150L
                 handler.postDelayed(this, delay)
                 updateUsingCache()
             }

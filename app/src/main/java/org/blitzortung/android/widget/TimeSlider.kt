@@ -7,7 +7,9 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatSeekBar
+import androidx.core.view.marginTop
 import org.blitzortung.android.app.R
+import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
 
@@ -24,7 +26,7 @@ class TimeSlider : AppCompatSeekBar {
 
     init {
         timeAxisPaint.color = Color.LTGRAY
-        timeAxisPaint.textSize = 24f
+        timeAxisPaint.textSize = 28f
         timeAxisPaint.textAlign = Paint.Align.CENTER
 
         timeAxisLinePaint.color = Color.LTGRAY
@@ -73,17 +75,16 @@ class TimeSlider : AppCompatSeekBar {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     override fun onDraw(c: Canvas) {
-        val base = height / 2f
         if (secondaryProgress >= 0 && max > 0) {
-            drawSecondaryProgress(c, base)
+            drawSecondaryProgress(c)
         }
 
         super.onDraw(c)
 
-        drawAxis(c, base)
-        drawAxisTics(c, base)
+        drawAxis(c)
+        drawAxisTics(c)
 
-        val bottomOffset = 10f
+        val bottomOffset = ViewHelper.pxFromDp(context, 6f)
         c.drawText(
             context.resources.getString(R.string.slider_current),
             width - paddingRight.toFloat(),
@@ -104,9 +105,11 @@ class TimeSlider : AppCompatSeekBar {
         )
     }
 
-    private fun drawSecondaryProgress(c: Canvas, base: Float) {
-        val distance = 20f
-        val triangleSize = 10f
+    private fun drawSecondaryProgress(c: Canvas) {
+        val base: Float  = (height - paddingBottom) /2f
+
+        val distance = ViewHelper.pxFromDp(context, 8f)
+        val triangleSize = ViewHelper.pxFromDp(context, 5f)
         val secondPosition = calculateX(secondaryProgress)
         trianglePath.reset()
         c.drawPath(
@@ -120,8 +123,10 @@ class TimeSlider : AppCompatSeekBar {
         )
     }
 
-    private fun drawAxis(c: Canvas, base: Float) {
-        val axisWidth = 5f
+    private fun drawAxis(c: Canvas) {
+        val base: Float  = (height - paddingBottom) /2f
+
+        val axisWidth = ViewHelper.pxFromDp(context, 2f)
         c.drawRect(
             paddingLeft.toFloat(),
             base - axisWidth / 2,
@@ -135,20 +140,26 @@ class TimeSlider : AppCompatSeekBar {
         c.drawCircle(position, base, 16f, timeAxisLinePaint)
     }
 
-    private fun drawAxisTics(c: Canvas, base: Float) {
+    private fun drawAxisTics(c: Canvas) {
+        val base: Float  = (height - paddingBottom) /2f
+
+        val textPosition = base + ViewHelper.pxFromDp(context, 18f)
+        val shortTick = ViewHelper.pxFromDp(context, 3f)
+        val longTick = ViewHelper.pxFromDp(context, 5f)
+        val unit = ViewHelper.pxFromDp(context, 0.5f)
         for (i in 0..max) {
             val position = calculateX(i)
 
             val ticksPerHour = this.ticksPerHour
             val tickLength = if (ticksPerHour != null && (max - i) % ticksPerHour == 0) {
                 val hour = (max - i) / ticksPerHour
-                c.drawText("${hour}", position, base + 38, timeAxisPaint)
-                10f
+                c.drawText("${hour}", position, textPosition, timeAxisPaint)
+                longTick
             } else {
-                6f
+                shortTick
             }
 
-            c.drawRect(position - 1, base - tickLength, position + 1, base + tickLength, timeAxisPaint)
+            c.drawRect(position - unit, base - tickLength, position + unit, base + tickLength, timeAxisPaint)
         }
     }
 
