@@ -26,7 +26,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="legend">Обозначение</string>
     <string name="legend_grid">Квадрат</string>
-    <string name="unit_minute"> мин.</string>
+    <string name="unit_minute">мин.</string>
     <string name="unit_km">км</string>
     <string name="total_time">всего времени</string>
     <string name="activity">активность</string>
@@ -365,12 +365,18 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_size_summary" >Установите размер символа Вашего месторасположения</string>
     <string name="keep_zoom_goto_own_location_summary" >Установка сохранения Вашего текущего масштаба при центрировании собственного местоположения</string>
     <string name="keep_zoom_goto_own_location_title" >Сохранить масштаб</string>
+    <string name="notification_channel_name">Предупреждение об урагане</string>
     <string name="not_available">н/д</string>
     <string name="unit_miles">миль</string>
     <string name="map_scale">Масштаб карты</string>
     <string name="map_scale_summary">Выберите процент масштабирования тайлов карты</string>
     <string name="location_permission_required">Разрешение местоположения требуется при использовании источника местоположения устройства.</string>
+    <string name="osmdroid_storage_warning">Не удается найти доступное место на карте памяти. Пожалуйста, сообщите разработчику.</string>
     <string name="changelog">Список изменений</string>
     <string name="location_permission_background_required">Разрешение фонового определения местоположения требуется при использовании источника местоположения устройства.</string>
     <string name="location_permission_background_disclosure">Это приложение использует данные о местоположении, даже когда приложение закрыто или не используется, при использовании фоновых сигналов тревоги с источником местоположения устройства.</string>
+    <string name="menu">Меню</string>
+    <string name="slider_current">Сейчас</string>
+    <string name="slider_past">Прошлое</string>
+    <string name="slider_legend">Часы</string>
 </resources>

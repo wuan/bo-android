@@ -356,7 +356,8 @@ class MainDataHandler @Inject constructor(
 
             Mode.ANIMATION -> {
                 parameters = parameters.animationStep(history)
-                val delay = if (parameters.isRealtime()) 3000L else 150L
+                val delay = 150L //if (parameters.isRealtime()) 3000L else 150L
+                // There is no need pause because it is possible to study the situation when the animation is turned off.
                 handler.postDelayed(this, delay)
                 updateUsingCache()
             }
