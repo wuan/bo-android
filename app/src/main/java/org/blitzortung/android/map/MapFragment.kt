@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
@@ -65,11 +66,6 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         centered.isAccessible = true
         centered.setBoolean(mScaleBarOverlay, true)
         mapView.overlays.add(this.mScaleBarOverlay)
-
-        compassOverlay = CompassOverlay(context, InternalCompassOrientationProvider(context), mapView)
-        compassOverlay.enableCompass()
-        compassOverlay.setCompassCenter(mapView.width / 2.0f, mapView.height / 2.0f)
-        mapView.overlays.add(this.compassOverlay)
 
         //built in zoom controls
         mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT)
