@@ -363,4 +363,8 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_required">L\'autorisation de localisation est requise lors de l\'utilisation d\'une source de localisation de périphérique.</string>
     <string name="location_permission_background_required">L\'autorisation de localisation en arrière-plan est requise lors de l\'utilisation d\'une source de localisation de périphérique.</string>
     <string name="location_permission_background_disclosure">Cette application utilise les données de localisation même lorsque l\'application est fermée ou non utilisée lors de l\'utilisation d\'alarmes d\'arrière-plan avec une source de localisation de périphérique.</string>
+    <string name="slider_current">maintenant</string>
+    <string name="slider_past">Passé</string>
+    <string name="slider_legend">[Heures]</string>
+    <string name="animation_interval_duration">Intervalle d\'animation</string>
 </resources>
