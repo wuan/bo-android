@@ -52,7 +52,9 @@ enum class PreferenceKey(val key: String) {
     LOCATION_LONGITUDE("location_longitude"),
     LOCATION_LATITUDE("location_latitude"),
     KEEP_ZOOM_GOTO_OWN_LOCATION("keep_zoom_goto_own_location"),
-    ANIMATION_INTERVAL_DURATION("animation_interval_duration");
+    ANIMATION_INTERVAL_DURATION("animation_interval_duration"),
+    ANIMATION_SLEEP_DURATION("animation_sleep_duration"),
+    ANIMATION_CYCLE_SLEEP_DURATION("animation_cycle_sleep_duration");
 
     override fun toString(): String {
         return key

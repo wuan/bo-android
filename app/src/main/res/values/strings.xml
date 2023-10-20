@@ -386,7 +386,14 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="slider_current">now</string>
     <string name="slider_past">past</string>
     <string name="slider_legend">[hours]</string>
+    <string name="animation_settings">Animation</string>
+    <string name="animation_settings_summary">Animation specific settings</string>
+    <string name="animation_sleep_duration">Sleep between steps</string>
+    <string name="animation_sleep_duration_summary">Sleep time between animation steps in milliseconds</string>
+    <string name="animation_cycle_sleep_duration">Sleep after cycle</string>
+    <string name="animation_cycle_sleep_duration_summary">Sleep time after animation cycle has finished (in milliseconds)</string>
     <string name="animation_interval_duration">Animation interval</string>
+    <string name="animation_interval_duration_summary">Size of the interval of the animation cycle in hours</string>
     <string-array name="animation_interval_durations">
         <item>2 h</item>
         <item>4 h</item>

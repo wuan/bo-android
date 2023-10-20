@@ -50,6 +50,7 @@ import org.osmdroid.events.ZoomEvent
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.properties.Delegates
 
 @Singleton
 class MainDataHandler @Inject constructor(
@@ -66,6 +67,9 @@ class MainDataHandler @Inject constructor(
 
     @Volatile
     private var updatesEnabled = false
+
+    private var animationSleepDuration by Delegates.notNull<Long>();
+    private var animationCycleSleepDuration by Delegates.notNull<Long>();
 
     var mode = Mode.DATA
         private set
@@ -117,6 +121,8 @@ class MainDataHandler @Inject constructor(
             PreferenceKey.HISTORIC_TIMESTEP,
             PreferenceKey.QUERY_PERIOD,
             PreferenceKey.ANIMATION_INTERVAL_DURATION,
+            PreferenceKey.ANIMATION_SLEEP_DURATION,
+            PreferenceKey.ANIMATION_CYCLE_SLEEP_DURATION,
         )
         updatesEnabled = true
     }
@@ -273,6 +279,14 @@ class MainDataHandler @Inject constructor(
                 }
             }
 
+            PreferenceKey.ANIMATION_SLEEP_DURATION -> {
+                animationSleepDuration = sharedPreferences.getInt(key.key, 200).toLong()
+            }
+
+            PreferenceKey.ANIMATION_CYCLE_SLEEP_DURATION -> {
+                animationCycleSleepDuration = sharedPreferences.getInt(key.key, 3000).toLong()
+            }
+
             else -> {
             }
         }
@@ -356,7 +370,9 @@ class MainDataHandler @Inject constructor(
 
             Mode.ANIMATION -> {
                 parameters = parameters.animationStep(history)
-                val delay = if (parameters.isRealtime()) 3000L else 150L
+                val delay = if (parameters.isRealtime()) {
+                    if (animationCycleSleepDuration > 0) animationCycleSleepDuration else animationSleepDuration
+                } else animationSleepDuration
                 handler.postDelayed(this, delay)
                 updateUsingCache()
             }
