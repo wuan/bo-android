@@ -21,12 +21,11 @@ package org.blitzortung.android.app.controller
 import android.content.Context
 import android.view.View
 import android.widget.ImageButton
-import android.widget.Toast
 import org.blitzortung.android.app.ButtonGroup
-import org.blitzortung.android.app.R
 import org.blitzortung.android.app.databinding.MainBinding
 import org.blitzortung.android.data.DataChannel
 import org.blitzortung.android.data.MainDataHandler
+import org.blitzortung.android.data.Mode
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.Event
 
@@ -39,6 +38,8 @@ class HistoryController(
 
     private val buttons: MutableCollection<ImageButton> = arrayListOf()
 
+    private var animationRunning = false
+
     val dataConsumer = { event: Event ->
         if (event is ResultEvent) {
             setRealtimeData(event.containsRealtimeData())
@@ -46,49 +47,41 @@ class HistoryController(
     }
 
     init {
-        setupHistoryRewindButton()
-        setupHistoryForwardButton()
+        setupStartStopAnimationButton()
         setupGoRealtimeButton()
-
         setRealtimeData(true)
     }
 
     private fun setRealtimeData(realtimeData: Boolean) {
-        binding.historyRew.visibility = View.VISIBLE
-        val historyButtonsVisibility = if (realtimeData) View.INVISIBLE else View.VISIBLE
-        binding.historyFfwd.visibility = historyButtonsVisibility
+        val historyButtonsVisibility = if (realtimeData || animationRunning) View.INVISIBLE else View.VISIBLE
         binding.goRealtime.visibility = historyButtonsVisibility
+        if (realtimeData) {
+            binding.timeSlider.progress = binding.timeSlider.max
+        }
         updateButtonColumn()
     }
 
-    private fun setupHistoryRewindButton() {
-        addButtonWithOnClickAction(binding.historyRew) {
-            if (dataHandler.rewInterval()) {
-                binding.historyFfwd.visibility = View.VISIBLE
-                binding.goRealtime.visibility = View.VISIBLE
-                updateButtonColumn()
-                updateData()
-            } else {
-                val toast = Toast.makeText(
-                    context,
-                    context.resources.getText(R.string.historic_timestep_limit_reached),
-                    Toast.LENGTH_SHORT
-                )
-                toast.show()
-            }
-        }
-    }
+    private fun setupStartStopAnimationButton() {
+        addButtonWithOnClickAction(binding.startStopAnimation) {
+            if (animationRunning) {
+                dataHandler.stop()
+                binding.startStopAnimation.setImageResource(android.R.drawable.ic_media_play)
+                dataHandler.goRealtime()
+                configureForRealtimeOperation()
 
-    private fun setupHistoryForwardButton() {
-        addButtonWithOnClickAction(binding.historyFfwd) {
-            if (dataHandler.ffwdInterval()) {
-                if (dataHandler.isRealtime) {
-                    configureForRealtimeOperation()
-                } else {
-                    dataHandler.updateData()
-                }
+                animationRunning = false
+                setRealtimeData(true)
+                binding.timeSlider.isEnabled = true
+            } else {
+                dataHandler.stop()
+                binding.startStopAnimation.setImageResource(android.R.drawable.ic_media_pause)
+                animationRunning = true
+                binding.timeSlider.isEnabled = false
+                dataHandler.startAnimation()
             }
         }
+
+        binding.startStopAnimation.visibility = View.VISIBLE
     }
 
     private fun setupGoRealtimeButton() {
@@ -108,11 +101,13 @@ class HistoryController(
     }
 
     private fun configureForRealtimeOperation() {
-        binding.historyFfwd.visibility = View.INVISIBLE
         binding.goRealtime.visibility = View.INVISIBLE
         updateButtonColumn()
 
         dataHandler.restart()
+        val historySteps = dataHandler.historySteps()
+        binding.timeSlider.max = historySteps
+        binding.timeSlider.progress = historySteps
     }
 
     private fun updateButtonColumn() {
@@ -125,5 +120,13 @@ class HistoryController(
 
     private fun updateData() {
         dataHandler.updateData(setOf(DataChannel.STRIKES))
+    }
+
+    fun onResume() {
+        animationRunning = dataHandler.mode == Mode.ANIMATION
+        if (animationRunning) {
+            binding.startStopAnimation.setImageResource(android.R.drawable.ic_media_pause)
+            binding.timeSlider.isEnabled = false
+        }
     }
 }

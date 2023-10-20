@@ -42,6 +42,8 @@ import android.view.View
 import android.view.ViewConfiguration
 import android.view.WindowManager
 import android.widget.ImageButton
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
@@ -61,6 +63,7 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.app.view.put
 import org.blitzortung.android.data.DataChannel
 import org.blitzortung.android.data.MainDataHandler
+import org.blitzortung.android.data.Mode
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.RequestStartedEvent
@@ -172,8 +175,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     mapFragment.mapView.invalidate()
 
                     binding.legendView.requestLayout()
+                    binding.timeSlider.update(event.parameters, event.history!!)
 
-                    if (!event.containsRealtimeData()) {
+                    if (event.flags.mode == Mode.ANIMATION || !event.containsRealtimeData()) {
                         setHistoricStatusString()
                     }
                 }
@@ -233,8 +237,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         buttonColumnHandler = ButtonColumnHandler(if (TabletAwareView.isTablet(this)) 75f else 55f)
         configureMenuAccess()
         historyController = HistoryController(this, binding, buttonColumnHandler, dataHandler)
-
-        buttonColumnHandler.addAllElements(historyController.getButtons(), ButtonGroup.DATA_UPDATING)
+        val historyButtons = historyController.getButtons()
+        buttonColumnHandler.addAllElements(historyButtons, ButtonGroup.DATA_UPDATING)
 
         //setupDetailModeButton()
 
@@ -246,6 +250,27 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         if (versionComponent.state == VersionComponent.State.FIRST_RUN_AFTER_UPDATE) {
             changeLogComponent.showChangeLogDialog(this)
         }
+
+        binding.timeSlider.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+                if (p2) {
+                    val changed = dataHandler.setPosition(p1)
+                    if (changed) {
+                        if (dataHandler.isRealtime) {
+                            dataHandler.restart()
+                        } else {
+                            dataHandler.updateData(setOf(DataChannel.STRIKES))
+                        }
+                    }
+                }
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+            }
+        })
     }
 
     private fun initializeOsmDroid() {
@@ -415,7 +440,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT,
             PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT,
             PreferenceKey.DO_NOT_SLEEP,
-            PreferenceKey.BACKGROUND_QUERY_PERIOD
+            PreferenceKey.BACKGROUND_QUERY_PERIOD,
         )
 
         val overlays = mapFragment.mapView.overlays
@@ -451,6 +476,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             locationHandler.shutdown()
             locationHandler.disableBackgroundMode()
         }
+
+        historyController.onResume()
+
         locationHandler.start()
 
         dataHandler.start()
@@ -741,10 +769,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun setHistoricStatusString() {
-        if (!strikeListOverlay.hasRealtimeData()) {
-            val timeString = DateFormat.format("@ kk:mm", strikeListOverlay.referenceTime) as String
-            setStatusString(timeString)
-        }
+        val timeString = DateFormat.format("@ kk:mm", strikeListOverlay.referenceTime) as String
+        setStatusString(timeString)
     }
 
     private fun setStatusString(runStatus: String) {

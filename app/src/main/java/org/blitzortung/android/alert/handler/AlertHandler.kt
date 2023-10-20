@@ -33,6 +33,7 @@ import org.blitzortung.android.app.controller.NotificationHandler
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.beans.RasterParameters
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.data.provider.result.ResultEvent
@@ -96,14 +97,16 @@ class AlertHandler @Inject constructor(
     val dataEventConsumer: (Event) -> Unit = { event ->
         if (event is ResultEvent) {
             Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer $event")
-            if (!event.failed && event.containsRealtimeData() && event.strikes != null) {
-                val strikes = Strikes(event.strikes, event.rasterParameters)
-                checkStrikes(strikes, locationHandler.location)
-            } else {
-                if (!event.containsRealtimeData()) {
-                    lastStrikes = null
+            if (!event.flags.ignoreForAlerting) {
+                if (!event.failed && event.containsRealtimeData() && event.strikes != null) {
+                    val strikes = Strikes(event.strikes, event.rasterParameters)
+                    checkStrikes(strikes, locationHandler.location)
+                } else {
+                    if (!event.containsRealtimeData()) {
+                        lastStrikes = null
+                    }
+                    broadcastResult(null)
                 }
-                broadcastResult(null)
             }
         }
     }
@@ -166,6 +169,7 @@ class AlertHandler @Inject constructor(
                     "AlertHandler.onSharedPreferenceChanged() signalingThresholdTime = $signalingThresholdTime"
                 )
             }
+
             else -> {}
         }
     }

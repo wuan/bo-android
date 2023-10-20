@@ -27,10 +27,12 @@ import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.data.cache.DataCache
 import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.LocalData
@@ -45,9 +47,10 @@ import org.blitzortung.android.util.Period
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.properties.Delegates
 
 @Singleton
 class MainDataHandler @Inject constructor(
@@ -55,6 +58,7 @@ class MainDataHandler @Inject constructor(
     private val dataProviderFactory: DataProviderFactory,
     private val preferences: SharedPreferences,
     private val handler: Handler,
+    private val cache: DataCache,
     private val localData: LocalData,
     private val updatePeriod: Period
 ) : OnSharedPreferenceChangeListener, Runnable, MapListener {
@@ -64,6 +68,12 @@ class MainDataHandler @Inject constructor(
     @Volatile
     private var updatesEnabled = false
 
+    private var animationSleepDuration by Delegates.notNull<Long>();
+    private var animationCycleSleepDuration by Delegates.notNull<Long>();
+
+    var mode = Mode.DATA
+        private set
+
     private var period: Int = 0
 
     private var dataProvider: DataProvider? = null
@@ -71,9 +81,12 @@ class MainDataHandler @Inject constructor(
     var parameters = Parameters()
         private set
 
-    private var autoRaster = false
+    var history = History()
+        private set
 
-    private lateinit var parametersController: ParametersController
+    private var animationHistory: History? = null
+
+    private var autoRaster = false
 
     private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
         override fun addedFirstConsumer() {
@@ -106,7 +119,10 @@ class MainDataHandler @Inject constructor(
             PreferenceKey.REGION,
             PreferenceKey.INTERVAL_DURATION,
             PreferenceKey.HISTORIC_TIMESTEP,
-            PreferenceKey.QUERY_PERIOD
+            PreferenceKey.QUERY_PERIOD,
+            PreferenceKey.ANIMATION_INTERVAL_DURATION,
+            PreferenceKey.ANIMATION_SLEEP_DURATION,
+            PreferenceKey.ANIMATION_CYCLE_SLEEP_DURATION,
         )
         updatesEnabled = true
     }
@@ -132,8 +148,35 @@ class MainDataHandler @Inject constructor(
                     updateParticipants = true
                 }
             }
-            Log.d(Main.LOG_TAG, "MainDataHandler.updateData() $activeParameters")
-            FetchDataTask(dataMode, dataProvider!!, { sendEvent(it) }, ::toast).execute(parameters = activeParameters)
+            updateUsingCache()
+        }
+    }
+
+    private fun updateUsingCache() {
+        var flags = Flags(mode = mode)
+
+        val parameters = activeParameters
+        val cachedResult = cache.get(parameters)
+        if (cachedResult != null) {
+            Log.d(LOG_TAG, "MainDataHandler.updateData() cached $parameters")
+            sendEvent(cachedResult)
+        } else {
+            Log.d(LOG_TAG, "MainDataHandler.updateData() fetch $parameters")
+            FetchDataTask(dataMode, dataProvider!!, {
+                if (mode == Mode.ANIMATION) {
+                    flags = flags.copy(storeResult = false)
+                    if (!it.containsRealtimeData()) {
+                        flags = flags.copy(ignoreForAlerting = true)
+                    }
+                }
+                val event = it.copy(flags = flags)
+                if (!it.containsRealtimeData()) {
+                    cache.put(event.parameters, event)
+                } else {
+                    cache.logStats()
+                }
+                sendEvent(event)
+            }, ::toast).execute(parameters = parameters, history = history)
         }
     }
 
@@ -198,12 +241,14 @@ class MainDataHandler @Inject constructor(
             }
 
             PreferenceKey.INTERVAL_DURATION -> {
-                parameters = parameters.copy(intervalDuration = Integer.parseInt(sharedPreferences.get(key, "60")))
+                val intervalDuration = Integer.parseInt(sharedPreferences.get(key, "60"))
+                parameters = parameters.withIntervalDuration(intervalDuration)
                 updateData()
             }
 
             PreferenceKey.HISTORIC_TIMESTEP -> {
-                parametersController = ParametersController.withOffsetIncrement(
+                history = history.copy(
+                    timeIncrement =
                     sharedPreferences.get(key, "30").toInt()
                 )
             }
@@ -217,6 +262,29 @@ class MainDataHandler @Inject constructor(
             PreferenceKey.QUERY_PERIOD -> {
                 period = Integer.parseInt(sharedPreferences.get(key, "60"))
                 Log.v(Main.LOG_TAG, "MainDataHandler query $period")
+            }
+
+            PreferenceKey.ANIMATION_INTERVAL_DURATION -> {
+                val value = Integer.parseInt(sharedPreferences.get(key, "6"))
+                animationHistory = when (value) {
+                    2 -> History(5, 120, false)
+                    4 -> History(10, 240, false)
+                    12 -> History(20, 720, false)
+                    24 -> History(30, 1440, true)
+                    else -> History(10, 360, false)
+                }
+                if (mode == Mode.ANIMATION) {
+                    history = animationHistory!!
+                    cache.clear()
+                }
+            }
+
+            PreferenceKey.ANIMATION_SLEEP_DURATION -> {
+                animationSleepDuration = sharedPreferences.getInt(key.key, 200).toLong()
+            }
+
+            PreferenceKey.ANIMATION_CYCLE_SLEEP_DURATION -> {
+                animationCycleSleepDuration = sharedPreferences.getInt(key.key, 3000).toLong()
             }
 
             else -> {
@@ -249,16 +317,16 @@ class MainDataHandler @Inject constructor(
     val intervalDuration: Int
         get() = parameters.intervalDuration
 
-    fun ffwdInterval(): Boolean {
-        return updateParameters { parametersController.ffwdInterval(it) }
-    }
-
-    fun rewInterval(): Boolean {
-        return updateParameters { parametersController.rewInterval(it) }
-    }
-
     fun goRealtime(): Boolean {
-        return updateParameters { parametersController.goRealtime(it) }
+        return updateParameters { it.goRealtime() }
+    }
+
+    fun setPosition(position: Int): Boolean {
+        return updateParameters { it.withPosition(position, history) }
+    }
+
+    fun historySteps(): Int {
+        return parameters.intervalMaxPosition(history)
     }
 
     private fun updateParameters(updater: (Parameters) -> Parameters): Boolean {
@@ -279,33 +347,56 @@ class MainDataHandler @Inject constructor(
     }
 
     override fun run() {
-        val currentTime = Period.currentTime
-        val updateTargets = HashSet<DataChannel>()
+        when (mode) {
+            Mode.DATA -> {
+                val currentTime = Period.currentTime
+                val updateTargets = HashSet<DataChannel>()
 
-        if (updatePeriod.shouldUpdate(currentTime, period)) {
-            updateTargets.add(DataChannel.STRIKES)
-        }
+                if (updatePeriod.shouldUpdate(currentTime, period)) {
+                    updateTargets.add(DataChannel.STRIKES)
+                }
 
-        if (updateTargets.isNotEmpty()) {
-            updateData(updateTargets)
-        }
+                if (updateTargets.isNotEmpty()) {
+                    updateData(updateTargets)
+                }
 
-        if (parameters.isRealtime()) {
-            val statusString = "" + updatePeriod.getCurrentUpdatePeriod(currentTime, period) + "/" + period
-            broadcastEvent(StatusEvent(statusString))
-            // Schedule the next update
-            handler.postDelayed(this, 1000)
+                if (parameters.isRealtime()) {
+                    val statusString = "" + updatePeriod.getCurrentUpdatePeriod(currentTime, period) + "/" + period
+                    broadcastEvent(StatusEvent(statusString))
+                    // Schedule the next update
+                    handler.postDelayed(this, 1000)
+                }
+            }
+
+            Mode.ANIMATION -> {
+                parameters = parameters.animationStep(history)
+                val delay = if (parameters.isRealtime()) {
+                    if (animationCycleSleepDuration > 0) animationCycleSleepDuration else animationSleepDuration
+                } else animationSleepDuration
+                handler.postDelayed(this, delay)
+                updateUsingCache()
+            }
         }
     }
 
     fun start() {
-        if (isRealtime) {
+        if (isRealtime || mode == Mode.ANIMATION) {
             handler.post(this)
         }
     }
 
+    fun startAnimation() {
+        cache.clear()
+        this.history = animationHistory!!
+        mode = Mode.ANIMATION
+        handler.post(this)
+    }
+
     fun restart() {
         updatePeriod.restart()
+        cache.clear()
+        history = History()
+        mode = Mode.DATA
         start()
     }
 
@@ -351,6 +442,8 @@ class MainDataHandler @Inject constructor(
             false
         }
     }
+
+
 }
 
 internal const val DEFAULT_RASTER_BASELENGTH = 10000

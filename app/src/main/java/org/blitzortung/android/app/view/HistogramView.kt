@@ -37,7 +37,7 @@ class HistogramView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : TabletAwareView(context, attrs, defStyle) {
 
-    private val backgroundPaint: Paint
+    private val backgroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val foregroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val textPaint: Paint
     private val defaultForegroundColor: Int
@@ -52,16 +52,17 @@ class HistogramView @JvmOverloads constructor(
     }
 
     init {
-
-        backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-        backgroundPaint.color = context.resources.getColor(R.color.translucent_background)
+        backgroundPaint.color = 0x00b0b0b0.toInt()
 
         defaultForegroundColor = context.resources.getColor(R.color.text_foreground)
+
         textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = defaultForegroundColor
             textSize = this@HistogramView.textSize
             textAlign = Paint.Align.RIGHT
         }
+
+        foregroundPaint.strokeWidth = 5f
 
         backgroundRect = RectF()
     }
@@ -109,7 +110,7 @@ class HistogramView @JvmOverloads constructor(
             val y0 = height - padding
             val yd = (height - 2 * padding - textSize) / ymax
 
-            foregroundPaint.strokeWidth = 2f
+            foregroundPaint.strokeWidth = 5f
             for (i in 0 until histogram.size - 1) {
                 foregroundPaint.color = colorHandler.getColor((histogram.size - 1 - i) / ratio)
                 canvas.drawLine(
@@ -121,7 +122,7 @@ class HistogramView @JvmOverloads constructor(
                 )
             }
 
-            foregroundPaint.strokeWidth = 1f
+            foregroundPaint.strokeWidth = 3f
             foregroundPaint.color = defaultForegroundColor
 
             canvas.drawLine(padding, height - padding, width - padding, height - padding, foregroundPaint)

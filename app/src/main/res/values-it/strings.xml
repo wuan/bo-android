@@ -354,4 +354,5 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_required">L\'autorizzazione alla posizione è richiesta quando si utilizza un\'origine della posizione del dispositivo.</string>
     <string name="location_permission_background_required">L\'autorizzazione alla posizione in background è necessaria quando si utilizza un\'origine della posizione del dispositivo.</string>
     <string name="location_permission_background_disclosure">Questa app utilizza i dati sulla posizione anche quando l\'app è chiusa o non è in uso quando si utilizzano allarmi in background con un\'origine della posizione del dispositivo.</string>
+    <string name="animation_interval_duration">Intervallo di animazione</string>
 </resources>

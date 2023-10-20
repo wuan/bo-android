@@ -8,8 +8,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.put
 import org.blitzortung.android.data.Flags
+import org.blitzortung.android.data.History
 import org.blitzortung.android.data.LocalReference
 import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.TimeInterval
 import org.blitzortung.android.data.beans.RasterElement
 import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
@@ -53,11 +55,14 @@ class JsonRpcDataProviderTest {
     fun getsGlobalData() {
         val parameters = Parameters(
             region = GLOBAL_REGION,
-            intervalDuration = 60,
-            intervalOffset = 30,
+            interval = TimeInterval(
+                offset = 30,
+                duration = 60
+            ),
             countThreshold = 5,
             rasterBaselength = 5000
         )
+        val history = History()
         val flags = Flags()
 
         val response = createResponse()
@@ -73,7 +78,7 @@ class JsonRpcDataProviderTest {
             )
         } returns response
 
-        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, flags) }
+        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
         assertThat(result.rasterParameters?.latitudeStart).isEqualTo(0.0)
         assertThat(result.rasterParameters?.longitudeStart).isEqualTo(0.0)
@@ -94,12 +99,15 @@ class JsonRpcDataProviderTest {
         val localReference = LocalReference(5,6)
         val parameters = Parameters(
             region = LOCAL_REGION,
-            intervalDuration = 60,
-            intervalOffset = 30,
+            interval = TimeInterval(
+                offset = 30,
+                duration = 60
+            ),
             countThreshold = 5,
             rasterBaselength = 5000,
             localReference = localReference
         )
+        val history = History()
         val flags = Flags()
 
         val response = createResponse()
@@ -119,7 +127,7 @@ class JsonRpcDataProviderTest {
             )
         } returns response
 
-        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, flags) }
+        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
         assertThat(result.rasterParameters?.latitudeStart).isEqualTo(15.0)
         assertThat(result.rasterParameters?.longitudeStart).isEqualTo(10.0)
@@ -140,12 +148,15 @@ class JsonRpcDataProviderTest {
         val localReference = LocalReference(5,6)
         val parameters = Parameters(
             region = 2,
-            intervalDuration = 60,
-            intervalOffset = 30,
+            interval = TimeInterval(
+                offset = 30,
+                duration = 60
+            ),
             countThreshold = 5,
             rasterBaselength = 5000,
             localReference = localReference
         )
+        val history = History()
         val flags = Flags()
 
         val response = createResponse()
@@ -164,7 +175,7 @@ class JsonRpcDataProviderTest {
             )
         } returns response
 
-        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, flags) }
+        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
         assertThat(result.rasterParameters?.latitudeStart).isEqualTo(15.0)
         assertThat(result.rasterParameters?.longitudeStart).isEqualTo(10.0)

@@ -359,7 +359,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_size_summary">Ustaw rozmiar symbolu własnej lokalizacji</string>
     <string name="keep_zoom_goto_own_location_summary">Ustawienie do utrzymania aktualnego powiększenia podczas centrowania własnej lokalizacji</string>
     <string name="keep_zoom_goto_own_location_title">Utrzymuj powiększenie</string>
-    <string name="notification_channel_name" translatable="false">Storm Alarms</string>
     <string name="not_available">Niedostępne</string>
     <string name="unit_miles">mi.</string>
     <string name="map_scale">Skala mapy</string>
@@ -369,4 +368,9 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_background_disclosure">Ta aplikacja korzysta z danych o lokalizacji nawet wtedy, gdy jest zamknięta lub nieużywana, podczas korzystania z alarmów w tle.</string>
     <string name="osmdroid_storage_warning">Nie można znaleźć miejsca do zapisu mapy. Proszę zgłosić.</string>
     <string name="changelog">Dziennik zmian</string>
+    <string name="menu">Otwórz menu</string>
+    <string name="slider_current">Teraz</string>
+    <string name="slider_past">Przeszłość</string>
+    <string name="slider_legend">[godziny]</string>
+    <string name="animation_interval_duration">Interwał animacji</string>
 </resources>

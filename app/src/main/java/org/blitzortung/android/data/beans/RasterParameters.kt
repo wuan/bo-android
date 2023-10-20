@@ -22,6 +22,7 @@ import android.graphics.Point
 import android.graphics.RectF
 import org.blitzortung.android.data.Coordsys
 import org.osmdroid.views.Projection
+import java.io.Serializable
 
 data class RasterParameters(
     val longitudeStart: Double,
@@ -31,7 +32,7 @@ data class RasterParameters(
     val longitudeBins: Int,
     val latitudeBins: Int,
     val baselength: Int? = null
-) {
+) : Serializable {
 
     val rectCenterLongitude: Double = longitudeStart + longitudeDelta * longitudeBins / 2.0
 

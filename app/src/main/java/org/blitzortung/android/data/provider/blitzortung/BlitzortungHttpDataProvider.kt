@@ -25,6 +25,7 @@ import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.Flags
+import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
@@ -155,8 +156,8 @@ class BlitzortungHttpDataProvider @Inject constructor(
     }
 
     private inner class Retriever : DataRetriever {
-        override fun getStrikes(parameters: Parameters, flags: Flags): ResultEvent {
-            var result = initializeResult(parameters, flags)
+        override fun getStrikes(parameters: Parameters, history: History?, flags: Flags): ResultEvent {
+            var result = initializeResult(parameters, history, flags)
 
             if (parameters != this@BlitzortungHttpDataProvider.parameters) {
                 this@BlitzortungHttpDataProvider.parameters = parameters
@@ -206,8 +207,8 @@ class BlitzortungHttpDataProvider @Inject constructor(
             return result
         }
 
-        override fun getStrikesGrid(parameters: Parameters, flags: Flags): ResultEvent {
-            return initializeResult(parameters, flags)
+        override fun getStrikesGrid(parameters: Parameters, history: History?, flags: Flags): ResultEvent {
+            return initializeResult(parameters, history, flags)
         }
 
         override fun getStations(region: Int): List<Station> {
