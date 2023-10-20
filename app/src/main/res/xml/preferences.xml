@@ -128,7 +128,7 @@
             android:enabled="true"
             android:entries="@array/animation_interval_durations"
             android:entryValues="@array/animation_interval_duration_values"
-            android:key="animation_interval"
+            android:key="animation_interval_duration"
             android:persistent="true"
             android:selectable="true"
             />
