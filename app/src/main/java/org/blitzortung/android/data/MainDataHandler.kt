@@ -394,7 +394,9 @@ class MainDataHandler @Inject constructor(
 
     fun restart() {
         updatePeriod.restart()
-        cache.clear()
+        if (mode == Mode.ANIMATION) {
+            cache.clear()
+        }
         history = History()
         mode = Mode.DATA
         start()
