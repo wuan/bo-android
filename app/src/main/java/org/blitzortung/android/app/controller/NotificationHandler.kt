@@ -71,7 +71,7 @@ open class NotificationHandler @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun createNotification(contentIntent: PendingIntent?, notificationText: String): Notification? {
+    private fun createNotification(contentIntent: PendingIntent?, notificationText: String): Notification {
         return Notification.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.icon)
             .setContentTitle(context.resources.getText(R.string.app_name))
@@ -83,7 +83,7 @@ open class NotificationHandler @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
-    private fun createJellyBeanNotification(contentIntent: PendingIntent?, notificationText: String): Notification? {
+    private fun createJellyBeanNotification(contentIntent: PendingIntent?, notificationText: String): Notification {
         val builder = Notification.Builder(context)
             .setSmallIcon(R.drawable.icon)
             .setContentTitle(context.resources.getText(R.string.app_name))

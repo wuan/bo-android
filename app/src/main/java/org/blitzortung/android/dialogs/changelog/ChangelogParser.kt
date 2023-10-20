@@ -55,8 +55,7 @@ class ChangelogParser {
     }
 
     private fun getParser(context: Context, changeLogFileId: Int): XmlPullParser {
-        val resourceTypeName = context.resources.getResourceTypeName(changeLogFileId)
-        return when (resourceTypeName) {
+        return when (val resourceTypeName = context.resources.getResourceTypeName(changeLogFileId)) {
             "raw" -> {
                 val inputStream = context.resources.openRawResource(changeLogFileId)
                 val parser = Xml.newPullParser()

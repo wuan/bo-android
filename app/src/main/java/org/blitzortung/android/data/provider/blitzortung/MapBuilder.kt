@@ -30,10 +30,10 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
     protected val keyValueBuilderMap: HashMap<String, (Array<String>) -> Unit> = HashMap()
 
     fun buildFromLine(line: String): T? {
-        try {
-            return buildFromLineChecked(line)
+        return try {
+            buildFromLineChecked(line)
         } catch (e: MapBuilderFailedException) {
-            return null
+            null
         }
     }
 

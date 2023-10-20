@@ -18,7 +18,6 @@
 
 package org.blitzortung.android.app.controller
 
-import android.content.Context
 import android.view.View
 import android.widget.ImageButton
 import org.blitzortung.android.app.ButtonGroup
@@ -30,7 +29,6 @@ import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.protocol.Event
 
 class HistoryController(
-    private val context: Context,
     private val binding: MainBinding,
     private val buttonHandler: ButtonColumnHandler<ImageButton, ButtonGroup>,
     private val dataHandler: MainDataHandler
@@ -116,10 +114,6 @@ class HistoryController(
 
     fun getButtons(): Collection<ImageButton> {
         return buttons.toList()
-    }
-
-    private fun updateData() {
-        dataHandler.updateData(setOf(DataChannel.STRIKES))
     }
 
     fun onResume() {

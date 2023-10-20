@@ -206,7 +206,6 @@ class JsonRpcDataProvider @Inject constructor(
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
-        @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
             PreferenceKey.SERVICE_URL -> {
                 val serviceUrl: String =

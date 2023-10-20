@@ -236,7 +236,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         buttonColumnHandler = ButtonColumnHandler(if (TabletAwareView.isTablet(this)) 75f else 55f)
         configureMenuAccess()
-        historyController = HistoryController(this, binding, buttonColumnHandler, dataHandler)
+        historyController = HistoryController(binding, buttonColumnHandler, dataHandler)
         val historyButtons = historyController.getButtons()
         buttonColumnHandler.addAllElements(historyButtons, ButtonGroup.DATA_UPDATING)
 
@@ -552,7 +552,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         super.onStop()
         Log.v(LOG_TAG, "Main.onStop()")
 
-        mapFragment.mapView.overlays.removeAll(listOf(fadeOverlay, ownLocationOverlay, strikeListOverlay))
+        mapFragment.mapView.overlays.removeAll(setOf(fadeOverlay, ownLocationOverlay, strikeListOverlay))
         mapFragment.mapView.removeMapListener(ownLocationOverlay)
         mapFragment.mapView.removeMapListener(strikeListOverlay)
         mapFragment.mapView.removeMapListener(dataHandler)
@@ -579,7 +579,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.v(
             LOG_TAG,
-            "Main.onRequestPermissionsResult() $requestCode - ${permissions.joinToString()} - ${grantResults.joinToString() { it.toString() }}"
+            "Main.onRequestPermissionsResult() $requestCode - ${permissions.joinToString()} - ${grantResults.joinToString { it.toString() }}"
         )
         val providerRelation = LocationProviderRelation.byOrdinal[requestCode]
         if (providerRelation != null) {
@@ -679,7 +679,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                                     val intent = if (allowIgnoreBatteryOptimization) {
                                         Intent(
                                             Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                                            Uri.parse("package:" + packageName)
+                                            Uri.parse("package:$packageName")
                                         )
                                     } else {
                                         Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
@@ -739,7 +739,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
-        @Suppress("NON_EXHAUSTIVE_WHEN") when (key) {
+        when (key) {
             PreferenceKey.COLOR_SCHEME -> {
                 strikeListOverlay.refresh()
             }

@@ -34,7 +34,7 @@ class QuickSettingsDialog : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = Builder(activity)
-        val layoutInflater = activity!!.layoutInflater
+        val layoutInflater = requireActivity().layoutInflater
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(activity)
 

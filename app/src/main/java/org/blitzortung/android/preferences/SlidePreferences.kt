@@ -80,10 +80,10 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
     }
 
     @Deprecated("Deprecated in Java")
-    override fun onSetInitialValue(should_restore: Boolean, defaultValue: Any?) {
-        super.onSetInitialValue(should_restore, defaultValue)
+    override fun onSetInitialValue(shouldRestore: Boolean, defaultValue: Any?) {
+        super.onSetInitialValue(shouldRestore, defaultValue)
 
-        if (should_restore && shouldPersist()) {
+        if (shouldRestore && shouldPersist()) {
             data.value = getPersistedInt(data.default)
         } else if (defaultValue is Int) {
             data.value = defaultValue

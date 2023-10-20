@@ -64,9 +64,9 @@ abstract class ConsumerContainer<P> {
         }
     }
 
-    abstract fun addedFirstConsumer();
+    abstract fun addedFirstConsumer()
 
-    abstract fun removedLastConsumer();
+    abstract fun removedLastConsumer()
 
     fun storeAndBroadcast(payload: P) {
         currentPayload = payload

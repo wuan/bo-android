@@ -66,7 +66,7 @@ class BlitzortungHttpDataProvider @Inject constructor(
         onSharedPreferenceChanged(preferences, PreferenceKey.USERNAME, PreferenceKey.PASSWORD)
     }
 
-    private fun readFromUrl(type: Type, region: Int, intervalTime: Calendar? = null): BufferedReader? {
+    private fun readFromUrl(type: Type, region: Int, intervalTime: Calendar? = null): BufferedReader {
 
         val useGzipCompression = type == Type.STATIONS
 
@@ -129,10 +129,10 @@ class BlitzortungHttpDataProvider @Inject constructor(
             strikeSequence.toList()
         } catch (e: SocketException) {
             Log.w(Main.LOG_TAG, e)
-            emptyList<T>()
+            emptyList()
         } catch (e: SocketTimeoutException) {
             Log.w(Main.LOG_TAG, e)
-            emptyList<T>()
+            emptyList()
         }
 
         Log.v(Main.LOG_TAG, logMessage.format(size, strikeList.count()))
@@ -197,7 +197,7 @@ class BlitzortungHttpDataProvider @Inject constructor(
                 this@BlitzortungHttpDataProvider.strikes = strikes
             }
 
-            if (strikes.count() > 0) {
+            if (strikes.isNotEmpty()) {
                 latestTime = endTime - millisecondsPerMinute
                 Log.v(Main.LOG_TAG, "BlitzortungHttpDataProvider.getStrikes() set latest time to $latestTime")
             }

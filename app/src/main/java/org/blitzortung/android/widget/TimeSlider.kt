@@ -7,7 +7,6 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatSeekBar
-import androidx.core.view.marginTop
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.data.History
@@ -153,7 +152,7 @@ class TimeSlider : AppCompatSeekBar {
             val ticksPerHour = this.ticksPerHour
             val tickLength = if (ticksPerHour != null && (max - i) % ticksPerHour == 0) {
                 val hour = (max - i) / ticksPerHour
-                c.drawText("${hour}", position, textPosition, timeAxisPaint)
+                c.drawText("$hour", position, textPosition, timeAxisPaint)
                 longTick
             } else {
                 shortTick

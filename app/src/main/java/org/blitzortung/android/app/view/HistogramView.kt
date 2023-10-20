@@ -52,7 +52,7 @@ class HistogramView @JvmOverloads constructor(
     }
 
     init {
-        backgroundPaint.color = 0x00b0b0b0.toInt()
+        backgroundPaint.color = 0x00b0b0b0
 
         defaultForegroundColor = context.resources.getColor(R.color.text_foreground)
 
@@ -141,7 +141,7 @@ class HistogramView @JvmOverloads constructor(
         } else {
             val histogram = dataEvent.histogram
 
-            var hasHistogram = histogram != null && histogram.isNotEmpty()
+            val hasHistogram = histogram != null && histogram.isNotEmpty()
 
             this.histogram = if (hasHistogram) {
                 histogram

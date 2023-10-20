@@ -40,9 +40,21 @@ class LegendView @JvmOverloads constructor(
         color = -1
         textSize = this@LegendView.textSize
     }
-    private val rasterTextPaint: Paint
-    private val regionTextPaint: Paint
-    private val countThresholdTextPaint: Paint
+    private val rasterTextPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = -1
+        textSize = this@LegendView.textSize * RASTER_HEIGHT
+        textAlign = Paint.Align.CENTER
+    }
+    private val regionTextPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = -1
+        textSize = this@LegendView.textSize * REGION_HEIGHT
+        textAlign = Paint.Align.CENTER
+    }
+    private val countThresholdTextPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = -1
+        textSize = this@LegendView.textSize * COUNT_THRESHOLD_HEIGHT
+        textAlign = Paint.Align.CENTER
+    }
     private val backgroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = context.resources.getColor(R.color.translucent_background)
     }
@@ -52,24 +64,6 @@ class LegendView @JvmOverloads constructor(
     var strikesOverlay: StrikeListOverlay? = null
 
     init {
-
-        rasterTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = -1
-            textSize = this@LegendView.textSize * RASTER_HEIGHT
-            textAlign = Paint.Align.CENTER
-        }
-
-        regionTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = -1
-            textSize = this@LegendView.textSize * REGION_HEIGHT
-            textAlign = Paint.Align.CENTER
-        }
-
-        countThresholdTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = -1
-            textSize = this@LegendView.textSize * COUNT_THRESHOLD_HEIGHT
-            textAlign = Paint.Align.CENTER
-        }
 
         setBackgroundColor(Color.TRANSPARENT)
     }
@@ -196,8 +190,8 @@ class LegendView @JvmOverloads constructor(
         get() {
             val regionNumber = strikesOverlay!!.parameters.region
 
-            for ((index, region_number) in resources.getStringArray(R.array.regions_values).withIndex()) {
-                if (regionNumber == Integer.parseInt(region_number)) {
+            for ((index, regionNumberString) in resources.getStringArray(R.array.regions_values).withIndex()) {
+                if (regionNumber == Integer.parseInt(regionNumberString)) {
                     return resources.getStringArray(R.array.regions)[index]
                 }
             }
@@ -214,7 +208,7 @@ class LegendView @JvmOverloads constructor(
     }
 
     private fun hasRegion(): Boolean {
-        return strikesOverlay?.parameters?.region ?: 0 != 0
+        return (strikesOverlay?.parameters?.region ?: 0) != 0
     }
 
     private val rasterString: String
@@ -228,7 +222,7 @@ class LegendView @JvmOverloads constructor(
         }
 
     private fun hasCountThreshold(): Boolean {
-        return strikesOverlay?.parameters?.countThreshold ?: 0 > 0
+        return (strikesOverlay?.parameters?.countThreshold ?: 0) > 0
     }
 
     companion object {

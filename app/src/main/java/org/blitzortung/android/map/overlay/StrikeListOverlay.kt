@@ -234,12 +234,12 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
         return rasterParameters != null
     }
 
-    fun hasRealtimeData(): Boolean {
+    private fun hasRealtimeData(): Boolean {
         return parameters.isRealtime()
     }
 
     private fun updateTotalNumberOfStrikes() {
-        totalNumberOfStrikes = strikeList.fold(0, { previous, item -> previous + item.multiplicity })
+        totalNumberOfStrikes = strikeList.fold(0) { previous, item -> previous + item.multiplicity }
     }
 
     var totalNumberOfStrikes: Int = 0

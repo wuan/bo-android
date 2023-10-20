@@ -42,7 +42,6 @@ class AlertSignal @Inject constructor(
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
 
-        @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
             ALERT_VIBRATION_SIGNAL -> {
                 vibrationDuration = sharedPreferences.get(key, 3) * 10L
