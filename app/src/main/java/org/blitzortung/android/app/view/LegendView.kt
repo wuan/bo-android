@@ -235,6 +235,6 @@ class LegendView @JvmOverloads constructor(
         const val REGION_HEIGHT = 1.1f
         const val RASTER_HEIGHT = 0.8f
         const val COUNT_THRESHOLD_HEIGHT = 0.8f
-        const val LEGEND_FORMAT = "%c %d%s"
+        const val LEGEND_FORMAT = "%c %d %s"
     }
 }
