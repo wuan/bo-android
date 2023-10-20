@@ -68,8 +68,8 @@ class MainDataHandler @Inject constructor(
     @Volatile
     private var updatesEnabled = false
 
-    private var animationSleepDuration by Delegates.notNull<Long>();
-    private var animationCycleSleepDuration by Delegates.notNull<Long>();
+    private var animationSleepDuration by Delegates.notNull<Long>()
+    private var animationCycleSleepDuration by Delegates.notNull<Long>()
 
     var mode = Mode.DATA
         private set
@@ -90,16 +90,16 @@ class MainDataHandler @Inject constructor(
 
     private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
         override fun addedFirstConsumer() {
-            Log.d(Main.LOG_TAG, "MainDataHandler: added first data consumer")
+            Log.d(LOG_TAG, "MainDataHandler: added first data consumer")
         }
 
         override fun removedLastConsumer() {
-            Log.d(Main.LOG_TAG, "MainDataHandler: removed last data consumer")
+            Log.d(LOG_TAG, "MainDataHandler: removed last data consumer")
         }
     }
 
     val locationEventConsumer: (LocationEvent) -> Unit = { locationEvent ->
-        Log.v(Main.LOG_TAG, "AlertView received location ${locationEvent.location}")
+        Log.v(LOG_TAG, "AlertView received location ${locationEvent.location}")
         location = locationEvent.location
     }
 
@@ -216,7 +216,7 @@ class MainDataHandler @Inject constructor(
                     showBlitzortungProviderWarning()
                 }
 
-                Log.v(Main.LOG_TAG, "MainDataHandler update data source: $providerType")
+                Log.v(LOG_TAG, "MainDataHandler update data source: $providerType")
 
                 updateData()
             }
@@ -261,7 +261,7 @@ class MainDataHandler @Inject constructor(
 
             PreferenceKey.QUERY_PERIOD -> {
                 period = Integer.parseInt(sharedPreferences.get(key, "60"))
-                Log.v(Main.LOG_TAG, "MainDataHandler query $period")
+                Log.v(LOG_TAG, "MainDataHandler query $period")
             }
 
             PreferenceKey.ANIMATION_INTERVAL_DURATION -> {
@@ -434,7 +434,7 @@ class MainDataHandler @Inject constructor(
         }
         return if (parameters.rasterBaselength != rasterBaselength) {
             Log.v(
-                Main.LOG_TAG,
+                LOG_TAG,
                 "MainDataHandler.autoRasterSizeUpdate() $zoomLevel : ${parameters.rasterBaselength} -> $rasterBaselength"
             )
             parameters = parameters.copy(rasterBaselength = rasterBaselength)

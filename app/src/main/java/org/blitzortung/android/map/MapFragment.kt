@@ -20,7 +20,6 @@ import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.ScaleBarOverlay
 import org.osmdroid.views.overlay.compass.CompassOverlay
-import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider
 import kotlin.math.min
 
 class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
@@ -30,9 +29,8 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         private set
     private lateinit var mCopyrightOverlay: CopyrightOverlay
     private lateinit var mScaleBarOverlay: ScaleBarOverlay
-    private lateinit var compassOverlay: CompassOverlay
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         mapView = OwnMapView(inflater.context)
 
         mapView.tileProvider.tileCache.apply {
@@ -143,7 +141,6 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
-        @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
             PreferenceKey.MAP_TYPE -> {
                 val mapTypeString = sharedPreferences.get(key, "SATELLITE")

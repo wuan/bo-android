@@ -83,7 +83,6 @@ class LocationHandler @Inject constructor(
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
-        @Suppress("NON_EXHAUSTIVE_WHEN")
         when (key) {
             PreferenceKey.LOCATION_MODE -> {
                 val providerFactory = { type: String ->

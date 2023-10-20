@@ -103,22 +103,22 @@ open class AlertDataHandler @Inject internal constructor(
 
     private fun closestValue(location: Double, target: Double, rasterSize: Double): Double {
         val delta = rasterSize / 2.0
-        if (location in target - delta..target + delta) {
-            return location
+        return if (location in target - delta..target + delta) {
+            location
         } else {
             if (location < target) {
-                return target - delta
+                target - delta
             } else {
-                return target + delta
+                target + delta
             }
         }
 
     }
 
     fun getLatestTimstampWithin(distanceLimit: Float, alertResult: AlertResult): Long {
-        return alertResult.sectors.fold(0L, { latestTimestamp, sector ->
+        return alertResult.sectors.fold(0L) { latestTimestamp, sector ->
             max(latestTimestamp, getLatestTimestampWithin(distanceLimit, sector))
-        })
+        }
     }
 
     fun getTextMessage(alertResult: AlertResult, notificationDistanceLimit: Float, resources: Resources): String {
@@ -135,9 +135,7 @@ open class AlertDataHandler @Inject internal constructor(
 
     private fun getLatestTimestampWithin(distanceLimit: Float, sector: AlertSector): Long {
         return sector.ranges
-            .filter { distanceLimit <= it.rangeMaximum }
-            .map { it.latestStrikeTimestamp }
-            .maxOrNull() ?: 0L
+            .filter { distanceLimit <= it.rangeMaximum }.maxOfOrNull { it.latestStrikeTimestamp } ?: 0L
     }
 
     private fun createSectors(alertParameters: AlertParameters): List<AggregatingAlertSector> {
@@ -191,8 +189,10 @@ open class AlertDataHandler @Inject internal constructor(
         return when {
             maximumSectorBearing > minimumSectorBearing ->
                 bearing < maximumSectorBearing && bearing >= minimumSectorBearing
+
             maximumSectorBearing < minimumSectorBearing ->
                 bearing >= minimumSectorBearing || bearing < maximumSectorBearing
+
             else -> true
         }
     }

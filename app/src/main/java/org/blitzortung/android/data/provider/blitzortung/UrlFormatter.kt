@@ -32,9 +32,7 @@ class UrlFormatter @Inject constructor() {
         useGzipCompression: Boolean
     ): String {
 
-        val localPath: String
-
-        localPath = if (type === BlitzortungHttpDataProvider.Type.STRIKES) {
+        val localPath: String = if (type === BlitzortungHttpDataProvider.Type.STRIKES) {
             "Strikes_%d/".format(region) + DateFormat.format("yyyy/MM/dd/kk/mm", intervalTime!!) + ".log"
         } else {
             type.name.lowercase(Locale.getDefault()) + ".txt"

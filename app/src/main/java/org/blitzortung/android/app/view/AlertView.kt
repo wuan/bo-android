@@ -263,8 +263,8 @@ class AlertView @JvmOverloads constructor(
             textAlign = Align.CENTER
             textSize = DEFAULT_FONT_SIZE.toFloat()
 
-            val maxWidth = alarmNotAvailableTextLines.map { warnText.measureText(it) }.maxOrNull()
-                ?: width.toFloat() - 20
+            val maxWidth = alarmNotAvailableTextLines.maxOfOrNull { warnText.measureText(it) }
+                ?: (width.toFloat() - 20)
             val scale = (width - 20).toFloat() / maxWidth
 
             //Now scale the text so we can use the whole width of the canvas

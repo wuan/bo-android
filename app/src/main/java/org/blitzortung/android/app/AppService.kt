@@ -222,7 +222,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
-        @Suppress("NON_EXHAUSTIVE_WHEN") when (key) {
+        when (key) {
             PreferenceKey.ALERT_ENABLED -> {
                 alertEnabled = sharedPreferences.get(key, false)
                 Log.v(Main.LOG_TAG, "AppService.onSharedPreferenceChanged() alertEnabled=$alertEnabled")

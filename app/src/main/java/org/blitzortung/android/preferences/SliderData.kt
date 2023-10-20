@@ -21,5 +21,5 @@ class SliderData(
     val size get() = maximum - minimum
     val text get() = "$value $suffix"
 
-    private fun applyConstraints(value: Int) = (value.coerceIn(minimum, maximum).plus(step / 2) / step).toInt() * step
+    private fun applyConstraints(value: Int) = (value.coerceIn(minimum, maximum).plus(step / 2) / step) * step
 }
