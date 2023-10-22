@@ -124,7 +124,7 @@
         <ListPreference
             android:title="@string/animation_interval_duration"
             android:summary="@string/animation_interval_duration_summary"
-            android:defaultValue="BLITZORTUNG"
+            android:defaultValue="6"
             android:enabled="true"
             android:entries="@array/animation_interval_durations"
             android:entryValues="@array/animation_interval_duration_values"
