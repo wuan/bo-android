@@ -63,7 +63,7 @@
             android:persistent="true"
             android:selectable="true"
             android:summary="@string/map_scale_summary"
-            android:text="%"
+            android:text="@string/percent"
             android:title="@string/map_scale" />
         <org.blitzortung.android.preferences.SlidePreferences
             android:defaultValue="55"
@@ -73,7 +73,7 @@
             android:persistent="true"
             android:selectable="true"
             android:summary="@string/map_fade_summary"
-            android:text="%"
+            android:text="@string/percent"
             android:title="@string/map_fade" />
         <ListPreference
             android:defaultValue="BLITZORTUNG"
@@ -105,7 +105,7 @@
                 android:max="400"
                 android:selectable="true"
                 android:persistent="true"
-                android:text="%"
+                android:text="@string/percent"
                 min="50"
                 />
         </PreferenceScreen>
@@ -140,7 +140,7 @@
             android:max="500"
             android:selectable="true"
             android:persistent="true"
-            android:text="ms"
+            android:text="@string/ms"
             android:min="100"
             step="50"
             />
@@ -152,7 +152,7 @@
             android:max="5000"
             android:selectable="true"
             android:persistent="true"
-            android:text="ms"
+            android:text="@string/ms"
             android:min="0"
             step="500"
             />
@@ -298,7 +298,7 @@
                 android:persistent="true"
                 android:selectable="true"
                 android:summary="@string/alarm_vibration_signal_summary"
-                android:text=""
+                android:text="@string/ms"
                 android:title="@string/alarm_vibration_signal" />
         </PreferenceScreen>
         <ListPreference

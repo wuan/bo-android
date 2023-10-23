@@ -97,7 +97,7 @@ class HistogramView @JvmOverloads constructor(
             val maximumCount = histogram.maxOrNull() ?: 0
 
             canvas.drawText(
-                "%.1f/%s".format(
+                "%.1f/%s _".format(
                     maximumCount.toFloat() / minutesPerBin, resources.getString(R.string.unit_minute)
                 ), width - 2 * padding, padding + textSize / 1.2f, textPaint
             )
