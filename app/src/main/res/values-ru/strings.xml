@@ -389,4 +389,19 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="animation_interval_duration_summary">Временной отрезок анимации, час</string>
     <string name="ok">Ок</string>
     <string name="cancel">Отмена</string>
+    <string name="ms">мс</string>
+    <string-array name="animation_interval_durations">
+        <item>2 часа</item>
+        <item>4 часа</item>
+        <item>6 часов</item>
+        <item>12 часов</item>
+        <item>24 часа</item>
+    </string-array>
+    <string-array name="animation_interval_duration_values">
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+    </string-array>
 </resources>

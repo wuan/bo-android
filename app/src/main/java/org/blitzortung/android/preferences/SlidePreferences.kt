@@ -36,7 +36,7 @@ class SlidePreferences(context: Context, attrs: AttributeSet) : DialogPreference
 
     init {
         data = SliderData(
-            suffix = attrs.getAttributeValue(ATTRIBUTE_NAMESPACE, "text"),
+            suffix = context.getString(attrs.getAttributeResourceValue(ATTRIBUTE_NAMESPACE, "text", -1)),
             default = attrs.getAttributeIntValue(ATTRIBUTE_NAMESPACE, "defaultValue", 30),
             minimum = attrs.getAttributeIntValue(ATTRIBUTE_NAMESPACE, "min", 0),
             maximum = attrs.getAttributeIntValue(ATTRIBUTE_NAMESPACE, "max", 80),
