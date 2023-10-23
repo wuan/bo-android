@@ -369,8 +369,29 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="osmdroid_storage_warning">Nie można znaleźć miejsca do zapisu mapy. Proszę zgłosić.</string>
     <string name="changelog">Dziennik zmian</string>
     <string name="menu">Otwórz menu</string>
-    <string name="slider_current">Teraz</string>
-    <string name="slider_past">Przeszłość</string>
+    <string name="slider_current">teraz</string>
+    <string name="slider_past">przeszłość</string>
     <string name="slider_legend">[godziny]</string>
-    <string name="animation_interval_duration">Interwał animacji</string>
+    <string name="animation_settings">Animacja</string>
+    <string name="animation_settings_summary">Ustawienia specyficzne dla animacji</string>
+    <string name="animation_sleep_duration">Przerwa między krokami</string>
+    <string name="animation_sleep_duration_summary">Czas przerwy między krokami animacji (w milisekundach)</string>
+    <string name="animation_cycle_sleep_duration">Przerwa po cyklu</string>
+    <string name="animation_cycle_sleep_duration_summary">Czas przerwy po zakończeniu cyklu animacji (w milisekundach)</string>
+    <string name="animation_interval_duration">Przedział czasowy animacji</string>
+    <string name="animation_interval_duration_summary">Rozmiar przedziału czasowego cyklu animacji (w godzinach)</string>
+    <string-array name="animation_interval_durations">
+        <item>2 godz.</item>
+        <item>4 godz.</item>
+        <item>6 godz.</item>
+        <item>12 godz.</item>
+        <item>24 godz.</item>
+    </string-array>
+    <string-array name="animation_interval_duration_values">
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+    </string-array>
 </resources>
