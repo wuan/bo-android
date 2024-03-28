@@ -175,14 +175,13 @@ class AlertHandler @Inject constructor(
     private fun checkStrikes(strikes: Strikes?, location: Location?) {
         lastStrikes = strikes
 
-        Log.v(
-            Main.LOG_TAG,
-            "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${locationHandler.location != null}"
-        )
         val alertResult = if (alertEnabled && location != null && strikes != null) {
-            val checkStrikes = alertDataHandler.checkStrikes(strikes, location, alertParameters)
-            checkStrikes
+            alertDataHandler.checkStrikes(strikes, location, alertParameters)
         } else {
+            Log.v(
+                Main.LOG_TAG,
+                "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${locationHandler.location != null}"
+            )
             null
         }
 
@@ -194,7 +193,7 @@ class AlertHandler @Inject constructor(
 
     private fun broadcastResult(alertResult: AlertResult?) {
         val alertEvent = if (alertResult != null) AlertResultEvent(alertResult) else ALERT_CANCEL_EVENT
-        Log.v(Main.LOG_TAG, "AlertHandler.broadcastResult(${alertEvent})")
+        Log.d(Main.LOG_TAG, "AlertHandler.broadcastResult(${alertEvent})")
         alertConsumerContainer.storeAndBroadcast(alertEvent)
     }
 

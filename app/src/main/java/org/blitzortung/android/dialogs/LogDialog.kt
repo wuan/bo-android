@@ -33,6 +33,7 @@ import org.blitzortung.android.dialogs.log.LogProvider
 
 class LogDialog(
     context: Context,
+    private val cacheSize: Int,
     private val buildVersion: BuildVersion,
     private val logProvider: LogProvider = LogProvider()
 ) : android.app.AlertDialog(context) {
@@ -48,9 +49,10 @@ class LogDialog(
 
         val versionText = getVersionString()
         val deviceText = getDeviceString()
+        val cacheText = getCacheString()
         val logLines = logProvider.getLogLines()
 
-        val logText = versionText + "\n\n" + deviceText + "\n\n" + logLines.joinToString("\n")
+        val logText = versionText + "\n\n" + deviceText + "\n\n" + cacheText + "\n\n" + logLines.joinToString("\n")
 
         with(findViewById<TextView>(R.id.log_text)) {
             setHorizontallyScrolling(true)
@@ -60,6 +62,10 @@ class LogDialog(
         with(findViewById<Button>(R.id.log_send_email)) {
             setOnClickListener { composeEmail(logText) }
         }
+    }
+
+    private fun getCacheString(): String {
+        return "Cache size: %.3f MB".format(cacheSize/1024f/1024f)
     }
 
     private fun getDeviceString(): String {

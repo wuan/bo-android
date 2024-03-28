@@ -28,18 +28,18 @@ class DataCache @Inject constructor() {
         cache[parameters] = Timestamped(dataEvent)
     }
 
-    fun logStats() {
-        var totalSize = 0L
-        cache.entries.forEach {
-            val baos = ByteArrayOutputStream()
-            val oos = ObjectOutputStream(baos)
-            oos.writeObject(it.value)
-            oos.close()
-            val bytes = baos.toByteArray()
-            Log.v(LOG_TAG, "${it.key} -> ${bytes.size}")
-            totalSize += bytes.size
-        }
-        Log.v(LOG_TAG, "total size: %.2f MB".format(totalSize/1024f/1024f))
+    fun calculateTotalSize(): Int = cache.entries.fold(0) { acc, entry ->
+        val size = determineObjectSize(entry.value)
+        Log.v(LOG_TAG, "${entry.key} -> ${size}")
+        acc + size
+    }
+
+    private fun determineObjectSize(obj: Any): Int {
+        val baos = ByteArrayOutputStream()
+        val oos = ObjectOutputStream(baos)
+        oos.writeObject(obj)
+        oos.close()
+        return baos.size()
     }
 
     fun clear() {

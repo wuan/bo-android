@@ -172,8 +172,6 @@ class MainDataHandler @Inject constructor(
                 val event = it.copy(flags = flags)
                 if (!it.containsRealtimeData()) {
                     cache.put(event.parameters, event)
-                } else {
-                    cache.logStats()
                 }
                 sendEvent(event)
             }, ::toast).execute(parameters = parameters, history = history)
@@ -444,6 +442,8 @@ class MainDataHandler @Inject constructor(
             false
         }
     }
+
+    fun calculateTotalCacheSize(): Int = cache.calculateTotalSize()
 
 
 }
