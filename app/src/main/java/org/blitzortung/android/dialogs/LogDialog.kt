@@ -29,11 +29,12 @@ import android.widget.TextView
 import android.widget.Toast
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.components.BuildVersion
+import org.blitzortung.android.data.cache.CacheSize
 import org.blitzortung.android.dialogs.log.LogProvider
 
 class LogDialog(
     context: Context,
-    private val cacheSize: Int,
+    private val cacheSize: CacheSize,
     private val buildVersion: BuildVersion,
     private val logProvider: LogProvider = LogProvider()
 ) : android.app.AlertDialog(context) {
@@ -65,7 +66,7 @@ class LogDialog(
     }
 
     private fun getCacheString(): String {
-        return "Cache size: %.3f MB".format(cacheSize/1024f/1024f)
+        return "Cache size: %d entries, %d strikes".format(cacheSize.entries, cacheSize.strikes)
     }
 
     private fun getDeviceString(): String {
