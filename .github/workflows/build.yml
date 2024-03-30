@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build
-          path: app/build
+          path: app/build/outputs
           if-no-files-found: "error"
       - name: Generate app bundle.
         run: ./gradlew build app:bundleRelease --stacktrace

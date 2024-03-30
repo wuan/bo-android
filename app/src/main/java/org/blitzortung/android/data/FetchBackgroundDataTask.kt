@@ -25,7 +25,9 @@ internal class FetchBackgroundDataTask(
         if (wakeLock.isHeld) {
             try {
                 wakeLock.release()
-                Log.v(Main.LOG_TAG, "FetchBackgroundDataTask.postExecute() released wakelock $wakeLock")
+                if (wakeLock.isHeld) {
+                    Log.v(Main.LOG_TAG, "FetchBackgroundDataTask.postExecute() released wakelock $wakeLock")
+                }
             } catch (e: RuntimeException) {
                 Log.e(Main.LOG_TAG, "FetchBackgroundDataTask.postExecute() release wakelock failed ", e)
             }
@@ -43,7 +45,7 @@ internal class FetchBackgroundDataTask(
                 wakeLock.acquire()
             }
             if (wakeLock.isHeld) {
-                Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquired wakelock $wakeLock")
+                //Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquired wakelock $wakeLock")
 
                 val updatedParameters =
                     parameters.copy(

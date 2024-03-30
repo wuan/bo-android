@@ -22,7 +22,6 @@ import android.view.View
 import android.widget.ImageButton
 import org.blitzortung.android.app.ButtonGroup
 import org.blitzortung.android.app.databinding.MainBinding
-import org.blitzortung.android.data.DataChannel
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.Mode
 import org.blitzortung.android.data.provider.result.ResultEvent

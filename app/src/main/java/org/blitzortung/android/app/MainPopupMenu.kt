@@ -51,7 +51,7 @@ class MainPopupMenu(
                         alertHandler
                     )
 
-                    R.id.menu_log -> LogDialog(context, buildVersion)
+                    R.id.menu_log -> LogDialog(context, dataHandler.calculateTotalCacheSize(), buildVersion)
 
                     R.id.menu_changelog -> changeLogComponent.getChangeLogDialog(context)
 

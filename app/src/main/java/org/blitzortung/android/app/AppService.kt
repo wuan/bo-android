@@ -99,7 +99,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.i(Main.LOG_TAG, "AppService.onStartCommand() startId: $startId $intent")
+        Log.v(Main.LOG_TAG, "AppService.onStartCommand() startId: $startId $intent")
 
         if (!locationHandler.backgroundMode) {
             locationHandler.shutdown()
@@ -114,17 +114,17 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
                 currentTimeSeconds - it
             }
             if (timeDifference == null || timeDifference > 0.6 * backgroundPeriod) {
-                Log.v(Main.LOG_TAG, "AppService.onStartCommand() with time difference ${timeDifference ?: 0} s")
+                Log.i(Main.LOG_TAG, "AppService.onStartCommand() with time difference ${timeDifference ?: 0} s")
                 lastUpdateTime = currentTimeSeconds
                 dataHandler.updateData()
             } else {
-                Log.v(
+                Log.d(
                     Main.LOG_TAG,
                     "AppService.onStartCommand() skip with insufficient time passed: ${currentTimeSeconds - lastUpdateTime!!} s < $backgroundPeriod s"
                 )
             }
         } else {
-            Log.v(Main.LOG_TAG, "AppService.onStartCommand() intent ${intent?.action}")
+            Log.d(Main.LOG_TAG, "AppService.onStartCommand() non matching intent ${intent?.action}")
         }
 
         return START_STICKY

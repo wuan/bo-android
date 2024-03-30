@@ -32,6 +32,7 @@ import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.data.cache.CacheSize
 import org.blitzortung.android.data.cache.DataCache
 import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
@@ -172,8 +173,6 @@ class MainDataHandler @Inject constructor(
                 val event = it.copy(flags = flags)
                 if (!it.containsRealtimeData()) {
                     cache.put(event.parameters, event)
-                } else {
-                    cache.logStats()
                 }
                 sendEvent(event)
             }, ::toast).execute(parameters = parameters, history = history)
@@ -445,7 +444,7 @@ class MainDataHandler @Inject constructor(
         }
     }
 
-
+    fun calculateTotalCacheSize(): CacheSize = cache.calculateTotalSize()
 }
 
 internal const val DEFAULT_RASTER_BASELENGTH = 10000
