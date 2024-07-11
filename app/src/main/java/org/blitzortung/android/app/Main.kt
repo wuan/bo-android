@@ -140,13 +140,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
                 statusComponent.indicateError(event.failed)
                 if (!event.failed && event.sequenceNumber != null) {
-                    val updatedSequenceNumber =
-                        if (isAtLeast(24)) {
-                        currentSequenceNumber.updateAndGet { previousSequenceNumber ->
-                            if (previousSequenceNumber < event.sequenceNumber) event.sequenceNumber else previousSequenceNumber
-                        }} else {
-                            if (currentSequenceNumber.get() < event.sequenceNumber) event.sequenceNumber else currentSequenceNumber.get()
-                        }
+                    val updatedSequenceNumber = determineUpdatedSequenceNumber(event.sequenceNumber)
                     if (updatedSequenceNumber == event.sequenceNumber) {
                         currentResult = event
 
@@ -204,6 +198,19 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             is StatusEvent -> {
                 setStatusString(event.status)
             }
+        }
+    }
+
+    private fun determineUpdatedSequenceNumber(sequenceNumber: Long) = if (isAtLeast(24)) {
+        currentSequenceNumber.updateAndGet { previousSequenceNumber ->
+            if (previousSequenceNumber < sequenceNumber) sequenceNumber else previousSequenceNumber
+        }
+    } else {
+        synchronized(currentSequenceNumber) {
+            val previousSequenceNumber = currentSequenceNumber.get()
+            val updated = if (previousSequenceNumber < sequenceNumber) sequenceNumber else previousSequenceNumber
+            currentSequenceNumber.set(updated)
+            updated
         }
     }
 
