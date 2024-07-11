@@ -23,7 +23,7 @@ class DataCache @Inject constructor() {
     }
 
     fun put(parameters: Parameters, dataEvent: ResultEvent) {
-        cache[parameters] = Timestamped(dataEvent)
+        cache[parameters] = Timestamped(dataEvent.copy(sequenceNumber = null))
     }
 
     fun calculateTotalSize(): CacheSize = cache.entries.fold(CacheSize(0, 0)) { acc, entry ->

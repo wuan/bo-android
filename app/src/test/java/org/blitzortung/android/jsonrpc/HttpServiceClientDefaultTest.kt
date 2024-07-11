@@ -51,7 +51,7 @@ class HttpServiceClientDefaultTest {
         )
 
         assertThat(handler.connection.outputStream.toString("UTF-8")).isEqualTo(data)
-        assertThat(response).isEqualTo(responseValue)
+        assertThat(response.body).isEqualTo(responseValue)
     }
 
     @Test
@@ -69,7 +69,7 @@ class HttpServiceClientDefaultTest {
         val response = uut.doRequest(URL("http://base.url"), data)
 
         assertThat(handler.connection.outputStream.toString("UTF-8")).isEqualTo(data)
-        assertThat(response).isEqualTo(responseValue)
+        assertThat(response.body).isEqualTo(responseValue)
     }
 }
 

@@ -24,6 +24,10 @@ import java.net.URL
 import javax.inject.Inject
 import javax.inject.Singleton
 
+data class JsonRpcResponse(
+    val data: JSONObject,
+)
+
 @Singleton
 class JsonRpcClient @Inject constructor(client: HttpServiceClientDefault) : HttpServiceClient by client {
 
@@ -53,15 +57,17 @@ class JsonRpcClient @Inject constructor(client: HttpServiceClientDefault) : Http
         return requestObject.toString()
     }
 
-    fun call(baseUrl: URL, methodName: String, vararg parameters: Any): JSONObject {
+    fun call(baseUrl: URL, methodName: String, vararg parameters: Any): JsonRpcResponse {
         val response = doRequest(baseUrl, buildRequest(methodName, parameters))
 
-        lastNumberOfTransferredBytes = response.length
+        lastNumberOfTransferredBytes = response.body.length
 
-        return if (response.startsWith("[")) {
-            JSONArray(response).getJSONObject(0)
+        return if (response.body.startsWith("[")) {
+            JsonRpcResponse(
+                data= JSONArray(response.body).getJSONObject(0),
+            )
         } else {
-            val responseObject = JSONObject(response)
+            val responseObject = JSONObject(response.body)
 
             if (responseObject.has("fault")) {
                 throw JsonRpcException(
@@ -71,7 +77,9 @@ class JsonRpcClient @Inject constructor(client: HttpServiceClientDefault) : Http
                     )
                 )
             }
-            responseObject
+            JsonRpcResponse(
+                data= responseObject,
+            )
         }
     }
 }
