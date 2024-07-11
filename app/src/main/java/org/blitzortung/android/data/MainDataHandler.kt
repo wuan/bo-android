@@ -49,6 +49,7 @@ import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
 import java.util.Locale
+import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.properties.Delegates
@@ -76,6 +77,7 @@ class MainDataHandler @Inject constructor(
         private set
 
     private var period: Int = 0
+    private var sequenceNumber = AtomicLong()
 
     private var dataProvider: DataProvider? = null
 
@@ -155,12 +157,13 @@ class MainDataHandler @Inject constructor(
 
     private fun updateUsingCache() {
         var flags = Flags(mode = mode)
+        val sequenceNumber = sequenceNumber.incrementAndGet()
 
         val parameters = activeParameters
         val cachedResult = cache.get(parameters)
         if (cachedResult != null) {
             Log.d(LOG_TAG, "MainDataHandler.updateData() cached $parameters")
-            sendEvent(cachedResult)
+            sendEvent(cachedResult.copy(sequenceNumber = sequenceNumber))
         } else {
             Log.d(LOG_TAG, "MainDataHandler.updateData() fetch $parameters")
             FetchDataTask(dataMode, dataProvider!!, {
@@ -174,7 +177,7 @@ class MainDataHandler @Inject constructor(
                 if (!it.containsRealtimeData()) {
                     cache.put(event.parameters, event)
                 }
-                sendEvent(event)
+                sendEvent(event.copy(sequenceNumber = sequenceNumber))
             }, ::toast).execute(parameters = parameters, history = history)
         }
     }

@@ -36,7 +36,8 @@ data class ResultEvent(
     val referenceTime: Long = 0,
     val parameters: Parameters,
     val history: History? = null,
-    val flags: Flags
+    val flags: Flags,
+    val sequenceNumber: Long? = null,
 ) : DataEvent, Serializable {
 
     fun containsRealtimeData(): Boolean {

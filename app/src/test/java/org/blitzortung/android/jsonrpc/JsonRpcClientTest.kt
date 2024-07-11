@@ -31,14 +31,14 @@ class JsonRpcClientTest {
     @Test
     fun callReturnsArray() {
         val response = "[{\"foo\": \"bar\"}]"
-        every { httpClient.doRequest(any(), any()) } answers { response }
+        every { httpClient.doRequest(any(), any()) } answers { HttpServiceClientResult(response) }
 
         val baseUrl = URL("http://base.url/")
         val methodName = "<methodName>"
-        val result: JSONObject = uut.call(baseUrl, methodName)
+        val result: JsonRpcResponse = uut.call(baseUrl, methodName)
 
-        assertThat(result.length()).isEqualTo(1)
-        assertThat(result.get("foo")).isEqualTo("bar")
+        assertThat(result.data.length()).isEqualTo(1)
+        assertThat(result.data.get("foo")).isEqualTo("bar")
 
         val params = JSONObject(mapOf(Pair("id", 0), Pair("method", methodName), Pair("params", JSONArray())))
         verify { httpClient.doRequest(baseUrl, params.toString()) }
@@ -49,14 +49,14 @@ class JsonRpcClientTest {
     @Test
     fun callReturnsObject() {
         val response = "{\"foo\": \"bar\"}"
-        every { httpClient.doRequest(any(), any()) } answers { response }
+        every { httpClient.doRequest(any(), any()) } answers { HttpServiceClientResult(response) }
 
         val baseUrl = URL("http://base.url/")
         val methodName = "<methodName>"
-        val result: JSONObject = uut.call(baseUrl, methodName)
+        val result: JsonRpcResponse = uut.call(baseUrl, methodName)
 
-        assertThat(result.length()).isEqualTo(1)
-        assertThat(result.get("foo")).isEqualTo("bar")
+        assertThat(result.data.length()).isEqualTo(1)
+        assertThat(result.data.get("foo")).isEqualTo("bar")
 
         val params = JSONObject(mapOf(Pair("id", 0), Pair("method", methodName), Pair("params", JSONArray())))
         verify { httpClient.doRequest(baseUrl, params.toString()) }
@@ -71,7 +71,7 @@ class JsonRpcClientTest {
                 any(),
                 any()
             )
-        } answers { "{\"fault\":true,\"faultString\": \"foo\",\"faultCode\":\"1234\"}" }
+        } answers { HttpServiceClientResult("{\"fault\":true,\"faultString\": \"foo\",\"faultCode\":\"1234\"}") }
 
         val baseUrl = URL("http://base.url/")
         val methodName = "<methodName>"

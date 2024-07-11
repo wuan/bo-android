@@ -35,6 +35,7 @@ import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
 import org.blitzortung.android.data.provider.data.initializeResult
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.jsonrpc.JsonRpcClient
+import org.blitzortung.android.jsonrpc.JsonRpcResponse
 import org.blitzortung.android.util.TimeFormat
 import org.json.JSONArray
 import org.json.JSONException
@@ -70,25 +71,25 @@ class JsonRpcDataProvider @Inject constructor(
     }
 
     @Throws(JSONException::class)
-    private fun addStrikes(response: JSONObject, result: ResultEvent): ResultEvent {
+    private fun addStrikes(response: JsonRpcResponse, result: ResultEvent): ResultEvent {
         val isIncremental = nextId != 0
         val strikes = ArrayList<Strike>()
-        val referenceTimestamp = getReferenceTimestamp(response)
-        val strikesArray = response.get("s") as JSONArray
+        val referenceTimestamp = getReferenceTimestamp(response.data)
+        val strikesArray = response.data.get("s") as JSONArray
         for (i in 0 until strikesArray.length()) {
             strikes.add(dataBuilder.createDefaultStrike(referenceTimestamp, strikesArray.getJSONArray(i)))
         }
-        if (response.has("next")) {
-            nextId = response.get("next") as Int
+        if (response.data.has("next")) {
+            nextId = response.data.get("next") as Int
         }
         return result.copy(strikes = strikes, updated = if (isIncremental) strikes.size else -1)
     }
 
-    private fun addRasterData(response: JSONObject, result: ResultEvent, baselength: Int): ResultEvent {
-        val rasterParameters = dataBuilder.createRasterParameters(response, baselength)
-        val referenceTimestamp = getReferenceTimestamp(response)
+    private fun addRasterData(response: JsonRpcResponse, result: ResultEvent, baselength: Int): ResultEvent {
+        val rasterParameters = dataBuilder.createRasterParameters(response.data, baselength)
+        val referenceTimestamp = getReferenceTimestamp(response.data)
 
-        val strikesArray = response.get("r") as JSONArray
+        val strikesArray = response.data.get("r") as JSONArray
         val strikes = ArrayList<Strike>()
         for (i in 0 until strikesArray.length()) {
             strikes.add(
@@ -135,7 +136,7 @@ class JsonRpcDataProvider @Inject constructor(
 
             try {
                 val response = client.call(serviceUrl, "get_stations")
-                val stationsArray = response.get("stations") as JSONArray
+                val stationsArray = response.data.get("stations") as JSONArray
 
                 for (i in 0 until stationsArray.length()) {
                     stations.add(dataBuilder.createStation(stationsArray.getJSONArray(i)))
@@ -155,7 +156,7 @@ class JsonRpcDataProvider @Inject constructor(
             try {
                 val response = JsonRpcData(client, serviceUrl).requestData(parameters)
                 result = addRasterData(response, result, parameters.rasterBaselength)
-                result = addStrikesHistogram(response, result)
+                result = addStrikesHistogram(response.data, result)
             } catch (e: Exception) {
                 throw RuntimeException(e)
             }
@@ -189,7 +190,7 @@ class JsonRpcDataProvider @Inject constructor(
                 )
 
                 result = addStrikes(response, result)
-                result = addStrikesHistogram(response, result)
+                result = addStrikesHistogram(response.data, result)
             } catch (e: Exception) {
                 throw RuntimeException(e)
             }

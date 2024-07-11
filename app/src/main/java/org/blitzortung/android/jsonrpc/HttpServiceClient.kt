@@ -20,8 +20,12 @@ package org.blitzortung.android.jsonrpc
 
 import java.net.URL
 
+data class HttpServiceClientResult(
+    val body: String,
+)
+
 interface HttpServiceClient {
-    fun doRequest(baseUrl: URL, data: String): String
+    fun doRequest(baseUrl: URL, data: String): HttpServiceClientResult
     var socketTimeout: Int
     var connectionTimeout: Int
 }

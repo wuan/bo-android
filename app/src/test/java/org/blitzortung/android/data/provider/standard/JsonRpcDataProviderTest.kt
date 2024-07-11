@@ -17,6 +17,7 @@ import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.jsonrpc.JsonRpcClient
+import org.blitzortung.android.jsonrpc.JsonRpcResponse
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Before
@@ -76,7 +77,7 @@ class JsonRpcDataProviderTest {
                 parameters.intervalOffset,
                 parameters.countThreshold
             )
-        } returns response
+        } returns JsonRpcResponse(response)
 
         val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
@@ -125,7 +126,7 @@ class JsonRpcDataProviderTest {
                 parameters.intervalOffset,
                 parameters.countThreshold
             )
-        } returns response
+        } returns JsonRpcResponse(response)
 
         val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
@@ -173,7 +174,7 @@ class JsonRpcDataProviderTest {
                 parameters.region,
                 parameters.countThreshold
             )
-        } returns response
+        } returns JsonRpcResponse(response)
 
         val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 

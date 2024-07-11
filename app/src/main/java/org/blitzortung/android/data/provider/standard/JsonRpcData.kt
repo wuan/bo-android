@@ -4,6 +4,7 @@ import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.jsonrpc.JsonRpcClient
+import org.blitzortung.android.jsonrpc.JsonRpcResponse
 import org.json.JSONObject
 import java.net.URL
 
@@ -12,7 +13,7 @@ class JsonRpcData(
     private val serviceUrl: URL,
 ) {
 
-    fun requestData(parameters: Parameters) : JSONObject {
+    fun requestData(parameters: Parameters) : JsonRpcResponse {
         val intervalDuration = parameters.intervalDuration
         val intervalOffset = parameters.intervalOffset
         val rasterBaselength = parameters.rasterBaselength
@@ -22,19 +23,21 @@ class JsonRpcData(
 
         return when (region) {
             GLOBAL_REGION -> {
+                val jsonRpcResponse: JsonRpcResponse = client.call(
+                    serviceUrl,
+                    "get_global_strikes_grid",
+                    intervalDuration,
+                    rasterBaselength,
+                    intervalOffset,
+                    countThreshold
+                )
                 with(
-                    client.call(
-                        serviceUrl,
-                        "get_global_strikes_grid",
-                        intervalDuration,
-                        rasterBaselength,
-                        intervalOffset,
-                        countThreshold
-                    )
+                    jsonRpcResponse
                 ) {
-                    put("y1", 0.0)
-                    put("x0", 0.0)
+                    data.put("y1", 0.0)
+                    data.put("x0", 0.0)
                 }
+                jsonRpcResponse
             }
             LOCAL_REGION -> {
                 client.call(

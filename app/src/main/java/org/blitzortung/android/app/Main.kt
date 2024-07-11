@@ -83,6 +83,7 @@ import org.blitzortung.android.util.isAtLeast
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
+import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -94,6 +95,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private lateinit var strikeListOverlay: StrikeListOverlay
     private lateinit var ownLocationOverlay: OwnLocationOverlay
     private lateinit var fadeOverlay: FadeOverlay
+    private var currentSequenceNumber = AtomicLong()
 
     private var clearData: Boolean = false
 
@@ -137,48 +139,57 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             is ResultEvent -> {
 
                 statusComponent.indicateError(event.failed)
-                if (!event.failed) {
-                    currentResult = event
-
-                    Log.d(LOG_TAG, "Main.onDataUpdate() $event")
-
-                    val resultParameters = event.parameters
-
-                    clearDataIfRequested()
-
-                    val initializeOverlay = strikeListOverlay.parameters != resultParameters
-                    with(strikeListOverlay) {
-                        parameters = resultParameters
-                        rasterParameters = event.rasterParameters
-                        referenceTime = event.referenceTime
-                    }
-
-                    if (event.updated >= 0 && !initializeOverlay) {
-                        strikeListOverlay.expireStrikes()
-                    } else {
-                        strikeListOverlay.clear()
-                    }
-
-                    if (event.strikes != null) {
-                        val strikes = if (event.updated > 0 && !initializeOverlay) {
-                            val size = event.strikes.size
-                            event.strikes.subList(size - event.updated, size)
-                        } else {
-                            event.strikes
+                if (!event.failed && event.sequenceNumber != null) {
+                    val updatedSequenceNumber =
+                        currentSequenceNumber.updateAndGet { previousSequenceNumber ->
+                            if (previousSequenceNumber < event.sequenceNumber) event.sequenceNumber else previousSequenceNumber
                         }
-                        strikeListOverlay.addStrikes(strikes)
-                    }
+                    if (updatedSequenceNumber == event.sequenceNumber) {
+                        currentResult = event
 
-                    binding.alertView.setColorHandler(strikeColorHandler, strikeListOverlay.parameters.intervalDuration)
+                        Log.d(LOG_TAG, "Main.onDataUpdate() $event")
 
-                    strikeListOverlay.refresh()
-                    mapFragment.mapView.invalidate()
+                        val resultParameters = event.parameters
 
-                    binding.legendView.requestLayout()
-                    binding.timeSlider.update(event.parameters, event.history!!)
+                        clearDataIfRequested()
 
-                    if (event.flags.mode == Mode.ANIMATION || !event.containsRealtimeData()) {
-                        setHistoricStatusString()
+                        val initializeOverlay = strikeListOverlay.parameters != resultParameters
+                        with(strikeListOverlay) {
+                            parameters = resultParameters
+                            rasterParameters = event.rasterParameters
+                            referenceTime = event.referenceTime
+                        }
+
+                        if (event.updated >= 0 && !initializeOverlay) {
+                            strikeListOverlay.expireStrikes()
+                        } else {
+                            strikeListOverlay.clear()
+                        }
+
+                        if (event.strikes != null) {
+                            val strikes = if (event.updated > 0 && !initializeOverlay) {
+                                val size = event.strikes.size
+                                event.strikes.subList(size - event.updated, size)
+                            } else {
+                                event.strikes
+                            }
+                            strikeListOverlay.addStrikes(strikes)
+                        }
+
+                        binding.alertView.setColorHandler(
+                            strikeColorHandler,
+                            strikeListOverlay.parameters.intervalDuration
+                        )
+
+                        strikeListOverlay.refresh()
+                        mapFragment.mapView.invalidate()
+
+                        binding.legendView.requestLayout()
+                        binding.timeSlider.update(event.parameters, event.history!!)
+
+                        if (event.flags.mode == Mode.ANIMATION || !event.containsRealtimeData()) {
+                            setHistoricStatusString()
+                        }
                     }
                 }
 

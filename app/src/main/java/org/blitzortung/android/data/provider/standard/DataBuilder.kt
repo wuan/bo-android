@@ -35,7 +35,6 @@ internal class DataBuilder {
                 lateralError = jsonArray.getDouble(3),
                 altitude = 0,
                 amplitude = jsonArray.getDouble(4).toFloat(),
-                stationCount = jsonArray.getInt(5).toShort()
             )
         } catch (e: JSONException) {
             throw IllegalStateException("error with JSON format while parsing strike data", e)

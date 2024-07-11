@@ -18,6 +18,8 @@
 
 package org.blitzortung.android.jsonrpc
 
+import android.util.Log
+import org.blitzortung.android.app.Main
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
@@ -34,7 +36,7 @@ class HttpServiceClientDefault @Inject constructor(
     override var socketTimeout = 0
     override var connectionTimeout = 0
 
-    override fun doRequest(baseUrl: URL, data: String): String {
+    override fun doRequest(baseUrl: URL, data: String): HttpServiceClientResult {
         val connection = baseUrl.openConnection() as HttpURLConnection
 
         connection.requestMethod = "POST"
@@ -61,6 +63,8 @@ class HttpServiceClientDefault @Inject constructor(
 
         // Do not disconnect the connection here as it will be potentially reused
 
-        return InputStreamReader(inputStream, "UTF-8").use { it.readText() }
+        return HttpServiceClientResult(
+            body = InputStreamReader(inputStream, "UTF-8").use { it.readText() },
+        )
     }
 }
