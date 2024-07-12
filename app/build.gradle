@@ -53,9 +53,10 @@ android {
         checkReleaseBuilds false
     }
     testCoverage {
-        jacocoVersion '0.8.10'
+        jacocoVersion '0.8.12'
     }
     namespace 'org.blitzortung.android.app'
+
 }
 
 def dagger_version = '2.51.1'
@@ -110,7 +111,7 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
         html.required.set(true)
     }
 
-    getReports().getXml().setDestination(file("${buildDir}/reports/jacoco/jacocoRootReport/merged.xml"))
+    getReports().getXml().setDestination(file("${project.buildDir}/reports/jacoco/jacocoRootReport/merged.xml"))
 
     def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*', '**/*$ViewBinder*.*']
     def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/classes", excludes: fileFilter)
