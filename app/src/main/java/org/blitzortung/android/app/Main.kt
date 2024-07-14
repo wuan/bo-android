@@ -503,6 +503,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         locationHandler.start()
 
         dataHandler.start()
+        dataHandler.updateRasterSize(mapFragment.zoomLevel)
     }
 
     private fun enableDataUpdates() {

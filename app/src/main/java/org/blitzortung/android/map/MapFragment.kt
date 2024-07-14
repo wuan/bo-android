@@ -128,6 +128,8 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         mapView.onResume()
     }
 
+    val zoomLevel get() = mapView.zoomLevelDouble
+
     fun calculateTargetZoomLevel(widthInMeters: Float): Double {
         val equatorLength = 40075004.0 // in meters
         val widthInPixels = min(mapView.height, mapView.width).toDouble()

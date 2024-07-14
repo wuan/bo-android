@@ -26,7 +26,6 @@ import android.util.Log
 import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
@@ -267,13 +266,14 @@ class MainDataHandler @Inject constructor(
             }
 
             PreferenceKey.ANIMATION_INTERVAL_DURATION -> {
-                val value = Integer.parseInt(sharedPreferences.get(key, "6"))
+                val value = Integer.parseInt(sharedPreferences.get(key, "4"))
                 animationHistory = when (value) {
                     2 -> History(5, 120, false)
                     4 -> History(10, 240, false)
+                    6 -> History(10, 360, false)
                     12 -> History(20, 720, false)
                     24 -> History(30, 1440, true)
-                    else -> History(10, 360, false)
+                    else -> History(10, 240, false)
                 }
                 if (mode == Mode.ANIMATION) {
                     history = animationHistory!!
@@ -418,34 +418,37 @@ class MainDataHandler @Inject constructor(
     }
 
     override fun onZoom(event: ZoomEvent?): Boolean {
-        return if (event != null && autoRaster) {
-            val zoomLevel = event.zoomLevel
-            autoRasterSizeUpdate(zoomLevel)
+        return if (event != null) {
+            updateRasterSize(event.zoomLevel)
         } else {
             false
         }
     }
 
-    private fun autoRasterSizeUpdate(zoomLevel: Double): Boolean {
-        val rasterBaselength = when {
-            zoomLevel >= 8f -> 5000
-            zoomLevel in 4.5f..8f -> 10000
-            zoomLevel in 3f..4.5f -> 25000
-            zoomLevel in 2f..3f -> 50000
-            else -> 100000
-        }
-        return if (parameters.rasterBaselength != rasterBaselength) {
-            Log.v(
-                LOG_TAG,
-                "MainDataHandler.autoRasterSizeUpdate() $zoomLevel : ${parameters.rasterBaselength} -> $rasterBaselength"
-            )
-            parameters = parameters.copy(rasterBaselength = rasterBaselength)
-            updateData()
-            true
+    fun updateRasterSize(zoomLevel: Double): Boolean =
+        if (autoRaster) {
+            val rasterBaselength = when {
+                zoomLevel >= 8f -> 5000
+                zoomLevel in 6f..8f -> 10000
+                zoomLevel in 4f..6f -> 25000
+                zoomLevel in 2f..4f -> 50000
+                else -> 100000
+            }
+            if (parameters.rasterBaselength != rasterBaselength) {
+                Log.v(
+                    LOG_TAG,
+                    "MainDataHandler.autoRasterSizeUpdate() $zoomLevel : ${parameters.rasterBaselength} -> $rasterBaselength"
+                )
+                parameters = parameters.copy(rasterBaselength = rasterBaselength)
+                updateData()
+                true
+            } else {
+                false
+            }
         } else {
             false
         }
-    }
+
 
     fun calculateTotalCacheSize(): CacheSize = cache.calculateTotalSize()
 }
