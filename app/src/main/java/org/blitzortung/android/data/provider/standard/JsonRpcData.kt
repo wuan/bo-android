@@ -5,7 +5,6 @@ import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.jsonrpc.JsonRpcClient
 import org.blitzortung.android.jsonrpc.JsonRpcResponse
-import org.json.JSONObject
 import java.net.URL
 
 class JsonRpcData(
@@ -16,7 +15,7 @@ class JsonRpcData(
     fun requestData(parameters: Parameters) : JsonRpcResponse {
         val intervalDuration = parameters.intervalDuration
         val intervalOffset = parameters.intervalOffset
-        val rasterBaselength = parameters.rasterBaselength
+        val gridSize = parameters.gridSize
         val countThreshold = parameters.countThreshold
         val region = parameters.region
         val localReference = parameters.localReference
@@ -27,7 +26,7 @@ class JsonRpcData(
                     serviceUrl,
                     "get_global_strikes_grid",
                     intervalDuration,
-                    rasterBaselength,
+                    gridSize,
                     intervalOffset,
                     countThreshold
                 )
@@ -45,7 +44,7 @@ class JsonRpcData(
                     "get_local_strikes_grid",
                     localReference!!.x,
                     localReference.y,
-                    rasterBaselength,
+                    gridSize,
                     intervalDuration,
                     intervalOffset,
                     countThreshold
@@ -56,7 +55,7 @@ class JsonRpcData(
                     serviceUrl,
                     "get_strikes_grid",
                     intervalDuration,
-                    rasterBaselength,
+                    gridSize,
                     intervalOffset,
                     region,
                     countThreshold

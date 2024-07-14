@@ -88,7 +88,7 @@ class MainDataHandler @Inject constructor(
 
     private var animationHistory: History? = null
 
-    private var autoRaster = false
+    private var autoGridSize = false
 
     private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
         override fun addedFirstConsumer() {
@@ -116,7 +116,7 @@ class MainDataHandler @Inject constructor(
             PreferenceKey.DATA_SOURCE,
             PreferenceKey.USERNAME,
             PreferenceKey.PASSWORD,
-            PreferenceKey.RASTER_SIZE,
+            PreferenceKey.GRID_SIZE,
             PreferenceKey.COUNT_THRESHOLD,
             PreferenceKey.REGION,
             PreferenceKey.INTERVAL_DURATION,
@@ -146,7 +146,7 @@ class MainDataHandler @Inject constructor(
 
             var updateParticipants = false
             if (updateTargets.contains(DataChannel.PARTICIPANTS)) {
-                if (dataProvider!!.type == DataProviderType.HTTP || !dataMode.raster) {
+                if (dataProvider!!.type == DataProviderType.HTTP || !dataMode.grid) {
                     updateParticipants = true
                 }
             }
@@ -183,14 +183,14 @@ class MainDataHandler @Inject constructor(
 
     private val activeParameters: Parameters
         get() {
-            return if (dataMode.raster) {
+            return if (dataMode.grid) {
                 localData.updateParameters(parameters, location)
             } else {
                 var parameters = parameters
                 if (!dataMode.region) {
                     parameters = parameters.copy(region = 0)
                 }
-                parameters.copy(rasterBaselength = 0, countThreshold = 0)
+                parameters.copy(gridSize = 0, countThreshold = 0)
             }
         }
 
@@ -222,15 +222,15 @@ class MainDataHandler @Inject constructor(
                 updateData()
             }
 
-            PreferenceKey.RASTER_SIZE -> {
-                val rasterBaselengthString = sharedPreferences.get(key, AUTO_RASTER_BASELENGTH)
-                if (rasterBaselengthString == AUTO_RASTER_BASELENGTH) {
-                    autoRaster = true
-                    parameters = parameters.copy(rasterBaselength = DEFAULT_RASTER_BASELENGTH)
+            PreferenceKey.GRID_SIZE -> {
+                val gridSizeString = sharedPreferences.get(key, AUTO_GRID_SIZE_VALUE)
+                if (gridSizeString == AUTO_GRID_SIZE_VALUE) {
+                    autoGridSize = true
+                    parameters = parameters.copy(gridSize = DEFAULT_GRID_SIZE)
                 } else {
-                    val rasterBaselength = Integer.parseInt(rasterBaselengthString)
-                    autoRaster = false
-                    parameters = parameters.copy(rasterBaselength = rasterBaselength)
+                    val gridSize = Integer.parseInt(gridSizeString)
+                    autoGridSize = false
+                    parameters = parameters.copy(gridSize = gridSize)
                 }
                 updateData()
             }
@@ -301,13 +301,13 @@ class MainDataHandler @Inject constructor(
         val providerType = dataProvider!!.type
 
         dataMode = when (providerType) {
-            DataProviderType.RPC -> DataMode(raster = true, region = false)
-            DataProviderType.HTTP -> DataMode(raster = false, region = true)
+            DataProviderType.RPC -> DataMode(grid = true, region = false)
+            DataProviderType.HTTP -> DataMode(grid = false, region = true)
         }
     }
 
     fun toggleExtendedMode() {
-        dataMode = dataMode.copy(raster = dataMode.raster.xor(true))
+        dataMode = dataMode.copy(grid = dataMode.grid.xor(true))
 
         if (!isRealtime) {
             val dataChannels = HashSet<DataChannel>()
@@ -419,27 +419,27 @@ class MainDataHandler @Inject constructor(
 
     override fun onZoom(event: ZoomEvent?): Boolean {
         return if (event != null) {
-            updateRasterSize(event.zoomLevel)
+            updateAutoGridSize(event.zoomLevel)
         } else {
             false
         }
     }
 
-    fun updateRasterSize(zoomLevel: Double): Boolean =
-        if (autoRaster) {
-            val rasterBaselength = when {
+    fun updateAutoGridSize(zoomLevel: Double): Boolean =
+        if (autoGridSize) {
+            val gridSize = when {
                 zoomLevel >= 8f -> 5000
                 zoomLevel in 6f..8f -> 10000
                 zoomLevel in 4f..6f -> 25000
                 zoomLevel in 2f..4f -> 50000
                 else -> 100000
             }
-            if (parameters.rasterBaselength != rasterBaselength) {
+            if (parameters.gridSize != gridSize) {
                 Log.v(
                     LOG_TAG,
-                    "MainDataHandler.autoRasterSizeUpdate() $zoomLevel : ${parameters.rasterBaselength} -> $rasterBaselength"
+                    "MainDataHandler.updateAutoGridSize() $zoomLevel : ${parameters.gridSize} -> $gridSize"
                 )
-                parameters = parameters.copy(rasterBaselength = rasterBaselength)
+                parameters = parameters.copy(gridSize = gridSize)
                 updateData()
                 true
             } else {
@@ -453,6 +453,6 @@ class MainDataHandler @Inject constructor(
     fun calculateTotalCacheSize(): CacheSize = cache.calculateTotalSize()
 }
 
-internal const val DEFAULT_RASTER_BASELENGTH = 10000
-internal const val AUTO_RASTER_BASELENGTH = "auto"
+internal const val DEFAULT_GRID_SIZE = 10000
+internal const val AUTO_GRID_SIZE_VALUE = "auto"
 

@@ -24,7 +24,7 @@ import java.io.Serializable
 
 data class Parameters(
     val region: Int = -1,
-    val rasterBaselength: Int = 0,
+    val gridSize: Int = 0,
     val interval: TimeInterval = TimeInterval(),
     val countThreshold: Int = 0,
     val localReference: LocalReference? = null

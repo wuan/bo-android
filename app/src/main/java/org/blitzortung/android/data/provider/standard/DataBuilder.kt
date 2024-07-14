@@ -43,28 +43,28 @@ internal class DataBuilder {
     }
 
     @Throws(JSONException::class)
-    fun createRasterParameters(response: JSONObject, baselength: Int): RasterParameters {
-        return RasterParameters(
+    fun createGridParameters(response: JSONObject, gridSize: Int): GridParameters {
+        return GridParameters(
             longitudeStart = response.getDouble("x0"),
             latitudeStart = response.getDouble("y1"),
             longitudeDelta = response.getDouble("xd"),
             latitudeDelta = response.getDouble("yd"),
             longitudeBins = response.getInt("xc"),
             latitudeBins = response.getInt("yc"),
-            baselength = baselength
+            size = gridSize
         )
     }
 
     @Throws(JSONException::class)
-    fun createRasterElement(
-        rasterParameters: RasterParameters,
+    fun createGridElement(
+        gridParameters: GridParameters,
         referenceTimestamp: Long,
         jsonArray: JSONArray
-    ): RasterElement {
-        return RasterElement(
+    ): GridElement {
+        return GridElement(
             timestamp = referenceTimestamp + 1000 * jsonArray.getInt(3),
-            longitude = rasterParameters.getCenterLongitude(jsonArray.getInt(0)),
-            latitude = rasterParameters.getCenterLatitude(jsonArray.getInt(1)),
+            longitude = gridParameters.getCenterLongitude(jsonArray.getInt(0)),
+            latitude = gridParameters.getCenterLatitude(jsonArray.getInt(1)),
             multiplicity = jsonArray.getInt(2)
         )
     }

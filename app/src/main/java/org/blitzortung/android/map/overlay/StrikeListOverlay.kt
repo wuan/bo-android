@@ -27,7 +27,7 @@ import android.view.ViewGroup
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.Parameters
-import org.blitzortung.android.data.beans.RasterParameters
+import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.OwnMapView
@@ -50,7 +50,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
     private val layerOverlayComponent: LayerOverlayComponent =
         LayerOverlayComponent(mapFragment.resources.getString(R.string.strikes_layer))
     private var zoomLevel: Double
-    var rasterParameters: RasterParameters? = null
+    var gridParameters: GridParameters? = null
     var referenceTime: Long = 0
     var parameters = Parameters()
 
@@ -65,7 +65,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
             }
 
             val paint = Paint()
-            if (hasRasterParameters() && parameters.region != 0) {
+            if (usesGrid() && parameters.region != 0) {
                 paint.color = colorHandler.lineColor
                 paint.style = Style.STROKE
 
@@ -87,9 +87,9 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
 
     private fun drawDataAreaRect(canvas: Canvas, mapView: MapView, paint: Paint) {
         val clipBounds = canvas.clipBounds
-        val currentRasterParameters = rasterParameters
-        if (currentRasterParameters != null) {
-            val rect = currentRasterParameters.getRect(mapView.projection)
+        val currentGridParameters = gridParameters
+        if (currentGridParameters != null) {
+            val rect = currentGridParameters.getRect(mapView.projection)
 
             if (rect.left >= clipBounds.left && rect.left <= clipBounds.right) {
                 canvas.drawLine(
@@ -194,7 +194,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
                 item.timestamp, parameters.intervalDuration
             )
 
-            if (hasRasterParameters() || currentSection != section) {
+            if (usesGrid() || currentSection != section) {
                 drawable = updateAndReturnDrawable(item, section, colorHandler)
             } else {
                 if (drawable != null) {
@@ -209,7 +209,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
         val color = colorHandler.getColor(section)
         val textColor = colorHandler.textColor
 
-        item.updateShape(rasterParameters, projection, color, textColor, zoomLevel)
+        item.updateShape(gridParameters, projection, color, textColor, zoomLevel)
 
         return item.shape!!
     }
@@ -221,7 +221,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
     override fun onZoom(event: ZoomEvent?): Boolean {
         if (event != null) {
             val zoomLevel = event.zoomLevel
-            if (hasRasterParameters() || zoomLevel != this.zoomLevel) {
+            if (usesGrid() || zoomLevel != this.zoomLevel) {
                 this.zoomLevel = zoomLevel
                 refresh()
             }
@@ -230,8 +230,8 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
     }
 
 
-    fun hasRasterParameters(): Boolean {
-        return rasterParameters != null
+    fun usesGrid(): Boolean {
+        return gridParameters != null
     }
 
     private fun hasRealtimeData(): Boolean {

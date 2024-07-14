@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.TimeInterval
-import org.blitzortung.android.data.beans.RasterElement
+import org.blitzortung.android.data.beans.GridElement
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.junit.Before
 import org.junit.Test
@@ -71,9 +71,9 @@ class DataCacheTest {
     @Test
     fun cacheSizeSimple() {
         val strikes = listOf(
-            RasterElement(0, 1.0, 2.0, 3),
-            RasterElement(2, 3.0, 4.0, 2),
-            RasterElement(4, -3.0, -4.0, 1),
+            GridElement(0, 1.0, 2.0, 3),
+            GridElement(2, 3.0, 4.0, 2),
+            GridElement(4, -3.0, -4.0, 1),
         )
         val dataEvent = ResultEvent(parameters = parameters, flags = Flags(), strikes = strikes)
 

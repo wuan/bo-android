@@ -157,10 +157,10 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>600</item>
     </string-array>
 
-    <string name="raster_size">Veličina rastera</string>
-    <string name="raster_size_summary">Obuhvat površine za prikaz ukupnog broja munja</string>
+    <string name="grid_size">Veličina rastera</string>
+    <string name="grid_size_summary">Obuhvat površine za prikaz ukupnog broja munja</string>
 
-    <string-array name="raster_sizes">
+    <string-array name="grid_sizes">
         <item>auto</item>
         <item>5 km</item>
         <item>10 km</item>
@@ -168,7 +168,7 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>50 km</item>
         <item>100 km</item>
     </string-array>
-    <string-array name="raster_size_values">
+    <string-array name="grid_size_values">
         <item>auto</item>
         <item>5000</item>
         <item>10000</item>

@@ -29,7 +29,7 @@ import org.osmdroid.views.Projection
 import kotlin.math.max
 import kotlin.math.min
 
-class RasterShape(private val center: IGeoPoint) : LightningShape {
+class GridShape(private val center: IGeoPoint) : LightningShape {
 
     private val size: RectF = RectF()
     private var color: Int = 0
@@ -48,7 +48,7 @@ class RasterShape(private val center: IGeoPoint) : LightningShape {
             centerPoint.y + size.bottom
         )
 
-        //Only draw visible Raster-Items
+        // Only draw visible Grid-Items
         if (canvas.quickReject(rect, Canvas.EdgeType.BW)) {
             return
         }

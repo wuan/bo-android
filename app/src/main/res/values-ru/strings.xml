@@ -156,10 +156,10 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>600</item>
     </string-array>
 
-    <string name="raster_size">Размер квадрата</string>
-    <string name="raster_size_summary">Размер области представления данных</string>
+    <string name="grid_size">Размер квадрата</string>
+    <string name="grid_size_summary">Размер области представления данных</string>
 
-    <string-array name="raster_sizes">
+    <string-array name="grid_sizes">
         <item>Авто</item>
         <item>5 км</item>
         <item>10 км</item>
@@ -167,7 +167,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>50 км</item>
         <item>100 км</item>
     </string-array>
-    <string-array name="raster_size_values">
+    <string-array name="grid_size_values">
         <item>auto</item>
         <item>5000</item>
         <item>10000</item>

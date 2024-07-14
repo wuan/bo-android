@@ -85,23 +85,23 @@ class JsonRpcDataProvider @Inject constructor(
         return result.copy(strikes = strikes, updated = if (isIncremental) strikes.size else -1)
     }
 
-    private fun addRasterData(response: JsonRpcResponse, result: ResultEvent, baselength: Int): ResultEvent {
-        val rasterParameters = dataBuilder.createRasterParameters(response.data, baselength)
+    private fun addGridData(response: JsonRpcResponse, result: ResultEvent, size: Int): ResultEvent {
+        val gridParameters = dataBuilder.createGridParameters(response.data, size)
         val referenceTimestamp = getReferenceTimestamp(response.data)
 
         val strikesArray = response.data.get("r") as JSONArray
         val strikes = ArrayList<Strike>()
         for (i in 0 until strikesArray.length()) {
             strikes.add(
-                dataBuilder.createRasterElement(
-                    rasterParameters,
+                dataBuilder.createGridElement(
+                    gridParameters,
                     referenceTimestamp,
                     strikesArray.getJSONArray(i)
                 )
             )
         }
 
-        return result.copy(strikes = strikes, rasterParameters = rasterParameters, referenceTime = referenceTimestamp)
+        return result.copy(strikes = strikes, gridParameters = gridParameters, referenceTime = referenceTimestamp)
     }
 
     @Throws(JSONException::class)
@@ -155,7 +155,7 @@ class JsonRpcDataProvider @Inject constructor(
 
             try {
                 val response = JsonRpcData(client, serviceUrl).requestData(parameters)
-                result = addRasterData(response, result, parameters.rasterBaselength)
+                result = addGridData(response, result, parameters.gridSize)
                 result = addStrikesHistogram(response.data, result)
             } catch (e: Exception) {
                 throw RuntimeException(e)
@@ -163,7 +163,7 @@ class JsonRpcDataProvider @Inject constructor(
 
             Log.v(
                 Main.LOG_TAG,
-                "JsonRpcDataProvider: read %d bytes (%d raster positions, region %d)".format(
+                "JsonRpcDataProvider: read %d bytes (%d grid entries, region %d)".format(
                     client.lastNumberOfTransferredBytes,
                     result.strikes?.size,
                     parameters.region

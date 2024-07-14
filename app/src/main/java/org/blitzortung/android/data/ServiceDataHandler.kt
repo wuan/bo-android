@@ -50,7 +50,7 @@ class ServiceDataHandler @Inject constructor(
     private var dataProvider: DataProvider? = null
 
     private val parameters = Parameters(
-        region = LOCAL_REGION, rasterBaselength = 5000,
+        region = LOCAL_REGION, gridSize = 5000,
         interval = TimeInterval.BACKGROUND,
         countThreshold = 0,
     )
@@ -70,7 +70,7 @@ class ServiceDataHandler @Inject constructor(
         location = locationEvent.location
     }
 
-    private val dataMode = DataMode(raster = true, region = false)
+    private val dataMode = DataMode(grid = true, region = false)
 
     init {
         dataProvider = dataProviderFactory.getDataProviderForType(DataProviderType.RPC)

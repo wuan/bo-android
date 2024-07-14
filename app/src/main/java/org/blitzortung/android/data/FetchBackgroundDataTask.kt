@@ -51,7 +51,7 @@ internal class FetchBackgroundDataTask(
                     parameters.copy(
                         interval = TimeInterval.BACKGROUND,
                         countThreshold = 0,
-                        rasterBaselength = 5000
+                        gridSize = 5000
                     )
                 val updatedFlags = flags.copy(storeResult = false)
 

@@ -31,7 +31,7 @@ internal open class FetchDataTask(
         withContext(Dispatchers.IO) {
             try {
                 dataProvider.retrieveData {
-                    if (dataMode.raster) {
+                    if (dataMode.grid) {
                         getStrikesGrid(parameters, history, flags)
                     } else {
                         getStrikes(parameters, history, flags)

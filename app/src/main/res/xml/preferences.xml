@@ -13,13 +13,13 @@
     <ListPreference
         android:defaultValue="auto"
         android:enabled="true"
-        android:entries="@array/raster_sizes"
-        android:entryValues="@array/raster_size_values"
-        android:key="raster_size"
+        android:entries="@array/grid_sizes"
+        android:entryValues="@array/grid_size_values"
+        android:key="grid_size"
         android:persistent="true"
         android:selectable="true"
-        android:summary="@string/raster_size_summary"
-        android:title="@string/raster_size" />
+        android:summary="@string/grid_size_summary"
+        android:title="@string/grid_size" />
     <ListPreference
         android:defaultValue="60"
         android:enabled="true"

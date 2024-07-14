@@ -40,9 +40,9 @@ class LegendView @JvmOverloads constructor(
         color = -1
         textSize = this@LegendView.textSize
     }
-    private val rasterTextPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val gridTextPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = -1
-        textSize = this@LegendView.textSize * RASTER_HEIGHT
+        textSize = this@LegendView.textSize * GRID_HEIGHT
         textAlign = Paint.Align.CENTER
     }
     private val regionTextPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -108,8 +108,8 @@ class LegendView @JvmOverloads constructor(
                 height += colorFieldSize * REGION_HEIGHT + padding
             }
 
-            if (hasRaster()) {
-                height += colorFieldSize * RASTER_HEIGHT + padding
+            if (usesGrid()) {
+                height += colorFieldSize * GRID_HEIGHT + padding
 
                 if (hasCountThreshold()) {
                     height += colorFieldSize * COUNT_THRESHOLD_HEIGHT + padding
@@ -163,14 +163,14 @@ class LegendView @JvmOverloads constructor(
                 topCoordinate += colorFieldSize * REGION_HEIGHT + padding
             }
 
-            if (hasRaster()) {
+            if (usesGrid()) {
                 canvas.drawText(
-                    context.getString(R.string.legend_grid) + ": " + rasterString,
+                    context.getString(R.string.legend_grid) + ": " + gridInfo,
                     width / 2.0f,
-                    topCoordinate + colorFieldSize * RASTER_HEIGHT / 1.1f,
-                    rasterTextPaint
+                    topCoordinate + colorFieldSize * GRID_HEIGHT / 1.1f,
+                    gridTextPaint
                 )
-                topCoordinate += colorFieldSize * RASTER_HEIGHT + padding
+                topCoordinate += colorFieldSize * GRID_HEIGHT + padding
 
                 if (hasCountThreshold()) {
                     val countThreshold = strikesOverlay.parameters.countThreshold
@@ -203,19 +203,19 @@ class LegendView @JvmOverloads constructor(
         foregroundPaint.alpha = alpha
     }
 
-    private fun hasRaster(): Boolean {
-        return strikesOverlay?.hasRasterParameters() ?: false
+    private fun usesGrid(): Boolean {
+        return strikesOverlay?.usesGrid() ?: false
     }
 
     private fun hasRegion(): Boolean {
         return (strikesOverlay?.parameters?.region ?: 0) != 0
     }
 
-    private val rasterString: String
+    private val gridInfo: String
         get() {
-            val baselength = strikesOverlay?.rasterParameters?.baselength
-            return if (baselength != null) {
-                "%.0f %s".format(baselength / 1000.0, context.getString(R.string.unit_km))
+            val gridSize = strikesOverlay?.gridParameters?.size
+            return if (gridSize != null) {
+                "%.0f %s".format(gridSize / 1000.0, context.getString(R.string.unit_km))
             } else {
                 context.getString(R.string.not_available)
             }
@@ -227,7 +227,7 @@ class LegendView @JvmOverloads constructor(
 
     companion object {
         const val REGION_HEIGHT = 1.1f
-        const val RASTER_HEIGHT = 0.8f
+        const val GRID_HEIGHT = 0.8f
         const val COUNT_THRESHOLD_HEIGHT = 0.8f
         const val LEGEND_FORMAT = "%c %d %s"
     }

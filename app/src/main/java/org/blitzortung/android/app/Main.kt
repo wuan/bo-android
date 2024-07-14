@@ -153,7 +153,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                         val initializeOverlay = strikeListOverlay.parameters != resultParameters
                         with(strikeListOverlay) {
                             parameters = resultParameters
-                            rasterParameters = event.rasterParameters
+                            gridParameters = event.gridParameters
                             referenceTime = event.referenceTime
                         }
 
@@ -373,11 +373,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 val currentResult = currentResult
                 if (currentResult != null) {
                     val parameters = currentResult.parameters
-                    val rasterParameters = currentResult.rasterParameters
-                    if (!parameters.isGlobal && rasterParameters != null) {
+                    val gridParameters = currentResult.gridParameters
+                    if (!parameters.isGlobal && gridParameters != null) {
                         animateToLocationAndVisibleSize(
-                            rasterParameters.rectCenterLongitude,
-                            rasterParameters.rectCenterLatitude,
+                            gridParameters.rectCenterLongitude,
+                            gridParameters.rectCenterLatitude,
                             if (parameters.region == LOCAL_REGION) 1800f else 5000f
                         )
                     } else {
@@ -503,7 +503,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         locationHandler.start()
 
         dataHandler.start()
-        dataHandler.updateRasterSize(mapFragment.zoomLevel)
+        dataHandler.updateAutoGridSize(mapFragment.zoomLevel)
     }
 
     private fun enableDataUpdates() {

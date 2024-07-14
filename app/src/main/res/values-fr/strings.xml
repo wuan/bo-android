@@ -156,10 +156,10 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
         <item>600</item>
     </string-array>
 
-    <string name="raster_size">Taille des cellules</string>
-    <string name="raster_size_summary">Sélectionnez la taille des cellules de la carte</string>
+    <string name="grid_size">Taille des cellules</string>
+    <string name="grid_size_summary">Sélectionnez la taille des cellules de la carte</string>
 
-    <string-array name="raster_sizes">
+    <string-array name="grid_sizes">
         <item>auto</item>
         <item>5 km</item>
         <item>10 km</item>
@@ -167,7 +167,7 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
         <item>50 km</item>
         <item>100 km</item>
     </string-array>
-    <string-array name="raster_size_values">
+    <string-array name="grid_size_values">
         <item>auto</item>
         <item>5000</item>
         <item>10000</item>
