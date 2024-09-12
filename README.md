@@ -1,5 +1,4 @@
-[![Lines of Code](https://sonar.tryb.de/api/project_badges/measure?project=wuan_bo-android_AYcZZuyTg4e1BA2WvQjK&metric=ncloc&token=ee89146b4ee29206327218b2a499361405b50fb2)](https://sonar.tryb.de/dashboard?id=wuan_bo-android_AYcZZuyTg4e1BA2WvQjK)
-[![Coverage](https://sonar.tryb.de/api/project_badges/measure?project=wuan_bo-android_AYcZZuyTg4e1BA2WvQjK&metric=coverage&token=ee89146b4ee29206327218b2a499361405b50fb2)](https://sonar.tryb.de/dashboard?id=wuan_bo-android_AYcZZuyTg4e1BA2WvQjK)
+[![Lines of Code](https://sonar.tryb.de/api/project_badges/measure?project=bo-android&metric=ncloc&token=sqb_43109627481c41b35385e95494d937d453dde3a2)](https://sonar.tryb.de/dashboard?id=bo-android) [![Coverage](https://sonar.tryb.de/api/project_badges/measure?project=bo-android&metric=coverage&token=sqb_43109627481c41b35385e95494d937d453dde3a2)](https://sonar.tryb.de/dashboard?id=bo-android)
 
 # About
 
