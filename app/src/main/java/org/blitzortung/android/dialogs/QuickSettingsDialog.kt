@@ -64,22 +64,22 @@ class QuickSettingsDialog : DialogFragment() {
 
         @SuppressLint("InflateParams") val view = layoutInflater.inflate(R.layout.quick_settings_dialog, null, false)
 
-        val selectedRegionList = view.findViewById(R.id.selected_region) as Spinner
+        val selectedRegionList: Spinner = view.findViewById(R.id.selected_region)
         selectedRegionList.setSelection(selectedRegion)
 
-        val gridSizeSpinner = view.findViewById(R.id.selected_grid_size) as Spinner
+        val gridSizeSpinner: Spinner = view.findViewById(R.id.selected_grid_size)
         gridSizeSpinner.setSelection(selectedGridSize)
 
-        val countThresholdSpinner = view.findViewById(R.id.selected_count_threshold) as Spinner
+        val countThresholdSpinner: Spinner = view.findViewById(R.id.selected_count_threshold)
         countThresholdSpinner.setSelection(selectedCountThreshold)
 
-        val intervalDurationSpinner = view.findViewById(R.id.selected_interval_duration) as Spinner
+        val intervalDurationSpinner: Spinner = view.findViewById(R.id.selected_interval_duration)
         intervalDurationSpinner.setSelection(selectedIntervalDuration)
 
-        val queryPeriodSpinner = view.findViewById(R.id.selected_query_period) as Spinner
+        val queryPeriodSpinner: Spinner = view.findViewById(R.id.selected_query_period)
         queryPeriodSpinner.setSelection(selectedQueryPeriod)
 
-        val animationIntervalDuration = view.findViewById(R.id.selected_animation_interval_durations) as Spinner
+        val animationIntervalDuration: Spinner = view.findViewById(R.id.selected_animation_interval_durations)
         animationIntervalDuration.setSelection(selectedAnimationInterval)
 
         builder.setView(view).setPositiveButton(R.string.ok) { _: DialogInterface, _: Int ->

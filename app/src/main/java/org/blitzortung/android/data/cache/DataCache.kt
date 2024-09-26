@@ -29,7 +29,7 @@ class DataCache @Inject constructor() {
     fun calculateTotalSize(): CacheSize = cache.entries.fold(CacheSize(0, 0)) { acc, entry ->
         val resultEvent = entry.value.value
         val strikeCount = resultEvent.strikes?.size ?: 0
-        Log.v(LOG_TAG, "${entry.key} -> ${strikeCount}")
+        Log.v(LOG_TAG, "${entry.key} -> $strikeCount")
         CacheSize(acc.entries + 1, acc.strikes + strikeCount)
     }
 

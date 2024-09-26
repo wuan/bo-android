@@ -61,7 +61,7 @@ class HttpServiceClientDefaultTest {
 
         val obj = ByteArrayOutputStream()
         val gzip = GZIPOutputStream(obj)
-        gzip.write(responseValue.toByteArray());
+        gzip.write(responseValue.toByteArray())
         gzip.close()
 
         handler.response = obj.toByteArray()
@@ -82,7 +82,7 @@ class MockURLStreamHandler : URLStreamHandler(), URLStreamHandlerFactory {
 
     // *** URLStreamHandler
     @Throws(IOException::class)
-    protected override fun openConnection(u: URL?): URLConnection {
+    override fun openConnection(u: URL?): URLConnection {
         connection = MockHttpURLConnection(u, responseHeaders) { this.response }
         return connection
     }
@@ -123,7 +123,7 @@ class MockHttpURLConnection(
     }
 
     override fun setRequestProperty(key: String?, value: String?) {
-        headers.put(key, value);
+        headers.put(key, value)
     }
 
     override fun getHeaderField(name: String?): String? {

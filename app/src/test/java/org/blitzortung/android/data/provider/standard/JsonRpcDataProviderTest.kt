@@ -45,7 +45,7 @@ class JsonRpcDataProviderTest {
         val preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 
         val edit = preferences.edit()
-        edit.put(PreferenceKey.SERVICE_URL, SERVICE_URL);
+        edit.put(PreferenceKey.SERVICE_URL, SERVICE_URL)
         edit.apply()
 
         uut = JsonRpcDataProvider(preferences, client)
@@ -199,8 +199,8 @@ class JsonRpcDataProviderTest {
         response.put("yd", "30")
         response.put("xc", "24")
         response.put("yc", "24")
-        val strike1 = JSONArray(listOf(2, 0, 5, 10));
-        val strike2 = JSONArray(listOf(1, -1, 9, 20));
+        val strike1 = JSONArray(listOf(2, 0, 5, 10))
+        val strike2 = JSONArray(listOf(1, -1, 9, 20))
         val strikesArray = JSONArray(listOf(strike1, strike2))
         response.put("r", strikesArray)
         return response

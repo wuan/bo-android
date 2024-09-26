@@ -65,7 +65,7 @@ enum class PreferenceKey(val key: String) {
         private val stringToValueMap = HashMap<String, PreferenceKey>()
 
         init {
-            for (key in values()) {
+            for (key in entries) {
                 val keyString = key.toString()
                 if (keyString in stringToValueMap) {
                     throw IllegalStateException("key value '%s' already defined".format(keyString))
