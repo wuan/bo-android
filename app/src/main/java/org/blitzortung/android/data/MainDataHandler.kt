@@ -340,10 +340,6 @@ class MainDataHandler @Inject constructor(
     val isRealtime: Boolean
         get() = parameters.isRealtime()
 
-    private suspend fun toast(stringResource: Int) = withContext(Dispatchers.Main) {
-        Toast.makeText(context, stringResource, Toast.LENGTH_LONG).show()
-    }
-
     private fun broadcastEvent(event: DataEvent) {
         dataConsumerContainer.broadcast(event)
     }
