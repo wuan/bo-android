@@ -50,7 +50,6 @@ class OwnMapView(context: Context) : MapView(context) {
         private val point: Point = Point()
 
         override fun onDoubleTap(event: MotionEvent): Boolean {
-
             this@OwnMapView.removeView(popup)
             val geoPoint = this.getPoint(event)
             this@OwnMapView.projection.toPixels(geoPoint, point)

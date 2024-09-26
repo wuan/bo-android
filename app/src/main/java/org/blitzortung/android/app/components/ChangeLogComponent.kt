@@ -30,6 +30,6 @@ class ChangeLogComponent @Inject constructor(
     }
 
     fun showChangeLogDialog(context: Context) {
-        getChangeLogDialog(context)?.show()
+        getChangeLogDialog(context).show()
     }
 }

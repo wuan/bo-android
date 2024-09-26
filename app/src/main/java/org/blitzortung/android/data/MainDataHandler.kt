@@ -165,7 +165,7 @@ class MainDataHandler @Inject constructor(
             sendEvent(cachedResult.copy(sequenceNumber = sequenceNumber))
         } else {
             Log.d(LOG_TAG, "MainDataHandler.updateData() fetch $parameters")
-            FetchDataTask(dataMode, dataProvider!!, {
+            FetchDataTask(dataMode, dataProvider!!) {
                 if (mode == Mode.ANIMATION) {
                     flags = flags.copy(storeResult = false)
                     if (!it.containsRealtimeData()) {
@@ -177,7 +177,7 @@ class MainDataHandler @Inject constructor(
                     cache.put(event.parameters, event)
                 }
                 sendEvent(event.copy(sequenceNumber = sequenceNumber))
-            }, ::toast).execute(parameters = parameters, history = history)
+            }.execute(parameters = parameters, history = history)
         }
     }
 

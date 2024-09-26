@@ -18,8 +18,6 @@
 
 package org.blitzortung.android.jsonrpc
 
-import android.util.Log
-import org.blitzortung.android.app.Main
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL

@@ -18,7 +18,7 @@ internal class FetchBackgroundDataTask(
     resultConsumer: (ResultEvent) -> Unit,
     toast: KSuspendFunction1<Int, Unit>,
     private val wakeLock: PowerManager.WakeLock
-) : FetchDataTask(dataMode, dataProvider, resultConsumer, toast) {
+) : FetchDataTask(dataMode, dataProvider, resultConsumer) {
 
     override fun onPostExecute(result: ResultEvent?) {
         super.onPostExecute(result)

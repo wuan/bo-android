@@ -745,9 +745,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         companion object {
             val byProviderName: Map<String, LocationProviderRelation> =
-                values().groupBy { it.providerName }.mapValues { it.value.first() }
+                entries.groupBy { it.providerName }.mapValues { it.value.first() }
             val byOrdinal: Map<Int, LocationProviderRelation> =
-                values().groupBy { it.ordinal }.mapValues { it.value.first() }
+                entries.groupBy { it.ordinal }.mapValues { it.value.first() }
         }
     }
 

@@ -17,10 +17,12 @@ import org.blitzortung.android.app.view.get
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
+import org.osmdroid.views.CustomZoomButtonsDisplay
 import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.ScaleBarOverlay
-import org.osmdroid.views.overlay.compass.CompassOverlay
+import java.lang.reflect.Field
 import kotlin.math.min
+
 
 class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
@@ -57,10 +59,11 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
         mCopyrightOverlay = CopyrightOverlay(context)
         mCopyrightOverlay.setTextSize(7)
-        mCopyrightOverlay.setOffset(0, bottomOffset)
+        val copyrightOffset = dm.widthPixels / 2 - dm.widthPixels / 10
+        mCopyrightOverlay.setOffset(copyrightOffset, bottomOffset)
         mapView.overlays.add(mCopyrightOverlay)
         mScaleBarOverlay = ScaleBarOverlay(mapView)
-        mScaleBarOverlay.setScaleBarOffset(dm.widthPixels / 2, bottomOffset + ViewHelper.pxFromDp(context, 4f).toInt())
+        mScaleBarOverlay.setScaleBarOffset(dm.widthPixels / 2, bottomOffset + ViewHelper.pxFromDp(context, 10f).toInt())
         mScaleBarOverlay.setCentred(true)
         mScaleBarOverlay.setAlignBottom(true)
         mScaleBarOverlay.setEnableAdjustLength(true)
@@ -70,7 +73,9 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         mapView.overlays.add(this.mScaleBarOverlay)
 
         //built in zoom controls
-        mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+        mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT)
+
+        setZoomControllerBottomOffset(bottomOffset + 10)
 
         //needed for pinch zooms
         mapView.setMultiTouchControls(true)
@@ -96,6 +101,13 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
         setHasOptionsMenu(true)
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_SCALE)
+    }
+
+    private fun setZoomControllerBottomOffset(bottomOffset: Int) {
+        val f: Field = CustomZoomButtonsController::class.java.getDeclaredField("mDisplay")
+        f.isAccessible = true // Abracadabra
+        val zoomDisplay = f.get(mapView.zoomController) as CustomZoomButtonsDisplay
+        zoomDisplay.setAdditionalPixelMargins(0f, 0f, 0f, bottomOffset.toFloat())
     }
 
     fun updateForgroundColor(fgcolor: Int) {
