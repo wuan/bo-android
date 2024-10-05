@@ -72,15 +72,13 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         centered.setBoolean(mScaleBarOverlay, true)
         mapView.overlays.add(this.mScaleBarOverlay)
 
-        //built in zoom controls
-        mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT)
+        // disable built in zoom controls
+        mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
 
-        setZoomControllerBottomOffset(bottomOffset + 10)
-
-        //needed for pinch zooms
+        // enable pinch zoom
         mapView.setMultiTouchControls(true)
 
-        //scales tiles to the current screen's DPI, helps with readability of labels
+        // scales tiles to the current screen's DPI, helps with readability of labels
         mapView.isTilesScaledToDpi = true
 
         //the rest of this is restoring the last map location the user looked at
@@ -101,13 +99,6 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
         setHasOptionsMenu(true)
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_SCALE)
-    }
-
-    private fun setZoomControllerBottomOffset(bottomOffset: Int) {
-        val f: Field = CustomZoomButtonsController::class.java.getDeclaredField("mDisplay")
-        f.isAccessible = true // Abracadabra
-        val zoomDisplay = f.get(mapView.zoomController) as CustomZoomButtonsDisplay
-        zoomDisplay.setAdditionalPixelMargins(0f, 0f, 0f, bottomOffset.toFloat())
     }
 
     fun updateForgroundColor(fgcolor: Int) {
