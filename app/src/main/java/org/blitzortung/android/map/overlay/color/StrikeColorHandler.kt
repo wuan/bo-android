@@ -19,8 +19,11 @@
 package org.blitzortung.android.map.overlay.color
 
 import android.content.SharedPreferences
+import javax.inject.Inject
+import javax.inject.Singleton
 
-open class StrikeColorHandler(preferences: SharedPreferences) : ColorHandler(preferences) {
+@Singleton
+open class StrikeColorHandler @Inject constructor(preferences: SharedPreferences) : ColorHandler(preferences) {
 
     private val streetmapColors = mutableMapOf<IntArray, IntArray>()
 
