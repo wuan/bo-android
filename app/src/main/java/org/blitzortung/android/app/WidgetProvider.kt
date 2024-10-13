@@ -40,6 +40,7 @@ import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.view.AlertView
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.TimeInterval
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.standard.JsonRpcDataProvider
 import org.blitzortung.android.location.LocationHandler
@@ -108,14 +109,14 @@ class WidgetProvider : AppWidgetProvider() {
         val alertView = AlertView(context)
         alertView.setColorHandler(colorHandler, 60)
 
-        val parameters = Parameters(region = 0, rasterBaselength = 5000, intervalDuration = 60)
+        val parameters = Parameters(region = 0, gridSize = 5000, interval = TimeInterval(duration = 60))
         val result = runBlocking {
             withContext(Dispatchers.Default) {
                 async {
                     Log.v(Main.LOG_TAG, "Widget.getUpdatedViews() retrieve running in ${Thread.currentThread().name}")
                     var result = ResultEvent(referenceTime = System.currentTimeMillis(), parameters = parameters, flags = Flags())
                     dataProvider.retrieveData {
-                        result = getStrikesGrid(parameters, result)
+                        result = getStrikesGrid(parameters, Flags())
                     }
                     Log.v(Main.LOG_TAG, "Widget.getUpdatedViews() check running in ${Thread.currentThread().name}")
                     alertDataHandler.checkStrikes(result.strikes!!, locationHandler.location!!, alertHandler.alertParameters, result.referenceTime)

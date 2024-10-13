@@ -43,9 +43,12 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".WidgetProvider">
-            <meta-data android:name="android.appwidget.provider"
-                       android:resource="@xml/widget_provider" />
+        <receiver
+            android:name=".WidgetProvider"
+            android:exported="false">
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_provider" />
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
