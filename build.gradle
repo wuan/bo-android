@@ -12,6 +12,8 @@ task clean(type: Delete) {
 
 sonar {
     properties {
-        property "sonar.projectKey", "bo-android"
+        property "sonar.projectKey", "wuan_bo-android"
+        property "sonar.organization", "wuan"
+        property "sonar.host.url", "https://sonarcloud.io"
     }
 }
