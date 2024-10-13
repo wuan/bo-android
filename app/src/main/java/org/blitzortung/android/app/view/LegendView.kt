@@ -204,7 +204,7 @@ class LegendView @JvmOverloads constructor(
     }
 
     private fun usesGrid(): Boolean {
-        return strikesOverlay?.usesGrid() ?: false
+        return strikesOverlay?.usesGrid() == true
     }
 
     private fun hasRegion(): Boolean {

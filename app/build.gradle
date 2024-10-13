@@ -37,6 +37,9 @@ android {
     }
     kotlin {
         jvmToolchain(17)
+        compilerOptions {
+            apiVersion = KotlinVersion.KOTLIN_1_9
+        }
     }
     testOptions {
         unitTests {
@@ -88,8 +91,8 @@ dependencies {
 
 kapt.includeCompileClasspath = false
 
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.api.tasks.testing.logging.TestLogEvent
+
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 tasks.withType(Test) {
     jacoco.includeNoLocationClasses = true

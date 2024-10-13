@@ -350,8 +350,8 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="share_log">Pošalji email …</string>
     <string name="share_unavailable">Dijeljenje emaila nije dostupno.</string>
     <string name="provider_warning">Molimo nemojte koristiti Blitzortung.org kao izvor podataka tijekom učestalih aktivnosti munja jer će doći do degradacije pri prikazu karte.</string>
-	<string name="own_location_summary">Postavke prikaza vlastite lokacije</string>
-	<string name="own_location">Vlastita lokacija</string>
+    <string name="own_location_summary">Postavke prikaza vlastite lokacije</string>
+    <string name="own_location">Vlastita lokacija</string>
     <string name="own_location_size">Veličina simbola vlastite lokacije</string>
     <string name="own_location_size_summary">Određivanje veličine simbola vlastite lokacije</string>
     <string name="keep_zoom_goto_own_location_summary">Zadrži trenutno zumiranje pri centriranju vlastite lokacije</string>

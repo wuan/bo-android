@@ -107,7 +107,7 @@ class AlertHandlerTest {
         every { alertDataHandler.getLatestTimstampWithin(any(), any()) } returns currentTime
 
         val parameters = Parameters(
-            interval = TimeInterval( offset = 0, duration = 60 ),
+            interval = TimeInterval(offset = 0, duration = 60),
             region = LOCAL_REGION, gridSize = gridSize
         )
         uut.dataEventConsumer.invoke(
@@ -145,7 +145,7 @@ class AlertHandlerTest {
         every { alertDataHandler.getLatestTimstampWithin(any(), any()) } returns currentTime
 
         val parameters = Parameters(
-            interval = TimeInterval( offset = 0, duration = 60 ),
+            interval = TimeInterval(offset = 0, duration = 60),
             region = LOCAL_REGION, gridSize = gridSize
         )
         uut.dataEventConsumer.invoke(
@@ -180,7 +180,7 @@ class AlertHandlerTest {
         mockAlertResult(currentTime, 0.0f)
 
         val parameters = Parameters(
-            interval = TimeInterval( offset = 0, duration = 60 ),
+            interval = TimeInterval(offset = 0, duration = 60),
             region = LOCAL_REGION, gridSize = gridSize
         )
         uut.dataEventConsumer.invoke(
@@ -213,12 +213,12 @@ class AlertHandlerTest {
         val gridParameters = GridParameters(10.0, 40.0, 10.0, 10.0, 20, 20, gridSize)
 
         val parameters = Parameters(
-            interval = TimeInterval( offset = -30, duration = 60 ),
+            interval = TimeInterval(offset = -30, duration = 60),
             region = LOCAL_REGION, gridSize = gridSize
         )
 
-        var alertEvent : AlertEvent? = null
-        uut.requestUpdates{ event -> alertEvent = event }
+        var alertEvent: AlertEvent? = null
+        uut.requestUpdates { event -> alertEvent = event }
 
         uut.dataEventConsumer.invoke(
             ResultEvent(
@@ -250,12 +250,12 @@ class AlertHandlerTest {
         val gridParameters = GridParameters(10.0, 40.0, 10.0, 10.0, 20, 20, gridSize)
 
         val parameters = Parameters(
-            interval = TimeInterval( offset = -30, duration = 60 ),
+            interval = TimeInterval(offset = -30, duration = 60),
             region = LOCAL_REGION, gridSize = gridSize
         )
 
-        var alertEvent : AlertEvent? = null
-        uut.requestUpdates{ event -> alertEvent = event }
+        var alertEvent: AlertEvent? = null
+        uut.requestUpdates { event -> alertEvent = event }
 
         uut.dataEventConsumer.invoke(
             ResultEvent(

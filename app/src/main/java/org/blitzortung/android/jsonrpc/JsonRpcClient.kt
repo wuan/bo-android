@@ -64,7 +64,7 @@ class JsonRpcClient @Inject constructor(client: HttpServiceClientDefault) : Http
 
         return if (response.body.startsWith("[")) {
             JsonRpcResponse(
-                data= JSONArray(response.body).getJSONObject(0),
+                data = JSONArray(response.body).getJSONObject(0),
             )
         } else {
             val responseObject = JSONObject(response.body)
@@ -78,7 +78,7 @@ class JsonRpcClient @Inject constructor(client: HttpServiceClientDefault) : Http
                 )
             }
             JsonRpcResponse(
-                data= responseObject,
+                data = responseObject,
             )
         }
     }

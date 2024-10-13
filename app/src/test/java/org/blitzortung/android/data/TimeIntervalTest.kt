@@ -1,6 +1,5 @@
 package org.blitzortung.android.data
 
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 

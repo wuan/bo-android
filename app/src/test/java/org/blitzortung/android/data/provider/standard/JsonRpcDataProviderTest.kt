@@ -97,7 +97,7 @@ class JsonRpcDataProviderTest {
 
     @Test
     fun getsLocalData() {
-        val localReference = LocalReference(5,6)
+        val localReference = LocalReference(5, 6)
         val parameters = Parameters(
             region = LOCAL_REGION,
             interval = TimeInterval(
@@ -146,7 +146,7 @@ class JsonRpcDataProviderTest {
 
     @Test
     fun getsRegionData() {
-        val localReference = LocalReference(5,6)
+        val localReference = LocalReference(5, 6)
         val parameters = Parameters(
             region = 2,
             interval = TimeInterval(

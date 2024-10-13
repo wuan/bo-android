@@ -366,12 +366,12 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="share_log">Send email …</string>
     <string name="share_unavailable">E-mail sharing is not available.</string>
     <string name="provider_warning">Please do not use the Blitzortung.org data provider during high lightning activity, as the map display performance will degrade.</string>
-    <string name="own_location_summary" >Own location Display-Settings</string>
-    <string name="own_location" >Own location</string>
-    <string name="own_location_size" >Own location symbol size</string>
-    <string name="own_location_size_summary" >Set the size of the own location symbol</string>
-    <string name="keep_zoom_goto_own_location_summary" >Setting to keep the current zoom when centering the own location</string>
-    <string name="keep_zoom_goto_own_location_title" >Keep zoom</string>
+    <string name="own_location_summary">Own location Display-Settings</string>
+    <string name="own_location">Own location</string>
+    <string name="own_location_size">Own location symbol size</string>
+    <string name="own_location_size_summary">Set the size of the own location symbol</string>
+    <string name="keep_zoom_goto_own_location_summary">Setting to keep the current zoom when centering the own location</string>
+    <string name="keep_zoom_goto_own_location_title">Keep zoom</string>
     <string name="notification_channel_name" translatable="false">Storm Alarms</string>
     <string name="not_available">n/a</string>
     <string name="unit_miles">mi.</string>

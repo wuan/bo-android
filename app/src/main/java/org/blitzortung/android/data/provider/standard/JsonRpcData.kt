@@ -12,7 +12,7 @@ class JsonRpcData(
     private val serviceUrl: URL,
 ) {
 
-    fun requestData(parameters: Parameters) : JsonRpcResponse {
+    fun requestData(parameters: Parameters): JsonRpcResponse {
         val intervalDuration = parameters.intervalDuration
         val intervalOffset = parameters.intervalOffset
         val gridSize = parameters.gridSize
@@ -38,6 +38,7 @@ class JsonRpcData(
                 }
                 jsonRpcResponse
             }
+
             LOCAL_REGION -> {
                 client.call(
                     serviceUrl,
@@ -50,6 +51,7 @@ class JsonRpcData(
                     countThreshold
                 )
             }
+
             else -> {
                 client.call(
                     serviceUrl,

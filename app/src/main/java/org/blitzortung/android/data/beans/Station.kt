@@ -40,9 +40,11 @@ class Station(
                     minutesAgo > 24 * 60 -> {
                         State.OFF
                     }
+
                     minutesAgo > 15 -> {
                         State.DELAYED
                     }
+
                     else -> {
                         State.ON
                     }

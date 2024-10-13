@@ -349,11 +349,11 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="share_log">E-Mail senden …</string>
     <string name="share_unavailable">E-Mail kann nicht versendet werden.</string>
     <string name="provider_warning">Bitte nutzen sie die Blitzortung.org Datenquelle nicht bei hoher Blitzaktivität. Die Dastellung der Karte wird möglicherweise verzögert.</string>
-    <string name="own_location_summary" >Einstellungen der Anzeige des Standorts</string>
-    <string name="own_location" >Eigener Standort</string>
-    <string name="own_location_size" >Größe des Standort-Symbols</string>
-    <string name="own_location_size_summary" >Einstellung der Größe des Standort-Symbols</string>
-    <string name="keep_zoom_goto_own_location_title" >Zoom beibehalten</string>
+    <string name="own_location_summary">Einstellungen der Anzeige des Standorts</string>
+    <string name="own_location">Eigener Standort</string>
+    <string name="own_location_size">Größe des Standort-Symbols</string>
+    <string name="own_location_size_summary">Einstellung der Größe des Standort-Symbols</string>
+    <string name="keep_zoom_goto_own_location_title">Zoom beibehalten</string>
     <string name="keep_zoom_goto_own_location_summary">Einstellung zur Beibehaltung des aktuellen Zooms beim Zentrieren des eigenen Standorts</string>
     <string name="background_query_toast">Bitte deaktivieren Sie die Akku-Optimierung für diese App damit die Warnung im Hintergrund zuverlässig funktioniert.</string>
     <string name="open_battery_optimiziation">Bitte deaktivieren Sie die Akku-Optimierung für diese App wenn die Hintergrundabfrage aktiv ist. Drücken Sie auf Abbrechen um die Hintergrundabfrage zu deaktiveren oder auf OK um zur Einstellung der Batterieoptimierung zu gelangen.</string>

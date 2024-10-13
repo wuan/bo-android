@@ -78,7 +78,10 @@ class DataCacheTest {
         val dataEvent = ResultEvent(parameters = parameters, flags = Flags(), strikes = strikes)
 
         uut.put(parameters, dataEvent)
-        uut.put(parameters.copy(interval = TimeInterval(offset = 60)), ResultEvent(parameters = parameters, flags = Flags()))
+        uut.put(
+            parameters.copy(interval = TimeInterval(offset = 60)),
+            ResultEvent(parameters = parameters, flags = Flags())
+        )
 
         val result = uut.calculateTotalSize()
 

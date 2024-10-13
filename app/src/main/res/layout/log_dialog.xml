@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/TextAppearance.AppCompat.Headline"
-        android:text="@string/app_log"/>
+        android:text="@string/app_log" />
 
     <View
         android:layout_width="match_parent"

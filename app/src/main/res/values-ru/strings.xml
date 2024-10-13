@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <string name="app_name">Трекер молний</string>
+    <string name="app_name">Трекер молний</string>
 
     <plurals name="strike">
         <item quantity="zero">Нет молний</item>
@@ -359,12 +359,12 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="share_log">Отправить по email …</string>
     <string name="share_unavailable">Обмен по E-mail не доступен.</string>
     <string name="provider_warning">Пожалуйста, не используйте Blitzortung.org во время высокой активности молний, так как производительность отображения карты будет снижаться.</string>
-    <string name="own_location_summary" >Настройки отображения Вашего месторасположения</string>
-    <string name="own_location" >Ваше месторасположение</string>
-    <string name="own_location_size" >Символ Вашего месторасположения</string>
-    <string name="own_location_size_summary" >Установите размер символа Вашего месторасположения</string>
-    <string name="keep_zoom_goto_own_location_summary" >Установка сохранения Вашего текущего масштаба при центрировании собственного местоположения</string>
-    <string name="keep_zoom_goto_own_location_title" >Сохранить масштаб</string>
+    <string name="own_location_summary">Настройки отображения Вашего месторасположения</string>
+    <string name="own_location">Ваше месторасположение</string>
+    <string name="own_location_size">Символ Вашего месторасположения</string>
+    <string name="own_location_size_summary">Установите размер символа Вашего месторасположения</string>
+    <string name="keep_zoom_goto_own_location_summary">Установка сохранения Вашего текущего масштаба при центрировании собственного местоположения</string>
+    <string name="keep_zoom_goto_own_location_title">Сохранить масштаб</string>
     <string name="notification_channel_name">Предупреждение об урагане</string>
     <string name="not_available">н/д</string>
     <string name="unit_miles">миль</string>

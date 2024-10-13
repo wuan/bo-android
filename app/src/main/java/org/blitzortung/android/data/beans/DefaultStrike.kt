@@ -20,7 +20,7 @@ package org.blitzortung.android.data.beans
 
 import java.io.Serializable
 
-data class DefaultStrike (
+data class DefaultStrike(
     override val timestamp: Long = 0,
     override val longitude: Double = 0.0,
     override val latitude: Double = 0.0,

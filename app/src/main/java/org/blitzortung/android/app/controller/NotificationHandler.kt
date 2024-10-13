@@ -59,6 +59,7 @@ open class NotificationHandler @Inject constructor(
             isAtLeast(Build.VERSION_CODES.O) -> {
                 createNotification(contentIntent, notificationText)
             }
+
             else -> {
                 createJellyBeanNotification(contentIntent, notificationText)
             }

@@ -17,10 +17,8 @@ import org.blitzortung.android.app.view.get
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
-import org.osmdroid.views.CustomZoomButtonsDisplay
 import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.ScaleBarOverlay
-import java.lang.reflect.Field
 import kotlin.math.min
 
 
@@ -151,11 +149,13 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
                 val mapTypeString = sharedPreferences.get(key, "SATELLITE")
                 mapView.setTileSource(if (mapTypeString == "SATELLITE") TileSourceFactory.DEFAULT_TILE_SOURCE else TileSourceFactory.MAPNIK)
             }
+
             PreferenceKey.MAP_SCALE -> {
                 val scaleFactor = sharedPreferences.get(key, 100) / 100f
                 Log.v(Main.LOG_TAG, "MapFragment scale $scaleFactor")
                 mapView.tilesScaleFactor = scaleFactor
             }
+
             else -> {}
         }
     }

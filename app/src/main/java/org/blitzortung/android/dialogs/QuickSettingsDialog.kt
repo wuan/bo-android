@@ -59,8 +59,10 @@ class QuickSettingsDialog : DialogFragment() {
         val selectedIntervalDuration = getSelectedIndex(intervalDurationValues, currentIntervalDurationValue)
 
         val animationIntervalDurationValues = resources.getStringArray(R.array.animation_interval_duration_values)
-        val currentAnimationIntervalDurationValue = preferences.get(PreferenceKey.ANIMATION_INTERVAL_DURATION, animationIntervalDurationValues[1])
-        val selectedAnimationInterval = getSelectedIndex(animationIntervalDurationValues, currentAnimationIntervalDurationValue)
+        val currentAnimationIntervalDurationValue =
+            preferences.get(PreferenceKey.ANIMATION_INTERVAL_DURATION, animationIntervalDurationValues[1])
+        val selectedAnimationInterval =
+            getSelectedIndex(animationIntervalDurationValues, currentAnimationIntervalDurationValue)
 
         @SuppressLint("InflateParams") val view = layoutInflater.inflate(R.layout.quick_settings_dialog, null, false)
 

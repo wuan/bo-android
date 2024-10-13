@@ -92,6 +92,7 @@ class BlitzortungHttpDataProvider @Inject constructor(
                     Log.w(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() $urlString not found")
                     return BufferedReader(InputStreamReader(ByteArrayInputStream("".toByteArray())))
                 }
+
                 else -> {
                     Log.w(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() $urlString failed")
                     throw RuntimeException(e)

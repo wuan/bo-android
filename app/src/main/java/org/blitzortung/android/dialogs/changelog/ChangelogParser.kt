@@ -63,6 +63,7 @@ class ChangelogParser {
                 parser.setInput(inputStream, null)
                 parser
             }
+
             "xml" -> context.resources.getXml(changeLogFileId)
             else -> throw IllegalArgumentException("bad changelog resource type $resourceTypeName")
         }

@@ -30,8 +30,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".AppService"
-            android:foregroundServiceType="dataSync"/>
+        <service
+            android:name=".AppService"
+            android:foregroundServiceType="dataSync" />
         <activity
             android:name=".Preferences"
             android:label="@string/preferences" />

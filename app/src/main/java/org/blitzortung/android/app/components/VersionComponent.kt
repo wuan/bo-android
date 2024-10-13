@@ -56,6 +56,7 @@ class VersionComponent @Inject constructor(
             configuredVersionCode == -1 -> State.FIRST_RUN
             configuredMajorVersion != buildVersion.majorVersion ||
                     configuredMinorVersion != buildVersion.minorVersion -> State.FIRST_RUN_AFTER_UPDATE
+
             else -> State.NO_UPDATE
         }
 

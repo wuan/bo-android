@@ -106,8 +106,7 @@
                 android:selectable="true"
                 android:persistent="true"
                 android:text="@string/percent"
-                min="50"
-                />
+                min="50" />
         </PreferenceScreen>
         <CheckBoxPreference
             android:title="@string/keep_zoom_goto_own_location_title"
@@ -115,7 +114,7 @@
             android:key="keep_zoom_goto_own_location"
             android:selectable="true"
             android:defaultValue="false"
-            android:persistent="true"/>
+            android:persistent="true" />
     </PreferenceScreen>
     <PreferenceScreen
         android:title="@string/animation_settings"
@@ -130,8 +129,7 @@
             android:entryValues="@array/animation_interval_duration_values"
             android:key="animation_interval_duration"
             android:persistent="true"
-            android:selectable="true"
-            />
+            android:selectable="true" />
         <org.blitzortung.android.preferences.SlidePreferences
             android:title="@string/animation_sleep_duration"
             android:summary="@string/animation_sleep_duration_summary"
@@ -142,8 +140,7 @@
             android:persistent="true"
             android:text="@string/ms"
             android:min="100"
-            step="50"
-            />
+            step="50" />
         <org.blitzortung.android.preferences.SlidePreferences
             android:title="@string/animation_cycle_sleep_duration"
             android:summary="@string/animation_cycle_sleep_duration_summary"
@@ -154,8 +151,7 @@
             android:persistent="true"
             android:text="@string/ms"
             android:min="0"
-            step="500"
-            />
+            step="500" />
     </PreferenceScreen>
     <PreferenceScreen
         android:key="data_settings"

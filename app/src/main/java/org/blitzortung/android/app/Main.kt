@@ -684,7 +684,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         Log.v(LOG_TAG, "requestWakeupPermissions() background alerts: $backgroundAlertEnabled")
 
         if (backgroundAlertEnabled) {
-            val pm = context.getSystemService(Context.POWER_SERVICE)
+            val pm = context.getSystemService(POWER_SERVICE)
             if (pm is PowerManager) {
                 val packageName = context.packageName
                 Log.v(LOG_TAG, "requestWakeupPermissions() package name $packageName")
