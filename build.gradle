@@ -15,5 +15,6 @@ sonar {
         property "sonar.projectKey", "wuan_bo-android"
         property "sonar.organization", "wuan"
         property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.androidLint.reportPaths", "app/build/reports/lint-results-debug.xml"
     }
 }
