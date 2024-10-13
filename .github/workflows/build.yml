@@ -32,21 +32,18 @@ jobs:
 
       - name: Cache SonarQube packages
         uses: actions/cache@v4
-        if: github.ref_name == 'main' && github.event_name == 'push'
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
       - name: Build and analyze
-        if: github.ref_name == 'main' && github.event_name == 'push'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew build jacocoTestReport sonar
 
       - name: Upload build artifacts
-        if: github.ref_name == 'main' && github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
           name: build
