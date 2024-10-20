@@ -13,7 +13,7 @@ import org.robolectric.annotation.Config
 @Config(manifest = Config.NONE)
 class StrikeColorHandlerTest {
 
-    lateinit var strikeColorHandler: StrikeColorHandler;
+    lateinit var strikeColorHandler: StrikeColorHandler
 
     @Before
     fun setUp() {
