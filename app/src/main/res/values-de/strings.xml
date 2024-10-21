@@ -364,7 +364,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="location_permission_required">Für die Ortsbestimmung über den Gerätestandort ist die Berechtigung erforderlich.</string>
     <string name="location_permission_background_required">Für die Ortsbestimmung über den Gerätestandort im Hintergrund ist die Berechtigung erforderlich.</string>
     <string name="changelog">Änderungsprotokoll</string>
-    <string name="location_permission_background_disclosure">Diese App verwendet Standortdaten, auch wenn die App geschlossen ist oder nicht verwendet wird, wenn Warnungen im Hintergrund mit einer Gerätestandortquelle verwendet werden.</string>
+    <string name="location_permission_background_disclosure">Diese App verwendet Standortdaten, auch wenn die App geschlossen ist oder nicht verwendet wird, <b>sofern Warnungen im Hintergrund aktiviert wurden</b> und eine <b>Gerätestandortquelle ausgewählt</b> ist.</string>
     <string name="menu">Menü öffnen</string>
     <string name="slider_current">jetzt</string>
     <string name="slider_past">Vergangenheit</string>

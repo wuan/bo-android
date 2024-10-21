@@ -645,7 +645,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             if (requiresPermission) {
                 val locationText = this.resources.getString(R.string.location_permission_background_disclosure)
                 AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
-                    .setNeutralButton(android.R.string.ok) { dialog, count ->
+                    .setPositiveButton(android.R.string.ok) { dialog, count ->
                         requestPermission(
                             permission, requestCode,
                             R.string.location_permission_required
@@ -667,13 +667,13 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     @TargetApi(Build.VERSION_CODES.M)
     private fun requestPermission(permission: String, requestCode: Int, permissionRequiredStringId: Int) {
         val shouldShowPermissionRationale = shouldShowRequestPermissionRationale(permission)
-        val permissionStatus = checkSelfPermission(permission)
+        val permissionIsGranted = checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
         Log.v(
             LOG_TAG,
-            "Main.requestPermission() permission: $permission, status: $permissionStatus, shouldRequest: ${!shouldShowPermissionRationale}"
+            "Main.requestPermission() permission: $permission, isGranted: $permissionIsGranted, shouldShowRationale: ${!shouldShowPermissionRationale}"
         )
 
-        if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
+        if (!permissionIsGranted) {
             if (shouldShowPermissionRationale) {
                 requestPermissionsAfterDialog(permissionRequiredStringId, permission, requestCode)
             } else {
@@ -688,10 +688,17 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         permission: String,
         requestCode: Int,
     ) {
+        Log.v(
+            LOG_TAG,
+            "Main.requestPermissionsAfterDialog() permission: $permission, dialogResource: $dialogTextResource, requestCode: $requestCode"
+        )
+
         val locationText = resources.getString(dialogTextResource)
         AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
-            .setNeutralButton(android.R.string.ok) { dialog, count ->
-                requestPermissions( arrayOf(permission), requestCode )
+            .setPositiveButton(android.R.string.ok) { dialog, count ->
+                Log.v(LOG_TAG, "Main.requestPermissionsAfterDialog() clicked OK, before request")
+                requestPermissions(arrayOf(permission), requestCode)
+                Log.v(LOG_TAG, "Main.requestPermissionsAfterDialog() clicked OK, after request")
             }.show()
     }
 
