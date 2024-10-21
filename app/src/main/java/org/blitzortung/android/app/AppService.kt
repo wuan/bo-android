@@ -19,17 +19,21 @@
 package org.blitzortung.android.app
 
 import android.app.AlarmManager
+import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
 import android.content.ComponentName
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.core.app.ServiceCompat
 import dagger.android.AndroidInjection
 import org.blitzortung.android.alert.handler.AlertHandler
+import org.blitzortung.android.app.controller.NotificationHandler.Companion.CHANNEL_ID
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
@@ -127,8 +131,29 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
             Log.d(Main.LOG_TAG, "AppService.onStartCommand() non matching intent ${intent?.action}")
         }
 
+        val intent = Intent(this, Main::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        val flags = PendingIntent.FLAG_CANCEL_CURRENT or (if (isAtLeast(Build.VERSION_CODES.M)) {
+            PendingIntent.FLAG_IMMUTABLE
+        } else {
+            0
+        })
+        val contentIntent = PendingIntent.getActivity(this, 0, intent, flags)
+
+        val notification = Notification.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.icon)
+            .setContentTitle(this.resources.getText(R.string.app_name))
+            .setContentText("bla")
+            .setContentIntent(contentIntent)
+            .setAutoCancel(true)
+            .setWhen(System.currentTimeMillis())
+            .setShowWhen(true).build()
+
+        ServiceCompat.startForeground(this, 0, notification, FOREGROUND_SERVICE_TYPE_MANIFEST)
+
         return START_STICKY
     }
+
 
     override fun onBind(intent: Intent): IBinder? {
         Log.i(Main.LOG_TAG, "AppService.onBind() $intent")
@@ -138,6 +163,8 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
 
     override fun onDestroy() {
         super.onDestroy()
+
+        ServiceCompat.stopForeground(this, 0)
 
         preferences.unregisterOnSharedPreferenceChangeListener(this)
         isEnabled = false

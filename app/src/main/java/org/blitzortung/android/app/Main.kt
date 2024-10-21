@@ -643,17 +643,18 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
             val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
             if (requiresPermission) {
-                val locationText = resources.getString(R.string.location_permission_background_disclosure)
+                val locationText = this.resources.getString(R.string.location_permission_background_disclosure)
                 AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
                     .setNeutralButton(android.R.string.ok) { dialog, count ->
                         requestPermission(
-                            arrayOf(permission), requestCode, R.string.location_permission_required
+                            permission, requestCode,
+                            R.string.location_permission_required
                         )
                     }.show()
             } else {
-                if (requiresBackgroundPermission) {
+                if (requiresBackgroundPermission && isAtLeast(Build.VERSION_CODES.Q)) {
                     requestPermission(
-                        arrayOf(ACCESS_BACKGROUND_LOCATION),
+                        ACCESS_BACKGROUND_LOCATION,
                         requestCode,
                         R.string.location_permission_background_required
                     )
@@ -662,21 +663,36 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         }
     }
 
+
     @TargetApi(Build.VERSION_CODES.M)
-    private fun requestPermission(permission: Array<String>, requestCode: Int, permissionRequiredStringId: Int) {
-        val shouldShowPermissionRationale = shouldShowRequestPermissionRationale(permission[0])
-        val permissionStatus = checkSelfPermission(permission[0])
+    private fun requestPermission(permission: String, requestCode: Int, permissionRequiredStringId: Int) {
+        val shouldShowPermissionRationale = shouldShowRequestPermissionRationale(permission)
+        val permissionStatus = checkSelfPermission(permission)
         Log.v(
             LOG_TAG,
-            "Main.requestPermission() permission: ${permission.joinToString()}, status: $permissionStatus, shouldRequest: ${!shouldShowPermissionRationale}"
+            "Main.requestPermission() permission: $permission, status: $permissionStatus, shouldRequest: ${!shouldShowPermissionRationale}"
         )
-        if (!shouldShowPermissionRationale && permissionStatus != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(permission, requestCode)
-        } else {
+
+        if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
             if (shouldShowPermissionRationale) {
-                Toast.makeText(baseContext, permissionRequiredStringId, Toast.LENGTH_LONG).show()
+                requestPermissionsAfterDialog(permissionRequiredStringId, permission, requestCode)
+            } else {
+                requestPermissions(arrayOf(permission), requestCode)
             }
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private fun requestPermissionsAfterDialog(
+        dialogTextResource: Int,
+        permission: String,
+        requestCode: Int,
+    ) {
+        val locationText = resources.getString(dialogTextResource)
+        AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
+            .setNeutralButton(android.R.string.ok) { dialog, count ->
+                requestPermissions( arrayOf(permission), requestCode )
+            }.show()
     }
 
     @TargetApi(Build.VERSION_CODES.M)
