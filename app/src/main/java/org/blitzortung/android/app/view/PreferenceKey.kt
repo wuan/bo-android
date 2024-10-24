@@ -26,7 +26,7 @@ enum class PreferenceKey(val key: String) {
     USERNAME("username"),
     PASSWORD("password"),
     SERVICE_URL("service_url"),
-    RASTER_SIZE("raster_size"),
+    GRID_SIZE("raster_size"),
     COUNT_THRESHOLD("count_threshold"),
     MAP_TYPE("map_mode"),
     MAP_SCALE("map_scale"),
@@ -65,7 +65,7 @@ enum class PreferenceKey(val key: String) {
         private val stringToValueMap = HashMap<String, PreferenceKey>()
 
         init {
-            for (key in values()) {
+            for (key in entries) {
                 val keyString = key.toString()
                 if (keyString in stringToValueMap) {
                     throw IllegalStateException("key value '%s' already defined".format(keyString))

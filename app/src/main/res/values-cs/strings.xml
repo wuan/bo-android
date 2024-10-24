@@ -159,10 +159,10 @@ Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
         <item>600</item>
     </string-array>
 
-    <string name="raster_size">Velikost rastru</string>
-    <string name="raster_size_summary">Velikost čtverečků na mapě</string>
+    <string name="grid_size">Velikost rastru</string>
+    <string name="grid_size_summary">Velikost čtverečků na mapě</string>
 
-    <string-array name="raster_sizes">
+    <string-array name="grid_sizes">
         <item>auto</item>
         <item>5 km</item>
         <item>10 km</item>
@@ -170,7 +170,7 @@ Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
         <item>50 km</item>
         <item>100 km</item>
     </string-array>
-    <string-array name="raster_size_values">
+    <string-array name="grid_size_values">
         <item>auto</item>
         <item>5000</item>
         <item>10000</item>
@@ -180,7 +180,7 @@ Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Strike count threshold</string>
-    <string name="count_threshold_summary">minimum strike count per raster area</string>
+    <string name="count_threshold_summary">threshold strike count per grid area</string>
 
     <string-array name="count_thresholds">
         <item>disabled</item>

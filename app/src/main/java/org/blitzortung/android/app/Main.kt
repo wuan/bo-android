@@ -83,6 +83,7 @@ import org.blitzortung.android.util.isAtLeast
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
+import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -94,6 +95,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private lateinit var strikeListOverlay: StrikeListOverlay
     private lateinit var ownLocationOverlay: OwnLocationOverlay
     private lateinit var fadeOverlay: FadeOverlay
+    private var currentSequenceNumber = AtomicLong()
 
     private var clearData: Boolean = false
 
@@ -137,48 +139,54 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             is ResultEvent -> {
 
                 statusComponent.indicateError(event.failed)
-                if (!event.failed) {
-                    currentResult = event
+                if (!event.failed && event.sequenceNumber != null) {
+                    val updatedSequenceNumber = determineUpdatedSequenceNumber(event.sequenceNumber)
+                    if (updatedSequenceNumber == event.sequenceNumber) {
+                        currentResult = event
 
-                    Log.d(LOG_TAG, "Main.onDataUpdate() $event")
+                        Log.d(LOG_TAG, "Main.onDataUpdate() $event")
 
-                    val resultParameters = event.parameters
+                        val resultParameters = event.parameters
 
-                    clearDataIfRequested()
+                        clearDataIfRequested()
 
-                    val initializeOverlay = strikeListOverlay.parameters != resultParameters
-                    with(strikeListOverlay) {
-                        parameters = resultParameters
-                        rasterParameters = event.rasterParameters
-                        referenceTime = event.referenceTime
-                    }
-
-                    if (event.updated >= 0 && !initializeOverlay) {
-                        strikeListOverlay.expireStrikes()
-                    } else {
-                        strikeListOverlay.clear()
-                    }
-
-                    if (event.strikes != null) {
-                        val strikes = if (event.updated > 0 && !initializeOverlay) {
-                            val size = event.strikes.size
-                            event.strikes.subList(size - event.updated, size)
-                        } else {
-                            event.strikes
+                        val initializeOverlay = strikeListOverlay.parameters != resultParameters
+                        with(strikeListOverlay) {
+                            parameters = resultParameters
+                            gridParameters = event.gridParameters
+                            referenceTime = event.referenceTime
                         }
-                        strikeListOverlay.addStrikes(strikes)
-                    }
 
-                    binding.alertView.setColorHandler(strikeColorHandler, strikeListOverlay.parameters.intervalDuration)
+                        if (event.updated >= 0 && !initializeOverlay) {
+                            strikeListOverlay.expireStrikes()
+                        } else {
+                            strikeListOverlay.clear()
+                        }
 
-                    strikeListOverlay.refresh()
-                    mapFragment.mapView.invalidate()
+                        if (event.strikes != null) {
+                            val strikes = if (event.updated > 0 && !initializeOverlay) {
+                                val size = event.strikes.size
+                                event.strikes.subList(size - event.updated, size)
+                            } else {
+                                event.strikes
+                            }
+                            strikeListOverlay.addStrikes(strikes)
+                        }
 
-                    binding.legendView.requestLayout()
-                    binding.timeSlider.update(event.parameters, event.history!!)
+                        binding.alertView.setColorHandler(
+                            strikeColorHandler,
+                            strikeListOverlay.parameters.intervalDuration
+                        )
 
-                    if (event.flags.mode == Mode.ANIMATION || !event.containsRealtimeData()) {
-                        setHistoricStatusString()
+                        strikeListOverlay.refresh()
+                        mapFragment.mapView.invalidate()
+
+                        binding.legendView.requestLayout()
+                        binding.timeSlider.update(event.parameters, event.history!!)
+
+                        if (event.flags.mode == Mode.ANIMATION || !event.containsRealtimeData()) {
+                            setHistoricStatusString()
+                        }
                     }
                 }
 
@@ -190,6 +198,19 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             is StatusEvent -> {
                 setStatusString(event.status)
             }
+        }
+    }
+
+    private fun determineUpdatedSequenceNumber(sequenceNumber: Long) = if (isAtLeast(24)) {
+        currentSequenceNumber.updateAndGet { previousSequenceNumber ->
+            if (previousSequenceNumber < sequenceNumber) sequenceNumber else previousSequenceNumber
+        }
+    } else {
+        synchronized(currentSequenceNumber) {
+            val previousSequenceNumber = currentSequenceNumber.get()
+            val updated = if (previousSequenceNumber < sequenceNumber) sequenceNumber else previousSequenceNumber
+            currentSequenceNumber.set(updated)
+            updated
         }
     }
 
@@ -352,11 +373,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 val currentResult = currentResult
                 if (currentResult != null) {
                     val parameters = currentResult.parameters
-                    val rasterParameters = currentResult.rasterParameters
-                    if (!parameters.isGlobal && rasterParameters != null) {
+                    val gridParameters = currentResult.gridParameters
+                    if (!parameters.isGlobal && gridParameters != null) {
                         animateToLocationAndVisibleSize(
-                            rasterParameters.rectCenterLongitude,
-                            rasterParameters.rectCenterLatitude,
+                            gridParameters.rectCenterLongitude,
+                            gridParameters.rectCenterLatitude,
                             if (parameters.region == LOCAL_REGION) 1800f else 5000f
                         )
                     } else {
@@ -482,6 +503,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         locationHandler.start()
 
         dataHandler.start()
+        dataHandler.updateAutoGridSize(mapFragment.zoomLevel)
     }
 
     private fun enableDataUpdates() {
@@ -662,7 +684,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         Log.v(LOG_TAG, "requestWakeupPermissions() background alerts: $backgroundAlertEnabled")
 
         if (backgroundAlertEnabled) {
-            val pm = context.getSystemService(Context.POWER_SERVICE)
+            val pm = context.getSystemService(POWER_SERVICE)
             if (pm is PowerManager) {
                 val packageName = context.packageName
                 Log.v(LOG_TAG, "requestWakeupPermissions() package name $packageName")
@@ -723,9 +745,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         companion object {
             val byProviderName: Map<String, LocationProviderRelation> =
-                values().groupBy { it.providerName }.mapValues { it.value.first() }
+                entries.groupBy { it.providerName }.mapValues { it.value.first() }
             val byOrdinal: Map<Int, LocationProviderRelation> =
-                values().groupBy { it.ordinal }.mapValues { it.value.first() }
+                entries.groupBy { it.ordinal }.mapValues { it.value.first() }
         }
     }
 

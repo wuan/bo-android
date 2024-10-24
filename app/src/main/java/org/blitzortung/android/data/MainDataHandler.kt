@@ -24,9 +24,6 @@ import android.location.Location
 import android.os.Handler
 import android.util.Log
 import android.widget.Toast
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
@@ -49,6 +46,7 @@ import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
 import java.util.Locale
+import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.properties.Delegates
@@ -76,6 +74,7 @@ class MainDataHandler @Inject constructor(
         private set
 
     private var period: Int = 0
+    private var sequenceNumber = AtomicLong()
 
     private var dataProvider: DataProvider? = null
 
@@ -87,7 +86,7 @@ class MainDataHandler @Inject constructor(
 
     private var animationHistory: History? = null
 
-    private var autoRaster = false
+    private var autoGridSize = false
 
     private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
         override fun addedFirstConsumer() {
@@ -115,7 +114,7 @@ class MainDataHandler @Inject constructor(
             PreferenceKey.DATA_SOURCE,
             PreferenceKey.USERNAME,
             PreferenceKey.PASSWORD,
-            PreferenceKey.RASTER_SIZE,
+            PreferenceKey.GRID_SIZE,
             PreferenceKey.COUNT_THRESHOLD,
             PreferenceKey.REGION,
             PreferenceKey.INTERVAL_DURATION,
@@ -145,7 +144,7 @@ class MainDataHandler @Inject constructor(
 
             var updateParticipants = false
             if (updateTargets.contains(DataChannel.PARTICIPANTS)) {
-                if (dataProvider!!.type == DataProviderType.HTTP || !dataMode.raster) {
+                if (dataProvider!!.type == DataProviderType.HTTP || !dataMode.grid) {
                     updateParticipants = true
                 }
             }
@@ -155,15 +154,16 @@ class MainDataHandler @Inject constructor(
 
     private fun updateUsingCache() {
         var flags = Flags(mode = mode)
+        val sequenceNumber = sequenceNumber.incrementAndGet()
 
         val parameters = activeParameters
         val cachedResult = cache.get(parameters)
         if (cachedResult != null) {
             Log.d(LOG_TAG, "MainDataHandler.updateData() cached $parameters")
-            sendEvent(cachedResult)
+            sendEvent(cachedResult.copy(sequenceNumber = sequenceNumber))
         } else {
             Log.d(LOG_TAG, "MainDataHandler.updateData() fetch $parameters")
-            FetchDataTask(dataMode, dataProvider!!, {
+            FetchDataTask(dataMode, dataProvider!!) {
                 if (mode == Mode.ANIMATION) {
                     flags = flags.copy(storeResult = false)
                     if (!it.containsRealtimeData()) {
@@ -174,21 +174,21 @@ class MainDataHandler @Inject constructor(
                 if (!it.containsRealtimeData()) {
                     cache.put(event.parameters, event)
                 }
-                sendEvent(event)
-            }, ::toast).execute(parameters = parameters, history = history)
+                sendEvent(event.copy(sequenceNumber = sequenceNumber))
+            }.execute(parameters = parameters, history = history)
         }
     }
 
     private val activeParameters: Parameters
         get() {
-            return if (dataMode.raster) {
+            return if (dataMode.grid) {
                 localData.updateParameters(parameters, location)
             } else {
                 var parameters = parameters
                 if (!dataMode.region) {
                     parameters = parameters.copy(region = 0)
                 }
-                parameters.copy(rasterBaselength = 0, countThreshold = 0)
+                parameters.copy(gridSize = 0, countThreshold = 0)
             }
         }
 
@@ -220,15 +220,15 @@ class MainDataHandler @Inject constructor(
                 updateData()
             }
 
-            PreferenceKey.RASTER_SIZE -> {
-                val rasterBaselengthString = sharedPreferences.get(key, AUTO_RASTER_BASELENGTH)
-                if (rasterBaselengthString == AUTO_RASTER_BASELENGTH) {
-                    autoRaster = true
-                    parameters = parameters.copy(rasterBaselength = DEFAULT_RASTER_BASELENGTH)
+            PreferenceKey.GRID_SIZE -> {
+                val gridSizeString = sharedPreferences.get(key, AUTO_GRID_SIZE_VALUE)
+                if (gridSizeString == AUTO_GRID_SIZE_VALUE) {
+                    autoGridSize = true
+                    parameters = parameters.copy(gridSize = DEFAULT_GRID_SIZE)
                 } else {
-                    val rasterBaselength = Integer.parseInt(rasterBaselengthString)
-                    autoRaster = false
-                    parameters = parameters.copy(rasterBaselength = rasterBaselength)
+                    val gridSize = Integer.parseInt(gridSizeString)
+                    autoGridSize = false
+                    parameters = parameters.copy(gridSize = gridSize)
                 }
                 updateData()
             }
@@ -264,13 +264,14 @@ class MainDataHandler @Inject constructor(
             }
 
             PreferenceKey.ANIMATION_INTERVAL_DURATION -> {
-                val value = Integer.parseInt(sharedPreferences.get(key, "6"))
+                val value = Integer.parseInt(sharedPreferences.get(key, "4"))
                 animationHistory = when (value) {
                     2 -> History(5, 120, false)
                     4 -> History(10, 240, false)
+                    6 -> History(10, 360, false)
                     12 -> History(20, 720, false)
                     24 -> History(30, 1440, true)
-                    else -> History(10, 360, false)
+                    else -> History(10, 240, false)
                 }
                 if (mode == Mode.ANIMATION) {
                     history = animationHistory!!
@@ -298,13 +299,13 @@ class MainDataHandler @Inject constructor(
         val providerType = dataProvider!!.type
 
         dataMode = when (providerType) {
-            DataProviderType.RPC -> DataMode(raster = true, region = false)
-            DataProviderType.HTTP -> DataMode(raster = false, region = true)
+            DataProviderType.RPC -> DataMode(grid = true, region = false)
+            DataProviderType.HTTP -> DataMode(grid = false, region = true)
         }
     }
 
     fun toggleExtendedMode() {
-        dataMode = dataMode.copy(raster = dataMode.raster.xor(true))
+        dataMode = dataMode.copy(grid = dataMode.grid.xor(true))
 
         if (!isRealtime) {
             val dataChannels = HashSet<DataChannel>()
@@ -336,10 +337,6 @@ class MainDataHandler @Inject constructor(
 
     val isRealtime: Boolean
         get() = parameters.isRealtime()
-
-    private suspend fun toast(stringResource: Int) = withContext(Dispatchers.Main) {
-        Toast.makeText(context, stringResource, Toast.LENGTH_LONG).show()
-    }
 
     private fun broadcastEvent(event: DataEvent) {
         dataConsumerContainer.broadcast(event)
@@ -415,38 +412,41 @@ class MainDataHandler @Inject constructor(
     }
 
     override fun onZoom(event: ZoomEvent?): Boolean {
-        return if (event != null && autoRaster) {
-            val zoomLevel = event.zoomLevel
-            autoRasterSizeUpdate(zoomLevel)
+        return if (event != null) {
+            updateAutoGridSize(event.zoomLevel)
         } else {
             false
         }
     }
 
-    private fun autoRasterSizeUpdate(zoomLevel: Double): Boolean {
-        val rasterBaselength = when {
-            zoomLevel >= 8f -> 5000
-            zoomLevel in 4.5f..8f -> 10000
-            zoomLevel in 3f..4.5f -> 25000
-            zoomLevel in 2f..3f -> 50000
-            else -> 100000
-        }
-        return if (parameters.rasterBaselength != rasterBaselength) {
-            Log.v(
-                LOG_TAG,
-                "MainDataHandler.autoRasterSizeUpdate() $zoomLevel : ${parameters.rasterBaselength} -> $rasterBaselength"
-            )
-            parameters = parameters.copy(rasterBaselength = rasterBaselength)
-            updateData()
-            true
+    fun updateAutoGridSize(zoomLevel: Double): Boolean =
+        if (autoGridSize) {
+            val gridSize = when {
+                zoomLevel >= 8f -> 5000
+                zoomLevel in 6f..8f -> 10000
+                zoomLevel in 4f..6f -> 25000
+                zoomLevel in 2f..4f -> 50000
+                else -> 100000
+            }
+            if (parameters.gridSize != gridSize) {
+                Log.v(
+                    LOG_TAG,
+                    "MainDataHandler.updateAutoGridSize() $zoomLevel : ${parameters.gridSize} -> $gridSize"
+                )
+                parameters = parameters.copy(gridSize = gridSize)
+                updateData()
+                true
+            } else {
+                false
+            }
         } else {
             false
         }
-    }
+
 
     fun calculateTotalCacheSize(): CacheSize = cache.calculateTotalSize()
 }
 
-internal const val DEFAULT_RASTER_BASELENGTH = 10000
-internal const val AUTO_RASTER_BASELENGTH = "auto"
+internal const val DEFAULT_GRID_SIZE = 10000
+internal const val AUTO_GRID_SIZE_VALUE = "auto"
 

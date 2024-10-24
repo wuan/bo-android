@@ -61,9 +61,9 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
 
             PreferenceKey.LOCATION_MODE -> {
                 val provider = configureLocationProviderPreferences(sharedPreferences)
-                getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                getSystemService(LOCATION_SERVICE) as LocationManager
                 if (provider != LocationHandler.MANUAL_PROVIDER &&
-                    !(getSystemService(Context.LOCATION_SERVICE) as LocationManager).isProviderEnabled(provider)
+                    !(getSystemService(LOCATION_SERVICE) as LocationManager).isProviderEnabled(provider)
                 ) {
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 }
@@ -103,14 +103,14 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
 
 
     private fun enableAppServiceMode() {
-        findPreference("raster_size").isEnabled = true
+        findPreference("grid_size").isEnabled = true
         findPreference("service_url").isEnabled = true
         findPreference("username").isEnabled = false
         findPreference("password").isEnabled = false
     }
 
     private fun enableBlitzortungHttpMode() {
-        findPreference("raster_size").isEnabled = false
+        findPreference("grid_size").isEnabled = false
         findPreference("service_url").isEnabled = false
         findPreference("username").isEnabled = true
         findPreference("password").isEnabled = true

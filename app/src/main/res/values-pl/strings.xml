@@ -156,10 +156,10 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>600</item>
     </string-array>
 
-    <string name="raster_size">Rozmiar rastra</string>
-    <string name="raster_size_summary">Rozmiar kwadratów rastra danych</string>
+    <string name="grid_size">Rozmiar siatki</string>
+    <string name="grid_size_summary">Rozmiar kwadratów siatki danych</string>
 
-    <string-array name="raster_sizes">
+    <string-array name="grid_sizes">
         <item>Automatyczny</item>
         <item>5 km</item>
         <item>10 km</item>
@@ -167,7 +167,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>50 km</item>
         <item>100 km</item>
     </string-array>
-    <string-array name="raster_size_values">
+    <string-array name="grid_size_values">
         <item>auto</item>
         <item>5000</item>
         <item>10000</item>
@@ -177,7 +177,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Próg liczby wyładowań</string>
-    <string name="count_threshold_summary">Minimalna liczba wyładowań na obszar rastra</string>
+    <string name="count_threshold_summary">Próg liczby wyładowań na obszar siatki</string>
 
     <string-array name="count_thresholds">
         <item>Wyłączony</item>

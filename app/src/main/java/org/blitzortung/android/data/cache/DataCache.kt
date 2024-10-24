@@ -23,13 +23,13 @@ class DataCache @Inject constructor() {
     }
 
     fun put(parameters: Parameters, dataEvent: ResultEvent) {
-        cache[parameters] = Timestamped(dataEvent)
+        cache[parameters] = Timestamped(dataEvent.copy(sequenceNumber = null))
     }
 
     fun calculateTotalSize(): CacheSize = cache.entries.fold(CacheSize(0, 0)) { acc, entry ->
         val resultEvent = entry.value.value
         val strikeCount = resultEvent.strikes?.size ?: 0
-        Log.v(LOG_TAG, "${entry.key} -> ${strikeCount}")
+        Log.v(LOG_TAG, "${entry.key} -> $strikeCount")
         CacheSize(acc.entries + 1, acc.strikes + strikeCount)
     }
 

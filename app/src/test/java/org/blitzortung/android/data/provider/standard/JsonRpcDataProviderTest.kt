@@ -12,11 +12,12 @@ import org.blitzortung.android.data.History
 import org.blitzortung.android.data.LocalReference
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.TimeInterval
-import org.blitzortung.android.data.beans.RasterElement
+import org.blitzortung.android.data.beans.GridElement
 import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.jsonrpc.JsonRpcClient
+import org.blitzortung.android.jsonrpc.JsonRpcResponse
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Before
@@ -44,7 +45,7 @@ class JsonRpcDataProviderTest {
         val preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 
         val edit = preferences.edit()
-        edit.put(PreferenceKey.SERVICE_URL, SERVICE_URL);
+        edit.put(PreferenceKey.SERVICE_URL, SERVICE_URL)
         edit.apply()
 
         uut = JsonRpcDataProvider(preferences, client)
@@ -60,7 +61,7 @@ class JsonRpcDataProviderTest {
                 duration = 60
             ),
             countThreshold = 5,
-            rasterBaselength = 5000
+            gridSize = 5000
         )
         val history = History()
         val flags = Flags()
@@ -72,31 +73,31 @@ class JsonRpcDataProviderTest {
                 URL(SERVICE_URL),
                 "get_global_strikes_grid",
                 parameters.intervalDuration,
-                parameters.rasterBaselength,
+                parameters.gridSize,
                 parameters.intervalOffset,
                 parameters.countThreshold
             )
-        } returns response
+        } returns JsonRpcResponse(response)
 
         val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
-        assertThat(result.rasterParameters?.latitudeStart).isEqualTo(0.0)
-        assertThat(result.rasterParameters?.longitudeStart).isEqualTo(0.0)
-        assertThat(result.rasterParameters?.baselength).isEqualTo(5000)
-        assertThat(result.rasterParameters?.latitudeBins).isEqualTo(24)
-        assertThat(result.rasterParameters?.longitudeBins).isEqualTo(24)
-        assertThat(result.rasterParameters?.latitudeDelta).isEqualTo(30.0)
-        assertThat(result.rasterParameters?.longitudeDelta).isEqualTo(15.0)
+        assertThat(result.gridParameters?.latitudeStart).isEqualTo(0.0)
+        assertThat(result.gridParameters?.longitudeStart).isEqualTo(0.0)
+        assertThat(result.gridParameters?.size).isEqualTo(5000)
+        assertThat(result.gridParameters?.latitudeBins).isEqualTo(24)
+        assertThat(result.gridParameters?.longitudeBins).isEqualTo(24)
+        assertThat(result.gridParameters?.latitudeDelta).isEqualTo(30.0)
+        assertThat(result.gridParameters?.longitudeDelta).isEqualTo(15.0)
 
         assertThat(result.strikes).containsExactly(
-            RasterElement(timestamp = 1679856584000L, longitude = 37.5, latitude = -15.0, multiplicity = 5),
-            RasterElement(timestamp = 1679856594000L, longitude = 22.5, latitude = 15.0, multiplicity = 9),
+            GridElement(timestamp = 1679856584000L, longitude = 37.5, latitude = -15.0, multiplicity = 5),
+            GridElement(timestamp = 1679856594000L, longitude = 22.5, latitude = 15.0, multiplicity = 9),
         )
     }
 
     @Test
     fun getsLocalData() {
-        val localReference = LocalReference(5,6)
+        val localReference = LocalReference(5, 6)
         val parameters = Parameters(
             region = LOCAL_REGION,
             interval = TimeInterval(
@@ -104,7 +105,7 @@ class JsonRpcDataProviderTest {
                 duration = 60
             ),
             countThreshold = 5,
-            rasterBaselength = 5000,
+            gridSize = 5000,
             localReference = localReference
         )
         val history = History()
@@ -120,32 +121,32 @@ class JsonRpcDataProviderTest {
                 "get_local_strikes_grid",
                 localReference.x,
                 localReference.y,
-                parameters.rasterBaselength,
+                parameters.gridSize,
                 parameters.intervalDuration,
                 parameters.intervalOffset,
                 parameters.countThreshold
             )
-        } returns response
+        } returns JsonRpcResponse(response)
 
         val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
-        assertThat(result.rasterParameters?.latitudeStart).isEqualTo(15.0)
-        assertThat(result.rasterParameters?.longitudeStart).isEqualTo(10.0)
-        assertThat(result.rasterParameters?.baselength).isEqualTo(5000)
-        assertThat(result.rasterParameters?.latitudeBins).isEqualTo(24)
-        assertThat(result.rasterParameters?.longitudeBins).isEqualTo(24)
-        assertThat(result.rasterParameters?.latitudeDelta).isEqualTo(30.0)
-        assertThat(result.rasterParameters?.longitudeDelta).isEqualTo(15.0)
+        assertThat(result.gridParameters?.latitudeStart).isEqualTo(15.0)
+        assertThat(result.gridParameters?.longitudeStart).isEqualTo(10.0)
+        assertThat(result.gridParameters?.size).isEqualTo(5000)
+        assertThat(result.gridParameters?.latitudeBins).isEqualTo(24)
+        assertThat(result.gridParameters?.longitudeBins).isEqualTo(24)
+        assertThat(result.gridParameters?.latitudeDelta).isEqualTo(30.0)
+        assertThat(result.gridParameters?.longitudeDelta).isEqualTo(15.0)
 
         assertThat(result.strikes).containsExactly(
-            RasterElement(timestamp = 1679856584000L, longitude = 47.5, latitude = 0.0, multiplicity = 5),
-            RasterElement(timestamp = 1679856594000L, longitude = 32.5, latitude = 30.0, multiplicity = 9),
+            GridElement(timestamp = 1679856584000L, longitude = 47.5, latitude = 0.0, multiplicity = 5),
+            GridElement(timestamp = 1679856594000L, longitude = 32.5, latitude = 30.0, multiplicity = 9),
         )
     }
 
     @Test
     fun getsRegionData() {
-        val localReference = LocalReference(5,6)
+        val localReference = LocalReference(5, 6)
         val parameters = Parameters(
             region = 2,
             interval = TimeInterval(
@@ -153,7 +154,7 @@ class JsonRpcDataProviderTest {
                 duration = 60
             ),
             countThreshold = 5,
-            rasterBaselength = 5000,
+            gridSize = 5000,
             localReference = localReference
         )
         val history = History()
@@ -168,26 +169,26 @@ class JsonRpcDataProviderTest {
                 URL(SERVICE_URL),
                 "get_strikes_grid",
                 parameters.intervalDuration,
-                parameters.rasterBaselength,
+                parameters.gridSize,
                 parameters.intervalOffset,
                 parameters.region,
                 parameters.countThreshold
             )
-        } returns response
+        } returns JsonRpcResponse(response)
 
         val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
-        assertThat(result.rasterParameters?.latitudeStart).isEqualTo(15.0)
-        assertThat(result.rasterParameters?.longitudeStart).isEqualTo(10.0)
-        assertThat(result.rasterParameters?.baselength).isEqualTo(5000)
-        assertThat(result.rasterParameters?.latitudeBins).isEqualTo(24)
-        assertThat(result.rasterParameters?.longitudeBins).isEqualTo(24)
-        assertThat(result.rasterParameters?.latitudeDelta).isEqualTo(30.0)
-        assertThat(result.rasterParameters?.longitudeDelta).isEqualTo(15.0)
+        assertThat(result.gridParameters?.latitudeStart).isEqualTo(15.0)
+        assertThat(result.gridParameters?.longitudeStart).isEqualTo(10.0)
+        assertThat(result.gridParameters?.size).isEqualTo(5000)
+        assertThat(result.gridParameters?.latitudeBins).isEqualTo(24)
+        assertThat(result.gridParameters?.longitudeBins).isEqualTo(24)
+        assertThat(result.gridParameters?.latitudeDelta).isEqualTo(30.0)
+        assertThat(result.gridParameters?.longitudeDelta).isEqualTo(15.0)
 
         assertThat(result.strikes).containsExactly(
-            RasterElement(timestamp = 1679856584000L, longitude = 47.5, latitude = 0.0, multiplicity = 5),
-            RasterElement(timestamp = 1679856594000L, longitude = 32.5, latitude = 30.0, multiplicity = 9),
+            GridElement(timestamp = 1679856584000L, longitude = 47.5, latitude = 0.0, multiplicity = 5),
+            GridElement(timestamp = 1679856594000L, longitude = 32.5, latitude = 30.0, multiplicity = 9),
         )
     }
 
@@ -198,8 +199,8 @@ class JsonRpcDataProviderTest {
         response.put("yd", "30")
         response.put("xc", "24")
         response.put("yc", "24")
-        val strike1 = JSONArray(listOf(2, 0, 5, 10));
-        val strike2 = JSONArray(listOf(1, -1, 9, 20));
+        val strike1 = JSONArray(listOf(2, 0, 5, 10))
+        val strike2 = JSONArray(listOf(1, -1, 9, 20))
         val strikesArray = JSONArray(listOf(strike1, strike2))
         response.put("r", strikesArray)
         return response

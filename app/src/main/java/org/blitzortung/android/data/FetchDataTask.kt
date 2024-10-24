@@ -6,13 +6,11 @@ import org.blitzortung.android.app.Main
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.ResultEvent
 import kotlin.coroutines.CoroutineContext
-import kotlin.reflect.KSuspendFunction1
 
 internal open class FetchDataTask(
     private val dataMode: DataMode,
     private val dataProvider: DataProvider,
-    private val resultConsumer: (ResultEvent) -> Unit,
-    private val toast: KSuspendFunction1<Int, Unit>
+    private val resultConsumer: (ResultEvent) -> Unit
 ) : CoroutineScope {
     private var job: Job = Job()
 
@@ -31,7 +29,7 @@ internal open class FetchDataTask(
         withContext(Dispatchers.IO) {
             try {
                 dataProvider.retrieveData {
-                    if (dataMode.raster) {
+                    if (dataMode.grid) {
                         getStrikesGrid(parameters, history, flags)
                     } else {
                         getStrikes(parameters, history, flags)

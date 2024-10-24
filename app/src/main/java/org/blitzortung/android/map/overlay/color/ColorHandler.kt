@@ -53,7 +53,7 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
     val colors: IntArray
         get() = getColors(target)
 
-    protected abstract fun getColors(target: ColorTarget): IntArray
+    abstract fun getColors(target: ColorTarget): IntArray
 
     fun getColorSection(referenceTime: Long, eventTime: Long, intervalDuration: Int): Int {
         val minutesPerColor = intervalDuration / colors.size

@@ -236,6 +236,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
 
                 configureServiceMode(true)
             }
+
             else -> {}
         }
     }

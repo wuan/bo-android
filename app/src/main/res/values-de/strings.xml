@@ -151,10 +151,10 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
         <item>600</item>
     </string-array>
 
-    <string name="raster_size">Rastergröße</string>
-    <string name="raster_size_summary">Größe der Quadrate des Datenrasters</string>
+    <string name="grid_size">Rastergröße</string>
+    <string name="grid_size_summary">Größe der Quadrate des Datenrasters</string>
 
-    <string-array name="raster_sizes">
+    <string-array name="grid_sizes">
         <item>auto</item>
         <item>5 km</item>
         <item>10 km</item>
@@ -162,7 +162,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
         <item>50 km</item>
         <item>100 km</item>
     </string-array>
-    <string-array name="raster_size_values">
+    <string-array name="grid_size_values">
         <item>auto</item>
         <item>5000</item>
         <item>10000</item>
@@ -349,11 +349,11 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="share_log">E-Mail senden …</string>
     <string name="share_unavailable">E-Mail kann nicht versendet werden.</string>
     <string name="provider_warning">Bitte nutzen sie die Blitzortung.org Datenquelle nicht bei hoher Blitzaktivität. Die Dastellung der Karte wird möglicherweise verzögert.</string>
-    <string name="own_location_summary" >Einstellungen der Anzeige des Standorts</string>
-    <string name="own_location" >Eigener Standort</string>
-    <string name="own_location_size" >Größe des Standort-Symbols</string>
-    <string name="own_location_size_summary" >Einstellung der Größe des Standort-Symbols</string>
-    <string name="keep_zoom_goto_own_location_title" >Zoom beibehalten</string>
+    <string name="own_location_summary">Einstellungen der Anzeige des Standorts</string>
+    <string name="own_location">Eigener Standort</string>
+    <string name="own_location_size">Größe des Standort-Symbols</string>
+    <string name="own_location_size_summary">Einstellung der Größe des Standort-Symbols</string>
+    <string name="keep_zoom_goto_own_location_title">Zoom beibehalten</string>
     <string name="keep_zoom_goto_own_location_summary">Einstellung zur Beibehaltung des aktuellen Zooms beim Zentrieren des eigenen Standorts</string>
     <string name="background_query_toast">Bitte deaktivieren Sie die Akku-Optimierung für diese App damit die Warnung im Hintergrund zuverlässig funktioniert.</string>
     <string name="open_battery_optimiziation">Bitte deaktivieren Sie die Akku-Optimierung für diese App wenn die Hintergrundabfrage aktiv ist. Drücken Sie auf Abbrechen um die Hintergrundabfrage zu deaktiveren oder auf OK um zur Einstellung der Batterieoptimierung zu gelangen.</string>

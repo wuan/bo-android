@@ -28,7 +28,7 @@ Polish by Jakub Świątkiewicz (kuba.dex@gmail.com), Agnieszka Cieślak (aga_04@
 Italian by Michele Locati (michele@locati.it)\n
 Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string>
-    <string name="copyright" translatable="false">© 2011–2023, Andreas Würl</string>
+    <string name="copyright" translatable="false">© 2011–2024, Andreas Würl</string>
     <string name="project_email" translatable="false">blitzortung@tryb.de</string>
     <string name="legend">Legend</string>
     <string name="legend_grid">Grid</string>
@@ -162,10 +162,10 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>600</item>
     </string-array>
 
-    <string name="raster_size">Raster size</string>
-    <string name="raster_size_summary">size of data rasterParameters squares</string>
+    <string name="grid_size">Grid size</string>
+    <string name="grid_size_summary">size of data grid squares</string>
 
-    <string-array name="raster_sizes">
+    <string-array name="grid_sizes">
         <item>auto</item>
         <item>5 km</item>
         <item>10 km</item>
@@ -173,7 +173,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>50 km</item>
         <item>100 km</item>
     </string-array>
-    <string-array name="raster_size_values">
+    <string-array name="grid_size_values">
         <item>auto</item>
         <item>5000</item>
         <item>10000</item>
@@ -183,7 +183,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Strike count threshold</string>
-    <string name="count_threshold_summary">minimum strike count per raster area</string>
+    <string name="count_threshold_summary">threshold strike count per grid area</string>
 
     <string-array name="count_thresholds">
         <item>disabled</item>
@@ -366,12 +366,12 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="share_log">Send email …</string>
     <string name="share_unavailable">E-mail sharing is not available.</string>
     <string name="provider_warning">Please do not use the Blitzortung.org data provider during high lightning activity, as the map display performance will degrade.</string>
-    <string name="own_location_summary" >Own location Display-Settings</string>
-    <string name="own_location" >Own location</string>
-    <string name="own_location_size" >Own location symbol size</string>
-    <string name="own_location_size_summary" >Set the size of the own location symbol</string>
-    <string name="keep_zoom_goto_own_location_summary" >Setting to keep the current zoom when centering the own location</string>
-    <string name="keep_zoom_goto_own_location_title" >Keep zoom</string>
+    <string name="own_location_summary">Own location Display-Settings</string>
+    <string name="own_location">Own location</string>
+    <string name="own_location_size">Own location symbol size</string>
+    <string name="own_location_size_summary">Set the size of the own location symbol</string>
+    <string name="keep_zoom_goto_own_location_summary">Setting to keep the current zoom when centering the own location</string>
+    <string name="keep_zoom_goto_own_location_title">Keep zoom</string>
     <string name="notification_channel_name" translatable="false">Storm Alarms</string>
     <string name="not_available">n/a</string>
     <string name="unit_miles">mi.</string>

@@ -156,10 +156,10 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
         <item>600</item>
     </string-array>
 
-    <string name="raster_size">Veľkosť rastra</string>
-    <string name="raster_size_summary">Veľkosť rastra údajov na mape</string>
+    <string name="grid_size">Veľkosť rastra</string>
+    <string name="grid_size_summary">Veľkosť rastra údajov na mape</string>
 
-    <string-array name="raster_sizes">
+    <string-array name="grid_sizes">
         <item>auto</item>
         <item>5 km</item>
         <item>10 km</item>
@@ -167,7 +167,7 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
         <item>50 km</item>
         <item>100 km</item>
     </string-array>
-    <string-array name="raster_size_values">
+    <string-array name="grid_size_values">
         <item>auto</item>
         <item>5000</item>
         <item>10000</item>
@@ -299,8 +299,8 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
         <item>250</item>
         <item>500</item>
     </string-array>
-	
-	<string name="signaling_threshold_time">Čas prahu signalizácie</string>
+
+    <string name="signaling_threshold_time">Čas prahu signalizácie</string>
     <string name="signaling_threshold_time_summary">Pre daný časový rozsah nebude vykonané opätovné upozorenie</string>
 
     <string-array name="signaling_threshold_times">
@@ -355,12 +355,12 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="share_log">*Odoslať email …</string>
     <string name="share_unavailable">Zdieľanie e-mailov nie je k dispozícii.</string>
     <string name="provider_warning">Please do not use the Blitzortung.org data provider during high lightning activity, as the map display performance will degrade.</string>
-    <string name="own_location_summary" >Nastavenie zobrazovania vlastnej polohy</string>
-    <string name="own_location" >Vlastná poloha</string>
-    <string name="own_location_size" >Veľkosť symbolu vlastnej polohy</string>
-    <string name="own_location_size_summary" >Nastavte veľkosť vlastného symbolu polohy</string>
-    <string name="keep_zoom_goto_own_location_summary" >Nastavenie pre udržanie aktuálneho priblíženia pri centrovaní na vlastnú polohu</string>
-    <string name="keep_zoom_goto_own_location_title" >Udržať priblíženie</string>
+    <string name="own_location_summary">Nastavenie zobrazovania vlastnej polohy</string>
+    <string name="own_location">Vlastná poloha</string>
+    <string name="own_location_size">Veľkosť symbolu vlastnej polohy</string>
+    <string name="own_location_size_summary">Nastavte veľkosť vlastného symbolu polohy</string>
+    <string name="keep_zoom_goto_own_location_summary">Nastavenie pre udržanie aktuálneho priblíženia pri centrovaní na vlastnú polohu</string>
+    <string name="keep_zoom_goto_own_location_title">Udržať priblíženie</string>
     <string name="changelog">Change log</string>
     <string name="location_permission_required">Pri použití zdroja polohy zariadenia je potrebné povolenie na umiestnenie.</string>
     <string name="location_permission_background_required">Pri použití zdroja umiestnenia zariadenia je potrebné povolenie na umiestnenie na pozadí.</string>

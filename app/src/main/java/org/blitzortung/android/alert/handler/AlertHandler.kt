@@ -33,7 +33,7 @@ import org.blitzortung.android.app.controller.NotificationHandler
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
-import org.blitzortung.android.data.beans.RasterParameters
+import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.location.LocationEvent
@@ -98,7 +98,7 @@ class AlertHandler @Inject constructor(
             Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer $event")
             if (!event.flags.ignoreForAlerting) {
                 if (!event.failed && event.containsRealtimeData() && event.strikes != null) {
-                    val strikes = Strikes(event.strikes, event.rasterParameters)
+                    val strikes = Strikes(event.strikes, event.gridParameters)
                     checkStrikes(strikes, locationHandler.location)
                 } else {
                     if (!event.containsRealtimeData()) {
@@ -262,5 +262,5 @@ class AlertHandler @Inject constructor(
 
 data class Strikes(
     val strikes: Collection<Strike>,
-    val rasterParameters: RasterParameters? = null
+    val gridParameters: GridParameters? = null
 )

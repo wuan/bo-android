@@ -29,7 +29,7 @@ import javax.inject.Singleton
 class MapBuilderFailedException(message: String) : Throwable(message)
 
 @Singleton
-class MapBuilderFactory constructor(
+class MapBuilderFactory(
     private val strikeLineSplitter: (String) -> Array<String>,
     private val stationLineSplitter: (String) -> Array<String>
 ) {

@@ -24,14 +24,14 @@ import org.blitzortung.android.data.Coordsys
 import org.osmdroid.views.Projection
 import java.io.Serializable
 
-data class RasterParameters(
+data class GridParameters(
     val longitudeStart: Double,
     val latitudeStart: Double,
     val longitudeDelta: Double,
     val latitudeDelta: Double,
     val longitudeBins: Int,
     val latitudeBins: Int,
-    val baselength: Int? = null
+    val size: Int? = null
 ) : Serializable {
 
     val rectCenterLongitude: Double = longitudeStart + longitudeDelta * longitudeBins / 2.0
@@ -65,7 +65,7 @@ data class RasterParameters(
             ), bottomRight
         )
 
-        // Log.d(Main.LOG_TAG, "RasterParameters.getRect() $longitudeStart - $longitudeEnd ($longitudeDelta, #$longitudeBins) $latitudeEnd - $latitudeStart ($latitudeDelta, #$latitudeBins)")
+        // Log.d(Main.LOG_TAG, "GridParameters.getRect() $longitudeStart - $longitudeEnd ($longitudeDelta, #$longitudeBins) $latitudeEnd - $latitudeStart ($latitudeDelta, #$latitudeBins)")
         return RectF(leftTop.x.toFloat(), leftTop.y.toFloat(), bottomRight.x.toFloat(), bottomRight.y.toFloat())
     }
 }

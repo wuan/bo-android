@@ -42,9 +42,9 @@ class QuickSettingsDialog : DialogFragment() {
         val currentRegionValue = preferences.get(PreferenceKey.REGION, regionValues[0])
         val selectedRegion = getSelectedIndex(regionValues, currentRegionValue)
 
-        val rasterSizeValues = resources.getStringArray(R.array.raster_size_values)
-        val currentRasterSizeValue = preferences.get(PreferenceKey.RASTER_SIZE, rasterSizeValues[1])
-        val selectedRasterSize = getSelectedIndex(rasterSizeValues, currentRasterSizeValue)
+        val gridSizeValues = resources.getStringArray(R.array.grid_size_values)
+        val currentGridSizeValue = preferences.get(PreferenceKey.GRID_SIZE, gridSizeValues[1])
+        val selectedGridSize = getSelectedIndex(gridSizeValues, currentGridSizeValue)
 
         val countThresholdValues = resources.getStringArray(R.array.count_threshold_values)
         val currentCountThresholdValue = preferences.get(PreferenceKey.COUNT_THRESHOLD, countThresholdValues[0])
@@ -59,32 +59,34 @@ class QuickSettingsDialog : DialogFragment() {
         val selectedIntervalDuration = getSelectedIndex(intervalDurationValues, currentIntervalDurationValue)
 
         val animationIntervalDurationValues = resources.getStringArray(R.array.animation_interval_duration_values)
-        val currentAnimationIntervalDurationValue = preferences.get(PreferenceKey.ANIMATION_INTERVAL_DURATION, animationIntervalDurationValues[1])
-        val selectedAnimationInterval = getSelectedIndex(animationIntervalDurationValues, currentAnimationIntervalDurationValue)
+        val currentAnimationIntervalDurationValue =
+            preferences.get(PreferenceKey.ANIMATION_INTERVAL_DURATION, animationIntervalDurationValues[1])
+        val selectedAnimationInterval =
+            getSelectedIndex(animationIntervalDurationValues, currentAnimationIntervalDurationValue)
 
         @SuppressLint("InflateParams") val view = layoutInflater.inflate(R.layout.quick_settings_dialog, null, false)
 
-        val selectedRegionList = view.findViewById(R.id.selected_region) as Spinner
+        val selectedRegionList: Spinner = view.findViewById(R.id.selected_region)
         selectedRegionList.setSelection(selectedRegion)
 
-        val rasterSizeSpinner = view.findViewById(R.id.selected_raster_size) as Spinner
-        rasterSizeSpinner.setSelection(selectedRasterSize)
+        val gridSizeSpinner: Spinner = view.findViewById(R.id.selected_grid_size)
+        gridSizeSpinner.setSelection(selectedGridSize)
 
-        val countThresholdSpinner = view.findViewById(R.id.selected_count_threshold) as Spinner
+        val countThresholdSpinner: Spinner = view.findViewById(R.id.selected_count_threshold)
         countThresholdSpinner.setSelection(selectedCountThreshold)
 
-        val intervalDurationSpinner = view.findViewById(R.id.selected_interval_duration) as Spinner
+        val intervalDurationSpinner: Spinner = view.findViewById(R.id.selected_interval_duration)
         intervalDurationSpinner.setSelection(selectedIntervalDuration)
 
-        val queryPeriodSpinner = view.findViewById(R.id.selected_query_period) as Spinner
+        val queryPeriodSpinner: Spinner = view.findViewById(R.id.selected_query_period)
         queryPeriodSpinner.setSelection(selectedQueryPeriod)
 
-        val animationIntervalDuration = view.findViewById(R.id.selected_animation_interval_durations) as Spinner
+        val animationIntervalDuration: Spinner = view.findViewById(R.id.selected_animation_interval_durations)
         animationIntervalDuration.setSelection(selectedAnimationInterval)
 
         builder.setView(view).setPositiveButton(R.string.ok) { _: DialogInterface, _: Int ->
             val regionValue = regionValues[selectedRegionList.selectedItemPosition]
-            val rasterSizeValue = rasterSizeValues[rasterSizeSpinner.selectedItemPosition]
+            val gridSizeValue = gridSizeValues[gridSizeSpinner.selectedItemPosition]
             val countThresholdValue = countThresholdValues[countThresholdSpinner.selectedItemPosition]
             val intervalDurationValue = intervalDurationValues[intervalDurationSpinner.selectedItemPosition]
             val queryPeriodValue = queryPeriodValues[queryPeriodSpinner.selectedItemPosition]
@@ -92,7 +94,7 @@ class QuickSettingsDialog : DialogFragment() {
 
             preferences.edit()
                 .putString(PreferenceKey.REGION.toString(), regionValue)
-                .putString(PreferenceKey.RASTER_SIZE.toString(), rasterSizeValue)
+                .putString(PreferenceKey.GRID_SIZE.toString(), gridSizeValue)
                 .putString(PreferenceKey.COUNT_THRESHOLD.toString(), countThresholdValue)
                 .putString(PreferenceKey.INTERVAL_DURATION.toString(), intervalDurationValue)
                 .putString(PreferenceKey.QUERY_PERIOD.toString(), queryPeriodValue)

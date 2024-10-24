@@ -1,6 +1,5 @@
 package org.blitzortung.android.data
 
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -52,10 +51,10 @@ class TimeIntervalTest {
 
         update { it.rewInterval(history) }
 
-        Assertions.assertThat(update { it.ffwdInterval(history) }).isTrue()
+        assertThat(update { it.ffwdInterval(history) }).isTrue()
         assertThat(interval.offset).isEqualTo(0)
 
-        Assertions.assertThat(update { it.ffwdInterval(history) }).isFalse()
+        assertThat(update { it.ffwdInterval(history) }).isFalse()
         assertThat(interval.offset).isEqualTo(0)
     }
 
@@ -63,12 +62,12 @@ class TimeIntervalTest {
     fun testGoRealtime() {
         interval = TimeInterval()
 
-        Assertions.assertThat(update { it.goRealtime() }).isFalse()
+        assertThat(update { it.goRealtime() }).isFalse()
         assertThat(interval.offset).isEqualTo(0)
 
         update { it.rewInterval(history) }
 
-        Assertions.assertThat(update { it.goRealtime() }).isTrue()
+        assertThat(update { it.goRealtime() }).isTrue()
         assertThat(interval.offset).isEqualTo(0)
     }
 

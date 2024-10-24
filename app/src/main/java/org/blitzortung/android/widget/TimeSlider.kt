@@ -105,7 +105,7 @@ class TimeSlider : AppCompatSeekBar {
     }
 
     private fun drawSecondaryProgress(c: Canvas) {
-        val base: Float  = (height - paddingBottom) /2f
+        val base: Float = (height - paddingBottom) / 2f
 
         val distance = ViewHelper.pxFromDp(context, 8f)
         val triangleSize = ViewHelper.pxFromDp(context, 5f)
@@ -123,7 +123,7 @@ class TimeSlider : AppCompatSeekBar {
     }
 
     private fun drawAxis(c: Canvas) {
-        val base: Float  = (height - paddingBottom) /2f
+        val base: Float = (height - paddingBottom) / 2f
 
         val axisWidth = ViewHelper.pxFromDp(context, 2f)
         c.drawRect(
@@ -140,7 +140,7 @@ class TimeSlider : AppCompatSeekBar {
     }
 
     private fun drawAxisTics(c: Canvas) {
-        val base: Float  = (height - paddingBottom) /2f
+        val base: Float = (height - paddingBottom) / 2f
 
         val textPosition = base + ViewHelper.pxFromDp(context, 18f)
         val shortTick = ViewHelper.pxFromDp(context, 3f)

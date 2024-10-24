@@ -33,16 +33,16 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/raster_size" />
+            android:text="@string/grid_size" />
 
         <Spinner
-            android:id="@+id/selected_raster_size"
+            android:id="@+id/selected_grid_size"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:entries="@array/raster_sizes"
+            android:entries="@array/grid_sizes"
             android:padding="10dp"
             android:minHeight="48dp"
-            android:prompt="@string/raster_size" />
+            android:prompt="@string/grid_size" />
 
         <View
             android:layout_width="match_parent"

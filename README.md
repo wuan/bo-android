@@ -1,9 +1,12 @@
-[![Lines of Code](https://sonar.tryb.de/api/project_badges/measure?project=wuan_bo-android_AYcZZuyTg4e1BA2WvQjK&metric=ncloc&token=ee89146b4ee29206327218b2a499361405b50fb2)](https://sonar.tryb.de/dashboard?id=wuan_bo-android_AYcZZuyTg4e1BA2WvQjK)
-[![Coverage](https://sonar.tryb.de/api/project_badges/measure?project=wuan_bo-android_AYcZZuyTg4e1BA2WvQjK&metric=coverage&token=ee89146b4ee29206327218b2a499361405b50fb2)](https://sonar.tryb.de/dashboard?id=wuan_bo-android_AYcZZuyTg4e1BA2WvQjK)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=wuan_bo-android&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=wuan_bo-android)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=wuan_bo-android&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=wuan_bo-android)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=wuan_bo-android&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=wuan_bo-android)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=wuan_bo-android&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=wuan_bo-android)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=wuan_bo-android&metric=coverage)](https://sonarcloud.io/summary/new_code?id=wuan_bo-android)
 
-# About
+# Blitzortung Lightning Monitor Android app
 
-The Android App *Blitzortung Lightning Monitor built from these sources visualizes lightning data provided by the blitzortung.org network.
+The Android App *Blitzortung Lightning Monitor* built from these sources visualizes lightning data provided by the blitzortung.org network.
 
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
      alt="Get it on F-Droid"

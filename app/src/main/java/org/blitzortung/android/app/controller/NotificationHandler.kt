@@ -59,11 +59,9 @@ open class NotificationHandler @Inject constructor(
             isAtLeast(Build.VERSION_CODES.O) -> {
                 createNotification(contentIntent, notificationText)
             }
-            isAtLeast(Build.VERSION_CODES.JELLY_BEAN) -> {
-                createJellyBeanNotification(contentIntent, notificationText)
-            }
+
             else -> {
-                createLegacyNotification(contentIntent, notificationText)
+                createJellyBeanNotification(contentIntent, notificationText)
             }
         }
 
@@ -82,7 +80,6 @@ open class NotificationHandler @Inject constructor(
             .setShowWhen(true).build()
     }
 
-    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     private fun createJellyBeanNotification(contentIntent: PendingIntent?, notificationText: String): Notification {
         val builder = Notification.Builder(context)
             .setSmallIcon(R.drawable.icon)
@@ -111,25 +108,6 @@ open class NotificationHandler @Inject constructor(
             // Register the channel with the system
             notificationManager.createNotificationChannel(channel)
         }
-    }
-
-    private fun createLegacyNotification(contentIntent: PendingIntent?, notificationText: String): Notification {
-        val notification = Notification(R.drawable.icon, notificationText, System.currentTimeMillis())
-        val setLatestEventInfo = Notification::class.java.getDeclaredMethod(
-            "setLatestEventInfo",
-            Context::class.java,
-            CharSequence::class.java,
-            CharSequence::class.java,
-            PendingIntent::class.java
-        )
-        setLatestEventInfo.invoke(
-            notification,
-            context,
-            context.resources.getText(R.string.app_name),
-            notificationText,
-            contentIntent
-        )
-        return notification
     }
 
     companion object {

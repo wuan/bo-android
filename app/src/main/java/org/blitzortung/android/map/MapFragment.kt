@@ -19,8 +19,8 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.ScaleBarOverlay
-import org.osmdroid.views.overlay.compass.CompassOverlay
 import kotlin.math.min
+
 
 class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
@@ -57,10 +57,11 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
         mCopyrightOverlay = CopyrightOverlay(context)
         mCopyrightOverlay.setTextSize(7)
-        mCopyrightOverlay.setOffset(0, bottomOffset)
+        val copyrightOffset = dm.widthPixels / 2 - dm.widthPixels / 10
+        mCopyrightOverlay.setOffset(copyrightOffset, bottomOffset)
         mapView.overlays.add(mCopyrightOverlay)
         mScaleBarOverlay = ScaleBarOverlay(mapView)
-        mScaleBarOverlay.setScaleBarOffset(dm.widthPixels / 2, bottomOffset + ViewHelper.pxFromDp(context, 4f).toInt())
+        mScaleBarOverlay.setScaleBarOffset(dm.widthPixels / 2, bottomOffset + ViewHelper.pxFromDp(context, 10f).toInt())
         mScaleBarOverlay.setCentred(true)
         mScaleBarOverlay.setAlignBottom(true)
         mScaleBarOverlay.setEnableAdjustLength(true)
@@ -69,13 +70,13 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         centered.setBoolean(mScaleBarOverlay, true)
         mapView.overlays.add(this.mScaleBarOverlay)
 
-        //built in zoom controls
+        // disable built in zoom controls
         mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
 
-        //needed for pinch zooms
+        // enable pinch zoom
         mapView.setMultiTouchControls(true)
 
-        //scales tiles to the current screen's DPI, helps with readability of labels
+        // scales tiles to the current screen's DPI, helps with readability of labels
         mapView.isTilesScaledToDpi = true
 
         //the rest of this is restoring the last map location the user looked at
@@ -128,6 +129,8 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         mapView.onResume()
     }
 
+    val zoomLevel get() = mapView.zoomLevelDouble
+
     fun calculateTargetZoomLevel(widthInMeters: Float): Double {
         val equatorLength = 40075004.0 // in meters
         val widthInPixels = min(mapView.height, mapView.width).toDouble()
@@ -146,11 +149,13 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
                 val mapTypeString = sharedPreferences.get(key, "SATELLITE")
                 mapView.setTileSource(if (mapTypeString == "SATELLITE") TileSourceFactory.DEFAULT_TILE_SOURCE else TileSourceFactory.MAPNIK)
             }
+
             PreferenceKey.MAP_SCALE -> {
                 val scaleFactor = sharedPreferences.get(key, 100) / 100f
                 Log.v(Main.LOG_TAG, "MapFragment scale $scaleFactor")
                 mapView.tilesScaleFactor = scaleFactor
             }
+
             else -> {}
         }
     }

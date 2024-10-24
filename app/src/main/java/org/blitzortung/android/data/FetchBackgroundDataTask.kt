@@ -18,7 +18,7 @@ internal class FetchBackgroundDataTask(
     resultConsumer: (ResultEvent) -> Unit,
     toast: KSuspendFunction1<Int, Unit>,
     private val wakeLock: PowerManager.WakeLock
-) : FetchDataTask(dataMode, dataProvider, resultConsumer, toast) {
+) : FetchDataTask(dataMode, dataProvider, resultConsumer) {
 
     override fun onPostExecute(result: ResultEvent?) {
         super.onPostExecute(result)
@@ -51,7 +51,7 @@ internal class FetchBackgroundDataTask(
                     parameters.copy(
                         interval = TimeInterval.BACKGROUND,
                         countThreshold = 0,
-                        rasterBaselength = 5000
+                        gridSize = 5000
                     )
                 val updatedFlags = flags.copy(storeResult = false)
 

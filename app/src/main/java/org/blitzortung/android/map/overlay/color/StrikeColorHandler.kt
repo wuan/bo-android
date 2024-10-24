@@ -33,10 +33,11 @@ open class StrikeColorHandler(preferences: SharedPreferences) : ColorHandler(pre
     }
 
     private fun getCachedStreetmapStrikeColors(strikeColors: IntArray): IntArray {
-        if (!streetmapColors.containsKey(strikeColors)) {
-            streetmapColors[strikeColors] = modifyBrightness(strikeColors, 0.8f)
+        return streetmapColors[strikeColors] ?: run {
+            val newValue = modifyBrightness(strikeColors, 0.8f)
+            streetmapColors[strikeColors] = newValue
+            newValue
         }
-        return streetmapColors[strikeColors]!!
     }
 
     override fun getTextColor(target: ColorTarget): Int {

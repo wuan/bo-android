@@ -22,6 +22,7 @@ internal fun createLocationProvider(
             updateConsumer,
             PreferenceManager.getDefaultSharedPreferences(context)
         )
+
         else -> null
     } ?: throw IllegalArgumentException("Cannot find provider for name $providerName")
 }

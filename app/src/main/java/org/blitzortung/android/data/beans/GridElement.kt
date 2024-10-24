@@ -20,7 +20,7 @@ package org.blitzortung.android.data.beans
 
 import java.io.Serializable
 
-data class RasterElement(
+data class GridElement(
     override val timestamp: Long,
     override val longitude: Double,
     override val latitude: Double,

@@ -28,7 +28,7 @@ class WidgetProvider : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         for (element in appWidgetIds) {
-            val appWidgetId = element
+            element
             updateAppWidget(context)
         }
     }

@@ -20,7 +20,7 @@ class LocalDataTest {
     @Before
     fun setUp() {
         uut = LocalData()
-        parameters = Parameters(region = LOCAL_REGION, rasterBaselength = 10000)
+        parameters = Parameters(region = LOCAL_REGION, gridSize = 10000)
     }
 
     @Test

@@ -23,8 +23,8 @@ import android.location.Location
 import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.data.AlertSector
-import org.blitzortung.android.data.beans.RasterElement
-import org.blitzortung.android.data.beans.RasterParameters
+import org.blitzortung.android.data.beans.GridElement
+import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.util.MeasurementSystem
 import javax.inject.Inject
@@ -54,7 +54,7 @@ open class AlertDataHandler @Inject internal constructor(
                 checkStrike(
                     alertSector,
                     strike,
-                    strikes.rasterParameters,
+                    strikes.gridParameters,
                     parameters.measurementSystem,
                     location,
                     thresholdTime
@@ -68,12 +68,12 @@ open class AlertDataHandler @Inject internal constructor(
     private fun checkStrike(
         sector: AggregatingAlertSector,
         strike: Strike,
-        rasterParameters: RasterParameters?,
+        gridParameters: GridParameters?,
         measurementSystem: MeasurementSystem,
         location: Location,
         thresholdTime: Long
     ) {
-        val distance = calculateDistanceTo(location, strike, rasterParameters, measurementSystem)
+        val distance = calculateDistanceTo(location, strike, gridParameters, measurementSystem)
 
         sector.ranges.find { distance <= it.rangeMaximum }?.let {
             it.addStrike(strike)
@@ -86,13 +86,13 @@ open class AlertDataHandler @Inject internal constructor(
     private fun calculateDistanceTo(
         location: Location,
         strike: Strike,
-        rasterParameters: RasterParameters?,
+        gridParameters: GridParameters?,
         measurementSystem: MeasurementSystem
     ): Float {
-        if (strike is RasterElement && rasterParameters != null) {
+        if (strike is GridElement && gridParameters != null) {
             strikeLocation.longitude =
-                closestValue(location.longitude, strike.longitude, rasterParameters.longitudeDelta)
-            strikeLocation.latitude = closestValue(location.latitude, strike.latitude, rasterParameters.latitudeDelta)
+                closestValue(location.longitude, strike.longitude, gridParameters.longitudeDelta)
+            strikeLocation.latitude = closestValue(location.latitude, strike.latitude, gridParameters.latitudeDelta)
         } else {
             strikeLocation.longitude = strike.longitude
             strikeLocation.latitude = strike.latitude
@@ -101,8 +101,8 @@ open class AlertDataHandler @Inject internal constructor(
         return measurementSystem.calculateDistance(distanceInMeters)
     }
 
-    private fun closestValue(location: Double, target: Double, rasterSize: Double): Double {
-        val delta = rasterSize / 2.0
+    private fun closestValue(location: Double, target: Double, gridSize: Double): Double {
+        val delta = gridSize / 2.0
         return if (location in target - delta..target + delta) {
             location
         } else {

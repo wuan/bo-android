@@ -19,8 +19,8 @@ import org.blitzortung.android.app.view.put
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.TimeInterval
-import org.blitzortung.android.data.beans.RasterElement
-import org.blitzortung.android.data.beans.RasterParameters
+import org.blitzortung.android.data.beans.GridElement
+import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.location.LocationHandler
@@ -65,18 +65,18 @@ class AlertHandlerTest {
 
     @Test
     fun receiveData() {
-        val rasterBaselength = 5000
+        val gridSize = 5000
         val parameters = Parameters(
             interval = TimeInterval(
                 offset = 0,
                 duration = 60
             ),
-            region = LOCAL_REGION, rasterBaselength = rasterBaselength
+            region = LOCAL_REGION, gridSize = gridSize
         )
         uut.dataEventConsumer.invoke(
             ResultEvent(
-                strikes = listOf(RasterElement(System.currentTimeMillis(), 11.0, 45.0, 5)),
-                rasterParameters = RasterParameters(10.0, 40.0, 10.0, 10.0, 20, 20, rasterBaselength),
+                strikes = listOf(GridElement(System.currentTimeMillis(), 11.0, 45.0, 5)),
+                gridParameters = GridParameters(10.0, 40.0, 10.0, 10.0, 20, 20, gridSize),
                 flags = Flags(),
                 parameters = parameters
             )
@@ -97,23 +97,23 @@ class AlertHandlerTest {
         location.latitude = 45.0
         every { locationHandler.location } returns location
 
-        val rasterBaselength = 5000
+        val gridSize = 5000
         val currentTime = System.currentTimeMillis()
-        val strikeList = listOf(RasterElement(currentTime, 11.0, 45.0, 5))
-        val rasterParameters = RasterParameters(10.0, 40.0, 10.0, 10.0, 20, 20, rasterBaselength)
+        val strikeList = listOf(GridElement(currentTime, 11.0, 45.0, 5))
+        val gridParameters = GridParameters(10.0, 40.0, 10.0, 10.0, 20, 20, gridSize)
 
         mockAlertResult(currentTime, 0.0f)
 
         every { alertDataHandler.getLatestTimstampWithin(any(), any()) } returns currentTime
 
         val parameters = Parameters(
-            interval = TimeInterval( offset = 0, duration = 60 ),
-            region = LOCAL_REGION, rasterBaselength = rasterBaselength
+            interval = TimeInterval(offset = 0, duration = 60),
+            region = LOCAL_REGION, gridSize = gridSize
         )
         uut.dataEventConsumer.invoke(
             ResultEvent(
                 strikes = strikeList,
-                rasterParameters = rasterParameters,
+                gridParameters = gridParameters,
                 flags = Flags(),
                 parameters = parameters
             )
@@ -135,23 +135,23 @@ class AlertHandlerTest {
         location.latitude = 45.0
         every { locationHandler.location } returns location
 
-        val rasterBaselength = 5000
+        val gridSize = 5000
         val currentTime = System.currentTimeMillis()
-        val strikeList = listOf(RasterElement(currentTime, 11.0, 45.0, 5))
-        val rasterParameters = RasterParameters(10.0, 40.0, 10.0, 10.0, 20, 20, rasterBaselength)
+        val strikeList = listOf(GridElement(currentTime, 11.0, 45.0, 5))
+        val gridParameters = GridParameters(10.0, 40.0, 10.0, 10.0, 20, 20, gridSize)
 
         mockAlertResult(currentTime, 0.0f)
 
         every { alertDataHandler.getLatestTimstampWithin(any(), any()) } returns currentTime
 
         val parameters = Parameters(
-            interval = TimeInterval( offset = 0, duration = 60 ),
-            region = LOCAL_REGION, rasterBaselength = rasterBaselength
+            interval = TimeInterval(offset = 0, duration = 60),
+            region = LOCAL_REGION, gridSize = gridSize
         )
         uut.dataEventConsumer.invoke(
             ResultEvent(
                 strikes = strikeList,
-                rasterParameters = rasterParameters,
+                gridParameters = gridParameters,
                 flags = Flags(),
                 parameters = parameters
             )
@@ -172,21 +172,21 @@ class AlertHandlerTest {
         location.latitude = 45.0
         every { locationHandler.location } returns location
 
-        val rasterBaselength = 5000
+        val gridSize = 5000
         val currentTime = System.currentTimeMillis()
-        val strikeList = listOf(RasterElement(currentTime, 11.0, 45.0, 5))
-        val rasterParameters = RasterParameters(10.0, 40.0, 10.0, 10.0, 20, 20, rasterBaselength)
+        val strikeList = listOf(GridElement(currentTime, 11.0, 45.0, 5))
+        val gridParameters = GridParameters(10.0, 40.0, 10.0, 10.0, 20, 20, gridSize)
 
         mockAlertResult(currentTime, 0.0f)
 
         val parameters = Parameters(
-            interval = TimeInterval( offset = 0, duration = 60 ),
-            region = LOCAL_REGION, rasterBaselength = rasterBaselength
+            interval = TimeInterval(offset = 0, duration = 60),
+            region = LOCAL_REGION, gridSize = gridSize
         )
         uut.dataEventConsumer.invoke(
             ResultEvent(
                 strikes = strikeList,
-                rasterParameters = rasterParameters,
+                gridParameters = gridParameters,
                 flags = Flags(),
                 parameters = parameters
             )
@@ -207,23 +207,23 @@ class AlertHandlerTest {
         location.latitude = 45.0
         every { locationHandler.location } returns location
 
-        val rasterBaselength = 5000
+        val gridSize = 5000
         val currentTime = System.currentTimeMillis()
-        val strikeList = listOf(RasterElement(currentTime, 11.0, 45.0, 5))
-        val rasterParameters = RasterParameters(10.0, 40.0, 10.0, 10.0, 20, 20, rasterBaselength)
+        val strikeList = listOf(GridElement(currentTime, 11.0, 45.0, 5))
+        val gridParameters = GridParameters(10.0, 40.0, 10.0, 10.0, 20, 20, gridSize)
 
         val parameters = Parameters(
-            interval = TimeInterval( offset = -30, duration = 60 ),
-            region = LOCAL_REGION, rasterBaselength = rasterBaselength
+            interval = TimeInterval(offset = -30, duration = 60),
+            region = LOCAL_REGION, gridSize = gridSize
         )
 
-        var alertEvent : AlertEvent? = null
-        uut.requestUpdates{ event -> alertEvent = event }
+        var alertEvent: AlertEvent? = null
+        uut.requestUpdates { event -> alertEvent = event }
 
         uut.dataEventConsumer.invoke(
             ResultEvent(
                 strikes = strikeList,
-                rasterParameters = rasterParameters,
+                gridParameters = gridParameters,
                 flags = Flags(),
                 parameters = parameters
             )
@@ -244,23 +244,23 @@ class AlertHandlerTest {
         location.latitude = 45.0
         every { locationHandler.location } returns location
 
-        val rasterBaselength = 5000
+        val gridSize = 5000
         val currentTime = System.currentTimeMillis()
-        val strikeList = listOf(RasterElement(currentTime, 11.0, 45.0, 5))
-        val rasterParameters = RasterParameters(10.0, 40.0, 10.0, 10.0, 20, 20, rasterBaselength)
+        val strikeList = listOf(GridElement(currentTime, 11.0, 45.0, 5))
+        val gridParameters = GridParameters(10.0, 40.0, 10.0, 10.0, 20, 20, gridSize)
 
         val parameters = Parameters(
-            interval = TimeInterval( offset = -30, duration = 60 ),
-            region = LOCAL_REGION, rasterBaselength = rasterBaselength
+            interval = TimeInterval(offset = -30, duration = 60),
+            region = LOCAL_REGION, gridSize = gridSize
         )
 
-        var alertEvent : AlertEvent? = null
-        uut.requestUpdates{ event -> alertEvent = event }
+        var alertEvent: AlertEvent? = null
+        uut.requestUpdates { event -> alertEvent = event }
 
         uut.dataEventConsumer.invoke(
             ResultEvent(
                 strikes = strikeList,
-                rasterParameters = rasterParameters,
+                gridParameters = gridParameters,
                 flags = Flags(ignoreForAlerting = true),
                 parameters = parameters
             )

@@ -18,6 +18,7 @@ class HttpServiceClientDefaultTest {
 
     companion object {
         val handler = MockURLStreamHandler()
+
         @BeforeClass
         @JvmStatic
         fun setUpClass() {
@@ -51,7 +52,7 @@ class HttpServiceClientDefaultTest {
         )
 
         assertThat(handler.connection.outputStream.toString("UTF-8")).isEqualTo(data)
-        assertThat(response).isEqualTo(responseValue)
+        assertThat(response.body).isEqualTo(responseValue)
     }
 
     @Test
@@ -61,7 +62,7 @@ class HttpServiceClientDefaultTest {
 
         val obj = ByteArrayOutputStream()
         val gzip = GZIPOutputStream(obj)
-        gzip.write(responseValue.toByteArray());
+        gzip.write(responseValue.toByteArray())
         gzip.close()
 
         handler.response = obj.toByteArray()
@@ -69,7 +70,7 @@ class HttpServiceClientDefaultTest {
         val response = uut.doRequest(URL("http://base.url"), data)
 
         assertThat(handler.connection.outputStream.toString("UTF-8")).isEqualTo(data)
-        assertThat(response).isEqualTo(responseValue)
+        assertThat(response.body).isEqualTo(responseValue)
     }
 }
 
@@ -82,7 +83,7 @@ class MockURLStreamHandler : URLStreamHandler(), URLStreamHandlerFactory {
 
     // *** URLStreamHandler
     @Throws(IOException::class)
-    protected override fun openConnection(u: URL?): URLConnection {
+    override fun openConnection(u: URL?): URLConnection {
         connection = MockHttpURLConnection(u, responseHeaders) { this.response }
         return connection
     }
@@ -123,7 +124,7 @@ class MockHttpURLConnection(
     }
 
     override fun setRequestProperty(key: String?, value: String?) {
-        headers.put(key, value);
+        headers.put(key, value)
     }
 
     override fun getHeaderField(name: String?): String? {
