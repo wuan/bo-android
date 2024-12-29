@@ -18,6 +18,7 @@
 
 package org.blitzortung.android.app
 
+import android.annotation.TargetApi
 import android.app.AlarmManager
 import android.app.Notification
 import android.app.PendingIntent
@@ -140,6 +141,15 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         })
         val contentIntent = PendingIntent.getActivity(this, 0, intent, flags)
 
+        if (isAtLeast(26)) {
+            startForground(contentIntent)
+        }
+
+        return START_STICKY
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private fun startForground(contentIntent: PendingIntent?) {
         val notification = Notification.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.icon)
             .setContentTitle(this.resources.getText(R.string.app_name))
@@ -150,10 +160,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
             .setShowWhen(true).build()
 
         ServiceCompat.startForeground(this, 0, notification, FOREGROUND_SERVICE_TYPE_MANIFEST)
-
-        return START_STICKY
     }
-
 
     override fun onBind(intent: Intent): IBinder? {
         Log.i(Main.LOG_TAG, "AppService.onBind() $intent")
