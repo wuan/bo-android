@@ -24,7 +24,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.LocationManager.*
@@ -421,20 +420,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         mapView.controller.animateTo(GeoPoint(latitude, longitude), targetZoomLevel, OwnMapView.DEFAULT_ZOOM_SPEED)
     }
 
-    val isDebugBuild: Boolean
-        get() {
-            var dbg = false
-            try {
-                val pm = packageManager
-                val pi = pm.getPackageInfo(packageName, 0)
-
-                dbg = ((pi.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0)
-            } catch (ignored: Exception) {
-            }
-
-            return dbg
-        }
-
     override fun onStart() {
         super.onStart()
         Log.d(LOG_TAG, "Main.onStart()")
@@ -638,26 +623,29 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             }
 
             val checkSelfPermission = checkSelfPermission(permission)
-            Log.v(LOG_TAG, "self permission: $checkSelfPermission")
             val requiresPermission = checkSelfPermission != PackageManager.PERMISSION_GRANTED
+            Log.v(
+                LOG_TAG,
+                "Main.requestLocationPermissions() self permission: $checkSelfPermission, required: $requiresPermission"
+            )
 
             val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
             if (requiresPermission) {
-                val locationText = this.resources.getString(R.string.location_permission_background_disclosure)
-                AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
-                    .setPositiveButton(android.R.string.ok) { dialog, count ->
-                        requestPermission(
-                            permission, requestCode,
-                            R.string.location_permission_required
-                        )
-                    }.show()
+                requestPermission(
+                    permission, requestCode,
+                    R.string.location_permission_required
+                )
             } else {
                 if (requiresBackgroundPermission && isAtLeast(Build.VERSION_CODES.Q)) {
-                    requestPermission(
-                        ACCESS_BACKGROUND_LOCATION,
-                        requestCode,
-                        R.string.location_permission_background_required
-                    )
+                    val locationText = this.resources.getString(R.string.location_permission_background_disclosure)
+                    AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
+                        .setPositiveButton(android.R.string.ok) { dialog, count ->
+                            requestPermission(
+                                ACCESS_BACKGROUND_LOCATION,
+                                requestCode,
+                                R.string.location_permission_background_required
+                            )
+                        }.show()
                 }
             }
         }
