@@ -26,7 +26,6 @@ import android.location.Location
 import android.os.Handler
 import android.util.Log
 import android.widget.Toast
-import androidx.core.animation.doOnEnd
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
@@ -142,10 +141,6 @@ class MainDataHandler @Inject constructor(
 
     val hasConsumers: Boolean
         get() = dataConsumerContainer.isEmpty
-
-    open fun defaultUpdate(animator: Animator) {
-        updateData()
-    }
 
     fun updateData(updateTargets: Set<DataChannel> = DEFAULT_DATA_CHANNELS) {
         if (updatesEnabled) {
@@ -423,30 +418,9 @@ class MainDataHandler @Inject constructor(
         return if (event != null) {
             val mapView = event.source as OwnMapView
             val updated = updateLocation(mapView.boundingBox)
-            if (updated && !mapView.isAnimating) {
-                updateData()
-            }
-            updated
+            ensureUpdate(updated, mapView)
         } else {
             false
-        }
-    }
-
-    private val animatorListener = object : AnimatorListener {
-        override fun onAnimationStart(animation: Animator) {
-        }
-
-        override fun onAnimationEnd(animation: Animator) {
-            Log.v(LOG_TAG, "MainDataHandler AnimatorListener.onAnimationEnd()")
-            this@MainDataHandler.updateData()
-        }
-
-        override fun onAnimationCancel(animation: Animator) {
-            Log.v(LOG_TAG, "MainDataHandler AnimatorListener.onAnimationCancel()")
-            this@MainDataHandler.updateData()
-        }
-
-        override fun onAnimationRepeat(animation: Animator) {
         }
     }
 
@@ -456,24 +430,21 @@ class MainDataHandler @Inject constructor(
             val updateAutoGridSize = updateAutoGridSize(event.zoomLevel)
             val updateLocation = updateLocation(mapView.boundingBox, updateAutoGridSize)
             val updated = updateLocation || updateAutoGridSize
-            if (updated) {
-                if (mapView.isAnimating) {
-
-                    val animator = mapView.animator()!!
-
-                    if (!animator.listeners.contains(animatorListener)) {
-                        animator.addListener(animatorListener)
-                    }
-
-                    Log.v(LOG_TAG, "MainDataHandler.onZoom() listeners ${animator.listeners}")
-                } else {
-                    updateData()
-                }
-            }
-            updated
+            ensureUpdate(updated, mapView)
         } else {
             false
         }
+    }
+
+    private fun ensureUpdate(updated: Boolean, mapView: OwnMapView): Boolean {
+        if (updated) {
+            if (mapView.isAnimating) {
+                addUpdateAfterAnimationListener(mapView)
+            } else {
+                updateData()
+            }
+        }
+        return updated
     }
 
     fun updateLocation(boundingBox: BoundingBox, force: Boolean = false): Boolean = localData.update(boundingBox, force)
@@ -501,6 +472,29 @@ class MainDataHandler @Inject constructor(
             false
         }
 
+    private fun addUpdateAfterAnimationListener(mapView: OwnMapView) {
+        val animator = mapView.animator()!!
+
+        if (!animator.listeners.contains(animatorListener)) {
+            animator.addListener(animatorListener)
+        }
+    }
+
+    private val animatorListener = object : AnimatorListener {
+        override fun onAnimationStart(animation: Animator) {
+        }
+
+        override fun onAnimationEnd(animation: Animator) {
+            this@MainDataHandler.updateData()
+        }
+
+        override fun onAnimationCancel(animation: Animator) {
+            this@MainDataHandler.updateData()
+        }
+
+        override fun onAnimationRepeat(animation: Animator) {
+        }
+    }
 
     fun calculateTotalCacheSize(): CacheSize = cache.calculateTotalSize()
 }

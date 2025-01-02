@@ -112,13 +112,13 @@ class HistogramView @JvmOverloads constructor(
             var topCoordinate = padding
 
             val bb = mapFragment.mapView.boundingBox
-            val text = "%.2f..%.2f - %.2f..%.2f".format(bb.lonWest, bb.lonEast, bb.latSouth, bb.latNorth)
+            val text = "%.2f..%.2f  %.2f..%.2f".format(bb.lonWest, bb.lonEast, bb.latSouth, bb.latNorth)
             canvas.drawText(text, width - padding, topCoordinate + textSize / 1.2f * SMALL_TEXT_SCALE, smallTextPaint)
             topCoordinate += (textSize + padding) * SMALL_TEXT_SCALE
 
             val gridParameters = gridParameters
             if (gridParameters != null) {
-                val text = "%.2f..%.2f - %.2f..%.2f".format(gridParameters.longitudeStart, gridParameters.longitudeEnd, gridParameters.latitudeEnd, gridParameters.latitudeStart)
+                val text = "%.2f..%.2f  %.2f..%.2f".format(gridParameters.longitudeStart, gridParameters.longitudeEnd, gridParameters.latitudeEnd, gridParameters.latitudeStart)
                 canvas.drawText(text, width - padding, topCoordinate + textSize / 1.2f * SMALL_TEXT_SCALE, smallTextPaint)
                 topCoordinate += (textSize + padding) * SMALL_TEXT_SCALE
             }

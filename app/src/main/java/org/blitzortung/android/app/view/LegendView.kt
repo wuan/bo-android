@@ -25,12 +25,10 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
 import org.blitzortung.android.app.R
-import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.overlay.StrikeListOverlay
 import org.blitzortung.android.util.TabletAwareView
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.round
 
 class LegendView @JvmOverloads constructor(
     context: Context,
