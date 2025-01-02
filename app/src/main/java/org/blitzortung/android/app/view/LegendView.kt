@@ -25,10 +25,12 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
 import org.blitzortung.android.app.R
+import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.overlay.StrikeListOverlay
 import org.blitzortung.android.util.TabletAwareView
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.round
 
 class LegendView @JvmOverloads constructor(
     context: Context,
@@ -64,7 +66,6 @@ class LegendView @JvmOverloads constructor(
     var strikesOverlay: StrikeListOverlay? = null
 
     init {
-
         setBackgroundColor(Color.TRANSPARENT)
     }
 
@@ -189,6 +190,7 @@ class LegendView @JvmOverloads constructor(
     private val regionName: String
         get() {
             val regionNumber = strikesOverlay!!.parameters.region
+
 
             for ((index, regionNumberString) in resources.getStringArray(R.array.regions_values).withIndex()) {
                 if (regionNumber == Integer.parseInt(regionNumberString)) {

@@ -30,6 +30,8 @@ import android.location.LocationManager.*
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.PowerManager
 import android.preference.PreferenceManager
 import android.provider.Settings
@@ -82,6 +84,7 @@ import org.blitzortung.android.util.isAtLeast
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
+import java.lang.Thread.sleep
 import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -367,6 +370,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         }
 
         with(binding.histogramView) {
+            mapFragment = this@Main.mapFragment
             setStrikesOverlay(strikeListOverlay)
             setOnClickListener {
                 val currentResult = currentResult
@@ -417,6 +421,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             mapView.zoomLevelDouble
         }
 
+        Log.d(LOG_TAG, "Main.animateAndZoomTo() start animation ${mapView.zoomLevelDouble}")
         mapView.controller.animateTo(GeoPoint(latitude, longitude), targetZoomLevel, OwnMapView.DEFAULT_ZOOM_SPEED)
     }
 
