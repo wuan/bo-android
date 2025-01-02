@@ -82,7 +82,6 @@ import org.blitzortung.android.util.isAtLeast
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
-import java.lang.Thread.sleep
 import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 import kotlin.math.roundToInt
