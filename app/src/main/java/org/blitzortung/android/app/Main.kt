@@ -367,6 +367,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         }
 
         with(binding.histogramView) {
+            mapFragment = this@Main.mapFragment
             setStrikesOverlay(strikeListOverlay)
             setOnClickListener {
                 val currentResult = currentResult
