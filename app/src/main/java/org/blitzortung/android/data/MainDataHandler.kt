@@ -18,6 +18,8 @@
 
 package org.blitzortung.android.data
 
+import android.animation.Animator
+import android.animation.Animator.AnimatorListener
 import android.content.Context
 import android.content.SharedPreferences
 import android.location.Location
@@ -40,11 +42,13 @@ import org.blitzortung.android.data.provider.result.RequestStartedEvent
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.result.StatusEvent
 import org.blitzortung.android.location.LocationEvent
+import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.protocol.ConsumerContainer
 import org.blitzortung.android.util.Period
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
+import org.osmdroid.util.BoundingBox
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
@@ -193,6 +197,9 @@ class MainDataHandler @Inject constructor(
         }
 
     private fun sendEvent(dataEvent: DataEvent) {
+        if (dataEvent is ResultEvent) {
+            localData.storeResult(dataEvent.gridParameters)
+        }
         if (dataEvent is ResultEvent && dataEvent.flags.storeResult) {
             dataConsumerContainer.storeAndBroadcast(dataEvent)
         } else {
@@ -408,23 +415,46 @@ class MainDataHandler @Inject constructor(
     }
 
     override fun onScroll(event: ScrollEvent?): Boolean {
-        return false
-    }
-
-    override fun onZoom(event: ZoomEvent?): Boolean {
         return if (event != null) {
-            updateAutoGridSize(event.zoomLevel)
+            val mapView = event.source as OwnMapView
+            val updated = updateLocation(mapView.boundingBox)
+            ensureUpdate(updated, mapView)
         } else {
             false
         }
     }
 
+    override fun onZoom(event: ZoomEvent?): Boolean {
+        return if (event != null) {
+            val mapView = event.source as OwnMapView
+            val updateAutoGridSize = updateAutoGridSize(event.zoomLevel)
+            val updateLocation = updateLocation(mapView.boundingBox, updateAutoGridSize)
+            val updated = updateLocation || updateAutoGridSize
+            ensureUpdate(updated, mapView)
+        } else {
+            false
+        }
+    }
+
+    private fun ensureUpdate(updated: Boolean, mapView: OwnMapView): Boolean {
+        if (updated) {
+            if (mapView.isAnimating) {
+                addUpdateAfterAnimationListener(mapView)
+            } else {
+                updateData()
+            }
+        }
+        return updated
+    }
+
+    fun updateLocation(boundingBox: BoundingBox, force: Boolean = false): Boolean = localData.update(boundingBox, force)
+
     fun updateAutoGridSize(zoomLevel: Double): Boolean =
         if (autoGridSize) {
             val gridSize = when {
                 zoomLevel >= 8f -> 5000
-                zoomLevel in 6f..8f -> 10000
-                zoomLevel in 4f..6f -> 25000
+                zoomLevel in 5.5f..8f -> 10000
+                zoomLevel in 4f..5.5f -> 25000
                 zoomLevel in 2f..4f -> 50000
                 else -> 100000
             }
@@ -434,7 +464,6 @@ class MainDataHandler @Inject constructor(
                     "MainDataHandler.updateAutoGridSize() $zoomLevel : ${parameters.gridSize} -> $gridSize"
                 )
                 parameters = parameters.copy(gridSize = gridSize)
-                updateData()
                 true
             } else {
                 false
@@ -443,6 +472,29 @@ class MainDataHandler @Inject constructor(
             false
         }
 
+    private fun addUpdateAfterAnimationListener(mapView: OwnMapView) {
+        val animator = mapView.animator()!!
+
+        if (!animator.listeners.contains(animatorListener)) {
+            animator.addListener(animatorListener)
+        }
+    }
+
+    private val animatorListener = object : AnimatorListener {
+        override fun onAnimationStart(animation: Animator) {
+        }
+
+        override fun onAnimationEnd(animation: Animator) {
+            this@MainDataHandler.updateData()
+        }
+
+        override fun onAnimationCancel(animation: Animator) {
+            this@MainDataHandler.updateData()
+        }
+
+        override fun onAnimationRepeat(animation: Animator) {
+        }
+    }
 
     fun calculateTotalCacheSize(): CacheSize = cache.calculateTotalSize()
 }

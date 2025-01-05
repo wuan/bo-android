@@ -38,6 +38,10 @@ data class GridParameters(
 
     val rectCenterLatitude: Double = latitudeStart - latitudeDelta * latitudeBins / 2.0
 
+    val longitudeEnd: Double = longitudeStart + longitudeDelta * longitudeBins
+
+    val latitudeEnd: Double = latitudeStart - latitudeDelta * latitudeBins
+
     fun getCenterLongitude(offset: Int): Double {
         return longitudeStart + longitudeDelta * (offset + 0.5)
     }

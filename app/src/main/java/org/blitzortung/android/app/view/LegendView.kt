@@ -64,7 +64,6 @@ class LegendView @JvmOverloads constructor(
     var strikesOverlay: StrikeListOverlay? = null
 
     init {
-
         setBackgroundColor(Color.TRANSPARENT)
     }
 
