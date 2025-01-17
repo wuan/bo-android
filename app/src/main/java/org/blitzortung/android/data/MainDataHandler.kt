@@ -473,9 +473,9 @@ class MainDataHandler @Inject constructor(
         }
 
     private fun addUpdateAfterAnimationListener(mapView: OwnMapView) {
-        val animator = mapView.animator()!!
+        val animator = mapView.animator()
 
-        if (!animator.listeners.contains(animatorListener)) {
+        if (animator != null && !animator.listeners.contains(animatorListener)) {
             animator.addListener(animatorListener)
         }
     }
