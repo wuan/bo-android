@@ -4,6 +4,7 @@ import android.location.Location
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.data.LocalReference
 import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.beans.GridParameters
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -86,6 +87,46 @@ class LocalDataTest {
         assertThat(result).isTrue
         assertThat(uut.dataArea).isEqualTo(5)
         assertThat(uut.localReference).isEqualTo(LocalReference(2, 9))
+    }
+
+    @Test
+    fun noUpdateLocalDataOnGridInside() {
+        val boundingBox = BoundingBox(46.0, 11.0, 45.0, 10.0)
+        uut.update(boundingBox)
+
+        uut.storeResult(GridParameters(10.0, 46.0, 0.2, 0.2, 5, 5))
+        val result = uut.update(boundingBox)
+
+        assertThat(result).isFalse
+        assertThat(uut.dataArea).isEqualTo(5)
+        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9))
+    }
+
+    @Test
+    fun noUpdateLocalDataOnGridOutsideWithoutUpdatedParameters() {
+        val boundingBox = BoundingBox(46.0, 11.0, 45.0, 10.0)
+        uut.update(boundingBox)
+
+        uut.storeResult(GridParameters(10.0, 46.0, 0.2, 0.2, 5, 3))
+        val result = uut.update(boundingBox)
+
+        assertThat(result).isFalse
+        assertThat(uut.dataArea).isEqualTo(5)
+        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9))
+    }
+
+    @Test
+    fun updateLocalDataOnGridOutsideWithUpdatedParameters() {
+        val boundingBox1 = BoundingBox(46.0, 11.0, 45.0, 10.0)
+        uut.update(boundingBox1)
+
+        uut.storeResult(GridParameters(10.0, 46.0, 0.2, 0.2, 5, 5))
+        val boundingBox2 = BoundingBox(55.0, 11.0, 45.0, 10.0)
+        val result = uut.update(boundingBox2)
+
+        assertThat(result).isTrue
+        assertThat(uut.dataArea).isEqualTo(5)
+        assertThat(uut.localReference).isEqualTo(LocalReference(2, 10))
     }
 
     @Test

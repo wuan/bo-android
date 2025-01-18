@@ -23,7 +23,7 @@ class LocalData @Inject constructor() {
 
     var localReference: LocalReference? = null
     var dataArea: Int = LOCAL_DATA_AREA
-    var gridParameters: GridParameters? = null
+    private var gridParameters: GridParameters? = null
 
     fun updateParameters(parameters: Parameters, location: Location?): Parameters {
         return when (parameters.region) {
