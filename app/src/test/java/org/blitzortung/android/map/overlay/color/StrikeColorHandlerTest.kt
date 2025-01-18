@@ -1,7 +1,6 @@
 package org.blitzortung.android.map.overlay.color
 
 import android.content.Context
-import io.mockk.MockKAnnotations
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -18,8 +17,6 @@ class StrikeColorHandlerTest {
 
     @Before
     fun setUp() {
-        MockKAnnotations.init(this, relaxed = true)
-
         val context = RuntimeEnvironment.getApplication()
         val preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 
