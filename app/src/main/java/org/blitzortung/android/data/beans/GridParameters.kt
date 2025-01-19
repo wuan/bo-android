@@ -38,6 +38,10 @@ data class GridParameters(
 
     val rectCenterLatitude: Double = latitudeStart - latitudeDelta * latitudeBins / 2.0
 
+    val longitudeEnd: Double = longitudeStart + longitudeDelta * longitudeBins
+
+    val latitudeEnd: Double = latitudeStart - latitudeDelta * latitudeBins
+
     fun getCenterLongitude(offset: Int): Double {
         return longitudeStart + longitudeDelta * (offset + 0.5)
     }
@@ -46,9 +50,11 @@ data class GridParameters(
         return latitudeStart - latitudeDelta * (offset + 0.5)
     }
 
-    private val rectLongitudeDelta: Double = longitudeDelta * longitudeBins
+    val longitudeInterval: Double = longitudeDelta * longitudeBins
 
-    private val rectLatitudeDelta: Double = latitudeDelta * latitudeBins
+    val latitudeInterval: Double = latitudeDelta * latitudeBins
+
+    val isGlobal = longitudeInterval > 350 && latitudeInterval > 170
 
     fun getRect(projection: Projection): RectF {
         var leftTop = Point()
@@ -56,8 +62,8 @@ data class GridParameters(
             Coordsys.toMapCoords(longitudeStart, latitudeStart), leftTop
         )
         var bottomRight = Point()
-        val longitudeEnd = longitudeStart + rectLongitudeDelta
-        val latitudeEnd = latitudeStart - rectLatitudeDelta
+        val longitudeEnd = longitudeStart + longitudeInterval
+        val latitudeEnd = latitudeStart - latitudeInterval
         bottomRight = projection.toPixels(
             Coordsys.toMapCoords(
                 longitudeEnd,
@@ -67,5 +73,11 @@ data class GridParameters(
 
         // Log.d(Main.LOG_TAG, "GridParameters.getRect() $longitudeStart - $longitudeEnd ($longitudeDelta, #$longitudeBins) $latitudeEnd - $latitudeStart ($latitudeDelta, #$latitudeBins)")
         return RectF(leftTop.x.toFloat(), leftTop.y.toFloat(), bottomRight.x.toFloat(), bottomRight.y.toFloat())
+    }
+
+    fun contains(longitude: Double, latitude: Double, inset: Double = 0.0): Boolean {
+        val inLongitude = longitude in longitudeStart + inset..longitudeEnd - inset
+        val inLatitude = latitude in latitudeStart - latitudeDelta * latitudeBins + inset .. latitudeStart - inset
+        return inLongitude && inLatitude
     }
 }

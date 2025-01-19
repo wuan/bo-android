@@ -25,6 +25,7 @@ import java.io.Serializable
 data class Parameters(
     val region: Int = -1,
     val gridSize: Int = 0,
+    val dataArea: Int = 5,
     val interval: TimeInterval = TimeInterval(),
     val countThreshold: Int = 0,
     val localReference: LocalReference? = null

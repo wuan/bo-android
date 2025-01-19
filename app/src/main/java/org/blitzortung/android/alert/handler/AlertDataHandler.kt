@@ -20,9 +20,11 @@ package org.blitzortung.android.alert.handler
 
 import android.content.res.Resources
 import android.location.Location
+import android.util.Log
 import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.data.AlertSector
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.data.beans.GridElement
 import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.beans.Strike
@@ -39,7 +41,13 @@ open class AlertDataHandler @Inject internal constructor(
     fun checkStrikes(
         strikes: Strikes, location: Location, parameters: AlertParameters,
         referenceTime: Long = System.currentTimeMillis()
-    ): AlertResult {
+    ): AlertResult? {
+        val gridParameters: GridParameters? = strikes.gridParameters
+        if (gridParameters != null && !gridParameters.isGlobal && !gridParameters.contains(location.longitude, location.latitude, 0.2)) {
+            Log.v(LOG_TAG, "Location $location is not in grid ${gridParameters.longitudeInterval} + ${gridParameters.latitudeInterval}")
+            return null
+        }
+
         val sectors = createSectors(parameters)
 
         val thresholdTime = referenceTime - parameters.alarmInterval
@@ -54,7 +62,7 @@ open class AlertDataHandler @Inject internal constructor(
                 checkStrike(
                     alertSector,
                     strike,
-                    strikes.gridParameters,
+                    gridParameters,
                     parameters.measurementSystem,
                     location,
                     thresholdTime
