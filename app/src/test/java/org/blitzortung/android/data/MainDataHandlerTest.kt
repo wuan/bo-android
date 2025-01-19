@@ -23,6 +23,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.MapView
 import org.robolectric.RobolectricTestRunner
@@ -108,6 +109,13 @@ class MainDataHandlerTest {
     }
 
     @Test
+    fun onScrollWithoutEvent() {
+        val result = uut.onScroll(null)
+
+        assertThat(result).isFalse
+    }
+
+    @Test
     fun reactOnScrollWithinDataArea() {
         val mapView = mockk<OwnMapView>();
 //        every { mapView.isAnimating } returns false
@@ -132,6 +140,48 @@ class MainDataHandlerTest {
         val event = ScrollEvent(mapView, 100, 100)
 
         val result = uut.onScroll(event)
+
+        assertThat(result).isTrue
+    }
+
+    @Test
+    fun reactOnZoomWithinDataArea() {
+        val mapView = mockk<OwnMapView>();
+        every { mapView.isAnimating } returns false
+        val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
+        every { mapView.boundingBox } returns boundingBox
+        every { localData.update(boundingBox, false) } returns false
+        val event = ZoomEvent(mapView, 6.0)
+
+        val result = uut.onZoom(event)
+
+        assertThat(result).isFalse
+    }
+
+    @Test
+    fun reactOnZoomlLeavingDataArea() {
+        val mapView = mockk<OwnMapView>();
+        every { mapView.isAnimating } returns false
+        val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
+        every { mapView.boundingBox } returns boundingBox
+        every { localData.update(boundingBox, false) } returns true
+        val event = ZoomEvent(mapView, 6.0)
+
+        val result = uut.onZoom(event)
+
+        assertThat(result).isTrue
+    }
+
+    @Test
+    fun reactOnZoomlUpdateGridSize() {
+        val mapView = mockk<OwnMapView>();
+        every { mapView.isAnimating } returns false
+        val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
+        every { mapView.boundingBox } returns boundingBox
+        every { localData.update(boundingBox, false) } returns false
+        val event = ZoomEvent(mapView, 8.0)
+
+        val result = uut.onZoom(event)
 
         assertThat(result).isTrue
     }
