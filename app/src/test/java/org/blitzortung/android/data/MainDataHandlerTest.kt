@@ -171,6 +171,13 @@ class MainDataHandlerTest {
     }
 
     @Test
+    fun onZoomWithoutEvent() {
+        val result = uut.onZoom(null)
+
+        assertThat(result).isFalse
+    }
+
+    @Test
     fun reactOnZoomWithinDataArea() {
         val mapView = mockk<OwnMapView>();
         every { mapView.isAnimating } returns false
