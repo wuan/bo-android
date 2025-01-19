@@ -146,12 +146,6 @@ class MainDataHandler @Inject constructor(
         if (updatesEnabled) {
             sendEvent(REQUEST_STARTED_EVENT)
 
-            var updateParticipants = false
-            if (updateTargets.contains(DataChannel.PARTICIPANTS)) {
-                if (dataProvider!!.type == DataProviderType.HTTP || !dataMode.grid) {
-                    updateParticipants = true
-                }
-            }
             updateUsingCache()
         }
     }
