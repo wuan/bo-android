@@ -12,13 +12,14 @@ class JsonRpcData(
     private val serviceUrl: URL,
 ) {
 
-    fun requestData(parameters: Parameters) : JsonRpcResponse {
+    fun requestData(parameters: Parameters): JsonRpcResponse {
         val intervalDuration = parameters.intervalDuration
         val intervalOffset = parameters.intervalOffset
         val gridSize = parameters.gridSize
         val countThreshold = parameters.countThreshold
         val region = parameters.region
         val localReference = parameters.localReference
+        val dataArea = parameters.dataArea
 
         return when (region) {
             GLOBAL_REGION -> {
@@ -38,6 +39,7 @@ class JsonRpcData(
                 }
                 jsonRpcResponse
             }
+
             LOCAL_REGION -> {
                 client.call(
                     serviceUrl,
@@ -47,9 +49,11 @@ class JsonRpcData(
                     gridSize,
                     intervalDuration,
                     intervalOffset,
-                    countThreshold
+                    countThreshold,
+                    dataArea,
                 )
             }
+
             else -> {
                 client.call(
                     serviceUrl,

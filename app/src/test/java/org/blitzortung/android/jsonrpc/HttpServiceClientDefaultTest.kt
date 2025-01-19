@@ -18,6 +18,7 @@ class HttpServiceClientDefaultTest {
 
     companion object {
         val handler = MockURLStreamHandler()
+
         @BeforeClass
         @JvmStatic
         fun setUpClass() {

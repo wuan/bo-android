@@ -64,7 +64,6 @@ class LegendView @JvmOverloads constructor(
     var strikesOverlay: StrikeListOverlay? = null
 
     init {
-
         setBackgroundColor(Color.TRANSPARENT)
     }
 
@@ -204,7 +203,7 @@ class LegendView @JvmOverloads constructor(
     }
 
     private fun usesGrid(): Boolean {
-        return strikesOverlay?.usesGrid() ?: false
+        return strikesOverlay?.usesGrid() == true
     }
 
     private fun hasRegion(): Boolean {

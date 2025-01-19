@@ -365,7 +365,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="map_scale_summary">Wybierz skalowanie [%] kafelków mapy</string>
     <string name="location_permission_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest uprawnienie do lokalizacji.</string>
     <string name="location_permission_background_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest uprawnienie do lokalizacji w tle.</string>
-    <string name="location_permission_background_disclosure">Ta aplikacja korzysta z danych o lokalizacji nawet wtedy, gdy jest zamknięta lub nieużywana, podczas korzystania z alarmów w tle.</string>
+    <string name="location_permission_background_disclosure">Ta aplikacja korzysta z danych o Twojej lokalizacji i danych sieciowych, nawet jeśli jest zamknięta lub nieużywana, a w tle włączone są alarmy.</string>
     <string name="osmdroid_storage_warning">Nie można znaleźć miejsca do zapisu mapy. Proszę zgłosić.</string>
     <string name="changelog">Dziennik zmian</string>
     <string name="menu">Otwórz menu</string>

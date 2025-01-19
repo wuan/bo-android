@@ -24,7 +24,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.LocationManager.*
@@ -368,6 +367,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         }
 
         with(binding.histogramView) {
+            mapFragment = this@Main.mapFragment
             setStrikesOverlay(strikeListOverlay)
             setOnClickListener {
                 val currentResult = currentResult
@@ -420,20 +420,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         mapView.controller.animateTo(GeoPoint(latitude, longitude), targetZoomLevel, OwnMapView.DEFAULT_ZOOM_SPEED)
     }
-
-    val isDebugBuild: Boolean
-        get() {
-            var dbg = false
-            try {
-                val pm = packageManager
-                val pi = pm.getPackageInfo(packageName, 0)
-
-                dbg = ((pi.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0)
-            } catch (ignored: Exception) {
-            }
-
-            return dbg
-        }
 
     override fun onStart() {
         super.onStart()
@@ -638,45 +624,71 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             }
 
             val checkSelfPermission = checkSelfPermission(permission)
-            Log.v(LOG_TAG, "self permission: $checkSelfPermission")
             val requiresPermission = checkSelfPermission != PackageManager.PERMISSION_GRANTED
+            Log.v(
+                LOG_TAG,
+                "Main.requestLocationPermissions() self permission: $checkSelfPermission, required: $requiresPermission"
+            )
 
             val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
             if (requiresPermission) {
-                val locationText = resources.getString(R.string.location_permission_background_disclosure)
-                AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
-                    .setNeutralButton(android.R.string.ok) { dialog, count ->
-                        requestPermission(
-                            arrayOf(permission), requestCode, R.string.location_permission_required
-                        )
-                    }.show()
+                requestPermission(
+                    permission, requestCode,
+                    R.string.location_permission_required
+                )
             } else {
-                if (requiresBackgroundPermission) {
-                    requestPermission(
-                        arrayOf(ACCESS_BACKGROUND_LOCATION),
-                        requestCode,
-                        R.string.location_permission_background_required
-                    )
+                if (requiresBackgroundPermission && isAtLeast(Build.VERSION_CODES.Q)) {
+                    val locationText = this.resources.getString(R.string.location_permission_background_disclosure)
+                    AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
+                        .setPositiveButton(android.R.string.ok) { dialog, count ->
+                            requestPermission(
+                                ACCESS_BACKGROUND_LOCATION,
+                                requestCode,
+                                R.string.location_permission_background_required
+                            )
+                        }.show()
                 }
             }
         }
     }
 
+
     @TargetApi(Build.VERSION_CODES.M)
-    private fun requestPermission(permission: Array<String>, requestCode: Int, permissionRequiredStringId: Int) {
-        val shouldShowPermissionRationale = shouldShowRequestPermissionRationale(permission[0])
-        val permissionStatus = checkSelfPermission(permission[0])
+    private fun requestPermission(permission: String, requestCode: Int, permissionRequiredStringId: Int) {
+        val shouldShowPermissionRationale = shouldShowRequestPermissionRationale(permission)
+        val permissionIsGranted = checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
         Log.v(
             LOG_TAG,
-            "Main.requestPermission() permission: ${permission.joinToString()}, status: $permissionStatus, shouldRequest: ${!shouldShowPermissionRationale}"
+            "Main.requestPermission() permission: $permission, isGranted: $permissionIsGranted, shouldShowRationale: ${!shouldShowPermissionRationale}"
         )
-        if (!shouldShowPermissionRationale && permissionStatus != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(permission, requestCode)
-        } else {
+
+        if (!permissionIsGranted) {
             if (shouldShowPermissionRationale) {
-                Toast.makeText(baseContext, permissionRequiredStringId, Toast.LENGTH_LONG).show()
+                requestPermissionsAfterDialog(permissionRequiredStringId, permission, requestCode)
+            } else {
+                requestPermissions(arrayOf(permission), requestCode)
             }
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private fun requestPermissionsAfterDialog(
+        dialogTextResource: Int,
+        permission: String,
+        requestCode: Int,
+    ) {
+        Log.v(
+            LOG_TAG,
+            "Main.requestPermissionsAfterDialog() permission: $permission, dialogResource: $dialogTextResource, requestCode: $requestCode"
+        )
+
+        val locationText = resources.getString(dialogTextResource)
+        AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
+            .setPositiveButton(android.R.string.ok) { dialog, count ->
+                Log.v(LOG_TAG, "Main.requestPermissionsAfterDialog() clicked OK, before request")
+                requestPermissions(arrayOf(permission), requestCode)
+                Log.v(LOG_TAG, "Main.requestPermissionsAfterDialog() clicked OK, after request")
+            }.show()
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -684,7 +696,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         Log.v(LOG_TAG, "requestWakeupPermissions() background alerts: $backgroundAlertEnabled")
 
         if (backgroundAlertEnabled) {
-            val pm = context.getSystemService(Context.POWER_SERVICE)
+            val pm = context.getSystemService(POWER_SERVICE)
             if (pm is PowerManager) {
                 val packageName = context.packageName
                 Log.v(LOG_TAG, "requestWakeupPermissions() package name $packageName")

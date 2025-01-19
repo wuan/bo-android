@@ -70,8 +70,7 @@ class StrikeOverlay(strike: Strike) {
     }
 
     fun pointIsInside(point: IGeoPoint, projection: Projection): Boolean {
-        return shape?.isPointInside(point, projection)
-            ?: false
+        return shape?.isPointInside(point, projection) == true
     }
 
     companion object {

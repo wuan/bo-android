@@ -214,6 +214,7 @@ class JsonRpcDataProvider @Inject constructor(
                 this.serviceUrl =
                     toCheckedUrl(if (serviceUrl.isNotBlank()) serviceUrl.trim() else DEFAULT_SERVICE_URL.toString())
             }
+
             else -> {}
         }
     }

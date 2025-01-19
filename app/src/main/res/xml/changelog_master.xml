@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
-    <release versionName="2.2" versionCode="293">
+    <release
+        versionName="2.3"
+        versionCode="327">
+        <feature>Dynamic local data retrieval</feature>
+    </release>
+    <release
+        versionName="2.2"
+        versionCode="293">
         <feature>Time slider replaces buttons</feature>
         <feature>Animated history</feature>
     </release>
-    <release versionName="2.1" versionCode="259">
+    <release
+        versionName="2.1"
+        versionCode="259">
         <feature>Global data mode</feature>
         <feature>Local data mode</feature>
         <feature>Automatic grid size</feature>
         <feature>Change log</feature>
         <improvement>Internal improvements</improvement>
     </release>
-    <release versionName="2.0" versionCode="250">
+    <release
+        versionName="2.0"
+        versionCode="250">
         <feature>OSM based map scheme</feature>
         <feature>Customize map tile scaling</feature>
         <improvment>Improved handling of missing permissions</improvment>

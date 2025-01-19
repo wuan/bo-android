@@ -349,12 +349,12 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="share_log">Stuur email …</string>
     <string name="share_unavailable">E-mail delen is niet beschikbaar.</string>
     <string name="provider_warning">Gebruik Blitzortung.org niet als informatiebron bij hoge activiteit, dit beinvloed prestaties van kaartweergave negatief.</string>
-    <string name="own_location_summary" >Eigen locatie weergave instellingen</string>
-    <string name="own_location" >Eigen locatie</string>
-    <string name="own_location_size" >Locatie symbool grootte</string>
-    <string name="own_location_size_summary" >Stel de grootte van het locatiesymbool in</string>
-    <string name="keep_zoom_goto_own_location_summary" >Instelling huidige zoom niveau behouden wanneer je centreerd naar je eigen locatie</string>
-    <string name="keep_zoom_goto_own_location_title" >Zoom behouden</string>
+    <string name="own_location_summary">Eigen locatie weergave instellingen</string>
+    <string name="own_location">Eigen locatie</string>
+    <string name="own_location_size">Locatie symbool grootte</string>
+    <string name="own_location_size_summary">Stel de grootte van het locatiesymbool in</string>
+    <string name="keep_zoom_goto_own_location_summary">Instelling huidige zoom niveau behouden wanneer je centreerd naar je eigen locatie</string>
+    <string name="keep_zoom_goto_own_location_title">Zoom behouden</string>
     <string name="not_available">n/b</string>
     <string name="unit_miles">mi.</string>
     <string name="map_scale">Schaal kaart</string>
@@ -362,7 +362,7 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_required">Locatie delen is nodig om je huidige locatie te bepalen.</string>
     <string name="changelog">Change log</string>
     <string name="location_permission_background_required">Achtergrondlocatietoestemming is vereist bij het gebruik van een apparaatlocatiebron.</string>
-    <string name="location_permission_background_disclosure">Deze app gebruikt locatiegegevens, zelfs wanneer de app is gesloten of niet in gebruik is, wanneer achtergrondalarmen worden gebruikt met een apparaatlocatiebron.</string>
+    <string name="location_permission_background_disclosure">Deze app gebruikt locatiegegevens en netwerkgegevens, zelfs wanneer de app gesloten is of niet in gebruik is bij gebruik van achtergrondalarmen met een apparaatlocatiebron.</string>
     <string name="menu">Menu openen</string>
     <string name="slider_current">nu</string>
     <string name="slider_past">Verleden</string>

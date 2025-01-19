@@ -7,4 +7,4 @@
     android:minWidth="20dp"
     android:updatePeriodMillis="10000"
     android:resizeMode="horizontal|vertical"
-    android:widgetCategory="home_screen"/>
+    android:widgetCategory="home_screen" />
