@@ -1,5 +1,7 @@
 package org.blitzortung.android.data
 
+import android.animation.Animator
+import android.animation.ValueAnimator
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Handler
@@ -7,6 +9,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.app.view.PreferenceKey
@@ -25,7 +28,6 @@ import org.junit.runner.RunWith
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
 import org.osmdroid.util.BoundingBox
-import org.osmdroid.views.MapView
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
@@ -105,7 +107,7 @@ class MainDataHandlerTest {
         uut.run()
 
         assertThat(receivedEvents).contains(StatusEvent("0/60"))
-        verify {handler.postDelayed(uut, 1000)}
+        verify { handler.postDelayed(uut, 1000) }
     }
 
     @Test
@@ -118,7 +120,6 @@ class MainDataHandlerTest {
     @Test
     fun reactOnScrollWithinDataArea() {
         val mapView = mockk<OwnMapView>();
-//        every { mapView.isAnimating } returns false
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
         every { mapView.boundingBox } returns boundingBox
         every { localData.update(boundingBox, false) } returns false
@@ -142,6 +143,31 @@ class MainDataHandlerTest {
         val result = uut.onScroll(event)
 
         assertThat(result).isTrue
+    }
+
+    @Test
+    fun reactOnScrollLeavingDataAreaWithAnimation() {
+        val mapView = mockk<OwnMapView>();
+        val animator = mockk<ValueAnimator>(relaxed = true);
+        every { animator.listeners } returns ArrayList<Animator.AnimatorListener>()
+        every { mapView.animator() } returns animator
+        every { mapView.isAnimating } returns true
+        val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
+        every { mapView.boundingBox } returns boundingBox
+        every { localData.update(boundingBox, false) } returns true
+        val event = ScrollEvent(mapView, 100, 100)
+
+        val result = uut.onScroll(event)
+
+        assertThat(result).isTrue
+
+        val animatorListenerSlot = slot<Animator.AnimatorListener>()
+        verify { animator.addListener(capture(animatorListenerSlot)) }
+        val captured = animatorListenerSlot.captured
+
+        assertThat(receivedEvents).isEmpty()
+        captured.onAnimationEnd(animator)
+        assertThat(receivedEvents).contains(REQUEST_STARTED_EVENT)
     }
 
     @Test
