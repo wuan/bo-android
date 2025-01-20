@@ -412,6 +412,7 @@ class MainDataHandler @Inject constructor(
         return if (event != null) {
             val mapView = event.source as OwnMapView
             val updated = updateLocation(mapView.boundingBox)
+//            Log.v(LOG_TAG, "MainDataHandler.onScroll() update: $updated")
             ensureUpdate(updated, mapView)
         } else {
             false
@@ -424,6 +425,7 @@ class MainDataHandler @Inject constructor(
             val updateAutoGridSize = updateAutoGridSize(event.zoomLevel)
             val updateLocation = updateLocation(mapView.boundingBox, updateAutoGridSize)
             val updated = updateLocation || updateAutoGridSize
+//            Log.v(LOG_TAG, "MainDataHandler.onZoom() update: $updated (location: $updateLocation, autoGrid: $updateAutoGridSize)")
             ensureUpdate(updated, mapView)
         } else {
             false
