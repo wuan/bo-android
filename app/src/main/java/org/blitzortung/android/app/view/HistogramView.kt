@@ -35,7 +35,7 @@ import org.blitzortung.android.map.overlay.StrikeListOverlay
 import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.TabletAwareView
 
-private const val SMALL_TEXT_SCALE = 0.6f
+private const val SMALL_TEXT_SCALE = 0.7f
 
 class HistogramView @JvmOverloads constructor(
     context: Context,
@@ -111,14 +111,9 @@ class HistogramView @JvmOverloads constructor(
 
             var topCoordinate = padding
 
-            val bb = mapFragment.mapView.boundingBox
-            val text = "%.2f..%.2f  %.2f..%.2f".format(bb.lonWest, bb.lonEast, bb.latSouth, bb.latNorth)
-            canvas.drawText(text, width - padding, topCoordinate + textSize / 1.2f * SMALL_TEXT_SCALE, smallTextPaint)
-            topCoordinate += (textSize + padding) * SMALL_TEXT_SCALE
-
             val gridParameters = gridParameters
-            if (gridParameters != null) {
-                val text = "%.2f..%.2f  %.2f..%.2f".format(gridParameters.longitudeStart, gridParameters.longitudeEnd, gridParameters.latitudeEnd, gridParameters.latitudeStart)
+            if (gridParameters != null && !gridParameters.isGlobal) {
+                val text = "%.1f..%.1f  %.1f..%.1f".format(gridParameters.longitudeStart, gridParameters.longitudeEnd, gridParameters.latitudeEnd, gridParameters.latitudeStart)
                 canvas.drawText(text, width - padding, topCoordinate + textSize / 1.2f * SMALL_TEXT_SCALE, smallTextPaint)
                 topCoordinate += (textSize + padding) * SMALL_TEXT_SCALE
             }
