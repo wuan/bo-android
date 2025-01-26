@@ -9,6 +9,7 @@ import org.blitzortung.android.data.beans.GridParameters
 import org.osmdroid.util.BoundingBox
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.round
 
@@ -56,11 +57,7 @@ class LocalData @Inject constructor() {
     }
 
     fun update(boundingBox: BoundingBox, force: Boolean = false): Boolean {
-        val dataArea =
-            max(
-                MIN_DATA_AREA,
-                round(DATA_AREA_SCALING * max(boundingBox.longitudeSpanWithDateLine, boundingBox.latitudeSpan)).toInt()
-            )
+        val dataArea = calculateDataArea(boundingBox)
         val xPos = calculateLocalCoordinate(boundingBox.centerLongitude, dataArea)
         val yPos = calculateLocalCoordinate(boundingBox.centerLatitude, dataArea)
         val localReference = LocalReference(xPos, yPos)
@@ -87,6 +84,12 @@ class LocalData @Inject constructor() {
         } else {
             false
         }
+    }
+
+    private fun calculateDataArea(boundingBox: BoundingBox): Int {
+        val maxExtent = max(boundingBox.longitudeSpanWithDateLine, boundingBox.latitudeSpan)
+        val targetValue = DATA_AREA_SCALING * maxExtent
+        return (ceil(targetValue / MIN_DATA_AREA) * MIN_DATA_AREA).toInt()
     }
 
     private fun isOutside(boundingBox: BoundingBox, gridParameters: GridParameters): Boolean {

@@ -190,8 +190,8 @@ class LocalDataTest {
         val result = uut.update(boundingBox2)
 
         assertThat(result).isTrue
-        assertThat(uut.dataArea).isEqualTo(6)
-        assertThat(uut.localReference).isEqualTo(LocalReference(1, 7))
+        assertThat(uut.dataArea).isEqualTo(10)
+        assertThat(uut.localReference).isEqualTo(LocalReference(1, 4))
     }
 
     fun createLocation(x: Double, y: Double): Location {
