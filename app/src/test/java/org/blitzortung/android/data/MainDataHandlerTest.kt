@@ -72,10 +72,13 @@ class MainDataHandlerTest {
 
     @Test
     fun updateGridSize() {
-        val result = uut.updateAutoGridSize(5.0)
+        val result1 = uut.updateAutoGridSize(1.0)
+        assertThat(result1).isTrue
 
-        assertThat(result).isTrue
-        assertThat(uut.parameters.gridSize).isEqualTo(25000)
+        val result2 = uut.updateAutoGridSize(5.0)
+
+        assertThat(result2).isTrue
+        assertThat(uut.parameters.gridSize).isEqualTo(10000)
     }
 
     @Test

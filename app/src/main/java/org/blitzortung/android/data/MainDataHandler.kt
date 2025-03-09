@@ -447,8 +447,8 @@ class MainDataHandler @Inject constructor(
         if (autoGridSize) {
             val gridSize = when {
                 zoomLevel >= 8f -> 5000
-                zoomLevel in 5.5f..8f -> 10000
-                zoomLevel in 4f..5.5f -> 25000
+                zoomLevel in 5f..8f -> 10000
+                zoomLevel in 4f..5f -> 25000
                 zoomLevel in 2f..4f -> 50000
                 else -> 100000
             }
