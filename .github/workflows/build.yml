@@ -1,4 +1,4 @@
-name: Test and Build
+name: Build and Test
 on:
   push:
     branches: [ main ]
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
