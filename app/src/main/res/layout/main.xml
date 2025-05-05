@@ -119,6 +119,14 @@
             android:layout_alignParentLeft="true"
             local:tablet_scaleable="true" />
 
+        <org.blitzortung.android.app.view.RegionView
+            android:id="@+id/region_view"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:layout_above="@+id/histogram_view"
+            android:layout_alignParentRight="true"
+            local:tablet_scaleable="true" />
+
         <org.blitzortung.android.app.view.HistogramView
             android:id="@+id/histogram_view"
             android:layout_width="110dp"

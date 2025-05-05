@@ -326,6 +326,13 @@
             android:selectable="true"
             android:summary="@string/do_not_sleep_summary"
             android:title="@string/do_not_sleep" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:enabled="true"
+            android:key="diagnosis_enabled"
+            android:selectable="true"
+            android:summary="@string/diagnosis_summary"
+            android:title="@string/diagnosis" />
     </PreferenceScreen>
 
 </PreferenceScreen>

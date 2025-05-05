@@ -432,6 +432,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         setHistoricStatusString()
         mapFragment.mapView.addMapListener(strikeListOverlay)
         mapFragment.mapView.addMapListener(dataHandler)
+        mapFragment.mapView.addMapListener(binding.regionView)
 
         fadeOverlay = FadeOverlay(strikeColorHandler)
 
@@ -509,6 +510,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             requestUpdates(alertHandler.dataEventConsumer)
             requestUpdates(historyController.dataConsumer)
             requestUpdates(binding.histogramView.dataConsumer)
+            requestUpdates(binding.regionView.dataConsumer)
         }
     }
 
@@ -561,6 +563,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         Log.v(LOG_TAG, "Main.onStop()")
 
         mapFragment.mapView.overlays.removeAll(setOf(fadeOverlay, ownLocationOverlay, strikeListOverlay))
+        mapFragment.mapView.removeMapListener(binding.regionView)
         mapFragment.mapView.removeMapListener(ownLocationOverlay)
         mapFragment.mapView.removeMapListener(strikeListOverlay)
         mapFragment.mapView.removeMapListener(dataHandler)

@@ -410,4 +410,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>12</item>
         <item>24</item>
     </string-array>
+    <string name="diagnosis">Diagnosis features</string>
+    <string name="diagnosis_summary">Enable features supporting diagnosis of app functionality.</string>
 </resources>
