@@ -446,9 +446,9 @@ class MainDataHandler @Inject constructor(
     fun updateAutoGridSize(zoomLevel: Double): Boolean =
         if (autoGridSize) {
             val gridSize = when {
-                zoomLevel >= 7.2f -> 5000
-                zoomLevel in 5.5f..7.2f -> 10000
-                zoomLevel in 3.5f..5.5f -> 25000
+                zoomLevel >= 7.5f -> 5000
+                zoomLevel in 5f..7.5f -> 10000
+                zoomLevel in 3.5f..5f -> 25000
                 zoomLevel in 2.5f..3.5f -> 50000
                 else -> 100000
             }

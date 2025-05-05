@@ -204,7 +204,7 @@ class RegionView @JvmOverloads constructor(
             val lonDelta = it.lonEast - it.lonWest
             val pixelSize = lonDelta / width
             val latDelta = it.latNorth - it.latSouth
-            val height = (latDelta / pixelSize).toInt()
+            val height = Math.max((latDelta / pixelSize).toInt(), (3 * padding + 3 * textSize).toInt())
             layoutParams.height= height
             invalidate()
         }
