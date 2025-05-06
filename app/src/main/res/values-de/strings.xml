@@ -391,4 +391,6 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="animation_cycle_sleep_duration_summary">Wartezeit vor dem Start eines neuen Animationszyklus in Millisekunden</string>
     <string name="animation_settings">Animation</string>
     <string name="animation_settings_summary">Parameter der Animation</string>
+    <string name="diagnosis">Diagnosefeatures</string>
+    <string name="diagnosis_summary">Aktiviert  Features für die App-Analyse</string>
 </resources>

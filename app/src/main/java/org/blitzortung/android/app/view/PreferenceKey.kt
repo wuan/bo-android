@@ -54,7 +54,8 @@ enum class PreferenceKey(val key: String) {
     KEEP_ZOOM_GOTO_OWN_LOCATION("keep_zoom_goto_own_location"),
     ANIMATION_INTERVAL_DURATION("animation_interval_duration"),
     ANIMATION_SLEEP_DURATION("animation_sleep_duration"),
-    ANIMATION_CYCLE_SLEEP_DURATION("animation_cycle_sleep_duration");
+    ANIMATION_CYCLE_SLEEP_DURATION("animation_cycle_sleep_duration"),
+    DIAGNOSIS_ENABLED("diagnosis_enabled");
 
     override fun toString(): String {
         return key

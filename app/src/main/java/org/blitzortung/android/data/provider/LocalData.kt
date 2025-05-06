@@ -19,6 +19,8 @@ private const val LOCAL_DATA_AREA = MIN_DATA_AREA
 
 private const val DATA_AREA_SCALING = 0.5
 
+private const val LOCAL_REGION_THRESHOLD = 10000
+
 @Singleton
 class LocalData @Inject constructor() {
 
@@ -41,7 +43,7 @@ class LocalData @Inject constructor() {
             }
 
             GLOBAL_REGION -> {
-                if (localReference != null && parameters.gridSize <= 10000) {
+                if (localReference != null && parameters.gridSize <= LOCAL_REGION_THRESHOLD) {
                     Log.d(LOG_TAG, "LocalData.updateParameters() global -> local")
                     parameters.copy(region = LOCAL_REGION, localReference = localReference, dataArea = dataArea)
                 } else {

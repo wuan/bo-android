@@ -46,13 +46,10 @@ class HistogramView @JvmOverloads constructor(
     private val backgroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val foregroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val textPaint: Paint
-    private val smallTextPaint: Paint
     private val defaultForegroundColor: Int
     private val backgroundRect: RectF
     private var strikesOverlay: StrikeListOverlay? = null
     private var histogram: IntArray? = null
-    private var gridParameters: GridParameters? = null
-    private var parameters: Parameters? = null
     lateinit var mapFragment: MapFragment
 
     val dataConsumer = { event: Event ->
@@ -69,11 +66,6 @@ class HistogramView @JvmOverloads constructor(
         textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = defaultForegroundColor
             textSize = this@HistogramView.textSize
-            textAlign = Paint.Align.RIGHT
-        }
-        smallTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = defaultForegroundColor
-            textSize = this@HistogramView.textSize * SMALL_TEXT_SCALE
             textAlign = Paint.Align.RIGHT
         }
 
@@ -110,13 +102,6 @@ class HistogramView @JvmOverloads constructor(
             canvas.drawRect(backgroundRect, backgroundPaint)
 
             var topCoordinate = padding
-
-            val gridParameters = gridParameters
-            if (gridParameters != null && !gridParameters.isGlobal) {
-                val text = "%.1f..%.1f  %.1f..%.1f".format(gridParameters.longitudeStart, gridParameters.longitudeEnd, gridParameters.latitudeEnd, gridParameters.latitudeStart)
-                canvas.drawText(text, width - padding, topCoordinate + textSize / 1.2f * SMALL_TEXT_SCALE, smallTextPaint)
-                topCoordinate += (textSize + padding) * SMALL_TEXT_SCALE
-            }
 
             val maximumCount = histogram.maxOrNull() ?: 0
 
@@ -167,8 +152,6 @@ class HistogramView @JvmOverloads constructor(
             histogram = null
         } else {
             val histogram = dataEvent.histogram
-            gridParameters = dataEvent.gridParameters
-            parameters = dataEvent.parameters
 
             val hasHistogram = histogram != null && histogram.isNotEmpty()
 
