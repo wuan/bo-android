@@ -28,7 +28,7 @@ Polish by Jakub Świątkiewicz (kuba.dex@gmail.com), Agnieszka Cieślak (aga_04@
 Italian by Michele Locati (michele@locati.it)\n
 Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string>
-    <string name="copyright" translatable="false">© 2011–2024, Andreas Würl</string>
+    <string name="copyright" translatable="false">© 2011–2025, Andreas Würl</string>
     <string name="project_email" translatable="false">blitzortung@tryb.de</string>
     <string name="legend">Legend</string>
     <string name="legend_grid">Grid</string>
@@ -379,7 +379,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="map_scale_summary">Select scaling [%] of map tiles</string>
     <string name="location_permission_required">Location permission is required when using a device location source.</string>
     <string name="location_permission_background_required">Background location permission is required when using a device location source.</string>
-    <string name="location_permission_background_disclosure">This app uses location data even when the app is closed or not in use when using background alarms with a device location source.</string>
+    <string name="location_permission_background_disclosure">This app uses location data and network data transfer even when the app is closed or not in use when using background alarms.</string>
     <string name="osmdroid_storage_warning">Cannot find writable storage for map. Please report.</string>
     <string name="changelog">Change log</string>
     <string name="menu">Open menu</string>
@@ -410,4 +410,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>12</item>
         <item>24</item>
     </string-array>
+    <string name="diagnosis">Diagnosis features</string>
+    <string name="diagnosis_summary">Enable features supporting diagnosis of app functionality.</string>
 </resources>

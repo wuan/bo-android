@@ -18,6 +18,7 @@
 
 package org.blitzortung.android.map
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Point
@@ -33,6 +34,7 @@ import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.location.LocationHandler
+import org.osmdroid.views.MapController
 import org.osmdroid.views.MapView
 
 
@@ -101,6 +103,16 @@ class OwnMapView(context: Context) : MapView(context) {
     }
 
     val popup: View by lazy { LayoutInflater.from(context).inflate(R.layout.popup, this, false) }
+
+    private val animatorField = MapController::class.java.getDeclaredField("mCurrentAnimator")
+
+    fun animator(): ValueAnimator? {
+        if (!isAnimating) return null
+
+        animatorField.isAccessible = true
+        val value = animatorField.get(controller)
+        return value?.let { value as ValueAnimator }
+    }
 
     companion object {
         const val DEFAULT_ZOOM_SPEED = 500L

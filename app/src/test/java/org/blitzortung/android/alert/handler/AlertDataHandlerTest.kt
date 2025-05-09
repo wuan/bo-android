@@ -67,7 +67,7 @@ class AlertDataHandlerTest {
         strike = strike.copy(timestamp = thresholdTime)
         every { location.distanceTo(any()) } returns 2500f
 
-        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)
+        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)!!
 
         val sector = result.sectorWithClosestStrike
         assertThat(sector).isNotNull
@@ -82,7 +82,7 @@ class AlertDataHandlerTest {
         every { location.distanceTo(any()) } returns 2500f
         every { location.bearingTo(any()) } returns 90f
 
-        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)
+        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)!!
 
         val sector = result.sectorWithClosestStrike
         assertThat(sector).isNotNull
@@ -97,7 +97,7 @@ class AlertDataHandlerTest {
         every { location.distanceTo(any()) } returns 2500f
         every { location.bearingTo(any()) } returns 180f
 
-        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)
+        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)!!
 
         val sector = result.sectorWithClosestStrike
         assertThat(sector).isNotNull
@@ -111,7 +111,7 @@ class AlertDataHandlerTest {
         strike = strike.copy(timestamp = thresholdTime)
         every { location.distanceTo(any()) } returns 5000.1f
 
-        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)
+        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)!!
 
         assertThat(result.sectorWithClosestStrike).isNull()
         assertThat(rangeWithStrike(result)).isNull()
@@ -123,7 +123,7 @@ class AlertDataHandlerTest {
         every { location.distanceTo(any()) } returns 2500.1f
         every { location.bearingTo(any()) } returns -90f
 
-        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)
+        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)!!
 
         assertThat(result.sectorWithClosestStrike).isNull()
         assertSectorAndRange(result, "N", 5f, beforeThresholdTime)
@@ -134,7 +134,7 @@ class AlertDataHandlerTest {
         strike = strike.copy(timestamp = beforeThresholdTime)
         every { location.distanceTo(any()) } returns 5000.1f
 
-        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)
+        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)!!
 
         assertThat(result.sectorWithClosestStrike).isNull()
         assertThat(rangeWithStrike(result)).isNull()

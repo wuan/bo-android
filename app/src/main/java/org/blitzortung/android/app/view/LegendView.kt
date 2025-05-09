@@ -64,7 +64,6 @@ class LegendView @JvmOverloads constructor(
     var strikesOverlay: StrikeListOverlay? = null
 
     init {
-
         setBackgroundColor(Color.TRANSPARENT)
     }
 
@@ -188,11 +187,22 @@ class LegendView @JvmOverloads constructor(
 
     private val regionName: String
         get() {
-            val regionNumber = strikesOverlay!!.parameters.region
 
-            for ((index, regionNumberString) in resources.getStringArray(R.array.regions_values).withIndex()) {
-                if (regionNumber == Integer.parseInt(regionNumberString)) {
-                    return resources.getStringArray(R.array.regions)[index]
+            val strikesOverlay = strikesOverlay
+
+            if (strikesOverlay != null) {
+                val regionNumber = strikesOverlay.parameters.region
+                val dataArea = strikesOverlay.parameters.dataArea
+
+                for ((index, regionNumberString) in resources.getStringArray(R.array.regions_values).withIndex()) {
+                    if (regionNumber == Integer.parseInt(regionNumberString)) {
+                        val detail = if (regionNumber < 0) {
+                            " [$dataArea]"
+                        } else {
+                            ""
+                        }
+                        return resources.getStringArray(R.array.regions)[index] + detail
+                    }
                 }
             }
 

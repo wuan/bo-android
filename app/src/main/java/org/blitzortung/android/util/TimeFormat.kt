@@ -37,7 +37,7 @@ object TimeFormat {
 
     fun parseTimeWithMilliseconds(timestampString: String): Long {
         try {
-            return DATE_TIME_MILLISECONDS_FORMATTER.parse(timestampString).time
+            return DATE_TIME_MILLISECONDS_FORMATTER.parse(timestampString)!!.time
         } catch (e: ParseException) {
             throw IllegalArgumentException("Unable to parse millisecond time string '%s'".format(timestampString), e)
         }
@@ -50,7 +50,7 @@ object TimeFormat {
 
     fun parseTime(timestampString: String): Long {
         try {
-            return JSON_DATE_TIME_FORMATTER.parse(timestampString).time
+            return JSON_DATE_TIME_FORMATTER.parse(timestampString)!!.time
         } catch (e: ParseException) {
             throw IllegalArgumentException("Unable to parse time string '%s'".format(timestampString), e)
         }

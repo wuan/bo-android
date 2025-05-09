@@ -25,11 +25,17 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.util.Log
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
+import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.overlay.StrikeListOverlay
 import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.TabletAwareView
+
+private const val SMALL_TEXT_SCALE = 0.7f
 
 class HistogramView @JvmOverloads constructor(
     context: Context,
@@ -44,6 +50,7 @@ class HistogramView @JvmOverloads constructor(
     private val backgroundRect: RectF
     private var strikesOverlay: StrikeListOverlay? = null
     private var histogram: IntArray? = null
+    lateinit var mapFragment: MapFragment
 
     val dataConsumer = { event: Event ->
         if (event is ResultEvent) {
@@ -94,13 +101,17 @@ class HistogramView @JvmOverloads constructor(
             backgroundRect.set(0f, 0f, width.toFloat(), height.toFloat())
             canvas.drawRect(backgroundRect, backgroundPaint)
 
+            var topCoordinate = padding
+
             val maximumCount = histogram.maxOrNull() ?: 0
 
             canvas.drawText(
                 "%.1f/%s _".format(
                     maximumCount.toFloat() / minutesPerBin, resources.getString(R.string.unit_minute)
-                ), width - 2 * padding, padding + textSize / 1.2f, textPaint
+                ), width - 2 * padding, topCoordinate + textSize / 1.2f, textPaint
             )
+
+            topCoordinate += textSize
 
             val ymax = if (maximumCount == 0) 1 else maximumCount
 
@@ -108,7 +119,8 @@ class HistogramView @JvmOverloads constructor(
             val xd = (width - 2 * padding) / (histogram.size - 1)
 
             val y0 = height - padding
-            val yd = (height - 2 * padding - textSize) / ymax
+            Log.v(LOG_TAG, "HistogramView.onDraw() height: $height, top $topCoordinate")
+            val yd = (height - topCoordinate - padding) / ymax
 
             foregroundPaint.strokeWidth = 5f
             for (i in 0 until histogram.size - 1) {

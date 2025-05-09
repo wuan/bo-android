@@ -43,7 +43,7 @@ class QuickSettingsDialog : DialogFragment() {
         val selectedRegion = getSelectedIndex(regionValues, currentRegionValue)
 
         val gridSizeValues = resources.getStringArray(R.array.grid_size_values)
-        val currentGridSizeValue = preferences.get(PreferenceKey.GRID_SIZE, gridSizeValues[1])
+        val currentGridSizeValue = preferences.get(PreferenceKey.GRID_SIZE, gridSizeValues[0])
         val selectedGridSize = getSelectedIndex(gridSizeValues, currentGridSizeValue)
 
         val countThresholdValues = resources.getStringArray(R.array.count_threshold_values)

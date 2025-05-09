@@ -124,7 +124,8 @@ class JsonRpcDataProviderTest {
                 parameters.gridSize,
                 parameters.intervalDuration,
                 parameters.intervalOffset,
-                parameters.countThreshold
+                parameters.countThreshold,
+                parameters.dataArea,
             )
         } returns JsonRpcResponse(response)
 
