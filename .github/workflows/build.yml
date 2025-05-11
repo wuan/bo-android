@@ -43,14 +43,13 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Debug secret source
-        run: echo ${{ github.secret_source }}
-
       - name: Build and analyze
-        if: ${{ github.secret_source == 'None' }}
+        if: ${{ github.secret_source != 'Actions' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        run: ./gradlew build jacocoTestReport
+        run: |
+          echo "Secret source: \"${{ github.secret_source }}\""
+          ./gradlew build jacocoTestReport
 
       - name: Build and analyze (Sonar)
         if: ${{ github.secret_source == 'Actions' }}
