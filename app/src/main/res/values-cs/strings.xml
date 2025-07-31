@@ -42,12 +42,12 @@ Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="preferences">Možnosti</string>
     <string name="user_settings">Uživ. nastavení</string>
     <string name="username">Uživatelské jméno</string>
-    <string name="username_summary">Uživatelské jméno účastníka blitzortung.org</string>
+    <string name="username_summary">Uživatelské jméno účastníka blitzortung.org (%s)</string>
     <string name="password">Heslo</string>
     <string name="password_summary">Heslo účastníka blitzortung.org</string>
     <string name="map_settings">Nastavení mapy</string>
     <string name="map_mode">Mód mapy</string>
-    <string name="map_mode_summary">Vyber satelitní nebo základní zobrazení</string>
+    <string name="map_mode_summary">Vyber satelitní nebo základní zobrazení (%s)</string>
     <string name="map_fade">Světlost mapy</string>
     <string name="map_fade_summary">Zesvětlení mapy pro lepší viditelnost dat</string>
 

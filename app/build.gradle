@@ -60,6 +60,10 @@ android {
         jacocoVersion '0.8.12'
     }
     namespace 'org.blitzortung.android.app'
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17
+    }
+    buildToolsVersion '35.0.0'
 
 }
 

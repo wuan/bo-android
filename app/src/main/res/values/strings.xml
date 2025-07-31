@@ -44,7 +44,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="preferences">Preferences</string>
     <string name="user_settings">User settings</string>
     <string name="username">Username</string>
-    <string name="username_summary">blitzortung.org participant user name</string>
+    <string name="username_summary">blitzortung.org participant user name (%s)</string>
     <string name="password">Password</string>
     <string name="password_summary">blitzortung.org participant password</string>
     <string name="map_settings">Map settings</string>

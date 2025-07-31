@@ -38,7 +38,7 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="preferences">Instellingen</string>
     <string name="user_settings">Gebruiker instellingen</string>
     <string name="username">Gebruiker</string>
-    <string name="username_summary">Gebruikersnaam voor blitzortung.org</string>
+    <string name="username_summary">Gebruikersnaam voor blitzortung.org (%s)</string>
     <string name="password">Wachtwoord</string>
     <string name="password_summary">Wachtwoord voor blitzortung.org</string>
     <string name="map_settings">Kaart instellingen</string>
