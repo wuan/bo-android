@@ -70,8 +70,9 @@ dependencies {
     implementation 'androidx.media:media:1.7.0'
     implementation 'androidx.core:core-ktx:1.16.0'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
-    implementation 'androidx.work:work-runtime-ktx:2.10.2'
+    implementation 'androidx.work:work-runtime-ktx:2.10.3'
     implementation 'org.osmdroid:osmdroid-android:6.1.20'
+    implementation 'com.takisoft.preferencex:preferencex-ringtone:1.1.0'
 
     // Dagger2
     implementation "com.google.dagger:dagger:$dagger_version"
@@ -86,9 +87,9 @@ dependencies {
     testImplementation 'org.assertj:assertj-core:3.27.3'
     testImplementation 'io.mockk:mockk:1.14.5'
     testImplementation 'org.robolectric:robolectric:4.15.1'
-    testImplementation 'androidx.test:core:1.6.1'
-    androidTestImplementation 'androidx.test:runner:1.6.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    testImplementation 'androidx.test:core:1.7.0'
+    androidTestImplementation 'androidx.test:runner:1.7.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
 }
 
 kapt.includeCompileClasspath = false
