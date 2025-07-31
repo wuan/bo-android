@@ -42,17 +42,52 @@
         android:summary="@string/count_threshold_summary"
         android:title="@string/count_threshold" />
 
-    <org.blitzortung.android.app.preferences.MapPreference
-        android:dialogTitle="@string/map_settings"
-        android:persistent="false"
+    <PreferenceCategory
         android:summary="@string/map_settings_summary"
-        android:title="@string/map_settings" />
-
-    <PreferenceScreen
-        android:key="own_location_settings"
-        android:summary="@string/own_location_summary"
-        android:title="@string/own_location">
-
+        android:title="@string/map_settings">
+        <ListPreference
+            android:defaultValue="SATELLITE"
+            android:enabled="true"
+            android:entries="@array/map_modes"
+            android:entryValues="@array/map_mode_values"
+            android:key="map_mode"
+            android:persistent="true"
+            android:selectable="true"
+            android:summary="@string/map_mode_summary"
+            android:title="@string/map_mode" />
+        <SeekBarPreference
+            android:defaultValue="70"
+            android:key="map_scale"
+            android:max="150"
+            android:persistent="true"
+            android:selectable="true"
+            android:summary="@string/map_scale_summary"
+            android:text="@string/percent"
+            android:title="@string/map_scale"
+            app:min="25"
+            app:seekBarIncrement="25"
+            app:showSeekBarValue="true" />
+        <SeekBarPreference
+            android:defaultValue="55"
+            android:key="map_fade"
+            android:max="90"
+            android:persistent="true"
+            android:selectable="true"
+            android:summary="@string/map_fade_summary"
+            android:text="@string/percent"
+            android:title="@string/map_fade"
+            app:seekBarIncrement="5"
+            app:showSeekBarValue="true" />
+        <ListPreference
+            android:defaultValue="BLITZORTUNG"
+            android:enabled="true"
+            android:entries="@array/color_schemes"
+            android:entryValues="@array/color_scheme_values"
+            android:key="color_scheme"
+            android:persistent="true"
+            android:selectable="true"
+            android:summary="@string/color_scheme_summary"
+            android:title="@string/color_scheme" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:enabled="true"
@@ -70,15 +105,15 @@
             android:summary="@string/own_location_size_summary"
             android:text="@string/percent"
             android:title="@string/own_location_size" />
-    </PreferenceScreen>
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="keep_zoom_goto_own_location"
-        android:persistent="true"
-        android:selectable="true"
-        android:summary="@string/keep_zoom_goto_own_location_summary"
-        android:title="@string/keep_zoom_goto_own_location_title" />
-    <PreferenceScreen
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="keep_zoom_goto_own_location"
+            android:persistent="true"
+            android:selectable="true"
+            android:summary="@string/keep_zoom_goto_own_location_summary"
+            android:title="@string/keep_zoom_goto_own_location_title" />
+    </PreferenceCategory>
+    <PreferenceCategory
         android:key="animation_settings"
         android:summary="@string/animation_settings_summary"
         android:title="@string/animation_settings">
@@ -114,8 +149,8 @@
             android:title="@string/animation_cycle_sleep_duration"
             app:min="0"
             app:seekBarIncrement="500" />
-    </PreferenceScreen>
-    <PreferenceScreen
+    </PreferenceCategory>
+    <PreferenceCategory
         android:key="data_settings"
         android:summary="@string/data_settings_summary"
         android:title="@string/data_settings">
@@ -167,8 +202,8 @@
             android:persistent="true"
             android:summary="@string/password_summary"
             android:title="@string/password" />
-    </PreferenceScreen>
-    <PreferenceScreen
+    </PreferenceCategory>
+    <PreferenceCategory
         android:summary="@string/location_settings_summary"
         android:title="@string/location_settings">
         <ListPreference
@@ -195,8 +230,8 @@
             android:persistent="true"
             android:summary="@string/location_latitude_summary"
             android:title="@string/latitude" />
-    </PreferenceScreen>
-    <PreferenceScreen
+    </PreferenceCategory>
+    <PreferenceCategory
         android:summary="@string/alarm_settings_summary"
         android:title="@string/alarm_settings">
         <CheckBoxPreference
@@ -237,7 +272,7 @@
             android:selectable="true"
             android:summary="@string/signaling_distance_limit_summary"
             android:title="@string/signaling_distance_limit" />
-        <PreferenceScreen android:title="@string/alarm_signal_settings">
+        <PreferenceCategory android:title="@string/alarm_signal_settings">
             <Preference
                 android:defaultValue=""
                 android:enabled="true"
@@ -258,7 +293,7 @@
                 android:summary="@string/alarm_vibration_signal_summary"
                 android:text="@string/ms"
                 android:title="@string/alarm_vibration_signal" />
-        </PreferenceScreen>
+        </PreferenceCategory>
         <ListPreference
             android:defaultValue="0"
             android:enabled="true"
@@ -269,8 +304,8 @@
             android:selectable="true"
             android:summary="@string/signaling_threshold_time_summary"
             android:title="@string/signaling_threshold_time" />
-    </PreferenceScreen>
-    <PreferenceScreen android:title="@string/generic_settings">
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/generic_settings">
         <ListPreference
             android:defaultValue="METRIC"
             android:enabled="true"
@@ -295,6 +330,6 @@
             android:selectable="true"
             android:summary="@string/diagnosis_summary"
             android:title="@string/diagnosis" />
-    </PreferenceScreen>
+    </PreferenceCategory>
 
 </PreferenceScreen>

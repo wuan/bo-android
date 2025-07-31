@@ -15,3 +15,4 @@ class SettingsFragment : PreferenceFragmentCompat() {
         super.onViewCreated(view, savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(requireActivity().window, true)
     }
+}

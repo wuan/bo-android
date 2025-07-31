@@ -49,7 +49,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="password_summary">blitzortung.org participant password</string>
     <string name="map_settings">Map settings</string>
     <string name="map_mode">Map mode</string>
-    <string name="map_mode_summary">Dark or bright basemap</string>
+    <string name="map_mode_summary">Dark or bright basemap (%s)</string>
     <string name="map_fade">Fade out map</string>
     <string name="map_fade_summary">Fade map background to enhance visibility of data</string>
 
@@ -84,7 +84,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="show_location_summary">include symbol for own location in map</string>
     <string name="data_settings">Data transmission</string>
     <string name="region">Region</string>
-    <string name="region_summary">select Europe, North America or Oceania</string>
+    <string name="region_summary">select data source region (%s)</string>
 
     <string-array name="regions">
         <item>Local</item>
@@ -163,7 +163,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="grid_size">Grid size</string>
-    <string name="grid_size_summary">size of data grid squares</string>
+    <string name="grid_size_summary">size of data grid squares (%s)</string>
 
     <string-array name="grid_sizes">
         <item>auto</item>
@@ -183,7 +183,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Strike count threshold</string>
-    <string name="count_threshold_summary">threshold strike count per grid area</string>
+    <string name="count_threshold_summary">Strike count threshold to show grid area (%s)</string>
 
     <string-array name="count_thresholds">
         <item>disabled</item>
@@ -312,7 +312,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="signaling_threshold_time">Signaling threshold time</string>
-    <string name="signaling_threshold_time_summary">Suppress further alarm signals for given time range</string>
+    <string name="signaling_threshold_time_summary">Suppress further alarm signals for given time range (%s)</string>
 
     <string-array name="signaling_threshold_times">
         <item>off</item>
@@ -332,7 +332,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="generic_settings">Generic settings</string>
     <string name="measurement_unit">Systems of measurement</string>
-    <string name="measurement_unit_summary">choose between km and mi. for distances</string>
+    <string name="measurement_unit_summary">choose between km and mi. for distances %s</string>
     <string-array name="measurement_units">
         <item>metric</item>
         <item>imperial</item>
