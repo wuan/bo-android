@@ -22,8 +22,11 @@ import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
 import android.content.SharedPreferences
 import android.location.LocationManager
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import androidx.core.content.edit
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
@@ -38,7 +41,11 @@ import org.blitzortung.android.location.LocationHandler
 import java.util.*
 import javax.inject.Inject
 
+
+
 class Preferences : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
+
+    private val REQUEST_CODE_ALERT_RINGTONE: Int = 123
 
     @set:Inject
     internal lateinit var preferences: SharedPreferences
@@ -85,7 +92,8 @@ class Preferences : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener
     }
 
     private fun configureOwnLocationSizePreference(sharedPreferences: SharedPreferences) {
-        findPreference<SeekBarPreference>(PreferenceKey.OWN_LOCATION_SIZE.toString())?.isEnabled = sharedPreferences.get(PreferenceKey.SHOW_LOCATION, false)
+        findPreference<SeekBarPreference>(PreferenceKey.OWN_LOCATION_SIZE.toString())?.isEnabled =
+            sharedPreferences.get(PreferenceKey.SHOW_LOCATION, false)
     }
 
     private fun configureDataSourcePreferences(sharedPreferences: SharedPreferences): DataProviderType {
@@ -127,7 +135,49 @@ class Preferences : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener
         findPreference<EditTextPreference>(PreferenceKey.LOCATION_LATITUDE)?.isEnabled = enabled
     }
 
-    fun <T: Preference> PreferenceFragmentCompat.findPreference(key: PreferenceKey): T? {
+    fun <T : Preference> PreferenceFragmentCompat.findPreference(key: PreferenceKey): T? {
         return findPreference(key.toString()) as T?
+    }
+
+    override fun onPreferenceTreeClick(preference: Preference): Boolean {
+        if (preference.getKey() == PreferenceKey.ALERT_SOUND_SIGNAL.toString()) {
+            val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
+            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION)
+            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
+            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true)
+            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI, Settings.System.DEFAULT_NOTIFICATION_URI)
+
+            val existingValue: String? = preferences.get(PreferenceKey.ALERT_SOUND_SIGNAL, null)
+            if (existingValue != null) {
+                if (existingValue.length == 0) {
+                    // Select "Silent"
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, null as Uri?)
+                } else {
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Uri.parse(existingValue))
+                }
+            } else {
+                // No ringtone has been selected, set to the default
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Settings.System.DEFAULT_NOTIFICATION_URI)
+            }
+
+            startActivityForResult(intent, REQUEST_CODE_ALERT_RINGTONE)
+            return true
+        } else {
+            return super.onPreferenceTreeClick(preference)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_CODE_ALERT_RINGTONE && data != null) {
+            val ringtone = data.getParcelableExtra<Uri?>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+            preferences.edit(commit = true) {
+                putString(
+                    PreferenceKey.ALERT_SOUND_SIGNAL.toString(),
+                    ringtone.toString()
+                )
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
     }
 }

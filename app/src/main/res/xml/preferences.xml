@@ -277,7 +277,7 @@
             android:summary="@string/signaling_distance_limit_summary"
             android:title="@string/signaling_distance_limit" />
         <PreferenceScreen android:title="@string/alarm_signal_settings">
-            <com.takisoft.preferencex.RingtonePreference
+            <Preference
                 android:defaultValue=""
                 android:enabled="true"
                 android:key="alarm_sound_signal"

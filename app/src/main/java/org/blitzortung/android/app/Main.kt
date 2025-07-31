@@ -18,7 +18,10 @@
 
 package org.blitzortung.android.app
 
-import android.Manifest.permission.*
+import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.DialogInterface
@@ -26,7 +29,9 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.location.LocationManager.*
+import android.location.LocationManager.GPS_PROVIDER
+import android.location.LocationManager.NETWORK_PROVIDER
+import android.location.LocationManager.PASSIVE_PROVIDER
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -85,6 +90,7 @@ import org.osmdroid.util.GeoPoint
 import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 import kotlin.math.roundToInt
+import androidx.core.content.edit
 
 class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private var backgroundAlertEnabled: Boolean = false
@@ -597,9 +603,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             val providerName = providerRelation.providerName
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.i(LOG_TAG, "$providerName permission has now been granted.")
-                val editor = preferences.edit()
-                editor.put(PreferenceKey.LOCATION_MODE, providerName)
-                editor.apply()
+                preferences.edit {
+                    put(PreferenceKey.LOCATION_MODE, providerName)
+                }
                 locationHandler.update(preferences)
             } else {
                 Log.i(LOG_TAG, "$providerName permission was NOT granted.")
@@ -841,9 +847,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun hideActionBar() {
-        if (isAtLeast(Build.VERSION_CODES.HONEYCOMB)) {
-            actionBar?.hide()
+        if (isAtLeast(Build.VERSION_CODES.HONEYCOMB) && !isAtLeast(Build.VERSION_CODES.VANILLA_ICE_CREAM)) {
+            //actionBar?.hide()
         }
+        actionBar?.show()
     }
 
     companion object {
