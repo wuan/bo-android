@@ -18,14 +18,18 @@
 
 package org.blitzortung.android.app
 
-import android.content.Context
+import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
 import android.content.SharedPreferences
 import android.location.LocationManager
 import android.os.Bundle
-import android.preference.PreferenceActivity
 import android.provider.Settings
-import dagger.android.AndroidInjection
+import androidx.preference.EditTextPreference
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SeekBarPreference
+import dagger.android.support.AndroidSupportInjection
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
@@ -34,14 +38,13 @@ import org.blitzortung.android.location.LocationHandler
 import java.util.*
 import javax.inject.Inject
 
-class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
+class Preferences : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
 
     @set:Inject
     internal lateinit var preferences: SharedPreferences
 
-    @Deprecated("Deprecated in Java")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        AndroidSupportInjection.inject(this)
         super.onCreate(savedInstanceState)
 
         addPreferencesFromResource(R.xml.preferences)
@@ -61,11 +64,14 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
 
             PreferenceKey.LOCATION_MODE -> {
                 val provider = configureLocationProviderPreferences(sharedPreferences)
-                getSystemService(LOCATION_SERVICE) as LocationManager
-                if (provider != LocationHandler.MANUAL_PROVIDER &&
-                    !(getSystemService(LOCATION_SERVICE) as LocationManager).isProviderEnabled(provider)
-                ) {
-                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                val context = this.context
+                if (context != null) {
+                    if (provider != LocationHandler.MANUAL_PROVIDER &&
+                        !(context.getSystemService(LOCATION_SERVICE) as LocationManager).isProviderEnabled(provider)
+                    ) {
+                        startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+
+                    }
                 }
             }
 
@@ -79,7 +85,7 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun configureOwnLocationSizePreference(sharedPreferences: SharedPreferences) {
-        findPreference("own_location_size").isEnabled = sharedPreferences.get(PreferenceKey.SHOW_LOCATION, false)
+        findPreference<SeekBarPreference>(PreferenceKey.OWN_LOCATION_SIZE.toString())?.isEnabled = sharedPreferences.get(PreferenceKey.SHOW_LOCATION, false)
     }
 
     private fun configureDataSourcePreferences(sharedPreferences: SharedPreferences): DataProviderType {
@@ -103,22 +109,25 @@ class Preferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
 
 
     private fun enableAppServiceMode() {
-        findPreference("grid_size").isEnabled = true
-        findPreference("service_url").isEnabled = true
-        findPreference("username").isEnabled = false
-        findPreference("password").isEnabled = false
+        findPreference<ListPreference>(PreferenceKey.GRID_SIZE)?.isEnabled = true
+        findPreference<EditTextPreference>(PreferenceKey.SERVICE_URL)?.isEnabled = true
+        findPreference<EditTextPreference>(PreferenceKey.USERNAME)?.isEnabled = false
+        findPreference<EditTextPreference>(PreferenceKey.PASSWORD)?.isEnabled = false
     }
 
     private fun enableBlitzortungHttpMode() {
-        findPreference("grid_size").isEnabled = false
-        findPreference("service_url").isEnabled = false
-        findPreference("username").isEnabled = true
-        findPreference("password").isEnabled = true
+        findPreference<ListPreference>(PreferenceKey.GRID_SIZE)?.isEnabled = false
+        findPreference<EditTextPreference>(PreferenceKey.SERVICE_URL)?.isEnabled = false
+        findPreference<EditTextPreference>(PreferenceKey.USERNAME)?.isEnabled = true
+        findPreference<EditTextPreference>(PreferenceKey.PASSWORD)?.isEnabled = true
     }
 
     private fun enableManualLocationMode(enabled: Boolean) {
-        findPreference("location_longitude").isEnabled = enabled
-        findPreference("location_latitude").isEnabled = enabled
+        findPreference<EditTextPreference>(PreferenceKey.LOCATION_LONGITUDE)?.isEnabled = enabled
+        findPreference<EditTextPreference>(PreferenceKey.LOCATION_LATITUDE)?.isEnabled = enabled
     }
 
+    fun <T: Preference> PreferenceFragmentCompat.findPreference(key: PreferenceKey): T? {
+        return findPreference(key.toString()) as T?
+    }
 }

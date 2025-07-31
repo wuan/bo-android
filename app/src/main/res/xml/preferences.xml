@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <ListPreference
         android:defaultValue="0"
         android:enabled="true"
@@ -54,22 +55,22 @@
             android:selectable="true"
             android:summary="@string/map_mode_summary"
             android:title="@string/map_mode" />
-        <org.blitzortung.android.preferences.SlidePreferences
+        <SeekBarPreference
             android:defaultValue="70"
             android:key="map_scale"
-            android:min="25"
+            app:min="25"
             android:max="150"
-            step="25"
+            app:seekBarIncrement="25"
             android:persistent="true"
             android:selectable="true"
             android:summary="@string/map_scale_summary"
             android:text="@string/percent"
             android:title="@string/map_scale" />
-        <org.blitzortung.android.preferences.SlidePreferences
+        <SeekBarPreference
             android:defaultValue="55"
             android:key="map_fade"
             android:max="90"
-            step="5"
+            app:seekBarIncrement="5"
             android:persistent="true"
             android:selectable="true"
             android:summary="@string/map_fade_summary"
@@ -97,7 +98,7 @@
                 android:selectable="true"
                 android:summary="@string/show_location_summary"
                 android:title="@string/show_location" />
-            <org.blitzortung.android.preferences.SlidePreferences
+            <SeekBarPreference
                 android:title="@string/own_location_size"
                 android:summary="@string/own_location_size_summary"
                 android:defaultValue="100"
@@ -130,7 +131,7 @@
             android:key="animation_interval_duration"
             android:persistent="true"
             android:selectable="true" />
-        <org.blitzortung.android.preferences.SlidePreferences
+        <SeekBarPreference
             android:title="@string/animation_sleep_duration"
             android:summary="@string/animation_sleep_duration_summary"
             android:defaultValue="200"
@@ -139,9 +140,9 @@
             android:selectable="true"
             android:persistent="true"
             android:text="@string/ms"
-            android:min="100"
-            step="50" />
-        <org.blitzortung.android.preferences.SlidePreferences
+            app:min ="100"
+            app:seekBarIncrement="50" />
+        <SeekBarPreference
             android:title="@string/animation_cycle_sleep_duration"
             android:summary="@string/animation_cycle_sleep_duration_summary"
             android:defaultValue="3000"
@@ -150,8 +151,8 @@
             android:selectable="true"
             android:persistent="true"
             android:text="@string/ms"
-            android:min="0"
-            step="500" />
+            app:min="0"
+            app:seekBarIncrement="500" />
     </PreferenceScreen>
     <PreferenceScreen
         android:key="data_settings"
@@ -286,7 +287,7 @@
                 android:showDefault="true"
                 android:summary="@string/alarm_audio_signal_summary"
                 android:title="@string/alarm_audio_signal" />
-            <org.blitzortung.android.preferences.SlidePreferences
+            <SeekBarPreference
                 android:defaultValue="3"
                 android:enabled="true"
                 android:key="alarm_vibration_signal"
