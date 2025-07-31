@@ -38,9 +38,8 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.location.LocationHandler
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
-
 
 
 class Preferences : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
@@ -135,9 +134,6 @@ class Preferences : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener
         findPreference<EditTextPreference>(PreferenceKey.LOCATION_LATITUDE)?.isEnabled = enabled
     }
 
-    fun <T : Preference> PreferenceFragmentCompat.findPreference(key: PreferenceKey): T? {
-        return findPreference(key.toString()) as T?
-    }
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean {
         if (preference.getKey() == PreferenceKey.ALERT_SOUND_SIGNAL.toString()) {
@@ -181,3 +177,19 @@ class Preferences : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener
         }
     }
 }
+
+fun <T : Preference> PreferenceFragmentCompat.findPreference(key: PreferenceKey): T? {
+    return findPreference(key.toString()) as T?
+}
+
+fun SharedPreferences.getString(key: PreferenceKey, defValue: String?): String? =
+    getString(key.toString(), defValue)
+
+fun SharedPreferences.getInt(key: PreferenceKey, defValue: Int): Int =
+    getInt(key.toString(), defValue)
+
+fun SharedPreferences.Editor.putString(key: PreferenceKey, value: String): SharedPreferences.Editor? =
+    putString(key.toString(), value)
+
+fun SharedPreferences.Editor.putInt(key: PreferenceKey, value: Int): SharedPreferences.Editor? =
+    putInt(key.toString(), value)

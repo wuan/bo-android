@@ -36,7 +36,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
-import android.preference.PreferenceManager
 import android.provider.Settings
 import android.text.format.DateFormat
 import android.util.AndroidRuntimeException
@@ -91,6 +90,7 @@ import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 import kotlin.math.roundToInt
 import androidx.core.content.edit
+import androidx.preference.PreferenceManager
 
 class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private var backgroundAlertEnabled: Boolean = false

@@ -42,115 +42,76 @@
         android:summary="@string/count_threshold_summary"
         android:title="@string/count_threshold" />
 
-    <PreferenceScreen
+    <org.blitzortung.android.app.preferences.MapPreference
+        android:dialogTitle="@string/map_settings"
+        android:persistent="false"
         android:summary="@string/map_settings_summary"
-        android:title="@string/map_settings">
-        <ListPreference
-            android:defaultValue="SATELLITE"
-            android:enabled="true"
-            android:entries="@array/map_modes"
-            android:entryValues="@array/map_mode_values"
-            android:key="map_mode"
-            android:persistent="true"
-            android:selectable="true"
-            android:summary="@string/map_mode_summary"
-            android:title="@string/map_mode" />
-        <SeekBarPreference
-            android:defaultValue="70"
-            android:key="map_scale"
-            app:min="25"
-            android:max="150"
-            app:seekBarIncrement="25"
-            android:persistent="true"
-            android:selectable="true"
-            android:summary="@string/map_scale_summary"
-            android:text="@string/percent"
-            android:title="@string/map_scale" />
-        <SeekBarPreference
-            android:defaultValue="55"
-            android:key="map_fade"
-            android:max="90"
-            app:seekBarIncrement="5"
-            android:persistent="true"
-            android:selectable="true"
-            android:summary="@string/map_fade_summary"
-            android:text="@string/percent"
-            android:title="@string/map_fade" />
-        <ListPreference
-            android:defaultValue="BLITZORTUNG"
-            android:enabled="true"
-            android:entries="@array/color_schemes"
-            android:entryValues="@array/color_scheme_values"
-            android:key="color_scheme"
-            android:persistent="true"
-            android:selectable="true"
-            android:summary="@string/color_scheme_summary"
-            android:title="@string/color_scheme" />
-        <PreferenceScreen
-            android:key="own_location_settings"
-            android:summary="@string/own_location_summary"
-            android:title="@string/own_location">
+        android:title="@string/map_settings" />
 
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:enabled="true"
-                android:key="location"
-                android:selectable="true"
-                android:summary="@string/show_location_summary"
-                android:title="@string/show_location" />
-            <SeekBarPreference
-                android:title="@string/own_location_size"
-                android:summary="@string/own_location_size_summary"
-                android:defaultValue="100"
-                android:key="own_location_size"
-                android:max="400"
-                android:selectable="true"
-                android:persistent="true"
-                android:text="@string/percent"
-                min="50" />
-        </PreferenceScreen>
-        <CheckBoxPreference
-            android:title="@string/keep_zoom_goto_own_location_title"
-            android:summary="@string/keep_zoom_goto_own_location_summary"
-            android:key="keep_zoom_goto_own_location"
-            android:selectable="true"
-            android:defaultValue="false"
-            android:persistent="true" />
-    </PreferenceScreen>
     <PreferenceScreen
-        android:title="@string/animation_settings"
+        android:key="own_location_settings"
+        android:summary="@string/own_location_summary"
+        android:title="@string/own_location">
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:enabled="true"
+            android:key="location"
+            android:selectable="true"
+            android:summary="@string/show_location_summary"
+            android:title="@string/show_location" />
+        <SeekBarPreference
+            min="50"
+            android:defaultValue="100"
+            android:key="own_location_size"
+            android:max="400"
+            android:persistent="true"
+            android:selectable="true"
+            android:summary="@string/own_location_size_summary"
+            android:text="@string/percent"
+            android:title="@string/own_location_size" />
+    </PreferenceScreen>
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="keep_zoom_goto_own_location"
+        android:persistent="true"
+        android:selectable="true"
+        android:summary="@string/keep_zoom_goto_own_location_summary"
+        android:title="@string/keep_zoom_goto_own_location_title" />
+    <PreferenceScreen
+        android:key="animation_settings"
         android:summary="@string/animation_settings_summary"
-        android:key="animation_settings">
+        android:title="@string/animation_settings">
         <ListPreference
-            android:title="@string/animation_interval_duration"
-            android:summary="@string/animation_interval_duration_summary"
             android:defaultValue="6"
             android:enabled="true"
             android:entries="@array/animation_interval_durations"
             android:entryValues="@array/animation_interval_duration_values"
             android:key="animation_interval_duration"
             android:persistent="true"
-            android:selectable="true" />
+            android:selectable="true"
+            android:summary="@string/animation_interval_duration_summary"
+            android:title="@string/animation_interval_duration" />
         <SeekBarPreference
-            android:title="@string/animation_sleep_duration"
-            android:summary="@string/animation_sleep_duration_summary"
             android:defaultValue="200"
             android:key="animation_sleep_duration"
             android:max="500"
-            android:selectable="true"
             android:persistent="true"
+            android:selectable="true"
+            android:summary="@string/animation_sleep_duration_summary"
             android:text="@string/ms"
-            app:min ="100"
+            android:title="@string/animation_sleep_duration"
+            app:min="100"
             app:seekBarIncrement="50" />
         <SeekBarPreference
-            android:title="@string/animation_cycle_sleep_duration"
-            android:summary="@string/animation_cycle_sleep_duration_summary"
             android:defaultValue="3000"
             android:key="animation_cycle_sleep_duration"
             android:max="5000"
-            android:selectable="true"
             android:persistent="true"
+            android:selectable="true"
+            android:summary="@string/animation_cycle_sleep_duration_summary"
             android:text="@string/ms"
+            android:title="@string/animation_cycle_sleep_duration"
             app:min="0"
             app:seekBarIncrement="500" />
     </PreferenceScreen>

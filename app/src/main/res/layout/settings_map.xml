@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Map Mode Preference -->
+        <TextView
+            android:id="@+id/textViewMapModeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/map_mode"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:layout_marginBottom="8dp"/>
+
+        <RadioGroup
+            android:id="@+id/radioGroupMapMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+            <!-- RadioButtons will be added dynamically or defined here if static -->
+            <!-- Example for SATELLITE (assuming it's the first in your array) -->
+            <!-- <RadioButton
+                android:id="@+id/radioButtonMapModeSatellite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Satellite" />
+            <RadioButton
+                android:id="@+id/radioButtonMapModeTerrain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Terrain" />
+             ... add other map modes ... -->
+        </RadioGroup>
+
+        <!-- Map Scale Preference -->
+        <TextView
+            android:id="@+id/textViewMapScaleTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/map_scale"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/textViewMapScaleValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="70%"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:layout_marginBottom="4dp"/>
+
+        <SeekBar
+            android:id="@+id/seekBarMapScale"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="150"
+            android:progress="70"
+            app:tickMark="@null"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Map Fade Preference -->
+        <TextView
+            android:id="@+id/textViewMapFadeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/map_fade"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/textViewMapFadeValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="55%"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:layout_marginBottom="4dp"/>
+
+        <SeekBar
+            android:id="@+id/seekBarMapFade"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="90"
+            android:progress="55"
+            app:tickMark="@null"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Color Scheme Preference -->
+        <TextView
+            android:id="@+id/textViewColorSchemeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/color_scheme"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:layout_marginBottom="8dp"/>
+
+        <RadioGroup
+            android:id="@+id/radioGroupColorScheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <!-- RadioButtons will be added dynamically or defined here -->
+            <!-- Example for BLITZORTUNG -->
+            <!-- <RadioButton
+                android:id="@+id/radioButtonColorSchemeBlitzortung"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Blitzortung" />
+             ... add other color schemes ... -->
+        </RadioGroup>
+
+    </LinearLayout>
+</ScrollView>

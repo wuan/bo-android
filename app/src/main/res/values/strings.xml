@@ -396,6 +396,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="animation_interval_duration_summary">Size of the interval of the animation cycle in hours</string>
     <string name="ms">ms</string>
     <string name="percent" translatable="false">%</string>
+    <string name="percent_format" translatable="false">%.1f%%</string>
     <string-array name="animation_interval_durations">
         <item>2 h</item>
         <item>4 h</item>
