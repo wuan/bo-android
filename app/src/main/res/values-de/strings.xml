@@ -38,7 +38,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="password_summary">Passwort von blitzortung.org Teilnehmern</string>
     <string name="map_settings">Karteneinstellungen</string>
     <string name="map_mode">Kartenmodus</string>
-    <string name="map_mode_summary">Dunkle oder helle Landkarte</string>
+    <string name="map_mode_summary">Dunkle oder helle Landkarte (%s)</string>
     <string name="map_fade">Karte verblassen</string>
     <string name="map_fade_summary">Karte verblassen um die Sichtbarkeit der Daten zu verbessern</string>
 

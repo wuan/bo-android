@@ -41,12 +41,12 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="preferences">Postavke</string>
     <string name="user_settings">Korisničke postavke</string>
     <string name="username">Korisničko ime</string>
-    <string name="username_summary">Korisničko ime za blitzortung.org servis</string>
+    <string name="username_summary">Korisničko ime za blitzortung.org servis (%s)</string>
     <string name="password">Zaporka</string>
     <string name="password_summary">Zaporka za blitzortung.org servis</string>
     <string name="map_settings">Postavke karte</string>
     <string name="map_mode">Prikaz karte</string>
-    <string name="map_mode_summary">Satelitski ili kartografski način prikaza</string>
+    <string name="map_mode_summary">Satelitski ili kartografski način prikaza (%s)</string>
     <string name="map_fade">Prozirnost karte</string>
     <string name="map_fade_summary">Razina prozirnosti karte radi povećanja vidljivosti podataka</string>
 
