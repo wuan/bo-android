@@ -24,6 +24,7 @@ import android.util.Log
 import org.blitzortung.android.app.BuildConfig
 import org.blitzortung.android.app.Main
 import javax.inject.Inject
+import androidx.core.content.edit
 
 class VersionComponent @Inject constructor(
     context: Context,
@@ -68,7 +69,7 @@ class VersionComponent @Inject constructor(
 
     private fun getAndStoreVersion(prefsKey: String, newValue: Int): Int {
         val knownValue = preferences.getInt(prefsKey, -1)
-        preferences.edit().putInt(prefsKey, newValue).apply()
+        preferences.edit { putInt(prefsKey, newValue) }
         return knownValue
     }
 
