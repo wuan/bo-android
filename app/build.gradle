@@ -45,7 +45,7 @@ android {
         unitTests {
             returnDefaultValues = true
             includeAndroidResources = true
-            configureEach {
+            all {
                 jvmArgs '-noverify'
             }
         }
@@ -88,7 +88,7 @@ dependencies {
     compileOnly 'javax.annotation:jsr250-api:1.0'
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.assertj:assertj-core:3.27.3'
+    testImplementation 'org.assertj:assertj-core:3.27.4'
     testImplementation 'io.mockk:mockk:1.14.5'
     testImplementation 'org.robolectric:robolectric:4.15.1'
     testImplementation 'androidx.test:core:1.7.0'
