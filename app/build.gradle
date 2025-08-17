@@ -12,8 +12,8 @@ android {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 21
         targetSdkVersion 35
-        versionCode 333
-        versionName '2.3.1'
+        versionCode 334
+        versionName '2.4.0'
         multiDexEnabled false
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -45,7 +45,7 @@ android {
         unitTests {
             returnDefaultValues = true
             includeAndroidResources = true
-            all {
+            configureEach {
                 jvmArgs '-noverify'
             }
         }
