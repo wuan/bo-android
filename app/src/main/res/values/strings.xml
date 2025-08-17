@@ -33,7 +33,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="legend">Legend</string>
     <string name="legend_grid">Grid</string>
     <string name="unit_minute">min</string>
-    <string name="unit_km">km</string>
+    <string name="unit_kmlimilimit">km</string>
     <string name="total_time">total time</string>
     <string name="activity">activity</string>
     <string name="during">during the past</string>
@@ -43,13 +43,11 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="layers">Layers</string>
     <string name="preferences">Preferences</string>
     <string name="user_settings">User settings</string>
-    <string name="username">Username</string>
-    <string name="username_summary">blitzortung.org participant user name</string>
-    <string name="password">Password</string>
-    <string name="password_summary">blitzortung.org participant password</string>
+    <string name="bo_username">Username Blitzortung.org</string>
+    <string name="bo_password">Password Blitzortung.org</string>
     <string name="map_settings">Map settings</string>
     <string name="map_mode">Map mode</string>
-    <string name="map_mode_summary">Dark or bright basemap</string>
+    <string name="map_mode_summary" translatable="false">%s</string>
     <string name="map_fade">Fade out map</string>
     <string name="map_fade_summary">Fade map background to enhance visibility of data</string>
 
@@ -76,15 +74,11 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Show participant locations</string>
-    <string name="show_participants_summary">show location of all stations in map (only with Blitzortung.org data
-        source)
-    </string>
     <string name="show_location">Show own location</string>
     <string name="show_location_summary">include symbol for own location in map</string>
     <string name="data_settings">Data transmission</string>
     <string name="region">Region</string>
-    <string name="region_summary">select Europe, North America or Oceania</string>
+    <string name="region_summary">select data source region (%s)</string>
 
     <string-array name="regions">
         <item>Local</item>
@@ -129,7 +123,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="historic_timestep_limit_reached">24 hours limit reached</string>
     <string name="historic_timestep">Historic timestep</string>
-    <string name="historic_timestep_summary">Time step size when exploring historical data</string>
+    <string name="historic_timestep_summary" translatable="false">%s</string>
 
     <string-array name="historic_timesteps">
         <item>15 min</item>
@@ -163,7 +157,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="grid_size">Grid size</string>
-    <string name="grid_size_summary">size of data grid squares</string>
+    <string name="grid_size_summary">size of data grid squares (%s)</string>
 
     <string-array name="grid_sizes">
         <item>auto</item>
@@ -183,7 +177,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Strike count threshold</string>
-    <string name="count_threshold_summary">threshold strike count per grid area</string>
+    <string name="count_threshold_summary">Strike count threshold to show grid area (%s)</string>
 
     <string-array name="count_thresholds">
         <item>disabled</item>
@@ -203,8 +197,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="data_source">Data source</string>
-    <string name="data_source_summary">integrated data source or access to blitzortung.org (only for stations)
-    </string>
+    <string name="data_source_summary" translatable="false">%s</string>
 
     <string-array name="data_sources">
         <item>Default</item>
@@ -229,18 +222,14 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>manual</item>
     </string-array>
     <string name="location_mode">location mode</string>
-    <string name="location_mode_summary">Select method which is used to determine the current location</string>
+    <string name="location_mode_summary" translatable="false">%s</string>
     <string name="longitude">longitude</string>
-    <string name="location_longitude_summary">manual entry of longitude</string>
     <string name="latitude">latitude</string>
-    <string name="location_latitude_summary">manual entry of latitude</string>
     <string name="alarm_settings">Alarm settings</string>
     <string name="alarm_enabled">Alarm enabled</string>
     <string name="alarm_enabled_summary">check lightning activity around the current location</string>
     <string name="background_query_period">Background query period</string>
-    <string name="background_query_period_summary">if selected: background query frequency to check for alarms if app is
-        not active
-    </string>
+    <string name="background_query_period_summary" translatable="false">%s</string>
     <string name="background_query_toast">Please disable battery optimization for this app for fully functional background alarm.</string>
     <string name="open_battery_optimiziation">Please disable battery optimization for this app when background query is enabled. Press CANCEL to disable background query and OK to proceed to the battery optimization setting.</string>
 
@@ -270,13 +259,9 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <item name="alarm_notification_id" type="id" />
 
     <string name="notification_distance_limit">Notification distance limit</string>
-    <string name="notification_distance_limit_summary">if selected: show notification when lightning activity is
-        detected within the selected range
-    </string>
+    <string name="notification_distance_limit_summary" translatable="false">%s</string>
     <string name="signaling_distance_limit">Signaling distance limit</string>
-    <string name="signaling_distance_limit_summary">if selected: alarm signal when lightning activity is detected within the
-        selected range
-    </string>
+    <string name="signaling_distance_limit_summary" translatable="false">%s</string>
 
     <string-array name="direction_names">
         <item>S</item>
@@ -312,7 +297,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="signaling_threshold_time">Signaling threshold time</string>
-    <string name="signaling_threshold_time_summary">Suppress further alarm signals for given time range</string>
+    <string name="signaling_threshold_time_summary">Suppress further alarm signals for given time range (%s)</string>
 
     <string-array name="signaling_threshold_times">
         <item>off</item>
@@ -332,7 +317,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="generic_settings">Generic settings</string>
     <string name="measurement_unit">Systems of measurement</string>
-    <string name="measurement_unit_summary">choose between km and mi. for distances</string>
+    <string name="measurement_unit_summary" translatable="false">%s</string>
     <string-array name="measurement_units">
         <item>metric</item>
         <item>imperial</item>
@@ -347,8 +332,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_layer">Own location</string>
     <string name="strikes_layer">Strikes</string>
     <string name="data_settings_summary">detailed settings to control data transmission and source</string>
-    <string name="map_settings_summary">Map mode and appearance related settings</string>
-    <string name="location_settings_summary">Location determination mode</string>
     <string name="alarm_settings_summary">Alarm activation, background service and radiuses</string>
     <string name="alarm_signal_settings">Alarm signal settings</string>
     <string name="alarm_audio_signal">Alarm audio signal</string>
@@ -358,7 +341,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_provider_not_available">location provider \'%s\' not available</string>
     <string name="location_provider_disabled">location provider \'%s\' is disabled</string>
     <string name="service_url">Non-default service URL</string>
-    <string name="service_url_summary">Overrides the default service URL if set</string>
     <string name="set_manual_location">Set manual location</string>
     <string name="error_indicator">Error indicator</string>
     <string name="app_log_subject" translatable="false">Application log</string>
@@ -396,6 +378,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="animation_interval_duration_summary">Size of the interval of the animation cycle in hours</string>
     <string name="ms">ms</string>
     <string name="percent" translatable="false">%</string>
+    <string name="percent_format" translatable="false">%.1f%%</string>
     <string-array name="animation_interval_durations">
         <item>2 h</item>
         <item>4 h</item>
@@ -412,4 +395,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="diagnosis">Diagnosis features</string>
     <string name="diagnosis_summary">Enable features supporting diagnosis of app functionality.</string>
+    <string name="undefined">undefined</string>
+    <string name="background_query_period_dialog_message">Using a periodical background query for alerts when the app is not running will require reading the location of your device.</string>
 </resources>

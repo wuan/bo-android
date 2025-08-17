@@ -28,7 +28,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="legend">Legenda</string>
     <string name="legend_grid">Siatka</string>
     <string name="unit_minute">min</string>
-    <string name="unit_km">km</string>
+    <string name="unit_kmlimilimit">km</string>
     <string name="total_time">Czas całkowity</string>
     <string name="activity">Aktywność</string>
     <string name="during">w ciągu ostatniej</string>
@@ -38,13 +38,10 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="layers">Warstwy</string>
     <string name="preferences">Preferencje</string>
     <string name="user_settings">Ustawienia użytkownika</string>
-    <string name="username">Nazwa użytkownika</string>
-    <string name="username_summary">Nazwa użytkownika uczestnika blitzortung.org</string>
-    <string name="password">Hasło</string>
-    <string name="password_summary">Hasło uczestnika blitzortung.org</string>
+    <string name="bo_username">Nazwa użytkownika Blitzortung.org</string>
+    <string name="bo_password">Hasło Blitzortung.org</string>
     <string name="map_settings">Ustawienia mapy</string>
     <string name="map_mode">Tryb mapy</string>
-    <string name="map_mode_summary">Ciemna lub jasna mapa bazowa</string>
     <string name="map_fade">Ściemnij mapę</string>
     <string name="map_fade_summary">Ściemnij tło mapy, aby zwiększyć widoczność danych</string>
 
@@ -71,9 +68,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Pokazuj lokalizacje uczestników</string>
-    <string name="show_participants_summary">Pokazuj lokalizację wszystkich stacji na mapie (tylko ze źródłem danych Blitzortung.org)
-    </string>
     <string name="show_location">Pokazuj własną lokalizację</string>
     <string name="show_location_summary">Dołącz symbol własnej lokalizacji na mapie</string>
     <string name="data_settings">Transmisja danych</string>
@@ -123,7 +117,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="historic_timestep_limit_reached">Osiągnięto 24-godzinny limit</string>
     <string name="historic_timestep">Krok czasu historii</string>
-    <string name="historic_timestep_summary">Rozmiar kroku czasu podczas przeglądania danych historycznych</string>
 
     <string-array name="historic_timesteps">
         <item>15 min</item>
@@ -197,8 +190,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="data_source">Źródło danych</string>
-    <string name="data_source_summary">Zintegrowane źródło danych lub dostęp do blitzortung.org (tylko dla stacji)
-    </string>
 
     <string-array name="data_sources">
         <item>Domyślne</item>
@@ -223,16 +214,12 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>manual</item>
     </string-array>
     <string name="location_mode">Tryb lokalizacji</string>
-    <string name="location_mode_summary">Wybierz metodę określania aktualnej lokalizacji</string>
     <string name="longitude">Długość geograficzna</string>
-    <string name="location_longitude_summary">Ręczne wprowadzanie długości geograficznej</string>
     <string name="latitude">Szerokość geograficzna</string>
-    <string name="location_latitude_summary">Ręczne wprowadzanie szerokości geograficznej</string>
     <string name="alarm_settings">Ustawienia alarmu</string>
     <string name="alarm_enabled">Alarm włączony</string>
     <string name="alarm_enabled_summary">Sprawdzaj aktywność wyładowań wokół aktualnej lokalizacji</string>
     <string name="background_query_period">Częstotliwość odpytywania w tle</string>
-    <string name="background_query_period_summary">Częstotliwość odpytywania w tle w celu sprawdzania alarmów, jeśli aplikacja nie jest aktywna</string>
     <string name="background_query_toast">Wyłącz optymalizację baterii dla tej aplikacji, aby alarmy w tle były w pełni funkcjonalne.</string>
     <string name="open_battery_optimiziation">Wyłącz optymalizację baterii dla tej aplikacji, gdy włączone jest odpytywanie w tle. Naciśnij ANULUJ, aby wyłączyć odpytywanie, i OK, aby przejść do ustawień optymalizacji baterii.</string>
 
@@ -262,9 +249,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <item name="alarm_notification_id" type="id" />
 
     <string name="notification_distance_limit">Limit odległości dla powiadomienia</string>
-    <string name="notification_distance_limit_summary">Wyświetlaj powiadomienie, gdy zostanie wykryta aktywność wyładowania w wybranym zakresie</string>
     <string name="signaling_distance_limit">Limit odległości dla sygnalizacji</string>
-    <string name="signaling_distance_limit_summary">Sygnał alarmowy po wykryciu aktywności wyładowania w wybranym zakresie</string>
 
     <string-array name="direction_names">
         <item>S</item>
@@ -320,7 +305,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="generic_settings">Ustawienia ogólne</string>
     <string name="measurement_unit">System miar</string>
-    <string name="measurement_unit_summary">Wybierz między kilometrami a milami dla odległości</string>
     <string-array name="measurement_units">
         <item>Metryczny</item>
         <item>Imperialny</item>
@@ -335,8 +319,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_layer">Własna lokalizacja</string>
     <string name="strikes_layer">Wyładowania</string>
     <string name="data_settings_summary">Szczegółowe ustawienia kontroli transmisji danych i źródła</string>
-    <string name="map_settings_summary">Tryb mapy i ustawienia związane z wyglądem</string>
-    <string name="location_settings_summary">Tryb określania lokalizacji</string>
     <string name="alarm_settings_summary">Aktywacja alarmu, obsługa w tle i promienie</string>
     <string name="alarm_signal_settings">Ustawienia sygnału alarmowego</string>
     <string name="alarm_audio_signal">Sygnał dźwiękowy alarmu</string>
@@ -346,7 +328,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_provider_not_available">Dostawca lokalizacji „%s” jest niedostępny</string>
     <string name="location_provider_disabled">Dostawca lokalizacji „%s” jest wyłączony</string>
     <string name="service_url">Alternatywny adres URL usługi</string>
-    <string name="service_url_summary">Zastępuje domyślny adres URL usługi</string>
     <string name="set_manual_location">Ustaw ręcznie lokalizację</string>
     <string name="error_indicator">Wskaźnik błędu</string>
     <string name="app_log">Logi aplikacji</string>

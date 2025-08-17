@@ -18,20 +18,22 @@
 
 package org.blitzortung.android.app
 
-import android.Manifest.permission.*
-import android.annotation.TargetApi
+import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.location.LocationManager.*
-import android.net.Uri
+import android.location.LocationManager.GPS_PROVIDER
+import android.location.LocationManager.NETWORK_PROVIDER
+import android.location.LocationManager.PASSIVE_PROVIDER
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
-import android.preference.PreferenceManager
 import android.provider.Settings
 import android.text.format.DateFormat
 import android.util.AndroidRuntimeException
@@ -44,8 +46,12 @@ import android.widget.ImageButton
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
+import androidx.preference.PreferenceManager
 import dagger.android.AndroidInjection
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertHandler
@@ -124,6 +130,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     internal lateinit var changeLogComponent: ChangeLogComponent
 
     private var currentResult: ResultEvent? = null
+
+    private var justReturnedFromSettings = false
 
     private val keepZoomOnGotoOwnLocation: Boolean
         inline get() = preferences.get(PreferenceKey.KEEP_ZOOM_GOTO_OWN_LOCATION, false)
@@ -252,8 +260,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             resources
         )
 
-        hideActionBar()
-
         buttonColumnHandler = ButtonColumnHandler(if (TabletAwareView.isTablet(this)) 75f else 55f)
         configureMenuAccess()
         historyController = HistoryController(binding, buttonColumnHandler, dataHandler)
@@ -301,7 +307,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             "Main.onCreate() osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}"
         )
         if (!StorageUtils.isWritable(osmDroidConfig.osmdroidBasePath)) {
-            preferences.edit().remove("osmdroid.basePath").apply()
+            preferences.edit { remove("osmdroid.basePath") }
             osmDroidConfig.load(this, preferences)
             Log.v(
                 LOG_TAG,
@@ -469,10 +475,17 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         stopService()
 
-        Log.v(LOG_TAG, "Main.onResume()")
+        Log.v(LOG_TAG, "Main.onResume() justReturnedFromSettings: $justReturnedFromSettings")
+
+        val cameFromSettings = justReturnedFromSettings
+        if (justReturnedFromSettings) {
+            justReturnedFromSettings = false
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestLocationPermissions(preferences)
+            if (!cameFromSettings) {
+                requestLocationPermissions(preferences)
+            }
             requestWakeupPermissions(baseContext)
         }
 
@@ -597,9 +610,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             val providerName = providerRelation.providerName
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.i(LOG_TAG, "$providerName permission has now been granted.")
-                val editor = preferences.edit()
-                editor.put(PreferenceKey.LOCATION_MODE, providerName)
-                editor.apply()
+                preferences.edit {
+                    put(PreferenceKey.LOCATION_MODE, providerName)
+                }
                 locationHandler.update(preferences)
             } else {
                 Log.i(LOG_TAG, "$providerName permission was NOT granted.")
@@ -610,7 +623,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun requestLocationPermissions(sharedPreferences: SharedPreferences) {
         val locationProviderName = sharedPreferences.get(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER)
         val permission = when (locationProviderName) {
@@ -621,7 +634,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         if (permission != null) {
             val requiresBackgroundPermission = if (isAtLeast(Build.VERSION_CODES.Q)) {
-                backgroundAlertEnabled && checkSelfPermission(ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED
+                val backgroundLocationPermission = checkSelfPermission(ACCESS_BACKGROUND_LOCATION)
+                val result = backgroundAlertEnabled && backgroundLocationPermission != PackageManager.PERMISSION_GRANTED
+                "Main.requestLocationPermissions() requires background: $backgroundLocationPermission"
+                result
             } else {
                 false
             }
@@ -630,33 +646,40 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             val requiresPermission = checkSelfPermission != PackageManager.PERMISSION_GRANTED
             Log.v(
                 LOG_TAG,
-                "Main.requestLocationPermissions() self permission: $checkSelfPermission, required: $requiresPermission"
+                "Main.requestLocationPermissions() self permission: $checkSelfPermission, required: $requiresPermission, background required: $requiresBackgroundPermission"
             )
 
             val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
+
+            if (requiresBackgroundPermission && isAtLeast(Build.VERSION_CODES.Q)) {
+                Log.v(
+                    LOG_TAG,
+                    "Main.requestLocationPermissions() open background permission dialog"
+                )
+                val locationText = this.resources.getString(R.string.location_permission_background_disclosure)
+                AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
+                    .setPositiveButton(android.R.string.ok) { dialog, count ->
+                        dialog.dismiss()
+                        requestPermission(
+                            ACCESS_BACKGROUND_LOCATION,
+                            requestCode,
+                            R.string.location_permission_background_required
+                        )
+                    }.setNegativeButton(android.R.string.cancel) { dialog, count ->
+                        preferences.edit { put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0") }
+                    }.show()
+            }
             if (requiresPermission) {
                 requestPermission(
                     permission, requestCode,
                     R.string.location_permission_required
                 )
-            } else {
-                if (requiresBackgroundPermission && isAtLeast(Build.VERSION_CODES.Q)) {
-                    val locationText = this.resources.getString(R.string.location_permission_background_disclosure)
-                    AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
-                        .setPositiveButton(android.R.string.ok) { dialog, count ->
-                            requestPermission(
-                                ACCESS_BACKGROUND_LOCATION,
-                                requestCode,
-                                R.string.location_permission_background_required
-                            )
-                        }.show()
-                }
             }
         }
     }
 
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun requestPermission(permission: String, requestCode: Int, permissionRequiredStringId: Int) {
         val shouldShowPermissionRationale = shouldShowRequestPermissionRationale(permission)
         val permissionIsGranted = checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
@@ -674,7 +697,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun requestPermissionsAfterDialog(
         dialogTextResource: Int,
         permission: String,
@@ -688,13 +711,13 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         val locationText = resources.getString(dialogTextResource)
         AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
             .setPositiveButton(android.R.string.ok) { dialog, count ->
-                Log.v(LOG_TAG, "Main.requestPermissionsAfterDialog() clicked OK, before request")
+                dialog.dismiss()
+                justReturnedFromSettings = true
                 requestPermissions(arrayOf(permission), requestCode)
-                Log.v(LOG_TAG, "Main.requestPermissionsAfterDialog() clicked OK, after request")
             }.show()
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun requestWakeupPermissions(context: Context) {
         Log.v(LOG_TAG, "requestWakeupPermissions() background alerts: $backgroundAlertEnabled")
 
@@ -706,7 +729,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 if (!pm.isIgnoringBatteryOptimizations(packageName)) {
                     val locationText = context.resources.getString(R.string.open_battery_optimiziation)
 
-                    val dialogClickListener = DialogInterface.OnClickListener { _, which ->
+                    val dialogClickListener = DialogInterface.OnClickListener { dialog, which ->
+                        dialog.dismiss()
                         when (which) {
                             DialogInterface.BUTTON_POSITIVE -> {
                                 Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
@@ -714,9 +738,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                                     val allowIgnoreBatteryOptimization =
                                         context.checkSelfPermission(REQUEST_IGNORE_BATTERY_OPTIMIZATIONS) == PackageManager.PERMISSION_GRANTED
                                     val intent = if (allowIgnoreBatteryOptimization) {
+                                        justReturnedFromSettings = true
                                         Intent(
                                             Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                                            Uri.parse("package:$packageName")
+                                            "package:$packageName".toUri()
                                         )
                                     } else {
                                         Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
@@ -746,8 +771,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     }
 
                     AlertDialog.Builder(this).setMessage(locationText)
-                        .setPositiveButton(android.R.string.yes, dialogClickListener)
-                        .setNegativeButton(android.R.string.no, dialogClickListener).show()
+                        .setPositiveButton(android.R.string.ok, dialogClickListener)
+                        .setNegativeButton(android.R.string.cancel, dialogClickListener).show()
                 }
             } else {
                 Log.w(LOG_TAG, "requestWakeupPermissions() could not get PowerManager")
@@ -838,12 +863,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         val popupMenu =
             MainPopupMenu(this, anchor, preferences, dataHandler, alertHandler, buildVersion, changeLogComponent)
         popupMenu.showPopupMenu()
-    }
-
-    private fun hideActionBar() {
-        if (isAtLeast(Build.VERSION_CODES.HONEYCOMB)) {
-            actionBar?.hide()
-        }
     }
 
     companion object {

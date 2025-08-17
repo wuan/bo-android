@@ -40,13 +40,10 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="layers">Capas</string>
     <string name="preferences">Preferencias</string>
     <string name="user_settings">Ajustes de usuario</string>
-    <string name="username">Nombre de usuario</string>
-    <string name="username_summary">Nombre de usuario del participante en blitzortung.org</string>
-    <string name="password">Contraseña</string>
-    <string name="password_summary">Contraseña del participante en blitzortung.org</string>
+    <string name="bo_username">Nombre de usuario Blitzortung.org</string>
+    <string name="bo_password">Contraseña Blitzortung.org</string>
     <string name="map_settings">Ajustes del mapa</string>
     <string name="map_mode">Modo del mapa</string>
-    <string name="map_mode_summary">Seleccionar vista de satélite o Streetmap</string>
     <string name="map_fade">Desvanecimiento del mapa</string>
     <string name="map_fade_summary">Desvanecimiento del fondo para mejorar la visibilidad de los datos</string>
 
@@ -73,10 +70,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Mostrar ubicación de los participantes</string>
-    <string name="show_participants_summary">mostrar localización de todas las estaciones en el mapa(solamente con el origen de datos Blitzortung.org)
-        
-    </string>
     <string name="show_location">Mostrar localización propia</string>
     <string name="show_location_summary">incluir símbolo para la localización propia en el mapa</string>
     <string name="data_settings">Trasmisión de datos</string>
@@ -126,7 +119,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="historic_timestep_limit_reached">Alcanzado el límite de 24 horas</string>
     <string name="historic_timestep">Intervalo de tiempo histórico</string>
-    <string name="historic_timestep_summary">Tamaño del intervalo de tiempo por el que se explora el historial de datos</string>
 
     <string-array name="historic_timesteps">
         <item>15 min</item>
@@ -200,8 +192,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="data_source">Origen de datos</string>
-    <string name="data_source_summary">origen de datos integrados o acceso a blitzortung.org (solamente para estaciones)
-    </string>
 
     <string-array name="data_sources">
         <item>Por defecto</item>
@@ -226,11 +216,8 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
         <item>manual</item>
     </string-array>
     <string name="location_mode">modo de localización</string>
-    <string name="location_mode_summary">Selecciona el método usado para determinar la localización actual</string>
     <string name="longitude">longitud</string>
-    <string name="location_longitude_summary">entrada manual de la longitud</string>
     <string name="latitude">latitud</string>
-    <string name="location_latitude_summary">entrada manual de la latitud</string>
     <string name="alarm_settings">Ajustes de alarma</string>
     <string name="alarm_enabled">Alarma habilitada</string>
     <string name="alarm_enabled_summary">comprobar actividad de rayos alrededor de la localización actual</string>
@@ -265,13 +252,7 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <item name="alarm_notification_id" type="id" />
 
     <string name="notification_distance_limit">Distancia límite de notificación</string>
-    <string name="notification_distance_limit_summary">si es seleccionada: muestra una notificación cuando un rayo es 
-    	detectado dentro del alcance seleccionado
-    </string>
     <string name="signaling_distance_limit">Distancia límite de alarma</string>
-    <string name="signaling_distance_limit_summary">si es seleccionada: muestra una señal de alarma cuando un rayo es detectado dentro del
-    	alcance seleccionado
-    </string>
 
     <string-array name="direction_names">
         <item>S</item>
@@ -327,7 +308,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="generic_settings">Ajustes generales</string>
     <string name="measurement_unit">Sistemas de medida</string>
-    <string name="measurement_unit_summary">elige entre km y millas para las distancias</string>
     <string-array name="measurement_units">
         <item>métrico</item>
         <item>imperial</item>
@@ -342,8 +322,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_layer">Localización propia</string>
     <string name="strikes_layer">Rayos</string>
     <string name="data_settings_summary">Ajustes detallados para el control de la transmisión y el origen de los datos</string>
-    <string name="map_settings_summary">Ajustes relacionados con el modo del mapa y la apariencia</string>
-    <string name="location_settings_summary">Modo de determinación de la localización</string>
     <string name="alarm_settings_summary">Activación, servicio de fondo y radio de la alarma</string>
     <string name="alarm_signal_settings">Ajustes de señalamiento de la alarma</string>
     <string name="alarm_audio_signal">sonido de alarma</string>
@@ -353,7 +331,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_provider_not_available">proveedor de localización \'%s\' no disponible</string>
     <string name="location_provider_disabled">proveedor de localización \'%s\' está deshabilitado</string>
     <string name="service_url">Servidor URL alternativo</string>
-    <string name="service_url_summary">Reemplaza al servidor URL por defecto si se activa</string>
     <string name="set_manual_location">Poner manualmente la ubicación</string>
     <string name="error_indicator">Indicador de error</string>
     <string name="app_log">Registro de la aplicación</string>
