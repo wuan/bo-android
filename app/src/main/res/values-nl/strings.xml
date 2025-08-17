@@ -37,13 +37,10 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="layers">Lagen</string>
     <string name="preferences">Instellingen</string>
     <string name="user_settings">Gebruiker instellingen</string>
-    <string name="username">Gebruiker</string>
-    <string name="username_summary">Gebruikersnaam voor blitzortung.org (%s)</string>
-    <string name="password">Wachtwoord</string>
-    <string name="password_summary">Wachtwoord voor blitzortung.org</string>
+    <string name="bo_username">Gebruiker Blitzortung.org</string>
+    <string name="bo_password">Wachtwoord Blitzortung.org</string>
     <string name="map_settings">Kaart instellingen</string>
     <string name="map_mode">Kaart mode</string>
-    <string name="map_mode_summary">Donker of lichte kaart</string>
     <string name="map_fade">Kaart vervagen</string>
     <string name="map_fade_summary">Vervaag kaart achtergrond om de zichtbaarheid van informatie te vergroten</string>
 
@@ -70,9 +67,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Deelnemers locatie tonen</string>
-    <string name="show_participants_summary">toon locaties van alle meetstations op kaart (enkel zichtbaar voor de Blitzortung.org informatie)
-    </string>
     <string name="show_location">Eigen locatie tonen</string>
     <string name="show_location_summary">Toon symbool op kaart voor eigen locatie</string>
     <string name="data_settings">Informatie overdracht</string>
@@ -122,7 +116,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="historic_timestep_limit_reached">24 uurs limiet bereikt</string>
     <string name="historic_timestep">Historische tijdinterval</string>
-    <string name="historic_timestep_summary">Stapgrootte voor bladeren door historische informatie</string>
 
     <string-array name="historic_timesteps">
         <item>15 min</item>
@@ -196,8 +189,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="data_source">Informatiebron</string>
-    <string name="data_source_summary">geïntegreerde informatiebron of toegang tot blitzortung.org (enkel voor stations)
-    </string>
 
     <string-array name="data_sources">
         <item>Standaard</item>
@@ -222,16 +213,12 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
         <item>manual</item>
     </string-array>
     <string name="location_mode">locatie mode</string>
-    <string name="location_mode_summary">Selecteer methode welke gebruikt wordt om huidige locatie te bepalen</string>
     <string name="longitude">lengtegraad</string>
-    <string name="location_longitude_summary">handmatige ingave van lengtegraad</string>
     <string name="latitude">breedtegraad</string>
-    <string name="location_latitude_summary">handmatige ingave van de breedtegraad</string>
     <string name="alarm_settings">Meldingen instelling</string>
     <string name="alarm_enabled">Meldingen ingeschakeld</string>
     <string name="alarm_enabled_summary">controleer onweer activiteit in de buurt van huidige locatie</string>
     <string name="background_query_period">Verversperiode in achtergrond</string>
-    <string name="background_query_period_summary">wanneer geselecteerd; verversperiode in achtergrond waarmee meldingen worden gecontrolleerd wanneer de app niet actief is</string>
     <string name="background_query_toast">Schakel batterij optimalisatie uit voor deze app om volledig gebruik te kunnen maken van Melding- en Signaleringen in achtergrond.</string>
     <string name="open_battery_optimiziation">Schakel batterij optimalisatie uit voor deze app wanneer je gebruik wilt maken van verversen in achtergrond. Annuleer om verversen uit te zetten en OK om door te gaan en batterij optimalisatie aan te passen.</string>
 
@@ -259,9 +246,7 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="notification_distance_limit">Notificatie afstandslimiet</string>
-    <string name="notification_distance_limit_summary">wanneer geselecteerd; toon notificatie wanneer activiteit gedetecteerd is binnen geselecteerde afstand</string>
     <string name="signaling_distance_limit">Signalering afstandslimiet</string>
-    <string name="signaling_distance_limit_summary">wanneer geselecteerd; geluidsignaal wanneer activiteit gedetecteerd wordt binnen geselecteerde afstand</string>
 
     <string-array name="direction_names">
         <item>Z</item>
@@ -317,7 +302,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="generic_settings">Generieke instellingen</string>
     <string name="measurement_unit">Meet eenheid</string>
-    <string name="measurement_unit_summary">keuze uit kilometer en miles voor afstanden</string>
     <string-array name="measurement_units">
         <item>metrisch</item>
         <item>imperial</item>
@@ -332,8 +316,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_layer">Eigen locatie</string>
     <string name="strikes_layer">Bliksems</string>
     <string name="data_settings_summary">gedetaileerde instellingen om controle te hebben op informatie- bronnen en overdracht</string>
-    <string name="map_settings_summary">Kaart mode en weergave gerelateerde instellingen</string>
-    <string name="location_settings_summary">Locatie detectie mode</string>
     <string name="alarm_settings_summary">Meldingen activeren, achtergrondservice en radius</string>
     <string name="alarm_signal_settings">Meldingsignaal instellingen</string>
     <string name="alarm_audio_signal">Melding geluidsignaal</string>
@@ -343,7 +325,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_provider_not_available">locatie provider \'%s\' is niet beschikbaar</string>
     <string name="location_provider_disabled">locatie provider \'%s\' is uitgeschakeld</string>
     <string name="service_url">Service URL</string>
-    <string name="service_url_summary">Overschrijft de standaard service URL wanneer deze is ingesteld</string>
     <string name="set_manual_location">Manuele locatie instellen</string>
     <string name="error_indicator">Fout indicator</string>
     <string name="share_log">Stuur email …</string>

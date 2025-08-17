@@ -32,13 +32,10 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="layers">Ebenen</string>
     <string name="preferences">Einstellungen</string>
     <string name="user_settings">Benutzereinstellungen</string>
-    <string name="username">Benutzername</string>
-    <string name="username_summary">Benutzername von blitzortung.org Teilnehmern</string>
-    <string name="password">Passwort</string>
-    <string name="password_summary">Passwort von blitzortung.org Teilnehmern</string>
+    <string name="bo_username">Benutzername Blitzortung.org</string>
+    <string name="bo_password">Passwort Blitzortung.org</string>
     <string name="map_settings">Karteneinstellungen</string>
     <string name="map_mode">Kartenmodus</string>
-    <string name="map_mode_summary">Dunkle oder helle Landkarte (%s)</string>
     <string name="map_fade">Karte verblassen</string>
     <string name="map_fade_summary">Karte verblassen um die Sichtbarkeit der Daten zu verbessern</string>
 
@@ -53,8 +50,8 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
         <item>TEMPERATURE</item>
     </string-array>
 
-    <string name="color_scheme">Farbschema</string>
-    <string name="color_scheme_summary">Farbschema für die Darstellung der Daten</string>
+    <string name="color_scheme">Farbschema der Blitzdaten</string>
+    <string name="color_scheme_summary">%s</string>
 
     <string-array name="map_modes">
         <item>Dunkle Landkarte</item>
@@ -65,15 +62,11 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Teilnehmer anzeigen</string>
-    <string name="show_participants_summary">Orte aller Teilnehmer au der Karte anzeigen (nur bei Blitzortung.org
-        Datenquelle)
-    </string>
     <string name="show_location">Standort anzeigen</string>
     <string name="show_location_summary">Eigenen Standort als Symbol in der Karte anzeigen</string>
     <string name="data_settings">Datenübertragung</string>
     <string name="region">Region auswählen</string>
-    <string name="region_summary">Europa, Nordamerika oder Ozeanien</string>
+    <string name="region_summary">%s</string>
 
     <string-array name="regions">
         <item>Lokal</item>
@@ -118,7 +111,6 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
 
     <string name="historic_timestep_limit_reached">24 Stunden-Grenze erreicht</string>
     <string name="historic_timestep">Zeitschritt für Historie</string>
-    <string name="historic_timestep_summary">Zeitschritt für den Abruf historischer Daten</string>
 
     <string-array name="historic_timesteps">
         <item>15 min</item>
@@ -132,7 +124,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     </string-array>
 
     <string name="query_period">Abfrageperiode</string>
-    <string name="query_period_summary">Frequenz des Datenabrufs</string>
+    <string name="query_period_summary">alle %s</string>
 
     <string-array name="query_periods">
         <item>20 s</item>
@@ -152,7 +144,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     </string-array>
 
     <string name="grid_size">Rastergröße</string>
-    <string name="grid_size_summary">Größe der Quadrate des Datenrasters</string>
+    <string name="grid_size_summary">%s</string>
 
     <string-array name="grid_sizes">
         <item>auto</item>
@@ -192,8 +184,6 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     </string-array>
 
     <string name="data_source">Datenquelle</string>
-    <string name="data_source_summary">integrierte Datenquelle oder Zugriff auf blitzortung.org (Nur für Teilnehmer)
-    </string>
 
     <string-array name="data_sources">
         <item>Standard</item>
@@ -218,19 +208,13 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
         <item>manual</item>
     </string-array>
     <string name="location_mode">Ortsbestimmungsmodus</string>
-    <string name="location_mode_summary">Auswahl der Methode zur Bestimmung des Aufenthaltsorts.</string>
     <string name="longitude">geogr. Länge</string>
-    <string name="location_longitude_summary">manuelle Eingabe der geogr. Länge</string>
     <string name="latitude">geogr. Breite</string>
-    <string name="location_latitude_summary">manuelle Eingabe der geogr. Breite</string>
 
     <string name="alarm_settings">Warneinstellungen</string>
     <string name="alarm_enabled">Warnung aktiv</string>
     <string name="alarm_enabled_summary">Überwachung der Gewitteraktivität um den aktuellen Standort</string>
     <string name="background_query_period">Hintergrund Abfrageperiode</string>
-    <string name="background_query_period_summary">falls ausgewählt: Abfragefrequenz für Warnungen wenn die App nicht
-        aktiv ist
-    </string>
 
     <string-array name="background_query_periods">
         <item>deaktiviert</item>
@@ -256,13 +240,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     </string-array>
 
     <string name="notification_distance_limit">Radiuslimit Benachrichtigung</string>
-    <string name="notification_distance_limit_summary">falls ausgewählt: Benachrichtigung für Blitzaktivität innerhalb
-        der angegebenen Entfernung
-    </string>
     <string name="signaling_distance_limit">Radiuslimit Alarmsignal</string>
-    <string name="signaling_distance_limit_summary">falls ausgewählt: Alarmsignal für Blitzaktivität innerhalb der
-        angegebenen Entfernung
-    </string>
 
     <string-array name="direction_names">
         <item>S</item>
@@ -318,7 +296,6 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
 
     <string name="generic_settings">Allgemeines</string>
     <string name="measurement_unit">Einheitensystem</string>
-    <string name="measurement_unit_summary">Wahl der Entfernungsangabe: Kilometer oder Meilen</string>
     <string-array name="measurement_units">
         <item>metrisch</item>
         <item>imperial</item>
@@ -332,9 +309,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="participants_layer">Teilnehmende Stationen</string>
     <string name="own_location_layer">Eigener Ort</string>
     <string name="strikes_layer">Blitze</string>
-    <string name="data_settings_summary">Einstellung Zeitparameter und Datenquelle</string>
-    <string name="map_settings_summary">Kartenmodus und -aussehen</string>
-    <string name="location_settings_summary">Wahl der Art der Ortsbestimmung</string>
+    <string name="data_settings_summary">Einstellung von Datenarametern und -quellen</string>
     <string name="alarm_settings_summary">Warnung, Hintergrunddienst und Warnradien</string>
     <string name="alarm_signal_settings">Alarmsignal</string>
     <string name="alarm_audio_signal">Tonsignal</string>
@@ -343,8 +318,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="alarm_vibration_signal_summary">Auswahl der Vibrationsdauer für den Alarm</string>
     <string name="location_provider_not_available">Location-Provider \'%s\' nicht verfügbar</string>
     <string name="location_provider_disabled">Location-Provider \'%s\' ist deaktiviert</string>
-    <string name="service_url">Service-URL</string>
-    <string name="service_url_summary">Benutzerdefinierte Service-URL, falls gesetzt</string>
+    <string name="service_url">Benutzerdefinierte Service-URL</string>
     <string name="set_manual_location">Setze benutzerdefinierten Ort</string>
     <string name="share_log">E-Mail senden …</string>
     <string name="share_unavailable">E-Mail kann nicht versendet werden.</string>
@@ -360,7 +334,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="app_log" translatable="false">Diagnose der App</string>
     <string name="legend_grid">Raster</string>
     <string name="map_scale">Kartenskalierung</string>
-    <string name="map_scale_summary">Skalierung der Kartenkacheln [%]</string>
+    <string name="map_scale_summary">in Prozent</string>
     <string name="location_permission_required">Für die Ortsbestimmung über den Gerätestandort ist die Berechtigung erforderlich.</string>
     <string name="location_permission_background_required">Für die Ortsbestimmung über den Gerätestandort im Hintergrund ist die Berechtigung erforderlich.</string>
     <string name="changelog">Änderungsprotokoll</string>
@@ -384,7 +358,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
         <item>12</item>
         <item>24</item>
     </string-array>
-    <string name="animation_interval_duration_summary">Zeitspanne der Animation</string>
+    <string name="animation_interval_duration_summary">%s</string>
     <string name="animation_sleep_duration">Wartezeit Schritte</string>
     <string name="animation_sleep_duration_summary">Wartezeit zwischen einzelnen Animationsschritten in Millisekunden</string>
     <string name="animation_cycle_sleep_duration">Wartezeit am Zyklusende</string>
@@ -393,4 +367,5 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="animation_settings_summary">Parameter der Animation</string>
     <string name="diagnosis">Diagnosefeatures</string>
     <string name="diagnosis_summary">Aktiviert  Features für die App-Analyse</string>
+    <string name="undefined">nicht definiert</string>
 </resources>

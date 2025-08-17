@@ -40,13 +40,10 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="layers">Slojevi</string>
     <string name="preferences">Postavke</string>
     <string name="user_settings">Korisničke postavke</string>
-    <string name="username">Korisničko ime</string>
-    <string name="username_summary">Korisničko ime za blitzortung.org servis (%s)</string>
-    <string name="password">Zaporka</string>
-    <string name="password_summary">Zaporka za blitzortung.org servis</string>
+    <string name="bo_username">Korisničko ime Blitzortung.org</string>
+    <string name="bo_password">Zaporka Blitzortung.org</string>
     <string name="map_settings">Postavke karte</string>
     <string name="map_mode">Prikaz karte</string>
-    <string name="map_mode_summary">Satelitski ili kartografski način prikaza (%s)</string>
     <string name="map_fade">Prozirnost karte</string>
     <string name="map_fade_summary">Razina prozirnosti karte radi povećanja vidljivosti podataka</string>
 
@@ -73,8 +70,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Prikaži lokacije učesnika</string>
-    <string name="show_participants_summary">Prikaz lokacije svih postaja na karti\n(samo ako je Blitzortung.org izvor podataka)</string>
     <string name="show_location">Prikaži vlastitu lokaciju</string>
     <string name="show_location_summary">Prikaz vlastite lokacije na karti</string>
     <string name="data_settings">Prijenos podataka</string>
@@ -124,7 +119,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="historic_timestep_limit_reached">Dosegnut 24-satni limit</string>
     <string name="historic_timestep">Povijesni podaci</string>
-    <string name="historic_timestep_summary">Vremenski interval za pregled povijesnih podataka</string>
 
     <string-array name="historic_timesteps">
         <item>15 min</item>
@@ -198,7 +192,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="data_source">Izvor podataka</string>
-    <string name="data_source_summary">Zadani izvor podataka ili blitzortung.org (samo za postaje)</string>
 
     <string-array name="data_sources">
         <item>zadani</item>
@@ -223,16 +216,12 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>manual</item>
     </string-array>
     <string name="location_mode">Metoda određivanja lokacije</string>
-    <string name="location_mode_summary">Odabir metode za određivanje vlastite lokacije</string>
     <string name="longitude">Dužina</string>
-    <string name="location_longitude_summary">Ručni unos geografske dužine vlastite lokacije</string>
     <string name="latitude">Širina</string>
-    <string name="location_latitude_summary">Ručni unos geografske širine vlastite lokacije</string>
     <string name="alarm_settings">Postavke alarma</string>
     <string name="alarm_enabled">Alarm uključen</string>
     <string name="alarm_enabled_summary">Prati aktivnosti munja oko vlastite lokacije</string>
     <string name="background_query_period">Pozadinska aktivnost</string>
-    <string name="background_query_period_summary">Ako je zadano: učestalost provjere prisutnosti munja dok je aplikacija neaktivna</string>
 
     <string-array name="background_query_periods">
         <item>isključeno</item>
@@ -260,9 +249,7 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <item name="alarm_notification_id" type="id" />
 
     <string name="notification_distance_limit">Obavješćivanje temeljem udaljenosti</string>
-    <string name="notification_distance_limit_summary">Ako je zadano: obavijesti o pojavi munja unutar zadanog radijusa</string>
     <string name="signaling_distance_limit">Signaliziranje temeljem udaljenosti</string>
-    <string name="signaling_distance_limit_summary">Ako je zadano: signaliziraj pojavu munja unutar zadanog radijusa</string>
 
     <string-array name="direction_names">
         <item>J</item>
@@ -318,7 +305,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="generic_settings">Opće postavke</string>
     <string name="measurement_unit">Mjerne jedinice</string>
-    <string name="measurement_unit_summary">Prikaz jednica za udaljenost u km ili miljama</string>
     <string-array name="measurement_units">
         <item>metrički sustav mjera</item>
         <item>imperijalni sustav mjera</item>
@@ -333,8 +319,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_layer">Vlastita lokacija</string>
     <string name="strikes_layer">Munje</string>
     <string name="data_settings_summary">Postavke izvora i načina prijenosa podataka</string>
-    <string name="map_settings_summary">Postavke karti i načina prikaza podataka</string>
-    <string name="location_settings_summary">Postavke lokacijskih usluga</string>
     <string name="alarm_settings_summary">Uključivanje alarma, pozadinski servisi i određivanje radijusa</string>
     <string name="alarm_signal_settings">Postavke signaliziranja alarma</string>
     <string name="alarm_audio_signal">Audio zvuka alarma</string>
@@ -344,7 +328,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_provider_not_available">Pružatelj lokacije \'%s\' nije dostupan.</string>
     <string name="location_provider_disabled">Pružatelj lokacije \'%s\' je isključen.</string>
     <string name="service_url">Alternativni URL servisa</string>
-    <string name="service_url_summary">Unos alternativnog URL-a servisa izvora podataka</string>
     <string name="set_manual_location">Ručni unos lokacije</string>
     <string name="error_indicator">Indikator pogreške</string>
     <string name="share_log">Pošalji email …</string>
