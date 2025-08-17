@@ -19,7 +19,7 @@ class MeasurementSystemTest {
 
     @Test
     fun testMetricUnitName() {
-        assertThat(MeasurementSystem.METRIC.unitNameString).isEqualTo(R.string.unit_km)
+        assertThat(MeasurementSystem.METRIC.unitNameString).isEqualTo(R.string.unit_kmlimilimit)
     }
 
     @Test

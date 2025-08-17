@@ -38,13 +38,10 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="layers">Calques</string>
     <string name="preferences">Préférences</string>
     <string name="user_settings">Paramètres Utilisateur</string>
-    <string name="username">Nom d\'utilisateur</string>
-    <string name="username_summary">C\'est votre nom d\'utilisateur sur blitzortung.org</string>
-    <string name="password">Mot de passe</string>
-    <string name="password_summary">C\'est votre mot de passe sur blitzortung.org</string>
+    <string name="bo_username">Nom d\'utilisateur Blitzortung.org</string>
+    <string name="bo_password">Mot de passe Blitzortung.org</string>
     <string name="map_settings">Paramètres de la carte</string>
     <string name="map_mode">Mode de la carte</string>
-    <string name="map_mode_summary">Selectionnez plan ou vue satellite</string>
     <string name="map_fade">Opacité de la carte</string>
     <string name="map_fade_summary">Opacité du fond de carte pour améliorer la visibilité des données</string>
 
@@ -71,9 +68,6 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Afficher les stations</string>
-    <string name="show_participants_summary">Montrer l\'emplacement de toutes les stations (seulement avec la source de données de Blitzortung.org)
-    </string>
     <string name="show_location">Montrer son emplacement</string>
     <string name="show_location_summary">Affiche un symbole qui représente votre emplacement</string>
     <string name="data_settings">Paramètres des données</string>
@@ -123,7 +117,6 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="historic_timestep_limit_reached">Limite de 24H atteinte</string>
     <string name="historic_timestep">Echelle de l\'historique</string>
-    <string name="historic_timestep_summary">Echelle de temps lors de l\'exploration des données</string>
 
     <string-array name="historic_timesteps">
         <item>15 min</item>
@@ -197,8 +190,6 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="data_source">Source des données</string>
-    <string name="data_source_summary">Source de données intégrée ou accès à blitzortung.org (seulement pour les stations)
-    </string>
 
     <string-array name="data_sources">
         <item>Défaut</item>
@@ -223,17 +214,12 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
         <item>manual</item>
     </string-array>
     <string name="location_mode">Mode de localisation</string>
-    <string name="location_mode_summary">Sélectionnez la méthode de localisation</string>
     <string name="longitude">Longitude</string>
-    <string name="location_longitude_summary">Entrez manuellement la longitude</string>
     <string name="latitude">Latitude</string>
-    <string name="location_latitude_summary">Entrez manuellement la latitude</string>
     <string name="alarm_settings">Paramètres d\'alarme</string>
     <string name="alarm_enabled">Alarme activée</string>
     <string name="alarm_enabled_summary">Surveille l\'activité orageuse autour de l\'emplacement courant</string>
     <string name="background_query_period">Fréquence de rafraichissement en tache de fond</string>
-    <string name="background_query_period_summary">Si selectionné: c\'est la fréquence de vérification des alarmes si l\'application n\'est pas active
-    </string>
 
     <string-array name="background_query_periods">
         <item>désactivé</item>
@@ -261,11 +247,7 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <item name="alarm_notification_id" type="id" />
 
     <string name="notification_distance_limit">Rayon de notification</string>
-    <string name="notification_distance_limit_summary">Si selectionné: affiche une notification lorsqu\'une activité orageuse est détectée dans la limite de la zone
-    </string>
     <string name="signaling_distance_limit">Rayon de l\'alarme</string>
-    <string name="signaling_distance_limit_summary">Si selectionné: envoie une alarme sonore lorsqu\'une activité orageuse est détectée dans la limite de la zone
-    </string>
 
     <string-array name="direction_names">
         <item>S</item>
@@ -321,7 +303,6 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="generic_settings">Paramètres génériques</string>
     <string name="measurement_unit">Unités de mesure</string>
-    <string name="measurement_unit_summary">Choisissez entre système métrique (km) et impérial (miles) pour les distances</string>
     <string-array name="measurement_units">
         <item>métrique</item>
         <item>impérial</item>
@@ -336,8 +317,6 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_layer">Votre emplacement</string>
     <string name="strikes_layer">Impacts</string>
     <string name="data_settings_summary">Paramètres détaillés pour controler la transmission et la source des données</string>
-    <string name="map_settings_summary">Mode et apparence de la carte</string>
-    <string name="location_settings_summary">Mode de localisation</string>
     <string name="alarm_settings_summary">Activation de l\'alarme, tâche de fond et rayon de surveillance</string>
     <string name="alarm_signal_settings">Paramètres du signal d\'alarme</string>
     <string name="alarm_audio_signal">Son de l\'alarme</string>
@@ -347,13 +326,12 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_provider_not_available">Le fournisseur de localisation \'%s\' n\'est pas disponible</string>
     <string name="location_provider_disabled">Le fournisseur de localisation \'%s\' est désactivé</string>
     <string name="service_url">Url alternative du service</string>
-    <string name="service_url_summary">Cette url remplace l\'url par défaut</string>
     <string name="set_manual_location">Définir manuellemnt l\'emplacement</string>
     <string name="error_indicator">Indicateur d\'erreur</string>
     <string name="app_log">Logs de l\'application</string>
     <string name="share_log">Envoyer par mail …</string>
     <string name="share_unavailable">L\'envoi par mail est désactivé</string>
-    <string name="unit_km">km</string>
+    <string name="unit_kmlimilimit">km</string>
     <string name="unit_minute">min</string>
     <string name="unit_miles">mi</string>
     <string name="legend_grid">Grille</string>
