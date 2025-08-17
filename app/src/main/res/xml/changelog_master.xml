@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
     <release
+        versionName="2.4"
+        versionCode="334">
+        <feature>Internal modernisation</feature>
+    </release>
+    <release
         versionName="2.3"
         versionCode="327">
         <feature>Dynamic local data retrieval</feature>
