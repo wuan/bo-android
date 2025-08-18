@@ -316,7 +316,6 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_layer">Propria posizione</string>
     <string name="strikes_layer">Lampi</string>
     <string name="data_settings_summary">impostazioni dettagliate per controllare la trasmissione e la fonte dei dati</string>
-    <string name="alarm_settings_summary">Attivazione avvisi, servizio in backgroune e distanze</string>
     <string name="alarm_signal_settings">impostazioni segnali d’allarme</string>
     <string name="alarm_audio_signal">segnale audio degli allarmi</string>
     <string name="alarm_vibration_signal">durata vibrazione degli allarmi</string>

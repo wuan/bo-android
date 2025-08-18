@@ -318,7 +318,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_layer">Własna lokalizacja</string>
     <string name="strikes_layer">Wyładowania</string>
     <string name="data_settings_summary">Szczegółowe ustawienia kontroli transmisji danych i źródła</string>
-    <string name="alarm_settings_summary">Aktywacja alarmu, obsługa w tle i promienie</string>
     <string name="alarm_signal_settings">Ustawienia sygnału alarmowego</string>
     <string name="alarm_audio_signal">Sygnał dźwiękowy alarmu</string>
     <string name="alarm_vibration_signal">Czas trwania wibracji alarmu</string>

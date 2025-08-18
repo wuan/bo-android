@@ -316,7 +316,6 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_layer">Votre emplacement</string>
     <string name="strikes_layer">Impacts</string>
     <string name="data_settings_summary">Paramètres détaillés pour controler la transmission et la source des données</string>
-    <string name="alarm_settings_summary">Activation de l\'alarme, tâche de fond et rayon de surveillance</string>
     <string name="alarm_signal_settings">Paramètres du signal d\'alarme</string>
     <string name="alarm_audio_signal">Son de l\'alarme</string>
     <string name="alarm_vibration_signal">Durée du vibreur d\'alarme</string>

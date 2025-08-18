@@ -315,7 +315,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_layer">Eigen locatie</string>
     <string name="strikes_layer">Bliksems</string>
     <string name="data_settings_summary">gedetaileerde instellingen om controle te hebben op informatie- bronnen en overdracht</string>
-    <string name="alarm_settings_summary">Meldingen activeren, achtergrondservice en radius</string>
     <string name="alarm_signal_settings">Meldingsignaal instellingen</string>
     <string name="alarm_audio_signal">Melding geluidsignaal</string>
     <string name="alarm_vibration_signal">Melding vibratieduur</string>

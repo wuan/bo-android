@@ -317,7 +317,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_layer">Ваше месторасположение</string>
     <string name="strikes_layer">Молнии</string>
     <string name="data_settings_summary">Расширенные настройки для управления передачей данных и источника</string>
-    <string name="alarm_settings_summary">Активация предупреждений, фоновая служба и радиусы</string>
     <string name="alarm_signal_settings">Настройки сигнала предупреждений</string>
     <string name="alarm_audio_signal">Выбор сигнала предупреждений</string>
     <string name="alarm_vibration_signal">Продолжительность вибрации сигнала предупреждения</string>

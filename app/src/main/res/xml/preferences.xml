@@ -74,7 +74,6 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:key="animation_settings"
-        android:summary="@string/animation_settings_summary"
         android:title="@string/animation_settings">
         <ListPreference
             android:defaultValue="6"
@@ -177,7 +176,6 @@
             android:title="@string/latitude" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:summary="@string/alarm_settings_summary"
         android:title="@string/alarm_settings">
         <CheckBoxPreference
             android:defaultValue="true"

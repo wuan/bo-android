@@ -300,7 +300,6 @@ Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_layer">Vlastní poloha</string>
     <string name="strikes_layer">Blesky</string>
     <string name="data_settings_summary">Podrobné nastavení pro kontrolu přenosu dat a zdrojů</string>
-    <string name="alarm_settings_summary">Alarmy, služby a vzdálenosti</string>
     <string name="alarm_signal_settings">Nastavení signalizace alarmu</string>
     <string name="alarm_audio_signal">Nastavení zvuku alarmu</string>
     <string name="alarm_vibration_signal">Trvání vibrací alarmu</string>

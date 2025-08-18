@@ -318,7 +318,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_layer">Vlastita lokacija</string>
     <string name="strikes_layer">Munje</string>
     <string name="data_settings_summary">Postavke izvora i načina prijenosa podataka</string>
-    <string name="alarm_settings_summary">Uključivanje alarma, pozadinski servisi i određivanje radijusa</string>
     <string name="alarm_signal_settings">Postavke signaliziranja alarma</string>
     <string name="alarm_audio_signal">Audio zvuka alarma</string>
     <string name="alarm_vibration_signal">Trajanje vibracije alarma</string>

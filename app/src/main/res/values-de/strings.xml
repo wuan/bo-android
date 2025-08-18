@@ -309,7 +309,6 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="own_location_layer">Eigener Ort</string>
     <string name="strikes_layer">Blitze</string>
     <string name="data_settings_summary">Einstellung von Datenarametern und -quellen</string>
-    <string name="alarm_settings_summary">Warnung, Hintergrunddienst und Warnradien</string>
     <string name="alarm_signal_settings">Alarmsignal</string>
     <string name="alarm_audio_signal">Tonsignal</string>
     <string name="alarm_vibration_signal">Vibration</string>

@@ -321,7 +321,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_layer">Localización propia</string>
     <string name="strikes_layer">Rayos</string>
     <string name="data_settings_summary">Ajustes detallados para el control de la transmisión y el origen de los datos</string>
-    <string name="alarm_settings_summary">Activación, servicio de fondo y radio de la alarma</string>
     <string name="alarm_signal_settings">Ajustes de señalamiento de la alarma</string>
     <string name="alarm_audio_signal">sonido de alarma</string>
     <string name="alarm_vibration_signal">duración de la vibración de la alarma</string>
