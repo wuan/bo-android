@@ -51,7 +51,6 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     </string-array>
 
     <string name="color_scheme">Farbschema der Blitzdaten</string>
-    <string name="color_scheme_summary">%s</string>
 
     <string-array name="map_modes">
         <item>Dunkle Landkarte</item>
@@ -363,8 +362,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="animation_sleep_duration_summary">Wartezeit zwischen einzelnen Animationsschritten in Millisekunden</string>
     <string name="animation_cycle_sleep_duration">Wartezeit am Zyklusende</string>
     <string name="animation_cycle_sleep_duration_summary">Wartezeit vor dem Start eines neuen Animationszyklus in Millisekunden</string>
-    <string name="animation_settings">Animation</string>
-    <string name="animation_settings_summary">Parameter der Animation</string>
+    <string name="animation_settings">Animationseinstellungen</string>
     <string name="diagnosis">Diagnosefeatures</string>
     <string name="diagnosis_summary">Aktiviert  Features für die App-Analyse</string>
     <string name="undefined">nicht definiert</string>

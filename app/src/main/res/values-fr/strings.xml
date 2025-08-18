@@ -57,7 +57,6 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="color_scheme">Thème de couleur</string>
-    <string name="color_scheme_summary">Thème de couleur d\'affichage des données de la carte</string>
 
     <string-array name="map_modes">
         <item>Vue Satellite</item>

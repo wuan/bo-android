@@ -59,7 +59,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="color_scheme">Shema boja</string>
-    <string name="color_scheme_summary">Shema boja za prikaz podataka</string>
 
     <string-array name="map_modes">
         <item>Satelitski</item>

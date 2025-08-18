@@ -60,7 +60,6 @@ Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="color_scheme">Barevné schéma</string>
-    <string name="color_scheme_summary">Barevné schéma zobrazených dat</string>
 
     <string-array name="map_modes">
         <item>Satelitní</item>

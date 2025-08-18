@@ -56,7 +56,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="color_scheme">Kleurenschema</string>
-    <string name="color_scheme_summary">Kleurenschema voor weergegave informatie</string>
 
     <string-array name="map_modes">
         <item>Donkere kaart</item>

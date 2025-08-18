@@ -56,7 +56,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="color_scheme">Цветовая схема</string>
-    <string name="color_scheme_summary">Цветовая схема представления данных</string>
 
     <string-array name="map_modes">
         <item>Темная</item>
@@ -354,7 +353,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="slider_past">Прошлое</string>
     <string name="slider_legend">(Часы)</string>
     <string name="animation_settings">Анимация</string>
-    <string name="animation_settings_summary">Настройки анимации</string>
     <string name="animation_sleep_duration">Пауза между шагами</string>
     <string name="animation_sleep_duration_summary">Временной интервал между шагами, мс</string>
     <string name="animation_cycle_sleep_duration">Пауза в конце анимации</string>

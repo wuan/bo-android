@@ -63,7 +63,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="color_scheme">Color scheme</string>
-    <string name="color_scheme_summary">Color scheme of data display</string>
+    <string name="color_scheme_summary" translatable="false">%</string>
 
     <string-array name="map_modes">
         <item>Dark map</item>
@@ -221,13 +221,13 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>gps</item>
         <item>manual</item>
     </string-array>
-    <string name="location_mode">location mode</string>
+    <string name="location_mode">Location mode</string>
     <string name="location_mode_summary" translatable="false">%s</string>
-    <string name="longitude">longitude</string>
-    <string name="latitude">latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="latitude">Latitude</string>
     <string name="alarm_settings">Alarm settings</string>
     <string name="alarm_enabled">Alarm enabled</string>
-    <string name="alarm_enabled_summary">check lightning activity around the current location</string>
+    <string name="alarm_enabled_summary">Check lightning activity around the current location</string>
     <string name="background_query_period">Background query period</string>
     <string name="background_query_period_summary" translatable="false">%s</string>
     <string name="background_query_toast">Please disable battery optimization for this app for fully functional background alarm.</string>
@@ -368,8 +368,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="slider_current">now</string>
     <string name="slider_past">past</string>
     <string name="slider_legend">[hours]</string>
-    <string name="animation_settings">Animation</string>
-    <string name="animation_settings_summary">Animation specific settings</string>
+    <string name="animation_settings">Animation settings</string>
     <string name="animation_sleep_duration">Sleep between steps</string>
     <string name="animation_sleep_duration_summary">Sleep time between animation steps in milliseconds</string>
     <string name="animation_cycle_sleep_duration">Sleep after cycle</string>
