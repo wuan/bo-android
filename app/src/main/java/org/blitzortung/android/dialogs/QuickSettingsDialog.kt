@@ -46,75 +46,67 @@ class QuickSettingsDialog : DialogFragment() {
 
         val spinnerManager = SpinnerManager(resources, view, preferences)
 
-        val regionValue = spinnerManager.update(
+        spinnerManager.add(
             R.array.regions_values, PreferenceKey.REGION, R.id.selected_region,
         )
 
-        val gridSizeValue = spinnerManager.update(
+        spinnerManager.add(
             R.array.grid_size_values, PreferenceKey.GRID_SIZE, R.id.selected_grid_size,
         )
 
-        val countThresholdValue = spinnerManager.update(
+        spinnerManager.add(
             R.array.count_threshold_values, PreferenceKey.COUNT_THRESHOLD, R.id.selected_count_threshold,
         )
 
-        val queryPeriodValue = spinnerManager.update(
+        spinnerManager.add(
             R.array.query_period_values, PreferenceKey.QUERY_PERIOD, R.id.selected_query_period,
         )
 
-        val intervalDurationValue = spinnerManager.update(
+        spinnerManager.add(
             R.array.interval_duration_values,
             PreferenceKey.INTERVAL_DURATION,
             R.id.selected_interval_duration,
             defaultIndex = 1
         )
 
-        val historicTimestepValue = spinnerManager.update(
+        spinnerManager.add(
             R.array.historic_timestep_values,
             PreferenceKey.HISTORIC_TIMESTEP,
             R.id.selected_historic_timestep,
             defaultIndex = 1
         )
 
-        val animationIntervalDurationValue = spinnerManager.update(
+        spinnerManager.add(
             R.array.animation_interval_duration_values,
             PreferenceKey.ANIMATION_INTERVAL_DURATION,
             R.id.selected_animation_interval_durations,
             defaultIndex = 1
         )
 
-
-        builder.setView(view).setPositiveButton(R.string.ok) { _: DialogInterface, _: Int ->
-            preferences.edit {
-                putString(PreferenceKey.REGION, regionValue())
-                    .putString(PreferenceKey.GRID_SIZE, gridSizeValue())
-                    .putString(PreferenceKey.COUNT_THRESHOLD, countThresholdValue())
-                    .putString(PreferenceKey.INTERVAL_DURATION, intervalDurationValue())
-                    .putString(PreferenceKey.QUERY_PERIOD, queryPeriodValue())
-                    .putString(PreferenceKey.HISTORIC_TIMESTEP, historicTimestepValue())
-                    .putString(PreferenceKey.ANIMATION_INTERVAL_DURATION, animationIntervalDurationValue())
-            }
-        }.setNegativeButton(R.string.cancel) { _: DialogInterface, _: Int -> }
-
-        return builder.create()
+        return builder.setView(view)
+            .setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> spinnerManager.updateSettings() }
+            .setNegativeButton(R.string.cancel) { _: DialogInterface, _: Int -> }
+            .create()
     }
 }
 
 class SpinnerManager(
-    val resources: Resources, val view: View, val preferences: SharedPreferences
+    val resources: Resources, val view: View, val preferences: SharedPreferences,
 ) {
-    fun update(
+    private val entries = mutableListOf<Pair<PreferenceKey, () -> String?>>()
+
+    fun add(
         valuesId: Int,
         preferenceKey: PreferenceKey,
         viewId: Int,
         defaultIndex: Int = 0
-    ): () -> String? {
+    ) {
         val values = resources.getStringArray(valuesId)
         val currentValue = preferences.get(preferenceKey, values[defaultIndex])
         val selectedIndex = getSelectedIndex(values, currentValue)
         val spinner: Spinner = view.findViewById(viewId)
         spinner.setSelection(selectedIndex)
-        return { values[spinner.selectedItemPosition] }
+        entries.add(Pair(preferenceKey) { values[spinner.selectedItemPosition] })
     }
 
     private fun getSelectedIndex(values: Array<String>, currentValue: String): Int {
@@ -126,5 +118,13 @@ class SpinnerManager(
             selectedIndex++
         }
         return if (selectedIndex < values.size) selectedIndex else 0
+    }
+
+    fun updateSettings() {
+        preferences.edit {
+            for (entry in entries) {
+                putString(entry.first, entry.second())
+            }
+        }
     }
 }
