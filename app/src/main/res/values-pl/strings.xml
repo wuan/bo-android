@@ -69,7 +69,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="show_location">Pokazuj własną lokalizację</string>
     <string name="show_location_summary">Dołącz symbol własnej lokalizacji na mapie</string>
-    <string name="data_settings">Transmisja danych</string>
+    <string name="data_source_settings">Transmisja danych</string>
     <string name="region">Obszar</string>
     <string name="region_summary">Wybierz Europę, Amerykę Północną czy Australię</string>
 
@@ -317,7 +317,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="participants_layer">Lokalizacja uczestników</string>
     <string name="own_location_layer">Własna lokalizacja</string>
     <string name="strikes_layer">Wyładowania</string>
-    <string name="data_settings_summary">Szczegółowe ustawienia kontroli transmisji danych i źródła</string>
     <string name="alarm_signal_settings">Ustawienia sygnału alarmowego</string>
     <string name="alarm_audio_signal">Sygnał dźwiękowy alarmu</string>
     <string name="alarm_vibration_signal">Czas trwania wibracji alarmu</string>

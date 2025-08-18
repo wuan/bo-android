@@ -68,7 +68,7 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="show_location">Eigen locatie tonen</string>
     <string name="show_location_summary">Toon symbool op kaart voor eigen locatie</string>
-    <string name="data_settings">Informatie overdracht</string>
+    <string name="data_source_settings">Informatie overdracht</string>
     <string name="region">Regio</string>
     <string name="region_summary">selecteer Europa, Noord Amerika of Oceanië</string>
 
@@ -314,7 +314,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="participants_layer">Deelnemer locatie</string>
     <string name="own_location_layer">Eigen locatie</string>
     <string name="strikes_layer">Bliksems</string>
-    <string name="data_settings_summary">gedetaileerde instellingen om controle te hebben op informatie- bronnen en overdracht</string>
     <string name="alarm_signal_settings">Meldingsignaal instellingen</string>
     <string name="alarm_audio_signal">Melding geluidsignaal</string>
     <string name="alarm_vibration_signal">Melding vibratieduur</string>

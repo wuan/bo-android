@@ -29,6 +29,7 @@ import androidx.fragment.app.DialogFragment
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import androidx.core.content.edit
 
 class QuickSettingsDialog : DialogFragment() {
 
@@ -58,6 +59,10 @@ class QuickSettingsDialog : DialogFragment() {
         val currentIntervalDurationValue = preferences.get(PreferenceKey.INTERVAL_DURATION, intervalDurationValues[1])
         val selectedIntervalDuration = getSelectedIndex(intervalDurationValues, currentIntervalDurationValue)
 
+        val historicTimestepValues = resources.getStringArray(R.array.historic_timestep_values)
+        val currentHistoricTimestepValue = preferences.get(PreferenceKey.HISTORIC_TIMESTEP, historicTimestepValues[1])
+        val selectedHistoricTimestepDuration = getSelectedIndex(historicTimestepValues, currentHistoricTimestepValue)
+
         val animationIntervalDurationValues = resources.getStringArray(R.array.animation_interval_duration_values)
         val currentAnimationIntervalDurationValue =
             preferences.get(PreferenceKey.ANIMATION_INTERVAL_DURATION, animationIntervalDurationValues[1])
@@ -81,6 +86,9 @@ class QuickSettingsDialog : DialogFragment() {
         val queryPeriodSpinner: Spinner = view.findViewById(R.id.selected_query_period)
         queryPeriodSpinner.setSelection(selectedQueryPeriod)
 
+        val historicTimestepSpinner: Spinner = view.findViewById(R.id.selected_historic_timestep)
+        historicTimestepSpinner.setSelection(selectedHistoricTimestepDuration)
+
         val animationIntervalDuration: Spinner = view.findViewById(R.id.selected_animation_interval_durations)
         animationIntervalDuration.setSelection(selectedAnimationInterval)
 
@@ -92,13 +100,15 @@ class QuickSettingsDialog : DialogFragment() {
             val queryPeriodValue = queryPeriodValues[queryPeriodSpinner.selectedItemPosition]
             val animationIntervalValue = animationIntervalDurationValues[animationIntervalDuration.selectedItemPosition]
 
-            preferences.edit()
-                .putString(PreferenceKey.REGION.toString(), regionValue)
-                .putString(PreferenceKey.GRID_SIZE.toString(), gridSizeValue)
-                .putString(PreferenceKey.COUNT_THRESHOLD.toString(), countThresholdValue)
-                .putString(PreferenceKey.INTERVAL_DURATION.toString(), intervalDurationValue)
-                .putString(PreferenceKey.QUERY_PERIOD.toString(), queryPeriodValue)
-                .putString(PreferenceKey.ANIMATION_INTERVAL_DURATION.toString(), animationIntervalValue).apply()
+            preferences.edit {
+                putString(PreferenceKey.REGION.toString(), regionValue)
+                    .putString(PreferenceKey.GRID_SIZE.toString(), gridSizeValue)
+                    .putString(PreferenceKey.COUNT_THRESHOLD.toString(), countThresholdValue)
+                    .putString(PreferenceKey.INTERVAL_DURATION.toString(), intervalDurationValue)
+                    .putString(PreferenceKey.QUERY_PERIOD.toString(), queryPeriodValue)
+                    .putString(PreferenceKey.HISTORIC_TIMESTEP.toString(), currentHistoricTimestepValue)
+                    .putString(PreferenceKey.ANIMATION_INTERVAL_DURATION.toString(), animationIntervalValue)
+            }
         }.setNegativeButton(R.string.cancel) { _: DialogInterface, _: Int -> }
 
         return builder.create()

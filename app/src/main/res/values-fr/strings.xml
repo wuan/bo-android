@@ -69,7 +69,7 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="show_location">Montrer son emplacement</string>
     <string name="show_location_summary">Affiche un symbole qui représente votre emplacement</string>
-    <string name="data_settings">Paramètres des données</string>
+    <string name="data_source_settings">Paramètres des données</string>
     <string name="region">Région</string>
     <string name="region_summary">Selectionnez entre Europe, Amérique, Océanie, Asie ou Afrique</string>
 
@@ -315,7 +315,6 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="participants_layer">Emplacement des stations</string>
     <string name="own_location_layer">Votre emplacement</string>
     <string name="strikes_layer">Impacts</string>
-    <string name="data_settings_summary">Paramètres détaillés pour controler la transmission et la source des données</string>
     <string name="alarm_signal_settings">Paramètres du signal d\'alarme</string>
     <string name="alarm_audio_signal">Son de l\'alarme</string>
     <string name="alarm_vibration_signal">Durée du vibreur d\'alarme</string>

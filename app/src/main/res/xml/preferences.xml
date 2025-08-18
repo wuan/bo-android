@@ -111,10 +111,9 @@
             app:showSeekBarValue="true" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="data_settings"
-        android:summary="@string/data_settings_summary"
-        android:title="@string/data_settings">
-        <ListPreference
+        android:key="data_source_settings"
+        android:title="@string/data_source_settings">
+        <ListPreferenceV
             android:defaultValue="30"
             android:enabled="true"
             android:entries="@array/historic_timesteps"
