@@ -113,16 +113,6 @@
     <PreferenceCategory
         android:key="data_source_settings"
         android:title="@string/data_source_settings">
-        <ListPreferenceV
-            android:defaultValue="30"
-            android:enabled="true"
-            android:entries="@array/historic_timesteps"
-            android:entryValues="@array/historic_timestep_values"
-            android:key="historic_timestep"
-            android:persistent="true"
-            android:selectable="true"
-            android:summary="@string/historic_timestep_summary"
-            android:title="@string/historic_timestep" />
         <ListPreference
             android:defaultValue="RPC"
             android:enabled="true"
