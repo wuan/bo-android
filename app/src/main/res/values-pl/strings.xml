@@ -357,7 +357,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="animation_cycle_sleep_duration">Przerwa po cyklu</string>
     <string name="animation_cycle_sleep_duration_summary">Czas przerwy po zakończeniu cyklu animacji (w milisekundach)</string>
     <string name="animation_interval_duration">Przedział czasowy animacji</string>
-    <string name="animation_interval_duration_summary">Rozmiar przedziału czasowego cyklu animacji (w godzinach)</string>
     <string-array name="animation_interval_durations">
         <item>2 godz.</item>
         <item>4 godz.</item>

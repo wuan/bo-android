@@ -357,7 +357,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="animation_cycle_sleep_duration">Пауза в конце анимации</string>
     <string name="animation_cycle_sleep_duration_summary">Время паузы после завершения анимации, мс</string>
     <string name="animation_interval_duration">Интервал анимации</string>
-    <string name="animation_interval_duration_summary">Временной отрезок анимации, час</string>
     <string name="ok">Ок</string>
     <string name="cancel">Отмена</string>
     <string name="ms">мс</string>

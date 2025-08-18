@@ -224,7 +224,6 @@
                 android:ringtoneType="notification"
                 android:selectable="true"
                 android:showDefault="true"
-                android:summary="@string/alarm_audio_signal_summary"
                 android:title="@string/alarm_audio_signal" />
             <SeekBarPreference
                 android:defaultValue="3"

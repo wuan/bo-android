@@ -356,7 +356,6 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
         <item>12</item>
         <item>24</item>
     </string-array>
-    <string name="animation_interval_duration_summary">%s</string>
     <string name="animation_sleep_duration">Wartezeit Schritte</string>
     <string name="animation_sleep_duration_summary">Wartezeit zwischen einzelnen Animationsschritten in Millisekunden</string>
     <string name="animation_cycle_sleep_duration">Wartezeit am Zyklusende</string>
