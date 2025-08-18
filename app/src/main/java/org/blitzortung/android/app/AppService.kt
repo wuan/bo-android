@@ -141,7 +141,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         })
         val contentIntent = PendingIntent.getActivity(this, 0, intent, flags)
 
-        if (isAtLeast(26)) {
+        if (isAtLeast(29)) {
             startForeground(contentIntent)
         }
 
