@@ -2,7 +2,9 @@ package org.blitzortung.android.location.provider
 
 import android.content.Context
 import android.location.Location
-import android.location.LocationManager.*
+import android.location.LocationManager.GPS_PROVIDER
+import android.location.LocationManager.NETWORK_PROVIDER
+import android.location.LocationManager.PASSIVE_PROVIDER
 import android.preference.PreferenceManager
 import org.blitzortung.android.location.LocationHandler
 

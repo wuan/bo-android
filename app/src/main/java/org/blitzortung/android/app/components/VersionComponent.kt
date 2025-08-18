@@ -21,10 +21,10 @@ package org.blitzortung.android.app.components
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.core.content.edit
 import org.blitzortung.android.app.BuildConfig
 import org.blitzortung.android.app.Main
 import javax.inject.Inject
-import androidx.core.content.edit
 
 class VersionComponent @Inject constructor(
     context: Context,

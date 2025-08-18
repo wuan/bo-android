@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <PreferenceCategory
-        android:title="@string/map_settings">
+    <PreferenceCategory android:title="@string/map_settings">
         <ListPreference
             android:defaultValue="SATELLITE"
             android:enabled="true"
@@ -139,8 +138,7 @@
             android:persistent="true"
             android:title="@string/bo_password" />
     </PreferenceCategory>
-    <PreferenceCategory
-        android:title="@string/location_settings">
+    <PreferenceCategory android:title="@string/location_settings">
         <ListPreference
             android:defaultValue="network"
             android:enabled="true"
@@ -164,8 +162,7 @@
             android:persistent="true"
             android:title="@string/latitude" />
     </PreferenceCategory>
-    <PreferenceCategory
-        android:title="@string/alarm_settings">
+    <PreferenceCategory android:title="@string/alarm_settings">
         <CheckBoxPreference
             android:defaultValue="true"
             android:enabled="true"

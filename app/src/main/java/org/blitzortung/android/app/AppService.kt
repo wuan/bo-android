@@ -18,7 +18,6 @@
 
 package org.blitzortung.android.app
 
-import android.annotation.TargetApi
 import android.app.AlarmManager
 import android.app.Notification
 import android.app.PendingIntent
@@ -31,6 +30,7 @@ import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.ServiceCompat
 import dagger.android.AndroidInjection
 import org.blitzortung.android.alert.handler.AlertHandler
@@ -142,14 +142,14 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         val contentIntent = PendingIntent.getActivity(this, 0, intent, flags)
 
         if (isAtLeast(26)) {
-            startForground(contentIntent)
+            startForeground(contentIntent)
         }
 
         return START_STICKY
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
-    private fun startForground(contentIntent: PendingIntent?) {
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun startForeground(contentIntent: PendingIntent?) {
         val notification = Notification.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.icon)
             .setContentTitle(this.resources.getText(R.string.app_name))

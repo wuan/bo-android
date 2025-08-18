@@ -249,7 +249,7 @@ class MainDataHandler @Inject constructor(
             PreferenceKey.HISTORIC_TIMESTEP -> {
                 history = history.copy(
                     timeIncrement =
-                    sharedPreferences.get(key, "30").toInt()
+                        sharedPreferences.get(key, "30").toInt()
                 )
             }
 

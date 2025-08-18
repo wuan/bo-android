@@ -77,7 +77,7 @@ data class GridParameters(
 
     fun contains(longitude: Double, latitude: Double, inset: Double = 0.0): Boolean {
         val inLongitude = longitude in longitudeStart + inset..longitudeEnd - inset
-        val inLatitude = latitude in latitudeStart - latitudeDelta * latitudeBins + inset .. latitudeStart - inset
+        val inLatitude = latitude in latitudeStart - latitudeDelta * latitudeBins + inset..latitudeStart - inset
         return inLongitude && inLatitude
     }
 }

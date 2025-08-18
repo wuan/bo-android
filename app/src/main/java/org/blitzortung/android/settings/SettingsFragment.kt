@@ -12,6 +12,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.View
 import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.preference.EditTextPreference
@@ -29,7 +30,6 @@ import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.location.LocationHandler
 import java.util.Locale
 import javax.inject.Inject
-import androidx.core.net.toUri
 
 private const val REQUEST_CODE_ALERT_RINGTONE: Int = 123
 
