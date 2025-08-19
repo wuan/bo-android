@@ -28,7 +28,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="legend">Legenda</string>
     <string name="legend_grid">Siatka</string>
     <string name="unit_minute">min</string>
-    <string name="unit_kmlimilimit">km</string>
+    <string name="unit_km">km</string>
     <string name="total_time">Czas całkowity</string>
     <string name="activity">Aktywność</string>
     <string name="during">w ciągu ostatniej</string>
@@ -71,7 +71,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="show_location_summary">Dołącz symbol własnej lokalizacji na mapie</string>
     <string name="data_source_settings">Transmisja danych</string>
     <string name="region">Obszar</string>
-    <string name="region_summary">Wybierz Europę, Amerykę Północną czy Australię</string>
 
     <string-array name="regions">
         <item>Lokalny</item>
@@ -97,7 +96,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="interval_duration">Przedział czasowy</string>
-    <string name="interval_duration_summary">Przedział czasowy, w którym wyświetlana jest aktywność wyładowań</string>
 
     <string-array name="interval_durations">
         <item>30 min</item>
@@ -129,7 +127,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="query_period">Częstotliwość odpytywania</string>
-    <string name="query_period_summary">Częstotliwość odświeżania danych</string>
 
     <string-array name="query_periods">
         <item>20 s</item>
@@ -149,7 +146,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="grid_size">Rozmiar siatki</string>
-    <string name="grid_size_summary">Rozmiar kwadratów siatki danych</string>
 
     <string-array name="grid_sizes">
         <item>Automatyczny</item>
@@ -169,7 +165,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Próg liczby wyładowań</string>
-    <string name="count_threshold_summary">Próg liczby wyładowań na obszar siatki</string>
 
     <string-array name="count_thresholds">
         <item>Wyłączony</item>

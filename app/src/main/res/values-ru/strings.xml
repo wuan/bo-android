@@ -27,7 +27,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="legend">Обозначение</string>
     <string name="legend_grid">Квадрат</string>
     <string name="unit_minute">мин.</string>
-    <string name="unit_kmlimilimit">км</string>
+    <string name="unit_km">км</string>
     <string name="total_time">всего времени</string>
     <string name="activity">активность</string>
     <string name="during">в прошлом</string>
@@ -70,7 +70,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="show_location_summary">Включить символ для собственного местоположения на карте</string>
     <string name="data_source_settings">Передача данных</string>
     <string name="region">Регион</string>
-    <string name="region_summary">Выберите регион предоставления данных</string>
 
     <string-array name="regions">
         <item>Домашний регион</item>
@@ -96,7 +95,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="interval_duration">Временной интервал</string>
-    <string name="interval_duration_summary">Временной интервал, за который отображается активность молний</string>
 
     <string-array name="interval_durations">
         <item>30 минут</item>
@@ -128,7 +126,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="query_period">Период обновления данных</string>
-    <string name="query_period_summary">Частота запроса новых данных</string>
 
     <string-array name="query_periods">
         <item>20 секунд</item>
@@ -148,7 +145,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="grid_size">Размер квадрата</string>
-    <string name="grid_size_summary">Размер области представления данных</string>
 
     <string-array name="grid_sizes">
         <item>Авто</item>
@@ -168,7 +164,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Порог отображения молний</string>
-    <string name="count_threshold_summary">Минимальное количество молний на один квадрат</string>
 
     <string-array name="count_thresholds">
         <item>Отключено</item>

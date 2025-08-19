@@ -5,7 +5,7 @@ import dagger.android.ContributesAndroidInjector
 import org.blitzortung.android.settings.SettingsFragment
 
 @Module
-abstract class SettingsModule {
+interface SettingsModule {
     @ContributesAndroidInjector
-    abstract fun contributeSettingsFragment(): SettingsFragment
+    fun contributeSettingsFragment(): SettingsFragment
 }

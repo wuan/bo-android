@@ -13,7 +13,7 @@
             android:summary="@string/map_mode_summary"
             android:title="@string/map_mode" />
         <SeekBarPreference
-            android:defaultValue="70"
+            android:defaultValue="75"
             android:key="map_scale"
             android:max="150"
             android:persistent="true"

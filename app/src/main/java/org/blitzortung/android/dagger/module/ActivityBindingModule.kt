@@ -6,11 +6,11 @@ import org.blitzortung.android.app.AppService
 import org.blitzortung.android.app.Main
 
 @Module
-abstract class ActivityBindingModule {
+interface ActivityBindingModule {
 
     @ContributesAndroidInjector
-    abstract fun contributeMainActivityInjector(): Main
+    fun contributeMainActivityInjector(): Main
 
     @ContributesAndroidInjector
-    abstract fun contributesAppServiceInjector(): AppService
+    fun contributesAppServiceInjector(): AppService
 }

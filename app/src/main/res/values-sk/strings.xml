@@ -71,7 +71,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="show_location_summary">Zobraziť symbol vlastnej polohy na mape</string>
     <string name="data_source_settings">Prenos údajov</string>
     <string name="region">Región</string>
-    <string name="region_summary">Vyberte si región korý si prajete sledovať</string>
 
     <string-array name="regions">
         <item>Local</item>
@@ -97,7 +96,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="interval_duration">Časový interval</string>
-    <string name="interval_duration_summary">Časový interval, počas ktorého je zobrazená činnosť bleskov</string>
 
     <string-array name="interval_durations">
         <item>30 minút</item>
@@ -129,7 +127,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="query_period">Obnovenie údajov</string>
-    <string name="query_period_summary">Frekvencia obnovovania údajov</string>
 
     <string-array name="query_periods">
         <item>20 sekúnd</item>
@@ -149,7 +146,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="grid_size">Veľkosť rastra</string>
-    <string name="grid_size_summary">Veľkosť rastra údajov na mape</string>
 
     <string-array name="grid_sizes">
         <item>auto</item>
@@ -169,7 +165,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Prah počtu bleskov</string>
-    <string name="count_threshold_summary">Minimálny počet bleskov aby sa zobrazil raster</string>
 
     <string-array name="count_thresholds">
         <item>Vypnuté</item>
@@ -219,8 +214,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_enabled">Upozornenia povolené</string>
     <string name="alarm_enabled_summary">Kontrolujte sa aktivita bleskov okolo aktuálneho miesta</string>
     <string name="background_query_period">Frekvencia obnovy na pozadí</string>
-    <string name="background_query_period_summary">Ak sú upozornenia povolené: frekvencia dopytu na pozadí, ak chcete byť upozornený na bleskovú aktivitu a aplikácia nie je aktívna
-    </string>
 
     <string-array name="background_query_periods">
         <item>Vypnuté</item>
