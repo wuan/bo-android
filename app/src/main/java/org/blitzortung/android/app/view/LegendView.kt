@@ -225,7 +225,7 @@ class LegendView @JvmOverloads constructor(
         get() {
             val gridSize = strikesOverlay?.gridParameters?.size
             return if (gridSize != null) {
-                "%.0f %s".format(gridSize / 1000.0, context.getString(R.string.unit_kmlimilimit))
+                "%.0f %s".format(gridSize / 1000.0, context.getString(R.string.unit_km))
             } else {
                 context.getString(R.string.not_available)
             }

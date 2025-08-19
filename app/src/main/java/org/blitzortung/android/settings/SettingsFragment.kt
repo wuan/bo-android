@@ -122,12 +122,10 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
             PreferenceKey.LOCATION_MODE -> {
                 val provider = configureLocationProviderPreferences(sharedPreferences)
                 val context = this.context
-                if (context != null) {
-                    if (provider != LocationHandler.MANUAL_PROVIDER &&
-                        !(context.getSystemService(LOCATION_SERVICE) as LocationManager).isProviderEnabled(provider)
-                    ) {
-                        startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-                    }
+                if (context != null && provider != LocationHandler.MANUAL_PROVIDER &&
+                    !(context.getSystemService(LOCATION_SERVICE) as LocationManager).isProviderEnabled(provider)
+                ) {
+                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 }
             }
 
@@ -189,7 +187,7 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
     }
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean {
-        if (preference.key == PreferenceKey.ALERT_SOUND_SIGNAL.toString()) {
+        return if (preference.key == PreferenceKey.ALERT_SOUND_SIGNAL.toString()) {
             val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
             intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION)
             intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
@@ -207,16 +205,16 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
                 if (existingValue.isEmpty()) {
                     intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, null as Uri?)
                 } else {
-                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Uri.parse(existingValue))
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, existingValue.toUri())
                 }
             } else {
                 intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Settings.System.DEFAULT_NOTIFICATION_URI)
             }
 
             startActivityForResult(intent, REQUEST_CODE_ALERT_RINGTONE)
-            return true
+            true
         } else {
-            return super.onPreferenceTreeClick(preference)
+            super.onPreferenceTreeClick(preference)
         }
     }
 

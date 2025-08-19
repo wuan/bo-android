@@ -33,7 +33,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="legend">Legend</string>
     <string name="legend_grid">Grid</string>
     <string name="unit_minute">min</string>
-    <string name="unit_kmlimilimit">km</string>
+    <string name="unit_km">km</string>
     <string name="total_time">total time</string>
     <string name="activity">activity</string>
     <string name="during">during the past</string>
@@ -78,7 +78,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="show_location_summary">include symbol for own location in map</string>
     <string name="data_source_settings">Data source</string>
     <string name="region">Region</string>
-    <string name="region_summary">select data source region (%s)</string>
 
     <string-array name="regions">
         <item>Local</item>
@@ -104,7 +103,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="interval_duration">Time interval</string>
-    <string name="interval_duration_summary">Time interval in which lightning activity is shown</string>
 
     <string-array name="interval_durations">
         <item>30 min</item>
@@ -123,7 +121,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="historic_timestep_limit_reached">24 hours limit reached</string>
     <string name="historic_timestep">Historic timestep</string>
-    <string name="historic_timestep_summary" translatable="false">%s</string>
 
     <string-array name="historic_timesteps">
         <item>15 min</item>
@@ -137,7 +134,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="query_period">Query period</string>
-    <string name="query_period_summary">frequency of data refresh</string>
 
     <string-array name="query_periods">
         <item>20 s</item>
@@ -157,7 +153,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="grid_size">Grid size</string>
-    <string name="grid_size_summary">size of data grid squares (%s)</string>
 
     <string-array name="grid_sizes">
         <item>auto</item>
@@ -177,7 +172,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Strike count threshold</string>
-    <string name="count_threshold_summary">Strike count threshold to show grid area (%s)</string>
 
     <string-array name="count_thresholds">
         <item>disabled</item>

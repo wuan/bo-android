@@ -73,7 +73,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="show_location_summary">Prikaz vlastite lokacije na karti</string>
     <string name="data_source_settings">Prijenos podataka</string>
     <string name="region">Područje</string>
-    <string name="region_summary">Odabir geografskog područja\n(Europa, Sjeverna Amerika, Oceanija, ..)</string>
 
     <string-array name="regions">
         <item>Local</item>
@@ -99,7 +98,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="interval_duration">Vremenski interval</string>
-    <string name="interval_duration_summary">Vremenski interval prikaza aktivnosti munja</string>
 
     <string-array name="interval_durations">
         <item>30 min</item>
@@ -131,7 +129,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="query_period">Obnova podataka</string>
-    <string name="query_period_summary">Učestalost obnove podataka</string>
 
     <string-array name="query_periods">
         <item>20 s</item>
@@ -151,7 +148,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="grid_size">Veličina rastera</string>
-    <string name="grid_size_summary">Obuhvat površine za prikaz ukupnog broja munja</string>
 
     <string-array name="grid_sizes">
         <item>auto</item>
@@ -171,7 +167,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Prag broja munja</string>
-    <string name="count_threshold_summary">Minimalni broj munja za prikaz rastera</string>
 
     <string-array name="count_thresholds">
         <item>isključeno</item>
