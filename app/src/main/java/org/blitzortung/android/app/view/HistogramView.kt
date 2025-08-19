@@ -24,11 +24,8 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.util.Log
-import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
-import org.blitzortung.android.data.Parameters
-import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.overlay.StrikeListOverlay
@@ -175,7 +172,7 @@ class HistogramView @JvmOverloads constructor(
                 return intArrayOf()
             }
 
-            Log.v(Main.LOG_TAG, "HistogramView create histogram from ${result.strikes.size} total strikes")
+            Log.v(LOG_TAG, "HistogramView create histogram from ${result.strikes.size} total strikes")
             val referenceTime = result.referenceTime
 
             val binInterval = 5

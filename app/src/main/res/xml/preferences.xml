@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <PreferenceCategory
-        android:title="@string/map_settings">
+    <PreferenceCategory android:title="@string/map_settings">
         <ListPreference
             android:defaultValue="SATELLITE"
             android:enabled="true"
@@ -74,7 +73,6 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:key="animation_settings"
-        android:summary="@string/animation_settings_summary"
         android:title="@string/animation_settings">
         <ListPreference
             android:defaultValue="6"
@@ -112,19 +110,8 @@
             app:showSeekBarValue="true" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="data_settings"
-        android:summary="@string/data_settings_summary"
-        android:title="@string/data_settings">
-        <ListPreference
-            android:defaultValue="30"
-            android:enabled="true"
-            android:entries="@array/historic_timesteps"
-            android:entryValues="@array/historic_timestep_values"
-            android:key="historic_timestep"
-            android:persistent="true"
-            android:selectable="true"
-            android:summary="@string/historic_timestep_summary"
-            android:title="@string/historic_timestep" />
+        android:key="data_source_settings"
+        android:title="@string/data_source_settings">
         <ListPreference
             android:defaultValue="RPC"
             android:enabled="true"
@@ -151,8 +138,7 @@
             android:persistent="true"
             android:title="@string/bo_password" />
     </PreferenceCategory>
-    <PreferenceCategory
-        android:title="@string/location_settings">
+    <PreferenceCategory android:title="@string/location_settings">
         <ListPreference
             android:defaultValue="network"
             android:enabled="true"
@@ -176,9 +162,7 @@
             android:persistent="true"
             android:title="@string/latitude" />
     </PreferenceCategory>
-    <PreferenceCategory
-        android:summary="@string/alarm_settings_summary"
-        android:title="@string/alarm_settings">
+    <PreferenceCategory android:title="@string/alarm_settings">
         <CheckBoxPreference
             android:defaultValue="true"
             android:enabled="true"
@@ -226,7 +210,6 @@
                 android:ringtoneType="notification"
                 android:selectable="true"
                 android:showDefault="true"
-                android:summary="@string/alarm_audio_signal_summary"
                 android:title="@string/alarm_audio_signal" />
             <SeekBarPreference
                 android:defaultValue="3"

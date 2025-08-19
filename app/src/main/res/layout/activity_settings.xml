@@ -4,4 +4,4 @@
     android:name="org.blitzortung.android.settings.SettingsFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"/>
+    android:fitsSystemWindows="true" />
