@@ -80,7 +80,7 @@ class VersionComponent @Inject constructor(
     companion object {
         internal const val CONFIGURED_VERSION_CODE = "configured_version_code"
         internal const val CONFIGURED_MAJOR_VERSION = "configured_major_version"
-        internal const val CONFIGURED_MINOR_VERSION = "configured_inor_version"
+        internal const val CONFIGURED_MINOR_VERSION = "configured_minor_version"
     }
 }
 
