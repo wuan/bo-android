@@ -63,7 +63,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="color_scheme">Color scheme</string>
-    <string name="color_scheme_summary">Color scheme of data display</string>
+    <string name="color_scheme_summary" translatable="false">%s</string>
 
     <string-array name="map_modes">
         <item>Dark map</item>
@@ -76,7 +76,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="show_location">Show own location</string>
     <string name="show_location_summary">include symbol for own location in map</string>
-    <string name="data_settings">Data transmission</string>
+    <string name="data_source_settings">Data source</string>
     <string name="region">Region</string>
     <string name="region_summary">select data source region (%s)</string>
 
@@ -221,13 +221,13 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>gps</item>
         <item>manual</item>
     </string-array>
-    <string name="location_mode">location mode</string>
+    <string name="location_mode">Location mode</string>
     <string name="location_mode_summary" translatable="false">%s</string>
-    <string name="longitude">longitude</string>
-    <string name="latitude">latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="latitude">Latitude</string>
     <string name="alarm_settings">Alarm settings</string>
     <string name="alarm_enabled">Alarm enabled</string>
-    <string name="alarm_enabled_summary">check lightning activity around the current location</string>
+    <string name="alarm_enabled_summary">Check lightning activity around the current location</string>
     <string name="background_query_period">Background query period</string>
     <string name="background_query_period_summary" translatable="false">%s</string>
     <string name="background_query_toast">Please disable battery optimization for this app for fully functional background alarm.</string>
@@ -331,8 +331,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="participants_layer">Participants location</string>
     <string name="own_location_layer">Own location</string>
     <string name="strikes_layer">Strikes</string>
-    <string name="data_settings_summary">detailed settings to control data transmission and source</string>
-    <string name="alarm_settings_summary">Alarm activation, background service and radiuses</string>
     <string name="alarm_signal_settings">Alarm signal settings</string>
     <string name="alarm_audio_signal">Alarm audio signal</string>
     <string name="alarm_vibration_signal">Alarm vibration duration</string>
@@ -340,7 +338,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_vibration_signal_summary">choose the duration of vibration signaling in alarm case</string>
     <string name="location_provider_not_available">location provider \'%s\' not available</string>
     <string name="location_provider_disabled">location provider \'%s\' is disabled</string>
-    <string name="service_url">Non-default service URL</string>
+    <string name="service_url">Custom Service URL</string>
     <string name="set_manual_location">Set manual location</string>
     <string name="error_indicator">Error indicator</string>
     <string name="app_log_subject" translatable="false">Application log</string>
@@ -368,14 +366,13 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="slider_current">now</string>
     <string name="slider_past">past</string>
     <string name="slider_legend">[hours]</string>
-    <string name="animation_settings">Animation</string>
-    <string name="animation_settings_summary">Animation specific settings</string>
+    <string name="animation_settings">Animation settings</string>
     <string name="animation_sleep_duration">Sleep between steps</string>
     <string name="animation_sleep_duration_summary">Sleep time between animation steps in milliseconds</string>
     <string name="animation_cycle_sleep_duration">Sleep after cycle</string>
     <string name="animation_cycle_sleep_duration_summary">Sleep time after animation cycle has finished (in milliseconds)</string>
     <string name="animation_interval_duration">Animation interval</string>
-    <string name="animation_interval_duration_summary">Size of the interval of the animation cycle in hours</string>
+    <string name="animation_interval_duration_summary" translatable="false">%s</string>
     <string name="ms">ms</string>
     <string name="percent" translatable="false">%</string>
     <string name="percent_format" translatable="false">%.1f%%</string>

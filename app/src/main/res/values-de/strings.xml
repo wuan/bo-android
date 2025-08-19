@@ -51,7 +51,6 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     </string-array>
 
     <string name="color_scheme">Farbschema der Blitzdaten</string>
-    <string name="color_scheme_summary">%s</string>
 
     <string-array name="map_modes">
         <item>Dunkle Landkarte</item>
@@ -64,7 +63,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
 
     <string name="show_location">Standort anzeigen</string>
     <string name="show_location_summary">Eigenen Standort als Symbol in der Karte anzeigen</string>
-    <string name="data_settings">Datenübertragung</string>
+    <string name="data_source_settings">Datenübertragung</string>
     <string name="region">Region auswählen</string>
     <string name="region_summary">%s</string>
 
@@ -309,8 +308,6 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="participants_layer">Teilnehmende Stationen</string>
     <string name="own_location_layer">Eigener Ort</string>
     <string name="strikes_layer">Blitze</string>
-    <string name="data_settings_summary">Einstellung von Datenarametern und -quellen</string>
-    <string name="alarm_settings_summary">Warnung, Hintergrunddienst und Warnradien</string>
     <string name="alarm_signal_settings">Alarmsignal</string>
     <string name="alarm_audio_signal">Tonsignal</string>
     <string name="alarm_vibration_signal">Vibration</string>
@@ -358,13 +355,11 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
         <item>12</item>
         <item>24</item>
     </string-array>
-    <string name="animation_interval_duration_summary">%s</string>
     <string name="animation_sleep_duration">Wartezeit Schritte</string>
     <string name="animation_sleep_duration_summary">Wartezeit zwischen einzelnen Animationsschritten in Millisekunden</string>
     <string name="animation_cycle_sleep_duration">Wartezeit am Zyklusende</string>
     <string name="animation_cycle_sleep_duration_summary">Wartezeit vor dem Start eines neuen Animationszyklus in Millisekunden</string>
-    <string name="animation_settings">Animation</string>
-    <string name="animation_settings_summary">Parameter der Animation</string>
+    <string name="animation_settings">Animationseinstellungen</string>
     <string name="diagnosis">Diagnosefeatures</string>
     <string name="diagnosis_summary">Aktiviert  Features für die App-Analyse</string>
     <string name="undefined">nicht definiert</string>

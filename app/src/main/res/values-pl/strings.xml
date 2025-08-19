@@ -57,7 +57,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="color_scheme">Schemat kolorów</string>
-    <string name="color_scheme_summary">Schemat kolorów wyświetlacza danych</string>
 
     <string-array name="map_modes">
         <item>Ciemna mapa</item>
@@ -70,7 +69,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="show_location">Pokazuj własną lokalizację</string>
     <string name="show_location_summary">Dołącz symbol własnej lokalizacji na mapie</string>
-    <string name="data_settings">Transmisja danych</string>
+    <string name="data_source_settings">Transmisja danych</string>
     <string name="region">Obszar</string>
     <string name="region_summary">Wybierz Europę, Amerykę Północną czy Australię</string>
 
@@ -318,8 +317,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="participants_layer">Lokalizacja uczestników</string>
     <string name="own_location_layer">Własna lokalizacja</string>
     <string name="strikes_layer">Wyładowania</string>
-    <string name="data_settings_summary">Szczegółowe ustawienia kontroli transmisji danych i źródła</string>
-    <string name="alarm_settings_summary">Aktywacja alarmu, obsługa w tle i promienie</string>
     <string name="alarm_signal_settings">Ustawienia sygnału alarmowego</string>
     <string name="alarm_audio_signal">Sygnał dźwiękowy alarmu</string>
     <string name="alarm_vibration_signal">Czas trwania wibracji alarmu</string>
@@ -354,13 +351,11 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="slider_past">przeszłość</string>
     <string name="slider_legend">[godziny]</string>
     <string name="animation_settings">Animacja</string>
-    <string name="animation_settings_summary">Ustawienia specyficzne dla animacji</string>
     <string name="animation_sleep_duration">Przerwa między krokami</string>
     <string name="animation_sleep_duration_summary">Czas przerwy między krokami animacji (w milisekundach)</string>
     <string name="animation_cycle_sleep_duration">Przerwa po cyklu</string>
     <string name="animation_cycle_sleep_duration_summary">Czas przerwy po zakończeniu cyklu animacji (w milisekundach)</string>
     <string name="animation_interval_duration">Przedział czasowy animacji</string>
-    <string name="animation_interval_duration_summary">Rozmiar przedziału czasowego cyklu animacji (w godzinach)</string>
     <string-array name="animation_interval_durations">
         <item>2 godz.</item>
         <item>4 godz.</item>

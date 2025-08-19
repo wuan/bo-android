@@ -38,8 +38,14 @@ import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.FileNotFoundException
 import java.io.InputStreamReader
-import java.net.*
-import java.util.*
+import java.net.Authenticator
+import java.net.PasswordAuthentication
+import java.net.SocketException
+import java.net.SocketTimeoutException
+import java.net.URL
+import java.util.Calendar
+import java.util.GregorianCalendar
+import java.util.TimeZone
 import java.util.zip.GZIPInputStream
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -181,7 +187,8 @@ class BlitzortungHttpDataProvider @Inject constructor(
             Authenticator.setDefault(MyAuthenticator())
 
             val strikes =
-                retrieveData("BlitzortungHttpDataProvider.getStrikes() read %d bytes (%d new strikes) from region $region",
+                retrieveData(
+                    "BlitzortungHttpDataProvider.getStrikes() read %d bytes (%d new strikes) from region $region",
                     intervalSequence.map {
                         intervalTime.timeInMillis = it
 

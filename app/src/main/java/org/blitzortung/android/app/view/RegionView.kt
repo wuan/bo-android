@@ -7,10 +7,6 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.preference.PreferenceManager
 import android.util.AttributeSet
-import android.util.Log
-import android.view.ViewGroup
-import android.widget.RelativeLayout
-import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.provider.result.ResultEvent
@@ -19,7 +15,6 @@ import org.blitzortung.android.util.TabletAwareView
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
 
 private const val SMALL_TEXT_SCALE = 0.6f
@@ -129,7 +124,7 @@ class RegionView @JvmOverloads constructor(
                     val y2 = padding + ((y0 - it.latSouth) / ys).toFloat()
 
                     foregroundPaint.strokeWidth = 1f
-                    drawBox(canvas, x1, y1, x2, y2, foregroundPaint);
+                    drawBox(canvas, x1, y1, x2, y2, foregroundPaint)
                 }
                 topCoordinate += textSize
 
@@ -139,11 +134,11 @@ class RegionView @JvmOverloads constructor(
             }
 
             zoomLevel?.let {
-                val text = "Zoom %.1f".format(it )
+                val text = "Zoom %.1f".format(it)
                 canvas.drawText(
                     text,
                     width - 2 * padding,
-                    height - 2 * padding ,
+                    height - 2 * padding,
                     textPaint
                 )
             }
@@ -205,7 +200,7 @@ class RegionView @JvmOverloads constructor(
             val pixelSize = lonDelta / width
             val latDelta = it.latNorth - it.latSouth
             val height = Math.max((latDelta / pixelSize).toInt(), (3 * padding + 3 * textSize).toInt())
-            layoutParams.height= height
+            layoutParams.height = height
             invalidate()
         }
     }
@@ -215,7 +210,7 @@ class RegionView @JvmOverloads constructor(
         key: PreferenceKey
     ) {
         when (key) {
-            PreferenceKey.DIAGNOSIS_ENABLED-> {
+            PreferenceKey.DIAGNOSIS_ENABLED -> {
                 val diagnosisEnabled = sharedPreferences.get(key, false)
                 visibility = if (diagnosisEnabled) {
                     VISIBLE

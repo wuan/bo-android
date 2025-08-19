@@ -109,6 +109,25 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="@string/historic_timestep" />
+
+        <Spinner
+            android:id="@+id/selected_historic_timestep"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/historic_timesteps"
+            android:padding="10dp"
+            android:minHeight="48dp"
+            android:prompt="@string/historic_timestep" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="@string/animation_interval_duration" />
 
         <Spinner

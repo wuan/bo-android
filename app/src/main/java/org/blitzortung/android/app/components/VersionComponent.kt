@@ -21,10 +21,10 @@ package org.blitzortung.android.app.components
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.core.content.edit
 import org.blitzortung.android.app.BuildConfig
 import org.blitzortung.android.app.Main
 import javax.inject.Inject
-import androidx.core.content.edit
 
 class VersionComponent @Inject constructor(
     context: Context,
@@ -80,7 +80,7 @@ class VersionComponent @Inject constructor(
     companion object {
         internal const val CONFIGURED_VERSION_CODE = "configured_version_code"
         internal const val CONFIGURED_MAJOR_VERSION = "configured_major_version"
-        internal const val CONFIGURED_MINOR_VERSION = "configured_inor_version"
+        internal const val CONFIGURED_MINOR_VERSION = "configured_minor_version"
     }
 }
 
