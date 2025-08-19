@@ -658,14 +658,14 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 )
                 val locationText = this.resources.getString(R.string.location_permission_background_disclosure)
                 AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
-                    .setPositiveButton(android.R.string.ok) { dialog, count ->
+                    .setPositiveButton(android.R.string.ok) { dialog, _ ->
                         dialog.dismiss()
                         requestPermission(
                             ACCESS_BACKGROUND_LOCATION,
                             requestCode,
                             R.string.location_permission_background_required
                         )
-                    }.setNegativeButton(android.R.string.cancel) { dialog, count ->
+                    }.setNegativeButton(android.R.string.cancel) { _, _ ->
                         preferences.edit { put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0") }
                     }.show()
             }

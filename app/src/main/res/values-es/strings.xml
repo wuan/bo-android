@@ -73,7 +73,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="show_location_summary">incluir símbolo para la localización propia en el mapa</string>
     <string name="data_source_settings">Trasmisión de datos</string>
     <string name="region">Región</string>
-    <string name="region_summary">seleccionar: Europa, Norteamérica u Oceanía</string>
 
     <string-array name="regions">
         <item>Local</item>
@@ -99,7 +98,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="interval_duration">Intervalo de tiempo</string>
-    <string name="interval_duration_summary">Intervalo de tiempo en el que la actividad de los rayos es mostrada</string>
 
     <string-array name="interval_durations">
         <item>30 min</item>
@@ -131,7 +129,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="query_period">Período de refresco</string>
-    <string name="query_period_summary">frecuencia de renovación de los datos</string>
 
     <string-array name="query_periods">
         <item>20 s</item>
@@ -151,7 +148,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="grid_size">Tamaño de la celda</string>
-    <string name="grid_size_summary">longitud del lado de la celda de datos</string>
 
     <string-array name="grid_sizes">
         <item>auto</item>
@@ -171,7 +167,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Umbral de rayos contados</string>
-    <string name="count_threshold_summary">número mínimo de rayos contados por área de la celda</string>
 
     <string-array name="count_thresholds">
         <item>Deshabilitado</item>
@@ -221,9 +216,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_enabled">Alarma habilitada</string>
     <string name="alarm_enabled_summary">comprobar actividad de rayos alrededor de la localización actual</string>
     <string name="background_query_period">Período de refresco en segundo plano</string>
-    <string name="background_query_period_summary">si es seleccionado: frecuencia de solicitud de datos para comprobar las alarmas si la aplicación no está abierta
-       
-    </string>
 
     <string-array name="background_query_periods">
         <item>Apagado</item>

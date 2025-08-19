@@ -70,7 +70,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="show_location_summary">Toon symbool op kaart voor eigen locatie</string>
     <string name="data_source_settings">Informatie overdracht</string>
     <string name="region">Regio</string>
-    <string name="region_summary">selecteer Europa, Noord Amerika of Oceanië</string>
 
     <string-array name="regions">
         <item>Local</item>
@@ -96,7 +95,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="interval_duration">Tijd interval</string>
-    <string name="interval_duration_summary">Interval waarmee onweer informatie wordt getoond</string>
 
     <string-array name="interval_durations">
         <item>30 min</item>
@@ -128,7 +126,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="query_period">Opvraag frequentie</string>
-    <string name="query_period_summary">frequentie voor het vernieuwen van informatie</string>
 
     <string-array name="query_periods">
         <item>20 s</item>
@@ -148,7 +145,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="grid_size">Raster grootte</string>
-    <string name="grid_size_summary">Grootte van raster kwadranten</string>
 
     <string-array name="grid_sizes">
         <item>auto</item>
@@ -168,7 +164,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Drempel bliksem</string>
-    <string name="count_threshold_summary">minimum aan bliksems per rasterkwadrant</string>
 
     <string-array name="count_thresholds">
         <item>uitgeschakeld</item>
