@@ -20,7 +20,8 @@ package org.blitzortung.android.util
 
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
+import java.util.TimeZone
 
 object TimeFormat {
 

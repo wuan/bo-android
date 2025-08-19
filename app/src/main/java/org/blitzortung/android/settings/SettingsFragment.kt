@@ -12,6 +12,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.View
 import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.preference.EditTextPreference
@@ -71,18 +72,18 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
             PreferenceKey.SERVICE_URL,
             PreferenceKey.LOCATION_LONGITUDE,
             PreferenceKey.LOCATION_LATITUDE,
+            PreferenceKey.ALERT_SOUND_SIGNAL,
         ).forEach { key ->
-            findPreference<EditTextPreference>(key)?.let { updateEditTextPreferenceSummary(it) }
+            findPreference<Preference>(key)?.let { updatePreferenceSummary(it) }
         }
     }
 
-    private fun updateEditTextPreferenceSummary(preference: EditTextPreference) {
+    private fun updatePreferenceSummary(preference: Preference) {
         val keyString = preference.key
         val preferenceKey = PreferenceKey.fromString(keyString)
 
-        val currentValue = preference.text
-        val originalSummaryResId = originalSummaries[preferenceKey]
-        val originalSummary = if (originalSummaryResId != null) getString(originalSummaryResId) else preference.summary?.toString() ?: ""
+        val currentValue = preferences.getString(preference.key, null)?.let { extractURITitle(it) }
+        val originalSummary = originalSummaries[preferenceKey]?.let { getString(it) } ?: ""
         val undefinedSummary = getString(R.string.undefined)
 
         if (preferenceKey == PreferenceKey.PASSWORD) {
@@ -92,9 +93,8 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
                 originalSummary
             }
         } else if (originalSummary.contains("%s")) {
-             preference.summary = String.format(originalSummary, currentValue ?: "")
-        }
-        else {
+            preference.summary = String.format(originalSummary, currentValue ?: "")
+        } else {
             if (!currentValue.isNullOrEmpty()) {
                 val summary = if (originalSummary.isEmpty()) "" else "$originalSummary: "
                 preference.summary = "$summary$currentValue"
@@ -103,6 +103,8 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
             }
         }
     }
+
+    private fun extractURITitle(value: String): String = value.toUri().getQueryParameter("title") ?: value
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -128,14 +130,17 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
                     }
                 }
             }
+
             PreferenceKey.SHOW_LOCATION -> configureOwnLocationSizePreference(sharedPreferences)
             PreferenceKey.USERNAME,
             PreferenceKey.PASSWORD,
             PreferenceKey.SERVICE_URL,
             PreferenceKey.LOCATION_LONGITUDE,
-            PreferenceKey.LOCATION_LATITUDE -> {
-                findPreference<EditTextPreference>(key)?.let { updateEditTextPreferenceSummary(it) }
+            PreferenceKey.LOCATION_LATITUDE,
+            PreferenceKey.ALERT_SOUND_SIGNAL -> {
+                findPreference<Preference>(key)?.let { updatePreferenceSummary(it) }
             }
+
             else -> {
                 // No action needed for other keys
             }
@@ -192,7 +197,7 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
             intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI, Settings.System.DEFAULT_NOTIFICATION_URI)
 
             val existingValue: String? = if (::preferences.isInitialized) {
-                preferences.get(PreferenceKey.ALERT_SOUND_SIGNAL, null)
+                preferences.getString(PreferenceKey.ALERT_SOUND_SIGNAL, null)
             } else {
                 Log.e(LOG_TAG, "SharedPreferences not initialized in onPreferenceTreeClick")
                 null

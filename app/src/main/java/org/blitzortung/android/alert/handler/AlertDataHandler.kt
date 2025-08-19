@@ -43,8 +43,16 @@ open class AlertDataHandler @Inject internal constructor(
         referenceTime: Long = System.currentTimeMillis()
     ): AlertResult? {
         val gridParameters: GridParameters? = strikes.gridParameters
-        if (gridParameters != null && !gridParameters.isGlobal && !gridParameters.contains(location.longitude, location.latitude, 0.2)) {
-            Log.v(LOG_TAG, "Location $location is not in grid ${gridParameters.longitudeInterval} + ${gridParameters.latitudeInterval}")
+        if (gridParameters != null && !gridParameters.isGlobal && !gridParameters.contains(
+                location.longitude,
+                location.latitude,
+                0.2
+            )
+        ) {
+            Log.v(
+                LOG_TAG,
+                "Location $location is not in grid ${gridParameters.longitudeInterval} + ${gridParameters.latitudeInterval}"
+            )
             return null
         }
 

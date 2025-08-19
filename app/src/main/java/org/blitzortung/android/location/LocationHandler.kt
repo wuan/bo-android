@@ -18,7 +18,11 @@
 
 package org.blitzortung.android.location
 
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.location.Location
 import android.location.LocationManager
 import android.util.Log

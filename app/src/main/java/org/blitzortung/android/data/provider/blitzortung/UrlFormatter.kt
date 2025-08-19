@@ -19,7 +19,8 @@
 package org.blitzortung.android.data.provider.blitzortung
 
 import android.text.format.DateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 

@@ -18,7 +18,11 @@
 
 package org.blitzortung.android.data.provider.standard
 
-import org.blitzortung.android.data.beans.*
+import org.blitzortung.android.data.beans.DefaultStrike
+import org.blitzortung.android.data.beans.GridElement
+import org.blitzortung.android.data.beans.GridParameters
+import org.blitzortung.android.data.beans.Station
+import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.util.TimeFormat
 import org.json.JSONArray
 import org.json.JSONException
