@@ -25,7 +25,6 @@ import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import android.preference.PreferenceManager
-import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey

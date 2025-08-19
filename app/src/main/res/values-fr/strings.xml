@@ -331,4 +331,5 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="slider_past">Passé</string>
     <string name="slider_legend">[Heures]</string>
     <string name="animation_interval_duration">Intervalle d\'animation</string>
+    <string name="animation_settings">Paramètres d\'animation</string>
 </resources>

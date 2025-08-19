@@ -338,7 +338,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="slider_current">teraz</string>
     <string name="slider_past">przeszłość</string>
     <string name="slider_legend">[godziny]</string>
-    <string name="animation_settings">Animacja</string>
+    <string name="animation_settings">Ustawienia animacji</string>
     <string name="animation_sleep_duration">Przerwa między krokami</string>
     <string name="animation_sleep_duration_summary">Czas przerwy między krokami animacji (w milisekundach)</string>
     <string name="animation_cycle_sleep_duration">Przerwa po cyklu</string>

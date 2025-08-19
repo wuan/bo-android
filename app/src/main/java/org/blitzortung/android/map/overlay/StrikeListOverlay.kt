@@ -25,7 +25,6 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewGroup
 import org.blitzortung.android.app.Main
-import org.blitzortung.android.app.R
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.beans.Strike

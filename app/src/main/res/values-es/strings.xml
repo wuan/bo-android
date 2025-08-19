@@ -328,4 +328,5 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="slider_current">ahora</string>
     <string name="slider_past">Pasado</string>
     <string name="slider_legend">[Horas]</string>
+    <string name="animation_settings">Configuración de animación</string>
 </resources>

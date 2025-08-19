@@ -50,7 +50,7 @@ class MainDataHandlerTest {
     @MockK
     private lateinit var period: Period
 
-    private lateinit var receivedEvents: MutableList<DataEvent>;
+    private lateinit var receivedEvents: MutableList<DataEvent>
 
 
     private lateinit var uut: MainDataHandler
@@ -122,7 +122,7 @@ class MainDataHandlerTest {
 
     @Test
     fun reactOnScrollWithinDataArea() {
-        val mapView = mockk<OwnMapView>();
+        val mapView = mockk<OwnMapView>()
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
         every { mapView.boundingBox } returns boundingBox
         every { localData.update(boundingBox, false) } returns false
@@ -136,7 +136,7 @@ class MainDataHandlerTest {
 
     @Test
     fun reactOnScrollLeavingDataArea() {
-        val mapView = mockk<OwnMapView>();
+        val mapView = mockk<OwnMapView>()
         every { mapView.isAnimating } returns false
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
         every { mapView.boundingBox } returns boundingBox
@@ -150,8 +150,8 @@ class MainDataHandlerTest {
 
     @Test
     fun reactOnScrollLeavingDataAreaWithAnimation() {
-        val mapView = mockk<OwnMapView>();
-        val animator = mockk<ValueAnimator>(relaxed = true);
+        val mapView = mockk<OwnMapView>()
+        val animator = mockk<ValueAnimator>(relaxed = true)
         every { animator.listeners } returns ArrayList<Animator.AnimatorListener>()
         every { mapView.animator() } returns animator
         every { mapView.isAnimating } returns true
@@ -182,7 +182,7 @@ class MainDataHandlerTest {
 
     @Test
     fun reactOnZoomWithinDataArea() {
-        val mapView = mockk<OwnMapView>();
+        val mapView = mockk<OwnMapView>()
         every { mapView.isAnimating } returns false
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
         every { mapView.boundingBox } returns boundingBox
@@ -196,7 +196,7 @@ class MainDataHandlerTest {
 
     @Test
     fun reactOnZoomlLeavingDataArea() {
-        val mapView = mockk<OwnMapView>();
+        val mapView = mockk<OwnMapView>()
         every { mapView.isAnimating } returns false
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
         every { mapView.boundingBox } returns boundingBox
@@ -210,7 +210,7 @@ class MainDataHandlerTest {
 
     @Test
     fun reactOnZoomlUpdateGridSize() {
-        val mapView = mockk<OwnMapView>();
+        val mapView = mockk<OwnMapView>()
         every { mapView.isAnimating } returns false
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
         every { mapView.boundingBox } returns boundingBox
