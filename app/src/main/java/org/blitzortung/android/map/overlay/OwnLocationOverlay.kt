@@ -48,7 +48,7 @@ class OwnLocationOverlay(
     OnSharedPreferenceChangeListener,
     LayerOverlay, MapListener {
     private val layerOverlayComponent: LayerOverlayComponent =
-        LayerOverlayComponent(context.resources.getString(R.string.own_location_layer))
+        LayerOverlayComponent()
 
     private var item: OwnLocationOverlayItem? = null
 
@@ -151,9 +151,6 @@ class OwnLocationOverlay(
         }
         return false
     }
-
-    override val name: String
-        get() = layerOverlayComponent.name
 
     override var visible: Boolean
         get() = layerOverlayComponent.visible

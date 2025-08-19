@@ -276,10 +276,9 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
         <item>500</item>
     </string-array>
 
-    <string name="signaling_threshold_time">Seuil de durée pour l\'alarme</string>
-    <string name="signaling_threshold_time_summary">Supprime d\'autres signaux d\'alarme pour la plage de temps donnée</string>
+    <string name="signaling_suppression_time">Seuil de durée pour l\'alarme</string>
 
-    <string-array name="signaling_threshold_times">
+    <string-array name="signaling_suppression_times">
         <item>off</item>
         <item>5 min</item>
         <item>15 min</item>
@@ -287,7 +286,7 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
         <item>60 min.</item>
         <item>120 min.</item>
     </string-array>
-    <string-array name="signaling_threshold_time_values">
+    <string-array name="signaling_suppression_time_values">
         <item>0</item>
         <item>5</item>
         <item>15</item>
@@ -307,13 +306,9 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="do_not_sleep">Ne pas se mettre en veille</string>
     <string name="do_not_sleep_summary">Ne pas se mettre en veille lorsque l\'application est lancée</string>
-    <string name="participants_layer">Emplacement des stations</string>
-    <string name="own_location_layer">Votre emplacement</string>
-    <string name="strikes_layer">Impacts</string>
     <string name="alarm_signal_settings">Paramètres du signal d\'alarme</string>
     <string name="alarm_audio_signal">Son de l\'alarme</string>
     <string name="alarm_vibration_signal">Durée du vibreur d\'alarme</string>
-    <string name="alarm_audio_signal_summary">Choisissez un son pour notifier l\'alarme</string>
     <string name="alarm_vibration_signal_summary">Choisissez la durée du vibreur en cas d\'alarme</string>
     <string name="location_provider_not_available">Le fournisseur de localisation \'%s\' n\'est pas disponible</string>
     <string name="location_provider_disabled">Le fournisseur de localisation \'%s\' est désactivé</string>
@@ -328,7 +323,6 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="unit_miles">mi</string>
     <string name="legend_grid">Grille</string>
     <string name="map_scale">Échelle de la carte</string>
-    <string name="own_location">Votre emplacement</string>
     <string name="changelog">Change log</string>
     <string name="location_permission_required">L\'autorisation de localisation est requise lors de l\'utilisation d\'une source de localisation de périphérique.</string>
     <string name="location_permission_background_required">L\'autorisation de localisation en arrière-plan est requise lors de l\'utilisation d\'une source de localisation de périphérique.</string>

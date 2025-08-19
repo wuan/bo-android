@@ -269,9 +269,8 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
         <item>500</item>
     </string-array>
 
-    <string name="signaling_threshold_time">Alarmsignal Ruheperiode</string>
-    <string name="signaling_threshold_time_summary">Unterdrückung weiterer Alarmsignale innerhalb der Ruheperiode</string>
-    <string-array name="signaling_threshold_times">
+    <string name="signaling_suppression_time">Alarmsignal Ruheperiode</string>
+    <string-array name="signaling_suppression_times">
         <item>deaktiviert</item>A
         <item>5 min</item>
         <item>15 min</item>
@@ -279,7 +278,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
         <item>60 min.</item>
         <item>120 min.</item>
     </string-array>
-    <string-array name="signaling_threshold_time_values">
+    <string-array name="signaling_suppression_time_values">
         <item>0</item>
         <item>5</item>
         <item>15</item>
@@ -300,13 +299,9 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     </string-array>
     <string name="do_not_sleep">kein Ruhezustand</string>
     <string name="do_not_sleep_summary">nicht in den Ruhezustand gehen, solange die App aktiv ist</string>
-    <string name="participants_layer">Teilnehmende Stationen</string>
-    <string name="own_location_layer">Eigener Ort</string>
-    <string name="strikes_layer">Blitze</string>
     <string name="alarm_signal_settings">Alarmsignal</string>
     <string name="alarm_audio_signal">Tonsignal</string>
     <string name="alarm_vibration_signal">Vibration</string>
-    <string name="alarm_audio_signal_summary">Auswahl eines Tonsignals für den Alarm</string>
     <string name="alarm_vibration_signal_summary">Auswahl der Vibrationsdauer für den Alarm</string>
     <string name="location_provider_not_available">Location-Provider \'%s\' nicht verfügbar</string>
     <string name="location_provider_disabled">Location-Provider \'%s\' ist deaktiviert</string>
@@ -315,8 +310,6 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="share_log">E-Mail senden …</string>
     <string name="share_unavailable">E-Mail kann nicht versendet werden.</string>
     <string name="provider_warning">Bitte nutzen sie die Blitzortung.org Datenquelle nicht bei hoher Blitzaktivität. Die Dastellung der Karte wird möglicherweise verzögert.</string>
-    <string name="own_location_summary">Einstellungen der Anzeige des Standorts</string>
-    <string name="own_location">Eigener Standort</string>
     <string name="own_location_size">Größe des Standort-Symbols</string>
     <string name="own_location_size_summary">Einstellung der Größe des Standort-Symbols</string>
     <string name="keep_zoom_goto_own_location_title">Zoom beibehalten</string>

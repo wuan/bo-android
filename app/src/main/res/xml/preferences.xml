@@ -225,13 +225,13 @@
         <ListPreference
             android:defaultValue="0"
             android:enabled="true"
-            android:entries="@array/signaling_threshold_times"
-            android:entryValues="@array/signaling_threshold_time_values"
-            android:key="signaling_threshold_time"
+            android:entries="@array/signaling_suppression_times"
+            android:entryValues="@array/signaling_suppression_time_values"
+            android:key="signaling_suppression_time"
             android:persistent="true"
             android:selectable="true"
-            android:summary="@string/signaling_threshold_time_summary"
-            android:title="@string/signaling_threshold_time" />
+            android:summary="@string/signaling_suppression_time_summary"
+            android:title="@string/signaling_suppression_time" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/generic_settings">
         <ListPreference

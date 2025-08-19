@@ -275,10 +275,9 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
         <item>500</item>
     </string-array>
 
-    <string name="signaling_threshold_time">Waarschuwing tijdslimiet</string>
-    <string name="signaling_threshold_time_summary">Voorkom waarschuwing binnen geselecteerd tijdlimiet</string>
+    <string name="signaling_suppression_time">Waarschuwing tijdslimiet</string>
 
-    <string-array name="signaling_threshold_times">
+    <string-array name="signaling_suppression_times">
         <item>uit</item>
         <item>5 min</item>
         <item>15 min</item>
@@ -286,7 +285,7 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
         <item>60 min.</item>
         <item>120 min.</item>
     </string-array>
-    <string-array name="signaling_threshold_time_values">
+    <string-array name="signaling_suppression_time_values">
         <item>0</item>
         <item>5</item>
         <item>15</item>
@@ -306,13 +305,9 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="do_not_sleep">Slaapstand uitschakelen</string>
     <string name="do_not_sleep_summary">Schakel het scherm niet uit wanneer de applicatie actief is</string>
-    <string name="participants_layer">Deelnemer locatie</string>
-    <string name="own_location_layer">Eigen locatie</string>
-    <string name="strikes_layer">Bliksems</string>
     <string name="alarm_signal_settings">Meldingsignaal instellingen</string>
     <string name="alarm_audio_signal">Melding geluidsignaal</string>
     <string name="alarm_vibration_signal">Melding vibratieduur</string>
-    <string name="alarm_audio_signal_summary">kies een geluid signaal voor meldingen</string>
     <string name="alarm_vibration_signal_summary">kies vibratieduur voor een melding</string>
     <string name="location_provider_not_available">locatie provider \'%s\' is niet beschikbaar</string>
     <string name="location_provider_disabled">locatie provider \'%s\' is uitgeschakeld</string>
@@ -322,8 +317,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="share_log">Stuur email …</string>
     <string name="share_unavailable">E-mail delen is niet beschikbaar.</string>
     <string name="provider_warning">Gebruik Blitzortung.org niet als informatiebron bij hoge activiteit, dit beinvloed prestaties van kaartweergave negatief.</string>
-    <string name="own_location_summary">Eigen locatie weergave instellingen</string>
-    <string name="own_location">Eigen locatie</string>
     <string name="own_location_size">Locatie symbool grootte</string>
     <string name="own_location_size_summary">Stel de grootte van het locatiesymbool in</string>
     <string name="keep_zoom_goto_own_location_summary">Instelling huidige zoom niveau behouden wanneer je centreerd naar je eigen locatie</string>
