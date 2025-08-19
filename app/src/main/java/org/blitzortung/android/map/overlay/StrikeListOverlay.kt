@@ -47,8 +47,8 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
     LayerOverlay, MapListener {
     private val strikeList = mutableListOf<StrikeOverlay>()
 
-    private val layerOverlayComponent: LayerOverlayComponent =
-        LayerOverlayComponent(mapFragment.resources.getString(R.string.strikes_layer))
+    private val layerOverlayComponent: LayerOverlayComponent = LayerOverlayComponent()
+
     private var zoomLevel: Double
     var gridParameters: GridParameters? = null
     var referenceTime: Long = 0
@@ -244,9 +244,6 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
 
     var totalNumberOfStrikes: Int = 0
         private set
-
-    override val name: String
-        get() = layerOverlayComponent.name
 
     override var visible: Boolean
         get() = layerOverlayComponent.visible

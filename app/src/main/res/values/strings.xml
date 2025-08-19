@@ -290,10 +290,10 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>500</item>
     </string-array>
 
-    <string name="signaling_threshold_time">Signaling threshold time</string>
-    <string name="signaling_threshold_time_summary">Suppress further alarm signals for given time range (%s)</string>
+    <string name="signaling_suppression_time">Signaling suppression time</string>
+    <string name="signaling_suppression_time_summary" translatable="false">%s</string>
 
-    <string-array name="signaling_threshold_times">
+    <string-array name="signaling_suppression_times">
         <item>off</item>
         <item>5 min</item>
         <item>15 min</item>
@@ -301,7 +301,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>60 min.</item>
         <item>120 min.</item>
     </string-array>
-    <string-array name="signaling_threshold_time_values">
+    <string-array name="signaling_suppression_time_values">
         <item>0</item>
         <item>5</item>
         <item>15</item>
@@ -322,13 +322,9 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="do_not_sleep">Do not sleep</string>
     <string name="do_not_sleep_summary">do not go to sleep while application is open</string>
-    <string name="participants_layer">Participants location</string>
-    <string name="own_location_layer">Own location</string>
-    <string name="strikes_layer">Strikes</string>
     <string name="alarm_signal_settings">Alarm signal settings</string>
     <string name="alarm_audio_signal">Alarm audio signal</string>
     <string name="alarm_vibration_signal">Alarm vibration duration</string>
-    <string name="alarm_audio_signal_summary">choose an audio notfication for alarm signaling</string>
     <string name="alarm_vibration_signal_summary">choose the duration of vibration signaling in alarm case</string>
     <string name="location_provider_not_available">location provider \'%s\' not available</string>
     <string name="location_provider_disabled">location provider \'%s\' is disabled</string>
@@ -340,8 +336,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="share_log">Send email …</string>
     <string name="share_unavailable">E-mail sharing is not available.</string>
     <string name="provider_warning">Please do not use the Blitzortung.org data provider during high lightning activity, as the map display performance will degrade.</string>
-    <string name="own_location_summary">Own location Display-Settings</string>
-    <string name="own_location">Own location</string>
     <string name="own_location_size">Own location symbol size</string>
     <string name="own_location_size_summary">Set the size of the own location symbol</string>
     <string name="keep_zoom_goto_own_location_summary">Setting to keep the current zoom when centering the own location</string>

@@ -276,10 +276,9 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
         <item>500</item>
     </string-array>
 
-    <string name="signaling_threshold_time">Čas prahu signalizácie</string>
-    <string name="signaling_threshold_time_summary">Pre daný časový rozsah nebude vykonané opätovné upozorenie</string>
+    <string name="signaling_suppression_time">Čas prahu signalizácie</string>
 
-    <string-array name="signaling_threshold_times">
+    <string-array name="signaling_suppression_times">
         <item>Vypnuté</item>
         <item>5 minút</item>
         <item>15 minút</item>
@@ -287,7 +286,7 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
         <item>60 minút</item>
         <item>120 minút</item>
     </string-array>
-    <string-array name="signaling_threshold_time_values">
+    <string-array name="signaling_suppression_time_values">
         <item>0</item>
         <item>5</item>
         <item>15</item>
@@ -308,13 +307,9 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="do_not_sleep">Neuspávať zariadenie</string>
     <string name="do_not_sleep_summary">Neuspávať zariadenie keď je aplikácia otvorená</string>
-    <string name="participants_layer">Polohy účastníkov</string>
-    <string name="own_location_layer">Vlastná poloha</string>
-    <string name="strikes_layer">Blesky</string>
     <string name="alarm_signal_settings">Nastavenie signalizácie upozornenia</string>
     <string name="alarm_audio_signal">Nstavenie zvuku upozornenia</string>
     <string name="alarm_vibration_signal">Trvanie vibrácii upozorenia</string>
-    <string name="alarm_audio_signal_summary">Vyberte zvuk pre signalizáciu upozornenia</string>
     <string name="alarm_vibration_signal_summary">Vyberte dĺžku vibrácie pre upozornenia</string>
     <string name="location_provider_not_available">Poskytovateľ polohy \'%s\' nie je dostupný</string>
     <string name="location_provider_disabled">Poskytovateľ polohy \'%s\' je vypnutý</string>
@@ -325,8 +320,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="share_log">*Odoslať email …</string>
     <string name="share_unavailable">Zdieľanie e-mailov nie je k dispozícii.</string>
     <string name="provider_warning">Please do not use the Blitzortung.org data provider during high lightning activity, as the map display performance will degrade.</string>
-    <string name="own_location_summary">Nastavenie zobrazovania vlastnej polohy</string>
-    <string name="own_location">Vlastná poloha</string>
     <string name="own_location_size">Veľkosť symbolu vlastnej polohy</string>
     <string name="own_location_size_summary">Nastavte veľkosť vlastného symbolu polohy</string>
     <string name="keep_zoom_goto_own_location_summary">Nastavenie pre udržanie aktuálneho priblíženia pri centrovaní na vlastnú polohu</string>

@@ -276,10 +276,9 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
         <item>500</item>
     </string-array>
 
-    <string name="signaling_threshold_time">Soglia temporale allarmi</string>
-    <string name="signaling_threshold_time_summary">Ometti segnali d’allarme successivi entro l’intervallo temporale specificato</string>
+    <string name="signaling_suppression_time">Soglia temporale allarmi</string>
 
-    <string-array name="signaling_threshold_times">
+    <string-array name="signaling_suppression_times">
         <item>spento</item>
         <item>5 min</item>
         <item>15 min</item>
@@ -287,7 +286,7 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
         <item>60 min.</item>
         <item>120 min.</item>
     </string-array>
-    <string-array name="signaling_threshold_time_values">
+    <string-array name="signaling_suppression_time_values">
         <item>0</item>
         <item>5</item>
         <item>15</item>
@@ -307,13 +306,9 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="do_not_sleep">Mantieni attivo</string>
     <string name="do_not_sleep_summary">mantieni attivo il dispositivo mentre l’applicazione è avviata</string>
-    <string name="participants_layer">Posizione dei partecipanti</string>
-    <string name="own_location_layer">Propria posizione</string>
-    <string name="strikes_layer">Lampi</string>
     <string name="alarm_signal_settings">impostazioni segnali d’allarme</string>
     <string name="alarm_audio_signal">segnale audio degli allarmi</string>
     <string name="alarm_vibration_signal">durata vibrazione degli allarmi</string>
-    <string name="alarm_audio_signal_summary">selezionare una notifica audio per la segnalazione degli allarmi</string>
     <string name="alarm_vibration_signal_summary">selezionare la durata della vibrazione in caso si segnali un allarme</string>
     <string name="location_provider_not_available">fornitore della posizione \'%s\' non disponibile</string>
     <string name="location_provider_disabled">fornitore della posizione \'%s\' disabilitato</string>

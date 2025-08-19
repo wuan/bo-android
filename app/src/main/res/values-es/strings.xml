@@ -278,10 +278,9 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
         <item>500</item>
     </string-array>
 
-    <string name="signaling_threshold_time">Límite de tiempo de señalización</string>
-    <string name="signaling_threshold_time_summary">Elimina nuevas señales de alarma para el límite de tiempo dado</string>
+    <string name="signaling_suppression_time">Límite de tiempo de señalización</string>
 
-    <string-array name="signaling_threshold_times">
+    <string-array name="signaling_suppression_times">
         <item>Apagado</item>
         <item>5 min</item>
         <item>15 min</item>
@@ -289,7 +288,7 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
         <item>60 min.</item>
         <item>120 min.</item>
     </string-array>
-    <string-array name="signaling_threshold_time_values">
+    <string-array name="signaling_suppression_time_values">
         <item>0</item>
         <item>5</item>
         <item>15</item>
@@ -309,13 +308,9 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="do_not_sleep">No apagar la pantalla</string>
     <string name="do_not_sleep_summary">No apagar la pantalla mientras la aplicación está abierta</string>
-    <string name="participants_layer">Localizacíón de los participantes</string>
-    <string name="own_location_layer">Localización propia</string>
-    <string name="strikes_layer">Rayos</string>
     <string name="alarm_signal_settings">Ajustes de señalamiento de la alarma</string>
     <string name="alarm_audio_signal">sonido de alarma</string>
     <string name="alarm_vibration_signal">duración de la vibración de la alarma</string>
-    <string name="alarm_audio_signal_summary">elige un sonido de notificación para la señal de alarma</string>
     <string name="alarm_vibration_signal_summary">elige la duración de la vibración en caso de alarma</string>
     <string name="location_provider_not_available">proveedor de localización \'%s\' no disponible</string>
     <string name="location_provider_disabled">proveedor de localización \'%s\' está deshabilitado</string>
