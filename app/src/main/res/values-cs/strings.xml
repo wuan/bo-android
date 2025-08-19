@@ -300,4 +300,5 @@ Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_required">Při použití zdroje umístění zařízení je vyžadováno oprávnění k poloze.</string>
     <string name="location_permission_background_required">Při použití zdroje umístění zařízení je vyžadováno oprávnění k umístění na pozadí.</string>
     <string name="location_permission_background_disclosure">Tato aplikace používá údaje o poloze, i když je aplikace zavřená nebo se nepoužívá při použití alarmů na pozadí se zdrojem polohy zařízení.</string>
+    <string name="animation_settings">Nastavení animace</string>
 </resources>
