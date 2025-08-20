@@ -21,15 +21,16 @@ package org.blitzortung.android.dialogs
 import android.annotation.SuppressLint
 import android.app.AlertDialog.Builder
 import android.app.Dialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.content.res.Resources
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.view.View
 import android.widget.Spinner
 import androidx.core.content.edit
 import androidx.fragment.app.DialogFragment
+import androidx.preference.PreferenceManager
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
@@ -42,7 +43,7 @@ class QuickSettingsDialog : DialogFragment() {
         val layoutInflater = requireActivity().layoutInflater
         @SuppressLint("InflateParams") val view = layoutInflater.inflate(R.layout.quick_settings_dialog, null, false)
 
-        val preferences = PreferenceManager.getDefaultSharedPreferences(activity)
+        val preferences = PreferenceManager.getDefaultSharedPreferences(activity as Context)
 
         val spinnerManager = SpinnerManager(resources, view, preferences)
 

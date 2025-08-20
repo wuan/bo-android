@@ -28,9 +28,9 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.location.Location
-import android.preference.PreferenceManager
 import android.util.AttributeSet
 import android.util.Log
+import androidx.preference.PreferenceManager
 import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.data.AlertSector
 import org.blitzortung.android.alert.event.AlertEvent
