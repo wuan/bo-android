@@ -1,6 +1,7 @@
 package org.blitzortung.android.app // Or your actual test package
 
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -26,7 +27,7 @@ class MainTest {
     val activityRule = ActivityScenarioRule(Main::class.java)
 
     private lateinit var uiDevice: androidx.test.uiautomator.UiDevice
-    private val dialogTimeout = 5000L // 5 seconds
+    private val timeout = 5000L // 5 seconds
 
     @Before
     fun setUp() {
@@ -44,16 +45,33 @@ class MainTest {
         onView(withId(R.id.map_view)).check(matches(isDisplayed()))
     }
 
-    private fun waitForAndAcceptQuickSettingsDialog() {
-        // Wait for the "Quick Settings" dialog to appear and find the "OK" button.
-        // This is based on the assumption that the "Quick Settings" dialog appears after location permission.
-        val quickSettingsOkButton = uiDevice.wait(
-            Until.findObject(By.text("OK")), // Adjust "OK" if the button text is different
-            dialogTimeout // Reuse timeout or define a new one for this dialog
-        )
+    @Test
+    fun openSettingsFragment_viaTopRightMenu() {
+        waitForAndAcceptLocationPermissionDialog()
+        waitForAndAcceptQuickSettingsDialog()
 
-        // Click the "OK" button on the Quick Settings dialog
-        quickSettingsOkButton?.click()
+        onView(withId(R.id.menu)).perform(click())
+
+
+        uiDevice.wait(
+            Until.findObject(By.text("Preferences")),
+            timeout
+        )?.click()
+
+        uiDevice.wait(
+            Until.hasObject(By.res(InstrumentationRegistry.getInstrumentation().targetContext.packageName, "activity_settings")),
+            timeout)
+
+        // Check if the settings fragment is displayed
+        onView(withId(R.id.activity_settings)).check(matches(isDisplayed()))
+    }
+
+
+    private fun waitForAndAcceptQuickSettingsDialog() {
+        uiDevice.wait(
+            Until.findObject(By.text("OK")),
+            timeout
+        )?.click()
     }
 
     private fun waitForAndAcceptLocationPermissionDialog() {
@@ -67,12 +85,12 @@ class MainTest {
         // Wait for the permission dialog's "allow" button to appear and find it.
         val allowButton = uiDevice.wait(
             Until.findObject(By.text(allowButtonTextPattern)),
-            dialogTimeout
+            timeout
         )
 
         // Verify that the button was found
         Assert.assertNotNull(
-            "Location permission dialog with 'Allow' button not found within ${dialogTimeout}ms. " +
+            "Location permission dialog with 'Allow' button not found within ${timeout}ms. " +
                     "Permissions might have been already granted or the dialog has different text.",
             allowButton
         )
