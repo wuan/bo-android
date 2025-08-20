@@ -329,4 +329,7 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="slider_past">Pasado</string>
     <string name="slider_legend">[Horas]</string>
     <string name="animation_settings">Configuración de animación</string>
+    <string name="undefined">indefinido</string>
+    <string name="background_query_period_dialog_message">El uso de una consulta periódica en segundo plano para alertas cuando la aplicación no se está ejecutando requerirá leer la ubicación de su dispositivo si no está configurado en ubicación manual.</string>
+    <string name="post_notifications_request">Habilite el permiso para publicar notificaciones si desea recibir alertas de notificación.</string>
 </resources>

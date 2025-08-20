@@ -301,4 +301,9 @@ Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_background_required">Při použití zdroje umístění zařízení je vyžadováno oprávnění k umístění na pozadí.</string>
     <string name="location_permission_background_disclosure">Tato aplikace používá údaje o poloze, i když je aplikace zavřená nebo se nepoužívá při použití alarmů na pozadí se zdrojem polohy zařízení.</string>
     <string name="animation_settings">Nastavení animace</string>
+    <string name="signaling_suppression_time">Doba potlačení signalizace</string>
+    <string name="service_url">URL adresa vlastní služby</string>
+    <string name="undefined">nedefinovaný</string>
+    <string name="background_query_period_dialog_message">Použití periodického dotazu na pozadí pro upozornění, když aplikace není spuštěna, bude vyžadovat čtení polohy vašeho zařízení, pokud není nastavena na manuální polohu.</string>
+    <string name="post_notifications_request">Povolte oprávnění k zasílání oznámení, pokud si přejete dostávat upozornění.</string>
 </resources>

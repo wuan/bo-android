@@ -360,4 +360,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="diagnosis">Funkcje diagnostyczne</string>
     <string name="diagnosis_summary">Włącz funkcje obsługujące diagnozę działania aplikacji</string>
+    <string name="undefined">niezdefiniowany</string>
+    <string name="background_query_period_dialog_message">"Korzystanie z okresowego zapytania w tle w celu wysyłania alertów, gdy aplikacja nie jest uruchomiona, będzie wymagało odczytania lokalizacji urządzenia, jeśli nie jest ustawiona opcja ręcznego określania lokalizacji. "</string>
+    <string name="post_notifications_request">Włącz pozwolenie na wysyłanie powiadomień, jeśli chcesz otrzymywać alerty powiadomień.</string>
 </resources>
