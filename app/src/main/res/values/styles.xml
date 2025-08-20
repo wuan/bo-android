@@ -5,7 +5,10 @@
         <item name="android:color">@color/translucent_background</item>
     </style>
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar" />
+    <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorPrimary">@color/White</item>
+        <item name="colorPrimaryVariant">@color/text_foreground</item>
+    </style>
 
     <style name="ChangelogHeader">
         <item name="android:textAppearance">@android:style/TextAppearance.Medium</item>

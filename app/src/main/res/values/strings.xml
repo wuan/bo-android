@@ -382,4 +382,5 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="diagnosis_summary">Enable features supporting diagnosis of app functionality.</string>
     <string name="undefined">undefined</string>
     <string name="background_query_period_dialog_message">Using a periodical background query for alerts when the app is not running will require reading the location of your device.</string>
+    <string name="post_notifications_request">Enable post notification permission if notification alerts are desired.</string>
 </resources>

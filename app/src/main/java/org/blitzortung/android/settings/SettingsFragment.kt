@@ -84,7 +84,7 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
 
         val currentValue = preferences.getString(preference.key, null)?.let { extractURITitle(it) }
         val originalSummary = originalSummaries[preferenceKey]?.let { getString(it) } ?: ""
-        val undefinedSummary = getString(R.string.undefined)
+        val undefinedSummary = context?.getString(R.string.undefined)
 
         if (preferenceKey == PreferenceKey.PASSWORD) {
             preference.summary = if (!currentValue.isNullOrEmpty()) {
