@@ -21,6 +21,7 @@ package org.blitzortung.android.app.controller
 import android.view.View
 import android.widget.RelativeLayout
 import org.blitzortung.android.app.helper.ViewHelper.pxFromSp
+import androidx.core.view.isVisible
 
 class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) {
 
@@ -45,7 +46,7 @@ class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) 
         for (currentIndex in elements.indices) {
             val element = elements[currentIndex]
             val view = element.view
-            if (view.visibility == View.VISIBLE) {
+            if (view.isVisible) {
                 val lp = RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT
                 )

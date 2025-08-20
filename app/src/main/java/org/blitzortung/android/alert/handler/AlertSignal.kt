@@ -22,6 +22,7 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.util.isAtLeast
 import javax.inject.Inject
 import javax.inject.Singleton
+import androidx.core.net.toUri
 
 @Singleton
 class AlertSignal @Inject constructor(
@@ -50,7 +51,7 @@ class AlertSignal @Inject constructor(
 
             ALERT_SOUND_SIGNAL -> {
                 val signalUri = sharedPreferences.get(key, "")
-                soundSignal = if (signalUri.isNotEmpty()) Uri.parse(signalUri) else null
+                soundSignal = if (signalUri.isNotEmpty()) signalUri.toUri() else null
                 Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() soundSignal = $soundSignal")
             }
 

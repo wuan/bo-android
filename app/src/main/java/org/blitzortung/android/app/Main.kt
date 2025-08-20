@@ -21,8 +21,8 @@ package org.blitzortung.android.app
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -742,30 +742,28 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                         when (which) {
                             DialogInterface.BUTTON_POSITIVE -> {
                                 Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    val allowIgnoreBatteryOptimization =
-                                        context.checkSelfPermission(REQUEST_IGNORE_BATTERY_OPTIMIZATIONS) == PackageManager.PERMISSION_GRANTED
-                                    val intent = if (allowIgnoreBatteryOptimization) {
-                                        justReturnedFromSettings = true
-                                        Intent(
-                                            Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                                            "package:$packageName".toUri()
-                                        )
-                                    } else {
-                                        Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-                                    }
+                                val allowIgnoreBatteryOptimization =
+                                    context.checkSelfPermission(REQUEST_IGNORE_BATTERY_OPTIMIZATIONS) == PackageManager.PERMISSION_GRANTED
+                                val intent = if (allowIgnoreBatteryOptimization) {
+                                    justReturnedFromSettings = true
+                                    Intent(
+                                        Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                                        "package:$packageName".toUri()
+                                    )
+                                } else {
+                                    Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                                }
 
-                                    try {
-                                        startActivity(intent)
-                                    } catch (e: AndroidRuntimeException) {
-                                        Toast.makeText(baseContext, R.string.background_query_toast, Toast.LENGTH_LONG)
-                                            .show()
-                                        Log.e(
-                                            LOG_TAG,
-                                            "requestWakeupPermissions() could not open battery optimization settings",
-                                            e
-                                        )
-                                    }
+                                try {
+                                    startActivity(intent)
+                                } catch (e: AndroidRuntimeException) {
+                                    Toast.makeText(baseContext, R.string.background_query_toast, Toast.LENGTH_LONG)
+                                        .show()
+                                    Log.e(
+                                        LOG_TAG,
+                                        "requestWakeupPermissions() could not open battery optimization settings",
+                                        e
+                                    )
                                 }
                             }
 

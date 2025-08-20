@@ -20,6 +20,7 @@ import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.ScaleBarOverlay
 import kotlin.math.min
+import androidx.core.content.edit
 
 
 class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
@@ -107,12 +108,12 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
     override fun onPause() {
         //save the current location
-        val edit = mPrefs.edit()
-        edit.putString(PREFS_TILE_SOURCE, mapView.tileProvider.tileSource.name())
-        edit.putString(PREFS_LATITUDE_STRING, mapView.mapCenter.latitude.toString())
-        edit.putString(PREFS_LONGITUDE_STRING, mapView.mapCenter.longitude.toString())
-        edit.putFloat(PREFS_ZOOM_LEVEL_DOUBLE, mapView.zoomLevelDouble.toFloat())
-        edit.apply()
+        mPrefs.edit {
+            putString(PREFS_TILE_SOURCE, mapView.tileProvider.tileSource.name())
+            putString(PREFS_LATITUDE_STRING, mapView.mapCenter.latitude.toString())
+            putString(PREFS_LONGITUDE_STRING, mapView.mapCenter.longitude.toString())
+            putFloat(PREFS_ZOOM_LEVEL_DOUBLE, mapView.zoomLevelDouble.toFloat())
+        }
 
         mapView.onPause()
         super.onPause()

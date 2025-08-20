@@ -49,6 +49,7 @@ import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
+import androidx.core.graphics.createBitmap
 
 class AlertView @JvmOverloads constructor(
     context: Context,
@@ -314,7 +315,7 @@ class AlertView @JvmOverloads constructor(
 
     private fun prepareTemporaryBitmap(size: Int) {
         if (temporaryBitmap == null) {
-            val temporaryBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+            val temporaryBitmap = createBitmap(size, size)
             this.temporaryBitmap = temporaryBitmap
             temporaryCanvas = Canvas(temporaryBitmap)
         }

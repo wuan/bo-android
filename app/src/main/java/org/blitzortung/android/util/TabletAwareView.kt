@@ -25,6 +25,7 @@ import android.view.View
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper.pxFromDp
 import org.blitzortung.android.app.helper.ViewHelper.pxFromSp
+import androidx.core.content.withStyledAttributes
 
 open class TabletAwareView(
     context: Context,
@@ -32,20 +33,20 @@ open class TabletAwareView(
     defStyle: Int
 ) : View(context, attrs, defStyle) {
 
-    protected val padding: Float
-    protected val textSize: Float
-    protected val sizeFactor: Float
+    protected var padding: Float = 0.0f
+    protected var textSize: Float = 0.0f
+    protected var sizeFactor: Float = 0.0f
 
     init {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.View, defStyle, 0)
+        context.withStyledAttributes(attrs, R.styleable.View, defStyle, 0) {
 
-        val scaleForTablet = a.getBoolean(R.styleable.View_tablet_scaleable, false) && isTablet(context)
+            val scaleForTablet = getBoolean(R.styleable.View_tablet_scaleable, false) && isTablet(context)
 
-        padding = pxFromDp(this.context, padding(scaleForTablet))
-        textSize = pxFromSp(this.context, textSize(scaleForTablet))
-        sizeFactor = sizeFactor(scaleForTablet)
+            padding = pxFromDp(context, padding(scaleForTablet))
+            textSize = pxFromSp(context, textSize(scaleForTablet))
+            sizeFactor = sizeFactor(scaleForTablet)
 
-        a.recycle()
+        }
     }
 
     @SuppressWarnings("unused")

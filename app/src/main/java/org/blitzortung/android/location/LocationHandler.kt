@@ -120,7 +120,7 @@ class LocationHandler @Inject constructor(
         this.provider = newProvider.apply {
             if (!this.isEnabled) {
                 val message = context.resources.getString(R.string.location_provider_disabled).format(newProvider.type)
-                Toast.makeText(context, message, Toast.LENGTH_LONG)
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
             } else {
                 start()
             }
