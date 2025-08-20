@@ -22,6 +22,7 @@ import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -487,6 +488,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 requestLocationPermissions(preferences)
             }
             requestWakeupPermissions(baseContext)
+            requestNotificationPermissions()
         }
 
         mapFragment.updateForgroundColor(strikeColorHandler.lineColor)
@@ -620,6 +622,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+
+    private fun requestNotificationPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermission(POST_NOTIFICATIONS, REQUEST_CODE_POST_NOTIFICATIONS, R.string.post_notifications_request)
         }
     }
 
@@ -868,5 +876,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     companion object {
         const val LOG_TAG = "BO_ANDROID"
         const val MAP_FRAGMENT_TAG = "org.blitzortung.MAP_FRAGMENT_TAG"
+        const val REQUEST_CODE_POST_NOTIFICATIONS = 101
+
     }
 }
