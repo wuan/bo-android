@@ -10,9 +10,9 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Vibrator
-import android.preference.PreferenceManager
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.preference.PreferenceManager
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey

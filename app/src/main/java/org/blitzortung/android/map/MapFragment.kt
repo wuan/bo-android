@@ -3,12 +3,12 @@ package org.blitzortung.android.map
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener

@@ -5,8 +5,8 @@ import android.content.SharedPreferences
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
-import android.preference.PreferenceManager
 import android.util.AttributeSet
+import androidx.preference.PreferenceManager
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.provider.result.ResultEvent

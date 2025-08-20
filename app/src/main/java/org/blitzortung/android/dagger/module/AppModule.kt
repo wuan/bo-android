@@ -7,7 +7,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageInfo
 import android.os.PowerManager
 import android.os.Vibrator
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
 import org.blitzortung.android.app.BOApplication
