@@ -329,4 +329,7 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_background_required">Dopuštenje za pozadinsko mjesto potrebno je kada se koristi izvor lokacije uređaja.</string>
     <string name="location_permission_background_disclosure">Ova aplikacija upotrebljava podatke o lokaciji čak i kada je aplikacija zatvorena ili se ne koristi kada upotrebljava pozadinske alarme s izvorom lokacije uređaja.</string>
     <string name="animation_settings">Postavke animacije</string>
+    <string name="undefined">nedefinirano</string>
+    <string name="background_query_period_dialog_message">"Korištenje periodičnog pozadinskog upita za upozorenja kada aplikacija ne radi zahtijevat će očitavanje lokacije vašeg uređaja ako nije postavljeno ručno lociranje. "</string>
+    <string name="post_notifications_request">Omogućite dopuštenje za objavu obavijesti ako želite primati upozorenja o obavijestima.</string>
 </resources>
