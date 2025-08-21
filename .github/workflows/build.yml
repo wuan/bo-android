@@ -1,9 +1,9 @@
 name: Build and Test
 on:
   push:
-    branches: [ main, beta ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, beta ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -44,19 +44,17 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
 
       - name: Build and analyze
-        if: ${{ github.secret_source != 'Actions' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         run: |
-          echo "Secret source: \"${{ github.secret_source }}\""
           ./gradlew build jacocoTestReport
 
-      - name: Build and analyze (Sonar)
+      - name: Run Sonar
         if: ${{ github.secret_source == 'Actions' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build jacocoTestReport sonar
+        run: ./gradlew sonar
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
