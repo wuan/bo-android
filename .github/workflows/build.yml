@@ -49,6 +49,15 @@ jobs:
         run: |
           ./gradlew build jacocoTestReport
 
+      - name: Run Android Instrumented Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: default
+          arch: x86_64
+          profile: Nexus 6
+          script: ./gradlew connectedAndroidTest
+
       - name: Run Sonar
         if: ${{ github.secret_source == 'Actions' }}
         env:
