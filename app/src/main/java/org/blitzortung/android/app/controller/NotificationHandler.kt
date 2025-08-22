@@ -46,9 +46,11 @@ open class NotificationHandler @Inject constructor(
     }
 
     fun sendNotification(notificationText: String) {
-        val intent = Intent(context, Main::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-        val flags = PendingIntent.FLAG_CANCEL_CURRENT or (if (isAtLeast(Build.VERSION_CODES.M)) {
+        val intent = Intent(context, Main::class.java).apply {
+            action = Intent.ACTION_MAIN
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val flags = PendingIntent.FLAG_UPDATE_CURRENT or (if (isAtLeast(Build.VERSION_CODES.M)) {
             PendingIntent.FLAG_IMMUTABLE
         } else {
             0
