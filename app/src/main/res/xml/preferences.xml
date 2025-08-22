@@ -220,7 +220,8 @@
                 android:selectable="true"
                 android:summary="@string/alarm_vibration_signal_summary"
                 android:text="@string/ms"
-                android:title="@string/alarm_vibration_signal" />
+                android:title="@string/alarm_vibration_signal"
+                app:showSeekBarValue="true" />
         </PreferenceCategory>
         <ListPreference
             android:defaultValue="0"
