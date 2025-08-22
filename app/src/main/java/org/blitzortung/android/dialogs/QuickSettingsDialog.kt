@@ -60,7 +60,7 @@ class QuickSettingsDialog : DialogFragment() {
         )
 
         spinnerManager.add(
-            R.array.query_period_values, PreferenceKey.QUERY_PERIOD, R.id.selected_query_period,
+            R.array.query_period_values, PreferenceKey.QUERY_PERIOD, R.id.selected_query_period, defaultIndex = 2
         )
 
         spinnerManager.add(

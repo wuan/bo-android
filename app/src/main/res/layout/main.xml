@@ -23,11 +23,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="4dp"
-            android:layout_marginLeft="4dp"
             android:layout_weight="1"
             android:text=""
             android:textColor="@color/text_foreground"
-            android:textSize="14dp"
+            android:textSize="14sp"
             local:tablet_scaleable="true" />
 
         <org.blitzortung.android.app.view.ScaledTextView
@@ -37,7 +36,7 @@
             android:layout_gravity="center_vertical"
             android:text=""
             android:textColor="@color/text_foreground"
-            android:textSize="14dp"
+            android:textSize="14sp"
             local:tablet_scaleable="true" />
 
         <RelativeLayout
@@ -60,6 +59,13 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true" />
 
+            <ImageView
+                android:id="@+id/background_alerts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:contentDescription="@string/background_alerts"
+                android:src="@drawable/alarm_on" />
         </RelativeLayout>
 
     </LinearLayout>
