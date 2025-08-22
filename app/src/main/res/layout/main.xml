@@ -50,6 +50,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:contentDescription="@string/error_indicator"
+                android:scaleX="0.7"
+                android:scaleY="0.7"
                 android:src="@android:drawable/stat_notify_error" />
 
             <ProgressBar
@@ -59,14 +61,16 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true" />
 
-            <ImageView
-                android:id="@+id/background_alerts"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:contentDescription="@string/background_alerts"
-                android:src="@drawable/alarm_on" />
         </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/background_alerts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/background_alerts"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:src="@drawable/alarm_on" />
 
     </LinearLayout>
 
@@ -146,14 +150,14 @@
             android:id="@+id/time_slider"
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:paddingLeft="25dp"
-            android:paddingRight="25dp"
-            android:paddingBottom="15dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:background="@color/translucent_background"
-            android:max="0" />
+            android:max="0"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp"
+            android:paddingBottom="15dp" />
     </RelativeLayout>
 
 </RelativeLayout>

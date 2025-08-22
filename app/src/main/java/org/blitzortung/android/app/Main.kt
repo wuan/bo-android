@@ -51,6 +51,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.core.net.toUri
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.preference.PreferenceManager
 import dagger.android.AndroidInjection
@@ -830,6 +831,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
             PreferenceKey.BACKGROUND_QUERY_PERIOD -> {
                 backgroundAlertEnabled = sharedPreferences.get(key, "0").toInt() > 0
+                binding.backgroundAlerts.isVisible = backgroundAlertEnabled
             }
 
             else -> {}

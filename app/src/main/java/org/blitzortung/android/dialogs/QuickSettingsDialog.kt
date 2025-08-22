@@ -48,7 +48,7 @@ class QuickSettingsDialog : DialogFragment() {
         val spinnerManager = SpinnerManager(resources, view, preferences)
 
         spinnerManager.add(
-            R.array.regions_values, PreferenceKey.REGION, R.id.selected_region,
+            R.array.regions_values, PreferenceKey.REGION, R.id.selected_region, defaultIndex = 1
         )
 
         spinnerManager.add(
