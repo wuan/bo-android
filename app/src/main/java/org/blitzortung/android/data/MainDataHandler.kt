@@ -31,6 +31,7 @@ import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+//import org.blitzortung.android.data.CustomToast.makeText
 import org.blitzortung.android.data.cache.CacheSize
 import org.blitzortung.android.data.cache.DataCache
 import org.blitzortung.android.data.provider.DataProviderFactory
@@ -201,12 +202,19 @@ class MainDataHandler @Inject constructor(
         }
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        key: PreferenceKey
+    ) {
         when (key) {
             PreferenceKey.DATA_SOURCE, PreferenceKey.SERVICE_URL -> {
                 val providerTypeString =
-                    sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.RPC.toString())
-                val providerType = DataProviderType.valueOf(providerTypeString.uppercase(Locale.getDefault()))
+                    sharedPreferences.get(
+                        PreferenceKey.DATA_SOURCE,
+                        DataProviderType.RPC.toString()
+                    )
+                val providerType =
+                    DataProviderType.valueOf(providerTypeString.uppercase(Locale.getDefault()))
                 val dataProvider = dataProviderFactory.getDataProviderForType(providerType)
                 this.dataProvider = dataProvider
 
@@ -294,7 +302,7 @@ class MainDataHandler @Inject constructor(
     }
 
     private fun showBlitzortungProviderWarning() =
-        Toast.makeText(context, R.string.provider_warning, Toast.LENGTH_LONG).show()
+        CustomToast.Companion.makeText(context, R.string.provider_warning, Toast.LENGTH_LONG).show()
 
     private fun updateProviderSpecifics() {
         val providerType = dataProvider!!.type
@@ -358,7 +366,8 @@ class MainDataHandler @Inject constructor(
                 }
 
                 if (parameters.isRealtime()) {
-                    val statusString = "" + updatePeriod.getCurrentUpdatePeriod(currentTime, period) + "/" + period
+                    val statusString =
+                        "" + updatePeriod.getCurrentUpdatePeriod(currentTime, period) + "/" + period
                     broadcastEvent(StatusEvent(statusString))
                     // Schedule the next update
                     handler.postDelayed(this, 1000)
@@ -441,7 +450,8 @@ class MainDataHandler @Inject constructor(
         return updated
     }
 
-    fun updateLocation(boundingBox: BoundingBox, force: Boolean = false): Boolean = localData.update(boundingBox, force)
+    fun updateLocation(boundingBox: BoundingBox, force: Boolean = false): Boolean =
+        localData.update(boundingBox, force)
 
     fun updateAutoGridSize(zoomLevel: Double): Boolean =
         if (autoGridSize) {
