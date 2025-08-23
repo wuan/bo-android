@@ -90,7 +90,7 @@ class MainDataHandler @Inject constructor(
 
     private var animationHistory: History? = null
 
-    private var autoGridSize = false
+    var autoGridSize = false
 
     private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
         override fun addedFirstConsumer() {
@@ -409,41 +409,34 @@ class MainDataHandler @Inject constructor(
     }
 
     override fun onScroll(event: ScrollEvent?): Boolean {
-        return if (event != null) {
-            val mapView = event.source as OwnMapView
-            val updated = updateLocation(mapView.boundingBox)
-            ensureUpdate(updated, mapView)
-        } else {
-            false
-        }
+        return event?.let { updateGrid(event.source as OwnMapView, this.autoGridSize) } ?: false
     }
 
     override fun onZoom(event: ZoomEvent?): Boolean {
-        return if (event != null) {
-            val mapView = event.source as OwnMapView
-            val updateAutoGridSize = updateAutoGridSize(event.zoomLevel)
-            val updateLocation = updateLocation(mapView.boundingBox, updateAutoGridSize)
-            val updated = updateLocation || updateAutoGridSize
-            ensureUpdate(updated, mapView)
-        } else {
-            false
-        }
+        return event?.let { updateGrid(event.source as OwnMapView, this.autoGridSize) } ?: false
     }
 
-    private fun ensureUpdate(updated: Boolean, mapView: OwnMapView): Boolean {
-        if (updated) {
+    fun updateGrid(
+        mapView: OwnMapView,
+        autoGridSize: Boolean
+    ): Boolean {
+        val updatedAutoGridSize = updateAutoGridSize(mapView.zoomLevelDouble, autoGridSize)
+        val updatedLocation = mapView.boundingBox?.let { updateLocation(it, updatedAutoGridSize) } ?: false
+
+        if (updatedLocation || updatedAutoGridSize) {
+            Log.v(LOG_TAG, "MainDataHandler.updateGrid() location: $updatedLocation gridSize: $updatedAutoGridSize")
             if (mapView.isAnimating) {
                 addUpdateAfterAnimationListener(mapView)
             } else {
                 updateData()
             }
         }
-        return updated
+        return updatedLocation || updatedAutoGridSize
     }
 
     fun updateLocation(boundingBox: BoundingBox, force: Boolean = false): Boolean = localData.update(boundingBox, force)
 
-    fun updateAutoGridSize(zoomLevel: Double): Boolean =
+    fun updateAutoGridSize(zoomLevel: Double, autoGridSize: Boolean): Boolean =
         if (autoGridSize) {
             val gridSize = when {
                 zoomLevel >= 7.5f -> 5000

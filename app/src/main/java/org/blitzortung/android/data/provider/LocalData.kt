@@ -47,7 +47,7 @@ class LocalData @Inject constructor() {
                     Log.d(LOG_TAG, "LocalData.updateParameters() global -> local")
                     parameters.copy(region = LOCAL_REGION, localReference = localReference, dataArea = dataArea)
                 } else {
-                    Log.d(LOG_TAG, "LocalData.updateParameters() global")
+                    Log.d(LOG_TAG, "LocalData.updateParameters() global (grid ${parameters.gridSize})")
                     parameters.copy(region = GLOBAL_REGION, localReference = null, dataArea = LOCAL_DATA_AREA)
                 }
             }

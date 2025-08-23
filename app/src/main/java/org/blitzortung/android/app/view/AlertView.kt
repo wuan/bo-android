@@ -30,6 +30,7 @@ import android.graphics.RectF
 import android.location.Location
 import android.util.AttributeSet
 import android.util.Log
+import androidx.core.graphics.createBitmap
 import androidx.preference.PreferenceManager
 import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.data.AlertSector
@@ -49,7 +50,6 @@ import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
-import androidx.core.graphics.createBitmap
 
 class AlertView @JvmOverloads constructor(
     context: Context,
@@ -74,21 +74,29 @@ class AlertView @JvmOverloads constructor(
     private var enableDescriptionText = false
 
     val alertEventConsumer: (AlertEvent?) -> Unit = { event ->
-        Log.v(Main.LOG_TAG, "AlertView alertEventConsumer received $event")
-        alertResult = if (event is AlertResultEvent) {
+        val eventAlertResult = if (event is AlertResultEvent) {
             event.alertResult
         } else {
             null
         }
-        invalidate()
+        val updated = alertResult != eventAlertResult
+        if (updated) {
+            Log.v(Main.LOG_TAG, "AlertView alertEventConsumer received $event")
+        }
+        alertResult = eventAlertResult
+
+        if (updated) invalidate()
     }
 
     val locationEventConsumer: (LocationEvent) -> Unit = { locationEvent ->
-        Log.v(Main.LOG_TAG, "AlertView received location ${locationEvent.location}")
-        location = locationEvent.location
-        val visibility = if (location != null) VISIBLE else INVISIBLE
-        setVisibility(visibility)
-        invalidate()
+        val updated = location != locationEvent.location
+        if (updated) {
+            Log.v(Main.LOG_TAG, "AlertView received location ${locationEvent.location}")
+            location = locationEvent.location
+            val visibility = if (location != null) VISIBLE else INVISIBLE
+            setVisibility(visibility)
+            invalidate()
+        }
     }
 
     init {

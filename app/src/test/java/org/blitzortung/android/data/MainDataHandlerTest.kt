@@ -72,10 +72,10 @@ class MainDataHandlerTest {
 
     @Test
     fun updateGridSize() {
-        val result1 = uut.updateAutoGridSize(1.0)
+        val result1 = uut.updateAutoGridSize(1.0, true)
         assertThat(result1).isTrue
 
-        val result2 = uut.updateAutoGridSize(5.0)
+        val result2 = uut.updateAutoGridSize(5.0, true)
 
         assertThat(result2).isTrue
         assertThat(uut.parameters.gridSize).isEqualTo(10000)
@@ -125,6 +125,7 @@ class MainDataHandlerTest {
         val mapView = mockk<OwnMapView>()
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
         every { mapView.boundingBox } returns boundingBox
+        every { mapView.zoomLevelDouble } returns 6.0
         every { localData.update(boundingBox, false) } returns false
 
         val event = ScrollEvent(mapView, 100, 100)
@@ -140,6 +141,7 @@ class MainDataHandlerTest {
         every { mapView.isAnimating } returns false
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
         every { mapView.boundingBox } returns boundingBox
+        every { mapView.zoomLevelDouble } returns 6.0
         every { localData.update(boundingBox, false) } returns true
         val event = ScrollEvent(mapView, 100, 100)
 
@@ -157,6 +159,7 @@ class MainDataHandlerTest {
         every { mapView.isAnimating } returns true
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
         every { mapView.boundingBox } returns boundingBox
+        every { mapView.zoomLevelDouble } returns 6.0
         every { localData.update(boundingBox, false) } returns true
         val event = ScrollEvent(mapView, 100, 100)
 
@@ -186,6 +189,7 @@ class MainDataHandlerTest {
         every { mapView.isAnimating } returns false
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
         every { mapView.boundingBox } returns boundingBox
+        every { mapView.zoomLevelDouble } returns 6.0
         every { localData.update(boundingBox, false) } returns false
         val event = ZoomEvent(mapView, 6.0)
 
@@ -200,6 +204,7 @@ class MainDataHandlerTest {
         every { mapView.isAnimating } returns false
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
         every { mapView.boundingBox } returns boundingBox
+        every { mapView.zoomLevelDouble } returns 6.0
         every { localData.update(boundingBox, false) } returns true
         val event = ZoomEvent(mapView, 6.0)
 
@@ -214,6 +219,7 @@ class MainDataHandlerTest {
         every { mapView.isAnimating } returns false
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
         every { mapView.boundingBox } returns boundingBox
+        every { mapView.zoomLevelDouble } returns 8.0
         every { localData.update(boundingBox, false) } returns false
         val event = ZoomEvent(mapView, 8.0)
 
