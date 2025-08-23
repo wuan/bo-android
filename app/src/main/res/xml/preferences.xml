@@ -74,16 +74,6 @@
     <PreferenceCategory
         android:key="animation_settings"
         android:title="@string/animation_settings">
-        <ListPreference
-            android:defaultValue="6"
-            android:enabled="true"
-            android:entries="@array/animation_interval_durations"
-            android:entryValues="@array/animation_interval_duration_values"
-            android:key="animation_interval_duration"
-            android:persistent="true"
-            android:selectable="true"
-            android:summary="@string/animation_interval_duration_summary"
-            android:title="@string/animation_interval_duration" />
         <SeekBarPreference
             android:defaultValue="200"
             android:key="animation_sleep_duration"

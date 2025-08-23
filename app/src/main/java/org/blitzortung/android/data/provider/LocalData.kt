@@ -44,7 +44,7 @@ class LocalData @Inject constructor() {
 
             GLOBAL_REGION -> {
                 if (localReference != null && parameters.gridSize <= LOCAL_REGION_THRESHOLD) {
-                    Log.d(LOG_TAG, "LocalData.updateParameters() global -> local")
+                    Log.d(LOG_TAG, "LocalData.updateParameters() global -> local ($localReference, $dataArea)")
                     parameters.copy(region = LOCAL_REGION, localReference = localReference, dataArea = dataArea)
                 } else {
                     Log.d(LOG_TAG, "LocalData.updateParameters() global")

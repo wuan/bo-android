@@ -30,6 +30,7 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.PreferenceManager
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.location.LocationHandler
