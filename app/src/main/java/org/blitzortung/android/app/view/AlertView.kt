@@ -82,10 +82,9 @@ class AlertView @JvmOverloads constructor(
         val updated = alertResult != eventAlertResult
         if (updated) {
             Log.v(Main.LOG_TAG, "AlertView alertEventConsumer received $event")
+            alertResult = eventAlertResult
+            invalidate()
         }
-        alertResult = eventAlertResult
-
-        if (updated) invalidate()
     }
 
     val locationEventConsumer: (LocationEvent) -> Unit = { locationEvent ->
