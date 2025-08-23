@@ -90,7 +90,7 @@ class LocalData @Inject constructor() {
 
     private fun calculateDataArea(boundingBox: BoundingBox): Int {
         val maxExtent = max(boundingBox.longitudeSpanWithDateLine, boundingBox.latitudeSpan)
-        50val targetValue = DATA_AREA_SCALING * maxExtent
+        val targetValue = DATA_AREA_SCALING * maxExtent
         return (ceil(targetValue / MIN_DATA_AREA) * MIN_DATA_AREA).toInt()
     }
 
