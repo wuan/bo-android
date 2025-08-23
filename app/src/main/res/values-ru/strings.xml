@@ -310,7 +310,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_signal_settings">Настройки сигнала предупреждений</string>
     <string name="alarm_audio_signal">Выбор сигнала предупреждений</string>
     <string name="alarm_vibration_signal">Продолжительность вибрации сигнала предупреждения</string>
-    <string name="alarm_vibration_signal_summary">Выберите продолжительность вибрации в случае предупреждения</string>
+    <string name="alarm_vibration_signal_summary">Выберите продолжительность вибрации в случае предупреждения, мс</string>
     <string name="location_provider_not_available">Месторасположение \'%s\' не доступно</string>
     <string name="location_provider_disabled">Месторасположение \'%s\' отключено</string>
     <string name="service_url">URL адрес стороннего сервера</string>
@@ -363,7 +363,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="diagnosis">Диагностика приложения</string>
     <string name="diagnosis_summary">Функции диагностики работоспособности приложения</string>
-    <string name="undefined">неопределенный</string>
+    <string name="undefined">Не установлен</string>
     <string name="background_query_period_dialog_message">"Использование периодического фонового запроса оповещений, когда приложение не запущено, потребует считывания местоположения вашего устройства, если оно не настроено на определение местоположения вручную. "</string>
     <string name="post_notifications_request">Включите разрешение на публикацию уведомлений, если вы хотите получать оповещения.</string>
 </resources>
