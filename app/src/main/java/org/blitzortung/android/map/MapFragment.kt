@@ -21,6 +21,8 @@ import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.ScaleBarOverlay
 import kotlin.math.min
 import androidx.core.content.edit
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
+import org.blitzortung.android.data.AUTO_GRID_SIZE_VALUE
 
 
 class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
@@ -81,22 +83,18 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         mapView.isTilesScaledToDpi = true
 
         //the rest of this is restoring the last map location the user looked at
-        val zoomLevel = mPrefs.getFloat(PREFS_ZOOM_LEVEL_DOUBLE, mPrefs.getInt(PREFS_ZOOM_LEVEL, 0).toFloat())
+        val zoomLevel = mPrefs.getFloat(PREFS_ZOOM_LEVEL_DOUBLE, 3.0f)
         mapView.controller.setZoom(zoomLevel.toDouble())
         mapView.setMapOrientation(0f, false)
         val latitudeString = mPrefs.getString(PREFS_LATITUDE_STRING, null)
         val longitudeString = mPrefs.getString(PREFS_LONGITUDE_STRING, null)
-        if (latitudeString == null || longitudeString == null) { // case handled for historical reasons only
-            val scrollX = mPrefs.getInt(PREFS_SCROLL_X, 0)
-            val scrollY = mPrefs.getInt(PREFS_SCROLL_Y, 0)
-            mapView.scrollTo(scrollX, scrollY)
-        } else {
+        if (latitudeString != null && longitudeString != null) { // case handled for historical reasons only
             val latitude = latitudeString.toDouble()
             val longitude = longitudeString.toDouble()
             mapView.setExpectedCenter(GeoPoint(latitude, longitude))
         }
+        mapView.invalidate()
 
-        setHasOptionsMenu(true)
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_SCALE)
     }
 
@@ -113,6 +111,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
             putString(PREFS_LATITUDE_STRING, mapView.mapCenter.latitude.toString())
             putString(PREFS_LONGITUDE_STRING, mapView.mapCenter.longitude.toString())
             putFloat(PREFS_ZOOM_LEVEL_DOUBLE, mapView.zoomLevelDouble.toFloat())
+            commit()
         }
 
         mapView.onPause()
@@ -168,11 +167,8 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
         const val PREFS_NAME = "org.andnav.osm.prefs"
         const val PREFS_TILE_SOURCE = "tilesource"
-        const val PREFS_SCROLL_X = "scrollX"
-        const val PREFS_SCROLL_Y = "scrollY"
         const val PREFS_LATITUDE_STRING = "latitudeString"
         const val PREFS_LONGITUDE_STRING = "longitudeString"
-        const val PREFS_ZOOM_LEVEL = "zoomLevel"
         const val PREFS_ZOOM_LEVEL_DOUBLE = "zoomLevelDouble"
     }
 }
