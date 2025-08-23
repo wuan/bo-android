@@ -502,10 +502,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         dataHandler.start()
 
-        mapFragment.mapView.addOnFirstLayoutListener { thisMapView, l, t, r, b ->
+        mapFragment.mapView.addOnFirstLayoutListener { thisMapView, _, _, _, _ ->
             val ownMapView = thisMapView as OwnMapView
-            val boundingBox = ownMapView.boundingBox
-            Log.v(LOG_TAG, "!!!! ${boundingBox.longitudeSpanWithDateLine} ${boundingBox.latitudeSpan}")
             dataHandler.updateGrid(ownMapView, dataHandler.autoGridSize)
             strikeListOverlay.onZoom(ZoomEvent(ownMapView, ownMapView.zoomLevelDouble))
         }
