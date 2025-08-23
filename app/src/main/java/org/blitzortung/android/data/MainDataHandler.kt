@@ -91,6 +91,7 @@ class MainDataHandler @Inject constructor(
     private var animationHistory: History? = null
 
     var autoGridSize = false
+        private set
 
     private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
         override fun addedFirstConsumer() {

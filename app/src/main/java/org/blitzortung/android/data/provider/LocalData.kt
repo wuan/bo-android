@@ -44,10 +44,10 @@ class LocalData @Inject constructor() {
 
             GLOBAL_REGION -> {
                 if (localReference != null && parameters.gridSize <= LOCAL_REGION_THRESHOLD) {
-                    Log.d(LOG_TAG, "LocalData.updateParameters() global -> local")
+                    Log.d(LOG_TAG, "LocalData.updateParameters() global -> local ($localReference, $dataArea)")
                     parameters.copy(region = LOCAL_REGION, localReference = localReference, dataArea = dataArea)
                 } else {
-                    Log.d(LOG_TAG, "LocalData.updateParameters() global (grid ${parameters.gridSize})")
+                    Log.d(LOG_TAG, "LocalData.updateParameters() global")
                     parameters.copy(region = GLOBAL_REGION, localReference = null, dataArea = LOCAL_DATA_AREA)
                 }
             }
@@ -90,7 +90,7 @@ class LocalData @Inject constructor() {
 
     private fun calculateDataArea(boundingBox: BoundingBox): Int {
         val maxExtent = max(boundingBox.longitudeSpanWithDateLine, boundingBox.latitudeSpan)
-        val targetValue = DATA_AREA_SCALING * maxExtent
+        50val targetValue = DATA_AREA_SCALING * maxExtent
         return (ceil(targetValue / MIN_DATA_AREA) * MIN_DATA_AREA).toInt()
     }
 
