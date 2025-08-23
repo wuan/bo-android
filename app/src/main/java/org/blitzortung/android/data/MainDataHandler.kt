@@ -31,7 +31,6 @@ import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
-//import org.blitzortung.android.data.CustomToast.makeText
 import org.blitzortung.android.data.cache.CacheSize
 import org.blitzortung.android.data.cache.DataCache
 import org.blitzortung.android.data.provider.DataProviderFactory
