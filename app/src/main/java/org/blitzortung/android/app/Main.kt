@@ -51,6 +51,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.core.net.toUri
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.preference.PreferenceManager
 import dagger.android.AndroidInjection
@@ -67,6 +68,7 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.app.view.put
+import org.blitzortung.android.data.AUTO_GRID_SIZE_VALUE
 import org.blitzortung.android.data.DataChannel
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.Mode
@@ -87,6 +89,7 @@ import org.blitzortung.android.util.LogUtil
 import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
 import org.osmdroid.config.Configuration
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
 import java.util.concurrent.atomic.AtomicLong
@@ -303,17 +306,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private fun initializeOsmDroid() {
         val osmDroidConfig = Configuration.getInstance()
         osmDroidConfig.load(this, preferences)
-        Log.v(
-            LOG_TAG,
-            "Main.onCreate() osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}"
-        )
         if (!StorageUtils.isWritable(osmDroidConfig.osmdroidBasePath)) {
             preferences.edit { remove("osmdroid.basePath") }
             osmDroidConfig.load(this, preferences)
-            Log.v(
-                LOG_TAG,
-                "Main.onCreate() updated osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}"
-            )
             if (!StorageUtils.isWritable(osmDroidConfig.osmdroidTileCache)) {
                 Toast.makeText(baseContext, R.string.osmdroid_storage_warning, Toast.LENGTH_LONG).show()
             }
@@ -456,6 +451,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT,
             PreferenceKey.DO_NOT_SLEEP,
             PreferenceKey.BACKGROUND_QUERY_PERIOD,
+            PreferenceKey.GRID_SIZE,
         )
 
         val overlays = mapFragment.mapView.overlays
@@ -505,7 +501,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         locationHandler.start()
 
         dataHandler.start()
-        dataHandler.updateAutoGridSize(mapFragment.zoomLevel)
+
+        mapFragment.mapView.addOnFirstLayoutListener { thisMapView, _, _, _, _ ->
+            val ownMapView = thisMapView as OwnMapView
+            dataHandler.updateGrid(ownMapView, dataHandler.autoGridSize)
+            strikeListOverlay.onZoom(ZoomEvent(ownMapView, ownMapView.zoomLevelDouble))
+        }
     }
 
     private fun enableDataUpdates() {
@@ -830,6 +831,13 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
             PreferenceKey.BACKGROUND_QUERY_PERIOD -> {
                 backgroundAlertEnabled = sharedPreferences.get(key, "0").toInt() > 0
+                binding.backgroundAlerts.isVisible = backgroundAlertEnabled
+            }
+
+            PreferenceKey.GRID_SIZE -> {
+                val gridSizeString = sharedPreferences.get(key, AUTO_GRID_SIZE_VALUE)
+                val autoGridSize = gridSizeString == AUTO_GRID_SIZE_VALUE
+                dataHandler.updateGrid(mapFragment.mapView, autoGridSize)
             }
 
             else -> {}
