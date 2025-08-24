@@ -1,10 +1,21 @@
+# .pre-commit-config.yaml
 repos:
-- repo: https://github.com/gitleaks/gitleaks
-  rev: v8.16.3
-  hooks:
-  - id: gitleaks
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.4.0
-  hooks:
-  - id: end-of-file-fixer
-  - id: trailing-whitespace
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0 # Using your existing pre-commit-hooks version
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        exclude: build/
+      - id: check-json
+        exclude: build/
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: detect-private-key
+
+  - repo: https://github.com/pinterest/ktlint
+    rev: '1.7.1' # A recent, stable version of ktlint. You can update this as needed.
+    hooks:
+      - id: ktlint
+        args: ["--android", "--experimental", "!**/generated/**", "!build/**"] # Apply Android styling, experimental rules, and exclude generated/build files.
+                                                                           # ktlint will also automatically use your project's .editorconfig if present.

@@ -26,4 +26,3 @@ data class AlertParameters(
     val sectorLabels: List<String>,
     val measurementSystem: MeasurementSystem
 )
-

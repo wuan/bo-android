@@ -228,4 +228,3 @@ class MainDataHandlerTest {
         assertThat(result).isTrue
     }
 }
-

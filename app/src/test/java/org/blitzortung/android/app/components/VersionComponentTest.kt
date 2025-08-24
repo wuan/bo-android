@@ -107,4 +107,3 @@ class BuildVersionTest {
         assertThat(buildVersion.majorVersion).isGreaterThanOrEqualTo(-1)
     }
 }
-
