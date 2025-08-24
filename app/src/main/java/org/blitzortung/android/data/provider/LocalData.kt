@@ -13,13 +13,13 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.round
 
-private const val MIN_DATA_AREA = 5
+private const val MIN_DATA_SCALE = 5
 
-private const val MAX_DATA_AREA = 20
+private const val MAX_DATA_SCALE = 20
 
-private const val LOCAL_DATA_AREA = MIN_DATA_AREA
+private const val LOCAL_DATA_SCALE = MIN_DATA_SCALE
 
-private const val DATA_AREA_SCALING = 0.5
+private const val DATA_AREA_SIZE_FACTOR = 0.5
 
 const val LOCAL_REGION_THRESHOLD = 25000
 
@@ -37,7 +37,7 @@ class LocalData @Inject constructor() {
                     Log.d(LOG_TAG, "LocalData.updateParameters() local")
                     val x = calculateLocalCoordinate(location.longitude)
                     val y = calculateLocalCoordinate(location.latitude)
-                    parameters.copy(dataArea = DataArea(x, y, LOCAL_DATA_AREA))
+                    parameters.copy(dataArea = DataArea(x, y, LOCAL_DATA_SCALE))
                 } else {
                     Log.d(LOG_TAG, "LocalData.updateParameters() local -> global")
                     parameters.copy(region = GLOBAL_REGION, dataArea = null)
@@ -104,9 +104,9 @@ class LocalData @Inject constructor() {
 
     private fun calculateDataArea(boundingBox: BoundingBox): Int? {
         val maxExtent = max(boundingBox.longitudeSpanWithDateLine, boundingBox.latitudeSpan)
-        val targetValue = DATA_AREA_SCALING * maxExtent
-        val dataArea = (ceil(targetValue / MIN_DATA_AREA) * MIN_DATA_AREA).toInt()
-        return if (dataArea <= MAX_DATA_AREA) dataArea else null
+        val targetValue = DATA_AREA_SIZE_FACTOR * maxExtent
+        val dataArea = (ceil(targetValue / MIN_DATA_SCALE) * MIN_DATA_SCALE).toInt()
+        return if (dataArea <= MAX_DATA_SCALE) dataArea else null
     }
 
     private fun isOutside(boundingBox: BoundingBox, gridParameters: GridParameters): Boolean {
@@ -121,7 +121,7 @@ class LocalData @Inject constructor() {
     }
 }
 
-fun calculateLocalCoordinate(value: Double, dataArea: Int = LOCAL_DATA_AREA): Int {
+fun calculateLocalCoordinate(value: Double, dataArea: Int = LOCAL_DATA_SCALE): Int {
     return (value / dataArea).toInt() - if (value < 0) 1 else 0
 }
 
