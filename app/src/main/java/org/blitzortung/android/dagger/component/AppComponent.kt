@@ -23,4 +23,3 @@ import javax.inject.Singleton
     ]
 )
 interface AppComponent : AndroidInjector<BOApplication>
-

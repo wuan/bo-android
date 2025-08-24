@@ -98,4 +98,3 @@ open class TabletAwareView(
     }
 
 }
-

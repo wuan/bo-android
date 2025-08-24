@@ -12,7 +12,3 @@
         android:text="@string/provider_warning"
         android:textColor="#FFFFFF" />
 </LinearLayout>
-
-
-
-

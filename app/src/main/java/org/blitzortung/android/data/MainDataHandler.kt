@@ -498,4 +498,3 @@ class MainDataHandler @Inject constructor(
 
 internal const val DEFAULT_GRID_SIZE = 10000
 internal const val AUTO_GRID_SIZE_VALUE = "auto"
-

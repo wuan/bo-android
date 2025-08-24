@@ -29,4 +29,3 @@ interface HttpServiceClient {
     var socketTimeout: Int
     var connectionTimeout: Int
 }
-
