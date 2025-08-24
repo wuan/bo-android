@@ -104,7 +104,8 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
         }
     }
 
-    private fun extractURITitle(value: String): String = value.toUri().getQueryParameter("title") ?: value
+    private fun extractURITitle(value: String): String = if (RingtoneManager.isDefault(value.toUri())) context?.getString(R.string.default_alarm_signal).toString()
+        else value.toUri().getQueryParameter("title") ?: value
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
