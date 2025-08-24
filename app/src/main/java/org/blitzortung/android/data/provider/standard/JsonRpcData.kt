@@ -3,9 +3,11 @@ package org.blitzortung.android.data.provider.standard
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
+import org.blitzortung.android.data.provider.LOCAL_REGION_THRESHOLD
 import org.blitzortung.android.jsonrpc.JsonRpcClient
 import org.blitzortung.android.jsonrpc.JsonRpcResponse
 import java.net.URL
+import kotlin.math.max
 
 class JsonRpcData(
     private val client: JsonRpcClient,
@@ -18,8 +20,7 @@ class JsonRpcData(
         val gridSize = parameters.gridSize
         val countThreshold = parameters.countThreshold
         val region = parameters.region
-        val localReference = parameters.localReference
-        val dataArea = parameters.dataArea
+        val localReference = parameters.dataArea
 
         return when (region) {
             GLOBAL_REGION -> {
@@ -27,7 +28,7 @@ class JsonRpcData(
                     serviceUrl,
                     "get_global_strikes_grid",
                     intervalDuration,
-                    gridSize,
+                    max(gridSize, LOCAL_REGION_THRESHOLD),
                     intervalOffset,
                     countThreshold
                 )
@@ -50,7 +51,7 @@ class JsonRpcData(
                     intervalDuration,
                     intervalOffset,
                     countThreshold,
-                    dataArea,
+                    localReference.scale,
                 )
             }
 

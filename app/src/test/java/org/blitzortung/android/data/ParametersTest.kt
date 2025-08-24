@@ -91,9 +91,9 @@ class ParametersTest {
 
     @Test
     fun withLocalReference() {
-        val localReference = LocalReference(5, 6)
-        val result = parameters.copy(localReference = localReference)
+        val dataArea = DataArea(5, 6, scale = 5)
+        val result = parameters.copy(dataArea = dataArea)
 
-        assertThat(result.localReference).isEqualTo(localReference)
+        assertThat(result.dataArea).isEqualTo(dataArea)
     }
 }

@@ -327,4 +327,5 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="undefined">indefinito</string>
     <string name="background_query_period_dialog_message">"L'utilizzo di una query periodica in background per gli avvisi quando l'app non è in esecuzione richiederà la lettura della posizione del dispositivo, se non è impostata sulla posizione manuale. "</string>
     <string name="post_notifications_request">"Abilita l'autorizzazione per l'invio di notifiche se desideri ricevere avvisi di notifica."</string>
+    <string name="default_alarm_signal">Suono sveglia predefinito</string>
 </resources>

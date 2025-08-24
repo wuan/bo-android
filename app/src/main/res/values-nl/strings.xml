@@ -338,4 +338,5 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="undefined">ongedefinieerd</string>
     <string name="background_query_period_dialog_message">Het gebruik van een periodieke achtergrondquery voor waarschuwingen wanneer de app niet actief is, vereist het lezen van de locatie van uw apparaat als dit niet is ingesteld op handmatige locatie.</string>
     <string name="post_notifications_request">Schakel toestemming voor het plaatsen van meldingen in als u meldingen wenst te ontvangen.</string>
+    <string name="default_alarm_signal">Standaard alarmgeluid</string>
 </resources>

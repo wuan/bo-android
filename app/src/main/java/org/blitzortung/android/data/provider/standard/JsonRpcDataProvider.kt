@@ -21,6 +21,7 @@ package org.blitzortung.android.data.provider.standard
 import android.content.SharedPreferences
 import android.util.Log
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get

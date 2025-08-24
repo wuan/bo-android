@@ -196,8 +196,8 @@ class LegendView @JvmOverloads constructor(
 
                 for ((index, regionNumberString) in resources.getStringArray(R.array.regions_values).withIndex()) {
                     if (regionNumber == Integer.parseInt(regionNumberString)) {
-                        val detail = if (regionNumber < 0) {
-                            " [$dataArea]"
+                        val detail = if (regionNumber < 0 && dataArea != null) {
+                            " [${dataArea.scale}]"
                         } else {
                             ""
                         }

@@ -315,7 +315,7 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_provider_not_available">proveedor de localización \'%s\' no disponible</string>
     <string name="location_provider_disabled">proveedor de localización \'%s\' está deshabilitado</string>
     <string name="service_url">Servidor URL alternativo</string>
-    <string name="set_manual_location">Poner manualmente la ubicación</string>
+    <string name="set_manual_location">Poner manually la ubicación</string>
     <string name="error_indicator">Indicador de error</string>
     <string name="app_log">Registro de la aplicación</string>
     <string name="share_log">Enviar correo electrónico…</string>
@@ -332,4 +332,5 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="undefined">indefinido</string>
     <string name="background_query_period_dialog_message">El uso de una consulta periódica en segundo plano para alertas cuando la aplicación no se está ejecutando requerirá leer la ubicación de su dispositivo si no está configurado en ubicación manual.</string>
     <string name="post_notifications_request">Habilite el permiso para publicar notificaciones si desea recibir alertas de notificación.</string>
+    <string name="default_alarm_signal">Sonido de alarma predeterminado</string>
 </resources>

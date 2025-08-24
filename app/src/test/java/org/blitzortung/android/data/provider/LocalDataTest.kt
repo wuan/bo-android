@@ -2,7 +2,7 @@ package org.blitzortung.android.data.provider
 
 import android.location.Location
 import org.assertj.core.api.Assertions.assertThat
-import org.blitzortung.android.data.LocalReference
+import org.blitzortung.android.data.DataArea
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.GridParameters
 import org.junit.Before
@@ -30,8 +30,8 @@ class LocalDataTest {
     fun calculatesLeftLowerCorner() {
         val result = uut.updateParameters(parameters, createLocation(5.0, 10.0))
 
-        assertThat(result.localReference?.x).isEqualTo(1)
-        assertThat(result.localReference?.y).isEqualTo(2)
+        assertThat(result.dataArea?.x).isEqualTo(1)
+        assertThat(result.dataArea?.y).isEqualTo(2)
         assertThat(result.region).isEqualTo(LOCAL_REGION)
     }
 
@@ -39,8 +39,8 @@ class LocalDataTest {
     fun calculatesLeftLowerCornerNegativeCoordinates() {
         val result = uut.updateParameters(parameters, createLocation(-7.5, -12.5))
 
-        assertThat(result.localReference?.x).isEqualTo(-2)
-        assertThat(result.localReference?.y).isEqualTo(-3)
+        assertThat(result.dataArea?.x).isEqualTo(-2)
+        assertThat(result.dataArea?.y).isEqualTo(-3)
         assertThat(result.region).isEqualTo(LOCAL_REGION)
     }
 
@@ -48,8 +48,8 @@ class LocalDataTest {
     fun calculatesCenter() {
         val result = uut.updateParameters(parameters, createLocation(7.5, 12.5))
 
-        assertThat(result.localReference?.x).isEqualTo(1)
-        assertThat(result.localReference?.y).isEqualTo(2)
+        assertThat(result.dataArea?.x).isEqualTo(1)
+        assertThat(result.dataArea?.y).isEqualTo(2)
         assertThat(result.region).isEqualTo(LOCAL_REGION)
     }
 
@@ -57,8 +57,8 @@ class LocalDataTest {
     fun calculatesUpperRightCornerInnerLimit() {
         val result = uut.updateParameters(parameters, createLocation(9.999, 14.999))
 
-        assertThat(result.localReference?.x).isEqualTo(1)
-        assertThat(result.localReference?.y).isEqualTo(2)
+        assertThat(result.dataArea?.x).isEqualTo(1)
+        assertThat(result.dataArea?.y).isEqualTo(2)
         assertThat(result.region).isEqualTo(LOCAL_REGION)
     }
 
@@ -66,8 +66,8 @@ class LocalDataTest {
     fun calculatesUpperRightCorner() {
         val result = uut.updateParameters(parameters, createLocation(10.0, 15.0))
 
-        assertThat(result.localReference?.x).isEqualTo(2)
-        assertThat(result.localReference?.y).isEqualTo(3)
+        assertThat(result.dataArea?.x).isEqualTo(2)
+        assertThat(result.dataArea?.y).isEqualTo(3)
         assertThat(result.region).isEqualTo(LOCAL_REGION)
     }
 
@@ -75,7 +75,7 @@ class LocalDataTest {
     fun fallsBackToGlobalWithoutLocation() {
         val result = uut.updateParameters(parameters, null)
 
-        assertThat(result.localReference).isNull()
+        assertThat(result.dataArea).isNull()
         assertThat(result.region).isEqualTo(GLOBAL_REGION)
     }
 
@@ -85,8 +85,7 @@ class LocalDataTest {
         val result = uut.update(boundingBox)
 
         assertThat(result).isTrue
-        assertThat(uut.dataArea).isEqualTo(5)
-        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9))
+        assertThat(uut.dataArea).isEqualTo(DataArea(2, 9, 5))
     }
 
     @Test
@@ -98,8 +97,7 @@ class LocalDataTest {
         val result = uut.update(boundingBox)
 
         assertThat(result).isFalse
-        assertThat(uut.dataArea).isEqualTo(5)
-        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9))
+        assertThat(uut.dataArea).isEqualTo(DataArea(2, 9, 5))
     }
 
     @Test
@@ -111,8 +109,7 @@ class LocalDataTest {
         val result = uut.update(boundingBox)
 
         assertThat(result).isFalse
-        assertThat(uut.dataArea).isEqualTo(5)
-        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9))
+        assertThat(uut.dataArea).isEqualTo(DataArea(2, 9, 5))
     }
 
     @Test
@@ -125,8 +122,7 @@ class LocalDataTest {
         val result = uut.update(boundingBox2)
 
         assertThat(result).isTrue
-        assertThat(uut.dataArea).isEqualTo(5)
-        assertThat(uut.localReference).isEqualTo(LocalReference(2, 10))
+        assertThat(uut.dataArea).isEqualTo(DataArea(2, 10,5))
     }
 
     @Test
@@ -138,8 +134,7 @@ class LocalDataTest {
         val result = uut.update(boundingBox2)
 
         assertThat(result).isFalse
-        assertThat(uut.dataArea).isEqualTo(5)
-        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9))
+        assertThat(uut.dataArea).isEqualTo(DataArea(2, 9, 5))
     }
 
     @Test
@@ -151,8 +146,7 @@ class LocalDataTest {
         val result = uut.update(boundingBox2, force = true)
 
         assertThat(result).isTrue
-        assertThat(uut.dataArea).isEqualTo(5)
-        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9))
+        assertThat(uut.dataArea).isEqualTo(DataArea(2, 9, 5))
     }
 
     @Test
@@ -164,8 +158,7 @@ class LocalDataTest {
         val result = uut.update(boundingBox2)
 
         assertThat(result).isTrue
-        assertThat(uut.dataArea).isEqualTo(5)
-        assertThat(uut.localReference).isEqualTo(LocalReference(2, 10))
+        assertThat(uut.dataArea).isEqualTo(DataArea(2, 10, 5))
     }
 
     @Test
@@ -177,12 +170,11 @@ class LocalDataTest {
         val result = uut.update(boundingBox2)
 
         assertThat(result).isFalse
-        assertThat(uut.dataArea).isEqualTo(5)
-        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9))
+        assertThat(uut.dataArea).isEqualTo(DataArea(2, 9, 5))
     }
 
     @Test
-    fun updateOfLocalDataOnZoomOutsiedArea() {
+    fun updateOfLocalDataOnZoomOutsideArea() {
         val boundingBox1 = BoundingBox(45.5, 10.5, 44.5, 9.5)
         uut.update(boundingBox1)
 
@@ -190,8 +182,19 @@ class LocalDataTest {
         val result = uut.update(boundingBox2)
 
         assertThat(result).isTrue
-        assertThat(uut.dataArea).isEqualTo(10)
-        assertThat(uut.localReference).isEqualTo(LocalReference(1, 4))
+        assertThat(uut.dataArea).isEqualTo(DataArea(1, 4, 10))
+    }
+
+    @Test
+    fun updateOfLocalDataOnZoomOutsideLocalArea() {
+        val boundingBox1 = BoundingBox(45.5, 10.5, 44.5, 9.5)
+        uut.update(boundingBox1)
+
+        val boundingBox2 = BoundingBox(51.0, 15.0, -40.0, 5.0)
+        val result = uut.update(boundingBox2)
+
+        assertThat(result).isTrue
+        assertThat(uut.dataArea).isNull()
     }
 
     fun createLocation(x: Double, y: Double): Location {
