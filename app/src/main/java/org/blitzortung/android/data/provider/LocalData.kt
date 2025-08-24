@@ -61,48 +61,47 @@ class LocalData @Inject constructor() {
     }
 
     fun update(boundingBox: BoundingBox, force: Boolean = false): Boolean {
-        val localReference = calculateLocalReference(boundingBox)
+        val dataArea = calculateDataArea(boundingBox)
 
         val gridParameters = gridParameters
         val isOutside = if (gridParameters == null) false else this@LocalData.isOutside(boundingBox, gridParameters)
-        val isChanged = this.dataArea != localReference
+        val isChanged = this.dataArea != dataArea
         return if (
             gridParameters != null && isOutside && isChanged ||
             gridParameters == null && isChanged ||
             force
         ) {
-            if (localReference != null) {
+            if (dataArea != null) {
                 Log.d(
                     LOG_TAG,
-                    "LocalData.update() $localReference from center ${round(boundingBox.centerLongitude * 100) / 100}, ${
+                    "LocalData.update() $dataArea from center ${round(boundingBox.centerLongitude * 100) / 100}, ${
                         round(boundingBox.centerLatitude * 100) / 100
-                    } -> ${localReference.x1}..${localReference.x2} ${localReference.y1}..${localReference.y2}, span: ${
+                    } -> ${dataArea.x1}..${dataArea.x2} ${dataArea.y1}..${dataArea.y2}, span: ${
                         round(boundingBox.longitudeSpanWithDateLine * 100) / 100
                     }, ${round(boundingBox.latitudeSpan * 100) / 100} "
                 )
             } else {
                 Log.d( LOG_TAG, "LocalData.update() disabled from center ${round(boundingBox.centerLongitude * 100) / 100}, ${ round(boundingBox.centerLatitude * 100) / 100 } " )
             }
-            this.dataArea = localReference
+            this.dataArea = dataArea
             true
         } else {
             false
         }
     }
 
-    private fun calculateLocalReference(boundingBox: BoundingBox): DataArea? {
-        val dataArea = calculateDataArea(boundingBox)
-        val reference = if (dataArea != null) {
-            val xPos = calculateLocalCoordinate(boundingBox.centerLongitude, dataArea)
-            val yPos = calculateLocalCoordinate(boundingBox.centerLatitude, dataArea)
-            DataArea(xPos, yPos, dataArea)
+    private fun calculateDataArea(boundingBox: BoundingBox): DataArea? {
+        val scale = calculateDataAreaScale(boundingBox)
+        return if (scale != null) {
+            val x = calculateLocalCoordinate(boundingBox.centerLongitude, scale)
+            val y = calculateLocalCoordinate(boundingBox.centerLatitude, scale)
+            DataArea(x, y, scale)
         } else {
             null
         }
-        return reference
     }
 
-    private fun calculateDataArea(boundingBox: BoundingBox): Int? {
+    private fun calculateDataAreaScale(boundingBox: BoundingBox): Int? {
         val maxExtent = max(boundingBox.longitudeSpanWithDateLine, boundingBox.latitudeSpan)
         val targetValue = DATA_AREA_SIZE_FACTOR * maxExtent
         val dataArea = (ceil(targetValue / MIN_DATA_SCALE) * MIN_DATA_SCALE).toInt()
@@ -121,8 +120,8 @@ class LocalData @Inject constructor() {
     }
 }
 
-fun calculateLocalCoordinate(value: Double, dataArea: Int = LOCAL_DATA_SCALE): Int {
-    return (value / dataArea).toInt() - if (value < 0) 1 else 0
+fun calculateLocalCoordinate(coordinate: Double, scale: Int = LOCAL_DATA_SCALE): Int {
+    return (coordinate / scale).toInt() - if (coordinate < 0) 1 else 0
 }
 
 internal const val LOCAL_REGION = -1
