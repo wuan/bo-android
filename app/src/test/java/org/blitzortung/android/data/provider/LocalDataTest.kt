@@ -85,8 +85,7 @@ class LocalDataTest {
         val result = uut.update(boundingBox)
 
         assertThat(result).isTrue
-        assertThat(uut.dataArea).isEqualTo(5)
-        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9))
+        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9, 5))
     }
 
     @Test
@@ -98,8 +97,7 @@ class LocalDataTest {
         val result = uut.update(boundingBox)
 
         assertThat(result).isFalse
-        assertThat(uut.dataArea).isEqualTo(5)
-        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9))
+        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9, 5))
     }
 
     @Test
@@ -111,8 +109,7 @@ class LocalDataTest {
         val result = uut.update(boundingBox)
 
         assertThat(result).isFalse
-        assertThat(uut.dataArea).isEqualTo(5)
-        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9))
+        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9, 5))
     }
 
     @Test
@@ -125,8 +122,7 @@ class LocalDataTest {
         val result = uut.update(boundingBox2)
 
         assertThat(result).isTrue
-        assertThat(uut.dataArea).isEqualTo(5)
-        assertThat(uut.localReference).isEqualTo(LocalReference(2, 10))
+        assertThat(uut.localReference).isEqualTo(LocalReference(2, 10,5))
     }
 
     @Test
@@ -138,8 +134,7 @@ class LocalDataTest {
         val result = uut.update(boundingBox2)
 
         assertThat(result).isFalse
-        assertThat(uut.dataArea).isEqualTo(5)
-        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9))
+        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9, 5))
     }
 
     @Test
@@ -151,8 +146,7 @@ class LocalDataTest {
         val result = uut.update(boundingBox2, force = true)
 
         assertThat(result).isTrue
-        assertThat(uut.dataArea).isEqualTo(5)
-        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9))
+        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9, 5))
     }
 
     @Test
@@ -164,8 +158,7 @@ class LocalDataTest {
         val result = uut.update(boundingBox2)
 
         assertThat(result).isTrue
-        assertThat(uut.dataArea).isEqualTo(5)
-        assertThat(uut.localReference).isEqualTo(LocalReference(2, 10))
+        assertThat(uut.localReference).isEqualTo(LocalReference(2, 10, 5))
     }
 
     @Test
@@ -177,12 +170,11 @@ class LocalDataTest {
         val result = uut.update(boundingBox2)
 
         assertThat(result).isFalse
-        assertThat(uut.dataArea).isEqualTo(5)
-        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9))
+        assertThat(uut.localReference).isEqualTo(LocalReference(2, 9, 5))
     }
 
     @Test
-    fun updateOfLocalDataOnZoomOutsiedArea() {
+    fun updateOfLocalDataOnZoomOutsideArea() {
         val boundingBox1 = BoundingBox(45.5, 10.5, 44.5, 9.5)
         uut.update(boundingBox1)
 
@@ -190,8 +182,19 @@ class LocalDataTest {
         val result = uut.update(boundingBox2)
 
         assertThat(result).isTrue
-        assertThat(uut.dataArea).isEqualTo(10)
-        assertThat(uut.localReference).isEqualTo(LocalReference(1, 4))
+        assertThat(uut.localReference).isEqualTo(LocalReference(1, 4, 10))
+    }
+
+    @Test
+    fun updateOfLocalDataOnZoomOutsideLocalArea() {
+        val boundingBox1 = BoundingBox(45.5, 10.5, 44.5, 9.5)
+        uut.update(boundingBox1)
+
+        val boundingBox2 = BoundingBox(51.0, 15.0, -40.0, 5.0)
+        val result = uut.update(boundingBox2)
+
+        assertThat(result).isTrue
+        assertThat(uut.localReference).isNull()
     }
 
     fun createLocation(x: Double, y: Double): Location {

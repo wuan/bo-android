@@ -25,7 +25,6 @@ import java.io.Serializable
 data class Parameters(
     val region: Int = -1,
     val gridSize: Int = 0,
-    val dataArea: Int = 5,
     val interval: TimeInterval = TimeInterval(),
     val countThreshold: Int = 0,
     val localReference: LocalReference? = null
@@ -68,8 +67,14 @@ data class Parameters(
 
 data class LocalReference(
     val x: Int,
-    val y: Int
-) : Serializable
+    val y: Int,
+    val dataArea: Int,
+) : Serializable {
+    val x1: Int = x * dataArea
+    val x2: Int = (x + 1) * dataArea
+    val y1: Int = y * dataArea
+    val y2: Int = (y + 1) * dataArea
+}
 
 data class History(
     val timeIncrement: Int = DEFAULT_OFFSET_INCREMENT,

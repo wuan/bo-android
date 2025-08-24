@@ -15,6 +15,8 @@ import kotlin.math.round
 
 private const val MIN_DATA_AREA = 5
 
+private const val MAX_DATA_AREA = 20
+
 private const val LOCAL_DATA_AREA = MIN_DATA_AREA
 
 private const val DATA_AREA_SCALING = 0.5
@@ -25,7 +27,7 @@ private const val LOCAL_REGION_THRESHOLD = 10000
 class LocalData @Inject constructor() {
 
     var localReference: LocalReference? = null
-    var dataArea: Int = LOCAL_DATA_AREA
+
     private var gridParameters: GridParameters? = null
 
     fun updateParameters(parameters: Parameters, location: Location?): Parameters {
@@ -35,20 +37,20 @@ class LocalData @Inject constructor() {
                     Log.d(LOG_TAG, "LocalData.updateParameters() local")
                     val x = calculateLocalCoordinate(location.longitude)
                     val y = calculateLocalCoordinate(location.latitude)
-                    parameters.copy(localReference = LocalReference(x, y), dataArea = LOCAL_DATA_AREA)
+                    parameters.copy(localReference = LocalReference(x, y, LOCAL_DATA_AREA))
                 } else {
                     Log.d(LOG_TAG, "LocalData.updateParameters() local -> global")
-                    parameters.copy(region = GLOBAL_REGION, localReference = null, dataArea = LOCAL_DATA_AREA)
+                    parameters.copy(region = GLOBAL_REGION, localReference = null)
                 }
             }
 
             GLOBAL_REGION -> {
                 if (localReference != null && parameters.gridSize <= LOCAL_REGION_THRESHOLD) {
-                    Log.d(LOG_TAG, "LocalData.updateParameters() global -> local ($localReference, $dataArea)")
-                    parameters.copy(region = LOCAL_REGION, localReference = localReference, dataArea = dataArea)
+                    Log.d(LOG_TAG, "LocalData.updateParameters() global -> local ($localReference)")
+                    parameters.copy(region = LOCAL_REGION, localReference = localReference)
                 } else {
                     Log.d(LOG_TAG, "LocalData.updateParameters() global")
-                    parameters.copy(region = GLOBAL_REGION, localReference = null, dataArea = LOCAL_DATA_AREA)
+                    parameters.copy(region = GLOBAL_REGION, localReference = null)
                 }
             }
 
@@ -59,28 +61,28 @@ class LocalData @Inject constructor() {
     }
 
     fun update(boundingBox: BoundingBox, force: Boolean = false): Boolean {
-        val dataArea = calculateDataArea(boundingBox)
-        val xPos = calculateLocalCoordinate(boundingBox.centerLongitude, dataArea)
-        val yPos = calculateLocalCoordinate(boundingBox.centerLatitude, dataArea)
-        val localReference = LocalReference(xPos, yPos)
+        val localReference = calculateLocalReference(boundingBox)
 
         val gridParameters = gridParameters
         val isOutside = if (gridParameters == null) false else this@LocalData.isOutside(boundingBox, gridParameters)
-        val isChanged = this.dataArea != dataArea || this.localReference != localReference
+        val isChanged = this.localReference != localReference
         return if (
             gridParameters != null && isOutside && isChanged ||
             gridParameters == null && isChanged ||
             force
         ) {
-            Log.d(
-                LOG_TAG,
-                "LocalData.update() $xPos, $yPos ($dataArea) from center ${round(boundingBox.centerLongitude * 100) / 100}, ${
-                    round(boundingBox.centerLatitude * 100) / 100
-                } -> ${xPos * dataArea}..${(xPos + 1) * dataArea} ${yPos * dataArea}..${(yPos + 1) * dataArea}, span: ${
-                    round(boundingBox.longitudeSpanWithDateLine * 100) / 100
-                }, ${round(boundingBox.latitudeSpan * 100) / 100} "
-            )
-            this.dataArea = dataArea
+            if (localReference != null) {
+                Log.d(
+                    LOG_TAG,
+                    "LocalData.update() $localReference from center ${round(boundingBox.centerLongitude * 100) / 100}, ${
+                        round(boundingBox.centerLatitude * 100) / 100
+                    } -> ${localReference.x1}..${localReference.x2} ${localReference.y1}..${localReference.y2}, span: ${
+                        round(boundingBox.longitudeSpanWithDateLine * 100) / 100
+                    }, ${round(boundingBox.latitudeSpan * 100) / 100} "
+                )
+            } else {
+                Log.d( LOG_TAG, "LocalData.update() disabled from center ${round(boundingBox.centerLongitude * 100) / 100}, ${ round(boundingBox.centerLatitude * 100) / 100 } " )
+            }
             this.localReference = localReference
             true
         } else {
@@ -88,10 +90,23 @@ class LocalData @Inject constructor() {
         }
     }
 
-    private fun calculateDataArea(boundingBox: BoundingBox): Int {
+    private fun calculateLocalReference(boundingBox: BoundingBox): LocalReference? {
+        val dataArea = calculateDataArea(boundingBox)
+        val localReference = if (dataArea != null) {
+            val xPos = calculateLocalCoordinate(boundingBox.centerLongitude, dataArea)
+            val yPos = calculateLocalCoordinate(boundingBox.centerLatitude, dataArea)
+            LocalReference(xPos, yPos, dataArea)
+        } else {
+            null
+        }
+        return localReference
+    }
+
+    private fun calculateDataArea(boundingBox: BoundingBox): Int? {
         val maxExtent = max(boundingBox.longitudeSpanWithDateLine, boundingBox.latitudeSpan)
         val targetValue = DATA_AREA_SCALING * maxExtent
-        return (ceil(targetValue / MIN_DATA_AREA) * MIN_DATA_AREA).toInt()
+        val dataArea = (ceil(targetValue / MIN_DATA_AREA) * MIN_DATA_AREA).toInt()
+        return if (dataArea <= MAX_DATA_AREA) dataArea else null
     }
 
     private fun isOutside(boundingBox: BoundingBox, gridParameters: GridParameters): Boolean {
