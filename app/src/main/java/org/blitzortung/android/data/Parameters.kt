@@ -27,7 +27,7 @@ data class Parameters(
     val gridSize: Int = 0,
     val interval: TimeInterval = TimeInterval(),
     val countThreshold: Int = 0,
-    val localReference: LocalReference? = null
+    val reference: Reference? = null
 ) : Serializable {
 
     val intervalDuration: Int
@@ -65,7 +65,7 @@ data class Parameters(
         if (history.timeIncrement != 0) -value / history.timeIncrement else 0
 }
 
-data class LocalReference(
+data class Reference(
     val x: Int,
     val y: Int,
     val dataArea: Int,

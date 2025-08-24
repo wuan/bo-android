@@ -353,4 +353,5 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="undefined">nicht definiert</string>
     <string name="background_query_period_dialog_message">Die Verwendung einer periodischen Hintergrundabfrage für Warnungen, wenn die App nicht ausgeführt wird, erfordert das Auslesen des Standorts Ihres Geräts, sofern dieser nicht auf manuellen Standort eingestellt ist.</string>
     <string name="post_notifications_request">Aktivieren Sie die Berechtigung zum Posten von Benachrichtigungen, wenn Benachrichtigungswarnungen gewünscht sind.</string>
+    <string name="default_alarm_signal">Standard-Alarmton</string>
 </resources>

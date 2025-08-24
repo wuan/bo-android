@@ -3,7 +3,7 @@ package org.blitzortung.android.data.provider
 import android.location.Location
 import android.util.Log
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
-import org.blitzortung.android.data.LocalReference
+import org.blitzortung.android.data.Reference
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.GridParameters
 import org.osmdroid.util.BoundingBox
@@ -26,7 +26,7 @@ const val LOCAL_REGION_THRESHOLD = 25000
 @Singleton
 class LocalData @Inject constructor() {
 
-    var localReference: LocalReference? = null
+    var reference: Reference? = null
 
     private var gridParameters: GridParameters? = null
 
@@ -37,20 +37,20 @@ class LocalData @Inject constructor() {
                     Log.d(LOG_TAG, "LocalData.updateParameters() local")
                     val x = calculateLocalCoordinate(location.longitude)
                     val y = calculateLocalCoordinate(location.latitude)
-                    parameters.copy(localReference = LocalReference(x, y, LOCAL_DATA_AREA))
+                    parameters.copy(reference = Reference(x, y, LOCAL_DATA_AREA))
                 } else {
                     Log.d(LOG_TAG, "LocalData.updateParameters() local -> global")
-                    parameters.copy(region = GLOBAL_REGION, localReference = null)
+                    parameters.copy(region = GLOBAL_REGION, reference = null)
                 }
             }
 
             GLOBAL_REGION -> {
-                if (localReference != null && parameters.gridSize <= LOCAL_REGION_THRESHOLD) {
-                    Log.d(LOG_TAG, "LocalData.updateParameters() global -> local ($localReference)")
-                    parameters.copy(region = LOCAL_REGION, localReference = localReference)
+                if (reference != null && parameters.gridSize <= LOCAL_REGION_THRESHOLD) {
+                    Log.d(LOG_TAG, "LocalData.updateParameters() global -> local ($reference)")
+                    parameters.copy(region = LOCAL_REGION, reference = reference)
                 } else {
                     Log.d(LOG_TAG, "LocalData.updateParameters() global")
-                    parameters.copy(region = GLOBAL_REGION, localReference = null)
+                    parameters.copy(region = GLOBAL_REGION, reference = null)
                 }
             }
 
@@ -65,7 +65,7 @@ class LocalData @Inject constructor() {
 
         val gridParameters = gridParameters
         val isOutside = if (gridParameters == null) false else this@LocalData.isOutside(boundingBox, gridParameters)
-        val isChanged = this.localReference != localReference
+        val isChanged = this.reference != localReference
         return if (
             gridParameters != null && isOutside && isChanged ||
             gridParameters == null && isChanged ||
@@ -83,23 +83,23 @@ class LocalData @Inject constructor() {
             } else {
                 Log.d( LOG_TAG, "LocalData.update() disabled from center ${round(boundingBox.centerLongitude * 100) / 100}, ${ round(boundingBox.centerLatitude * 100) / 100 } " )
             }
-            this.localReference = localReference
+            this.reference = localReference
             true
         } else {
             false
         }
     }
 
-    private fun calculateLocalReference(boundingBox: BoundingBox): LocalReference? {
+    private fun calculateLocalReference(boundingBox: BoundingBox): Reference? {
         val dataArea = calculateDataArea(boundingBox)
-        val localReference = if (dataArea != null) {
+        val reference = if (dataArea != null) {
             val xPos = calculateLocalCoordinate(boundingBox.centerLongitude, dataArea)
             val yPos = calculateLocalCoordinate(boundingBox.centerLatitude, dataArea)
-            LocalReference(xPos, yPos, dataArea)
+            Reference(xPos, yPos, dataArea)
         } else {
             null
         }
-        return localReference
+        return reference
     }
 
     private fun calculateDataArea(boundingBox: BoundingBox): Int? {

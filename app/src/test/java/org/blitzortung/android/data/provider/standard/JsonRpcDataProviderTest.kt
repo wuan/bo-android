@@ -9,7 +9,7 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.put
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.History
-import org.blitzortung.android.data.LocalReference
+import org.blitzortung.android.data.Reference
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.TimeInterval
 import org.blitzortung.android.data.beans.GridElement
@@ -97,7 +97,7 @@ class JsonRpcDataProviderTest {
 
     @Test
     fun getsLocalData() {
-        val localReference = LocalReference(5, 6, 5)
+        val reference = Reference(5, 6, 5)
         val parameters = Parameters(
             region = LOCAL_REGION,
             interval = TimeInterval(
@@ -106,7 +106,7 @@ class JsonRpcDataProviderTest {
             ),
             countThreshold = 5,
             gridSize = 5000,
-            localReference = localReference
+            reference = reference
         )
         val history = History()
         val flags = Flags()
@@ -119,13 +119,13 @@ class JsonRpcDataProviderTest {
             client.call(
                 URL(SERVICE_URL),
                 "get_local_strikes_grid",
-                localReference.x,
-                localReference.y,
+                reference.x,
+                reference.y,
                 parameters.gridSize,
                 parameters.intervalDuration,
                 parameters.intervalOffset,
                 parameters.countThreshold,
-                localReference.dataArea,
+                reference.dataArea,
             )
         } returns JsonRpcResponse(response)
 
@@ -147,7 +147,7 @@ class JsonRpcDataProviderTest {
 
     @Test
     fun getsRegionData() {
-        val localReference = LocalReference(5, 6, 5)
+        val reference = Reference(5, 6, 5)
         val parameters = Parameters(
             region = 2,
             interval = TimeInterval(
@@ -156,7 +156,7 @@ class JsonRpcDataProviderTest {
             ),
             countThreshold = 5,
             gridSize = 5000,
-            localReference = localReference
+            reference = reference
         )
         val history = History()
         val flags = Flags()
