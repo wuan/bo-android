@@ -482,9 +482,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!cameFromSettings) {
                 requestLocationPermissions(preferences)
+                requestWakeupPermissions(baseContext)
+                requestNotificationPermissions()
             }
-            requestWakeupPermissions(baseContext)
-            requestNotificationPermissions()
         }
 
         mapFragment.updateForgroundColor(strikeColorHandler.lineColor)
