@@ -192,12 +192,12 @@ class LegendView @JvmOverloads constructor(
 
             if (strikesOverlay != null) {
                 val regionNumber = strikesOverlay.parameters.region
-                val localReference = strikesOverlay.parameters.reference
+                val localReference = strikesOverlay.parameters.dataArea
 
                 for ((index, regionNumberString) in resources.getStringArray(R.array.regions_values).withIndex()) {
                     if (regionNumber == Integer.parseInt(regionNumberString)) {
                         val detail = if (regionNumber < 0 && localReference != null) {
-                            " [${localReference.dataArea}]"
+                            " [${localReference.scale}]"
                         } else {
                             ""
                         }

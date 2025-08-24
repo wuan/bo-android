@@ -20,7 +20,7 @@ class JsonRpcData(
         val gridSize = parameters.gridSize
         val countThreshold = parameters.countThreshold
         val region = parameters.region
-        val localReference = parameters.reference
+        val localReference = parameters.dataArea
 
         return when (region) {
             GLOBAL_REGION -> {
@@ -51,7 +51,7 @@ class JsonRpcData(
                     intervalDuration,
                     intervalOffset,
                     countThreshold,
-                    localReference.dataArea,
+                    localReference.scale,
                 )
             }
 

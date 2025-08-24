@@ -9,7 +9,7 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.put
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.History
-import org.blitzortung.android.data.Reference
+import org.blitzortung.android.data.DataArea
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.TimeInterval
 import org.blitzortung.android.data.beans.GridElement
@@ -61,7 +61,7 @@ class JsonRpcDataProviderTest {
                 duration = 60
             ),
             countThreshold = 5,
-            gridSize = 5000
+            gridSize = 25000
         )
         val history = History()
         val flags = Flags()
@@ -83,7 +83,7 @@ class JsonRpcDataProviderTest {
 
         assertThat(result.gridParameters?.latitudeStart).isEqualTo(0.0)
         assertThat(result.gridParameters?.longitudeStart).isEqualTo(0.0)
-        assertThat(result.gridParameters?.size).isEqualTo(5000)
+        assertThat(result.gridParameters?.size).isEqualTo(25000)
         assertThat(result.gridParameters?.latitudeBins).isEqualTo(24)
         assertThat(result.gridParameters?.longitudeBins).isEqualTo(24)
         assertThat(result.gridParameters?.latitudeDelta).isEqualTo(30.0)
@@ -97,7 +97,7 @@ class JsonRpcDataProviderTest {
 
     @Test
     fun getsLocalData() {
-        val reference = Reference(5, 6, 5)
+        val dataArea = DataArea(5, 6, 5)
         val parameters = Parameters(
             region = LOCAL_REGION,
             interval = TimeInterval(
@@ -106,7 +106,7 @@ class JsonRpcDataProviderTest {
             ),
             countThreshold = 5,
             gridSize = 5000,
-            reference = reference
+            dataArea = dataArea
         )
         val history = History()
         val flags = Flags()
@@ -119,13 +119,13 @@ class JsonRpcDataProviderTest {
             client.call(
                 URL(SERVICE_URL),
                 "get_local_strikes_grid",
-                reference.x,
-                reference.y,
+                dataArea.x,
+                dataArea.y,
                 parameters.gridSize,
                 parameters.intervalDuration,
                 parameters.intervalOffset,
                 parameters.countThreshold,
-                reference.dataArea,
+                dataArea.scale,
             )
         } returns JsonRpcResponse(response)
 
@@ -147,7 +147,7 @@ class JsonRpcDataProviderTest {
 
     @Test
     fun getsRegionData() {
-        val reference = Reference(5, 6, 5)
+        val dataArea = DataArea(5, 6, 5)
         val parameters = Parameters(
             region = 2,
             interval = TimeInterval(
@@ -156,7 +156,7 @@ class JsonRpcDataProviderTest {
             ),
             countThreshold = 5,
             gridSize = 5000,
-            reference = reference
+            dataArea = dataArea
         )
         val history = History()
         val flags = Flags()
