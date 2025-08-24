@@ -69,7 +69,6 @@ import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.app.view.put
 import org.blitzortung.android.data.AUTO_GRID_SIZE_VALUE
-import org.blitzortung.android.data.DataChannel
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.Mode
 import org.blitzortung.android.data.provider.LOCAL_REGION
@@ -289,7 +288,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                         if (dataHandler.isRealtime) {
                             dataHandler.restart()
                         } else {
-                            dataHandler.updateData(setOf(DataChannel.STRIKES))
+                            Log.v(LOG_TAG, "TimeSlider call updateData()")
+                            dataHandler.updateData()
                         }
                     }
                 }
@@ -322,7 +322,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
             setOnClickListener {
                 dataHandler.toggleExtendedMode()
-                dataHandler.updateData(setOf(DataChannel.STRIKES))
+                dataHandler.updateData()
             }
 
             buttonColumnHandler.addElement(this, ButtonGroup.DATA_UPDATING)
@@ -500,12 +500,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         locationHandler.start()
 
-        dataHandler.start()
-
         mapFragment.mapView.addOnFirstLayoutListener { thisMapView, _, _, _, _ ->
             val ownMapView = thisMapView as OwnMapView
             dataHandler.updateGrid(ownMapView, dataHandler.autoGridSize)
             strikeListOverlay.onZoom(ZoomEvent(ownMapView, ownMapView.zoomLevelDouble))
+
+            dataHandler.start()
         }
     }
 

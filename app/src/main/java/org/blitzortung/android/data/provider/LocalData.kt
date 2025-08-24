@@ -21,7 +21,7 @@ private const val LOCAL_DATA_AREA = MIN_DATA_AREA
 
 private const val DATA_AREA_SCALING = 0.5
 
-private const val LOCAL_REGION_THRESHOLD = 10000
+const val LOCAL_REGION_THRESHOLD = 25000
 
 @Singleton
 class LocalData @Inject constructor() {

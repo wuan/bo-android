@@ -143,7 +143,7 @@ class MainDataHandler @Inject constructor(
     val hasConsumers: Boolean
         get() = dataConsumerContainer.isEmpty
 
-    fun updateData(updateTargets: Set<DataChannel> = DEFAULT_DATA_CHANNELS) {
+    fun updateData() {
         if (updatesEnabled) {
             sendEvent(REQUEST_STARTED_EVENT)
 
@@ -319,7 +319,7 @@ class MainDataHandler @Inject constructor(
         if (!isRealtime) {
             val dataChannels = HashSet<DataChannel>()
             dataChannels.add(DataChannel.STRIKES)
-            updateData(dataChannels)
+            updateData()
         }
     }
 
@@ -362,7 +362,7 @@ class MainDataHandler @Inject constructor(
                 }
 
                 if (updateTargets.isNotEmpty()) {
-                    updateData(updateTargets)
+                    updateData()
                 }
 
                 if (parameters.isRealtime()) {
@@ -437,6 +437,7 @@ class MainDataHandler @Inject constructor(
             if (mapView.isAnimating) {
                 addUpdateAfterAnimationListener(mapView)
             } else {
+                Log.v(LOG_TAG, "MainDataHandler.updateGrid() call updateData()")
                 updateData()
             }
         }
@@ -498,4 +499,3 @@ class MainDataHandler @Inject constructor(
 
 internal const val DEFAULT_GRID_SIZE = 10000
 internal const val AUTO_GRID_SIZE_VALUE = "auto"
-
