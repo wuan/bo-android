@@ -71,6 +71,7 @@ import org.blitzortung.android.app.view.put
 import org.blitzortung.android.data.AUTO_GRID_SIZE_VALUE
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.Mode
+import org.blitzortung.android.data.SequenceValidator
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.RequestStartedEvent
@@ -103,7 +104,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private lateinit var strikeListOverlay: StrikeListOverlay
     private lateinit var ownLocationOverlay: OwnLocationOverlay
     private lateinit var fadeOverlay: FadeOverlay
-    private var currentSequenceNumber = AtomicLong()
 
     private var clearData: Boolean = false
 
@@ -125,6 +125,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     @set:Inject
     internal lateinit var versionComponent: VersionComponent
+
+    @set:Inject
+    internal lateinit var sequenceValidator: SequenceValidator
 
     @set:Inject
     internal lateinit var buildVersion: BuildVersion
@@ -150,8 +153,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
                 statusComponent.indicateError(event.failed)
                 if (!event.failed && event.sequenceNumber != null) {
-                    val updatedSequenceNumber = determineUpdatedSequenceNumber(event.sequenceNumber)
-                    if (updatedSequenceNumber == event.sequenceNumber) {
+                    if (sequenceValidator.isUpdate(event.sequenceNumber)) {
                         currentResult = event
 
                         Log.d(LOG_TAG, "Main.onDataUpdate() $event")
@@ -208,19 +210,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             is StatusEvent -> {
                 setStatusString(event.status)
             }
-        }
-    }
-
-    private fun determineUpdatedSequenceNumber(sequenceNumber: Long) = if (isAtLeast(24)) {
-        currentSequenceNumber.updateAndGet { previousSequenceNumber ->
-            if (previousSequenceNumber < sequenceNumber) sequenceNumber else previousSequenceNumber
-        }
-    } else {
-        synchronized(currentSequenceNumber) {
-            val previousSequenceNumber = currentSequenceNumber.get()
-            val updated = if (previousSequenceNumber < sequenceNumber) sequenceNumber else previousSequenceNumber
-            currentSequenceNumber.set(updated)
-            updated
         }
     }
 
