@@ -26,8 +26,8 @@ class SequenceValidator @Inject constructor() {
 
     private val currentSequenceNumber = AtomicLong()
 
-    fun isUpdate(sequenceNumber: Long) =
-        sequenceNumber == determineUpdatedSequenceNumber(sequenceNumber)
+    fun isUpdate(sequenceNumber: Long?) =
+        sequenceNumber != null && sequenceNumber == determineUpdatedSequenceNumber(sequenceNumber)
 
     private fun determineUpdatedSequenceNumber(sequenceNumber: Long) = if (isAtLeast(24)) {
         currentSequenceNumber.updateAndGet { previousSequenceNumber ->

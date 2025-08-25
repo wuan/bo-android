@@ -13,6 +13,13 @@ import org.robolectric.annotation.Config
 class SequenceValidatorTest {
 
     @Test
+    fun nullValueIsIgnored() {
+        val validator = SequenceValidator()
+
+        assertFalse(validator.isUpdate(null))
+    }
+
+    @Test
     fun higherNumberIsUpdate() {
         val validator = SequenceValidator()
 

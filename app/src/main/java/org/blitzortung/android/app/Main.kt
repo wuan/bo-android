@@ -92,7 +92,6 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
-import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -152,8 +151,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             is ResultEvent -> {
 
                 statusComponent.indicateError(event.failed)
-                if (!event.failed && event.sequenceNumber != null) {
-                    if (sequenceValidator.isUpdate(event.sequenceNumber)) {
+                if (!event.failed && sequenceValidator.isUpdate(event.sequenceNumber)) {
                         currentResult = event
 
                         Log.d(LOG_TAG, "Main.onDataUpdate() $event")
@@ -199,7 +197,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                         if (event.flags.mode == Mode.ANIMATION || !event.containsRealtimeData()) {
                             setHistoricStatusString()
                         }
-                    }
                 }
 
                 statusComponent.stopProgress()
@@ -344,10 +341,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 val currentLocation = locationHandler.location
                 if (currentLocation != null) {
                     val diameter = if (!keepZoomOnGotoOwnLocation) {
-                        // Calculate the new diameter
                         determineTargetZoomRadius(alertHandler)
                     } else {
-                        //User doesn't want to zoom, so we do not provide a diameter
                         null
                     }
 
