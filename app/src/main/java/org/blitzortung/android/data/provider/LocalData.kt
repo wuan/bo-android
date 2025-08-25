@@ -21,7 +21,7 @@ private const val LOCAL_DATA_SCALE = MIN_DATA_SCALE
 
 private const val DATA_AREA_SIZE_FACTOR = 0.5
 
-const val LOCAL_REGION_THRESHOLD = 25000
+const val LOCAL_REGION_GRID_SIZE_THRESHOLD = 25000
 
 @Singleton
 class LocalData @Inject constructor() {
@@ -40,17 +40,17 @@ class LocalData @Inject constructor() {
                     parameters.copy(dataArea = DataArea(x, y, LOCAL_DATA_SCALE))
                 } else {
                     Log.d(LOG_TAG, "LocalData.updateParameters() local -> global")
-                    parameters.copy(region = GLOBAL_REGION, dataArea = null)
+                    globalParameters(parameters)
                 }
             }
 
             GLOBAL_REGION -> {
-                if (dataArea != null && parameters.gridSize <= LOCAL_REGION_THRESHOLD) {
+                if (dataArea != null && parameters.gridSize < LOCAL_REGION_GRID_SIZE_THRESHOLD) {
                     Log.d(LOG_TAG, "LocalData.updateParameters() global -> local ($dataArea)")
                     parameters.copy(region = LOCAL_REGION, dataArea = dataArea)
                 } else {
                     Log.d(LOG_TAG, "LocalData.updateParameters() global")
-                    parameters.copy(region = GLOBAL_REGION, dataArea = null)
+                    globalParameters(parameters)
                 }
             }
 
@@ -59,6 +59,12 @@ class LocalData @Inject constructor() {
             }
         }
     }
+
+    private fun globalParameters(parameters: Parameters): Parameters = parameters.copy(
+        region = GLOBAL_REGION,
+        dataArea = null,
+        gridSize = max(parameters.gridSize, LOCAL_REGION_GRID_SIZE_THRESHOLD)
+    )
 
     fun update(boundingBox: BoundingBox, force: Boolean = false): Boolean {
         val dataArea = calculateDataArea(boundingBox)
