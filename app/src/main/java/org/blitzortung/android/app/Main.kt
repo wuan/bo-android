@@ -71,6 +71,7 @@ import org.blitzortung.android.app.view.put
 import org.blitzortung.android.data.AUTO_GRID_SIZE_VALUE
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.Mode
+import org.blitzortung.android.data.SequenceValidator
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.RequestStartedEvent
@@ -91,7 +92,6 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
-import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -103,7 +103,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private lateinit var strikeListOverlay: StrikeListOverlay
     private lateinit var ownLocationOverlay: OwnLocationOverlay
     private lateinit var fadeOverlay: FadeOverlay
-    private var currentSequenceNumber = AtomicLong()
 
     private var clearData: Boolean = false
 
@@ -125,6 +124,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     @set:Inject
     internal lateinit var versionComponent: VersionComponent
+
+    @set:Inject
+    internal lateinit var sequenceValidator: SequenceValidator
 
     @set:Inject
     internal lateinit var buildVersion: BuildVersion
@@ -149,9 +151,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             is ResultEvent -> {
 
                 statusComponent.indicateError(event.failed)
-                if (!event.failed && event.sequenceNumber != null) {
-                    val updatedSequenceNumber = determineUpdatedSequenceNumber(event.sequenceNumber)
-                    if (updatedSequenceNumber == event.sequenceNumber) {
+                if (!event.failed && sequenceValidator.isUpdate(event.sequenceNumber)) {
                         currentResult = event
 
                         Log.d(LOG_TAG, "Main.onDataUpdate() $event")
@@ -197,7 +197,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                         if (event.flags.mode == Mode.ANIMATION || !event.containsRealtimeData()) {
                             setHistoricStatusString()
                         }
-                    }
                 }
 
                 statusComponent.stopProgress()
@@ -208,19 +207,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             is StatusEvent -> {
                 setStatusString(event.status)
             }
-        }
-    }
-
-    private fun determineUpdatedSequenceNumber(sequenceNumber: Long) = if (isAtLeast(24)) {
-        currentSequenceNumber.updateAndGet { previousSequenceNumber ->
-            if (previousSequenceNumber < sequenceNumber) sequenceNumber else previousSequenceNumber
-        }
-    } else {
-        synchronized(currentSequenceNumber) {
-            val previousSequenceNumber = currentSequenceNumber.get()
-            val updated = if (previousSequenceNumber < sequenceNumber) sequenceNumber else previousSequenceNumber
-            currentSequenceNumber.set(updated)
-            updated
         }
     }
 
@@ -355,10 +341,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 val currentLocation = locationHandler.location
                 if (currentLocation != null) {
                     val diameter = if (!keepZoomOnGotoOwnLocation) {
-                        // Calculate the new diameter
-                        1.5f * determineTargetZoomRadius(alertHandler)
+                        determineTargetZoomRadius(alertHandler)
                     } else {
-                        //User doesn't want to zoom, so we do not provide a diameter
                         null
                     }
 

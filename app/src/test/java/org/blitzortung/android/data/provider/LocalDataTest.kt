@@ -72,11 +72,22 @@ class LocalDataTest {
     }
 
     @Test
-    fun fallsBackToGlobalWithoutLocation() {
+    fun fallsBackToGlobalWithoutLocationForcesGlobalGridSize() {
         val result = uut.updateParameters(parameters, null)
 
         assertThat(result.dataArea).isNull()
         assertThat(result.region).isEqualTo(GLOBAL_REGION)
+        assertThat(result.gridSize).isEqualTo(25000)
+    }
+
+    @Test
+    fun fallsBackToGlobalWithoutLocationKeepsGlobalGridSize() {
+        val parameters = parameters.copy(gridSize = 50000)
+        val result = uut.updateParameters(parameters, null)
+
+        assertThat(result.dataArea).isNull()
+        assertThat(result.region).isEqualTo(GLOBAL_REGION)
+        assertThat(result.gridSize).isEqualTo(50000)
     }
 
     @Test
@@ -86,6 +97,30 @@ class LocalDataTest {
 
         assertThat(result).isTrue
         assertThat(uut.dataArea).isEqualTo(DataArea(2, 9, 5))
+    }
+
+    @Test
+    fun updateGlobalModeLocalData() {
+        val parameters = parameters.copy(region = GLOBAL_REGION, gridSize = 10000)
+        uut.update(BoundingBox(46.0, 11.0, 45.0, 10.0))
+
+        val result = uut.updateParameters(parameters, null)
+
+        assertThat(result.region).isEqualTo(LOCAL_REGION)
+        assertThat(result.dataArea).isEqualTo(DataArea(2,9,5))
+        assertThat(result.gridSize).isEqualTo(10000)
+    }
+
+    @Test
+    fun updateGlobalModeFallingBackToGlobalDataAboveGridSize() {
+        val parameters = parameters.copy(region = GLOBAL_REGION, gridSize = 25000)
+        uut.update(BoundingBox(46.0, 11.0, 45.0, 10.0))
+
+        val result = uut.updateParameters(parameters, null)
+
+        assertThat(result.region).isEqualTo(GLOBAL_REGION)
+        assertThat(result.dataArea).isNull()
+        assertThat(result.gridSize).isEqualTo(25000)
     }
 
     @Test

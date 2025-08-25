@@ -67,7 +67,7 @@ android {
 
 }
 
-def dagger_version = '2.57'
+def dagger_version = '2.57.1'
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.1'
