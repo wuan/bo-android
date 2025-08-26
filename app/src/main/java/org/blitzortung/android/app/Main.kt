@@ -484,13 +484,20 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         locationHandler.start()
 
-        mapFragment.mapView.addOnFirstLayoutListener { thisMapView, _, _, _, _ ->
-            val ownMapView = thisMapView as OwnMapView
-            dataHandler.updateGrid(ownMapView, dataHandler.autoGridSize)
-            strikeListOverlay.onZoom(ZoomEvent(ownMapView, ownMapView.zoomLevelDouble))
-
-            dataHandler.start()
+        if (mapFragment.mapView.isLaidOut) {
+            startDataHandler(mapFragment.mapView)
+        } else {
+            mapFragment.mapView.addOnFirstLayoutListener { thisMapView, _, _, _, _ ->
+                startDataHandler(thisMapView as OwnMapView)
+            }
         }
+    }
+
+    private fun startDataHandler(mapView: OwnMapView) {
+        dataHandler.updateGrid(mapView, dataHandler.autoGridSize)
+        strikeListOverlay.onZoom(ZoomEvent(mapView, mapView.zoomLevelDouble))
+
+        dataHandler.start()
     }
 
     private fun enableDataUpdates() {

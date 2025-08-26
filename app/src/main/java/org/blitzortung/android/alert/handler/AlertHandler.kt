@@ -95,8 +95,8 @@ class AlertHandler @Inject constructor(
 
     val dataEventConsumer: (Event) -> Unit = { event ->
         if (event is ResultEvent) {
-            Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer $event")
             if (!event.flags.ignoreForAlerting) {
+                Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer $event")
                 if (!event.failed && event.containsRealtimeData() && event.strikes != null) {
                     val strikes = Strikes(event.strikes, event.gridParameters)
                     checkStrikes(strikes, locationHandler.location)

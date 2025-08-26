@@ -116,7 +116,6 @@ class HistogramView @JvmOverloads constructor(
             val xd = (width - 2 * padding) / (histogram.size - 1)
 
             val y0 = height - padding
-            Log.v(LOG_TAG, "HistogramView.onDraw() height: $height, top $topCoordinate")
             val yd = (height - topCoordinate - padding) / ymax
 
             foregroundPaint.strokeWidth = 5f
