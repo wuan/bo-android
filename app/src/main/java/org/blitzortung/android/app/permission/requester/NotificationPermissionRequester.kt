@@ -1,14 +1,16 @@
-package org.blitzortung.android.app.permission
+package org.blitzortung.android.app.permission.requester
 
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.os.Build
 import org.blitzortung.android.app.Main.Companion.REQUEST_CODE_POST_NOTIFICATIONS
 import org.blitzortung.android.app.R
+import org.blitzortung.android.app.permission.PermissionRequester
+import org.blitzortung.android.app.permission.PermissionsHelper
 
-class Notification(
+class NotificationPermissionRequester(
     private val permissionsHelper: PermissionsHelper,
 ): PermissionRequester {
-    override fun getName(): String = "notification"
+    override val name: String = "notification"
 
     override fun request(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

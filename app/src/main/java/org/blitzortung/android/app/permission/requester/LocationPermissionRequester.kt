@@ -1,4 +1,4 @@
-package org.blitzortung.android.app.permission
+package org.blitzortung.android.app.permission.requester
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -9,6 +9,9 @@ import android.location.LocationManager.PASSIVE_PROVIDER
 import android.os.Build
 import androidx.annotation.RequiresApi
 import org.blitzortung.android.app.R
+import org.blitzortung.android.app.permission.LocationProviderRelation
+import org.blitzortung.android.app.permission.PermissionRequester
+import org.blitzortung.android.app.permission.PermissionsHelper
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 
@@ -16,7 +19,7 @@ class LocationPermissionRequester(
     private val permissionsHelper: PermissionsHelper,
     private val sharedPreferences: SharedPreferences
 ) : PermissionRequester {
-    override fun getName(): String = "location"
+    override val name: String = "location"
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun request(): Boolean {
@@ -38,7 +41,7 @@ class LocationPermissionRequester(
             NETWORK_PROVIDER -> ACCESS_COARSE_LOCATION
             else -> null
         }
-        val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
+        val requestCode = (LocationProviderRelation.Companion.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
         return Pair(permission, requestCode)
     }
 }

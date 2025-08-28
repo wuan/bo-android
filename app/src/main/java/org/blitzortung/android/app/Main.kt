@@ -470,7 +470,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         }
     }
 
-
     private fun startDataHandler(mapView: OwnMapView) {
         dataHandler.updateGrid(mapView, dataHandler.autoGridSize)
         strikeListOverlay.onZoom(ZoomEvent(mapView, mapView.zoomLevelDouble))

@@ -1,4 +1,4 @@
-package org.blitzortung.android.app.permission
+package org.blitzortung.android.app.permission.requester
 
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.app.Activity
@@ -12,6 +12,8 @@ import androidx.core.content.edit
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.Main.Companion.REQUEST_CODE_BACKGROUND_LOCATION
 import org.blitzortung.android.app.R
+import org.blitzortung.android.app.permission.PermissionRequester
+import org.blitzortung.android.app.permission.PermissionsHelper
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.put
 import org.blitzortung.android.util.isAtLeast
@@ -22,7 +24,7 @@ class BackgroundLocationPermissionRequester(
     private val preferences: SharedPreferences,
     private val backgroundAlertEnabled: Boolean
 ) : PermissionRequester {
-    override fun getName(): String = "background location"
+    override val name: String = "background location"
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun request(): Boolean {

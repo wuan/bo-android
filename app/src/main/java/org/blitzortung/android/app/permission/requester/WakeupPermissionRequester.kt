@@ -1,4 +1,4 @@
-package org.blitzortung.android.app.permission
+package org.blitzortung.android.app.permission.requester
 
 import android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
 import android.app.Activity
@@ -15,10 +15,11 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.edit
 import androidx.core.net.toUri
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
+import org.blitzortung.android.app.permission.PermissionRequester
+import org.blitzortung.android.app.permission.PermissionsHelper
 import org.blitzortung.android.app.view.PreferenceKey
 
 class WakeupPermissionRequester(
@@ -27,7 +28,7 @@ class WakeupPermissionRequester(
     private val preferences: SharedPreferences,
     private val backgroundAlertEnabled: Boolean,
 ): PermissionRequester {
-    override fun getName(): String = "wakeup"
+    override val name: String = "wakeup"
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun request(): Boolean {
