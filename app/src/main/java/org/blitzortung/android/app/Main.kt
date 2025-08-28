@@ -182,8 +182,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     }
 
                     binding.alertView.setColorHandler(
-                        strikeColorHandler,
-                        strikeListOverlay.parameters.intervalDuration
+                        strikeColorHandler, strikeListOverlay.parameters.intervalDuration
                     )
 
                     strikeListOverlay.refresh()
@@ -457,12 +456,13 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         Log.v(LOG_TAG, "Main.onResume()")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val calls: List<Pair<String, () -> Boolean>> = listOf(
+            val permissionRequests: List<Pair<String, () -> Boolean>> = listOf(
                 Pair("location", { requestLocationPermissions(preferences) }),
+                Pair("notification", { requestNotificationPermissions() }),
+                Pair("background_location", { requestBackgroundLocationPermissions() }),
                 Pair("wakeup", { requestWakeupPermissions(baseContext) }),
-                Pair("notification", { requestNotificationPermissions() })
             )
-            for (pair in calls) {
+            for (pair in permissionRequests) {
                 val result = pair.second()
                 Log.v(LOG_TAG, "Main.onResume() permission ${pair.first}: result: $result")
                 if (result) {
@@ -603,9 +603,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         if (providerRelation != null) {
             val providerName = providerRelation.providerName
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                val previousValue = preferences.get(PreferenceKey.LOCATION_MODE, "n/a")
                 Log.i(
                     LOG_TAG,
-                    "Main..onRequestPermissionResult() $providerName permission has now been granted. (code $requestCode)"
+                    "Main..onRequestPermissionResult() $providerName permission has now been granted. (code $requestCode, previous: $previousValue)"
                 )
                 preferences.edit {
                     put(PreferenceKey.LOCATION_MODE, providerName)
@@ -619,6 +620,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 locationHandler.shutdown()
             }
         } else {
+            Log.i(LOG_TAG, "Main.onRequestPermissionResult() permissions: $permissions, requestCode: $requestCode")
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
     }
@@ -626,7 +628,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private fun requestNotificationPermissions(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestPermission(POST_NOTIFICATIONS, REQUEST_CODE_POST_NOTIFICATIONS, R.string.post_notifications_request)
-            true
         } else {
             false
         }
@@ -634,64 +635,56 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun requestLocationPermissions(sharedPreferences: SharedPreferences): Boolean {
+        val (permission, requestCode) = getLocationPermission(sharedPreferences)
+
+        return if (permission != null) {
+            requestPermission(
+                permission, requestCode, R.string.location_permission_required
+            )
+        } else {
+            false
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun requestBackgroundLocationPermissions(): Boolean {
+        return if (isAtLeast(Build.VERSION_CODES.Q) && backgroundAlertEnabled && checkSelfPermission(
+                ACCESS_BACKGROUND_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.v(LOG_TAG, "Main.requestLocationPermissions() open background permission dialog")
+            val locationText = this.resources.getString(R.string.location_permission_background_disclosure)
+            AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
+                .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                    dialog.dismiss()
+                    requestPermission(
+                        ACCESS_BACKGROUND_LOCATION,
+                        REQUEST_CODE_BACKGROUND_LOCATION,
+                        R.string.location_permission_background_required
+                    )
+                }.setNegativeButton(android.R.string.cancel) { _, _ ->
+                    preferences.edit { put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0") }
+                }.show()
+            true
+        } else {
+            false
+        }
+    }
+
+    private fun getLocationPermission(sharedPreferences: SharedPreferences): Pair<String?, Int> {
         val locationProviderName = sharedPreferences.get(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER)
         val permission = when (locationProviderName) {
             PASSIVE_PROVIDER, GPS_PROVIDER -> ACCESS_FINE_LOCATION
             NETWORK_PROVIDER -> ACCESS_COARSE_LOCATION
             else -> null
         }
-
-        if (permission != null) {
-            val requiresBackgroundPermission = if (isAtLeast(Build.VERSION_CODES.Q)) {
-                val backgroundLocationPermission = checkSelfPermission(ACCESS_BACKGROUND_LOCATION)
-                val result = backgroundAlertEnabled && backgroundLocationPermission != PackageManager.PERMISSION_GRANTED
-                "Main.requestLocationPermissions() requires background: $backgroundLocationPermission"
-                result
-            } else {
-                false
-            }
-
-            val checkSelfPermission = checkSelfPermission(permission)
-            val requiresPermission = checkSelfPermission != PackageManager.PERMISSION_GRANTED
-            Log.v(
-                LOG_TAG,
-                "Main.requestLocationPermissions() self permission: $checkSelfPermission, required: $requiresPermission, background required: $requiresBackgroundPermission"
-            )
-
-            val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
-            if (requiresBackgroundPermission && isAtLeast(Build.VERSION_CODES.Q)) {
-                Log.v(
-                    LOG_TAG,
-                    "Main.requestLocationPermissions() open background permission dialog"
-                )
-                val locationText = this.resources.getString(R.string.location_permission_background_disclosure)
-                AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
-                    .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                        dialog.dismiss()
-                        requestPermission(
-                            ACCESS_BACKGROUND_LOCATION,
-                            requestCode,
-                            R.string.location_permission_background_required
-                        )
-                    }.setNegativeButton(android.R.string.cancel) { _, _ ->
-                        preferences.edit { put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0") }
-                    }.show()
-            } else if (requiresPermission) {
-                requestPermission(
-                    permission, requestCode,
-                    R.string.location_permission_required
-                )
-            } else {
-                return false
-            }
-            return true
-        }
-        return false
+        val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
+        return Pair(permission, requestCode)
     }
 
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun requestPermission(permission: String, requestCode: Int, permissionRequiredStringId: Int) {
+    private fun requestPermission(permission: String, requestCode: Int, permissionRequiredStringId: Int): Boolean {
         val shouldShowPermissionRationale = shouldShowRequestPermissionRationale(permission)
         val permissionIsGranted = checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
         Log.v(
@@ -699,12 +692,15 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             "Main.requestPermission() permission: $permission, requestCode: $requestCode, isGranted: $permissionIsGranted, shouldShowRationale: ${!shouldShowPermissionRationale}"
         )
 
-        if (!permissionIsGranted) {
+        return if (!permissionIsGranted) {
             if (shouldShowPermissionRationale) {
                 requestPermissionsAfterDialog(permissionRequiredStringId, permission, requestCode)
             } else {
                 requestPermissions(arrayOf(permission), requestCode)
             }
+            true
+        } else {
+            false
         }
     }
 
@@ -857,7 +853,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         statusText += "/"
         val intervalDuration = strikeListOverlay.parameters.intervalDuration
         statusText += resources.getQuantityString(R.plurals.minute, intervalDuration, intervalDuration)
-        statusText += " " + runStatus
+        statusText += " $runStatus"
 
         statusComponent.setText(statusText)
     }
@@ -885,6 +881,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         const val LOG_TAG = "BO_ANDROID"
         const val MAP_FRAGMENT_TAG = "org.blitzortung.MAP_FRAGMENT_TAG"
         const val REQUEST_CODE_POST_NOTIFICATIONS = 101
-
+        const val REQUEST_CODE_BACKGROUND_LOCATION = 102
     }
 }
