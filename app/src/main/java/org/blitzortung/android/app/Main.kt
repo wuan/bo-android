@@ -136,8 +136,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     private var currentResult: ResultEvent? = null
 
-    private var justReturnedFromSettings = false
-
     private val keepZoomOnGotoOwnLocation: Boolean
         inline get() = preferences.get(PreferenceKey.KEEP_ZOOM_GOTO_OWN_LOCATION, false)
 
@@ -152,51 +150,51 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
                 statusComponent.indicateError(event.failed)
                 if (!event.failed && sequenceValidator.isUpdate(event.sequenceNumber)) {
-                        currentResult = event
+                    currentResult = event
 
-                        Log.d(LOG_TAG, "Main.onDataUpdate() $event")
+                    Log.d(LOG_TAG, "Main.onDataUpdate() $event")
 
-                        val resultParameters = event.parameters
+                    val resultParameters = event.parameters
 
-                        clearDataIfRequested()
+                    clearDataIfRequested()
 
-                        val initializeOverlay = strikeListOverlay.parameters != resultParameters
-                        with(strikeListOverlay) {
-                            parameters = resultParameters
-                            gridParameters = event.gridParameters
-                            referenceTime = event.referenceTime
-                        }
+                    val initializeOverlay = strikeListOverlay.parameters != resultParameters
+                    with(strikeListOverlay) {
+                        parameters = resultParameters
+                        gridParameters = event.gridParameters
+                        referenceTime = event.referenceTime
+                    }
 
-                        if (event.updated >= 0 && !initializeOverlay) {
-                            strikeListOverlay.expireStrikes()
+                    if (event.updated >= 0 && !initializeOverlay) {
+                        strikeListOverlay.expireStrikes()
+                    } else {
+                        strikeListOverlay.clear()
+                    }
+
+                    if (event.strikes != null) {
+                        val strikes = if (event.updated > 0 && !initializeOverlay) {
+                            val size = event.strikes.size
+                            event.strikes.subList(size - event.updated, size)
                         } else {
-                            strikeListOverlay.clear()
+                            event.strikes
                         }
+                        strikeListOverlay.addStrikes(strikes)
+                    }
 
-                        if (event.strikes != null) {
-                            val strikes = if (event.updated > 0 && !initializeOverlay) {
-                                val size = event.strikes.size
-                                event.strikes.subList(size - event.updated, size)
-                            } else {
-                                event.strikes
-                            }
-                            strikeListOverlay.addStrikes(strikes)
-                        }
+                    binding.alertView.setColorHandler(
+                        strikeColorHandler,
+                        strikeListOverlay.parameters.intervalDuration
+                    )
 
-                        binding.alertView.setColorHandler(
-                            strikeColorHandler,
-                            strikeListOverlay.parameters.intervalDuration
-                        )
+                    strikeListOverlay.refresh()
+                    mapFragment.mapView.invalidate()
 
-                        strikeListOverlay.refresh()
-                        mapFragment.mapView.invalidate()
+                    binding.legendView.requestLayout()
+                    binding.timeSlider.update(event.parameters, event.history!!)
 
-                        binding.legendView.requestLayout()
-                        binding.timeSlider.update(event.parameters, event.history!!)
-
-                        if (event.flags.mode == Mode.ANIMATION || !event.containsRealtimeData()) {
-                            setHistoricStatusString()
-                        }
+                    if (event.flags.mode == Mode.ANIMATION || !event.containsRealtimeData()) {
+                        setHistoricStatusString()
+                    }
                 }
 
                 statusComponent.stopProgress()
@@ -456,18 +454,20 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         stopService()
 
-        Log.v(LOG_TAG, "Main.onResume() justReturnedFromSettings: $justReturnedFromSettings")
-
-        val cameFromSettings = justReturnedFromSettings
-        if (justReturnedFromSettings) {
-            justReturnedFromSettings = false
-        }
+        Log.v(LOG_TAG, "Main.onResume()")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!cameFromSettings) {
-                requestLocationPermissions(preferences)
-                requestWakeupPermissions(baseContext)
-                requestNotificationPermissions()
+            val calls: List<Pair<String, () -> Boolean>> = listOf(
+                Pair("location", { requestLocationPermissions(preferences) }),
+                Pair("wakeup", { requestWakeupPermissions(baseContext) }),
+                Pair("notification", { requestNotificationPermissions() })
+            )
+            for (pair in calls) {
+                val result = pair.second()
+                Log.v(LOG_TAG, "Main.onResume() permission ${pair.first}: result: $result")
+                if (result) {
+                    break
+                }
             }
         }
 
@@ -603,13 +603,19 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         if (providerRelation != null) {
             val providerName = providerRelation.providerName
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.i(LOG_TAG, "$providerName permission has now been granted.")
+                Log.i(
+                    LOG_TAG,
+                    "Main..onRequestPermissionResult() $providerName permission has now been granted. (code $requestCode)"
+                )
                 preferences.edit {
                     put(PreferenceKey.LOCATION_MODE, providerName)
                 }
                 locationHandler.update(preferences)
             } else {
-                Log.i(LOG_TAG, "$providerName permission was NOT granted.")
+                Log.i(
+                    LOG_TAG,
+                    "Main..onRequestPermissionResult() $providerName permission was NOT granted. (code $requestCode)"
+                )
                 locationHandler.shutdown()
             }
         } else {
@@ -617,14 +623,17 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         }
     }
 
-    private fun requestNotificationPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    private fun requestNotificationPermissions(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestPermission(POST_NOTIFICATIONS, REQUEST_CODE_POST_NOTIFICATIONS, R.string.post_notifications_request)
+            true
+        } else {
+            false
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun requestLocationPermissions(sharedPreferences: SharedPreferences) {
+    private fun requestLocationPermissions(sharedPreferences: SharedPreferences): Boolean {
         val locationProviderName = sharedPreferences.get(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER)
         val permission = when (locationProviderName) {
             PASSIVE_PROVIDER, GPS_PROVIDER -> ACCESS_FINE_LOCATION
@@ -650,7 +659,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             )
 
             val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
-
             if (requiresBackgroundPermission && isAtLeast(Build.VERSION_CODES.Q)) {
                 Log.v(
                     LOG_TAG,
@@ -668,14 +676,17 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     }.setNegativeButton(android.R.string.cancel) { _, _ ->
                         preferences.edit { put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0") }
                     }.show()
-            }
-            if (requiresPermission) {
+            } else if (requiresPermission) {
                 requestPermission(
                     permission, requestCode,
                     R.string.location_permission_required
                 )
+            } else {
+                return false
             }
+            return true
         }
+        return false
     }
 
 
@@ -685,7 +696,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         val permissionIsGranted = checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
         Log.v(
             LOG_TAG,
-            "Main.requestPermission() permission: $permission, isGranted: $permissionIsGranted, shouldShowRationale: ${!shouldShowPermissionRationale}"
+            "Main.requestPermission() permission: $permission, requestCode: $requestCode, isGranted: $permissionIsGranted, shouldShowRationale: ${!shouldShowPermissionRationale}"
         )
 
         if (!permissionIsGranted) {
@@ -712,13 +723,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
             .setPositiveButton(android.R.string.ok) { dialog, count ->
                 dialog.dismiss()
-                justReturnedFromSettings = true
                 requestPermissions(arrayOf(permission), requestCode)
             }.show()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun requestWakeupPermissions(context: Context) {
+    private fun requestWakeupPermissions(context: Context): Boolean {
         Log.v(LOG_TAG, "requestWakeupPermissions() background alerts: $backgroundAlertEnabled")
 
         if (backgroundAlertEnabled) {
@@ -737,7 +747,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                                 val allowIgnoreBatteryOptimization =
                                     context.checkSelfPermission(REQUEST_IGNORE_BATTERY_OPTIMIZATIONS) == PackageManager.PERMISSION_GRANTED
                                 val intent = if (allowIgnoreBatteryOptimization) {
-                                    justReturnedFromSettings = true
                                     Intent(
                                         Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
                                         "package:$packageName".toUri()
@@ -771,11 +780,13 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     AlertDialog.Builder(this).setMessage(locationText)
                         .setPositiveButton(android.R.string.ok, dialogClickListener)
                         .setNegativeButton(android.R.string.cancel, dialogClickListener).show()
+                    return true
                 }
             } else {
                 Log.w(LOG_TAG, "requestWakeupPermissions() could not get PowerManager")
             }
         }
+        return false
     }
 
     private enum class LocationProviderRelation(val providerName: String) {

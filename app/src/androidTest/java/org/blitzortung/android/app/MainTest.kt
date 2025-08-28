@@ -38,7 +38,6 @@ class MainTest {
     @Test
     fun mainActivity_isLaunched_andMapViewIsDisplayed() {
         waitForAndAcceptLocationPermissionDialog()
-
         waitForAndAcceptQuickSettingsDialog()
 
         // Check if the map view is displayed using Espresso
