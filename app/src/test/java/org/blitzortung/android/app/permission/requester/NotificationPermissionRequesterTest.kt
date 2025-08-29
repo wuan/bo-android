@@ -54,7 +54,13 @@ class NotificationPermissionRequesterTest {
         val result = notificationPermissionRequester.request()
 
         assertThat(result).isTrue()
-        verify(exactly = 1) { permissionsHelper.requestPermission(POST_NOTIFICATIONS, 101, R.string.post_notifications_request ) }
+        verify(exactly = 1) {
+            permissionsHelper.requestPermission(
+                POST_NOTIFICATIONS,
+                101,
+                R.string.post_notifications_request
+            )
+        }
     }
 
     @Test
@@ -65,6 +71,12 @@ class NotificationPermissionRequesterTest {
         val result = notificationPermissionRequester.request()
 
         assertThat(result).isFalse()
-        verify(exactly = 1) { permissionsHelper.requestPermission(POST_NOTIFICATIONS, 101, R.string.post_notifications_request ) }
+        verify(exactly = 1) {
+            permissionsHelper.requestPermission(
+                POST_NOTIFICATIONS,
+                101,
+                R.string.post_notifications_request
+            )
+        }
     }
 }

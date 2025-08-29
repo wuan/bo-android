@@ -54,7 +54,11 @@ class LocationPermissionRequesterTest {
         val result = locationPermissionRequester.request()
         assertThat(result).isTrue()
 
-        verify(exactly = 1) { permissionsHelper.requestPermission(ACCESS_FINE_LOCATION, 1, R.string.location_permission_required ) }
+        verify(exactly = 1) {
+            permissionsHelper.requestPermission(
+                ACCESS_FINE_LOCATION, 1, R.string.location_permission_required
+            )
+        }
     }
 
     @Test
@@ -80,8 +84,11 @@ class LocationPermissionRequesterTest {
         val result = locationPermissionRequester.request()
         assertThat(result).isTrue()
 
-        verify(exactly = 1) { permissionsHelper.requestPermission(ACCESS_COARSE_LOCATION, 2, R.string.location_permission_required ) }
+        verify(exactly = 1) {
+            permissionsHelper.requestPermission(
+                ACCESS_COARSE_LOCATION, 2, R.string.location_permission_required
+            )
+        }
     }
-
 
 }
