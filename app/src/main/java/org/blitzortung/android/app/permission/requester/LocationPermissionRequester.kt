@@ -34,14 +34,17 @@ class LocationPermissionRequester(
         }
     }
 
-    private fun getLocationPermission(sharedPreferences: SharedPreferences): Pair<String?, Int> {
-        val locationProviderName = sharedPreferences.get(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER)
-        val permission = when (locationProviderName) {
-            PASSIVE_PROVIDER, GPS_PROVIDER -> ACCESS_FINE_LOCATION
-            NETWORK_PROVIDER -> ACCESS_COARSE_LOCATION
-            else -> null
+    companion object {
+        internal fun getLocationPermission(sharedPreferences: SharedPreferences): Pair<String?, Int> {
+            val locationProviderName = sharedPreferences.get(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER)
+            val permission = when (locationProviderName) {
+                PASSIVE_PROVIDER, GPS_PROVIDER -> ACCESS_FINE_LOCATION
+                NETWORK_PROVIDER -> ACCESS_COARSE_LOCATION
+                else -> null
+            }
+            val requestCode =
+                (LocationProviderRelation.Companion.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
+            return Pair(permission, requestCode)
         }
-        val requestCode = (LocationProviderRelation.Companion.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
-        return Pair(permission, requestCode)
     }
 }

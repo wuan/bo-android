@@ -5,9 +5,8 @@ import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
+import android.location.LocationManager.PASSIVE_PROVIDER
 import android.os.Build
-import android.view.View
 import android.widget.Button
 import androidx.core.content.edit
 import io.mockk.MockKAnnotations
@@ -20,6 +19,7 @@ import org.blitzortung.android.app.R
 import org.blitzortung.android.app.permission.PermissionsHelper
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.put
+import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.settings.getString
 import org.junit.Before
 import org.junit.Test
@@ -54,6 +54,7 @@ class BackgroundLocationPermissionRequesterTest {
 
         preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
         preferences.edit { put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "300") }
+        preferences.edit { put(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER) }
 
         backgroundLocationPermissionRequester =
             BackgroundLocationPermissionRequester(permissionsHelper, activity, preferences, true)
@@ -68,11 +69,23 @@ class BackgroundLocationPermissionRequesterTest {
     fun `request should ignore the permission when background alerts are not enabled`() {
         backgroundLocationPermissionRequester =
             BackgroundLocationPermissionRequester(permissionsHelper, activity, preferences, false)
-        every { permissionsHelper.requestPermission(any(), any(), any()) } answers { true }
 
         val result = backgroundLocationPermissionRequester.request()
 
         assertThat(result).isFalse()
+        verify(exactly = 0) {
+            permissionsHelper.requestPermission(any(), any(), any())
+        }
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.Q])
+    fun `request should not open the dialog if manual location provider is selected`() {
+        preferences.edit { put(PreferenceKey.LOCATION_MODE, LocationHandler.MANUAL_PROVIDER) }
+
+        val result = backgroundLocationPermissionRequester.request()
+        assertThat(result).isFalse()
+
         verify(exactly = 0) {
             permissionsHelper.requestPermission(any(), any(), any())
         }
@@ -94,7 +107,11 @@ class BackgroundLocationPermissionRequesterTest {
         assertThat(dialog.isShowing).isFalse()
 
         verify(exactly = 1) {
-            permissionsHelper.requestPermission(ACCESS_BACKGROUND_LOCATION, 102, R.string.location_permission_background_required)
+            permissionsHelper.requestPermission(
+                ACCESS_BACKGROUND_LOCATION,
+                102,
+                R.string.location_permission_background_required
+            )
         }
         assertThat(preferences.getString(PreferenceKey.BACKGROUND_QUERY_PERIOD, "")).isEqualTo("300")
     }

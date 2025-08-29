@@ -4,6 +4,7 @@ import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.app.Activity
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.location.LocationManager.PASSIVE_PROVIDER
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -14,8 +15,10 @@ import org.blitzortung.android.app.Main.Companion.REQUEST_CODE_BACKGROUND_LOCATI
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.permission.PermissionRequester
 import org.blitzortung.android.app.permission.PermissionsHelper
+import org.blitzortung.android.app.permission.requester.LocationPermissionRequester.Companion.getLocationPermission
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.put
+import org.blitzortung.android.settings.getString
 import org.blitzortung.android.util.isAtLeast
 
 class BackgroundLocationPermissionRequester(
@@ -28,9 +31,10 @@ class BackgroundLocationPermissionRequester(
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun request(): Boolean {
-        return if (isAtLeast(Build.VERSION_CODES.Q) && backgroundAlertEnabled && activity.checkSelfPermission(
-                ACCESS_BACKGROUND_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
+        return if (isAtLeast(Build.VERSION_CODES.Q) &&
+            backgroundAlertEnabled &&
+            activity.checkSelfPermission(ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            getLocationPermission(preferences).first != null
         ) {
             Log.v(LOG_TAG, "Main.requestLocationPermissions() open background permission dialog")
             val locationText = activity.resources.getString(R.string.location_permission_background_disclosure)
