@@ -64,6 +64,10 @@ class LogDialog(
         with(findViewById<Button>(R.id.log_send_email)) {
             setOnClickListener { composeEmail(logText) }
         }
+
+        with(findViewById<Button>(R.id.log_cancel)) {
+            setOnClickListener { dismiss() }
+        }
     }
 
     private fun getCacheString(): String {
