@@ -16,7 +16,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.permission.PermissionsHelper
+import org.blitzortung.android.app.permission.PermissionsSupport
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.put
 import org.blitzortung.android.location.LocationHandler
@@ -35,7 +35,7 @@ import org.robolectric.shadows.ShadowLooper
 class BackgroundLocationPermissionRequesterTest {
 
     @MockK
-    private lateinit var permissionsHelper: PermissionsHelper
+    private lateinit var permissionsSupport: PermissionsSupport
 
     private lateinit var activity: Activity
 
@@ -57,7 +57,7 @@ class BackgroundLocationPermissionRequesterTest {
         preferences.edit { put(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER) }
 
         backgroundLocationPermissionRequester =
-            BackgroundLocationPermissionRequester(permissionsHelper, activity, preferences)
+            BackgroundLocationPermissionRequester(activity, preferences)
     }
 
     @Test
@@ -69,11 +69,11 @@ class BackgroundLocationPermissionRequesterTest {
     fun `request should ignore the permission when background alerts are not enabled`() {
         preferences.edit { put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0") }
 
-        val result = backgroundLocationPermissionRequester.request()
+        val result = backgroundLocationPermissionRequester.request(permissionsSupport)
 
         assertThat(result).isFalse()
         verify(exactly = 0) {
-            permissionsHelper.requestPermission(any(), any(), any())
+            permissionsSupport.requestPermission(any(), any(), any())
         }
     }
 
@@ -82,20 +82,20 @@ class BackgroundLocationPermissionRequesterTest {
     fun `request should not open the dialog if manual location provider is selected`() {
         preferences.edit { put(PreferenceKey.LOCATION_MODE, LocationHandler.MANUAL_PROVIDER) }
 
-        val result = backgroundLocationPermissionRequester.request()
+        val result = backgroundLocationPermissionRequester.request(permissionsSupport)
         assertThat(result).isFalse()
 
         verify(exactly = 0) {
-            permissionsHelper.requestPermission(any(), any(), any())
+            permissionsSupport.requestPermission(any(), any(), any())
         }
     }
 
     @Test
     @Config(sdk = [Build.VERSION_CODES.Q])
     fun `request should open the dialog if all conditions are valid and request permission on clicking OK`() {
-        every { permissionsHelper.requestPermission(any(), any(), any()) } answers { true }
+        every { permissionsSupport.requestPermission(any(), any(), any()) } answers { true }
 
-        val result = backgroundLocationPermissionRequester.request()
+        val result = backgroundLocationPermissionRequester.request(permissionsSupport)
         assertThat(result).isTrue()
 
         val dialog = ShadowDialog.getLatestDialog()
@@ -106,7 +106,7 @@ class BackgroundLocationPermissionRequesterTest {
         assertThat(dialog.isShowing).isFalse()
 
         verify(exactly = 1) {
-            permissionsHelper.requestPermission(
+            permissionsSupport.requestPermission(
                 ACCESS_BACKGROUND_LOCATION,
                 102,
                 R.string.location_permission_background_required
@@ -118,9 +118,9 @@ class BackgroundLocationPermissionRequesterTest {
     @Test
     @Config(sdk = [Build.VERSION_CODES.Q])
     fun `request should open the dialog if all conditions are valid and request permission on clicking Cancel`() {
-        every { permissionsHelper.requestPermission(any(), any(), any()) } answers { true }
+        every { permissionsSupport.requestPermission(any(), any(), any()) } answers { true }
 
-        val result = backgroundLocationPermissionRequester.request()
+        val result = backgroundLocationPermissionRequester.request(permissionsSupport)
         assertThat(result).isTrue()
 
         val dialog = ShadowDialog.getLatestDialog()
@@ -131,7 +131,7 @@ class BackgroundLocationPermissionRequesterTest {
         assertThat(dialog.isShowing).isFalse()
 
         verify(exactly = 0) {
-            permissionsHelper.requestPermission(any(), any(), any())
+            permissionsSupport.requestPermission(any(), any(), any())
         }
         assertThat(preferences.getString(PreferenceKey.BACKGROUND_QUERY_PERIOD, "")).isEqualTo("0")
     }

@@ -13,7 +13,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.permission.PermissionsHelper
+import org.blitzortung.android.app.permission.PermissionsSupport
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.location.LocationHandler.Companion.MANUAL_PROVIDER
 import org.junit.Before
@@ -26,7 +26,7 @@ import org.robolectric.RuntimeEnvironment
 class LocationPermissionRequesterTest {
 
     @MockK
-    private lateinit var permissionsHelper: PermissionsHelper
+    private lateinit var permissionsSupport: PermissionsSupport
 
     private lateinit var preferences: SharedPreferences
 
@@ -39,7 +39,7 @@ class LocationPermissionRequesterTest {
         val context = RuntimeEnvironment.getApplication()
         preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 
-        locationPermissionRequester = LocationPermissionRequester(permissionsHelper, preferences)
+        locationPermissionRequester = LocationPermissionRequester(preferences)
     }
 
     @Test
@@ -49,13 +49,13 @@ class LocationPermissionRequesterTest {
 
     @Test
     fun `request should use PASSIVE provider by default`() {
-        every { permissionsHelper.requestPermission(any(), any(), any()) } answers { true }
+        every { permissionsSupport.requestPermission(any(), any(), any()) } answers { true }
 
-        val result = locationPermissionRequester.request()
+        val result = locationPermissionRequester.request(permissionsSupport)
         assertThat(result).isTrue()
 
         verify(exactly = 1) {
-            permissionsHelper.requestPermission(
+            permissionsSupport.requestPermission(
                 ACCESS_FINE_LOCATION, 1, R.string.location_permission_required
             )
         }
@@ -66,12 +66,12 @@ class LocationPermissionRequesterTest {
         preferences.edit {
             putString(PreferenceKey.LOCATION_MODE.toString(), MANUAL_PROVIDER)
         }
-        every { permissionsHelper.requestPermission(any(), any(), any()) } answers { false }
+        every { permissionsSupport.requestPermission(any(), any(), any()) } answers { false }
 
-        val result = locationPermissionRequester.request()
+        val result = locationPermissionRequester.request(permissionsSupport)
         assertThat(result).isFalse()
 
-        verify(exactly = 0) { permissionsHelper.requestPermission(any(), any(), any()) }
+        verify(exactly = 0) { permissionsSupport.requestPermission(any(), any(), any()) }
     }
 
     @Test
@@ -79,13 +79,13 @@ class LocationPermissionRequesterTest {
         preferences.edit {
             putString(PreferenceKey.LOCATION_MODE.toString(), NETWORK_PROVIDER)
         }
-        every { permissionsHelper.requestPermission(any(), any(), any()) } answers { true }
+        every { permissionsSupport.requestPermission(any(), any(), any()) } answers { true }
 
-        val result = locationPermissionRequester.request()
+        val result = locationPermissionRequester.request(permissionsSupport)
         assertThat(result).isTrue()
 
         verify(exactly = 1) {
-            permissionsHelper.requestPermission(
+            permissionsSupport.requestPermission(
                 ACCESS_COARSE_LOCATION, 2, R.string.location_permission_required
             )
         }

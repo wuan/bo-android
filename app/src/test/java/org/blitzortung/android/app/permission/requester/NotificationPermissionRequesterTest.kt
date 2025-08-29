@@ -9,7 +9,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.permission.PermissionsHelper
+import org.blitzortung.android.app.permission.PermissionsSupport
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,7 +20,7 @@ import org.robolectric.annotation.Config
 class NotificationPermissionRequesterTest {
 
     @MockK
-    private lateinit var permissionsHelper: PermissionsHelper
+    private lateinit var permissionsSupport: PermissionsSupport
 
     private lateinit var notificationPermissionRequester: NotificationPermissionRequester
 
@@ -29,7 +29,7 @@ class NotificationPermissionRequesterTest {
         MockKAnnotations.init(this, relaxed = true)
 
         // Create the class under test
-        notificationPermissionRequester = NotificationPermissionRequester(permissionsHelper)
+        notificationPermissionRequester = NotificationPermissionRequester()
     }
 
     @Test
@@ -40,22 +40,22 @@ class NotificationPermissionRequesterTest {
     @Test
     @Config(sdk = [Build.VERSION_CODES.S]) // Test on SDK < TIRAMISU (33)
     fun `request should return false if SDK is below TIRAMISU`() {
-        val result = notificationPermissionRequester.request()
+        val result = notificationPermissionRequester.request(permissionsSupport)
         assertThat(result).isFalse()
 
-        verify(exactly = 0) { permissionsHelper.requestPermission(any(), any(), any()) }
+        verify(exactly = 0) { permissionsSupport.requestPermission(any(), any(), any()) }
     }
 
     @Test
     @Config(sdk = [Build.VERSION_CODES.TIRAMISU]) // Test on SDK < TIRAMISU (33)
     fun `request should return the true result of the requestPermission method if SDK is above TIRAMISU`() {
-        every { permissionsHelper.requestPermission(any(), any(), any()) } answers { true }
+        every { permissionsSupport.requestPermission(any(), any(), any()) } answers { true }
 
-        val result = notificationPermissionRequester.request()
+        val result = notificationPermissionRequester.request(permissionsSupport)
 
         assertThat(result).isTrue()
         verify(exactly = 1) {
-            permissionsHelper.requestPermission(
+            permissionsSupport.requestPermission(
                 POST_NOTIFICATIONS,
                 101,
                 R.string.post_notifications_request
@@ -66,13 +66,13 @@ class NotificationPermissionRequesterTest {
     @Test
     @Config(sdk = [Build.VERSION_CODES.TIRAMISU]) // Test on SDK < TIRAMISU (33)
     fun `request should return the false result of the requestPermission method if SDK is above TIRAMISU`() {
-        every { permissionsHelper.requestPermission(any(), any(), any()) } answers { false }
+        every { permissionsSupport.requestPermission(any(), any(), any()) } answers { false }
 
-        val result = notificationPermissionRequester.request()
+        val result = notificationPermissionRequester.request(permissionsSupport)
 
         assertThat(result).isFalse()
         verify(exactly = 1) {
-            permissionsHelper.requestPermission(
+            permissionsSupport.requestPermission(
                 POST_NOTIFICATIONS,
                 101,
                 R.string.post_notifications_request

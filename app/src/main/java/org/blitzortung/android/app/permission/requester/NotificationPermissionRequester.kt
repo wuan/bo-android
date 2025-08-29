@@ -5,16 +5,14 @@ import android.os.Build
 import org.blitzortung.android.app.Main.Companion.REQUEST_CODE_POST_NOTIFICATIONS
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.permission.PermissionRequester
-import org.blitzortung.android.app.permission.PermissionsHelper
+import org.blitzortung.android.app.permission.PermissionsSupport
 
-class NotificationPermissionRequester(
-    private val permissionsHelper: PermissionsHelper,
-): PermissionRequester {
+class NotificationPermissionRequester() : PermissionRequester {
     override val name: String = "notification"
 
-    override fun request(): Boolean {
+    override fun request(permissionsSupport: PermissionsSupport): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            permissionsHelper.requestPermission(POST_NOTIFICATIONS, REQUEST_CODE_POST_NOTIFICATIONS, R.string.post_notifications_request)
+            permissionsSupport.requestPermission(POST_NOTIFICATIONS, REQUEST_CODE_POST_NOTIFICATIONS, R.string.post_notifications_request)
         } else {
             false
         }

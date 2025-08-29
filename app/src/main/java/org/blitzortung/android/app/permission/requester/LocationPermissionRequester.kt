@@ -11,22 +11,21 @@ import androidx.annotation.RequiresApi
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.permission.LocationProviderRelation
 import org.blitzortung.android.app.permission.PermissionRequester
-import org.blitzortung.android.app.permission.PermissionsHelper
+import org.blitzortung.android.app.permission.PermissionsSupport
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 
 class LocationPermissionRequester(
-    private val permissionsHelper: PermissionsHelper,
     private val sharedPreferences: SharedPreferences
 ) : PermissionRequester {
     override val name: String = "location"
 
     @RequiresApi(Build.VERSION_CODES.M)
-    override fun request(): Boolean {
+    override fun request(permissionsSupport: PermissionsSupport): Boolean {
         val (permission, requestCode) = getLocationPermission(sharedPreferences)
 
         return if (permission != null) {
-            permissionsHelper.requestPermission(
+            permissionsSupport.requestPermission(
                 permission, requestCode, R.string.location_permission_required
             )
         } else {

@@ -49,7 +49,11 @@ import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
 import org.blitzortung.android.app.databinding.MainBinding
 import org.blitzortung.android.app.permission.LocationProviderRelation
-import org.blitzortung.android.app.permission.PermissionsManager
+import org.blitzortung.android.app.permission.PermissionsSupport
+import org.blitzortung.android.app.permission.requester.BackgroundLocationPermissionRequester
+import org.blitzortung.android.app.permission.requester.LocationPermissionRequester
+import org.blitzortung.android.app.permission.requester.NotificationPermissionRequester
+import org.blitzortung.android.app.permission.requester.WakeupPermissionRequester
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
@@ -114,9 +118,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     @set:Inject
     internal lateinit var sequenceValidator: SequenceValidator
-
-    @set:Inject
-    internal lateinit var permissionsManager: PermissionsManager
 
     @set:Inject
     internal lateinit var buildVersion: BuildVersion
@@ -448,7 +449,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         Log.v(LOG_TAG, "Main.onResume()")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            permissionsManager.ensurePermissions(this, preferences, backgroundAlertEnabled)
+            PermissionsSupport.ensurePermissions(this,
+                LocationPermissionRequester(preferences),
+                NotificationPermissionRequester(),
+                BackgroundLocationPermissionRequester(this, preferences),
+                WakeupPermissionRequester(this, preferences)
+                )
         }
 
         mapFragment.updateForgroundColor(strikeColorHandler.lineColor)
