@@ -78,7 +78,7 @@ class PermissionsManagerTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("need to refactor this test to use a real Robolectric setup in order to be able to detect the Dialog")
     fun `requestPermission when not granted and rationale needed should show dialog then request and return true`() {
         every {activity.checkSelfPermission(PERMISSION_STRING)} answers { PackageManager.PERMISSION_DENIED }
         every {activity.shouldShowRequestPermissionRationale(PERMISSION_STRING)} answers { true }
