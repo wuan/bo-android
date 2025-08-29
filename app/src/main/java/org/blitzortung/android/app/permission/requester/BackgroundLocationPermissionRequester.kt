@@ -35,8 +35,7 @@ class BackgroundLocationPermissionRequester(
             Log.v(LOG_TAG, "Main.requestLocationPermissions() open background permission dialog")
             val locationText = activity.resources.getString(R.string.location_permission_background_disclosure)
             AlertDialog.Builder(activity).setMessage(locationText).setCancelable(false)
-                .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                    dialog.dismiss()
+                .setPositiveButton(android.R.string.ok) { _, _ ->
                     permissionsManager.requestPermission(
                         ACCESS_BACKGROUND_LOCATION,
                         REQUEST_CODE_BACKGROUND_LOCATION,

@@ -3,11 +3,9 @@ package org.blitzortung.android.app.permission.requester
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.Context
 import android.content.SharedPreferences
 import android.location.LocationManager.NETWORK_PROVIDER
-import android.os.Build
 import androidx.core.content.edit
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -15,7 +13,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.permission.LocationProviderRelation
 import org.blitzortung.android.app.permission.PermissionsHelper
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.location.LocationHandler.Companion.MANUAL_PROVIDER
@@ -24,7 +21,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
-import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 class LocationPermissionRequesterTest {
