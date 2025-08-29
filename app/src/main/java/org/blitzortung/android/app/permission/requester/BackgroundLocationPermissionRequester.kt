@@ -4,7 +4,6 @@ import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.app.Activity
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.location.LocationManager.PASSIVE_PROVIDER
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -17,22 +16,22 @@ import org.blitzortung.android.app.permission.PermissionRequester
 import org.blitzortung.android.app.permission.PermissionsHelper
 import org.blitzortung.android.app.permission.requester.LocationPermissionRequester.Companion.getLocationPermission
 import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.get
 import org.blitzortung.android.app.view.put
-import org.blitzortung.android.settings.getString
 import org.blitzortung.android.util.isAtLeast
+import kotlin.text.toInt
 
 class BackgroundLocationPermissionRequester(
     private val permissionsManager: PermissionsHelper,
     private val activity: Activity,
-    private val preferences: SharedPreferences,
-    private val backgroundAlertEnabled: Boolean
+    private val preferences: SharedPreferences
 ) : PermissionRequester {
     override val name: String = "background location"
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun request(): Boolean {
         return if (isAtLeast(Build.VERSION_CODES.Q) &&
-            backgroundAlertEnabled &&
+            isBackgroundAlertEnabled(preferences) &&
             activity.checkSelfPermission(ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED &&
             getLocationPermission(preferences).first != null
         ) {
@@ -52,5 +51,11 @@ class BackgroundLocationPermissionRequester(
         } else {
             false
         }
+    }
+
+    companion object {
+        internal fun isBackgroundAlertEnabled(preferences: SharedPreferences) : Boolean =
+            preferences.get(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0")
+                .toInt() > 0
     }
 }

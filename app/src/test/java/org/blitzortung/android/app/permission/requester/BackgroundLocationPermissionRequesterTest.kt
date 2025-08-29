@@ -57,7 +57,7 @@ class BackgroundLocationPermissionRequesterTest {
         preferences.edit { put(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER) }
 
         backgroundLocationPermissionRequester =
-            BackgroundLocationPermissionRequester(permissionsHelper, activity, preferences, true)
+            BackgroundLocationPermissionRequester(permissionsHelper, activity, preferences)
     }
 
     @Test
@@ -67,8 +67,7 @@ class BackgroundLocationPermissionRequesterTest {
 
     @Test
     fun `request should ignore the permission when background alerts are not enabled`() {
-        backgroundLocationPermissionRequester =
-            BackgroundLocationPermissionRequester(permissionsHelper, activity, preferences, false)
+        preferences.edit { put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0") }
 
         val result = backgroundLocationPermissionRequester.request()
 

@@ -20,19 +20,18 @@ import androidx.core.net.toUri
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.permission.PermissionRequester
-import org.blitzortung.android.app.permission.PermissionsHelper
 import org.blitzortung.android.app.view.PreferenceKey
 
 class WakeupPermissionRequester(
-    private val helper: PermissionsHelper,
     private val activity: Activity,
     private val preferences: SharedPreferences,
-    private val backgroundAlertEnabled: Boolean,
 ): PermissionRequester {
     override val name: String = "wakeup"
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun request(): Boolean {
+        val backgroundAlertEnabled = BackgroundLocationPermissionRequester.isBackgroundAlertEnabled(preferences)
+
         Log.v(LOG_TAG, "requestWakeupPermissions() background alerts: $backgroundAlertEnabled")
 
         if (backgroundAlertEnabled) {

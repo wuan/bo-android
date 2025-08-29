@@ -23,8 +23,8 @@ class PermissionsManager @Inject constructor() {
         val permissionRequesters: List<PermissionRequester> = listOf(
             LocationPermissionRequester(helper, preferences),
             NotificationPermissionRequester(helper),
-            BackgroundLocationPermissionRequester(helper, activity, preferences, backgroundAlertEnabled),
-            WakeupPermissionRequester(helper, activity, preferences, backgroundAlertEnabled)
+            BackgroundLocationPermissionRequester(helper, activity, preferences),
+            WakeupPermissionRequester(activity, preferences)
         )
         for (permissionRequester in permissionRequesters) {
             val result = permissionRequester.request()
