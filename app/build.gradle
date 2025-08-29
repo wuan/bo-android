@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 21
-        targetSdkVersion 35
+        targetSdk 35
         versionCode 342
         versionName '2.4.1'
         multiDexEnabled false

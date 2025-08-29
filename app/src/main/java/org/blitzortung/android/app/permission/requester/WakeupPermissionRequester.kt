@@ -43,8 +43,7 @@ class WakeupPermissionRequester(
                 if (!pm.isIgnoringBatteryOptimizations(packageName)) {
                     val locationText = activity.resources.getString(R.string.open_battery_optimiziation)
 
-                    val dialogClickListener = DialogInterface.OnClickListener { dialog, which ->
-                        dialog.dismiss()
+                    val dialogClickListener = DialogInterface.OnClickListener { _, which ->
                         when (which) {
                             DialogInterface.BUTTON_POSITIVE -> {
                                 disableBatteryOptimisation(packageName)
