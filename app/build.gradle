@@ -126,12 +126,65 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
 
     // Make sure the path is correct (if not run the unit tests and try find the .exec file that is generated after the unit tests are finished should be similar to that one)
     executionData.from = fileTree(dir: "$buildDir", includes: ["outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"])
-
 }
+
+task jacocoCombinedReport(type: JacocoReport, dependsOn: ['testDebugUnitTest','connectedDebugAndroidTest']) {
+    // Ensure this task runs after unit and instrumented tests have completed
+//    dependsOn tasks.named("testDebugUnitTest")
+//    dependsOn tasks.named("connectedDebugAndroidTest") // Or the specific task like 'createDebugCoverageReport'
+
+    group = "Reporting"
+    description = "Generates a combined JaCoCo code coverage report for unit and instrumented tests."
+
+    reports {
+        xml.required = true
+        html.required = false
+        csv.required = false
+    }
+
+    // Paths to execution data files
+    def unitTestExecFile = "$buildDir/jacoco/testDebugUnitTest.exec"
+    // For AGP 7.x+, instrumented test .ec files are often here:
+    def instrumentedTestExecFiles = fileTree(dir: "$buildDir/outputs/code_coverage/debugAndroidTest/connected", includes: ["**/*.ec"])
+    // For older AGP versions, the path might differ, e.g., "$buildDir/outputs/androidTest-results/connected/coverage.ec"
+
+    executionData.from = files(unitTestExecFile, instrumentedTestExecFiles)
+
+    // Source directories (adjust if your structure is different)
+    sourceDirectories.from = files(
+            "$projectDir/src/main/java",
+            "$projectDir/src/main/kotlin" // Add if you use Kotlin
+    )
+
+    // Class directories (compiled .class files)
+    // This is the most complex part and highly dependent on your AGP version and project setup.
+    // The goal is to point to the compiled classes of your 'main' source set for the 'debug' variant.
+    // Exclude Android generated classes, Dagger/Hilt, DataBinding, etc.
+    def mainClasses = fileTree(dir: "$buildDir/tmp/kotlin-classes/debug", // Common for Kotlin projects
+            excludes: [
+                    '**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*',
+                    '**/*_MembersInjector.class', '**/*_Factory.class', '**/*_Provide*Factory.class', // Dagger/Hilt
+                    '**/*Args.class', '**/*Args$*.class', '**/*Directions.class', '**/*Directions$*.class', // Navigation Components
+                    '**/*Binding.class', '**/BR.class', // Data Binding
+                    '**/*JsonAdapter.class' // Moshi or similar
+                    // Add more exclusions as needed for your project
+            ])
+    // If you also have Java sources, you might need to add paths like:
+    // def javaMainClasses = fileTree(dir: "$buildDir/intermediates/javac/debug/classes", excludes: [...])
+    // classDirectories.from = files(mainClasses, javaMainClasses)
+    classDirectories.from = files(mainClasses)
+
+
+    // Output location for the combined report
+    reports.html.outputLocation = file("$buildDir/reports/jacoco/combined/html")
+    reports.xml.outputLocation = file("$buildDir/reports/jacoco/combined/report.xml") // Common for CI/Sonar
+    reports.csv.outputLocation = file("$buildDir/reports/jacoco/combined/report.csv")
+}
+
 
 sonar {
     properties {
         property "sonar.junit.reportPaths", "build/test-results/testDebugUnitTest/"
-        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
+        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/combined/report.xml"
     }
 }
