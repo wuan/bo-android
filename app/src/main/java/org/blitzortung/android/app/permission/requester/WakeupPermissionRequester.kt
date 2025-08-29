@@ -15,6 +15,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.edit
 import androidx.core.net.toUri
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
@@ -46,33 +47,11 @@ class WakeupPermissionRequester(
                         dialog.dismiss()
                         when (which) {
                             DialogInterface.BUTTON_POSITIVE -> {
-                                Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
-                                val allowIgnoreBatteryOptimization =
-                                    activity.checkSelfPermission(REQUEST_IGNORE_BATTERY_OPTIMIZATIONS) == PackageManager.PERMISSION_GRANTED
-                                val intent = if (allowIgnoreBatteryOptimization) {
-                                    Intent(
-                                        Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                                        "package:$packageName".toUri()
-                                    )
-                                } else {
-                                    Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-                                }
-
-                                try {
-                                    activity.startActivity(intent)
-                                } catch (e: AndroidRuntimeException) {
-                                    Toast.makeText(activity.baseContext, R.string.background_query_toast, Toast.LENGTH_LONG)
-                                        .show()
-                                    Log.e(
-                                        LOG_TAG,
-                                        "requestWakeupPermissions() could not open battery optimization settings",
-                                        e
-                                    )
-                                }
+                                disableBatteryOptimisation(packageName)
                             }
 
                             DialogInterface.BUTTON_NEGATIVE -> {
-                                preferences.edit().apply {
+                                preferences.edit {
                                     putString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), 0.toString())
                                     apply()
                                 }
@@ -90,5 +69,36 @@ class WakeupPermissionRequester(
             }
         }
         return false
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun disableBatteryOptimisation(packageName: String?) {
+        Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
+        val allowIgnoreBatteryOptimization =
+            activity.checkSelfPermission(REQUEST_IGNORE_BATTERY_OPTIMIZATIONS) == PackageManager.PERMISSION_GRANTED
+        val intent = if (allowIgnoreBatteryOptimization) {
+            Intent(
+                Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                "package:$packageName".toUri()
+            )
+        } else {
+            Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+        }
+
+        try {
+            activity.startActivity(intent)
+        } catch (e: AndroidRuntimeException) {
+            showErrorMessage(e)
+        }
+    }
+
+    private fun showErrorMessage(e: AndroidRuntimeException) {
+        Toast.makeText(activity.baseContext, R.string.background_query_toast, Toast.LENGTH_LONG)
+            .show()
+        Log.e(
+            LOG_TAG,
+            "requestWakeupPermissions() could not open battery optimization settings",
+            e
+        )
     }
 }

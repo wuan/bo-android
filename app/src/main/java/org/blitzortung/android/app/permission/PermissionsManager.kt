@@ -74,8 +74,7 @@ class PermissionsHelper(
 
         val locationText = activity.resources.getString(dialogTextResource)
         AlertDialog.Builder(activity).setMessage(locationText).setCancelable(false)
-            .setPositiveButton(android.R.string.ok) { dialog, count ->
-                dialog.dismiss()
+            .setPositiveButton(android.R.string.ok) { _, _ ->
                 activity.requestPermissions(arrayOf(permission), requestCode)
             }.show()
     }
