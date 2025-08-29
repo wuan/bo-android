@@ -69,7 +69,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="show_location">Pokazuj własną lokalizację</string>
     <string name="show_location_summary">Dołącz symbol własnej lokalizacji na mapie</string>
-    <string name="data_source_settings">Transmisja danych</string>
+    <string name="data_source_settings">Źródło danych</string>
     <string name="region">Obszar</string>
 
     <string-array name="regions">
@@ -278,7 +278,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>500</item>
     </string-array>
 
-    <string name="signaling_suppression_time">Próg czasu dla sygnalizacji</string>
+    <string name="signaling_suppression_time">Czas tłumienia sygnału</string>
 
     <string-array name="signaling_suppression_times">
         <item>Wyłączony</item>
@@ -311,7 +311,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_signal_settings">Ustawienia sygnału alarmowego</string>
     <string name="alarm_audio_signal">Sygnał dźwiękowy alarmu</string>
     <string name="alarm_vibration_signal">Czas trwania wibracji alarmu</string>
-    <string name="alarm_vibration_signal_summary">Wybierz czas trwania wibracji dla alarmu</string>
+    <string name="alarm_vibration_signal_summary">Wybierz czas trwania wibracji dla alarmu (w milisekundach)</string>
     <string name="location_provider_not_available">Dostawca lokalizacji „%s” jest niedostępny</string>
     <string name="location_provider_disabled">Dostawca lokalizacji „%s” jest wyłączony</string>
     <string name="service_url">Alternatywny adres URL usługi</string>
@@ -360,8 +360,8 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="diagnosis">Funkcje diagnostyczne</string>
     <string name="diagnosis_summary">Włącz funkcje obsługujące diagnozę działania aplikacji</string>
-    <string name="undefined">niezdefiniowany</string>
-    <string name="background_query_period_dialog_message">"Korzystanie z okresowego zapytania w tle w celu wysyłania alertów, gdy aplikacja nie jest uruchomiona, będzie wymagało odczytania lokalizacji urządzenia, jeśli nie jest ustawiona opcja ręcznego określania lokalizacji. "</string>
-    <string name="post_notifications_request">Włącz pozwolenie na wysyłanie powiadomień, jeśli chcesz otrzymywać alerty powiadomień.</string>
+    <string name="undefined">Niezdefiniowany</string>
+    <string name="background_query_period_dialog_message">"Korzystanie z okresowego odpytywania w tle w celu wysyłania alarmów, gdy aplikacja nie jest uruchomiona, będzie wymagać odczytywania lokalizacji Twojego urządzenia, jeśli nie została ona ustawiona ręcznie."</string>
+    <string name="post_notifications_request">Włącz uprawnienie do wysyłania powiadomień, jeśli chcesz otrzymywać alarmy.</string>
     <string name="default_alarm_signal">Domyślny dźwięk alarmu</string>
 </resources>
