@@ -18,26 +18,13 @@
 
 package org.blitzortung.android.app
 
-import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.Manifest.permission.POST_NOTIFICATIONS
-import android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.location.LocationManager.GPS_PROVIDER
-import android.location.LocationManager.NETWORK_PROVIDER
-import android.location.LocationManager.PASSIVE_PROVIDER
 import android.os.Build
 import android.os.Bundle
-import android.os.PowerManager
-import android.provider.Settings
 import android.text.format.DateFormat
-import android.util.AndroidRuntimeException
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
@@ -47,10 +34,7 @@ import android.widget.ImageButton
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
-import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.core.view.WindowCompat // Import added
 import androidx.fragment.app.FragmentActivity
@@ -64,6 +48,12 @@ import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
 import org.blitzortung.android.app.databinding.MainBinding
+import org.blitzortung.android.app.permission.LocationProviderRelation
+import org.blitzortung.android.app.permission.PermissionsSupport
+import org.blitzortung.android.app.permission.requester.BackgroundLocationPermissionRequester
+import org.blitzortung.android.app.permission.requester.LocationPermissionRequester
+import org.blitzortung.android.app.permission.requester.NotificationPermissionRequester
+import org.blitzortung.android.app.permission.requester.WakeupPermissionRequester
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
@@ -459,19 +449,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         Log.v(LOG_TAG, "Main.onResume()")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val permissionRequests: List<Pair<String, () -> Boolean>> = listOf(
-                Pair("location", { requestLocationPermissions(preferences) }),
-                Pair("notification", { requestNotificationPermissions() }),
-                Pair("background_location", { requestBackgroundLocationPermissions() }),
-                Pair("wakeup", { requestWakeupPermissions(baseContext) }),
-            )
-            for (pair in permissionRequests) {
-                val result = pair.second()
-                Log.v(LOG_TAG, "Main.onResume() permission ${pair.first}: result: $result")
-                if (result) {
-                    break
-                }
-            }
+            PermissionsSupport.ensurePermissions(this,
+                LocationPermissionRequester(preferences),
+                NotificationPermissionRequester(),
+                BackgroundLocationPermissionRequester(this, preferences),
+                WakeupPermissionRequester(this, preferences)
+                )
         }
 
         mapFragment.updateForgroundColor(strikeColorHandler.lineColor)
@@ -625,177 +608,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         } else {
             Log.i(LOG_TAG, "Main.onRequestPermissionResult() permissions: $permissions, requestCode: $requestCode")
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        }
-    }
-
-    private fun requestNotificationPermissions(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermission(POST_NOTIFICATIONS, REQUEST_CODE_POST_NOTIFICATIONS, R.string.post_notifications_request)
-        } else {
-            false
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun requestLocationPermissions(sharedPreferences: SharedPreferences): Boolean {
-        val (permission, requestCode) = getLocationPermission(sharedPreferences)
-
-        return if (permission != null) {
-            requestPermission(
-                permission, requestCode, R.string.location_permission_required
-            )
-        } else {
-            false
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun requestBackgroundLocationPermissions(): Boolean {
-        return if (isAtLeast(Build.VERSION_CODES.Q) && backgroundAlertEnabled && checkSelfPermission(
-                ACCESS_BACKGROUND_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            Log.v(LOG_TAG, "Main.requestLocationPermissions() open background permission dialog")
-            val locationText = this.resources.getString(R.string.location_permission_background_disclosure)
-            AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
-                .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                    dialog.dismiss()
-                    requestPermission(
-                        ACCESS_BACKGROUND_LOCATION,
-                        REQUEST_CODE_BACKGROUND_LOCATION,
-                        R.string.location_permission_background_required
-                    )
-                }.setNegativeButton(android.R.string.cancel) { _, _ ->
-                    preferences.edit { put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0") }
-                }.show()
-            true
-        } else {
-            false
-        }
-    }
-
-    private fun getLocationPermission(sharedPreferences: SharedPreferences): Pair<String?, Int> {
-        val locationProviderName = sharedPreferences.get(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER)
-        val permission = when (locationProviderName) {
-            PASSIVE_PROVIDER, GPS_PROVIDER -> ACCESS_FINE_LOCATION
-            NETWORK_PROVIDER -> ACCESS_COARSE_LOCATION
-            else -> null
-        }
-        val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
-        return Pair(permission, requestCode)
-    }
-
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun requestPermission(permission: String, requestCode: Int, permissionRequiredStringId: Int): Boolean {
-        val shouldShowPermissionRationale = shouldShowRequestPermissionRationale(permission)
-        val permissionIsGranted = checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
-        Log.v(
-            LOG_TAG,
-            "Main.requestPermission() permission: $permission, requestCode: $requestCode, isGranted: $permissionIsGranted, shouldShowRationale: ${!shouldShowPermissionRationale}"
-        )
-
-        return if (!permissionIsGranted) {
-            if (shouldShowPermissionRationale) {
-                requestPermissionsAfterDialog(permissionRequiredStringId, permission, requestCode)
-            } else {
-                requestPermissions(arrayOf(permission), requestCode)
-            }
-            true
-        } else {
-            false
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun requestPermissionsAfterDialog(
-        dialogTextResource: Int,
-        permission: String,
-        requestCode: Int,
-    ) {
-        Log.v(
-            LOG_TAG,
-            "Main.requestPermissionsAfterDialog() permission: $permission, dialogResource: $dialogTextResource, requestCode: $requestCode"
-        )
-
-        val locationText = resources.getString(dialogTextResource)
-        AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
-            .setPositiveButton(android.R.string.ok) { dialog, count ->
-                dialog.dismiss()
-                requestPermissions(arrayOf(permission), requestCode)
-            }.show()
-    }
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun requestWakeupPermissions(context: Context): Boolean {
-        Log.v(LOG_TAG, "requestWakeupPermissions() background alerts: $backgroundAlertEnabled")
-
-        if (backgroundAlertEnabled) {
-            val pm = context.getSystemService(POWER_SERVICE)
-            if (pm is PowerManager) {
-                val packageName = context.packageName
-                Log.v(LOG_TAG, "requestWakeupPermissions() package name $packageName")
-                if (!pm.isIgnoringBatteryOptimizations(packageName)) {
-                    val locationText = context.resources.getString(R.string.open_battery_optimiziation)
-
-                    val dialogClickListener = DialogInterface.OnClickListener { dialog, which ->
-                        dialog.dismiss()
-                        when (which) {
-                            DialogInterface.BUTTON_POSITIVE -> {
-                                Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
-                                val allowIgnoreBatteryOptimization =
-                                    context.checkSelfPermission(REQUEST_IGNORE_BATTERY_OPTIMIZATIONS) == PackageManager.PERMISSION_GRANTED
-                                val intent = if (allowIgnoreBatteryOptimization) {
-                                    Intent(
-                                        Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                                        "package:$packageName".toUri()
-                                    )
-                                } else {
-                                    Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-                                }
-
-                                try {
-                                    startActivity(intent)
-                                } catch (e: AndroidRuntimeException) {
-                                    Toast.makeText(baseContext, R.string.background_query_toast, Toast.LENGTH_LONG)
-                                        .show()
-                                    Log.e(
-                                        LOG_TAG,
-                                        "requestWakeupPermissions() could not open battery optimization settings",
-                                        e
-                                    )
-                                }
-                            }
-
-                            DialogInterface.BUTTON_NEGATIVE -> {
-                                preferences.edit().apply {
-                                    putString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), 0.toString())
-                                    apply()
-                                }
-                            }
-                        }
-                    }
-
-                    AlertDialog.Builder(this).setMessage(locationText)
-                        .setPositiveButton(android.R.string.ok, dialogClickListener)
-                        .setNegativeButton(android.R.string.cancel, dialogClickListener).show()
-                    return true
-                }
-            } else {
-                Log.w(LOG_TAG, "requestWakeupPermissions() could not get PowerManager")
-            }
-        }
-        return false
-    }
-
-    private enum class LocationProviderRelation(val providerName: String) {
-        GPS(GPS_PROVIDER), PASSIVE(PASSIVE_PROVIDER), NETWORK(NETWORK_PROVIDER);
-
-        companion object {
-            val byProviderName: Map<String, LocationProviderRelation> =
-                entries.groupBy { it.providerName }.mapValues { it.value.first() }
-            val byOrdinal: Map<Int, LocationProviderRelation> =
-                entries.groupBy { it.ordinal }.mapValues { it.value.first() }
         }
     }
 
