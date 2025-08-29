@@ -36,6 +36,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import androidx.core.content.edit
 import androidx.core.view.isVisible
+import androidx.core.view.WindowCompat // Import added
 import androidx.fragment.app.FragmentActivity
 import androidx.preference.PreferenceManager
 import dagger.android.AndroidInjection
@@ -205,6 +206,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         binding = MainBinding.inflate(layoutInflater)
 
         Log.v(LOG_TAG, "Main.onCreate()")
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         try {
             super.onCreate(savedInstanceState)
