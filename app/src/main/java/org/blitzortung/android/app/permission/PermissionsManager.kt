@@ -44,8 +44,8 @@ class PermissionsSupport(
             "Main.requestPermissionsAfterDialog() permission: $permission, dialogResource: $dialogTextResource, requestCode: $requestCode"
         )
 
-        val locationText = activity.resources.getString(dialogTextResource)
-        AlertDialog.Builder(activity).setMessage(locationText).setCancelable(false)
+        val message = activity.resources.getString(dialogTextResource)
+        AlertDialog.Builder(activity).setMessage(message).setCancelable(false)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 activity.requestPermissions(arrayOf(permission), requestCode)
             }.show()
