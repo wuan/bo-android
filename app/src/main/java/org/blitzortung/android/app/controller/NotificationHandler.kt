@@ -43,7 +43,7 @@ open class NotificationHandler @Inject constructor(
 
     init {
         if (isAtLeast(Build.VERSION_CODES.O)) {
-            createNotificationChannels() // Renamed from createNotificationChannel
+            createNotificationChannels()
         }
     }
 
@@ -103,7 +103,16 @@ open class NotificationHandler @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannels() { // Renamed method
-        // Create the "distant" channel
+        val backgroundName = context.getString(R.string.notification_channel_background_name)
+        val backgroundChannel = NotificationChannel(BACKGROUND_CHANNEL_ID, backgroundName, IMPORTANCE_LOW).apply {
+            description = context.getString(R.string.notification_channel_background_description)
+            enableLights(false)
+            enableVibration(false)
+            setSound(null, null) // No sound
+            // setBypassDnd(false) // Default is false, explicitly state for clarity if desired
+        }
+        notificationManager.createNotificationChannel(backgroundChannel)
+
         val distantName = context.getString(R.string.notification_channel_distant_name)
         val distantChannel = NotificationChannel(DISTANT_CHANNEL_ID, distantName, IMPORTANCE_LOW).apply {
             description = context.getString(R.string.notification_channel_distant_description)
@@ -114,7 +123,6 @@ open class NotificationHandler @Inject constructor(
         }
         notificationManager.createNotificationChannel(distantChannel)
 
-        // Create the "close" channel
         val closeName = context.getString(R.string.notification_channel_close_name)
         val closeChannel = NotificationChannel(CLOSE_CHANNEL_ID, closeName, IMPORTANCE_HIGH).apply {
             description = context.getString(R.string.notification_channel_close_description)
@@ -133,9 +141,9 @@ open class NotificationHandler @Inject constructor(
     }
 
     companion object {
-        const val DISTANT_CHANNEL_ID = "blitzortung_alert_distant_channel" // New ID
-        const val CLOSE_CHANNEL_ID = "blitzortung_alert_close_channel"   // New ID
-        // const val CHANNEL_ID = "channel" // This old constant can be removed after all usages are replaced
+        const val BACKGROUND_CHANNEL_ID = "blitzortung_background_channel"
+        const val DISTANT_CHANNEL_ID = "blitzortung_alert_distant_channel"
+        const val CLOSE_CHANNEL_ID = "blitzortung_alert_close_channel"
     }
 
 }

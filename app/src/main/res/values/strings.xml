@@ -389,4 +389,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="notification_channel_close_name">Close lightning</string>
     <string name="notification_channel_distant_description">Notification channel for alerts for distant lightning activity</string>
     <string name="notification_channel_close_description">Notification channel for alerts for close lightning activity</string>
+    <string name="notification_channel_background_name">Background operation</string>
+    <string name="notification_channel_background_description">Channel for background operation notifications</string>
 </resources>
