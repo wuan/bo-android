@@ -22,10 +22,12 @@ package org.blitzortung.android.app.controller
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.NotificationManager.IMPORTANCE_HIGH
 import android.app.NotificationManager.IMPORTANCE_LOW
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.AudioAttributes
 import android.os.Build
 import androidx.annotation.RequiresApi
 
@@ -41,11 +43,11 @@ open class NotificationHandler @Inject constructor(
 
     init {
         if (isAtLeast(Build.VERSION_CODES.O)) {
-            createNotificationChannel()
+            createNotificationChannels() // Renamed from createNotificationChannel
         }
     }
 
-    fun sendNotification(notificationText: String) {
+    fun sendNotification(notificationText: String, isCloseAlarm: Boolean) { // Added isCloseAlarm parameter
         val intent = Intent(context, Main::class.java).apply {
             action = Intent.ACTION_MAIN
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -59,7 +61,7 @@ open class NotificationHandler @Inject constructor(
 
         val notification = when {
             isAtLeast(Build.VERSION_CODES.O) -> {
-                createNotification(contentIntent, notificationText)
+                createNotification(contentIntent, notificationText, isCloseAlarm) // Pass isCloseAlarm
             }
 
             else -> {
@@ -71,8 +73,9 @@ open class NotificationHandler @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun createNotification(contentIntent: PendingIntent?, notificationText: String): Notification {
-        return Notification.Builder(context, CHANNEL_ID)
+    private fun createNotification(contentIntent: PendingIntent?, notificationText: String, isCloseAlarm: Boolean): Notification {
+        val channelId = if (isCloseAlarm) CLOSE_CHANNEL_ID else DISTANT_CHANNEL_ID
+        return Notification.Builder(context, channelId) // Use dynamic channelId
             .setSmallIcon(R.drawable.icon)
             .setContentTitle(context.resources.getText(R.string.app_name))
             .setContentText(notificationText)
@@ -98,22 +101,41 @@ open class NotificationHandler @Inject constructor(
         return builder.build()
     }
 
-    private fun createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = context.getString(R.string.notification_channel_name)
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                setImportance(IMPORTANCE_LOW)
-            }
-            // Register the channel with the system
-            notificationManager.createNotificationChannel(channel)
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannels() { // Renamed method
+        // Create the "distant" channel
+        val distantName = context.getString(R.string.notification_channel_distant_name)
+        val distantChannel = NotificationChannel(DISTANT_CHANNEL_ID, distantName, IMPORTANCE_LOW).apply {
+            description = context.getString(R.string.notification_channel_distant_description)
+            enableLights(false)
+            enableVibration(false)
+            setSound(null, null) // No sound
+            // setBypassDnd(false) // Default is false, explicitly state for clarity if desired
         }
+        notificationManager.createNotificationChannel(distantChannel)
+
+        // Create the "close" channel
+        val closeName = context.getString(R.string.notification_channel_close_name)
+        val closeChannel = NotificationChannel(CLOSE_CHANNEL_ID, closeName, IMPORTANCE_HIGH).apply {
+            description = context.getString(R.string.notification_channel_close_description)
+            enableLights(true)
+            enableVibration(true)
+            // Default sound and vibration will be used for IMPORTANCE_HIGH,
+            // or you can set a custom sound if needed.
+            val audioAttributes = AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+                .build()
+            setSound(android.provider.Settings.System.DEFAULT_NOTIFICATION_URI, audioAttributes)
+            // setBypassDnd(false) // Default is false, explicitly state for clarity if desired
+        }
+        notificationManager.createNotificationChannel(closeChannel)
     }
 
     companion object {
-        const val CHANNEL_ID = "channel"
+        const val DISTANT_CHANNEL_ID = "blitzortung_alert_distant_channel" // New ID
+        const val CLOSE_CHANNEL_ID = "blitzortung_alert_close_channel"   // New ID
+        // const val CHANNEL_ID = "channel" // This old constant can be removed after all usages are replaced
     }
 
 }
