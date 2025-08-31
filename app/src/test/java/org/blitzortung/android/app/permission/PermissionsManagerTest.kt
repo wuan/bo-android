@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Build
 import android.widget.Button
-import androidx.appcompat.app.AlertDialog
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -13,15 +12,10 @@ import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowAlertDialog
-import org.robolectric.shadows.ShadowActivity
-import org.robolectric.shadows.ShadowResources
 import org.assertj.core.api.Assertions.assertThat
-import org.blitzortung.android.app.Main
 import org.junit.Ignore
 import org.robolectric.shadows.ShadowDialog
 import org.robolectric.shadows.ShadowLooper
@@ -52,7 +46,7 @@ class PermissionsManagerTest {
         every {activity.checkSelfPermission(PERMISSION_STRING)} answers { PackageManager.PERMISSION_GRANTED }
 
         // Act
-        val result = permissionsSupport.requestPermission(
+        val result = permissionsSupport.request(
             PERMISSION_STRING,
             REQUEST_CODE,
             PERMISSION_RATIONALE_STRING_ID
@@ -67,7 +61,7 @@ class PermissionsManagerTest {
         every {activity.checkSelfPermission(PERMISSION_STRING)} answers { PackageManager.PERMISSION_DENIED }
         every {activity.shouldShowRequestPermissionRationale(PERMISSION_STRING)} answers { false }
 
-        val result = permissionsSupport.requestPermission(
+        val result = permissionsSupport.request(
             PERMISSION_STRING,
             REQUEST_CODE,
             PERMISSION_RATIONALE_STRING_ID
@@ -88,7 +82,7 @@ class PermissionsManagerTest {
         shadowPackageManager.setShouldShowRequestPermissionRationale(PERMISSION_STRING, true)
 
         // Act
-        val result = permissionsSupport.requestPermission(
+        val result = permissionsSupport.request(
             PERMISSION_STRING,
             REQUEST_CODE,
             android.R.string.copy

@@ -13,12 +13,12 @@ class PermissionsSupport(
 ) {
 
     @RequiresApi(Build.VERSION_CODES.M)
-    fun requestPermission(permission: String, requestCode: Int, permissionRequiredStringId: Int): Boolean {
+    fun request(permission: String, requestCode: Int, permissionRequiredStringId: Int): Boolean {
         val shouldShowPermissionRationale = activity.shouldShowRequestPermissionRationale(permission)
         val permissionIsGranted = activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
         Log.v(
             LOG_TAG,
-            "Main.requestPermission() permission: $permission, requestCode: $requestCode, isGranted: $permissionIsGranted, shouldShowRationale: ${!shouldShowPermissionRationale}"
+            "PermissionsSupport.request() permission: $permission, requestCode: $requestCode, isGranted: $permissionIsGranted, shouldShowRationale: ${!shouldShowPermissionRationale}"
         )
 
         return if (!permissionIsGranted) {

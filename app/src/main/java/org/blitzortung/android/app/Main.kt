@@ -451,7 +451,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PermissionsSupport.ensurePermissions(this,
                 LocationPermissionRequester(preferences),
-                NotificationPermissionRequester(),
+                NotificationPermissionRequester(preferences),
                 BackgroundLocationPermissionRequester(this, preferences),
                 WakeupPermissionRequester(this, preferences)
                 )
@@ -583,16 +583,16 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.v(
             LOG_TAG,
-            "Main.onRequestPermissionsResult() $requestCode - ${permissions.joinToString()} - ${grantResults.joinToString { it.toString() }}"
+            "Main.onRequestPermissionsResult() $requestCode: ${permissions.joinToString()} ${grantResults.joinToString { it.toString() }}"
         )
-        val providerRelation = LocationProviderRelation.byOrdinal[requestCode]
-        if (providerRelation != null) {
-            val providerName = providerRelation.providerName
+        val locationProviderRelation = LocationProviderRelation.byOrdinal[requestCode]
+        if (locationProviderRelation != null) {
+            val providerName = locationProviderRelation.providerName
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 val previousValue = preferences.get(PreferenceKey.LOCATION_MODE, "n/a")
                 Log.i(
                     LOG_TAG,
-                    "Main..onRequestPermissionResult() $providerName permission has now been granted. (code $requestCode, previous: $previousValue)"
+                    "Main.onRequestPermissionResult() $providerName permission has now been granted. (code $requestCode, previous: $previousValue)"
                 )
                 preferences.edit {
                     put(PreferenceKey.LOCATION_MODE, providerName)
@@ -601,11 +601,27 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             } else {
                 Log.i(
                     LOG_TAG,
-                    "Main..onRequestPermissionResult() $providerName permission was NOT granted. (code $requestCode)"
+                    "Main.onRequestPermissionResult() $providerName permission was NOT granted. (code $requestCode)"
                 )
                 locationHandler.shutdown()
             }
-        } else {
+        } else if (requestCode == REQUEST_CODE_POST_NOTIFICATIONS && grantResults.isNotEmpty()) {
+            Log.i(
+                LOG_TAG,
+                "Main.onRequestPermissionResult() POST_NOTIFICATIONS ${grantResults[0]}, ${grantResults[0] == PackageManager.PERMISSION_DENIED}, background $backgroundAlertEnabled"
+            )
+            val alertEnabled = preferences.get(PreferenceKey.ALERT_ENABLED, false)
+            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED && (alertEnabled || backgroundAlertEnabled)) {
+                Log.i(
+                    LOG_TAG,
+                    "Main.onRequestPermissionResult() POST_NOTIFICATIONS permission was NOT granted but is required for background queries. Disabling background queries"
+                )
+                preferences.edit {
+                    put(PreferenceKey.ALERT_ENABLED, false)
+                    put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0")
+                }
+            }
+        }else {
             Log.i(LOG_TAG, "Main.onRequestPermissionResult() permissions: $permissions, requestCode: $requestCode")
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }

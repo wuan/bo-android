@@ -43,19 +43,19 @@ class NotificationPermissionRequesterTest {
         val result = notificationPermissionRequester.request(permissionsSupport)
         assertThat(result).isFalse()
 
-        verify(exactly = 0) { permissionsSupport.requestPermission(any(), any(), any()) }
+        verify(exactly = 0) { permissionsSupport.request(any(), any(), any()) }
     }
 
     @Test
     @Config(sdk = [Build.VERSION_CODES.TIRAMISU]) // Test on SDK < TIRAMISU (33)
     fun `request should return the true result of the requestPermission method if SDK is above TIRAMISU`() {
-        every { permissionsSupport.requestPermission(any(), any(), any()) } answers { true }
+        every { permissionsSupport.request(any(), any(), any()) } answers { true }
 
         val result = notificationPermissionRequester.request(permissionsSupport)
 
         assertThat(result).isTrue()
         verify(exactly = 1) {
-            permissionsSupport.requestPermission(
+            permissionsSupport.request(
                 POST_NOTIFICATIONS,
                 101,
                 R.string.post_notifications_request
@@ -66,13 +66,13 @@ class NotificationPermissionRequesterTest {
     @Test
     @Config(sdk = [Build.VERSION_CODES.TIRAMISU]) // Test on SDK < TIRAMISU (33)
     fun `request should return the false result of the requestPermission method if SDK is above TIRAMISU`() {
-        every { permissionsSupport.requestPermission(any(), any(), any()) } answers { false }
+        every { permissionsSupport.request(any(), any(), any()) } answers { false }
 
         val result = notificationPermissionRequester.request(permissionsSupport)
 
         assertThat(result).isFalse()
         verify(exactly = 1) {
-            permissionsSupport.requestPermission(
+            permissionsSupport.request(
                 POST_NOTIFICATIONS,
                 101,
                 R.string.post_notifications_request
