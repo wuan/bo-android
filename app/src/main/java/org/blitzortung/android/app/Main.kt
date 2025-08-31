@@ -449,7 +449,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         Log.v(LOG_TAG, "Main.onResume()")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            PermissionsSupport.ensurePermissions(this,
+            PermissionsSupport.ensure(this,
                 LocationPermissionRequester(preferences),
                 NotificationPermissionRequester(preferences),
                 BackgroundLocationPermissionRequester(this, preferences),

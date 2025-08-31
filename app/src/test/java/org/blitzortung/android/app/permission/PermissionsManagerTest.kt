@@ -128,7 +128,7 @@ class PermissionsManagerTest {
         val requester = MockPermissionRequester("TestRequester", true)
 
         // Act
-        PermissionsSupport.ensurePermissions(activity, requester)
+        PermissionsSupport.ensure(activity, requester)
 
         // Assert
         assertThat(requester.requestCalled).isTrue()
@@ -141,7 +141,7 @@ class PermissionsManagerTest {
         val requester2 = MockPermissionRequester("Requester2", true)
 
         // Act
-        PermissionsSupport.ensurePermissions(activity, requester1, requester2)
+        PermissionsSupport.ensure(activity, requester1, requester2)
 
         // Assert
         assertThat(requester1.requestCalled).isTrue()
@@ -155,7 +155,7 @@ class PermissionsManagerTest {
         val requester2 = MockPermissionRequester("Requester2", false)
 
         // Act
-        PermissionsSupport.ensurePermissions(activity, requester1, requester2)
+        PermissionsSupport.ensure(activity, requester1, requester2)
 
         // Assert
         assertThat(requester1.requestCalled).isTrue()
