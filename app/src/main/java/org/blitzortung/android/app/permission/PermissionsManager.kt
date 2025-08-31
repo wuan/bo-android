@@ -13,17 +13,17 @@ class PermissionsSupport(
 ) {
 
     @RequiresApi(Build.VERSION_CODES.M)
-    fun requestPermission(permission: String, requestCode: Int, permissionRequiredStringId: Int): Boolean {
-        val shouldShowPermissionRationale = activity.shouldShowRequestPermissionRationale(permission)
-        val permissionIsGranted = activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
+    fun request(permission: String, requestCode: Int, permissionRequiredStringId: Int): Boolean {
+        val showRationale = activity.shouldShowRequestPermissionRationale(permission)
+        val isGranted = activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
         Log.v(
             LOG_TAG,
-            "Main.requestPermission() permission: $permission, requestCode: $requestCode, isGranted: $permissionIsGranted, shouldShowRationale: ${!shouldShowPermissionRationale}"
+            "PermissionsSupport.request() permission: $permission, requestCode: $requestCode, isGranted: $isGranted, showRationale: $showRationale"
         )
 
-        return if (!permissionIsGranted) {
-            if (shouldShowPermissionRationale) {
-                requestPermissionsAfterDialog(permissionRequiredStringId, permission, requestCode)
+        return if (!isGranted) {
+            if (showRationale) {
+                requestAfterDialog(permissionRequiredStringId, permission, requestCode)
             } else {
                 activity.requestPermissions(arrayOf(permission), requestCode)
             }
@@ -34,14 +34,14 @@ class PermissionsSupport(
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun requestPermissionsAfterDialog(
+    private fun requestAfterDialog(
         dialogTextResource: Int,
         permission: String,
         requestCode: Int,
     ) {
         Log.v(
             LOG_TAG,
-            "Main.requestPermissionsAfterDialog() permission: $permission, dialogResource: $dialogTextResource, requestCode: $requestCode"
+            "PermissionsSupport.requestPermissionsAfterDialog() permission: $permission, dialogResource: $dialogTextResource, requestCode: $requestCode"
         )
 
         val message = activity.resources.getString(dialogTextResource)
@@ -53,13 +53,13 @@ class PermissionsSupport(
 
     companion object {
         @RequiresApi(Build.VERSION_CODES.M)
-        fun ensurePermissions(activity: Activity, vararg permissionRequesters : PermissionRequester) {
+        fun ensure(activity: Activity, vararg permissionRequesters : PermissionRequester) {
 
             val permissionsSupport = PermissionsSupport(activity)
 
             for (permissionRequester in permissionRequesters) {
                 val result = permissionRequester.request(permissionsSupport)
-                Log.v(LOG_TAG, "Main.onResume() permission ${permissionRequester.name}: result: $result")
+                Log.v(LOG_TAG, "PermissionsSupport.ensure() permission ${permissionRequester.name}: result: $result")
                 if (result) {
                     break
                 }
