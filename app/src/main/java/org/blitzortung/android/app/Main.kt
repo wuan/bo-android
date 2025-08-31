@@ -581,10 +581,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        Log.v(
-            LOG_TAG,
-            "Main.onRequestPermissionsResult() $requestCode: ${permissions.joinToString()} ${grantResults.joinToString { it.toString() }}"
-        )
         val locationProviderRelation = LocationProviderRelation.byOrdinal[requestCode]
         if (locationProviderRelation != null) {
             val providerName = locationProviderRelation.providerName
@@ -606,16 +602,13 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 locationHandler.shutdown()
             }
         } else if (requestCode == REQUEST_CODE_POST_NOTIFICATIONS && grantResults.isNotEmpty()) {
-            Log.i(
-                LOG_TAG,
-                "Main.onRequestPermissionResult() POST_NOTIFICATIONS ${grantResults[0]}, ${grantResults[0] == PackageManager.PERMISSION_DENIED}, background $backgroundAlertEnabled"
-            )
             val alertEnabled = preferences.get(PreferenceKey.ALERT_ENABLED, false)
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED && (alertEnabled || backgroundAlertEnabled)) {
                 Log.i(
                     LOG_TAG,
-                    "Main.onRequestPermissionResult() POST_NOTIFICATIONS permission was NOT granted but is required for background queries. Disabling background queries"
+                    "Main.onRequestPermissionResult() POST_NOTIFICATIONS permission was NOT granted but is required for alerts. Disabling alerts and background queries"
                 )
+                Toast.makeText(baseContext, R.string.post_notifications_required_for_alerts, Toast.LENGTH_LONG).show()
                 preferences.edit {
                     put(PreferenceKey.ALERT_ENABLED, false)
                     put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0")
