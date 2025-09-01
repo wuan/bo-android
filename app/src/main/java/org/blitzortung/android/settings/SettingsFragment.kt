@@ -23,6 +23,7 @@ import androidx.preference.SeekBarPreference
 import dagger.android.support.AndroidSupportInjection
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
+import org.blitzortung.android.app.view.MessageListPreference
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
@@ -57,6 +58,7 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
             configureDataSourcePreferences(preferences)
             configureLocationProviderPreferences(preferences)
             configureOwnLocationSizePreference(preferences)
+            configureAlertEnabledPreference(preferences)
 
             // Initial summary update for EditTextPreferences
             updateEditTextPreferenceSummaries()
@@ -131,6 +133,7 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
             }
 
             PreferenceKey.SHOW_LOCATION -> configureOwnLocationSizePreference(sharedPreferences)
+            PreferenceKey.ALERT_ENABLED -> configureAlertEnabledPreference(sharedPreferences)
             PreferenceKey.USERNAME,
             PreferenceKey.PASSWORD,
             PreferenceKey.SERVICE_URL,
@@ -144,6 +147,10 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
                 // No action needed for other keys
             }
         }
+    }
+
+    private fun configureAlertEnabledPreference(sharedPreferences: SharedPreferences) {
+        enableNotifications(sharedPreferences.get(PreferenceKey.ALERT_ENABLED, false))
     }
 
     private fun configureOwnLocationSizePreference(sharedPreferences: SharedPreferences) {
@@ -185,6 +192,15 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
     private fun enableManualLocationMode(enabled: Boolean) {
         findPreference<EditTextPreference>(PreferenceKey.LOCATION_LONGITUDE)?.isEnabled = enabled
         findPreference<EditTextPreference>(PreferenceKey.LOCATION_LATITUDE)?.isEnabled = enabled
+    }
+
+    private fun enableNotifications(enabled: Boolean) {
+        findPreference<MessageListPreference>(PreferenceKey.BACKGROUND_QUERY_PERIOD)?.isEnabled = enabled
+        findPreference<ListPreference>(PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT)?.isEnabled = enabled
+        findPreference<ListPreference>(PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT)?.isEnabled = enabled
+        findPreference<Preference>(PreferenceKey.ALERT_SOUND_SIGNAL)?.isEnabled = enabled
+        findPreference<SeekBarPreference>(PreferenceKey.ALERT_VIBRATION_SIGNAL)?.isEnabled = enabled
+        findPreference<EditTextPreference>(PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME)?.isEnabled = enabled
     }
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean {

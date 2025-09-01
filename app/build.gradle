@@ -6,14 +6,14 @@ plugins {
 }
 
 android {
-    compileSdk 35
+    compileSdkVersion 35
 
     defaultConfig {
         applicationId "org.blitzortung.android.app"
         minSdkVersion 21
-        targetSdk 35
-        versionCode 343
-        versionName '2.4.2'
+        targetSdkVersion 35
+        versionCode 344
+        versionName '2.4.3'
         multiDexEnabled false
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

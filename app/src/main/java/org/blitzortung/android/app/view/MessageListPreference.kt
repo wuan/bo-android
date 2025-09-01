@@ -11,7 +11,6 @@ class MessageListPreference @JvmOverloads constructor(
 ) : ListPreference(context, attrs) {
 
     init {
-        // Set the custom dialog layout resource
         dialogLayoutResource = R.layout.custom_list_preference_dialog_layout
     }
 }
