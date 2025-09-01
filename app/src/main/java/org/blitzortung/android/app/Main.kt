@@ -651,8 +651,16 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 }
             }
 
+            PreferenceKey.ALERT_ENABLED -> {
+                val alertEnabled = sharedPreferences.get(key, false)
+                if (!alertEnabled) {
+                    backgroundAlertEnabled = false
+                }
+            }
+
             PreferenceKey.BACKGROUND_QUERY_PERIOD -> {
-                backgroundAlertEnabled = sharedPreferences.get(key, "0").toInt() > 0
+                val alertEnabled = sharedPreferences.get(key, false)
+                backgroundAlertEnabled = alertEnabled && sharedPreferences.get(key, "0").toInt() > 0
                 binding.backgroundAlerts.isVisible = backgroundAlertEnabled
             }
 
