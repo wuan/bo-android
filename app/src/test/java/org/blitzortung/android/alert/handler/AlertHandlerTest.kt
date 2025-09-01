@@ -82,8 +82,7 @@ class AlertHandlerTest {
             )
         )
 
-        assertThat(uut.alertEvent).isInstanceOf(AlertCancelEvent::class.java)
-
+        assertThat(uut.alertEvent).isInstanceOf(AlertResultEvent::class.java)
     }
 
     @Test
