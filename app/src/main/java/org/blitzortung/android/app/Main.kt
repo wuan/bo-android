@@ -1,3 +1,4 @@
+
 /*
 
    Copyright 2015 Andreas Würl
@@ -85,6 +86,9 @@ import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
 import javax.inject.Inject
 import kotlin.math.roundToInt
+import android.content.Context // Added
+import android.view.LayoutInflater // Added
+import android.widget.Button // Added
 
 class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private var backgroundAlertEnabled: Boolean = false
@@ -201,6 +205,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private lateinit var mapFragment: MapFragment
 
     private lateinit var binding: MainBinding
+    private var docOverlayView: View? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -277,6 +282,15 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             override fun onStopTrackingTouch(p0: SeekBar?) {
             }
         })
+
+        val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+//        val overlayShown = prefs.getBoolean("doc_overlay_shown_v3", false)
+        val overlayShown = false
+        if (!overlayShown) {
+            binding.root.post {
+                showDocOverlay()
+            }
+        }
     }
 
     private fun initializeOsmDroid() {
@@ -707,6 +721,74 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         val popupMenu =
             MainPopupMenu(this, anchor, preferences, dataHandler, alertHandler, buildVersion, changeLogComponent)
         popupMenu.showPopupMenu()
+    }
+
+    private fun showDocOverlay() {
+        if (docOverlayView == null) {
+            val inflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            // Use binding.root as the parent if it's the actual root ViewGroup container for the overlay
+            // Or get the correct ViewGroup from your binding object by its ID if necessary.
+            // Assuming binding.mainActivityContent is the RelativeLayout from main.xml with id 'main_activity_content'
+            val parentView = findViewById<android.view.ViewGroup>(R.id.main)
+            if (parentView == null) {
+                Log.e(LOG_TAG, "Could not find parent view (R.id.main_activity_content) for doc overlay")
+                // Fallback to binding.root if parentView is not found, though this might not be ideal
+                // depending on your main.xml structure.
+                // If binding.root is a FrameLayout or RelativeLayout, it might work.
+                try {
+                    docOverlayView = inflater.inflate(R.layout.doc_overlay, binding.root as android.view.ViewGroup, false)
+                } catch (e: ClassCastException) {
+                     Log.e(LOG_TAG, "binding.root could not be cast to ViewGroup for doc overlay", e)
+                     return
+                }
+            } else {
+                 docOverlayView = inflater.inflate(R.layout.doc_overlay, parentView, false)
+            }
+
+
+            val gotItButton = docOverlayView?.findViewById<Button>(R.id.doc_button_got_it)
+            gotItButton?.setOnClickListener {
+                hideDocOverlay()
+                // Mark as shown when "Got it!" is clicked
+                val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                prefs.edit().putBoolean("doc_overlay_shown_v3", true).apply()
+            }
+        }
+        docOverlayView?.let {
+            if (it.parent == null) {
+                 val parentView = findViewById<android.view.ViewGroup>(R.id.main)
+                 if (parentView != null) {
+                    parentView.addView(it)
+                 } else {
+                    // Fallback if R.id.main_activity_content is not found
+                    try {
+                        (binding.root as android.view.ViewGroup).addView(it)
+                    } catch (e: ClassCastException) {
+                        Log.e(LOG_TAG, "binding.root could not be cast to ViewGroup for adding doc overlay", e)
+                        return
+                    }
+                 }
+            }
+            it.visibility = View.VISIBLE
+        }
+    }
+
+    private fun hideDocOverlay() {
+        docOverlayView?.let {
+            val parentView = findViewById<android.view.ViewGroup>(R.id.main)
+            if (parentView != null) {
+                parentView.removeView(it)
+            } else {
+                 // Fallback if R.id.main_activity_content is not found
+                try {
+                    (binding.root as android.view.ViewGroup).removeView(it)
+                } catch (e: ClassCastException) {
+                     Log.e(LOG_TAG, "binding.root could not be cast to ViewGroup for removing doc overlay", e)
+                }
+            }
+            // To simply hide and reuse later:
+            // it.visibility = View.GONE
+        }
     }
 
     companion object {
