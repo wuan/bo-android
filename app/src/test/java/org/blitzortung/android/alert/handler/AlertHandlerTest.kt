@@ -64,26 +64,25 @@ class AlertHandlerTest {
     }
 
     @Test
-    fun receiveData() {
+    fun receiveDataShouldProduceAlertResultButNotTriggerAnyNotification() {
         val gridSize = 5000
-        val parameters = Parameters(
-            interval = TimeInterval(
-                offset = 0,
-                duration = 60
-            ),
-            region = LOCAL_REGION, gridSize = gridSize
+        val parameters =
+            Parameters(interval = TimeInterval(offset = 0, duration = 60), region = LOCAL_REGION, gridSize = gridSize)
+        val resultEvent = ResultEvent(
+            strikes = listOf(GridElement(System.currentTimeMillis(), 11.0, 45.0, 5)),
+            gridParameters = GridParameters(10.0, 40.0, 10.0, 10.0, 20, 20, gridSize),
+            flags = Flags(),
+            parameters = parameters
         )
-        uut.dataEventConsumer.invoke(
-            ResultEvent(
-                strikes = listOf(GridElement(System.currentTimeMillis(), 11.0, 45.0, 5)),
-                gridParameters = GridParameters(10.0, 40.0, 10.0, 10.0, 20, 20, gridSize),
-                flags = Flags(),
-                parameters = parameters
-            )
-        )
+        mockAlertResult(System.currentTimeMillis(), 5.0f)
 
-        assertThat(uut.alertEvent).isInstanceOf(AlertCancelEvent::class.java)
+        uut.dataEventConsumer.invoke(resultEvent)
 
+        assertThat(uut.alertEvent).isInstanceOf(AlertResultEvent::class.java)
+        val alertResult = (uut.alertEvent as AlertResultEvent).alertResult
+        assertThat(alertResult?.closestStrikeDistance).isEqualTo(5.0f)
+
+        verify(exactly = 0) { alertSignal.emitSignal() }
     }
 
     @Test

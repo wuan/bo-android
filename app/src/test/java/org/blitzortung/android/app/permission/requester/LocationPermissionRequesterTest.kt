@@ -49,13 +49,13 @@ class LocationPermissionRequesterTest {
 
     @Test
     fun `request should use PASSIVE provider by default`() {
-        every { permissionsSupport.requestPermission(any(), any(), any()) } answers { true }
+        every { permissionsSupport.request(any(), any(), any()) } answers { true }
 
         val result = locationPermissionRequester.request(permissionsSupport)
         assertThat(result).isTrue()
 
         verify(exactly = 1) {
-            permissionsSupport.requestPermission(
+            permissionsSupport.request(
                 ACCESS_FINE_LOCATION, 1, R.string.location_permission_required
             )
         }
@@ -66,12 +66,12 @@ class LocationPermissionRequesterTest {
         preferences.edit {
             putString(PreferenceKey.LOCATION_MODE.toString(), MANUAL_PROVIDER)
         }
-        every { permissionsSupport.requestPermission(any(), any(), any()) } answers { false }
+        every { permissionsSupport.request(any(), any(), any()) } answers { false }
 
         val result = locationPermissionRequester.request(permissionsSupport)
         assertThat(result).isFalse()
 
-        verify(exactly = 0) { permissionsSupport.requestPermission(any(), any(), any()) }
+        verify(exactly = 0) { permissionsSupport.request(any(), any(), any()) }
     }
 
     @Test
@@ -79,13 +79,13 @@ class LocationPermissionRequesterTest {
         preferences.edit {
             putString(PreferenceKey.LOCATION_MODE.toString(), NETWORK_PROVIDER)
         }
-        every { permissionsSupport.requestPermission(any(), any(), any()) } answers { true }
+        every { permissionsSupport.request(any(), any(), any()) } answers { true }
 
         val result = locationPermissionRequester.request(permissionsSupport)
         assertThat(result).isTrue()
 
         verify(exactly = 1) {
-            permissionsSupport.requestPermission(
+            permissionsSupport.request(
                 ACCESS_COARSE_LOCATION, 2, R.string.location_permission_required
             )
         }

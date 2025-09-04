@@ -177,7 +177,7 @@ class AlertHandler @Inject constructor(
     private fun checkStrikes(strikes: Strikes?, location: Location?) {
         lastStrikes = strikes
 
-        val alertResult = if (alertEnabled && location != null && strikes != null) {
+        val alertResult = if (location != null && strikes != null) {
             alertDataHandler.checkStrikes(strikes, location, alertParameters)
         } else {
             Log.v(
@@ -200,7 +200,7 @@ class AlertHandler @Inject constructor(
     }
 
     private fun processResult(alertResult: AlertResult?) {
-        if (alertResult != null) {
+        if (alertEnabled && alertResult != null) {
             if (alertResult.closestStrikeDistance <= signalingDistanceLimit) {
                 alertSignal(alertResult)
             }

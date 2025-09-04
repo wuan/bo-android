@@ -16,16 +16,16 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 
 class LocationPermissionRequester(
-    private val sharedPreferences: SharedPreferences
+    private val preferences: SharedPreferences
 ) : PermissionRequester {
     override val name: String = "location"
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun request(permissionsSupport: PermissionsSupport): Boolean {
-        val (permission, requestCode) = getLocationPermission(sharedPreferences)
+        val (permission, requestCode) = getLocationPermission(preferences)
 
         return if (permission != null) {
-            permissionsSupport.requestPermission(
+            permissionsSupport.request(
                 permission, requestCode, R.string.location_permission_required
             )
         } else {
@@ -34,8 +34,8 @@ class LocationPermissionRequester(
     }
 
     companion object {
-        internal fun getLocationPermission(sharedPreferences: SharedPreferences): Pair<String?, Int> {
-            val locationProviderName = sharedPreferences.get(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER)
+        internal fun getLocationPermission(preferences: SharedPreferences): Pair<String?, Int> {
+            val locationProviderName = preferences.get(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER)
             val permission = when (locationProviderName) {
                 PASSIVE_PROVIDER, GPS_PROVIDER -> ACCESS_FINE_LOCATION
                 NETWORK_PROVIDER -> ACCESS_COARSE_LOCATION

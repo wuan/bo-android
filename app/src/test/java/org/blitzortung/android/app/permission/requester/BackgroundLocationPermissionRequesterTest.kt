@@ -73,7 +73,7 @@ class BackgroundLocationPermissionRequesterTest {
 
         assertThat(result).isFalse()
         verify(exactly = 0) {
-            permissionsSupport.requestPermission(any(), any(), any())
+            permissionsSupport.request(any(), any(), any())
         }
     }
 
@@ -86,14 +86,14 @@ class BackgroundLocationPermissionRequesterTest {
         assertThat(result).isFalse()
 
         verify(exactly = 0) {
-            permissionsSupport.requestPermission(any(), any(), any())
+            permissionsSupport.request(any(), any(), any())
         }
     }
 
     @Test
     @Config(sdk = [Build.VERSION_CODES.Q])
     fun `request should open the dialog if all conditions are valid and request permission on clicking OK`() {
-        every { permissionsSupport.requestPermission(any(), any(), any()) } answers { true }
+        every { permissionsSupport.request(any(), any(), any()) } answers { true }
 
         val result = backgroundLocationPermissionRequester.request(permissionsSupport)
         assertThat(result).isTrue()
@@ -106,7 +106,7 @@ class BackgroundLocationPermissionRequesterTest {
         assertThat(dialog.isShowing).isFalse()
 
         verify(exactly = 1) {
-            permissionsSupport.requestPermission(
+            permissionsSupport.request(
                 ACCESS_BACKGROUND_LOCATION,
                 102,
                 R.string.location_permission_background_required
@@ -118,7 +118,7 @@ class BackgroundLocationPermissionRequesterTest {
     @Test
     @Config(sdk = [Build.VERSION_CODES.Q])
     fun `request should open the dialog if all conditions are valid and request permission on clicking Cancel`() {
-        every { permissionsSupport.requestPermission(any(), any(), any()) } answers { true }
+        every { permissionsSupport.request(any(), any(), any()) } answers { true }
 
         val result = backgroundLocationPermissionRequester.request(permissionsSupport)
         assertThat(result).isTrue()
@@ -131,7 +131,7 @@ class BackgroundLocationPermissionRequesterTest {
         assertThat(dialog.isShowing).isFalse()
 
         verify(exactly = 0) {
-            permissionsSupport.requestPermission(any(), any(), any())
+            permissionsSupport.request(any(), any(), any())
         }
         assertThat(preferences.getString(PreferenceKey.BACKGROUND_QUERY_PERIOD, "")).isEqualTo("0")
     }
