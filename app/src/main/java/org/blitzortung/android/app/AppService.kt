@@ -34,7 +34,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ServiceCompat
 import dagger.android.AndroidInjection
 import org.blitzortung.android.alert.handler.AlertHandler
-import org.blitzortung.android.app.controller.NotificationHandler.Companion.CHANNEL_ID
+import org.blitzortung.android.app.controller.NotificationHandler.Companion.BACKGROUND_CHANNEL_ID
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
@@ -150,7 +150,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun startForeground(contentIntent: PendingIntent?) {
-        val notification = Notification.Builder(this, CHANNEL_ID)
+        val notification = Notification.Builder(this, BACKGROUND_CHANNEL_ID)
             .setSmallIcon(R.drawable.icon)
             .setContentTitle(this.resources.getText(R.string.app_name))
             .setContentText("bla")
