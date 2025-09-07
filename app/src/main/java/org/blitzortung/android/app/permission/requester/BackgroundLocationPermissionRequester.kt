@@ -10,7 +10,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
-import org.blitzortung.android.app.Main.Companion.REQUEST_CODE_BACKGROUND_LOCATION
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.permission.PermissionRequester
 import org.blitzortung.android.app.permission.PermissionsSupport
@@ -56,5 +55,6 @@ class BackgroundLocationPermissionRequester(
         internal fun isBackgroundAlertEnabled(preferences: SharedPreferences) : Boolean =
             preferences.get(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0")
                 .toInt() > 0
+        const val REQUEST_CODE_BACKGROUND_LOCATION = 102
     }
 }

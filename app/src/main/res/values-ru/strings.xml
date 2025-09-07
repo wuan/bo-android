@@ -367,4 +367,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="background_query_period_dialog_message">"Использование периодического фонового запроса оповещений, когда приложение не запущено, потребует считывания местоположения вашего устройства, если оно не настроено на определение местоположения вручную. "</string>
     <string name="post_notifications_request">Включите разрешение на публикацию уведомлений, если вы хотите получать оповещения.</string>
     <string name="default_alarm_signal">Звук предупреждений по умолчанию</string>
+    <string name="location_required_for_alerts">Местоположение требуется для оповещений, отключения оповещений и фоновых запросов.</string>
+    <string name="post_notifications_required_for_alerts">Для оповещений требуется разрешение на уведомление, отключение оповещений и фоновых запросов.</string>
 </resources>
