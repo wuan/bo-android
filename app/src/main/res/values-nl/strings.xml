@@ -340,4 +340,5 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="post_notifications_request">Schakel toestemming voor het plaatsen van meldingen in als u meldingen wenst te ontvangen.</string>
     <string name="default_alarm_signal">Standaard alarmgeluid</string>
     <string name="location_required_for_alerts">Location is required for alerts, disabling alerts and background queries.</string>
+    <string name="post_notifications_required_for_alerts">Notification permission is required for alerts, disabling alerts and background queries.</string>
 </resources>
