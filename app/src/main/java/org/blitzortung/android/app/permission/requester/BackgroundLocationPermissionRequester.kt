@@ -56,5 +56,6 @@ class BackgroundLocationPermissionRequester(
         internal fun isBackgroundAlertEnabled(preferences: SharedPreferences) : Boolean =
             preferences.get(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0")
                 .toInt() > 0
+        const val REQUEST_CODE_BACKGROUND_LOCATION = 102
     }
 }

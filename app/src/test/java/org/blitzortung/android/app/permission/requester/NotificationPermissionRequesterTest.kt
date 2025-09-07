@@ -2,9 +2,9 @@ package org.blitzortung.android.app.permission.requester
 
 
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
-import android.location.LocationManager.NETWORK_PROVIDER
 import android.os.Build
 import androidx.core.content.edit
 import io.mockk.MockKAnnotations
@@ -12,6 +12,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.permission.PermissionsSupport
 import org.blitzortung.android.app.view.PreferenceKey
@@ -19,6 +20,7 @@ import org.blitzortung.android.app.view.put
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
@@ -29,6 +31,8 @@ class NotificationPermissionRequesterTest {
     @MockK
     private lateinit var permissionsSupport: PermissionsSupport
 
+    private lateinit var activity: Activity
+
     private lateinit var preferences: SharedPreferences
 
     private lateinit var notificationPermissionRequester: NotificationPermissionRequester
@@ -37,10 +41,14 @@ class NotificationPermissionRequesterTest {
     fun setUp() {
         MockKAnnotations.init(this, relaxed = true)
 
+        activity = Robolectric.buildActivity(Main::class.java)
+            .setup()
+            .get()
+
         val context = RuntimeEnvironment.getApplication()
         preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 
-        notificationPermissionRequester = NotificationPermissionRequester(preferences)
+        notificationPermissionRequester = NotificationPermissionRequester(activity, preferences)
     }
 
     @Test
@@ -106,5 +114,8 @@ class NotificationPermissionRequesterTest {
                 R.string.post_notifications_request
             )
         }
+    }
+    companion object {
+        const val REQUEST_CODE_POST_NOTIFICATIONS = 101
     }
 }

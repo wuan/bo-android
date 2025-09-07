@@ -20,7 +20,6 @@ package org.blitzortung.android.app
 
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -35,8 +34,8 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import androidx.core.content.edit
+import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
-import androidx.core.view.WindowCompat // Import added
 import androidx.fragment.app.FragmentActivity
 import androidx.preference.PreferenceManager
 import dagger.android.AndroidInjection
@@ -49,6 +48,7 @@ import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
 import org.blitzortung.android.app.databinding.MainBinding
 import org.blitzortung.android.app.permission.LocationProviderRelation
+import org.blitzortung.android.app.permission.PermissionRequester
 import org.blitzortung.android.app.permission.PermissionsSupport
 import org.blitzortung.android.app.permission.requester.BackgroundLocationPermissionRequester
 import org.blitzortung.android.app.permission.requester.LocationPermissionRequester
@@ -58,7 +58,6 @@ import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.app.view.get
-import org.blitzortung.android.app.view.put
 import org.blitzortung.android.data.AUTO_GRID_SIZE_VALUE
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.Mode
@@ -70,8 +69,6 @@ import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.result.StatusEvent
 import org.blitzortung.android.dialogs.QuickSettingsDialog
 import org.blitzortung.android.location.LocationHandler
-import org.blitzortung.android.location.LocationHandler.Companion.MANUAL_PROVIDER
-import org.blitzortung.android.location.provider.ManualLocationProvider
 import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.overlay.FadeOverlay
@@ -126,6 +123,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     @set:Inject
     internal lateinit var changeLogComponent: ChangeLogComponent
+
+    private lateinit var permissionRequesters: Array<PermissionRequester>
 
     private var currentResult: ResultEvent? = null
 
@@ -279,6 +278,13 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             override fun onStopTrackingTouch(p0: SeekBar?) {
             }
         })
+
+        permissionRequesters = arrayOf(
+            LocationPermissionRequester(this, preferences),
+            NotificationPermissionRequester(this, preferences),
+            BackgroundLocationPermissionRequester(this, preferences),
+            WakeupPermissionRequester(this, preferences)
+        )
     }
 
     private fun initializeOsmDroid() {
@@ -443,6 +449,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         Log.d(LOG_TAG, "Main.onRestart()")
     }
 
+
     override fun onResume() {
         super.onResume()
 
@@ -451,12 +458,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         Log.v(LOG_TAG, "Main.onResume()")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            PermissionsSupport.ensure(this,
-                LocationPermissionRequester(preferences),
-                NotificationPermissionRequester(preferences),
-                BackgroundLocationPermissionRequester(this, preferences),
-                WakeupPermissionRequester(this, preferences)
-                )
+            PermissionsSupport.ensure(
+                this, *permissionRequesters
+            )
         }
 
         mapFragment.updateForgroundColor(strikeColorHandler.lineColor)
@@ -583,53 +587,15 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        val locationProviderRelation = LocationProviderRelation.byOrdinal[requestCode]
-        val alertEnabled = preferences.get(PreferenceKey.ALERT_ENABLED, false)
-        if (locationProviderRelation != null) {
-            val providerName = locationProviderRelation.providerName
-            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                val previousValue = preferences.get(PreferenceKey.LOCATION_MODE, "n/a")
-                Log.i(
-                    LOG_TAG,
-                    "Main.onRequestPermissionResult() $providerName permission has been granted. (code $requestCode, previous: $previousValue)"
-                )
-                preferences.edit {
-                    put(PreferenceKey.LOCATION_MODE, providerName)
-                }
-                locationHandler.update(preferences)
-            } else {
-                Log.i(
-                    LOG_TAG,
-                    "Main.onRequestPermissionResult() $providerName permission was NOT granted. (code $requestCode)"
-                )
-                preferences.edit {
-                    put(PreferenceKey.LOCATION_MODE, MANUAL_PROVIDER)
-                }
-                if (alertEnabled &&  ManualLocationProvider.getManualLocation(preferences) == null) {
-                    Toast.makeText(this, R.string.location_required_for_alerts, Toast.LENGTH_LONG).show()
-                    preferences.edit {
-                        put(PreferenceKey.ALERT_ENABLED, false)
-                        put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0")
-                    }
-                }
-                locationHandler.update(preferences)
-            }
-        } else if (requestCode == REQUEST_CODE_POST_NOTIFICATIONS && grantResults.isNotEmpty()) {
-            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED && (alertEnabled || backgroundAlertEnabled)) {
-                Log.i(
-                    LOG_TAG,
-                    "Main.onRequestPermissionResult() POST_NOTIFICATIONS permission was NOT granted but is required for alerts. Disabling alerts and background queries"
-                )
-                Toast.makeText(baseContext, R.string.post_notifications_required_for_alerts, Toast.LENGTH_LONG).show()
-                preferences.edit {
-                    put(PreferenceKey.ALERT_ENABLED, false)
-                    put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0")
-                }
-            }
-        } else {
-            Log.i(LOG_TAG, "Main.onRequestPermissionResult() permissions: ${permissions.joinToString(",")}, requestCode: $requestCode")
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Log.v(
+            LOG_TAG,
+            "Main.onRequestPermissionResult() permissions: ${permissions.joinToString(",")}, requestCode: $requestCode"
+        )
+        for (requester in permissionRequesters) {
+            val handled = requester.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            if (handled) return
         }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
@@ -724,7 +690,5 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     companion object {
         const val LOG_TAG = "BO_ANDROID"
         const val MAP_FRAGMENT_TAG = "org.blitzortung.MAP_FRAGMENT_TAG"
-        const val REQUEST_CODE_POST_NOTIFICATIONS = 101
-        const val REQUEST_CODE_BACKGROUND_LOCATION = 102
     }
 }

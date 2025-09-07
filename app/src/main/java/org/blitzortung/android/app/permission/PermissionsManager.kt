@@ -71,4 +71,5 @@ class PermissionsSupport(
 interface PermissionRequester {
     val name: String
     fun request(permissionsSupport: PermissionsSupport): Boolean
+    fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray): Boolean = false
 }

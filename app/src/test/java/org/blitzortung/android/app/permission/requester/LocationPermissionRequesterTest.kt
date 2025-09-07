@@ -3,6 +3,7 @@ package org.blitzortung.android.app.permission.requester
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.location.LocationManager.NETWORK_PROVIDER
@@ -12,6 +13,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.permission.PermissionsSupport
 import org.blitzortung.android.app.view.PreferenceKey
@@ -19,6 +21,7 @@ import org.blitzortung.android.location.LocationHandler.Companion.MANUAL_PROVIDE
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
@@ -28,6 +31,8 @@ class LocationPermissionRequesterTest {
     @MockK
     private lateinit var permissionsSupport: PermissionsSupport
 
+    private lateinit var activity: Activity
+
     private lateinit var preferences: SharedPreferences
 
     private lateinit var locationPermissionRequester: LocationPermissionRequester
@@ -36,10 +41,14 @@ class LocationPermissionRequesterTest {
     fun setUp() {
         MockKAnnotations.init(this, relaxed = true)
 
+        activity = Robolectric.buildActivity(Main::class.java)
+            .setup()
+            .get()
+
         val context = RuntimeEnvironment.getApplication()
         preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 
-        locationPermissionRequester = LocationPermissionRequester(preferences)
+        locationPermissionRequester = LocationPermissionRequester(activity, preferences)
     }
 
     @Test
