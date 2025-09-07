@@ -14,26 +14,9 @@ class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sh
     override val isEnabled: Boolean = true
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
-        val doubleConverter = fun(x: String): Double? {
-            try {
-                return x.toDouble()
-            } catch (e: NumberFormatException) {
-                Log.e(Main.LOG_TAG, "bad longitude/latitude number format '$x'")
-            }
-
-            return null
-        }
-
         when (key) {
             PreferenceKey.LOCATION_LONGITUDE, PreferenceKey.LOCATION_LATITUDE -> {
-                val location = Location("")
-
-                location.longitude =
-                    sharedPreferences.getAndConvert(PreferenceKey.LOCATION_LONGITUDE, "11.0", doubleConverter) ?: 11.0
-                location.latitude =
-                    sharedPreferences.getAndConvert(PreferenceKey.LOCATION_LATITUDE, "49.0", doubleConverter) ?: 49.0
-
-                sendLocationUpdate(location)
+                sendLocationUpdate(getManualLocation(sharedPreferences))
             }
 
             else -> {}
@@ -57,5 +40,35 @@ class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sh
     }
 
     override fun reconfigureProvider(isInBackground: Boolean) { /* Nothing to do here */
+    }
+
+    companion object {
+        fun getManualLocation(
+            sharedPreferences: SharedPreferences,
+        ): Location? {
+            val doubleConverter = fun(x: String): Double? {
+                try {
+                    return x.toDouble()
+                } catch (e: NumberFormatException) {
+                    Log.d(Main.LOG_TAG, "bad longitude/latitude number format '$x'")
+                }
+
+                return null
+            }
+
+            val longitude =
+                sharedPreferences.getAndConvert(PreferenceKey.LOCATION_LONGITUDE, "", doubleConverter)
+            val latitude =
+                sharedPreferences.getAndConvert(PreferenceKey.LOCATION_LATITUDE, "", doubleConverter)
+
+            return if (longitude != null && latitude != null) {
+                Location("").also {
+                    it.longitude = longitude
+                    it.latitude = latitude
+                }
+            } else {
+                null
+            }
+        }
     }
 }

@@ -70,6 +70,8 @@ import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.result.StatusEvent
 import org.blitzortung.android.dialogs.QuickSettingsDialog
 import org.blitzortung.android.location.LocationHandler
+import org.blitzortung.android.location.LocationHandler.Companion.MANUAL_PROVIDER
+import org.blitzortung.android.location.provider.ManualLocationProvider
 import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.overlay.FadeOverlay
@@ -582,13 +584,14 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         val locationProviderRelation = LocationProviderRelation.byOrdinal[requestCode]
+        val alertEnabled = preferences.get(PreferenceKey.ALERT_ENABLED, false)
         if (locationProviderRelation != null) {
             val providerName = locationProviderRelation.providerName
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 val previousValue = preferences.get(PreferenceKey.LOCATION_MODE, "n/a")
                 Log.i(
                     LOG_TAG,
-                    "Main.onRequestPermissionResult() $providerName permission has now been granted. (code $requestCode, previous: $previousValue)"
+                    "Main.onRequestPermissionResult() $providerName permission has been granted. (code $requestCode, previous: $previousValue)"
                 )
                 preferences.edit {
                     put(PreferenceKey.LOCATION_MODE, providerName)
@@ -599,10 +602,19 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     LOG_TAG,
                     "Main.onRequestPermissionResult() $providerName permission was NOT granted. (code $requestCode)"
                 )
-                locationHandler.shutdown()
+                preferences.edit {
+                    put(PreferenceKey.LOCATION_MODE, MANUAL_PROVIDER)
+                }
+                if (alertEnabled &&  ManualLocationProvider.getManualLocation(preferences) == null) {
+                    Toast.makeText(this, R.string.location_required_for_alerts, Toast.LENGTH_LONG).show()
+                    preferences.edit {
+                        put(PreferenceKey.ALERT_ENABLED, false)
+                        put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0")
+                    }
+                }
+                locationHandler.update(preferences)
             }
         } else if (requestCode == REQUEST_CODE_POST_NOTIFICATIONS && grantResults.isNotEmpty()) {
-            val alertEnabled = preferences.get(PreferenceKey.ALERT_ENABLED, false)
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED && (alertEnabled || backgroundAlertEnabled)) {
                 Log.i(
                     LOG_TAG,
@@ -614,8 +626,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0")
                 }
             }
-        }else {
-            Log.i(LOG_TAG, "Main.onRequestPermissionResult() permissions: $permissions, requestCode: $requestCode")
+        } else {
+            Log.i(LOG_TAG, "Main.onRequestPermissionResult() permissions: ${permissions.joinToString(",")}, requestCode: $requestCode")
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
     }
