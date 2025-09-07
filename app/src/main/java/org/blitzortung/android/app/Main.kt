@@ -47,7 +47,6 @@ import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
 import org.blitzortung.android.app.databinding.MainBinding
-import org.blitzortung.android.app.permission.LocationProviderRelation
 import org.blitzortung.android.app.permission.PermissionRequester
 import org.blitzortung.android.app.permission.PermissionsSupport
 import org.blitzortung.android.app.permission.requester.BackgroundLocationPermissionRequester
