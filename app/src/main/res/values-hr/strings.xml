@@ -333,4 +333,5 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="background_query_period_dialog_message">"Korištenje periodičnog pozadinskog upita za upozorenja kada aplikacija ne radi zahtijevat će očitavanje lokacije vašeg uređaja ako nije postavljeno ručno lociranje. "</string>
     <string name="post_notifications_request">Omogućite dopuštenje za objavu obavijesti ako želite primati upozorenja o obavijestima.</string>
     <string name="default_alarm_signal">Zadani zvuk alarma</string>
+    <string name="location_required_for_alerts">Location is required for alerts, disabling alerts and background queries.</string>
 </resources>

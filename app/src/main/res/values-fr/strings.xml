@@ -336,4 +336,5 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="background_query_period_dialog_message">"L'utilisation d'une requête d'arrière-plan périodique pour les alertes lorsque l'application n'est pas en cours d'exécution nécessitera la lecture de l'emplacement de votre appareil s'il n'est pas défini sur l'emplacement manuel. "</string>
     <string name="post_notifications_request">"Activez l'autorisation de publication des notifications si vous souhaitez recevoir des alertes de notification."</string>
     <string name="default_alarm_signal">Son d\'alarme par défaut</string>
+    <string name="location_required_for_alerts">Location is required for alerts, disabling alerts and background queries.</string>
 </resources>

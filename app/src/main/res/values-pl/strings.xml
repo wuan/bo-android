@@ -364,4 +364,5 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="background_query_period_dialog_message">"Korzystanie z okresowego odpytywania w tle w celu wysyłania alarmów, gdy aplikacja nie jest uruchomiona, będzie wymagać odczytywania lokalizacji Twojego urządzenia, jeśli nie została ona ustawiona ręcznie."</string>
     <string name="post_notifications_request">Włącz uprawnienie do wysyłania powiadomień, jeśli chcesz otrzymywać alarmy.</string>
     <string name="default_alarm_signal">Domyślny dźwięk alarmu</string>
+    <string name="location_required_for_alerts">Location is required for alerts, disabling alerts and background queries.</string>
 </resources>

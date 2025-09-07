@@ -332,4 +332,5 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="undefined">nedefinované</string>
     <string name="background_query_period_dialog_message">"Používanie pravidelného dopytovania sa na pozadí pre upozornenia, keď aplikácia nie je spustená, bude vyžadovať načítanie polohy vášho zariadenia, ak nie je nastavené na manuálne určovanie polohy. "</string>
     <string name="post_notifications_request">Ak chcete upozornenia na príspevky, povoľte povolenie na ich odosielanie.</string>
+    <string name="location_required_for_alerts">Location is required for alerts, disabling alerts and background queries.</string>
 </resources>
