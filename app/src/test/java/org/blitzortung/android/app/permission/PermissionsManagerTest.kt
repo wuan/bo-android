@@ -168,4 +168,22 @@ class PermissionsManagerTest {
         assertThat(requester1.requestCalled).isTrue()
         assertThat(requester2.requestCalled).isTrue()
     }
+
+    @Test
+    fun `default method should return false`() {
+       class TestPermissionRequester : PermissionRequester {
+           override val name: String
+               get() = "test"
+
+           override fun request(permissionsSupport: PermissionsSupport): Boolean {
+               TODO("Not yet implemented")
+           }
+       }
+
+        val requester = TestPermissionRequester()
+
+        val result = requester.onRequestPermissionsResult(1, arrayOf("test"), intArrayOf(1))
+
+        assertThat(result).isFalse()
+    }
 }
