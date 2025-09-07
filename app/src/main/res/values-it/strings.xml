@@ -328,6 +328,6 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="background_query_period_dialog_message">"L'utilizzo di una query periodica in background per gli avvisi quando l'app non è in esecuzione richiederà la lettura della posizione del dispositivo, se non è impostata sulla posizione manuale. "</string>
     <string name="post_notifications_request">"Abilita l'autorizzazione per l'invio di notifiche se desideri ricevere avvisi di notifica."</string>
     <string name="default_alarm_signal">Suono sveglia predefinito</string>
-    <string name="location_required_for_alerts">Location is required for alerts, disabling alerts and background queries.</string>
-    <string name="post_notifications_required_for_alerts">Notification permission is required for alerts, disabling alerts and background queries.</string>
+    <string name="location_required_for_alerts">La posizione è richiesta per gli avvisi, disabilitando gli avvisi e le query in background.</string>
+    <string name="post_notifications_required_for_alerts">Per gli avvisi è richiesta l\'autorizzazione alla notifica, disabilitando gli avvisi e le query in background.</string>
 </resources>

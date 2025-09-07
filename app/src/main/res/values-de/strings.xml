@@ -354,6 +354,6 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="background_query_period_dialog_message">Die Verwendung einer periodischen Hintergrundabfrage für Warnungen, wenn die App nicht ausgeführt wird, erfordert das Auslesen des Standorts Ihres Geräts, sofern dieser nicht auf manuellen Standort eingestellt ist.</string>
     <string name="post_notifications_request">Aktivieren Sie die Berechtigung zum Posten von Benachrichtigungen, wenn Benachrichtigungswarnungen gewünscht sind.</string>
     <string name="default_alarm_signal">Standard-Alarmton</string>
-    <string name="location_required_for_alerts">Location is required for alerts, disabling alerts and background queries.</string>
-    <string name="post_notifications_required_for_alerts">Notification permission is required for alerts, disabling alerts and background queries.</string>
+    <string name="location_required_for_alerts">Für Warnungen ist eine Standortbestimmung erforderlich. Warnungen und Hintergrundabfragen werden deaktiviert.</string>
+    <string name="post_notifications_required_for_alerts">Die Berechtigung zur Benachrichtigung ist für Warnungen erforderlich. Warnungen und Hintergrundabfragen werden deaktiviert.</string>
 </resources>

@@ -339,6 +339,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="background_query_period_dialog_message">Het gebruik van een periodieke achtergrondquery voor waarschuwingen wanneer de app niet actief is, vereist het lezen van de locatie van uw apparaat als dit niet is ingesteld op handmatige locatie.</string>
     <string name="post_notifications_request">Schakel toestemming voor het plaatsen van meldingen in als u meldingen wenst te ontvangen.</string>
     <string name="default_alarm_signal">Standaard alarmgeluid</string>
-    <string name="location_required_for_alerts">Location is required for alerts, disabling alerts and background queries.</string>
-    <string name="post_notifications_required_for_alerts">Notification permission is required for alerts, disabling alerts and background queries.</string>
+    <string name="location_required_for_alerts">Locatie is vereist voor waarschuwingen, het uitschakelen van waarschuwingen en achtergrondquery\'s.</string>
+    <string name="post_notifications_required_for_alerts">Toestemming voor meldingen is vereist voor waarschuwingen, het uitschakelen van waarschuwingen en achtergrondquery\'s.</string>
 </resources>
