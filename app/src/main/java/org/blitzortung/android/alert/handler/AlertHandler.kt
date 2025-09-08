@@ -21,6 +21,7 @@ package org.blitzortung.android.alert.handler
 import android.content.Context
 import android.content.SharedPreferences
 import android.location.Location
+import android.os.Build
 import android.util.Log
 import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
@@ -41,6 +42,7 @@ import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.protocol.ConsumerContainer
 import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.MeasurementSystem
+import org.blitzortung.android.util.isAtLeast
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -213,7 +215,12 @@ class AlertHandler @Inject constructor(
         val signalingLatestTimestamp = alertDataHandler.getLatestTimstampWithin(signalingDistanceLimit, alertResult)
         if (signalingLatestTimestamp > signalingLastTimestamp + signalingThresholdTime) {
             Log.d(Main.LOG_TAG, "AlertHandler.alertSignal() signal ${signalingLatestTimestamp / 1000}")
-            alertSignal.emitSignal()
+            if (isAtLeast(Build.VERSION_CODES.O)) {
+                sendNotification(alertResult, true)
+            } else {
+                alertSignal.emitSignal()
+            }
+
             signalingLastTimestamp = signalingLatestTimestamp
         } else {
             Log.d(
@@ -228,13 +235,7 @@ class AlertHandler @Inject constructor(
             alertDataHandler.getLatestTimstampWithin(notificationDistanceLimit, alertResult)
         if (notificationLatestTimestamp > notificationLastTimestamp) {
             Log.d(Main.LOG_TAG, "AlertHandler.alertNotification() notification ${notificationLatestTimestamp / 1000}")
-            notificationHandler.sendNotification(
-                context.resources.getString(R.string.activity) + ": " + alertDataHandler.getTextMessage(
-                    alertResult,
-                    notificationDistanceLimit,
-                    context.resources
-                )
-            )
+            sendNotification(alertResult, false)
             notificationLastTimestamp = notificationLatestTimestamp
         } else {
             Log.d(
@@ -242,6 +243,17 @@ class AlertHandler @Inject constructor(
                 "AlertHandler.alertNotification() skipped ${notificationLatestTimestamp - notificationLastTimestamp}"
             )
         }
+    }
+
+    private fun sendNotification(alertResult: AlertResult, isCloseAlarm: Boolean) {
+        notificationHandler.sendNotification(
+            context.resources.getString(R.string.activity) + ": " + alertDataHandler.getTextMessage(
+                alertResult,
+                notificationDistanceLimit,
+                context.resources
+            ),
+            isCloseAlarm
+        )
     }
 
     fun requestUpdates(alertEventConsumer: (AlertEvent) -> Unit) {
