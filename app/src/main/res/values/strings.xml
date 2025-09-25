@@ -387,4 +387,10 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="default_alarm_signal">Default alarm sound</string>
     <string name="location_required_for_alerts">Location is required for alerts, disabling alerts and background queries.</string>
     <string name="post_notifications_required_for_alerts">Notification permission is required for alerts, disabling alerts and background queries.</string>
+    <string name="notification_channel_distant_name">Distant lightning</string>
+    <string name="notification_channel_close_name">Close lightning</string>
+    <string name="notification_channel_distant_description">Notification channel for alerts for distant lightning activity</string>
+    <string name="notification_channel_close_description">Notification channel for alerts for close lightning activity</string>
+    <string name="notification_channel_background_name">Background operation</string>
+    <string name="notification_channel_background_description">Channel for background operation notifications</string>
 </resources>
