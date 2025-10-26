@@ -16,6 +16,8 @@ The Android App *Blitzortung Lightning Monitor* built from these sources visuali
      alt="Get it on Google Play"
      height="80">](https://play.google.com/store/apps/details?id=org.blitzortung.android.app)
 
+Please have a look at [the documentation](https://blitzortung.tryb.de) for more information on usage.
+
 ## Available translations
 
  * Czech
@@ -37,5 +39,3 @@ We are still looking forward to volunteers preparing a translation for the follo
  * yours?
 
 Translations to other languages are welcome as well. Please contact us via `blitzortung at tryb.de`
-
-
