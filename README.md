@@ -4,6 +4,7 @@
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=wuan_bo-android&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=wuan_bo-android)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=wuan_bo-android&metric=coverage)](https://sonarcloud.io/summary/new_code?id=wuan_bo-android)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/wuan/bo-android/badge)](https://scorecard.dev/viewer/?uri=github.com/wuan/bo-android)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/wuan/bo-android)
 
 # Blitzortung Lightning Monitor Android app
 
