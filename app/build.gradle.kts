@@ -98,15 +98,46 @@ dependencies {
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
     compileOnly("javax.annotation:jsr250-api:1.0")
 
+    // Unit Testing
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.assertj:assertj-core:3.27.4")
     testImplementation("io.mockk:mockk:1.14.5")
     testImplementation("org.robolectric:robolectric:4.15.1")
     testImplementation("androidx.test:core:1.7.0")
+    testImplementation("androidx.test:core-ktx:1.7.0")
+    testImplementation("androidx.test.ext:junit:1.2.1")
+    testImplementation("androidx.test.ext:junit-ktx:1.2.1")
+
+    // Kotlin Coroutines Testing
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+
+    // Turbine - Flow Testing
+    testImplementation("app.cash.turbine:turbine:1.2.0")
+
+    // AndroidX Arch Core Testing (LiveData/ViewModel testing)
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+
+    // AndroidX Test Rules
+    testImplementation("androidx.test:rules:1.6.1")
+
+    // Fragment Testing
+    debugImplementation("androidx.fragment:fragment-testing:1.8.5")
+
+    // Instrumented Testing
     androidTestImplementation("androidx.test:runner:1.7.0")
+    androidTestImplementation("androidx.test:rules:1.6.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.7.0")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.7.0")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.ext:junit-ktx:1.2.1")
+    androidTestImplementation("io.mockk:mockk-android:1.14.5")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+
+    // Compose Testing (if needed in future)
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.9.0")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.9.0")
 }
 
 kapt {
