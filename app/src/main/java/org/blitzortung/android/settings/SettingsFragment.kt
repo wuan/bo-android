@@ -11,6 +11,8 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
@@ -32,13 +34,34 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.location.LocationHandler
 
-private const val REQUEST_CODE_ALERT_RINGTONE: Int = 123
-
 class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
     @set:Inject
     internal lateinit var preferences: SharedPreferences
 
     private val originalSummaries = mutableMapOf<PreferenceKey, Int>()
+
+    // Modern Activity Result API for ringtone picker
+    private val ringtonePickerLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            result.data?.let { data ->
+                val ringtone = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI, Uri::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+                }
+                if (::preferences.isInitialized) {
+                    preferences.edit(commit = true) {
+                        putString(
+                            PreferenceKey.ALERT_SOUND_SIGNAL.toString(),
+                            ringtone?.toString() ?: "",
+                        )
+                    }
+                } else {
+                    Log.e(LOG_TAG, "SharedPreferences not initialized when handling ringtone result")
+                }
+            }
+        }
 
     override fun onAttach(context: Context) {
         Log.v(LOG_TAG, "SettingsFragment.onAttach()")
@@ -243,35 +266,13 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
                 intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Settings.System.DEFAULT_NOTIFICATION_URI)
             }
 
-            startActivityForResult(intent, REQUEST_CODE_ALERT_RINGTONE)
+            ringtonePickerLauncher.launch(intent)
             true
         } else {
             super.onPreferenceTreeClick(preference)
         }
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?,
-    ) {
-        if (requestCode == REQUEST_CODE_ALERT_RINGTONE && data != null) {
-            val ringtone = data.getParcelableExtra<Uri?>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
-            if (::preferences.isInitialized) {
-                preferences.edit(commit = true) {
-                    putString(
-                        PreferenceKey.ALERT_SOUND_SIGNAL.toString(),
-                        ringtone?.toString() ?: "",
-                    )
-                }
-            } else {
-                Log.e(LOG_TAG, "SharedPreferences not initialized in onActivityResult")
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-    }
 }
 
 fun <T : Preference> PreferenceFragmentCompat.findPreference(key: PreferenceKey): T? {
