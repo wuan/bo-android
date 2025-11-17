@@ -14,7 +14,6 @@ import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
 class ManualLocationProviderTest {
-
     private lateinit var preferences: SharedPreferences
 
     @Before

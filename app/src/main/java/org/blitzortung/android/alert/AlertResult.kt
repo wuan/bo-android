@@ -23,7 +23,7 @@ import org.blitzortung.android.alert.data.AlertSector
 data class AlertResult(
     val sectors: List<AlertSector>,
     val parameters: AlertParameters,
-    val referenceTime: Long
+    val referenceTime: Long,
 ) {
     val sectorsByDistance: Map<Float, AlertSector> by lazy {
         sectors.filter { it.closestStrikeDistance < Float.POSITIVE_INFINITY }

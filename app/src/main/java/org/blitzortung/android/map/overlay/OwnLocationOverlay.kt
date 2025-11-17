@@ -42,10 +42,11 @@ import org.osmdroid.views.overlay.ItemizedOverlay
 
 class OwnLocationOverlay(
     context: Context,
-    private val mapView: MapView
+    private val mapView: MapView,
 ) : ItemizedOverlay<OwnLocationOverlayItem>(DEFAULT_DRAWABLE),
     OnSharedPreferenceChangeListener,
-    LayerOverlay, MapListener {
+    LayerOverlay,
+    MapListener {
     private val layerOverlayComponent: LayerOverlayComponent =
         LayerOverlayComponent()
 
@@ -87,7 +88,11 @@ class OwnLocationOverlay(
         refresh()
     }
 
-    override fun draw(canvas: Canvas?, mapView: MapView?, shadow: Boolean) {
+    override fun draw(
+        canvas: Canvas?,
+        mapView: MapView?,
+        shadow: Boolean,
+    ) {
         if (!shadow) {
             super.draw(canvas, mapView, false)
         }
@@ -116,11 +121,19 @@ class OwnLocationOverlay(
         refresh()
     }
 
-    override fun onSnapToItem(x: Int, y: Int, snapPoint: Point?, mapView: IMapView?): Boolean {
+    override fun onSnapToItem(
+        x: Int,
+        y: Int,
+        snapPoint: Point?,
+        mapView: IMapView?,
+    ): Boolean {
         return false
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        key: PreferenceKey,
+    ) {
         if (key == PreferenceKey.SHOW_LOCATION) {
             val showLocation = sharedPreferences.get(key, false)
 
@@ -130,9 +143,10 @@ class OwnLocationOverlay(
                 disableOwnLocation()
             }
         } else if (key == PreferenceKey.OWN_LOCATION_SIZE) {
-            symbolSize = sharedPreferences.getAndConvert(PreferenceKey.OWN_LOCATION_SIZE, 100) {
-                it.toFloat() / 100
-            }
+            symbolSize =
+                sharedPreferences.getAndConvert(PreferenceKey.OWN_LOCATION_SIZE, 100) {
+                    it.toFloat() / 100
+                }
         }
     }
 
@@ -158,7 +172,6 @@ class OwnLocationOverlay(
         }
 
     companion object {
-
         private val DEFAULT_DRAWABLE: Drawable
 
         init {

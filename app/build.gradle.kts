@@ -31,7 +31,7 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
         debug {
@@ -131,11 +131,12 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     // Add files that should not be listed in the report (e.g. generated Files from dagger)
     val fileFilter = listOf("**/*Dagger.*")
 
-    val kotlinDebugTree = fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug") {
-        exclude(fileFilter)
-    }
+    val kotlinDebugTree =
+        fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug") {
+            exclude(fileFilter)
+        }
 
-    val mainSrc = "${projectDir}/src/main/java"
+    val mainSrc = "$projectDir/src/main/java"
     sourceDirectories.setFrom(files(mainSrc))
     classDirectories.setFrom(files(kotlinDebugTree))
 
@@ -143,7 +144,7 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     executionData.setFrom(
         fileTree(layout.buildDirectory.get()) {
             include("outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec")
-        }
+        },
     )
 }
 

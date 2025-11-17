@@ -11,7 +11,6 @@ import org.junit.Before
 import org.junit.Test
 
 class DataCacheTest {
-
     private val parameters = Parameters(interval = TimeInterval(offset = 30))
 
     private lateinit var uut: DataCache
@@ -70,17 +69,18 @@ class DataCacheTest {
 
     @Test
     fun cacheSizeSimple() {
-        val strikes = listOf(
-            GridElement(0, 1.0, 2.0, 3),
-            GridElement(2, 3.0, 4.0, 2),
-            GridElement(4, -3.0, -4.0, 1),
-        )
+        val strikes =
+            listOf(
+                GridElement(0, 1.0, 2.0, 3),
+                GridElement(2, 3.0, 4.0, 2),
+                GridElement(4, -3.0, -4.0, 1),
+            )
         val dataEvent = ResultEvent(parameters = parameters, flags = Flags(), strikes = strikes)
 
         uut.put(parameters, dataEvent)
         uut.put(
             parameters.copy(interval = TimeInterval(offset = 60)),
-            ResultEvent(parameters = parameters, flags = Flags())
+            ResultEvent(parameters = parameters, flags = Flags()),
         )
 
         val result = uut.calculateTotalSize()

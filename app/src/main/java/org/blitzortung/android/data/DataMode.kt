@@ -20,5 +20,5 @@ package org.blitzortung.android.data
 
 data class DataMode(
     val grid: Boolean = true,
-    val region: Boolean = false
+    val region: Boolean = false,
 )

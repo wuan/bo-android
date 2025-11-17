@@ -24,17 +24,19 @@ import java.io.InputStreamReader
 class LogProvider {
     fun getLogLines(): List<String> {
         val process = Runtime.getRuntime().exec("logcat -d")
-        val reader = BufferedReader(
-            InputStreamReader(process.inputStream)
-        )
+        val reader =
+            BufferedReader(
+                InputStreamReader(process.inputStream),
+            )
 
         val lines: ArrayList<String> = arrayListOf()
         reader.use {
             var line: String?
             do {
                 line = reader.readLine()
-                if (line == null)
+                if (line == null) {
                     break
+                }
                 lines.add(line)
             } while (true)
         }

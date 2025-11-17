@@ -21,7 +21,6 @@ import org.robolectric.shadows.ShadowPackageManager
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [Build.VERSION_CODES.P]) // Target a specific SDK relevant for permissions
 class PermissionsManagerTest {
-
     private class DummyActivity : Activity()
 
     private lateinit var activity: Activity
@@ -50,11 +49,12 @@ class PermissionsManagerTest {
         shadowActivity.grantPermissions(PERMISSION_STRING)
 
         // Act
-        val result = permissionsSupport.request(
-            PERMISSION_STRING,
-            REQUEST_CODE,
-            PERMISSION_RATIONALE_STRING_ID
-        )
+        val result =
+            permissionsSupport.request(
+                PERMISSION_STRING,
+                REQUEST_CODE,
+                PERMISSION_RATIONALE_STRING_ID,
+            )
 
         assertThat(result).isFalse()
         assertThat(shadowActivity.lastRequestedPermission).isNull()
@@ -65,11 +65,12 @@ class PermissionsManagerTest {
         shadowActivity.denyPermissions(PERMISSION_STRING)
         shadowPackageManager.setShouldShowRequestPermissionRationale(PERMISSION_STRING, false)
 
-        val result = permissionsSupport.request(
-            PERMISSION_STRING,
-            REQUEST_CODE,
-            PERMISSION_RATIONALE_STRING_ID
-        )
+        val result =
+            permissionsSupport.request(
+                PERMISSION_STRING,
+                REQUEST_CODE,
+                PERMISSION_RATIONALE_STRING_ID,
+            )
 
         assertThat(result).isTrue()
         val permissionRequest = shadowActivity.lastRequestedPermission
@@ -84,11 +85,12 @@ class PermissionsManagerTest {
         shadowPackageManager.setShouldShowRequestPermissionRationale(PERMISSION_STRING, true)
 
         // Act
-        val result = permissionsSupport.request(
-            PERMISSION_STRING,
-            REQUEST_CODE,
-            R.string.copy
-        )
+        val result =
+            permissionsSupport.request(
+                PERMISSION_STRING,
+                REQUEST_CODE,
+                R.string.copy,
+            )
 
         // Assert
         assertThat(result).isTrue() // Indicates a request flow was initiated
@@ -112,9 +114,10 @@ class PermissionsManagerTest {
     // Mock PermissionRequester for testing ensurePermissions
     class MockPermissionRequester(
         override val name: String,
-        private val requestResult: Boolean
+        private val requestResult: Boolean,
     ) : PermissionRequester {
         var requestCalled = false
+
         override fun request(permissionsSupport: PermissionsSupport): Boolean {
             requestCalled = true
             return requestResult
@@ -171,14 +174,14 @@ class PermissionsManagerTest {
 
     @Test
     fun `default method should return false`() {
-       class TestPermissionRequester : PermissionRequester {
-           override val name: String
-               get() = "test"
+        class TestPermissionRequester : PermissionRequester {
+            override val name: String
+                get() = "test"
 
-           override fun request(permissionsSupport: PermissionsSupport): Boolean {
-               TODO("Not yet implemented")
-           }
-       }
+            override fun request(permissionsSupport: PermissionsSupport): Boolean {
+                TODO("Not yet implemented")
+            }
+        }
 
         val requester = TestPermissionRequester()
 

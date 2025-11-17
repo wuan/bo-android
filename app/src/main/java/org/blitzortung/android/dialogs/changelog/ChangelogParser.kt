@@ -5,7 +5,10 @@ import android.util.Xml
 import org.xmlpull.v1.XmlPullParser
 
 class ChangelogParser {
-    fun readChangeLog(context: Context, changeLogFileId: Int): List<Release> {
+    fun readChangeLog(
+        context: Context,
+        changeLogFileId: Int,
+    ): List<Release> {
         val parser = getParser(context, changeLogFileId)
 
         return parseRoot(parser)
@@ -22,7 +25,10 @@ class ChangelogParser {
         return releases
     }
 
-    private fun iterate(parser: XmlPullParser, visitor: (parser: XmlPullParser) -> Unit) {
+    private fun iterate(
+        parser: XmlPullParser,
+        visitor: (parser: XmlPullParser) -> Unit,
+    ) {
         while (parser.next() !in listOf(XmlPullParser.END_DOCUMENT, XmlPullParser.END_TAG)) {
             if (parser.eventType != XmlPullParser.START_TAG) {
                 continue
@@ -41,12 +47,13 @@ class ChangelogParser {
             it.next()
             val containedText = it.text
             it.nextTag()
-            val element = when (elementName) {
-                "bugfix" -> Bugfix(containedText)
-                "feature" -> Feature(containedText)
-                "improvement" -> Improvement(containedText)
-                else -> null
-            }
+            val element =
+                when (elementName) {
+                    "bugfix" -> Bugfix(containedText)
+                    "feature" -> Feature(containedText)
+                    "improvement" -> Improvement(containedText)
+                    else -> null
+                }
             if (element != null) {
                 changes.add(element)
             }
@@ -54,7 +61,10 @@ class ChangelogParser {
         return Release(versionName, versionCode, changes)
     }
 
-    private fun getParser(context: Context, changeLogFileId: Int): XmlPullParser {
+    private fun getParser(
+        context: Context,
+        changeLogFileId: Int,
+    ): XmlPullParser {
         return when (val resourceTypeName = context.resources.getResourceTypeName(changeLogFileId)) {
             "raw" -> {
                 val inputStream = context.resources.openRawResource(changeLogFileId)
@@ -68,13 +78,12 @@ class ChangelogParser {
             else -> throw IllegalArgumentException("bad changelog resource type $resourceTypeName")
         }
     }
-
 }
 
 data class Release(
     val versionName: String,
     val versionCode: Int,
-    val changes: List<Change>
+    val changes: List<Change>,
 )
 
 sealed class Change {
@@ -82,13 +91,13 @@ sealed class Change {
 }
 
 data class Bugfix(
-    override val description: String
+    override val description: String,
 ) : Change()
 
 data class Feature(
-    override val description: String
+    override val description: String,
 ) : Change()
 
 data class Improvement(
-    override val description: String
+    override val description: String,
 ) : Change()

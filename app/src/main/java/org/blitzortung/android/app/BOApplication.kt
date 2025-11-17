@@ -4,13 +4,12 @@ import android.app.Application
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
+import javax.inject.Inject
 import org.blitzortung.android.dagger.component.DaggerAppComponent
 import org.blitzortung.android.dagger.module.AppModule
 import org.blitzortung.android.dagger.module.ServiceModule
-import javax.inject.Inject
 
 class BOApplication : Application(), HasAndroidInjector {
-
     @set:Inject
     lateinit var androidInjector: DispatchingAndroidInjector<Any>
 

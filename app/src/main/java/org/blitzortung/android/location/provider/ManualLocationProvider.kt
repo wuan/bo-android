@@ -13,7 +13,10 @@ class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sh
     LocationProvider(locationUpdate), OnSharedPreferenceChangeListener {
     override val isEnabled: Boolean = true
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        key: PreferenceKey,
+    ) {
         when (key) {
             PreferenceKey.LOCATION_LONGITUDE, PreferenceKey.LOCATION_LATITUDE -> {
                 sendLocationUpdate(getManualLocation(sharedPreferences))
@@ -39,13 +42,11 @@ class ManualLocationProvider(locationUpdate: (Location?) -> Unit, private val sh
         super.shutdown()
     }
 
-    override fun reconfigureProvider(isInBackground: Boolean) { /* Nothing to do here */
+    override fun reconfigureProvider(isInBackground: Boolean) { // Nothing to do here
     }
 
     companion object {
-        fun getManualLocation(
-            sharedPreferences: SharedPreferences,
-        ): Location? {
+        fun getManualLocation(sharedPreferences: SharedPreferences): Location? {
             val doubleConverter = fun(x: String): Double? {
                 try {
                     return x.toDouble()

@@ -15,7 +15,6 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 class LocalDataTest {
-
     private lateinit var uut: LocalData
 
     private lateinit var parameters: Parameters
@@ -107,7 +106,7 @@ class LocalDataTest {
         val result = uut.updateParameters(parameters, null)
 
         assertThat(result.region).isEqualTo(LOCAL_REGION)
-        assertThat(result.dataArea).isEqualTo(DataArea(2,9,5))
+        assertThat(result.dataArea).isEqualTo(DataArea(2, 9, 5))
         assertThat(result.gridSize).isEqualTo(10000)
     }
 
@@ -157,7 +156,7 @@ class LocalDataTest {
         val result = uut.update(boundingBox2)
 
         assertThat(result).isTrue
-        assertThat(uut.dataArea).isEqualTo(DataArea(2, 10,5))
+        assertThat(uut.dataArea).isEqualTo(DataArea(2, 10, 5))
     }
 
     @Test
@@ -232,7 +231,10 @@ class LocalDataTest {
         assertThat(uut.dataArea).isNull()
     }
 
-    fun createLocation(x: Double, y: Double): Location {
+    fun createLocation(
+        x: Double,
+        y: Double,
+    ): Location {
         return Location("").apply {
             longitude = x
             latitude = y

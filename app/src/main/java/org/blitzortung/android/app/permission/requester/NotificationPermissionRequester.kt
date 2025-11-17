@@ -19,7 +19,7 @@ import org.blitzortung.android.app.view.put
 
 class NotificationPermissionRequester(
     private val activity: Activity,
-    val preferences: SharedPreferences
+    val preferences: SharedPreferences,
 ) : PermissionRequester {
     override val name: String = "notification"
 
@@ -27,13 +27,21 @@ class NotificationPermissionRequester(
         val requiresNotifications = isAlertEnabled(preferences) || isBackgroundAlertEnabled(preferences)
         Log.v(LOG_TAG, "NotificationPermissionRequester.request() requiresNotifications: $requiresNotifications")
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && requiresNotifications) {
-            permissionsSupport.request(POST_NOTIFICATIONS, REQUEST_CODE_POST_NOTIFICATIONS, R.string.post_notifications_request)
+            permissionsSupport.request(
+                POST_NOTIFICATIONS,
+                REQUEST_CODE_POST_NOTIFICATIONS,
+                R.string.post_notifications_request,
+            )
         } else {
             false
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray): Boolean {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray,
+    ): Boolean {
         val alertEnabled = isAlertEnabled(preferences)
         val backgroundAlertEnabled = isBackgroundAlertEnabled(preferences)
 
@@ -41,7 +49,7 @@ class NotificationPermissionRequester(
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED && (alertEnabled || backgroundAlertEnabled)) {
                 Log.i(
                     LOG_TAG,
-                    "Main.onRequestPermissionResult() POST_NOTIFICATIONS permission was NOT granted but is required for alerts. Disabling alerts and background queries"
+                    "Main.onRequestPermissionResult() POST_NOTIFICATIONS permission was NOT granted but is required for alerts. Disabling alerts and background queries",
                 )
                 Toast.makeText(activity, R.string.post_notifications_required_for_alerts, Toast.LENGTH_LONG).show()
                 preferences.edit {
@@ -56,10 +64,9 @@ class NotificationPermissionRequester(
     }
 
     companion object {
-        internal fun isAlertEnabled(preferences: SharedPreferences) : Boolean =
+        internal fun isAlertEnabled(preferences: SharedPreferences): Boolean =
             preferences.get(PreferenceKey.ALERT_ENABLED, false)
 
         const val REQUEST_CODE_POST_NOTIFICATIONS = 101
     }
-
 }

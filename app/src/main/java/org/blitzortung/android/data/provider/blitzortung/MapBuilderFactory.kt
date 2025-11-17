@@ -18,28 +18,26 @@
 
 package org.blitzortung.android.data.provider.blitzortung
 
+import java.util.regex.Pattern
+import javax.inject.Inject
+import javax.inject.Singleton
 import org.blitzortung.android.data.beans.DefaultStrike
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.util.TimeFormat
-import java.util.regex.Pattern
-import javax.inject.Inject
-import javax.inject.Singleton
 
 class MapBuilderFailedException(message: String) : Throwable(message)
 
 @Singleton
 class MapBuilderFactory(
     private val strikeLineSplitter: (String) -> Array<String>,
-    private val stationLineSplitter: (String) -> Array<String>
+    private val stationLineSplitter: (String) -> Array<String>,
 ) {
-
     @Inject
     constructor() : this(::lineSplitter, ::stationLineSplitter)
 
     fun createStrikeMapBuilder(): MapBuilder<Strike> {
         return object : MapBuilder<Strike>(strikeLineSplitter) {
-
             init {
                 setBuilderMap()
             }
@@ -83,7 +81,7 @@ class MapBuilderFactory(
                     altitude,
                     amplitude,
                     stationCount,
-                    lateralError.toDouble()
+                    lateralError.toDouble(),
                 )
             }
         }
@@ -91,7 +89,6 @@ class MapBuilderFactory(
 
     fun createStationMapBuilder(): MapBuilder<Station> {
         return object : MapBuilder<Station>(stationLineSplitter) {
-
             init {
                 setBuilderMap()
             }

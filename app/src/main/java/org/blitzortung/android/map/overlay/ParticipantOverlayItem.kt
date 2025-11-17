@@ -24,9 +24,8 @@ import org.blitzortung.android.data.beans.Station.State
 import org.osmdroid.views.overlay.OverlayItem
 
 class ParticipantOverlayItem(
-    station: Station
+    station: Station,
 ) : OverlayItem(station.name, "", Coordsys.toMapCoords(station.longitude, station.latitude)) {
-
     private val lastDataTime: Long = station.offlineSince
 
     private val participantState: State

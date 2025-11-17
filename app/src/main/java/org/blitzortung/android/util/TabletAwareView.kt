@@ -22,17 +22,16 @@ import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.withStyledAttributes
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper.pxFromDp
 import org.blitzortung.android.app.helper.ViewHelper.pxFromSp
-import androidx.core.content.withStyledAttributes
 
 open class TabletAwareView(
     context: Context,
     attrs: AttributeSet?,
-    defStyle: Int
+    defStyle: Int,
 ) : View(context, attrs, defStyle) {
-
     protected var padding: Float = 0.0f
     protected var textSize: Float = 0.0f
     protected var sizeFactor: Float = 0.0f
@@ -45,7 +44,6 @@ open class TabletAwareView(
             padding = pxFromDp(context, padding(scaleForTablet))
             textSize = pxFromSp(context, textSize(scaleForTablet))
             sizeFactor = sizeFactor(scaleForTablet)
-
         }
     }
 
@@ -96,6 +94,4 @@ open class TabletAwareView(
             return if (scaleForTablet) 1.4f else 1f
         }
     }
-
 }
-

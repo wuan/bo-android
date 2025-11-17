@@ -24,6 +24,5 @@ data class AlertParameters(
     val alarmInterval: Long,
     val rangeSteps: List<Float>,
     val sectorLabels: List<String>,
-    val measurementSystem: MeasurementSystem
+    val measurementSystem: MeasurementSystem,
 )
-

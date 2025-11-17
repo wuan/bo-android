@@ -21,7 +21,6 @@ package org.blitzortung.android.map.overlay.color
 import android.content.SharedPreferences
 
 open class StrikeColorHandler(preferences: SharedPreferences) : ColorHandler(preferences) {
-
     private val streetmapColors = mutableMapOf<IntArray, IntArray>()
 
     override fun getColors(target: ColorTarget): IntArray {

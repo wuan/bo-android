@@ -21,6 +21,8 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SeekBarPreference
 import dagger.android.support.AndroidSupportInjection
+import java.util.Locale
+import javax.inject.Inject
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.MessageListPreference
@@ -29,13 +31,10 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.location.LocationHandler
-import java.util.Locale
-import javax.inject.Inject
 
 private const val REQUEST_CODE_ALERT_RINGTONE: Int = 123
 
 class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
-
     @set:Inject
     internal lateinit var preferences: SharedPreferences
 
@@ -47,7 +46,10 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
         super.onAttach(context)
     }
 
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+    override fun onCreatePreferences(
+        savedInstanceState: Bundle?,
+        rootKey: String?,
+    ) {
         Log.v(LOG_TAG, "SettingsFragment.onCreatePreferences()")
 
         addPreferencesFromResource(R.xml.preferences)
@@ -89,11 +91,12 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
         val undefinedSummary = context?.getString(R.string.undefined)
 
         if (preferenceKey == PreferenceKey.PASSWORD) {
-            preference.summary = if (!currentValue.isNullOrEmpty()) {
-                "********"
-            } else {
-                originalSummary
-            }
+            preference.summary =
+                if (!currentValue.isNullOrEmpty()) {
+                    "********"
+                } else {
+                    originalSummary
+                }
         } else if (originalSummary.contains("%s")) {
             preference.summary = String.format(originalSummary, currentValue ?: "")
         } else {
@@ -106,10 +109,17 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
         }
     }
 
-    private fun extractURITitle(value: String): String = if (RingtoneManager.isDefault(value.toUri())) context?.getString(R.string.default_alarm_signal).toString()
-        else value.toUri().getQueryParameter("title") ?: value
+    private fun extractURITitle(value: String): String =
+        if (RingtoneManager.isDefault(value.toUri())) {
+            context?.getString(R.string.default_alarm_signal).toString()
+        } else {
+            value.toUri().getQueryParameter("title") ?: value
+        }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = listView
         ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, insets ->
@@ -119,7 +129,10 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
         }
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        key: PreferenceKey,
+    ) {
         when (key) {
             PreferenceKey.DATA_SOURCE -> configureDataSourcePreferences(sharedPreferences)
             PreferenceKey.LOCATION_MODE -> {
@@ -139,7 +152,8 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
             PreferenceKey.SERVICE_URL,
             PreferenceKey.LOCATION_LONGITUDE,
             PreferenceKey.LOCATION_LATITUDE,
-            PreferenceKey.ALERT_SOUND_SIGNAL -> {
+            PreferenceKey.ALERT_SOUND_SIGNAL,
+            -> {
                 findPreference<Preference>(key)?.let { updatePreferenceSummary(it) }
             }
 
@@ -211,12 +225,13 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
             intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true)
             intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI, Settings.System.DEFAULT_NOTIFICATION_URI)
 
-            val existingValue: String? = if (::preferences.isInitialized) {
-                preferences.getString(PreferenceKey.ALERT_SOUND_SIGNAL, null)
-            } else {
-                Log.e(LOG_TAG, "SharedPreferences not initialized in onPreferenceTreeClick")
-                null
-            }
+            val existingValue: String? =
+                if (::preferences.isInitialized) {
+                    preferences.getString(PreferenceKey.ALERT_SOUND_SIGNAL, null)
+                } else {
+                    Log.e(LOG_TAG, "SharedPreferences not initialized in onPreferenceTreeClick")
+                    null
+                }
 
             if (existingValue != null) {
                 if (existingValue.isEmpty()) {
@@ -236,14 +251,18 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
     }
 
     @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+    ) {
         if (requestCode == REQUEST_CODE_ALERT_RINGTONE && data != null) {
             val ringtone = data.getParcelableExtra<Uri?>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
             if (::preferences.isInitialized) {
                 preferences.edit(commit = true) {
                     putString(
                         PreferenceKey.ALERT_SOUND_SIGNAL.toString(),
-                        ringtone?.toString() ?: ""
+                        ringtone?.toString() ?: "",
                     )
                 }
             } else {
@@ -259,14 +278,22 @@ fun <T : Preference> PreferenceFragmentCompat.findPreference(key: PreferenceKey)
     return findPreference<T>(key.toString())
 }
 
-fun SharedPreferences.getString(key: PreferenceKey, defValue: String?): String? =
-    getString(key.toString(), defValue)
+fun SharedPreferences.getString(
+    key: PreferenceKey,
+    defValue: String?,
+): String? = getString(key.toString(), defValue)
 
-fun SharedPreferences.getInt(key: PreferenceKey, defValue: Int): Int =
-    getInt(key.toString(), defValue)
+fun SharedPreferences.getInt(
+    key: PreferenceKey,
+    defValue: Int,
+): Int = getInt(key.toString(), defValue)
 
-fun SharedPreferences.Editor.putString(key: PreferenceKey, value: String?): SharedPreferences.Editor =
-    putString(key.toString(), value)
+fun SharedPreferences.Editor.putString(
+    key: PreferenceKey,
+    value: String?,
+): SharedPreferences.Editor = putString(key.toString(), value)
 
-fun SharedPreferences.Editor.putInt(key: PreferenceKey, value: Int): SharedPreferences.Editor =
-    putInt(key.toString(), value)
+fun SharedPreferences.Editor.putInt(
+    key: PreferenceKey,
+    value: Int,
+): SharedPreferences.Editor = putInt(key.toString(), value)

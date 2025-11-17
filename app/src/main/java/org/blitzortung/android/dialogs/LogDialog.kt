@@ -20,26 +20,24 @@ package org.blitzortung.android.dialogs
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.net.toUri
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.components.BuildVersion
 import org.blitzortung.android.data.cache.CacheSize
 import org.blitzortung.android.dialogs.log.LogProvider
-import androidx.core.net.toUri
 
 class LogDialog(
     context: Context,
     private val cacheSize: CacheSize,
     private val buildVersion: BuildVersion,
-    private val logProvider: LogProvider = LogProvider()
+    private val logProvider: LogProvider = LogProvider(),
 ) : android.app.AlertDialog(context) {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -75,11 +73,11 @@ class LogDialog(
     }
 
     private fun getDeviceString(): String {
-        val device = Build.DEVICE           // Device
-        val model = Build.MODEL            // Model
-        val product = Build.PRODUCT          // Product
+        val device = Build.DEVICE // Device
+        val model = Build.MODEL // Model
+        val product = Build.PRODUCT // Product
         val version = System.getProperty("os.version") // OS version
-        val sdkInt = Build.VERSION.SDK_INT      // API Level
+        val sdkInt = Build.VERSION.SDK_INT // API Level
 
         return "Device: $device, model: $model, Product: $product, Version: $version, SDK: $sdkInt"
     }
@@ -95,10 +93,11 @@ class LogDialog(
         intent.putExtra(Intent.EXTRA_SUBJECT, context.resources.getString(R.string.app_log_subject))
         intent.putExtra(
             Intent.EXTRA_TEXT,
-            if (body.length > MAX_LOG_SIZE)
+            if (body.length > MAX_LOG_SIZE) {
                 body.substring(body.length - MAX_LOG_SIZE)
-            else
+            } else {
                 body
+            },
         )
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
@@ -112,7 +111,10 @@ class LogDialog(
         }
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+    override fun onKeyUp(
+        keyCode: Int,
+        event: KeyEvent,
+    ): Boolean {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             dismiss()
             return true

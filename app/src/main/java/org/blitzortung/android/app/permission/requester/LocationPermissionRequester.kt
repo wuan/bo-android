@@ -26,7 +26,7 @@ import org.blitzortung.android.location.provider.ManualLocationProvider
 
 class LocationPermissionRequester(
     private val activity: Activity,
-    private val preferences: SharedPreferences
+    private val preferences: SharedPreferences,
 ) : PermissionRequester {
     override val name: String = "location"
 
@@ -36,14 +36,20 @@ class LocationPermissionRequester(
 
         return if (permission != null) {
             permissionsSupport.request(
-                permission, requestCode, R.string.location_permission_required
+                permission,
+                requestCode,
+                R.string.location_permission_required,
             )
         } else {
             false
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray): Boolean {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray,
+    ): Boolean {
         val locationProviderRelation = LocationProviderRelation.byOrdinal[requestCode]
         val alertEnabled = preferences.get(PreferenceKey.ALERT_ENABLED, false)
         return if (locationProviderRelation != null) {
@@ -52,7 +58,7 @@ class LocationPermissionRequester(
                 val previousValue = preferences.get(PreferenceKey.LOCATION_MODE, "n/a")
                 Log.i(
                     LOG_TAG,
-                    "Main.onRequestPermissionResult() $providerName permission has been granted. (code $requestCode, previous: $previousValue)"
+                    "Main.onRequestPermissionResult() $providerName permission has been granted. (code $requestCode, previous: $previousValue)",
                 )
                 preferences.edit {
                     put(PreferenceKey.LOCATION_MODE, providerName)
@@ -60,7 +66,7 @@ class LocationPermissionRequester(
             } else {
                 Log.i(
                     LOG_TAG,
-                    "Main.onRequestPermissionResult() $providerName permission was NOT granted. (code $requestCode)"
+                    "Main.onRequestPermissionResult() $providerName permission was NOT granted. (code $requestCode)",
                 )
                 preferences.edit {
                     put(PreferenceKey.LOCATION_MODE, MANUAL_PROVIDER)
@@ -79,15 +85,15 @@ class LocationPermissionRequester(
         }
     }
 
-
     companion object {
         internal fun getLocationPermission(preferences: SharedPreferences): Pair<String?, Int> {
             val locationProviderName = preferences.get(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER)
-            val permission = when (locationProviderName) {
-                PASSIVE_PROVIDER, GPS_PROVIDER -> ACCESS_FINE_LOCATION
-                NETWORK_PROVIDER -> ACCESS_COARSE_LOCATION
-                else -> null
-            }
+            val permission =
+                when (locationProviderName) {
+                    PASSIVE_PROVIDER, GPS_PROVIDER -> ACCESS_FINE_LOCATION
+                    NETWORK_PROVIDER -> ACCESS_COARSE_LOCATION
+                    else -> null
+                }
             val requestCode =
                 (LocationProviderRelation.Companion.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
             return Pair(permission, requestCode)

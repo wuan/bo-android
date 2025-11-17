@@ -9,16 +9,19 @@ import androidx.appcompat.app.AlertDialog
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 
 class PermissionsSupport(
-    private val activity: Activity
+    private val activity: Activity,
 ) {
-
     @RequiresApi(Build.VERSION_CODES.M)
-    fun request(permission: String, requestCode: Int, permissionRequiredStringId: Int): Boolean {
+    fun request(
+        permission: String,
+        requestCode: Int,
+        permissionRequiredStringId: Int,
+    ): Boolean {
         val showRationale = activity.shouldShowRequestPermissionRationale(permission)
         val isGranted = activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
         Log.v(
             LOG_TAG,
-            "PermissionsSupport.request() permission: $permission, requestCode: $requestCode, isGranted: $isGranted, showRationale: $showRationale"
+            "PermissionsSupport.request() permission: $permission, requestCode: $requestCode, isGranted: $isGranted, showRationale: $showRationale",
         )
 
         return if (!isGranted) {
@@ -41,7 +44,7 @@ class PermissionsSupport(
     ) {
         Log.v(
             LOG_TAG,
-            "PermissionsSupport.requestPermissionsAfterDialog() permission: $permission, dialogResource: $dialogTextResource, requestCode: $requestCode"
+            "PermissionsSupport.requestPermissionsAfterDialog() permission: $permission, dialogResource: $dialogTextResource, requestCode: $requestCode",
         )
 
         val message = activity.resources.getString(dialogTextResource)
@@ -53,8 +56,10 @@ class PermissionsSupport(
 
     companion object {
         @RequiresApi(Build.VERSION_CODES.M)
-        fun ensure(activity: Activity, vararg permissionRequesters : PermissionRequester) {
-
+        fun ensure(
+            activity: Activity,
+            vararg permissionRequesters: PermissionRequester,
+        ) {
             val permissionsSupport = PermissionsSupport(activity)
 
             for (permissionRequester in permissionRequesters) {
@@ -70,6 +75,12 @@ class PermissionsSupport(
 
 interface PermissionRequester {
     val name: String
+
     fun request(permissionsSupport: PermissionsSupport): Boolean
-    fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray): Boolean = false
+
+    fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray,
+    ): Boolean = false
 }

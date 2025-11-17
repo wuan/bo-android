@@ -20,11 +20,10 @@ package org.blitzortung.android.app.controller
 
 import android.view.View
 import android.widget.RelativeLayout
-import org.blitzortung.android.app.helper.ViewHelper.pxFromSp
 import androidx.core.view.isVisible
+import org.blitzortung.android.app.helper.ViewHelper.pxFromSp
 
 class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) {
-
     data class GroupedView<V, G>(val view: V, val groups: Set<G>)
 
     private val elements: MutableList<GroupedView<V, G>>
@@ -33,11 +32,17 @@ class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) 
         elements = arrayListOf()
     }
 
-    fun addElement(element: V, vararg groups: G) {
+    fun addElement(
+        element: V,
+        vararg groups: G,
+    ) {
         elements.add(GroupedView(element, groups.toSet()))
     }
 
-    fun addAllElements(elements: Collection<V>, vararg groups: G) {
+    fun addAllElements(
+        elements: Collection<V>,
+        vararg groups: G,
+    ) {
         this.elements.addAll(elements.map { GroupedView(it, groups.toSet()) })
     }
 
@@ -47,9 +52,11 @@ class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) 
             val element = elements[currentIndex]
             val view = element.view
             if (view.isVisible) {
-                val lp = RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT
-                )
+                val lp =
+                    RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    )
                 lp.width = pxFromSp(view.context, buttonSize).toInt()
                 lp.height = pxFromSp(view.context, buttonSize).toInt()
                 lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 1)
@@ -63,6 +70,4 @@ class ButtonColumnHandler<V : View, G : Enum<G>>(private val buttonSize: Float) 
             }
         }
     }
-
-
 }

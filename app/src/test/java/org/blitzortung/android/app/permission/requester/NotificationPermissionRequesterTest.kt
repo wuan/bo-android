@@ -1,6 +1,5 @@
 package org.blitzortung.android.app.permission.requester
 
-
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.app.Activity
 import android.content.Context
@@ -29,7 +28,6 @@ import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 class NotificationPermissionRequesterTest {
-
     @MockK
     private lateinit var permissionsSupport: PermissionsSupport
 
@@ -43,9 +41,10 @@ class NotificationPermissionRequesterTest {
     fun setUp() {
         MockKAnnotations.init(this, relaxed = true)
 
-        activity = Robolectric.buildActivity(Main::class.java)
-            .setup()
-            .get()
+        activity =
+            Robolectric.buildActivity(Main::class.java)
+                .setup()
+                .get()
 
         val context = RuntimeEnvironment.getApplication()
         preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
@@ -93,7 +92,7 @@ class NotificationPermissionRequesterTest {
             permissionsSupport.request(
                 POST_NOTIFICATIONS,
                 101,
-                R.string.post_notifications_request
+                R.string.post_notifications_request,
             )
         }
     }
@@ -113,28 +112,30 @@ class NotificationPermissionRequesterTest {
             permissionsSupport.request(
                 POST_NOTIFICATIONS,
                 101,
-                R.string.post_notifications_request
+                R.string.post_notifications_request,
             )
         }
     }
 
     @Test
     fun `onRequestPermissionsResult returns false if request code does not match`() {
-        val result = notificationPermissionRequester.onRequestPermissionsResult(
-            requestCode = 123,
-            permissions = arrayOf(POST_NOTIFICATIONS),
-            grantResults = intArrayOf(PackageManager.PERMISSION_GRANTED)
-        )
+        val result =
+            notificationPermissionRequester.onRequestPermissionsResult(
+                requestCode = 123,
+                permissions = arrayOf(POST_NOTIFICATIONS),
+                grantResults = intArrayOf(PackageManager.PERMISSION_GRANTED),
+            )
         assertThat(result).isFalse()
     }
 
     @Test
     fun `onRequestPermissionsResult returns false if grant results is empty`() {
-        val result = notificationPermissionRequester.onRequestPermissionsResult(
-            requestCode = 101,
-            permissions = arrayOf(POST_NOTIFICATIONS),
-            grantResults = intArrayOf()
-        )
+        val result =
+            notificationPermissionRequester.onRequestPermissionsResult(
+                requestCode = 101,
+                permissions = arrayOf(POST_NOTIFICATIONS),
+                grantResults = intArrayOf(),
+            )
         assertThat(result).isFalse()
     }
 
@@ -145,11 +146,12 @@ class NotificationPermissionRequesterTest {
             put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "300")
         }
 
-        val result = notificationPermissionRequester.onRequestPermissionsResult(
-            requestCode = 101,
-            permissions = arrayOf(POST_NOTIFICATIONS),
-            grantResults = intArrayOf(PackageManager.PERMISSION_GRANTED)
-        )
+        val result =
+            notificationPermissionRequester.onRequestPermissionsResult(
+                requestCode = 101,
+                permissions = arrayOf(POST_NOTIFICATIONS),
+                grantResults = intArrayOf(PackageManager.PERMISSION_GRANTED),
+            )
 
         assertThat(result).isTrue()
 
@@ -163,11 +165,12 @@ class NotificationPermissionRequesterTest {
             put(PreferenceKey.ALERT_ENABLED, true)
         }
 
-        val result = notificationPermissionRequester.onRequestPermissionsResult(
-            requestCode = 101,
-            permissions = arrayOf(POST_NOTIFICATIONS),
-            grantResults = intArrayOf(PackageManager.PERMISSION_DENIED)
-        )
+        val result =
+            notificationPermissionRequester.onRequestPermissionsResult(
+                requestCode = 101,
+                permissions = arrayOf(POST_NOTIFICATIONS),
+                grantResults = intArrayOf(PackageManager.PERMISSION_DENIED),
+            )
 
         assertThat(result).isTrue()
 
@@ -180,11 +183,12 @@ class NotificationPermissionRequesterTest {
             put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "300")
         }
 
-        val result = notificationPermissionRequester.onRequestPermissionsResult(
-            requestCode = 101,
-            permissions = arrayOf(POST_NOTIFICATIONS),
-            grantResults = intArrayOf(PackageManager.PERMISSION_DENIED)
-        )
+        val result =
+            notificationPermissionRequester.onRequestPermissionsResult(
+                requestCode = 101,
+                permissions = arrayOf(POST_NOTIFICATIONS),
+                grantResults = intArrayOf(PackageManager.PERMISSION_DENIED),
+            )
 
         assertThat(result).isTrue()
 

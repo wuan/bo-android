@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
+import kotlin.text.toInt
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.permission.PermissionRequester
@@ -18,11 +19,10 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.app.view.put
 import org.blitzortung.android.util.isAtLeast
-import kotlin.text.toInt
 
 class BackgroundLocationPermissionRequester(
     private val activity: Activity,
-    private val preferences: SharedPreferences
+    private val preferences: SharedPreferences,
 ) : PermissionRequester {
     override val name: String = "background location"
 
@@ -40,7 +40,7 @@ class BackgroundLocationPermissionRequester(
                     permissionsSupport.request(
                         ACCESS_BACKGROUND_LOCATION,
                         REQUEST_CODE_BACKGROUND_LOCATION,
-                        R.string.location_permission_background_required
+                        R.string.location_permission_background_required,
                     )
                 }.setNegativeButton(android.R.string.cancel) { _, _ ->
                     preferences.edit { put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0") }
@@ -52,9 +52,10 @@ class BackgroundLocationPermissionRequester(
     }
 
     companion object {
-        internal fun isBackgroundAlertEnabled(preferences: SharedPreferences) : Boolean =
+        internal fun isBackgroundAlertEnabled(preferences: SharedPreferences): Boolean =
             preferences.get(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0")
                 .toInt() > 0
+
         const val REQUEST_CODE_BACKGROUND_LOCATION = 102
     }
 }
