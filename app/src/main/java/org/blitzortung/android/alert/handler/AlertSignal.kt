@@ -9,6 +9,7 @@ import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
+import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -74,7 +75,20 @@ class AlertSignal
         }
 
         private fun vibrateIfEnabled() {
-            vibrator.vibrate(vibrationDuration)
+            if (vibrationDuration > 0) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    // Android 8.0+ (API 26+): Use VibrationEffect
+                    val vibrationEffect = VibrationEffect.createOneShot(
+                        vibrationDuration,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                    vibrator.vibrate(vibrationEffect)
+                } else {
+                    // Legacy devices: Use deprecated method
+                    @Suppress("DEPRECATION")
+                    vibrator.vibrate(vibrationDuration)
+                }
+            }
         }
 
         private fun playSoundIfEnabled() {
