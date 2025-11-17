@@ -10,6 +10,7 @@ import org.blitzortung.android.dagger.module.ActivityBindingModule
 import org.blitzortung.android.dagger.module.AppModule
 import org.blitzortung.android.dagger.module.ServiceModule
 import org.blitzortung.android.dagger.module.SettingsModule
+import org.blitzortung.android.dagger.module.ViewModelModule
 
 @Singleton
 @Component(
@@ -20,6 +21,7 @@ import org.blitzortung.android.dagger.module.SettingsModule
         ServiceModule::class,
         SettingsModule::class,
         ActivityBindingModule::class,
+        ViewModelModule::class,
     ],
 )
 interface AppComponent : AndroidInjector<BOApplication>
