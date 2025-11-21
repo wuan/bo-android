@@ -36,7 +36,9 @@ import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
+import org.blitzortung.android.alert.Alarm
 import org.blitzortung.android.alert.AlertResult
+import org.blitzortung.android.alert.OutOfArea
 import org.blitzortung.android.alert.data.AlertSector
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.event.AlertResultEvent
@@ -164,7 +166,7 @@ class AlarmView
             val temporaryCanvas = temporaryCanvas
             val temporaryBitmap = temporaryBitmap
             if (temporaryBitmap != null && temporaryCanvas != null) {
-                if (alertResult != null && intervalDuration != 0) {
+                if (alertResult is Alarm && intervalDuration != 0) {
                     val alertParameters = alertResult.parameters
                     val rangeSteps = alertParameters.rangeSteps
                     val rangeStepCount = rangeSteps.size
@@ -233,13 +235,10 @@ class AlarmView
                     textStyle.textAlign = Align.RIGHT
                     val textHeight = textStyle.getFontMetrics(null)
                     for (radiusIndex in 0 until rangeStepCount) {
-                        val leftTop = center - (radiusIndex + 1) * radiusIncrement
-                        val bottomRight = center + (radiusIndex + 1) * radiusIncrement
-                        arcArea.set(leftTop, leftTop, bottomRight, bottomRight)
                         if (radiusIndex == rangeStepCount - 1) {
                             lines.strokeWidth = (size / 80).toFloat()
                         }
-                        temporaryCanvas.drawArc(arcArea, 0f, 360f, false, lines)
+                        drawCircle(center, (radiusIndex + 1) * radiusIncrement, temporaryCanvas, lines )
 
                         if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
                             val text = "%.0f".format(rangeSteps[radiusIndex])
@@ -260,6 +259,8 @@ class AlarmView
                             }
                         }
                     }
+                } else if (alertResult is OutOfArea) {
+                    drawOutOfRangeSymbol(center, radius, size, temporaryCanvas)
                 } else {
                     if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
                         drawAlertOrLocationMissingMessage(center, temporaryCanvas)
@@ -301,6 +302,22 @@ class AlarmView
             }
         }
 
+    private fun drawOutOfRangeSymbol(
+        center: Float,
+        radius: Float,
+        size: Int,
+        temporaryCanvas: Canvas,
+    ) {
+        with(lines) {
+            color = colorHandler.lineColor
+            strokeWidth = (size / 80).toFloat()
+        }
+
+        drawCircle(center, radius * 0.9f, temporaryCanvas, lines)
+        drawCircle(center, radius * 0.85f, temporaryCanvas, lines)
+        drawCircle(center, radius * 0.75f, temporaryCanvas, lines)
+        drawCircle(center, radius * 0.55f, temporaryCanvas, lines)
+    }
         private fun drawOwnLocationSymbol(
             center: Float,
             radius: Float,
@@ -312,18 +329,26 @@ class AlarmView
                 strokeWidth = (size / 80).toFloat()
             }
 
-            val largeRadius = radius * 0.8f
-            val leftTop = center - largeRadius
-            val bottomRight = center + largeRadius
-            arcArea.set(leftTop, leftTop, bottomRight, bottomRight)
-            temporaryCanvas.drawArc(arcArea, 0f, 360f, false, lines)
+            drawCircle(center, radius * 0.8f, temporaryCanvas, lines)
 
             val smallRadius = radius * 0.6f
             temporaryCanvas.drawLine(center - smallRadius, center, center + smallRadius, center, lines)
             temporaryCanvas.drawLine(center, center - smallRadius, center, center + smallRadius, lines)
         }
 
-        private fun drawSectorLabel(
+    private fun drawCircle(
+        center: Float,
+        largeRadius: Float,
+        temporaryCanvas: Canvas,
+        paint: Paint
+    ) {
+        val leftTop = center - largeRadius
+        val bottomRight = center + largeRadius
+        arcArea.set(leftTop, leftTop, bottomRight, bottomRight)
+        temporaryCanvas.drawArc(arcArea, 0f, 360f, false, paint)
+    }
+
+    private fun drawSectorLabel(
             center: Float,
             radiusIncrement: Float,
             sector: AlertSector,

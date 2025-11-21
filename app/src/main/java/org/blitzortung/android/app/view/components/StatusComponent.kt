@@ -23,8 +23,10 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import org.blitzortung.android.alert.Alarm
 import org.blitzortung.android.alert.AlertLabel
 import org.blitzortung.android.alert.AlertLabelHandler
+import org.blitzortung.android.alert.NoAlarm
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.event.AlertResultEvent
 
@@ -46,13 +48,8 @@ class StatusComponent(
         alertLabelHandler = AlertLabelHandler(this, context)
 
         alertEventConsumer = { event ->
-            alertLabelHandler.apply(
-                if (event is AlertResultEvent) {
-                    event.alertResult
-                } else {
-                    null
-                },
-            )
+            if (event is AlertResultEvent && event.alertResult is Alarm)
+            alertLabelHandler.apply( event.alertResult )
         }
     }
 

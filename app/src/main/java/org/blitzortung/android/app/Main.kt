@@ -41,6 +41,7 @@ import androidx.preference.PreferenceManager
 import dagger.android.AndroidInjection
 import javax.inject.Inject
 import kotlin.math.roundToInt
+import org.blitzortung.android.alert.Alarm
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.BuildVersion
@@ -388,7 +389,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         val alertEvent = alertHandler.alertEvent
         if (alertEvent is AlertResultEvent) {
             val alertResult = alertEvent.alertResult
-            if (alertResult != null) {
+            if (alertResult is Alarm) {
                 radius = (alertResult.closestStrikeDistance * 1.2f).coerceIn(50f, radius)
             }
         }

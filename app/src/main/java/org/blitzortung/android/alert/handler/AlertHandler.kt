@@ -24,8 +24,10 @@ import android.location.Location
 import android.util.Log
 import javax.inject.Inject
 import javax.inject.Singleton
+import org.blitzortung.android.alert.Alarm
 import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
+import org.blitzortung.android.alert.NoAlarm
 import org.blitzortung.android.alert.event.AlertCancelEvent
 import org.blitzortung.android.alert.event.AlertEvent
 import org.blitzortung.android.alert.event.AlertResultEvent
@@ -193,7 +195,7 @@ class AlertHandler
                         Main.LOG_TAG,
                         "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${locationHandler.location != null}",
                     )
-                    null
+                    NoAlarm
                 }
 
             processResult(alertResult)
@@ -208,8 +210,8 @@ class AlertHandler
             alertConsumerContainer.storeAndBroadcast(alertEvent)
         }
 
-        private fun processResult(alertResult: AlertResult?) {
-            if (alertEnabled && alertResult != null) {
+        private fun processResult(alertResult: AlertResult) {
+            if (alertEnabled && alertResult is Alarm) {
                 if (alertResult.closestStrikeDistance <= signalingDistanceLimit) {
                     alertSignal(alertResult)
                 }
@@ -220,7 +222,7 @@ class AlertHandler
             broadcastResult(alertResult)
         }
 
-        private fun alertSignal(alertResult: AlertResult) {
+        private fun alertSignal(alertResult: Alarm) {
             val signalingLatestTimestamp = alertDataHandler.getLatestTimstampWithin(signalingDistanceLimit, alertResult)
             if (signalingLatestTimestamp > signalingLastTimestamp + signalingThresholdTime) {
                 Log.d(Main.LOG_TAG, "AlertHandler.alertSignal() signal ${signalingLatestTimestamp / 1000}")
@@ -234,9 +236,9 @@ class AlertHandler
             }
         }
 
-        private fun alertNotification(alertResult: AlertResult) {
+        private fun alertNotification(alarm: Alarm) {
             val notificationLatestTimestamp =
-                alertDataHandler.getLatestTimstampWithin(notificationDistanceLimit, alertResult)
+                alertDataHandler.getLatestTimstampWithin(notificationDistanceLimit, alarm)
             if (notificationLatestTimestamp > notificationLastTimestamp) {
                 Log.d(
                     Main.LOG_TAG,
@@ -245,7 +247,7 @@ class AlertHandler
                 notificationHandler.sendNotification(
                     context.resources.getString(R.string.activity) + ": " +
                         alertDataHandler.getTextMessage(
-                            alertResult,
+                            alarm,
                             notificationDistanceLimit,
                             context.resources,
                         ),

@@ -25,24 +25,31 @@ class AlertLabelHandler(
     private val alertLabel: AlertLabel,
     private val context: Context,
 ) {
-    fun apply(result: AlertResult?) {
-        var warningText = ""
+    fun apply(result: Alarm) {
 
         var textColorResource = R.color.Green
 
-        if (result != null && result.closestStrikeDistance < Float.POSITIVE_INFINITY) {
-            textColorResource =
-                when (result.closestStrikeDistance) {
-                    in 0.0..20.0 -> R.color.RedWarn
-                    in 20.0..50.0 -> R.color.Yellow
-                    else -> R.color.Green
+        val warningText = when(result) {
+            is Alarm -> {
+                if (result.closestStrikeDistance < Float.POSITIVE_INFINITY) {
+                    textColorResource =
+                        when (result.closestStrikeDistance) {
+                            in 0.0..20.0 -> R.color.RedWarn
+                            in 20.0..50.0 -> R.color.Yellow
+                            else -> R.color.Green
+                        }
+                    val distanceUnit = context.resources.getString(result.parameters.measurementSystem.unitNameString)
+                    "%.0f$distanceUnit".format(result.closestStrikeDistance) + if (result.closestStrikeDistance > 0.1) {
+                        " ${result.bearingName}"
+                    } else {""}
+                } else {
+                    ""
                 }
-            val distanceUnit = context.resources.getString(result.parameters.measurementSystem.unitNameString)
-            warningText = "%.0f$distanceUnit".format(result.closestStrikeDistance)
-            if (result.closestStrikeDistance > 0.1) {
-                warningText += " ${result.bearingName}"
             }
+            OutOfArea -> "<->"
+            NoAlarm -> ""
         }
+
 
         val color = context.getColor(textColorResource)
         alertLabel.setAlarmTextColor(color)
