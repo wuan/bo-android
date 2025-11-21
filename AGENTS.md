@@ -35,6 +35,9 @@ Project documentation: https://blitzortung.tryb.de
 
 # Run SonarQube analysis (requires SONAR_TOKEN)
 ./gradlew sonar
+
+# Update the verification metadata
+gradle --write-verification-metadata sha256
 ```
 
 ### Building release artifacts
