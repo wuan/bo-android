@@ -42,7 +42,6 @@ import dagger.android.AndroidInjection
 import javax.inject.Inject
 import kotlin.math.roundToInt
 import org.blitzortung.android.alert.LocalActivity
-import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.BuildVersion
 import org.blitzortung.android.app.components.ChangeLogComponent
@@ -66,9 +65,9 @@ import org.blitzortung.android.data.Mode
 import org.blitzortung.android.data.SequenceValidator
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.data.provider.result.NoData
 import org.blitzortung.android.data.provider.result.RequestStarted
-import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.data.provider.result.StatusUpdate
 import org.blitzortung.android.dialogs.QuickSettingsDialog
 import org.blitzortung.android.location.LocationHandler
@@ -389,12 +388,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private fun determineTargetZoomRadius(alertHandler: AlertHandler): Float {
         var radius = alertHandler.maxDistance
 
-        val alertEvent = alertHandler.alertEvent
-        if (alertEvent is AlertResultEvent) {
-            val alertResult = alertEvent.warning
-            if (alertResult is LocalActivity) {
-                radius = (alertResult.closestStrikeDistance * 1.2f).coerceIn(50f, radius)
-            }
+        val warning = alertHandler.alertEvent
+        if (warning is LocalActivity) {
+            radius = (warning.closestStrikeDistance * 1.2f).coerceIn(50f, radius)
         }
         return radius
     }
