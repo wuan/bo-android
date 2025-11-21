@@ -37,7 +37,7 @@ Project documentation: https://blitzortung.tryb.de
 ./gradlew sonar
 
 # Update the verification metadata
-gradle --write-verification-metadata sha256
+./gradlew --write-verification-metadata sha256 help
 ```
 
 ### Building release artifacts
