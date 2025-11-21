@@ -45,7 +45,6 @@ class AlertDialog(
         super.onStart()
 
         alertView = findViewById(R.id.alarm_diagram)
-        alertView.enableLongClickListener(dataHandler, alertHandler)
         alertView.enableDescriptionText()
 
         alertView.setColorHandler(colorHandler, dataHandler.intervalDuration)
