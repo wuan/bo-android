@@ -34,7 +34,6 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
-import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.data.DataProvider
@@ -142,23 +141,6 @@ class JsonRpcDataProvider
         override fun <T> retrieveData(retrieve: DataRetriever.() -> T): T = Retriever(client).retrieve()
 
         private inner class Retriever(val client: JsonRpcClient) : DataRetriever {
-            override fun getStations(region: Int): List<Station> {
-                val stations = ArrayList<Station>()
-
-                try {
-                    val response = client.call(serviceUrl, "get_stations")
-                    val stationsArray = response.data.get("stations") as JSONArray
-
-                    for (i in 0 until stationsArray.length()) {
-                        stations.add(dataBuilder.createStation(stationsArray.getJSONArray(i)))
-                    }
-                } catch (e: Exception) {
-                    throw RuntimeException(e)
-                }
-
-                return stations
-            }
-
             override fun getStrikesGrid(
                 parameters: Parameters,
                 history: History?,

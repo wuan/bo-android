@@ -21,7 +21,6 @@ package org.blitzortung.android.data.provider.data
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
-import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.result.DataReceived
 
@@ -44,8 +43,6 @@ interface DataProvider {
             history: History?,
             flags: Flags,
         ): DataReceived
-
-        fun getStations(region: Int): List<Station>
     }
 }
 

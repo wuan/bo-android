@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.os.PowerManager
 import android.util.Log
-import kotlin.reflect.KSuspendFunction1
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.blitzortung.android.app.Main
@@ -16,7 +15,6 @@ internal class FetchBackgroundDataTask(
     dataMode: DataMode,
     dataProvider: DataProvider,
     resultConsumer: (DataReceived) -> Unit,
-    toast: KSuspendFunction1<Int, Unit>,
     private val wakeLock: PowerManager.WakeLock,
 ) : FetchDataTask(dataMode, dataProvider, resultConsumer) {
     override fun onPostExecute(result: DataReceived?) {

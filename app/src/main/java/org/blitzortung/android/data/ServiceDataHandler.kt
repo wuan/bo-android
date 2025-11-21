@@ -84,7 +84,9 @@ class ServiceDataHandler
         fun updateData() {
             dataProvider?.let { dataProvider ->
                 Log.v(Main.LOG_TAG, "ServiceDataHandler.updateData() $activeParameters $wakeLock")
-                FetchBackgroundDataTask(dataMode, dataProvider, { sendEvent(it) }, ::toast, wakeLock)
+                val task =
+                    FetchBackgroundDataTask(dataMode, dataProvider, { sendEvent(it) }, wakeLock)
+                task
                     .execute(activeParameters)
             }
         }
