@@ -24,9 +24,8 @@ data class GridElement(
     override val timestamp: Long,
     override val longitude: Double,
     override val latitude: Double,
-    override val multiplicity: Int
+    override val multiplicity: Int,
 ) : Strike, Serializable {
-
     companion object {
         private const val serialVersionUID = 6765788323616893614L
     }

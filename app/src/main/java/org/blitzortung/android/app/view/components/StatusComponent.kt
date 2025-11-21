@@ -33,9 +33,8 @@ class StatusComponent(
     private val status: TextView,
     private val progressBar: ProgressBar,
     private val errorIndicator: ImageView,
-    resources: Resources
+    resources: Resources,
 ) : AlertLabel {
-
     private val alertLabelHandler: AlertLabelHandler
 
     val alertEventConsumer: (AlertEvent) -> Unit
@@ -48,10 +47,11 @@ class StatusComponent(
 
         alertEventConsumer = { event ->
             alertLabelHandler.apply(
-                if (event is AlertResultEvent)
+                if (event is AlertResultEvent) {
                     event.alertResult
-                else
+                } else {
                     null
+                },
             )
         }
     }

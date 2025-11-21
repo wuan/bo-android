@@ -7,9 +7,13 @@ import android.widget.Toast
 import org.blitzortung.android.app.R
 
 class CustomToast
-    (context: Context?) : Toast(context) {
+(context: Context?) : Toast(context) {
     companion object {
-        fun makeText(context: Context, text: Int, duration: Int): Toast {
+        fun makeText(
+            context: Context,
+            text: Int,
+            duration: Int,
+        ): Toast {
             val t = Toast.makeText(context, text, duration)
             val inflater =
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -19,5 +23,3 @@ class CustomToast
         }
     }
 }
-
-

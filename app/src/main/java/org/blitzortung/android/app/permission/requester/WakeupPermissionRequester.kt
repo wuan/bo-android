@@ -26,7 +26,7 @@ import org.blitzortung.android.app.view.PreferenceKey
 class WakeupPermissionRequester(
     private val activity: Activity,
     private val preferences: SharedPreferences,
-): PermissionRequester {
+) : PermissionRequester {
     override val name: String = "wakeup"
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -43,20 +43,21 @@ class WakeupPermissionRequester(
                 if (!pm.isIgnoringBatteryOptimizations(packageName)) {
                     val locationText = activity.resources.getString(R.string.open_battery_optimiziation)
 
-                    val dialogClickListener = DialogInterface.OnClickListener { _, which ->
-                        when (which) {
-                            DialogInterface.BUTTON_POSITIVE -> {
-                                disableBatteryOptimisation(packageName)
-                            }
+                    val dialogClickListener =
+                        DialogInterface.OnClickListener { _, which ->
+                            when (which) {
+                                DialogInterface.BUTTON_POSITIVE -> {
+                                    disableBatteryOptimisation(packageName)
+                                }
 
-                            DialogInterface.BUTTON_NEGATIVE -> {
-                                preferences.edit {
-                                    putString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), 0.toString())
-                                    apply()
+                                DialogInterface.BUTTON_NEGATIVE -> {
+                                    preferences.edit {
+                                        putString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), 0.toString())
+                                        apply()
+                                    }
                                 }
                             }
                         }
-                    }
 
                     AlertDialog.Builder(activity).setMessage(locationText)
                         .setPositiveButton(android.R.string.ok, dialogClickListener)
@@ -75,14 +76,15 @@ class WakeupPermissionRequester(
         Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
         val allowIgnoreBatteryOptimization =
             activity.checkSelfPermission(REQUEST_IGNORE_BATTERY_OPTIMIZATIONS) == PackageManager.PERMISSION_GRANTED
-        val intent = if (allowIgnoreBatteryOptimization) {
-            Intent(
-                Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                "package:$packageName".toUri()
-            )
-        } else {
-            Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-        }
+        val intent =
+            if (allowIgnoreBatteryOptimization) {
+                Intent(
+                    Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                    "package:$packageName".toUri(),
+                )
+            } else {
+                Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+            }
 
         try {
             activity.startActivity(intent)
@@ -97,7 +99,7 @@ class WakeupPermissionRequester(
         Log.e(
             LOG_TAG,
             "requestWakeupPermissions() could not open battery optimization settings",
-            e
+            e,
         )
     }
 }

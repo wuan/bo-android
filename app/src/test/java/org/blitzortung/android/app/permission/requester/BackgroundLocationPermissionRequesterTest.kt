@@ -1,6 +1,5 @@
 package org.blitzortung.android.app.permission.requester
 
-
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.app.Activity
 import android.content.Context
@@ -33,7 +32,6 @@ import org.robolectric.shadows.ShadowLooper
 
 @RunWith(RobolectricTestRunner::class)
 class BackgroundLocationPermissionRequesterTest {
-
     @MockK
     private lateinit var permissionsSupport: PermissionsSupport
 
@@ -46,9 +44,10 @@ class BackgroundLocationPermissionRequesterTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxed = true)
-        activity = Robolectric.buildActivity(Main::class.java)
-            .setup()
-            .get()
+        activity =
+            Robolectric.buildActivity(Main::class.java)
+                .setup()
+                .get()
 
         val context = RuntimeEnvironment.getApplication()
 
@@ -109,7 +108,7 @@ class BackgroundLocationPermissionRequesterTest {
             permissionsSupport.request(
                 ACCESS_BACKGROUND_LOCATION,
                 102,
-                R.string.location_permission_background_required
+                R.string.location_permission_background_required,
             )
         }
         assertThat(preferences.getString(PreferenceKey.BACKGROUND_QUERY_PERIOD, "")).isEqualTo("300")
@@ -135,6 +134,4 @@ class BackgroundLocationPermissionRequesterTest {
         }
         assertThat(preferences.getString(PreferenceKey.BACKGROUND_QUERY_PERIOD, "")).isEqualTo("0")
     }
-
-
 }

@@ -18,7 +18,6 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 class AlertDataHandlerTest {
-
     private lateinit var strike: DefaultStrike
 
     @MockK
@@ -42,17 +41,19 @@ class AlertDataHandlerTest {
 
         strike = DefaultStrike(timestamp = now, longitude = 12.0, latitude = 41.0, altitude = 0, amplitude = 20.0f)
 
-        strikeLocation = Location("").apply {
-            longitude = strike.longitude
-            latitude = strike.latitude
-        }
+        strikeLocation =
+            Location("").apply {
+                longitude = strike.longitude
+                latitude = strike.latitude
+            }
 
-        parameters = AlertParameters(
-            alarmInterval = 10 * 60 * 1000,
-            rangeSteps = listOf(2.5f, 5f),
-            sectorLabels = listOf("S", "N"),
-            measurementSystem = MeasurementSystem.METRIC
-        )
+        parameters =
+            AlertParameters(
+                alarmInterval = 10 * 60 * 1000,
+                rangeSteps = listOf(2.5f, 5f),
+                sectorLabels = listOf("S", "N"),
+                measurementSystem = MeasurementSystem.METRIC,
+            )
 
         now = System.currentTimeMillis()
         thresholdTime = now - parameters.alarmInterval
@@ -144,7 +145,7 @@ class AlertDataHandlerTest {
         result: AlertResult,
         expectedSectorLabel: String,
         expectedRange: Float,
-        expectedTime: Long
+        expectedTime: Long,
     ) {
         val sectorWithStrike = sectorWithStrike(result)
         assertThat(sectorWithStrike).isNotNull

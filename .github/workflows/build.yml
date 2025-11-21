@@ -28,6 +28,7 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3.2.2
+
       - name: Cache Gradle packages
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
@@ -42,6 +43,28 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+
+      - name: Run static analysis (Detekt)
+        run: ./gradlew detekt
+
+      - name: Run code formatting check (ktlint)
+        run: ./gradlew ktlintCheck
+
+      - name: Upload Detekt reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: detekt-reports
+          path: |
+            build/reports/detekt/
+            app/build/reports/detekt/
+
+      - name: Upload ktlint reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ktlint-reports
+          path: app/build/reports/ktlint/
 
       - name: Build and analyze
         if: ${{ github.secret_source != 'Actions' }}

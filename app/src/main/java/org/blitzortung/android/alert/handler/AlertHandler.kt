@@ -22,6 +22,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.location.Location
 import android.util.Log
+import javax.inject.Inject
+import javax.inject.Singleton
 import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertResult
 import org.blitzortung.android.alert.event.AlertCancelEvent
@@ -41,226 +43,239 @@ import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.protocol.ConsumerContainer
 import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.MeasurementSystem
-import javax.inject.Inject
-import javax.inject.Singleton
-
 
 @Singleton
-class AlertHandler @Inject constructor(
-    private val locationHandler: LocationHandler,
-    preferences: SharedPreferences,
-    private val context: Context,
-    private val notificationHandler: NotificationHandler,
-    private val alertDataHandler: AlertDataHandler,
-    private val alertSignal: AlertSignal
+class AlertHandler
+    @Inject
+    constructor(
+        private val locationHandler: LocationHandler,
+        preferences: SharedPreferences,
+        private val context: Context,
+        private val notificationHandler: NotificationHandler,
+        private val alertDataHandler: AlertDataHandler,
+        private val alertSignal: AlertSignal,
+    ) : OnSharedPreferenceChangeListener {
+        var alertParameters: AlertParameters
+            private set
 
-) : OnSharedPreferenceChangeListener {
+        private val alertConsumerContainer: ConsumerContainer<AlertEvent> =
+            object : ConsumerContainer<AlertEvent>() {
+                override fun addedFirstConsumer() {
+                    Log.d(Main.LOG_TAG, "AlertHandler: added first alert consumer")
+                }
 
-    var alertParameters: AlertParameters
-        private set
+                override fun removedLastConsumer() {
+                    Log.d(Main.LOG_TAG, "AlertHandler: removed last alert consumer")
+                }
+            }
 
-    private val alertConsumerContainer: ConsumerContainer<AlertEvent> = object : ConsumerContainer<AlertEvent>() {
-        override fun addedFirstConsumer() {
-            Log.d(Main.LOG_TAG, "AlertHandler: added first alert consumer")
+        private var lastStrikes: Strikes? = null
+
+        private var alertEnabled: Boolean = false
+
+        private var notificationDistanceLimit: Float = 0.0f
+
+        private var notificationLastTimestamp: Long = 0
+
+        private var signalingDistanceLimit: Float = 0.0f
+
+        private var signalingThresholdTime: Long = 0
+
+        private var signalingLastTimestamp: Long = 0
+
+        private val locationEventConsumer: (LocationEvent) -> Unit = { event ->
+            Log.v(Main.LOG_TAG, "AlertHandler.locationEventConsumer ${event.location}")
+
+            checkStrikes(lastStrikes, event.location)
         }
 
-        override fun removedLastConsumer() {
-            Log.d(Main.LOG_TAG, "AlertHandler: removed last alert consumer")
+        init {
+            locationHandler.requestUpdates(locationEventConsumer)
         }
-    }
 
-    private var lastStrikes: Strikes? = null
-
-    private var alertEnabled: Boolean = false
-
-    private var notificationDistanceLimit: Float = 0.0f
-
-    private var notificationLastTimestamp: Long = 0
-
-    private var signalingDistanceLimit: Float = 0.0f
-
-    private var signalingThresholdTime: Long = 0
-
-    private var signalingLastTimestamp: Long = 0
-
-    private val locationEventConsumer: (LocationEvent) -> Unit = { event ->
-        Log.v(Main.LOG_TAG, "AlertHandler.locationEventConsumer ${event.location}")
-
-        checkStrikes(lastStrikes, event.location)
-    }
-
-    init {
-        locationHandler.requestUpdates(locationEventConsumer)
-    }
-
-    val dataEventConsumer: (Event) -> Unit = { event ->
-        if (event is ResultEvent) {
-            if (!event.flags.ignoreForAlerting) {
-                Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer $event")
-                if (!event.failed && event.containsRealtimeData() && event.strikes != null) {
-                    val strikes = Strikes(event.strikes, event.gridParameters)
-                    checkStrikes(strikes, locationHandler.location)
-                } else {
-                    if (!event.containsRealtimeData()) {
-                        lastStrikes = null
+        val dataEventConsumer: (Event) -> Unit = { event ->
+            if (event is ResultEvent) {
+                if (!event.flags.ignoreForAlerting) {
+                    Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer $event")
+                    if (!event.failed && event.containsRealtimeData() && event.strikes != null) {
+                        val strikes = Strikes(event.strikes, event.gridParameters)
+                        checkStrikes(strikes, locationHandler.location)
+                    } else {
+                        if (!event.containsRealtimeData()) {
+                            lastStrikes = null
+                        }
+                        broadcastResult(null)
                     }
-                    broadcastResult(null)
                 }
             }
         }
-    }
 
-    init {
-        Log.d(Main.LOG_TAG, "AlertHandler() create $this")
-        val rangeSteps = listOf(10f, 25f, 50f, 100f, 250f, 500f)
-        val alarmInterval = 10 * 60 * 1000L
-        val sectorLabels = context.resources.getStringArray(R.array.direction_names).toList()
-        alertParameters = AlertParameters(alarmInterval, rangeSteps, sectorLabels, MeasurementSystem.METRIC)
+        init {
+            Log.d(Main.LOG_TAG, "AlertHandler() create $this")
+            val rangeSteps = listOf(10f, 25f, 50f, 100f, 250f, 500f)
+            val alarmInterval = 10 * 60 * 1000L
+            val sectorLabels = context.resources.getStringArray(R.array.direction_names).toList()
+            alertParameters = AlertParameters(alarmInterval, rangeSteps, sectorLabels, MeasurementSystem.METRIC)
 
-        preferences.registerOnSharedPreferenceChangeListener(this)
-        onSharedPreferenceChanged(
-            preferences, PreferenceKey.ALERT_ENABLED, PreferenceKey.MEASUREMENT_UNIT,
-            PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT, PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT,
-            PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME, PreferenceKey.ALERT_VIBRATION_SIGNAL,
-            PreferenceKey.ALERT_SOUND_SIGNAL
-        )
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
-        when (key) {
-            PreferenceKey.ALERT_ENABLED -> {
-                alertEnabled = sharedPreferences.get(key, false)
-                Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() alertEnabled = $alertEnabled")
-            }
-
-            PreferenceKey.MEASUREMENT_UNIT -> {
-                val measurementSystemName = sharedPreferences.get(key, MeasurementSystem.METRIC.toString())
-
-                alertParameters =
-                    alertParameters.copy(measurementSystem = MeasurementSystem.valueOf(measurementSystemName))
-                Log.v(
-                    Main.LOG_TAG,
-                    "AlertHandler.onSharedPreferenceChanged() measurementSystem = ${alertParameters.measurementSystem}"
-                )
-            }
-
-            PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT -> {
-                notificationDistanceLimit = sharedPreferences.get(key, "50").toFloat()
-                Log.v(
-                    Main.LOG_TAG,
-                    "AlertHandler.onSharedPreferenceChanged() notificationDistanceLimit = $notificationDistanceLimit"
-                )
-            }
-
-            PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT -> {
-                signalingDistanceLimit = sharedPreferences.get(key, "25").toFloat()
-                Log.v(
-                    Main.LOG_TAG,
-                    "AlertHandler.onSharedPreferenceChanged() signalingDistanceLimit = $signalingDistanceLimit"
-                )
-            }
-
-            PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME -> {
-                signalingThresholdTime = sharedPreferences.get(key, "25").toLong() * 1000 * 60
-                Log.v(
-                    Main.LOG_TAG,
-                    "AlertHandler.onSharedPreferenceChanged() signalingThresholdTime = $signalingThresholdTime"
-                )
-            }
-
-            else -> {}
-        }
-    }
-
-    private fun checkStrikes(strikes: Strikes?, location: Location?) {
-        lastStrikes = strikes
-
-        val alertResult = if (location != null && strikes != null) {
-            alertDataHandler.checkStrikes(strikes, location, alertParameters)
-        } else {
-            Log.v(
-                Main.LOG_TAG,
-                "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${locationHandler.location != null}"
-            )
-            null
-        }
-
-        processResult(alertResult)
-    }
-
-    val maxDistance: Float
-        get() = alertParameters.rangeSteps.last()
-
-    private fun broadcastResult(alertResult: AlertResult?) {
-        val alertEvent = if (alertResult != null) AlertResultEvent(alertResult) else ALERT_CANCEL_EVENT
-        Log.d(Main.LOG_TAG, "AlertHandler.broadcastResult(${alertEvent})")
-        alertConsumerContainer.storeAndBroadcast(alertEvent)
-    }
-
-    private fun processResult(alertResult: AlertResult?) {
-        if (alertEnabled && alertResult != null) {
-            if (alertResult.closestStrikeDistance <= signalingDistanceLimit) {
-                alertSignal(alertResult)
-            }
-            if (alertResult.closestStrikeDistance <= notificationDistanceLimit) {
-                alertNotification(alertResult)
-            }
-        }
-        broadcastResult(alertResult)
-    }
-
-    private fun alertSignal(alertResult: AlertResult) {
-        val signalingLatestTimestamp = alertDataHandler.getLatestTimstampWithin(signalingDistanceLimit, alertResult)
-        if (signalingLatestTimestamp > signalingLastTimestamp + signalingThresholdTime) {
-            Log.d(Main.LOG_TAG, "AlertHandler.alertSignal() signal ${signalingLatestTimestamp / 1000}")
-            alertSignal.emitSignal()
-            signalingLastTimestamp = signalingLatestTimestamp
-        } else {
-            Log.d(
-                Main.LOG_TAG,
-                "AlertHandler.alertSignal() skipped - ${(signalingLatestTimestamp - signalingLastTimestamp) / 1000}, threshold: ${signalingThresholdTime / 1000}"
+            preferences.registerOnSharedPreferenceChangeListener(this)
+            onSharedPreferenceChanged(
+                preferences,
+                PreferenceKey.ALERT_ENABLED,
+                PreferenceKey.MEASUREMENT_UNIT,
+                PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT,
+                PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT,
+                PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME,
+                PreferenceKey.ALERT_VIBRATION_SIGNAL,
+                PreferenceKey.ALERT_SOUND_SIGNAL,
             )
         }
-    }
 
-    private fun alertNotification(alertResult: AlertResult) {
-        val notificationLatestTimestamp =
-            alertDataHandler.getLatestTimstampWithin(notificationDistanceLimit, alertResult)
-        if (notificationLatestTimestamp > notificationLastTimestamp) {
-            Log.d(Main.LOG_TAG, "AlertHandler.alertNotification() notification ${notificationLatestTimestamp / 1000}")
-            notificationHandler.sendNotification(
-                context.resources.getString(R.string.activity) + ": " + alertDataHandler.getTextMessage(
-                    alertResult,
-                    notificationDistanceLimit,
-                    context.resources
+        override fun onSharedPreferenceChanged(
+            sharedPreferences: SharedPreferences,
+            key: PreferenceKey,
+        ) {
+            when (key) {
+                PreferenceKey.ALERT_ENABLED -> {
+                    alertEnabled = sharedPreferences.get(key, false)
+                    Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() alertEnabled = $alertEnabled")
+                }
+
+                PreferenceKey.MEASUREMENT_UNIT -> {
+                    val measurementSystemName = sharedPreferences.get(key, MeasurementSystem.METRIC.toString())
+
+                    alertParameters =
+                        alertParameters.copy(measurementSystem = MeasurementSystem.valueOf(measurementSystemName))
+                    Log.v(
+                        Main.LOG_TAG,
+                        "AlertHandler.onSharedPreferenceChanged() measurementSystem = ${alertParameters.measurementSystem}",
+                    )
+                }
+
+                PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT -> {
+                    notificationDistanceLimit = sharedPreferences.get(key, "50").toFloat()
+                    Log.v(
+                        Main.LOG_TAG,
+                        "AlertHandler.onSharedPreferenceChanged() notificationDistanceLimit = $notificationDistanceLimit",
+                    )
+                }
+
+                PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT -> {
+                    signalingDistanceLimit = sharedPreferences.get(key, "25").toFloat()
+                    Log.v(
+                        Main.LOG_TAG,
+                        "AlertHandler.onSharedPreferenceChanged() signalingDistanceLimit = $signalingDistanceLimit",
+                    )
+                }
+
+                PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME -> {
+                    signalingThresholdTime = sharedPreferences.get(key, "25").toLong() * 1000 * 60
+                    Log.v(
+                        Main.LOG_TAG,
+                        "AlertHandler.onSharedPreferenceChanged() signalingThresholdTime = $signalingThresholdTime",
+                    )
+                }
+
+                else -> {}
+            }
+        }
+
+        private fun checkStrikes(
+            strikes: Strikes?,
+            location: Location?,
+        ) {
+            lastStrikes = strikes
+
+            val alertResult =
+                if (location != null && strikes != null) {
+                    alertDataHandler.checkStrikes(strikes, location, alertParameters)
+                } else {
+                    Log.v(
+                        Main.LOG_TAG,
+                        "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${locationHandler.location != null}",
+                    )
+                    null
+                }
+
+            processResult(alertResult)
+        }
+
+        val maxDistance: Float
+            get() = alertParameters.rangeSteps.last()
+
+        private fun broadcastResult(alertResult: AlertResult?) {
+            val alertEvent = if (alertResult != null) AlertResultEvent(alertResult) else ALERT_CANCEL_EVENT
+            Log.d(Main.LOG_TAG, "AlertHandler.broadcastResult($alertEvent)")
+            alertConsumerContainer.storeAndBroadcast(alertEvent)
+        }
+
+        private fun processResult(alertResult: AlertResult?) {
+            if (alertEnabled && alertResult != null) {
+                if (alertResult.closestStrikeDistance <= signalingDistanceLimit) {
+                    alertSignal(alertResult)
+                }
+                if (alertResult.closestStrikeDistance <= notificationDistanceLimit) {
+                    alertNotification(alertResult)
+                }
+            }
+            broadcastResult(alertResult)
+        }
+
+        private fun alertSignal(alertResult: AlertResult) {
+            val signalingLatestTimestamp = alertDataHandler.getLatestTimstampWithin(signalingDistanceLimit, alertResult)
+            if (signalingLatestTimestamp > signalingLastTimestamp + signalingThresholdTime) {
+                Log.d(Main.LOG_TAG, "AlertHandler.alertSignal() signal ${signalingLatestTimestamp / 1000}")
+                alertSignal.emitSignal()
+                signalingLastTimestamp = signalingLatestTimestamp
+            } else {
+                Log.d(
+                    Main.LOG_TAG,
+                    "AlertHandler.alertSignal() skipped - ${(signalingLatestTimestamp - signalingLastTimestamp) / 1000}, threshold: ${signalingThresholdTime / 1000}",
                 )
-            )
-            notificationLastTimestamp = notificationLatestTimestamp
-        } else {
-            Log.d(
-                Main.LOG_TAG,
-                "AlertHandler.alertNotification() skipped ${notificationLatestTimestamp - notificationLastTimestamp}"
-            )
+            }
+        }
+
+        private fun alertNotification(alertResult: AlertResult) {
+            val notificationLatestTimestamp =
+                alertDataHandler.getLatestTimstampWithin(notificationDistanceLimit, alertResult)
+            if (notificationLatestTimestamp > notificationLastTimestamp) {
+                Log.d(
+                    Main.LOG_TAG,
+                    "AlertHandler.alertNotification() notification ${notificationLatestTimestamp / 1000}",
+                )
+                notificationHandler.sendNotification(
+                    context.resources.getString(R.string.activity) + ": " +
+                        alertDataHandler.getTextMessage(
+                            alertResult,
+                            notificationDistanceLimit,
+                            context.resources,
+                        ),
+                )
+                notificationLastTimestamp = notificationLatestTimestamp
+            } else {
+                Log.d(
+                    Main.LOG_TAG,
+                    "AlertHandler.alertNotification() skipped ${notificationLatestTimestamp - notificationLastTimestamp}",
+                )
+            }
+        }
+
+        fun requestUpdates(alertEventConsumer: (AlertEvent) -> Unit) {
+            alertConsumerContainer.addConsumer(alertEventConsumer)
+        }
+
+        fun removeUpdates(alertEventConsumer: (AlertEvent) -> Unit) {
+            alertConsumerContainer.removeConsumer(alertEventConsumer)
+        }
+
+        val alertEvent: AlertEvent
+            get() = alertConsumerContainer.currentPayload ?: ALERT_CANCEL_EVENT
+
+        companion object {
+            val ALERT_CANCEL_EVENT = AlertCancelEvent()
         }
     }
-
-    fun requestUpdates(alertEventConsumer: (AlertEvent) -> Unit) {
-        alertConsumerContainer.addConsumer(alertEventConsumer)
-    }
-
-    fun removeUpdates(alertEventConsumer: (AlertEvent) -> Unit) {
-        alertConsumerContainer.removeConsumer(alertEventConsumer)
-    }
-
-    val alertEvent: AlertEvent
-        get() = alertConsumerContainer.currentPayload ?: ALERT_CANCEL_EVENT
-
-    companion object {
-        val ALERT_CANCEL_EVENT = AlertCancelEvent()
-    }
-}
 
 data class Strikes(
     val strikes: Collection<Strike>,
-    val gridParameters: GridParameters? = null
+    val gridParameters: GridParameters? = null,
 )

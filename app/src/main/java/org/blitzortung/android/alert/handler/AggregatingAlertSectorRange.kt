@@ -22,9 +22,8 @@ import org.blitzortung.android.data.beans.Strike
 
 internal class AggregatingAlertSectorRange(
     val rangeMinimum: Float,
-    val rangeMaximum: Float
+    val rangeMaximum: Float,
 ) {
-
     var strikeCount: Int = 0
         private set
 
@@ -37,6 +36,4 @@ internal class AggregatingAlertSectorRange(
         }
         strikeCount += strike.multiplicity
     }
-
-
 }

@@ -7,7 +7,14 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.Projection
 
 interface LightningShape {
-    fun draw(canvas: Canvas, mapView: MapView, paint: Paint)
+    fun draw(
+        canvas: Canvas,
+        mapView: MapView,
+        paint: Paint,
+    )
 
-    fun isPointInside(tappedGeoPoint: IGeoPoint, projection: Projection): Boolean
+    fun isPointInside(
+        tappedGeoPoint: IGeoPoint,
+        projection: Projection,
+    ): Boolean
 }

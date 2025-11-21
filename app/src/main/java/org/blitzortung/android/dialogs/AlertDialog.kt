@@ -31,7 +31,7 @@ class AlertDialog(
     context: Context,
     private val colorHandler: ColorHandler,
     private val dataHandler: MainDataHandler,
-    private val alertHandler: AlertHandler
+    private val alertHandler: AlertHandler,
 ) : android.app.AlertDialog(context) {
     private lateinit var alertView: AlertView
 
@@ -60,7 +60,10 @@ class AlertDialog(
         alertHandler.removeUpdates(alertView.alertEventConsumer)
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+    override fun onKeyUp(
+        keyCode: Int,
+        event: KeyEvent,
+    ): Boolean {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             dismiss()
             return true

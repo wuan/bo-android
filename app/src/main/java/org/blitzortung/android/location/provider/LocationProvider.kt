@@ -2,8 +2,8 @@ package org.blitzortung.android.location.provider
 
 import android.location.Location
 import android.util.Log
-import org.blitzortung.android.app.Main
 import java.lang.Double.isNaN
+import org.blitzortung.android.app.Main
 
 abstract class LocationProvider(protected val locationUpdate: (Location?) -> Unit) {
     var isRunning: Boolean = false
@@ -35,7 +35,7 @@ abstract class LocationProvider(protected val locationUpdate: (Location?) -> Uni
     open fun shutdown() {
         isRunning = false
 
-        //Invalidate the current location, when the provider is stopped
+        // Invalidate the current location, when the provider is stopped
         sendLocationUpdate(null)
 
         Log.v(Main.LOG_TAG, "LocationProvider.shutdown() type: $type")

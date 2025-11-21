@@ -20,20 +20,6 @@ package org.blitzortung.android.data.provider.blitzortung
 
 import android.content.SharedPreferences
 import android.util.Log
-import org.blitzortung.android.app.Main
-import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.get
-import org.blitzortung.android.data.Flags
-import org.blitzortung.android.data.History
-import org.blitzortung.android.data.Parameters
-import org.blitzortung.android.data.beans.Station
-import org.blitzortung.android.data.beans.Strike
-import org.blitzortung.android.data.provider.DataProviderType
-import org.blitzortung.android.data.provider.data.DataProvider
-import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
-import org.blitzortung.android.data.provider.data.initializeResult
-import org.blitzortung.android.data.provider.result.ResultEvent
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.FileNotFoundException
@@ -50,202 +36,234 @@ import java.util.zip.GZIPInputStream
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.max
+import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
+import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.get
+import org.blitzortung.android.data.Flags
+import org.blitzortung.android.data.History
+import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.beans.Station
+import org.blitzortung.android.data.beans.Strike
+import org.blitzortung.android.data.provider.DataProviderType
+import org.blitzortung.android.data.provider.data.DataProvider
+import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
+import org.blitzortung.android.data.provider.data.initializeResult
+import org.blitzortung.android.data.provider.result.ResultEvent
 
 @Singleton
-class BlitzortungHttpDataProvider @Inject constructor(
-    preferences: SharedPreferences,
-    private val urlFormatter: UrlFormatter,
-    mapBuilderFactory: MapBuilderFactory
-) : OnSharedPreferenceChangeListener, DataProvider {
+class BlitzortungHttpDataProvider
+    @Inject
+    constructor(
+        preferences: SharedPreferences,
+        private val urlFormatter: UrlFormatter,
+        mapBuilderFactory: MapBuilderFactory,
+    ) : OnSharedPreferenceChangeListener, DataProvider {
+        private val strikeMapBuilder: MapBuilder<Strike> = mapBuilderFactory.createStrikeMapBuilder()
+        private val stationMapBuilder: MapBuilder<Station> = mapBuilderFactory.createStationMapBuilder()
+        private var latestTime: Long = 0
+        private var strikes: List<Strike> = emptyList()
+        private var parameters: Parameters? = null
 
-    private val strikeMapBuilder: MapBuilder<Strike> = mapBuilderFactory.createStrikeMapBuilder()
-    private val stationMapBuilder: MapBuilder<Station> = mapBuilderFactory.createStationMapBuilder()
-    private var latestTime: Long = 0
-    private var strikes: List<Strike> = emptyList()
-    private var parameters: Parameters? = null
+        private lateinit var username: String
+        private lateinit var password: String
 
-    private lateinit var username: String
-    private lateinit var password: String
+        init {
+            preferences.registerOnSharedPreferenceChangeListener(this)
+            onSharedPreferenceChanged(preferences, PreferenceKey.USERNAME, PreferenceKey.PASSWORD)
+        }
 
-    init {
-        preferences.registerOnSharedPreferenceChangeListener(this)
-        onSharedPreferenceChanged(preferences, PreferenceKey.USERNAME, PreferenceKey.PASSWORD)
-    }
+        private fun readFromUrl(
+            type: Type,
+            region: Int,
+            intervalTime: Calendar? = null,
+        ): BufferedReader {
+            val useGzipCompression = type == Type.STATIONS
 
-    private fun readFromUrl(type: Type, region: Int, intervalTime: Calendar? = null): BufferedReader {
+            val reader: BufferedReader
 
-        val useGzipCompression = type == Type.STATIONS
+            val urlString = urlFormatter.getUrlFor(type, region, intervalTime, useGzipCompression)
 
-        val reader: BufferedReader
+            try {
+                val url = URL(urlString)
+                val connection = url.openConnection()
+                connection.connectTimeout = 40000
+                connection.readTimeout = 40000
+                connection.allowUserInteraction = false
+                var inputStream = connection.inputStream
+                if (useGzipCompression) {
+                    inputStream = GZIPInputStream(inputStream)
+                }
 
-        val urlString = urlFormatter.getUrlFor(type, region, intervalTime, useGzipCompression)
+                reader = inputStream.bufferedReader()
+            } catch (e: Exception) {
+                when (e) {
+                    is FileNotFoundException -> {
+                        Log.w(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() $urlString not found")
+                        return BufferedReader(InputStreamReader(ByteArrayInputStream("".toByteArray())))
+                    }
 
-        try {
-            val url = URL(urlString)
-            val connection = url.openConnection()
-            connection.connectTimeout = 40000
-            connection.readTimeout = 40000
-            connection.allowUserInteraction = false
-            var inputStream = connection.inputStream
-            if (useGzipCompression) {
-                inputStream = GZIPInputStream(inputStream)
+                    else -> {
+                        Log.w(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() $urlString failed")
+                        throw RuntimeException(e)
+                    }
+                }
             }
 
-            reader = inputStream.bufferedReader()
-        } catch (e: Exception) {
-            when (e) {
-                is FileNotFoundException -> {
-                    Log.w(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() $urlString not found")
-                    return BufferedReader(InputStreamReader(ByteArrayInputStream("".toByteArray())))
+            Log.v(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() $urlString")
+
+            return reader
+        }
+
+        /**
+         * Used to retrieve Data from Blitzortung
+         * @param readerSeq A sequence of nullable BufferedReader, which the data is read from
+         * @param parse A Lambda which receives a sequence of lines from a buffered reader and transforms them into a sequence of T
+         * @return Returns a list of parsed T's
+         */
+        private fun <T : Any> retrieveData(
+            logMessage: String,
+            readerSeq: Sequence<BufferedReader?>,
+            parse: (String) -> T?,
+        ): List<T> {
+            var size = 0
+
+            val strikeSequence: Sequence<T> =
+                readerSeq.filterNotNull().flatMap { reader ->
+                    reader.lineSequence().mapNotNull { line ->
+                        size += line.length
+
+                        parse(line)
+                    }
                 }
+
+            val strikeList =
+                try {
+                    strikeSequence.toList()
+                } catch (e: SocketException) {
+                    Log.w(Main.LOG_TAG, e)
+                    emptyList()
+                } catch (e: SocketTimeoutException) {
+                    Log.w(Main.LOG_TAG, e)
+                    emptyList()
+                }
+
+            Log.v(Main.LOG_TAG, logMessage.format(size, strikeList.count()))
+
+            return strikeList
+        }
+
+        override val type: DataProviderType = DataProviderType.HTTP
+
+        override fun reset() {
+            latestTime = 0L
+            strikes = emptyList()
+        }
+
+        enum class Type {
+            STRIKES,
+            STATIONS,
+        }
+
+        override fun <T> retrieveData(retrieve: DataRetriever.() -> T): T {
+            return Retriever().retrieve()
+        }
+
+        private inner class Retriever : DataRetriever {
+            override fun getStrikes(
+                parameters: Parameters,
+                history: History?,
+                flags: Flags,
+            ): ResultEvent {
+                var result = initializeResult(parameters, history, flags)
+
+                if (parameters != this@BlitzortungHttpDataProvider.parameters) {
+                    this@BlitzortungHttpDataProvider.parameters = parameters
+                    reset()
+                }
+
+                val intervalDuration = parameters.intervalDuration
+                val intervalOffset = parameters.intervalOffset
+                val region = parameters.region
+
+                val tz = TimeZone.getTimeZone("UTC")
+                val intervalTime = GregorianCalendar(tz)
+
+                val millisecondsPerMinute = 60 * 1000L
+                val endTime = System.currentTimeMillis() + intervalOffset * millisecondsPerMinute
+                val startTime = endTime - intervalDuration * millisecondsPerMinute
+                val intervalSequence =
+                    createTimestampSequence(10 * millisecondsPerMinute, max(startTime, latestTime), endTime)
+
+                Authenticator.setDefault(MyAuthenticator())
+
+                val strikes =
+                    retrieveData(
+                        "BlitzortungHttpDataProvider.getStrikes() read %d bytes (%d new strikes) from region $region",
+                        intervalSequence.map {
+                            intervalTime.timeInMillis = it
+
+                            return@map readFromUrl(Type.STRIKES, region, intervalTime)
+                        },
+                    ) { strikeMapBuilder.buildFromLine(it) }
+
+                if (latestTime > 0L) {
+                    result = result.copy(updated = strikes.size)
+                    val expireTime = result.referenceTime - (intervalDuration - intervalOffset) * millisecondsPerMinute
+                    this@BlitzortungHttpDataProvider.strikes =
+                        this@BlitzortungHttpDataProvider.strikes.filter { it.timestamp > expireTime }
+                    this@BlitzortungHttpDataProvider.strikes += strikes
+                } else {
+                    this@BlitzortungHttpDataProvider.strikes = strikes
+                }
+
+                if (strikes.isNotEmpty()) {
+                    latestTime = endTime - millisecondsPerMinute
+                    Log.v(Main.LOG_TAG, "BlitzortungHttpDataProvider.getStrikes() set latest time to $latestTime")
+                }
+
+                result = result.copy(strikes = this@BlitzortungHttpDataProvider.strikes, referenceTime = endTime)
+
+                return result
+            }
+
+            override fun getStrikesGrid(
+                parameters: Parameters,
+                history: History?,
+                flags: Flags,
+            ): ResultEvent {
+                return initializeResult(parameters, history, flags)
+            }
+
+            override fun getStations(region: Int): List<Station> {
+                Authenticator.setDefault(MyAuthenticator())
+
+                return retrieveData(
+                    "BlitzortungHttpDataProvider.getStations() read %d bytes (%d stations) from region $region",
+                    sequenceOf(readFromUrl(Type.STATIONS, region)),
+                ) {
+                    stationMapBuilder.buildFromLine(it)
+                }
+            }
+        }
+
+        private inner class MyAuthenticator : Authenticator() {
+            override fun getPasswordAuthentication(): PasswordAuthentication {
+                return PasswordAuthentication(username, password.toCharArray())
+            }
+        }
+
+        override fun onSharedPreferenceChanged(
+            sharedPreferences: SharedPreferences,
+            key: PreferenceKey,
+        ) {
+            when (key) {
+                PreferenceKey.USERNAME -> username = sharedPreferences.get(key, "")
+
+                PreferenceKey.PASSWORD -> password = sharedPreferences.get(key, "")
 
                 else -> {
-                    Log.w(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() $urlString failed")
-                    throw RuntimeException(e)
                 }
             }
         }
-
-        Log.v(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() $urlString")
-
-        return reader
     }
-
-    /**
-     * Used to retrieve Data from Blitzortung
-     * @param readerSeq A sequence of nullable BufferedReader, which the data is read from
-     * @param parse A Lambda which receives a sequence of lines from a buffered reader and transforms them into a sequence of T
-     * @return Returns a list of parsed T's
-     */
-    private fun <T : Any> retrieveData(
-        logMessage: String,
-        readerSeq: Sequence<BufferedReader?>,
-        parse: (String) -> T?
-    ): List<T> {
-        var size = 0
-
-        val strikeSequence: Sequence<T> = readerSeq.filterNotNull().flatMap { reader ->
-            reader.lineSequence().mapNotNull { line ->
-                size += line.length
-
-                parse(line)
-            }
-        }
-
-        val strikeList = try {
-            strikeSequence.toList()
-        } catch (e: SocketException) {
-            Log.w(Main.LOG_TAG, e)
-            emptyList()
-        } catch (e: SocketTimeoutException) {
-            Log.w(Main.LOG_TAG, e)
-            emptyList()
-        }
-
-        Log.v(Main.LOG_TAG, logMessage.format(size, strikeList.count()))
-
-        return strikeList
-    }
-
-    override val type: DataProviderType = DataProviderType.HTTP
-
-    override fun reset() {
-        latestTime = 0L
-        strikes = emptyList()
-    }
-
-    enum class Type {
-        STRIKES, STATIONS
-    }
-
-    override fun <T> retrieveData(retrieve: DataRetriever.() -> T): T {
-        return Retriever().retrieve()
-    }
-
-    private inner class Retriever : DataRetriever {
-        override fun getStrikes(parameters: Parameters, history: History?, flags: Flags): ResultEvent {
-            var result = initializeResult(parameters, history, flags)
-
-            if (parameters != this@BlitzortungHttpDataProvider.parameters) {
-                this@BlitzortungHttpDataProvider.parameters = parameters
-                reset()
-            }
-
-            val intervalDuration = parameters.intervalDuration
-            val intervalOffset = parameters.intervalOffset
-            val region = parameters.region
-
-            val tz = TimeZone.getTimeZone("UTC")
-            val intervalTime = GregorianCalendar(tz)
-
-            val millisecondsPerMinute = 60 * 1000L
-            val endTime = System.currentTimeMillis() + intervalOffset * millisecondsPerMinute
-            val startTime = endTime - intervalDuration * millisecondsPerMinute
-            val intervalSequence =
-                createTimestampSequence(10 * millisecondsPerMinute, max(startTime, latestTime), endTime)
-
-            Authenticator.setDefault(MyAuthenticator())
-
-            val strikes =
-                retrieveData(
-                    "BlitzortungHttpDataProvider.getStrikes() read %d bytes (%d new strikes) from region $region",
-                    intervalSequence.map {
-                        intervalTime.timeInMillis = it
-
-                        return@map readFromUrl(Type.STRIKES, region, intervalTime)
-                    }) { strikeMapBuilder.buildFromLine(it) }
-
-            if (latestTime > 0L) {
-                result = result.copy(updated = strikes.size)
-                val expireTime = result.referenceTime - (intervalDuration - intervalOffset) * millisecondsPerMinute
-                this@BlitzortungHttpDataProvider.strikes =
-                    this@BlitzortungHttpDataProvider.strikes.filter { it.timestamp > expireTime }
-                this@BlitzortungHttpDataProvider.strikes += strikes
-            } else {
-                this@BlitzortungHttpDataProvider.strikes = strikes
-            }
-
-            if (strikes.isNotEmpty()) {
-                latestTime = endTime - millisecondsPerMinute
-                Log.v(Main.LOG_TAG, "BlitzortungHttpDataProvider.getStrikes() set latest time to $latestTime")
-            }
-
-            result = result.copy(strikes = this@BlitzortungHttpDataProvider.strikes, referenceTime = endTime)
-
-            return result
-        }
-
-        override fun getStrikesGrid(parameters: Parameters, history: History?, flags: Flags): ResultEvent {
-            return initializeResult(parameters, history, flags)
-        }
-
-        override fun getStations(region: Int): List<Station> {
-
-            Authenticator.setDefault(MyAuthenticator())
-
-            return retrieveData(
-                "BlitzortungHttpDataProvider.getStations() read %d bytes (%d stations) from region $region",
-                sequenceOf(readFromUrl(Type.STATIONS, region))
-            ) {
-                stationMapBuilder.buildFromLine(it)
-            }
-        }
-    }
-
-    private inner class MyAuthenticator : Authenticator() {
-        override fun getPasswordAuthentication(): PasswordAuthentication {
-            return PasswordAuthentication(username, password.toCharArray())
-        }
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
-        when (key) {
-            PreferenceKey.USERNAME -> username = sharedPreferences.get(key, "")
-
-            PreferenceKey.PASSWORD -> password = sharedPreferences.get(key, "")
-
-            else -> {
-            }
-        }
-    }
-}

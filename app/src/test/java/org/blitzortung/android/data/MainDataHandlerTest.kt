@@ -35,7 +35,6 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 class MainDataHandlerTest {
-
     private lateinit var preferences: SharedPreferences
 
     @MockK
@@ -51,7 +50,6 @@ class MainDataHandlerTest {
     private lateinit var period: Period
 
     private lateinit var receivedEvents: MutableList<DataEvent>
-
 
     private lateinit var uut: MainDataHandler
 
@@ -228,4 +226,3 @@ class MainDataHandlerTest {
         assertThat(result).isTrue
     }
 }
-

@@ -34,158 +34,169 @@ import org.blitzortung.android.util.TabletAwareView
 
 private const val SMALL_TEXT_SCALE = 0.7f
 
-class HistogramView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyle: Int = 0
-) : TabletAwareView(context, attrs, defStyle) {
+class HistogramView
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyle: Int = 0,
+    ) : TabletAwareView(context, attrs, defStyle) {
+        private val backgroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        private val foregroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        private val textPaint: Paint
+        private val defaultForegroundColor: Int
+        private val backgroundRect: RectF
+        private var strikesOverlay: StrikeListOverlay? = null
+        private var histogram: IntArray? = null
+        lateinit var mapFragment: MapFragment
 
-    private val backgroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val foregroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val textPaint: Paint
-    private val defaultForegroundColor: Int
-    private val backgroundRect: RectF
-    private var strikesOverlay: StrikeListOverlay? = null
-    private var histogram: IntArray? = null
-    lateinit var mapFragment: MapFragment
-
-    val dataConsumer = { event: Event ->
-        if (event is ResultEvent) {
-            updateHistogram(event)
-        }
-    }
-
-    init {
-        backgroundPaint.color = 0x00b0b0b0
-
-        defaultForegroundColor = context.resources.getColor(R.color.text_foreground)
-
-        textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = defaultForegroundColor
-            textSize = this@HistogramView.textSize
-            textAlign = Paint.Align.RIGHT
-        }
-
-        foregroundPaint.strokeWidth = 5f
-
-        backgroundRect = RectF()
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val getSize = fun(spec: Int) = MeasureSpec.getSize(spec)
-
-        val parentWidth = getSize(widthMeasureSpec) * sizeFactor
-        val parentHeight = getSize(heightMeasureSpec) * sizeFactor
-
-        super.onMeasure(
-            MeasureSpec.makeMeasureSpec(parentWidth.toInt(), MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(parentHeight.toInt(), MeasureSpec.EXACTLY)
-        )
-    }
-
-    override fun onDraw(canvas: Canvas) {
-        val strikesOverlay = strikesOverlay
-        val histogram = histogram
-        if (strikesOverlay != null && histogram != null && histogram.isNotEmpty()) {
-            val colorHandler = strikesOverlay.colorHandler
-            val minutesPerColor = strikesOverlay.parameters.intervalDuration / colorHandler.numberOfColors
-            val minutesPerBin = 5
-            val ratio = minutesPerColor / minutesPerBin
-            if (ratio == 0) {
-                return
+        val dataConsumer = { event: Event ->
+            if (event is ResultEvent) {
+                updateHistogram(event)
             }
+        }
 
-            backgroundRect.set(0f, 0f, width.toFloat(), height.toFloat())
-            canvas.drawRect(backgroundRect, backgroundPaint)
+        init {
+            backgroundPaint.color = 0x00b0b0b0
 
-            var topCoordinate = padding
+            defaultForegroundColor = context.resources.getColor(R.color.text_foreground)
 
-            val maximumCount = histogram.maxOrNull() ?: 0
-
-            canvas.drawText(
-                "%.1f/%s _".format(
-                    maximumCount.toFloat() / minutesPerBin, resources.getString(R.string.unit_minute)
-                ), width - 2 * padding, topCoordinate + textSize / 1.2f, textPaint
-            )
-
-            topCoordinate += textSize
-
-            val ymax = if (maximumCount == 0) 1 else maximumCount
-
-            val x0 = padding
-            val xd = (width - 2 * padding) / (histogram.size - 1)
-
-            val y0 = height - padding
-            val yd = (height - topCoordinate - padding) / ymax
+            textPaint =
+                Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    color = defaultForegroundColor
+                    textSize = this@HistogramView.textSize
+                    textAlign = Paint.Align.RIGHT
+                }
 
             foregroundPaint.strokeWidth = 5f
-            for (i in 0 until histogram.size - 1) {
-                foregroundPaint.color = colorHandler.getColor((histogram.size - 1 - i) / ratio)
-                canvas.drawLine(
-                    x0 + xd * i,
-                    y0 - yd * histogram[i],
-                    x0 + xd * (i + 1),
-                    y0 - yd * histogram[i + 1],
-                    foregroundPaint
+
+            backgroundRect = RectF()
+        }
+
+        override fun onMeasure(
+            widthMeasureSpec: Int,
+            heightMeasureSpec: Int,
+        ) {
+            val getSize = fun(spec: Int) = MeasureSpec.getSize(spec)
+
+            val parentWidth = getSize(widthMeasureSpec) * sizeFactor
+            val parentHeight = getSize(heightMeasureSpec) * sizeFactor
+
+            super.onMeasure(
+                MeasureSpec.makeMeasureSpec(parentWidth.toInt(), MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(parentHeight.toInt(), MeasureSpec.EXACTLY),
+            )
+        }
+
+        override fun onDraw(canvas: Canvas) {
+            val strikesOverlay = strikesOverlay
+            val histogram = histogram
+            if (strikesOverlay != null && histogram != null && histogram.isNotEmpty()) {
+                val colorHandler = strikesOverlay.colorHandler
+                val minutesPerColor = strikesOverlay.parameters.intervalDuration / colorHandler.numberOfColors
+                val minutesPerBin = 5
+                val ratio = minutesPerColor / minutesPerBin
+                if (ratio == 0) {
+                    return
+                }
+
+                backgroundRect.set(0f, 0f, width.toFloat(), height.toFloat())
+                canvas.drawRect(backgroundRect, backgroundPaint)
+
+                var topCoordinate = padding
+
+                val maximumCount = histogram.maxOrNull() ?: 0
+
+                canvas.drawText(
+                    "%.1f/%s _".format(
+                        maximumCount.toFloat() / minutesPerBin,
+                        resources.getString(R.string.unit_minute),
+                    ),
+                    width - 2 * padding,
+                    topCoordinate + textSize / 1.2f,
+                    textPaint,
                 )
+
+                topCoordinate += textSize
+
+                val ymax = if (maximumCount == 0) 1 else maximumCount
+
+                val x0 = padding
+                val xd = (width - 2 * padding) / (histogram.size - 1)
+
+                val y0 = height - padding
+                val yd = (height - topCoordinate - padding) / ymax
+
+                foregroundPaint.strokeWidth = 5f
+                for (i in 0 until histogram.size - 1) {
+                    foregroundPaint.color = colorHandler.getColor((histogram.size - 1 - i) / ratio)
+                    canvas.drawLine(
+                        x0 + xd * i,
+                        y0 - yd * histogram[i],
+                        x0 + xd * (i + 1),
+                        y0 - yd * histogram[i + 1],
+                        foregroundPaint,
+                    )
+                }
+
+                foregroundPaint.strokeWidth = 3f
+                foregroundPaint.color = defaultForegroundColor
+
+                canvas.drawLine(padding, height - padding, width - padding, height - padding, foregroundPaint)
+                canvas.drawLine(width - padding, padding, width - padding, height - padding, foregroundPaint)
             }
-
-            foregroundPaint.strokeWidth = 3f
-            foregroundPaint.color = defaultForegroundColor
-
-            canvas.drawLine(padding, height - padding, width - padding, height - padding, foregroundPaint)
-            canvas.drawLine(width - padding, padding, width - padding, height - padding, foregroundPaint)
         }
-    }
 
-    fun setStrikesOverlay(strikesOverlay: StrikeListOverlay) {
-        this.strikesOverlay = strikesOverlay
-    }
+        fun setStrikesOverlay(strikesOverlay: StrikeListOverlay) {
+            this.strikesOverlay = strikesOverlay
+        }
 
-    private fun updateHistogram(dataEvent: ResultEvent) {
-        if (dataEvent.failed) {
-            visibility = INVISIBLE
-            histogram = null
-        } else {
-            val histogram = dataEvent.histogram
-
-            val hasHistogram = histogram != null && histogram.isNotEmpty()
-
-            this.histogram = if (hasHistogram) {
-                histogram
+        private fun updateHistogram(dataEvent: ResultEvent) {
+            if (dataEvent.failed) {
+                visibility = INVISIBLE
+                histogram = null
             } else {
-                createHistogram(dataEvent)
+                val histogram = dataEvent.histogram
+
+                val hasHistogram = histogram != null && histogram.isNotEmpty()
+
+                this.histogram =
+                    if (hasHistogram) {
+                        histogram
+                    } else {
+                        createHistogram(dataEvent)
+                    }
+
+                visibility = if (hasHistogram) VISIBLE else INVISIBLE
+
+                if (hasHistogram) {
+                    invalidate()
+                }
             }
+        }
 
-            visibility = if (hasHistogram) VISIBLE else INVISIBLE
+        private fun createHistogram(result: ResultEvent): IntArray {
+            result.parameters.let { parameters ->
+                if (result.strikes == null) {
+                    return intArrayOf()
+                }
 
-            if (hasHistogram) {
-                invalidate()
+                Log.v(LOG_TAG, "HistogramView create histogram from ${result.strikes.size} total strikes")
+                val referenceTime = result.referenceTime
+
+                val binInterval = 5
+                val binCount = parameters.intervalDuration / binInterval
+                val histogram = IntArray(binCount)
+
+                result.strikes.forEach { strike ->
+                    val binIndex = (binCount - 1) - ((referenceTime - strike.timestamp) / 1000 / 60 / binInterval).toInt()
+                    if (binIndex in 0 until binCount) {
+                        histogram[binIndex]++
+                    }
+                }
+                return histogram
             }
         }
     }
-
-    private fun createHistogram(result: ResultEvent): IntArray {
-        result.parameters.let { parameters ->
-            if (result.strikes == null) {
-                return intArrayOf()
-            }
-
-            Log.v(LOG_TAG, "HistogramView create histogram from ${result.strikes.size} total strikes")
-            val referenceTime = result.referenceTime
-
-            val binInterval = 5
-            val binCount = parameters.intervalDuration / binInterval
-            val histogram = IntArray(binCount)
-
-            result.strikes.forEach { strike ->
-                val binIndex = (binCount - 1) - ((referenceTime - strike.timestamp) / 1000 / 60 / binInterval).toInt()
-                if (binIndex in 0 until binCount)
-                    histogram[binIndex]++
-            }
-            return histogram
-        }
-    }
-}
 
 data class Strike(val timestamp: Long)

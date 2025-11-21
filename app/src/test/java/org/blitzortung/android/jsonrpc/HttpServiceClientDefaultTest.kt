@@ -1,10 +1,6 @@
 package org.blitzortung.android.jsonrpc
 
 import io.mockk.MockKAnnotations
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Test
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -15,7 +11,10 @@ import java.net.URLConnection
 import java.net.URLStreamHandler
 import java.net.URLStreamHandlerFactory
 import java.util.zip.GZIPOutputStream
-
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Test
 
 class HttpServiceClientDefaultTest {
     private lateinit var uut: HttpServiceClientDefault
@@ -51,8 +50,8 @@ class HttpServiceClientDefaultTest {
                 Pair("Content-Type", "text/json"),
                 Pair("Content-Length", "${data.length}"),
                 Pair("User-Agent", "bo-android-foo"),
-                Pair("Accept-Encoding", "gzip")
-            )
+                Pair("Accept-Encoding", "gzip"),
+            ),
         )
 
         assertThat(handler.connection.outputStream.toString("UTF-8")).isEqualTo(data)
@@ -102,9 +101,7 @@ class MockHttpURLConnection(
     val url: URL?,
     private val responseHeaders: MutableMap<String, String>,
     val responseSupplier: () -> ByteArray,
-
-    ) : HttpURLConnection(url) {
-
+) : HttpURLConnection(url) {
     val outputStream = ByteArrayOutputStream()
 
     val headers = mutableMapOf<String?, String?>()
@@ -119,6 +116,7 @@ class MockHttpURLConnection(
     }
 
     override fun disconnect() {}
+
     override fun usingProxy(): Boolean {
         return false
     }
@@ -127,7 +125,10 @@ class MockHttpURLConnection(
         return outputStream
     }
 
-    override fun setRequestProperty(key: String?, value: String?) {
+    override fun setRequestProperty(
+        key: String?,
+        value: String?,
+    ) {
         headers.put(key, value)
     }
 

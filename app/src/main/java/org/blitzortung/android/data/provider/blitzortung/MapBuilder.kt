@@ -26,7 +26,6 @@ import org.blitzortung.android.app.Main
 import org.blitzortung.android.util.isAtLeast
 
 abstract class MapBuilder<T> internal constructor(private val lineSplitter: (String) -> Array<String>) {
-
     protected val keyValueBuilderMap: HashMap<String, (Array<String>) -> Unit> = HashMap()
 
     fun buildFromLine(line: String): T? {
@@ -57,16 +56,17 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
     }
 
     private fun extractValues(htmlString: String): Array<String>? {
-        val valueString = if (isAtLeast(Build.VERSION_CODES.N)) {
-            Html.fromHtml(htmlString, FROM_HTML_MODE_COMPACT).toString()
-        } else {
-            try {
-                Html.fromHtml(htmlString).toString()
-            } catch (throwable: Throwable) {
-                Log.w(Main.LOG_TAG, throwable)
-                return null
+        val valueString =
+            if (isAtLeast(Build.VERSION_CODES.N)) {
+                Html.fromHtml(htmlString, FROM_HTML_MODE_COMPACT).toString()
+            } else {
+                try {
+                    Html.fromHtml(htmlString).toString()
+                } catch (throwable: Throwable) {
+                    Log.w(Main.LOG_TAG, throwable)
+                    return null
+                }
             }
-        }
         return valueString.split(SPLIT_PATTERN).dropLastWhile { it.isEmpty() }.toTypedArray()
     }
 

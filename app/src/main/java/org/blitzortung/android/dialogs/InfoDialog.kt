@@ -26,15 +26,20 @@ import org.blitzortung.android.app.R
 import org.blitzortung.android.app.components.BuildVersion
 
 class InfoDialog(context: Context, buildVersion: BuildVersion) : AlertDialog(context) {
-
     init {
-        setTitle("" + context.resources.getText(R.string.app_name) + " V" + buildVersion.versionName + " (" + buildVersion.versionCode + ")")
-        @SuppressLint("InflateParams") val infoDialogView = layoutInflater.inflate(R.layout.info_dialog, null, false)
+        setTitle(
+            "" + context.resources.getText(R.string.app_name) + " V" + buildVersion.versionName + " (" + buildVersion.versionCode + ")",
+        )
+        @SuppressLint("InflateParams")
+        val infoDialogView = layoutInflater.inflate(R.layout.info_dialog, null, false)
         setView(infoDialogView)
         setCancelable(true)
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+    override fun onKeyUp(
+        keyCode: Int,
+        event: KeyEvent,
+    ): Boolean {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             dismiss()
             return true

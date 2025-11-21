@@ -1,13 +1,12 @@
 package org.blitzortung.android.protocol
 
+import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
 import org.junit.Test
-import java.util.concurrent.atomic.AtomicInteger
 
 class ConsumerContainerTest {
-
     private lateinit var testConsumerContainer: TestConsumerContainer
 
     @Before
@@ -126,7 +125,6 @@ class ConsumerContainerTest {
 }
 
 class TestConsumerContainer : ConsumerContainer<String>() {
-
     val firstConsumersAdded = AtomicInteger()
 
     val lastConsumersRemoved = AtomicInteger()

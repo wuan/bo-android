@@ -25,8 +25,11 @@ import android.widget.RemoteViews
 import org.blitzortung.android.app.view.AlertView
 
 class WidgetProvider : AppWidgetProvider() {
-
-    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray,
+    ) {
         for (element in appWidgetIds) {
             element
             updateAppWidget(context)
@@ -34,18 +37,17 @@ class WidgetProvider : AppWidgetProvider() {
     }
 
     private fun updateAppWidget(context: Context) {
-
         val alertView = AlertView(context)
         alertView.measure(150, 150)
         alertView.layout(0, 0, 150, 150)
         alertView.isDrawingCacheEnabled = true
         val bitmap = alertView.drawingCache
 
-        val remoteViews = RemoteViews(
-            context.packageName,
-            R.layout.widget
-        )
+        val remoteViews =
+            RemoteViews(
+                context.packageName,
+                R.layout.widget,
+            )
         remoteViews.setImageViewBitmap(R.layout.widget, bitmap)
-
     }
 }

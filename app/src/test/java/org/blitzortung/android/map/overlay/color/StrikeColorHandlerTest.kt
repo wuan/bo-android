@@ -12,7 +12,6 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 class StrikeColorHandlerTest {
-
     lateinit var strikeColorHandler: StrikeColorHandler
 
     @Before
@@ -21,7 +20,6 @@ class StrikeColorHandlerTest {
         val preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 
         strikeColorHandler = StrikeColorHandler(preferences)
-
     }
 
     @Test

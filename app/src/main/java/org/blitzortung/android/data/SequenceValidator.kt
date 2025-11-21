@@ -18,28 +18,29 @@
 
 package org.blitzortung.android.data
 
-import org.blitzortung.android.util.isAtLeast
 import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
+import org.blitzortung.android.util.isAtLeast
 
-class SequenceValidator @Inject constructor() {
+class SequenceValidator
+    @Inject
+    constructor() {
+        private val currentSequenceNumber = AtomicLong()
 
-    private val currentSequenceNumber = AtomicLong()
+        fun isUpdate(sequenceNumber: Long?) =
+            sequenceNumber != null && sequenceNumber == determineUpdatedSequenceNumber(sequenceNumber)
 
-    fun isUpdate(sequenceNumber: Long?) =
-        sequenceNumber != null && sequenceNumber == determineUpdatedSequenceNumber(sequenceNumber)
-
-    private fun determineUpdatedSequenceNumber(sequenceNumber: Long) = if (isAtLeast(24)) {
-        currentSequenceNumber.updateAndGet { previousSequenceNumber ->
-            if (previousSequenceNumber < sequenceNumber) sequenceNumber else previousSequenceNumber
-        }
-    } else {
-        synchronized(currentSequenceNumber) {
-            val previousSequenceNumber = currentSequenceNumber.get()
-            val updated = if (previousSequenceNumber < sequenceNumber) sequenceNumber else previousSequenceNumber
-            currentSequenceNumber.set(updated)
-            updated
-        }
+        private fun determineUpdatedSequenceNumber(sequenceNumber: Long) =
+            if (isAtLeast(24)) {
+                currentSequenceNumber.updateAndGet { previousSequenceNumber ->
+                    if (previousSequenceNumber < sequenceNumber) sequenceNumber else previousSequenceNumber
+                }
+            } else {
+                synchronized(currentSequenceNumber) {
+                    val previousSequenceNumber = currentSequenceNumber.get()
+                    val updated = if (previousSequenceNumber < sequenceNumber) sequenceNumber else previousSequenceNumber
+                    currentSequenceNumber.set(updated)
+                    updated
+                }
+            }
     }
-
-}
