@@ -30,7 +30,6 @@ class LocationPermissionRequester(
 ) : PermissionRequester {
     override val name: String = "location"
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun request(permissionsSupport: PermissionsSupport): Boolean {
         val (permission, requestCode) = getLocationPermission(preferences)
 

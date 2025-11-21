@@ -29,7 +29,6 @@ class WakeupPermissionRequester(
 ) : PermissionRequester {
     override val name: String = "wakeup"
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun request(permissionsSupport: PermissionsSupport): Boolean {
         val backgroundAlertEnabled = BackgroundLocationPermissionRequester.isBackgroundAlertEnabled(preferences)
 
@@ -71,7 +70,6 @@ class WakeupPermissionRequester(
         return false
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun disableBatteryOptimisation(packageName: String?) {
         Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
         val allowIgnoreBatteryOptimization =

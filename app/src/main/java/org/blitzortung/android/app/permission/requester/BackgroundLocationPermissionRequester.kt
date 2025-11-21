@@ -26,7 +26,6 @@ class BackgroundLocationPermissionRequester(
 ) : PermissionRequester {
     override val name: String = "background location"
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun request(permissionsSupport: PermissionsSupport): Boolean {
         return if (isAtLeast(Build.VERSION_CODES.Q) &&
             isBackgroundAlertEnabled(preferences) &&

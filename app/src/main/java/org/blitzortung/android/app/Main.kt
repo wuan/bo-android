@@ -471,12 +471,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         Log.v(LOG_TAG, "Main.onResume()")
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            PermissionsSupport.ensure(
-                this,
-                *permissionRequesters,
-            )
-        }
+        PermissionsSupport.ensure(
+            this,
+            *permissionRequesters,
+        )
 
         mapFragment.updateForgroundColor(strikeColorHandler.lineColor)
 

@@ -12,7 +12,6 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import androidx.preference.PreferenceManager
 import javax.inject.Inject
@@ -68,8 +67,7 @@ constructor(
 
     fun emitSignal() {
         vibrateIfEnabled()
-        val playSound = if (isAtLeast(Build.VERSION_CODES.M)) !doNotDisturb() else true
-        if (playSound) {
+        if (!doNotDisturb()) {
             playSoundIfEnabled()
         }
     }
@@ -114,7 +112,6 @@ constructor(
         return Log.v(Main.LOG_TAG, "playing " + ringtone.getTitle(context))
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun doNotDisturb(): Boolean {
         val currentInterruptionFilter = notificationManager.currentInterruptionFilter
         val doNotDisturb = currentInterruptionFilter >= NotificationManager.INTERRUPTION_FILTER_PRIORITY
