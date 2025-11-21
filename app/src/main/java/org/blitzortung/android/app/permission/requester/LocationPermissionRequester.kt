@@ -8,10 +8,8 @@ import android.content.pm.PackageManager
 import android.location.LocationManager.GPS_PROVIDER
 import android.location.LocationManager.NETWORK_PROVIDER
 import android.location.LocationManager.PASSIVE_PROVIDER
-import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.content.edit
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R

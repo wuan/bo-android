@@ -20,7 +20,7 @@ import org.robolectric.shadows.ShadowPackageManager
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [Build.VERSION_CODES.P]) // Target a specific SDK relevant for permissions
-class PermissionsManagerTest {
+class PermissionsSupportTest {
     private class DummyActivity : Activity()
 
     private lateinit var activity: Activity

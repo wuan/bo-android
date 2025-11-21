@@ -164,115 +164,123 @@ constructor(
         val temporaryCanvas = temporaryCanvas
         val temporaryBitmap = temporaryBitmap
         if (temporaryBitmap != null && temporaryCanvas != null) {
-            if (alertResult is LocalActivity && intervalDuration != 0) {
-                val alertParameters = alertResult.parameters
-                val rangeSteps = alertParameters.rangeSteps
-                val rangeStepCount = rangeSteps.size
-                val radiusIncrement = radius / rangeStepCount
-                val sectorWidth = (360 / alertParameters.sectorLabels.size).toFloat()
+            when (alertResult) {
+                is LocalActivity if intervalDuration != 0 -> {
+                    val alertParameters = alertResult.parameters
+                    val rangeSteps = alertParameters.rangeSteps
+                    val rangeStepCount = rangeSteps.size
+                    val radiusIncrement = radius / rangeStepCount
+                    val sectorWidth = (360 / alertParameters.sectorLabels.size).toFloat()
 
-                with(lines) {
-                    color = colorHandler.lineColor
-                    strokeWidth = (size / 150).toFloat()
-                }
-
-                with(textStyle) {
-                    textAlign = Align.CENTER
-                    color = colorHandler.textColor
-                }
-
-                val actualTime = System.currentTimeMillis()
-
-                for (alertSector in alertResult.sectors) {
-                    val startAngle = alertSector.minimumSectorBearing + 90f + 180f
-
-                    val ranges = alertSector.ranges
-                    for (rangeIndex in ranges.indices.reversed()) {
-                        val alertSectorRange = ranges[rangeIndex]
-
-                        val sectorRadius = (rangeIndex + 1) * radiusIncrement
-                        val leftTop = center - sectorRadius
-                        val bottomRight = center + sectorRadius
-
-                        val drawColor = alertSectorRange.strikeCount > 0
-                        if (drawColor) {
-                            val color =
-                                colorHandler.getColor(
-                                    actualTime,
-                                    alertSectorRange.latestStrikeTimestamp,
-                                    intervalDuration,
-                                )
-                            sectorPaint.color = color
-                        }
-                        arcArea.set(leftTop, leftTop, bottomRight, bottomRight)
-                        temporaryCanvas.drawArc(
-                            arcArea,
-                            startAngle,
-                            sectorWidth,
-                            true,
-                            if (drawColor) sectorPaint else background,
-                        )
+                    with(lines) {
+                        color = colorHandler.lineColor
+                        strokeWidth = (size / 150).toFloat()
                     }
-                }
 
-                for (alertSector in alertResult.sectors) {
-                    val bearing = alertSector.minimumSectorBearing.toDouble()
-                    temporaryCanvas.drawLine(
-                        center,
-                        center,
-                        center + (radius * sin(bearing / 180.0f * Math.PI)).toFloat(),
-                        center + (radius * -cos(bearing / 180.0f * Math.PI)).toFloat(),
-                        lines,
-                    )
-
-                    if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
-                        drawSectorLabel(center, radiusIncrement, alertSector, bearing + sectorWidth / 2.0)
+                    with(textStyle) {
+                        textAlign = Align.CENTER
+                        color = colorHandler.textColor
                     }
-                }
 
-                textStyle.textAlign = Align.RIGHT
-                val textHeight = textStyle.getFontMetrics(null)
-                for (radiusIndex in 0 until rangeStepCount) {
-                    if (radiusIndex == rangeStepCount - 1) {
-                        lines.strokeWidth = (size / 80).toFloat()
-                    }
-                    drawCircle(center, (radiusIndex + 1) * radiusIncrement, lines, temporaryCanvas)
+                    val actualTime = System.currentTimeMillis()
 
-                    if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
-                        val text = "%.0f".format(rangeSteps[radiusIndex])
-                        temporaryCanvas.drawText(
-                            text,
-                            center + (radiusIndex + 0.85f) * radiusIncrement,
-                            center + textHeight / 3f,
-                            textStyle,
-                        )
-                        if (radiusIndex == rangeStepCount - 1) {
-                            val distanceUnit = resources.getString(alertParameters.measurementSystem.unitNameString)
-                            temporaryCanvas.drawText(
-                                distanceUnit,
-                                center + (radiusIndex + 0.85f) * radiusIncrement,
-                                center + textHeight * 1.33f,
-                                textStyle,
+                    for (alertSector in alertResult.sectors) {
+                        val startAngle = alertSector.minimumSectorBearing + 90f + 180f
+
+                        val ranges = alertSector.ranges
+                        for (rangeIndex in ranges.indices.reversed()) {
+                            val alertSectorRange = ranges[rangeIndex]
+
+                            val sectorRadius = (rangeIndex + 1) * radiusIncrement
+                            val leftTop = center - sectorRadius
+                            val bottomRight = center + sectorRadius
+
+                            val drawColor = alertSectorRange.strikeCount > 0
+                            if (drawColor) {
+                                val color =
+                                    colorHandler.getColor(
+                                        actualTime,
+                                        alertSectorRange.latestStrikeTimestamp,
+                                        intervalDuration,
+                                    )
+                                sectorPaint.color = color
+                            }
+                            arcArea.set(leftTop, leftTop, bottomRight, bottomRight)
+                            temporaryCanvas.drawArc(
+                                arcArea,
+                                startAngle,
+                                sectorWidth,
+                                true,
+                                if (drawColor) sectorPaint else background,
                             )
                         }
                     }
+
+                    for (alertSector in alertResult.sectors) {
+                        val bearing = alertSector.minimumSectorBearing.toDouble()
+                        temporaryCanvas.drawLine(
+                            center,
+                            center,
+                            center + (radius * sin(bearing / 180.0f * Math.PI)).toFloat(),
+                            center + (radius * -cos(bearing / 180.0f * Math.PI)).toFloat(),
+                            lines,
+                        )
+
+                        if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
+                            drawSectorLabel(center, radiusIncrement, alertSector, bearing + sectorWidth / 2.0)
+                        }
+                    }
+
+                    textStyle.textAlign = Align.RIGHT
+                    val textHeight = textStyle.getFontMetrics(null)
+                    for (radiusIndex in 0 until rangeStepCount) {
+                        if (radiusIndex == rangeStepCount - 1) {
+                            lines.strokeWidth = (size / 80).toFloat()
+                        }
+                        drawCircle(center, (radiusIndex + 1) * radiusIncrement, lines, temporaryCanvas)
+
+                        if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
+                            val text = "%.0f".format(rangeSteps[radiusIndex])
+                            temporaryCanvas.drawText(
+                                text,
+                                center + (radiusIndex + 0.85f) * radiusIncrement,
+                                center + textHeight / 3f,
+                                textStyle,
+                            )
+                            if (radiusIndex == rangeStepCount - 1) {
+                                val distanceUnit = resources.getString(alertParameters.measurementSystem.unitNameString)
+                                temporaryCanvas.drawText(
+                                    distanceUnit,
+                                    center + (radiusIndex + 0.85f) * radiusIncrement,
+                                    center + textHeight * 1.33f,
+                                    textStyle,
+                                )
+                            }
+                        }
+                    }
                 }
-            } else if (alertResult is Outlying) {
-                drawOutOfRangeSymbol(center, radius, size, temporaryCanvas)
-            } else if (alertResult == NoLocation) {
-                if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
-                    drawAlertOrLocationMissingMessage(center, temporaryCanvas)
-                } else {
-                    drawNoLocationSymbol(center, radius, size, temporaryCanvas)
+
+                Outlying -> {
+                    drawOutOfRangeSymbol(center, radius, size, temporaryCanvas)
                 }
-            } else {
-                if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
-                    drawAlertOrLocationMissingMessage(center, temporaryCanvas)
-                } else {
-                    if (location != null) {
-                        drawOwnLocationSymbol(center, radius, size, temporaryCanvas)
+
+                NoLocation -> {
+                    if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
+                        drawAlertOrLocationMissingMessage(center, temporaryCanvas)
                     } else {
                         drawNoLocationSymbol(center, radius, size, temporaryCanvas)
+                    }
+                }
+
+                else -> {
+                    if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
+                        drawAlertOrLocationMissingMessage(center, temporaryCanvas)
+                    } else {
+                        if (location != null) {
+                            drawOwnLocationSymbol(center, radius, size, temporaryCanvas)
+                        } else {
+                            drawNoLocationSymbol(center, radius, size, temporaryCanvas)
+                        }
                     }
                 }
             }
