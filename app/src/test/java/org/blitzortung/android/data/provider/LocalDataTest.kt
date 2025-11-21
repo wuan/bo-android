@@ -19,6 +19,8 @@ class LocalDataTest {
 
     private lateinit var parameters: Parameters
 
+    private var globalGrid: GridParameters = GridParameters(longitudeStart=0.0, latitudeStart=0.0, longitudeDelta=0.318399, latitudeDelta=0.235637, longitudeBins=1130, latitudeBins=763, size=25000)
+
     @Before
     fun setUp() {
         uut = LocalData()
@@ -223,12 +225,35 @@ class LocalDataTest {
     fun updateOfLocalDataOnZoomOutsideLocalArea() {
         val boundingBox1 = BoundingBox(45.5, 10.5, 44.5, 9.5)
         uut.update(boundingBox1)
+        val parameters = parameters.copy(region = LOCAL_REGION, gridSize = 10000)
+        uut.updateParameters(parameters, null)
 
         val boundingBox2 = BoundingBox(51.0, 15.0, -40.0, 5.0)
         val result = uut.update(boundingBox2)
 
         assertThat(result).isTrue
         assertThat(uut.dataArea).isNull()
+    }
+
+    @Test
+    fun updateOfInitialGlobalDataOnZoomIntoLocalArea() {
+        val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
+
+        val result = uut.update(boundingBox)
+
+        assertThat(result).isTrue
+        assertThat(uut.dataArea).isEqualTo(DataArea(2, 8, 5))
+    }
+
+    @Test
+    fun updateOfGlobalDataOnZoomIntoLocalArea() {
+        uut.storeResult(globalGrid)
+        val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
+
+        val result = uut.update(boundingBox)
+
+        assertThat(result).isTrue
+        assertThat(uut.dataArea).isEqualTo(DataArea(2, 8, 5))
     }
 
     fun createLocation(
