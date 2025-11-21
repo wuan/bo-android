@@ -50,10 +50,11 @@ class MainTest {
 
         onView(withId(R.id.menu)).perform(click())
 
-        uiDevice.wait(
-            Until.findObject(By.text("Preferences")),
-            timeout,
-        )?.click()
+        uiDevice
+            .wait(
+                Until.findObject(By.text("Preferences")),
+                timeout,
+            )?.click()
 
         uiDevice.wait(
             Until.hasObject(
@@ -67,10 +68,11 @@ class MainTest {
     }
 
     private fun waitForAndAcceptQuickSettingsDialog() {
-        uiDevice.wait(
-            Until.findObject(By.text("OK")),
-            timeout,
-        )?.click()
+        uiDevice
+            .wait(
+                Until.findObject(By.text("OK")),
+                timeout,
+            )?.click()
     }
 
     private fun waitForAndAcceptLocationPermissionDialog() {
