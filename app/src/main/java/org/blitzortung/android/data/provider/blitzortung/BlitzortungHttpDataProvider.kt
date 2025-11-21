@@ -49,7 +49,7 @@ import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
 import org.blitzortung.android.data.provider.data.initializeResult
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 
 @Singleton
 class BlitzortungHttpDataProvider
@@ -174,7 +174,7 @@ class BlitzortungHttpDataProvider
                 parameters: Parameters,
                 history: History?,
                 flags: Flags,
-            ): ResultEvent {
+            ): DataReceived {
                 var result = initializeResult(parameters, history, flags)
 
                 if (parameters != this@BlitzortungHttpDataProvider.parameters) {
@@ -231,7 +231,7 @@ class BlitzortungHttpDataProvider
                 parameters: Parameters,
                 history: History?,
                 flags: Flags,
-            ): ResultEvent {
+            ): DataReceived {
                 return initializeResult(parameters, history, flags)
             }
 

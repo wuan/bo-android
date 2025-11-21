@@ -63,7 +63,7 @@ class OwnLocationOverlay(
     }
 
     val locationEventConsumer: (LocationEvent) -> Unit = { event ->
-        val location = event.location
+        val location = event.location()
 
         if (isEnabled) {
             item = location?.run { OwnLocationOverlayItem(location) }

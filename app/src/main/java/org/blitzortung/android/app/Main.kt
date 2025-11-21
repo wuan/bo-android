@@ -41,7 +41,7 @@ import androidx.preference.PreferenceManager
 import dagger.android.AndroidInjection
 import javax.inject.Inject
 import kotlin.math.roundToInt
-import org.blitzortung.android.alert.Alarm
+import org.blitzortung.android.alert.LocalActivity
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.BuildVersion
@@ -66,9 +66,10 @@ import org.blitzortung.android.data.Mode
 import org.blitzortung.android.data.SequenceValidator
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.result.DataEvent
-import org.blitzortung.android.data.provider.result.RequestStartedEvent
-import org.blitzortung.android.data.provider.result.ResultEvent
-import org.blitzortung.android.data.provider.result.StatusEvent
+import org.blitzortung.android.data.provider.result.NoData
+import org.blitzortung.android.data.provider.result.RequestStarted
+import org.blitzortung.android.data.provider.result.DataReceived
+import org.blitzortung.android.data.provider.result.StatusUpdate
 import org.blitzortung.android.dialogs.QuickSettingsDialog
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.map.MapFragment
@@ -126,19 +127,19 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     private lateinit var permissionRequesters: Array<PermissionRequester>
 
-    private var currentResult: ResultEvent? = null
+    private var currentResult: DataReceived? = null
 
     private val keepZoomOnGotoOwnLocation: Boolean
         inline get() = preferences.get(PreferenceKey.KEEP_ZOOM_GOTO_OWN_LOCATION, false)
 
     private val dataEventConsumer: (DataEvent) -> Unit = { event ->
         when (event) {
-            is RequestStartedEvent -> {
+            is RequestStarted -> {
                 Log.d(LOG_TAG, "Main.onDataUpdate() received request started event")
                 statusComponent.startProgress()
             }
 
-            is ResultEvent -> {
+            is DataReceived -> {
 
                 statusComponent.indicateError(event.failed)
                 if (!event.failed && sequenceValidator.isUpdate(event.sequenceNumber)) {
@@ -195,9 +196,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 binding.legendView.invalidate()
             }
 
-            is StatusEvent -> {
+            is StatusUpdate -> {
                 setStatusString(event.status)
             }
+
+            NoData -> {}
         }
     }
 
@@ -388,8 +391,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         val alertEvent = alertHandler.alertEvent
         if (alertEvent is AlertResultEvent) {
-            val alertResult = alertEvent.alertResult
-            if (alertResult is Alarm) {
+            val alertResult = alertEvent.warning
+            if (alertResult is LocalActivity) {
                 radius = (alertResult.closestStrikeDistance * 1.2f).coerceIn(50f, radius)
             }
         }

@@ -41,7 +41,7 @@ class ConsumerContainerTest {
     fun consumerShoudNotStoreCurrentBroadcast() {
         testConsumerContainer.broadcast("foo")
 
-        assertThat(testConsumerContainer.currentPayload).isNull()
+        assertThat(testConsumerContainer.currentPayload).isEqualTo("initial")
     }
 
     @Test
@@ -67,19 +67,11 @@ class ConsumerContainerTest {
     }
 
     @Test
-    fun addingNullConsumerShouldThrow() {
-        assertThatThrownBy {
-            testConsumerContainer.addConsumer(null)
-        }.isInstanceOf(IllegalArgumentException::class.java)
-            .hasMessage("consumer may not be null")
-    }
-
-    @Test
     fun addedConsumerShouldReceiveNoDataWithNoCurrentPayloadSet() {
         var result: String? = null
         testConsumerContainer.addConsumer { string -> result = string }
 
-        assertThat(result).isNull()
+        assertThat(result).isEqualTo("initial")
     }
 
     @Test
@@ -123,7 +115,7 @@ class ConsumerContainerTest {
     }
 }
 
-class TestConsumerContainer : ConsumerContainer<String>() {
+class TestConsumerContainer : ConsumerContainer<String>("initial") {
     val firstConsumersAdded = AtomicInteger()
 
     val lastConsumersRemoved = AtomicInteger()

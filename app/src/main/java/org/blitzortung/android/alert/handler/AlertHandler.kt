@@ -24,13 +24,11 @@ import android.location.Location
 import android.util.Log
 import javax.inject.Inject
 import javax.inject.Singleton
-import org.blitzortung.android.alert.Alarm
+import org.blitzortung.android.alert.LocalActivity
 import org.blitzortung.android.alert.AlertParameters
-import org.blitzortung.android.alert.AlertResult
-import org.blitzortung.android.alert.NoAlarm
-import org.blitzortung.android.alert.event.AlertCancelEvent
-import org.blitzortung.android.alert.event.AlertEvent
-import org.blitzortung.android.alert.event.AlertResultEvent
+import org.blitzortung.android.alert.Warning
+import org.blitzortung.android.alert.NoData
+import org.blitzortung.android.alert.NoLocation
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.controller.NotificationHandler
@@ -39,11 +37,12 @@ import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.beans.Strike
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.location.LocationHandler
+import org.blitzortung.android.location.LocationUpdate
 import org.blitzortung.android.protocol.ConsumerContainer
-import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.MeasurementSystem
 
 @Singleton
@@ -60,8 +59,8 @@ class AlertHandler
         var alertParameters: AlertParameters
             private set
 
-        private val alertConsumerContainer: ConsumerContainer<AlertEvent> =
-            object : ConsumerContainer<AlertEvent>() {
+        private val alertConsumerContainer: ConsumerContainer<Warning> =
+            object : ConsumerContainer<Warning>(NoData) {
                 override fun addedFirstConsumer() {
                     Log.d(Main.LOG_TAG, "AlertHandler: added first alert consumer")
                 }
@@ -86,17 +85,19 @@ class AlertHandler
         private var signalingLastTimestamp: Long = 0
 
         private val locationEventConsumer: (LocationEvent) -> Unit = { event ->
-            Log.v(Main.LOG_TAG, "AlertHandler.locationEventConsumer ${event.location}")
+            Log.v(Main.LOG_TAG, "AlertHandler.locationEventConsumer ${event}")
 
-            checkStrikes(lastStrikes, event.location)
+            if (event is LocationUpdate) {
+                checkStrikes(lastStrikes, event.location)
+            }
         }
 
         init {
             locationHandler.requestUpdates(locationEventConsumer)
         }
 
-        val dataEventConsumer: (Event) -> Unit = { event ->
-            if (event is ResultEvent) {
+        val dataEventConsumer: (DataEvent) -> Unit = { event ->
+            if (event is DataReceived) {
                 if (!event.flags.ignoreForAlerting) {
                     Log.v(Main.LOG_TAG, "AlertHandler.dataEventConsumer $event")
                     if (!event.failed && event.containsRealtimeData() && event.strikes != null) {
@@ -106,7 +107,7 @@ class AlertHandler
                         if (!event.containsRealtimeData()) {
                             lastStrikes = null
                         }
-                        broadcastResult(null)
+                        broadcastResult(NoData)
                     }
                 }
             }
@@ -195,7 +196,11 @@ class AlertHandler
                         Main.LOG_TAG,
                         "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${locationHandler.location != null}",
                     )
-                    NoAlarm
+                    if (location == null) {
+                        NoLocation
+                    } else {
+                        NoData
+                    }
                 }
 
             processResult(alertResult)
@@ -204,25 +209,24 @@ class AlertHandler
         val maxDistance: Float
             get() = alertParameters.rangeSteps.last()
 
-        private fun broadcastResult(alertResult: AlertResult?) {
-            val alertEvent = if (alertResult != null) AlertResultEvent(alertResult) else ALERT_CANCEL_EVENT
-            Log.d(Main.LOG_TAG, "AlertHandler.broadcastResult($alertEvent)")
-            alertConsumerContainer.storeAndBroadcast(alertEvent)
+        private fun broadcastResult(warning: Warning) {
+            Log.d(Main.LOG_TAG, "AlertHandler.broadcastResult($warning)")
+            alertConsumerContainer.storeAndBroadcast(warning)
         }
 
-        private fun processResult(alertResult: AlertResult) {
-            if (alertEnabled && alertResult is Alarm) {
-                if (alertResult.closestStrikeDistance <= signalingDistanceLimit) {
-                    alertSignal(alertResult)
+        private fun processResult(warning: Warning) {
+            if (alertEnabled && warning is LocalActivity) {
+                if (warning.closestStrikeDistance <= signalingDistanceLimit) {
+                    alertSignal(warning)
                 }
-                if (alertResult.closestStrikeDistance <= notificationDistanceLimit) {
-                    alertNotification(alertResult)
+                if (warning.closestStrikeDistance <= notificationDistanceLimit) {
+                    alertNotification(warning)
                 }
             }
-            broadcastResult(alertResult)
+            broadcastResult(warning)
         }
 
-        private fun alertSignal(alertResult: Alarm) {
+        private fun alertSignal(alertResult: LocalActivity) {
             val signalingLatestTimestamp = alertDataHandler.getLatestTimstampWithin(signalingDistanceLimit, alertResult)
             if (signalingLatestTimestamp > signalingLastTimestamp + signalingThresholdTime) {
                 Log.d(Main.LOG_TAG, "AlertHandler.alertSignal() signal ${signalingLatestTimestamp / 1000}")
@@ -236,7 +240,7 @@ class AlertHandler
             }
         }
 
-        private fun alertNotification(alarm: Alarm) {
+        private fun alertNotification(alarm: LocalActivity) {
             val notificationLatestTimestamp =
                 alertDataHandler.getLatestTimstampWithin(notificationDistanceLimit, alarm)
             if (notificationLatestTimestamp > notificationLastTimestamp) {
@@ -261,20 +265,16 @@ class AlertHandler
             }
         }
 
-        fun requestUpdates(alertEventConsumer: (AlertEvent) -> Unit) {
+        fun requestUpdates(alertEventConsumer: (Warning) -> Unit) {
             alertConsumerContainer.addConsumer(alertEventConsumer)
         }
 
-        fun removeUpdates(alertEventConsumer: (AlertEvent) -> Unit) {
+        fun removeUpdates(alertEventConsumer: (Warning) -> Unit) {
             alertConsumerContainer.removeConsumer(alertEventConsumer)
         }
 
-        val alertEvent: AlertEvent
-            get() = alertConsumerContainer.currentPayload ?: ALERT_CANCEL_EVENT
-
-        companion object {
-            val ALERT_CANCEL_EVENT = AlertCancelEvent()
-        }
+        val alertEvent: Warning
+            get() = alertConsumerContainer.currentPayload
     }
 
 data class Strikes(

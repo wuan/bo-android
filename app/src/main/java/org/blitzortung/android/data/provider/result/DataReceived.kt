@@ -26,7 +26,7 @@ import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
 
-data class ResultEvent(
+data class DataReceived(
     val strikes: List<Strike>? = null,
     val stations: List<Station>? = null,
     val gridParameters: GridParameters? = null,

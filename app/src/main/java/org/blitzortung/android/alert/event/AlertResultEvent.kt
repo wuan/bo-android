@@ -18,8 +18,8 @@
 
 package org.blitzortung.android.alert.event
 
-import org.blitzortung.android.alert.AlertResult
+import org.blitzortung.android.alert.Warning
 
 data class AlertResultEvent(
-    val alertResult: AlertResult?,
+    val warning: Warning?,
 ) : AlertEvent

@@ -20,39 +20,47 @@ package org.blitzortung.android.alert
 
 import android.content.Context
 import org.blitzortung.android.app.R
+import org.blitzortung.android.app.R.color.Green
+import org.blitzortung.android.app.R.color.RedWarn
+import org.blitzortung.android.app.R.color.Yellow
 
 class AlertLabelHandler(
     private val alertLabel: AlertLabel,
     private val context: Context,
 ) {
-    fun apply(result: Alarm) {
+    fun apply(result: Warning) {
 
-        var textColorResource = R.color.Green
-
-        val warningText = when(result) {
-            is Alarm -> {
-                if (result.closestStrikeDistance < Float.POSITIVE_INFINITY) {
-                    textColorResource =
-                        when (result.closestStrikeDistance) {
-                            in 0.0..20.0 -> R.color.RedWarn
-                            in 20.0..50.0 -> R.color.Yellow
-                            else -> R.color.Green
-                        }
-                    val distanceUnit = context.resources.getString(result.parameters.measurementSystem.unitNameString)
-                    "%.0f$distanceUnit".format(result.closestStrikeDistance) + if (result.closestStrikeDistance > 0.1) {
-                        " ${result.bearingName}"
-                    } else {""}
-                } else {
-                    ""
-                }
-            }
-            OutOfArea -> "<->"
-            NoAlarm -> ""
+        val (warningText, textColorResource) = when (result) {
+            is LocalActivity -> extractStatus(result)
+            Outlying -> "<->" to R.color.RedWarn
+            NoData -> "" to R.color.Green
+            NoLocation -> "?" to R.color.RedWarn
         }
-
 
         val color = context.getColor(textColorResource)
         alertLabel.setAlarmTextColor(color)
         alertLabel.setAlarmText(warningText)
     }
+
+    fun extractStatus(result: LocalActivity): Pair<String, Int> {
+        return if (result.closestStrikeDistance < Float.POSITIVE_INFINITY) {
+            val textColorResource =
+                when (result.closestStrikeDistance) {
+                    in 0.0..20.0 -> RedWarn
+                    in 20.0..50.0 -> Yellow
+                    else -> Green
+                }
+            val distanceUnit = context.resources.getString(result.parameters.measurementSystem.unitNameString)
+            val status =
+                "%.0f$distanceUnit".format(result.closestStrikeDistance) + if (result.closestStrikeDistance > 0.1) {
+                    " ${result.bearingName}"
+                } else {
+                    ""
+                }
+            status to textColorResource
+        } else {
+            "" to R.color.Green
+        }
+    }
+
 }

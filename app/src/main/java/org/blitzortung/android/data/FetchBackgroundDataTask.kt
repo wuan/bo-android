@@ -9,17 +9,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.data.provider.data.DataProvider
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.util.isAtLeast
 
 internal class FetchBackgroundDataTask(
     dataMode: DataMode,
     dataProvider: DataProvider,
-    resultConsumer: (ResultEvent) -> Unit,
+    resultConsumer: (DataReceived) -> Unit,
     toast: KSuspendFunction1<Int, Unit>,
     private val wakeLock: PowerManager.WakeLock,
 ) : FetchDataTask(dataMode, dataProvider, resultConsumer) {
-    override fun onPostExecute(result: ResultEvent?) {
+    override fun onPostExecute(result: DataReceived?) {
         super.onPostExecute(result)
         if (wakeLock.isHeld) {
             try {
@@ -40,7 +40,7 @@ internal class FetchBackgroundDataTask(
         parameters: Parameters,
         history: History?,
         flags: Flags,
-    ): ResultEvent? =
+    ): DataReceived? =
         withContext(Dispatchers.IO) {
             if (isAtLeast(Build.VERSION_CODES.N)) {
                 wakeLock.acquire(ServiceDataHandler.WAKELOCK_TIMEOUT)

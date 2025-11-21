@@ -26,10 +26,10 @@ import android.util.AttributeSet
 import android.util.Log
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.overlay.StrikeListOverlay
-import org.blitzortung.android.protocol.Event
 import org.blitzortung.android.util.TabletAwareView
 
 private const val SMALL_TEXT_SCALE = 0.7f
@@ -50,8 +50,8 @@ class HistogramView
         private var histogram: IntArray? = null
         lateinit var mapFragment: MapFragment
 
-        val dataConsumer = { event: Event ->
-            if (event is ResultEvent) {
+        val dataConsumer = { event: DataEvent ->
+            if (event is DataReceived) {
                 updateHistogram(event)
             }
         }
@@ -151,7 +151,7 @@ class HistogramView
             this.strikesOverlay = strikesOverlay
         }
 
-        private fun updateHistogram(dataEvent: ResultEvent) {
+        private fun updateHistogram(dataEvent: DataReceived) {
             if (dataEvent.failed) {
                 visibility = INVISIBLE
                 histogram = null
@@ -175,7 +175,7 @@ class HistogramView
             }
         }
 
-        private fun createHistogram(result: ResultEvent): IntArray {
+        private fun createHistogram(result: DataReceived): IntArray {
             result.parameters.let { parameters ->
                 if (result.strikes == null) {
                     return intArrayOf()

@@ -9,8 +9,8 @@ import android.util.AttributeSet
 import androidx.preference.PreferenceManager
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.beans.GridParameters
-import org.blitzortung.android.data.provider.result.ResultEvent
-import org.blitzortung.android.protocol.Event
+import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.util.TabletAwareView
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
@@ -36,8 +36,8 @@ class RegionView
 
         private var gridParameters: GridParameters? = null
 
-        val dataConsumer = { event: Event ->
-            if (event is ResultEvent) {
+        val dataConsumer = { event: DataEvent ->
+            if (event is DataReceived) {
                 updateHistogram(event)
             }
         }
@@ -164,7 +164,7 @@ class RegionView
             canvas.drawLine(x1, y1, x1, y2, paint)
         }
 
-        private fun updateHistogram(dataEvent: ResultEvent) {
+        private fun updateHistogram(dataEvent: DataReceived) {
             if (dataEvent.failed) {
                 visibility = INVISIBLE
                 gridParameters = null

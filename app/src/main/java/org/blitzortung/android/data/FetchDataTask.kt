@@ -9,12 +9,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.data.provider.data.DataProvider
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 
 internal open class FetchDataTask(
     private val dataMode: DataMode,
     private val dataProvider: DataProvider,
-    private val resultConsumer: (ResultEvent) -> Unit,
+    private val resultConsumer: (DataReceived) -> Unit,
 ) : CoroutineScope {
     private var job: Job = Job()
 
@@ -37,7 +37,7 @@ internal open class FetchDataTask(
         parameters: Parameters,
         history: History?,
         flags: Flags,
-    ): ResultEvent? =
+    ): DataReceived? =
         withContext(Dispatchers.IO) {
             try {
                 dataProvider.retrieveData {
@@ -50,7 +50,7 @@ internal open class FetchDataTask(
             } catch (e: RuntimeException) {
                 Log.e(Main.LOG_TAG, "error fetching data", e)
 
-                ResultEvent(
+                DataReceived(
                     failed = true,
                     referenceTime = System.currentTimeMillis(),
                     parameters = parameters,
@@ -60,7 +60,7 @@ internal open class FetchDataTask(
             }
         }
 
-    open fun onPostExecute(result: ResultEvent?) {
+    open fun onPostExecute(result: DataReceived?) {
         if (result != null) {
             resultConsumer.invoke(result)
         }

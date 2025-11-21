@@ -20,17 +20,19 @@ package org.blitzortung.android.alert
 
 import org.blitzortung.android.alert.data.AlertSector
 
-sealed interface AlertResult
+sealed interface Warning
 
-object OutOfArea : AlertResult
+object Outlying : Warning
 
-object NoAlarm : AlertResult
+object NoData : Warning
 
-data class Alarm(
+object NoLocation : Warning
+
+data class LocalActivity(
     val sectors: List<AlertSector>,
     val parameters: AlertParameters,
     val referenceTime: Long,
-) : AlertResult {
+) : Warning {
 
     val sectorsByDistance: Map<Float, AlertSector> by lazy {
         sectors

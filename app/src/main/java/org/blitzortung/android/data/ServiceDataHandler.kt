@@ -34,6 +34,7 @@ import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.LocalData
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.provider.result.NoData
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.protocol.ConsumerContainer
 
@@ -59,7 +60,7 @@ class ServiceDataHandler
             )
 
         private val dataConsumerContainer =
-            object : ConsumerContainer<DataEvent>() {
+            object : ConsumerContainer<DataEvent>(NoData) {
                 override fun addedFirstConsumer() {
                     Log.d(Main.LOG_TAG, "ServiceDataHandler: added first data consumer")
                 }
@@ -70,8 +71,8 @@ class ServiceDataHandler
             }
 
         val locationEventConsumer: (LocationEvent) -> Unit = { locationEvent ->
-            Log.v(Main.LOG_TAG, "AlertView received location ${locationEvent.location}")
-            location = locationEvent.location
+            Log.v(Main.LOG_TAG, "AlertView received location ${locationEvent}")
+            location = locationEvent.location()
         }
 
         private val dataMode = DataMode(grid = true, region = false)

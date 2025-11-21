@@ -18,4 +18,4 @@
 
 package org.blitzortung.android.data.provider.result
 
-class RequestStartedEvent : DataEvent
+data class StatusUpdate(val status: String) : DataEvent

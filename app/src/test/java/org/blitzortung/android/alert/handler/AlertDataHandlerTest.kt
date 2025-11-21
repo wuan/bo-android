@@ -5,9 +5,12 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
+import org.blitzortung.android.alert.LocalActivity
 import org.blitzortung.android.alert.AlertParameters
-import org.blitzortung.android.alert.AlertResult
+import org.blitzortung.android.alert.Outlying
+import org.blitzortung.android.alert.data.AlertSectorRange
 import org.blitzortung.android.data.beans.DefaultStrike
+import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.util.MeasurementSystem
 import org.junit.Before
 import org.junit.Test
@@ -68,7 +71,7 @@ class AlertDataHandlerTest {
         strike = strike.copy(timestamp = thresholdTime)
         every { location.distanceTo(any()) } returns 2500f
 
-        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)!!
+        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now) as LocalActivity
 
         val sector = result.sectorWithClosestStrike
         assertThat(sector).isNotNull
@@ -83,7 +86,7 @@ class AlertDataHandlerTest {
         every { location.distanceTo(any()) } returns 2500f
         every { location.bearingTo(any()) } returns 90f
 
-        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)!!
+        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now) as LocalActivity
 
         val sector = result.sectorWithClosestStrike
         assertThat(sector).isNotNull
@@ -98,7 +101,7 @@ class AlertDataHandlerTest {
         every { location.distanceTo(any()) } returns 2500f
         every { location.bearingTo(any()) } returns 180f
 
-        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)!!
+        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now) as LocalActivity
 
         val sector = result.sectorWithClosestStrike
         assertThat(sector).isNotNull
@@ -112,7 +115,7 @@ class AlertDataHandlerTest {
         strike = strike.copy(timestamp = thresholdTime)
         every { location.distanceTo(any()) } returns 5000.1f
 
-        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)!!
+        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now) as LocalActivity
 
         assertThat(result.sectorWithClosestStrike).isNull()
         assertThat(rangeWithStrike(result)).isNull()
@@ -124,7 +127,7 @@ class AlertDataHandlerTest {
         every { location.distanceTo(any()) } returns 2500.1f
         every { location.bearingTo(any()) } returns -90f
 
-        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)!!
+        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now) as LocalActivity
 
         assertThat(result.sectorWithClosestStrike).isNull()
         assertSectorAndRange(result, "N", 5f, beforeThresholdTime)
@@ -135,14 +138,59 @@ class AlertDataHandlerTest {
         strike = strike.copy(timestamp = beforeThresholdTime)
         every { location.distanceTo(any()) } returns 5000.1f
 
-        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now)!!
+        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now) as LocalActivity
 
         assertThat(result.sectorWithClosestStrike).isNull()
         assertThat(rangeWithStrike(result)).isNull()
     }
 
+    @Test
+    fun testGridDataWithAlert() {
+        strike = strike.copy(timestamp = now, longitude = 10.5, latitude = 49.52)
+        location = createLocation(10.5, 49.5)
+
+        val gridParameters = GridParameters(10.0,50.0,0.2, 0.2,10,10)
+        val strikes = Strikes(listOf(strike), gridParameters=gridParameters)
+        val result = alertDataHandler.checkStrikes(strikes, location, parameters, now) as LocalActivity
+
+        assertThat(result.sectorWithClosestStrike).isNotNull()
+        assertThat(rangeWithStrike(result)).isEqualTo(
+            AlertSectorRange(rangeMinimum = 0.0f, rangeMaximum = 2.5f, strikeCount = 1, latestStrikeTimestamp = now)
+        )
+    }
+
+    @Test
+    fun testGridDataWithoutAlert() {
+        strike = strike.copy(timestamp = now, longitude = 10.5, latitude = 49.8)
+        location = createLocation(10.5, 49.5)
+
+        val gridParameters = GridParameters(10.0,50.0,0.2, 0.2,10,10)
+        val strikes = Strikes(listOf(strike), gridParameters=gridParameters)
+        val result = alertDataHandler.checkStrikes(strikes, location, parameters, now) as LocalActivity
+
+        assertThat(result.sectorWithClosestStrike).isNull()
+        assertThat(rangeWithStrike(result)).isNull()
+    }
+
+    @Test
+    fun testGridDataWithOutsideLocationWithInset() {
+        strike = strike.copy(timestamp = now, longitude = 10.5, latitude = 49.8)
+        location = createLocation(10.5, 49.81)
+
+        val gridParameters = GridParameters(10.0,50.0,0.2, 0.2,10,10)
+        val strikes = Strikes(listOf(strike), gridParameters=gridParameters)
+        val result = alertDataHandler.checkStrikes(strikes, location, parameters, now)
+
+        assertThat(result).isEqualTo(Outlying)
+    }
+
+    fun createLocation(longitude: Double, latitude: Double): Location = Location("").also {
+        it.longitude = longitude
+        it.latitude = latitude
+    }
+
     private fun assertSectorAndRange(
-        result: AlertResult,
+        result: LocalActivity,
         expectedSectorLabel: String,
         expectedRange: Float,
         expectedTime: Long,
@@ -161,9 +209,9 @@ class AlertDataHandlerTest {
         }
     }
 
-    private fun sectorWithStrike(result: AlertResult) =
+    private fun sectorWithStrike(result: LocalActivity) =
         result.sectors.firstOrNull { !it.ranges.none { range -> range.strikeCount > 0 } }
 
-    private fun rangeWithStrike(result: AlertResult) =
+    private fun rangeWithStrike(result: LocalActivity) =
         result.sectors.flatMap { it.ranges }.firstOrNull { it.strikeCount > 0 }
 }

@@ -6,18 +6,18 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.data.Parameters
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 
 @Singleton
 class DataCache
     @Inject
     constructor() {
-        val cache = hashMapOf<Parameters, Timestamped<ResultEvent>>()
+        val cache = hashMapOf<Parameters, Timestamped<DataReceived>>()
 
         fun get(
             parameters: Parameters,
             expiryTime: Long = DEFAULT_EXPIRY_TIME,
-        ): ResultEvent? {
+        ): DataReceived? {
             val entry = cache[parameters] ?: return null
             if (entry.timestamp < System.currentTimeMillis() - expiryTime) {
                 cache.remove(parameters)
@@ -28,7 +28,7 @@ class DataCache
 
         fun put(
             parameters: Parameters,
-            dataEvent: ResultEvent,
+            dataEvent: DataReceived,
         ) {
             cache[parameters] = Timestamped(dataEvent.copy(sequenceNumber = null))
         }

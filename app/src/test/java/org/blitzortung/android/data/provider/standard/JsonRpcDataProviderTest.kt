@@ -16,7 +16,7 @@ import org.blitzortung.android.data.TimeInterval
 import org.blitzortung.android.data.beans.GridElement
 import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.jsonrpc.JsonRpcClient
 import org.blitzortung.android.jsonrpc.JsonRpcResponse
 import org.json.JSONArray
@@ -79,7 +79,7 @@ class JsonRpcDataProviderTest {
             )
         } returns JsonRpcResponse(response)
 
-        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
+        val result: DataReceived = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
         assertThat(result.gridParameters?.latitudeStart).isEqualTo(0.0)
         assertThat(result.gridParameters?.longitudeStart).isEqualTo(0.0)
@@ -131,7 +131,7 @@ class JsonRpcDataProviderTest {
             )
         } returns JsonRpcResponse(response)
 
-        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
+        val result: DataReceived = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
         assertThat(result.gridParameters?.latitudeStart).isEqualTo(15.0)
         assertThat(result.gridParameters?.longitudeStart).isEqualTo(10.0)
@@ -181,7 +181,7 @@ class JsonRpcDataProviderTest {
             )
         } returns JsonRpcResponse(response)
 
-        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
+        val result: DataReceived = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
         assertThat(result.gridParameters?.latitudeStart).isEqualTo(15.0)
         assertThat(result.gridParameters?.longitudeStart).isEqualTo(10.0)
