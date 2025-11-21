@@ -19,7 +19,6 @@
 package org.blitzortung.android.alert
 
 import android.content.Context
-import android.content.res.Resources
 import org.blitzortung.android.app.R
 
 class AlertLabelHandler(

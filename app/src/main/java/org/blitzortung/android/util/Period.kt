@@ -31,26 +31,21 @@ class Period {
     fun shouldUpdate(
         currentTime: Long,
         currentPeriod: Int,
-    ): Boolean {
-        return if (currentTime >= lastUpdateTime + currentPeriod) {
+    ): Boolean =
+        if (currentTime >= lastUpdateTime + currentPeriod) {
             updateCount++
             lastUpdateTime = currentTime
             true
         } else {
             false
         }
-    }
 
-    fun isNthUpdate(countPeriod: Int): Boolean {
-        return (updateCount % countPeriod) == 0
-    }
+    fun isNthUpdate(countPeriod: Int): Boolean = (updateCount % countPeriod) == 0
 
     fun getCurrentUpdatePeriod(
         currentTime: Long,
         currentPeriod: Int,
-    ): Long {
-        return currentPeriod - (currentTime - lastUpdateTime)
-    }
+    ): Long = currentPeriod - (currentTime - lastUpdateTime)
 
     fun restart() {
         lastUpdateTime = 0

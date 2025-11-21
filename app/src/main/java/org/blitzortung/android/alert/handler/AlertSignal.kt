@@ -27,97 +27,98 @@ import org.blitzortung.android.util.isAtLeast
 
 @Singleton
 class AlertSignal
-    @Inject
-    constructor(
-        private val context: Context,
-        private val vibrator: Vibrator,
-        private val notificationManager: NotificationManager,
-    ) : OnSharedPreferenceChangeListener {
-        init {
-            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-            preferences.registerOnSharedPreferenceChangeListener(this)
-            onSharedPreferenceChanged(preferences, ALERT_VIBRATION_SIGNAL, ALERT_SOUND_SIGNAL)
-        }
+@Inject
+constructor(
+    private val context: Context,
+    private val vibrator: Vibrator,
+    private val notificationManager: NotificationManager,
+) : OnSharedPreferenceChangeListener {
+    init {
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+        preferences.registerOnSharedPreferenceChangeListener(this)
+        onSharedPreferenceChanged(preferences, ALERT_VIBRATION_SIGNAL, ALERT_SOUND_SIGNAL)
+    }
 
-        private var soundSignal: Uri? = null
+    private var soundSignal: Uri? = null
 
-        private var vibrationDuration = 0L
+    private var vibrationDuration = 0L
 
-        override fun onSharedPreferenceChanged(
-            sharedPreferences: SharedPreferences,
-            key: PreferenceKey,
-        ) {
-            when (key) {
-                ALERT_VIBRATION_SIGNAL -> {
-                    vibrationDuration = sharedPreferences.get(key, 3) * 10L
-                    Log.v(
-                        Main.LOG_TAG,
-                        "AlertHandler.onSharedPreferenceChanged() vibrationDuration = $vibrationDuration",
-                    )
-                }
-
-                ALERT_SOUND_SIGNAL -> {
-                    val signalUri = sharedPreferences.get(key, "")
-                    soundSignal = if (signalUri.isNotEmpty()) signalUri.toUri() else null
-                    Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() soundSignal = $soundSignal")
-                }
-
-                else -> {}
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        key: PreferenceKey,
+    ) {
+        when (key) {
+            ALERT_VIBRATION_SIGNAL -> {
+                vibrationDuration = sharedPreferences.get(key, 3) * 10L
+                Log.v(
+                    Main.LOG_TAG,
+                    "AlertHandler.onSharedPreferenceChanged() vibrationDuration = $vibrationDuration",
+                )
             }
-        }
 
-        fun emitSignal() {
-            vibrateIfEnabled()
-            val playSound = if (isAtLeast(Build.VERSION_CODES.M)) !doNotDisturb() else true
-            if (playSound) {
-                playSoundIfEnabled()
+            ALERT_SOUND_SIGNAL -> {
+                val signalUri = sharedPreferences.get(key, "")
+                soundSignal = if (signalUri.isNotEmpty()) signalUri.toUri() else null
+                Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() soundSignal = $soundSignal")
             }
-        }
 
-        private fun vibrateIfEnabled() {
-            if (vibrationDuration > 0) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    // Android 8.0+ (API 26+): Use VibrationEffect
-                    val vibrationEffect = VibrationEffect.createOneShot(
+            else -> {}
+        }
+    }
+
+    fun emitSignal() {
+        vibrateIfEnabled()
+        val playSound = if (isAtLeast(Build.VERSION_CODES.M)) !doNotDisturb() else true
+        if (playSound) {
+            playSoundIfEnabled()
+        }
+    }
+
+    private fun vibrateIfEnabled() {
+        if (vibrationDuration > 0) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Android 8.0+ (API 26+): Use VibrationEffect
+                val vibrationEffect =
+                    VibrationEffect.createOneShot(
                         vibrationDuration,
                         VibrationEffect.DEFAULT_AMPLITUDE
                     )
-                    vibrator.vibrate(vibrationEffect)
-                } else {
-                    // Legacy devices: Use deprecated method
-                    @Suppress("DEPRECATION")
-                    vibrator.vibrate(vibrationDuration)
-                }
+                vibrator.vibrate(vibrationEffect)
+            } else {
+                // Legacy devices: Use deprecated method
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(vibrationDuration)
             }
-        }
-
-        private fun playSoundIfEnabled() {
-            soundSignal?.let { signal ->
-                RingtoneManager.getRingtone(context, signal)?.let { ringtone ->
-                    playRingtone(ringtone)
-                }
-            }
-        }
-
-        private fun playRingtone(ringtone: Ringtone): Int {
-            if (!ringtone.isPlaying) {
-                if (isAtLeast(Build.VERSION_CODES.LOLLIPOP)) {
-                    ringtone.audioAttributes =
-                        AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_NOTIFICATION).build()
-                } else {
-                    @Suppress("DEPRECATION")
-                    ringtone.streamType = AudioManager.STREAM_NOTIFICATION
-                }
-                ringtone.play()
-            }
-            return Log.v(Main.LOG_TAG, "playing " + ringtone.getTitle(context))
-        }
-
-        @RequiresApi(Build.VERSION_CODES.M)
-        private fun doNotDisturb(): Boolean {
-            val currentInterruptionFilter = notificationManager.currentInterruptionFilter
-            val doNotDisturb = currentInterruptionFilter >= NotificationManager.INTERRUPTION_FILTER_PRIORITY
-            Log.v(Main.LOG_TAG, "AlertHandler.doNotDisturb() current: $currentInterruptionFilter filter: $doNotDisturb")
-            return doNotDisturb
         }
     }
+
+    private fun playSoundIfEnabled() {
+        soundSignal?.let { signal ->
+            RingtoneManager.getRingtone(context, signal)?.let { ringtone ->
+                playRingtone(ringtone)
+            }
+        }
+    }
+
+    private fun playRingtone(ringtone: Ringtone): Int {
+        if (!ringtone.isPlaying) {
+            if (isAtLeast(Build.VERSION_CODES.LOLLIPOP)) {
+                ringtone.audioAttributes =
+                    AudioAttributes.Builder().setLegacyStreamType(AudioManager.STREAM_NOTIFICATION).build()
+            } else {
+                @Suppress("DEPRECATION")
+                ringtone.streamType = AudioManager.STREAM_NOTIFICATION
+            }
+            ringtone.play()
+        }
+        return Log.v(Main.LOG_TAG, "playing " + ringtone.getTitle(context))
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun doNotDisturb(): Boolean {
+        val currentInterruptionFilter = notificationManager.currentInterruptionFilter
+        val doNotDisturb = currentInterruptionFilter >= NotificationManager.INTERRUPTION_FILTER_PRIORITY
+        Log.v(Main.LOG_TAG, "AlertHandler.doNotDisturb() current: $currentInterruptionFilter filter: $doNotDisturb")
+        return doNotDisturb
+    }
+}

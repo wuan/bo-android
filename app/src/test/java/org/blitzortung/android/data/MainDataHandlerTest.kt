@@ -80,8 +80,9 @@ class MainDataHandlerTest {
     }
 
     @Test
-    fun SharedPreferencesChangedForDataSource() {
-        preferences.edit()
+    fun sharedPreferencesChangedForDataSource() {
+        preferences
+            .edit()
             .putString(PreferenceKey.DATA_SOURCE.toString(), DataProviderType.HTTP.toString())
             .commit()
 
@@ -92,8 +93,9 @@ class MainDataHandlerTest {
     }
 
     @Test
-    fun SharedPreferencesChangedForGridSize() {
-        preferences.edit()
+    fun sharedPreferencesChangedForGridSize() {
+        preferences
+            .edit()
             .putString(PreferenceKey.GRID_SIZE.toString(), "5000")
             .commit()
 

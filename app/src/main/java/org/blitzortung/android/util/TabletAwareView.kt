@@ -54,44 +54,27 @@ open class TabletAwareView(
     constructor(context: Context) : this(context, null, 0)
 
     companion object {
-        fun isTablet(context: Context): Boolean {
-            return if (isAtLeast(Build.VERSION_CODES.HONEYCOMB_MR2)) {
+        fun isTablet(context: Context): Boolean =
+            if (isAtLeast(Build.VERSION_CODES.HONEYCOMB_MR2)) {
                 context.resources.configuration.smallestScreenWidthDp >= 600
             } else {
                 false
             }
-        }
 
-        fun padding(context: Context): Float {
-            return padding(isTablet(context))
-        }
+        fun padding(context: Context): Float = padding(isTablet(context))
 
-        fun padding(scaleForTablet: Boolean): Float {
-            return if (scaleForTablet) 8f else 5f
-        }
+        fun padding(scaleForTablet: Boolean): Float = if (scaleForTablet) 8f else 5f
 
-        fun textSize(context: Context): Float {
-            return textSize(isTablet(context))
-        }
+        fun textSize(context: Context): Float = textSize(isTablet(context))
 
-        fun textSize(scaleForTablet: Boolean): Float {
-            return 14f * textSizeFactor(scaleForTablet)
-        }
+        fun textSize(scaleForTablet: Boolean): Float = 14f * textSizeFactor(scaleForTablet)
 
-        fun sizeFactor(context: Context): Float {
-            return sizeFactor(isTablet(context))
-        }
+        fun sizeFactor(context: Context): Float = sizeFactor(isTablet(context))
 
-        fun sizeFactor(scaleForTablet: Boolean): Float {
-            return if (scaleForTablet) 1.8f else 1f
-        }
+        fun sizeFactor(scaleForTablet: Boolean): Float = if (scaleForTablet) 1.8f else 1f
 
-        fun textSizeFactor(context: Context): Float {
-            return textSizeFactor(isTablet(context))
-        }
+        fun textSizeFactor(context: Context): Float = textSizeFactor(isTablet(context))
 
-        fun textSizeFactor(scaleForTablet: Boolean): Float {
-            return if (scaleForTablet) 1.4f else 1f
-        }
+        fun textSizeFactor(scaleForTablet: Boolean): Float = if (scaleForTablet) 1.4f else 1f
     }
 }

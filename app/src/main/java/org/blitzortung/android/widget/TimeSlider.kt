@@ -171,7 +171,6 @@ class TimeSlider : AppCompatSeekBar {
         }
     }
 
-    private fun calculateX(progress: Int): Float {
-        return paddingLeft.toFloat() + (width - (paddingLeft.toFloat() + paddingRight.toFloat())) / max * progress
-    }
+    private fun calculateX(progress: Int): Float =
+        paddingLeft.toFloat() + (width - (paddingLeft.toFloat() + paddingRight.toFloat())) / max * progress
 }

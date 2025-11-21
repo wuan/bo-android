@@ -31,7 +31,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.preference.PreferenceManager
 import java.util.Locale
 import org.blitzortung.android.app.Main
-import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.location.LocationHandler
@@ -85,7 +84,8 @@ class OwnMapView(context: Context) : MapView(context) {
                     }
                 }
 
-            AlertDialog.Builder(context)
+            AlertDialog
+                .Builder(context)
                 .setMessage("$locationText: %.4f %.4f?".format(longitude, latitude))
                 .setPositiveButton(android.R.string.ok, dialogClickListener)
                 .setNegativeButton(android.R.string.cancel, dialogClickListener)
@@ -95,13 +95,12 @@ class OwnMapView(context: Context) : MapView(context) {
         private fun roundCoordinate(value: Double): String = String.format(Locale.ROOT, COORDINATE_FORMAT, value)
     }
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        return if (gestureDetector.onTouchEvent(event)) {
+    override fun onTouchEvent(event: MotionEvent): Boolean =
+        if (gestureDetector.onTouchEvent(event)) {
             true
         } else {
             super.onTouchEvent(event)
         }
-    }
 
     val popup: View by lazy { LayoutInflater.from(context).inflate(R.layout.popup, this, false) }
 

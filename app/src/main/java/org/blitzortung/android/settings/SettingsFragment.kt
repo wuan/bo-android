@@ -34,7 +34,9 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.location.LocationHandler
 
-class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
+class SettingsFragment :
+    PreferenceFragmentCompat(),
+    OnSharedPreferenceChangeListener {
     @set:Inject
     internal lateinit var preferences: SharedPreferences
 
@@ -176,7 +178,7 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
             PreferenceKey.LOCATION_LONGITUDE,
             PreferenceKey.LOCATION_LATITUDE,
             PreferenceKey.ALERT_SOUND_SIGNAL,
-            -> {
+                -> {
                 findPreference<Preference>(key)?.let { updatePreferenceSummary(it) }
             }
 
@@ -240,8 +242,8 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
         findPreference<EditTextPreference>(PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME)?.isEnabled = enabled
     }
 
-    override fun onPreferenceTreeClick(preference: Preference): Boolean {
-        return if (preference.key == PreferenceKey.ALERT_SOUND_SIGNAL.toString()) {
+    override fun onPreferenceTreeClick(preference: Preference): Boolean =
+        if (preference.key == PreferenceKey.ALERT_SOUND_SIGNAL.toString()) {
             val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
             intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION)
             intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
@@ -271,13 +273,9 @@ class SettingsFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeLis
         } else {
             super.onPreferenceTreeClick(preference)
         }
-    }
-
 }
 
-fun <T : Preference> PreferenceFragmentCompat.findPreference(key: PreferenceKey): T? {
-    return findPreference<T>(key.toString())
-}
+fun <T : Preference> PreferenceFragmentCompat.findPreference(key: PreferenceKey): T? = findPreference<T>(key.toString())
 
 fun SharedPreferences.getString(
     key: PreferenceKey,

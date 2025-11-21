@@ -20,12 +20,13 @@ package org.blitzortung.android.util
 
 import org.blitzortung.android.app.R
 
-enum class MeasurementSystem(val unitNameString: Int, private val factor: Float) {
+enum class MeasurementSystem(
+    val unitNameString: Int,
+    private val factor: Float,
+) {
     METRIC(R.string.unit_km, 1000.0f),
     IMPERIAL(R.string.unit_miles, 1609.344f),
     ;
 
-    fun calculateDistance(meters: Float): Float {
-        return meters / factor
-    }
+    fun calculateDistance(meters: Float): Float = meters / factor
 }

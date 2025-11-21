@@ -26,7 +26,8 @@ data class AlertResult(
     val referenceTime: Long,
 ) {
     val sectorsByDistance: Map<Float, AlertSector> by lazy {
-        sectors.filter { it.closestStrikeDistance < Float.POSITIVE_INFINITY }
+        sectors
+            .filter { it.closestStrikeDistance < Float.POSITIVE_INFINITY }
             .sortedBy { it.closestStrikeDistance }
             .associateBy { it.closestStrikeDistance }
     }

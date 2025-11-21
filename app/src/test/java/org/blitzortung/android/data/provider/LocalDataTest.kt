@@ -234,10 +234,9 @@ class LocalDataTest {
     fun createLocation(
         x: Double,
         y: Double,
-    ): Location {
-        return Location("").apply {
+    ): Location =
+        Location("").apply {
             longitude = x
             latitude = y
         }
-    }
 }

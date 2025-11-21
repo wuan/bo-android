@@ -70,8 +70,7 @@ class ConsumerContainerTest {
     fun addingNullConsumerShouldThrow() {
         assertThatThrownBy {
             testConsumerContainer.addConsumer(null)
-        }
-            .isInstanceOf(IllegalArgumentException::class.java)
+        }.isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("consumer may not be null")
     }
 

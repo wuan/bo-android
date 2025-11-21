@@ -45,7 +45,8 @@ class BackgroundLocationPermissionRequesterTest {
     fun setUp() {
         MockKAnnotations.init(this, relaxed = true)
         activity =
-            Robolectric.buildActivity(Main::class.java)
+            Robolectric
+                .buildActivity(Main::class.java)
                 .setup()
                 .get()
 

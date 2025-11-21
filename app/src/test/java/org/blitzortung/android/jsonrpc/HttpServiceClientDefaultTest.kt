@@ -77,7 +77,9 @@ class HttpServiceClientDefaultTest {
     }
 }
 
-class MockURLStreamHandler : URLStreamHandler(), URLStreamHandlerFactory {
+class MockURLStreamHandler :
+    URLStreamHandler(),
+    URLStreamHandlerFactory {
     var response: ByteArray = ByteArray(0)
     var responseHeaders = mutableMapOf<String, String>()
 
@@ -92,9 +94,7 @@ class MockURLStreamHandler : URLStreamHandler(), URLStreamHandlerFactory {
     }
 
     // *** URLStreamHandlerFactory
-    override fun createURLStreamHandler(protocol: String?): URLStreamHandler {
-        return this
-    }
+    override fun createURLStreamHandler(protocol: String?): URLStreamHandler = this
 }
 
 class MockHttpURLConnection(
@@ -107,9 +107,7 @@ class MockHttpURLConnection(
     val headers = mutableMapOf<String?, String?>()
 
     @Throws(IOException::class)
-    override fun getInputStream(): InputStream {
-        return responseSupplier().inputStream()
-    }
+    override fun getInputStream(): InputStream = responseSupplier().inputStream()
 
     @Throws(IOException::class)
     override fun connect() {
@@ -117,13 +115,9 @@ class MockHttpURLConnection(
 
     override fun disconnect() {}
 
-    override fun usingProxy(): Boolean {
-        return false
-    }
+    override fun usingProxy(): Boolean = false
 
-    override fun getOutputStream(): OutputStream {
-        return outputStream
-    }
+    override fun getOutputStream(): OutputStream = outputStream
 
     override fun setRequestProperty(
         key: String?,
@@ -132,7 +126,5 @@ class MockHttpURLConnection(
         headers.put(key, value)
     }
 
-    override fun getHeaderField(name: String?): String? {
-        return responseHeaders.get(name)
-    }
+    override fun getHeaderField(name: String?): String? = responseHeaders.get(name)
 }

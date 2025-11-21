@@ -46,7 +46,8 @@ open class AlertDataHandler
             referenceTime: Long = System.currentTimeMillis(),
         ): AlertResult? {
             val gridParameters: GridParameters? = strikes.gridParameters
-            if (gridParameters != null && !gridParameters.isGlobal &&
+            if (gridParameters != null &&
+                !gridParameters.isGlobal &&
                 !gridParameters.contains(
                     location.longitude,
                     location.latitude,
@@ -141,27 +142,23 @@ open class AlertDataHandler
         fun getLatestTimstampWithin(
             distanceLimit: Float,
             alertResult: AlertResult,
-        ): Long {
-            return alertResult.sectors.fold(0L) { latestTimestamp, sector ->
-                max(latestTimestamp, getLatestTimestampWithin(distanceLimit, sector))
-            }
+        ): Long = alertResult.sectors.fold(0L) { latestTimestamp, sector ->
+            max(latestTimestamp, getLatestTimestampWithin(distanceLimit, sector))
         }
 
         fun getTextMessage(
             alertResult: AlertResult,
             notificationDistanceLimit: Float,
             resources: Resources,
-        ): String {
-            return alertResult.sectorsByDistance
-                .filter { it.key <= notificationDistanceLimit }
-                .map {
-                    "%s %.0f%s".format(
-                        it.value.label,
-                        it.key,
-                        resources.getString(alertResult.parameters.measurementSystem.unitNameString),
-                    )
-                }.joinToString()
-        }
+        ): String = alertResult.sectorsByDistance
+            .filter { it.key <= notificationDistanceLimit }
+            .map {
+                "%s %.0f%s".format(
+                    it.value.label,
+                    it.key,
+                    resources.getString(alertResult.parameters.measurementSystem.unitNameString),
+                )
+            }.joinToString()
 
         private fun getLatestTimestampWithin(
             distanceLimit: Float,
@@ -216,9 +213,7 @@ open class AlertDataHandler
         private fun getRelevantSector(
             bearing: Double,
             sectors: Collection<AggregatingAlertSector>,
-        ): AggregatingAlertSector? {
-            return sectors.firstOrNull { sectorContainsBearing(it, bearing) }
-        }
+        ): AggregatingAlertSector? = sectors.firstOrNull { sectorContainsBearing(it, bearing) }
 
         private fun sectorContainsBearing(
             sector: AggregatingAlertSector,
