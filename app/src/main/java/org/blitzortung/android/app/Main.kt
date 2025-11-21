@@ -239,7 +239,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 findViewById(R.id.status),
                 findViewById(R.id.progress),
                 findViewById(R.id.error_indicator),
-                resources,
+                this,
             )
 
         buttonColumnHandler = ButtonColumnHandler(if (TabletAwareView.isTablet(this)) 75f else 55f)

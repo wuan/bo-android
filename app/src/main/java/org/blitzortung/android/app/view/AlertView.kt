@@ -278,7 +278,7 @@ class AlertView
             canvas: Canvas,
         ) {
             with(warnText) {
-                color = resources.getColor(R.color.RedWarn)
+                color = context.getColor(R.color.RedWarn)
                 textAlign = Align.CENTER
                 textSize = DEFAULT_FONT_SIZE.toFloat()
 

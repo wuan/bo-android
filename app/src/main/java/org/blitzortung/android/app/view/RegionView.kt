@@ -45,7 +45,7 @@ class RegionView
         init {
             backgroundPaint.color = 0x00b0b0b0
 
-            defaultForegroundColor = context.resources.getColor(R.color.text_foreground)
+            defaultForegroundColor = context.getColor(R.color.text_foreground)
 
             textPaint =
                 Paint(Paint.ANTI_ALIAS_FLAG).apply {

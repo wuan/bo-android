@@ -18,7 +18,7 @@
 
 package org.blitzortung.android.app.view.components
 
-import android.content.res.Resources
+import android.content.Context
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -33,7 +33,7 @@ class StatusComponent(
     private val status: TextView,
     private val progressBar: ProgressBar,
     private val errorIndicator: ImageView,
-    resources: Resources,
+    context: Context,
 ) : AlertLabel {
     private val alertLabelHandler: AlertLabelHandler
 
@@ -43,7 +43,7 @@ class StatusComponent(
         progressBar.visibility = View.INVISIBLE
         errorIndicator.visibility = View.INVISIBLE
 
-        alertLabelHandler = AlertLabelHandler(this, resources)
+        alertLabelHandler = AlertLabelHandler(this, context)
 
         alertEventConsumer = { event ->
             alertLabelHandler.apply(

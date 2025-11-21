@@ -63,7 +63,7 @@ class LegendView
             }
         private val backgroundPaint: Paint =
             Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = context.resources.getColor(R.color.translucent_background)
+                color = context.getColor(R.color.translucent_background)
             }
         private val foregroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
         private val backgroundRect: RectF = RectF()
