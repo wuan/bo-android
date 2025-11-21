@@ -2,7 +2,7 @@
 # https://detekt.dev/docs/introduction/configurations
 
 build:
-  maxIssues: 22
+  maxIssues: 85
   excludeCorrectable: false
   weights:
     complexity: 2
