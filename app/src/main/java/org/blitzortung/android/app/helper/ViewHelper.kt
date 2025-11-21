@@ -21,13 +21,18 @@ package org.blitzortung.android.app.helper
 import android.content.Context
 
 object ViewHelper {
-
-    fun pxFromSp(context: Context, sp: Float): Float {
+    fun pxFromSp(
+        context: Context,
+        sp: Float,
+    ): Float {
         val displayMetrics = context.resources.displayMetrics
         return sp * displayMetrics.scaledDensity
     }
 
-    fun pxFromDp(context: Context, dp: Float): Float {
+    fun pxFromDp(
+        context: Context,
+        dp: Float,
+    ): Float {
         val displayMetrics = context.resources.displayMetrics
         return dp * displayMetrics.density
     }

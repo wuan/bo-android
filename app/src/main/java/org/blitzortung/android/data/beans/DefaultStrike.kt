@@ -27,9 +27,8 @@ data class DefaultStrike(
     val altitude: Int = 0,
     val amplitude: Float = 0f,
     val stationCount: Short = 0,
-    val lateralError: Double = 0.0
+    val lateralError: Double = 0.0,
 ) : Strike, Serializable {
-
     override val multiplicity = 1
 
     companion object {

@@ -24,9 +24,8 @@ class Station(
     override val longitude: Double,
     override val latitude: Double,
     val name: String,
-    val offlineSince: Long
+    val offlineSince: Long,
 ) : Location, Serializable {
-
     val state: State
         get() {
             return if (offlineSince == OFFLINE_SINCE_NOT_SET) {
@@ -53,7 +52,9 @@ class Station(
         }
 
     enum class State {
-        ON, DELAYED, OFF
+        ON,
+        DELAYED,
+        OFF,
     }
 
     companion object {

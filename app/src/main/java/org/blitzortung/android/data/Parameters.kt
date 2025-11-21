@@ -18,18 +18,17 @@
 
 package org.blitzortung.android.data
 
+import java.io.Serializable
 import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
-import java.io.Serializable
 
 data class Parameters(
     val region: Int = -1,
     val gridSize: Int = 0,
     val interval: TimeInterval = TimeInterval(),
     val countThreshold: Int = 0,
-    val dataArea: DataArea? = null
+    val dataArea: DataArea? = null,
 ) : Serializable {
-
     val intervalDuration: Int
         get() = interval.duration
 
@@ -44,7 +43,10 @@ data class Parameters(
 
     fun animationStep(history: History): Parameters = copy(interval = interval.animationStep(history))
 
-    fun withPosition(position: Int, history: History): Parameters {
+    fun withPosition(
+        position: Int,
+        history: History,
+    ): Parameters {
         val offset = (-intervalMaxPosition(history) + position) * history.timeIncrement
         return copy(interval = interval.withOffset(offset, history))
     }
@@ -58,11 +60,12 @@ data class Parameters(
     fun intervalPosition(history: History): Int =
         calculatePosition(history.lowerLimit(interval) - interval.offset, history)
 
-    fun intervalMaxPosition(history: History): Int =
-        calculatePosition(history.lowerLimit(interval), history)
+    fun intervalMaxPosition(history: History): Int = calculatePosition(history.lowerLimit(interval), history)
 
-    private fun calculatePosition(value: Int, history: History): Int =
-        if (history.timeIncrement != 0) -value / history.timeIncrement else 0
+    private fun calculatePosition(
+        value: Int,
+        history: History,
+    ): Int = if (history.timeIncrement != 0) -value / history.timeIncrement else 0
 }
 
 data class DataArea(
@@ -81,7 +84,6 @@ data class History(
     val range: Int = MAX_HISTORY_RANGE,
     val limit: Boolean = true,
 ) : Serializable {
-
     fun lowerLimit(timeInterval: TimeInterval): Int {
         return -range + if (limit) timeInterval.duration else 0
     }

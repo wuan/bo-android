@@ -2,13 +2,12 @@ package org.blitzortung.android.app.view
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.core.content.withStyledAttributes
 import org.blitzortung.android.app.R
 import org.blitzortung.android.util.TabletAwareView
-import androidx.core.content.withStyledAttributes
 
 class ScaledTextView(context: Context, attrs: AttributeSet?) :
     androidx.appcompat.widget.AppCompatTextView(context, attrs) {
-
     init {
         context.withStyledAttributes(attrs, R.styleable.View, 0, 0) {
 

@@ -5,6 +5,7 @@ pluginManagement {
         mavenCentral()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -12,5 +13,14 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
+// Enable build cache for faster incremental builds
+buildCache {
+    local {
+        isEnabled = true
+        directory = File(rootDir, ".gradle/build-cache")
+    }
+}
+
 rootProject.name = "bo-android"
-include ':app'
+include(":app")

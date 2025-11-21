@@ -20,11 +20,11 @@ package org.blitzortung.android.data
 
 import org.osmdroid.util.GeoPoint
 
-
 object Coordsys {
-
-    fun toMapCoords(longitude: Double, latitude: Double): GeoPoint {
+    fun toMapCoords(
+        longitude: Double,
+        latitude: Double,
+    ): GeoPoint {
         return GeoPoint(latitude, longitude)
     }
-
 }

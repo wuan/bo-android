@@ -7,9 +7,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
+import kotlin.math.min
 import org.blitzortung.android.app.Main
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
@@ -19,21 +22,19 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.ScaleBarOverlay
-import kotlin.math.min
-import androidx.core.content.edit
-import org.blitzortung.android.app.Main.Companion.LOG_TAG
-import org.blitzortung.android.data.AUTO_GRID_SIZE_VALUE
-
 
 class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
-
     private lateinit var mPrefs: SharedPreferences
     lateinit var mapView: OwnMapView
         private set
     private lateinit var mCopyrightOverlay: CopyrightOverlay
     private lateinit var mScaleBarOverlay: ScaleBarOverlay
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         mapView = OwnMapView(inflater.context)
 
         mapView.tileProvider.tileCache.apply {
@@ -82,7 +83,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         // scales tiles to the current screen's DPI, helps with readability of labels
         mapView.isTilesScaledToDpi = true
 
-        //the rest of this is restoring the last map location the user looked at
+        // the rest of this is restoring the last map location the user looked at
         val zoomLevel = mPrefs.getFloat(PREFS_ZOOM_LEVEL_DOUBLE, 3.0f)
         mapView.controller.setZoom(zoomLevel.toDouble())
         mapView.setMapOrientation(0f, false)
@@ -105,7 +106,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
     }
 
     override fun onPause() {
-        //save the current location
+        // save the current location
         mPrefs.edit {
             putString(PREFS_TILE_SOURCE, mapView.tileProvider.tileSource.name())
             putString(PREFS_LATITUDE_STRING, mapView.mapCenter.latitude.toString())
@@ -143,11 +144,16 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         return zoomLevel - 1.0
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        key: PreferenceKey,
+    ) {
         when (key) {
             PreferenceKey.MAP_TYPE -> {
                 val mapTypeString = sharedPreferences.get(key, "SATELLITE")
-                mapView.setTileSource(if (mapTypeString == "SATELLITE") TileSourceFactory.DEFAULT_TILE_SOURCE else TileSourceFactory.MAPNIK)
+                mapView.setTileSource(
+                    if (mapTypeString == "SATELLITE") TileSourceFactory.DEFAULT_TILE_SOURCE else TileSourceFactory.MAPNIK,
+                )
             }
 
             PreferenceKey.MAP_SCALE -> {

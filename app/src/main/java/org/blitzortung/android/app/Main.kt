@@ -39,6 +39,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.preference.PreferenceManager
 import dagger.android.AndroidInjection
+import javax.inject.Inject
+import kotlin.math.roundToInt
 import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.BuildVersion
@@ -81,8 +83,6 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
-import javax.inject.Inject
-import kotlin.math.roundToInt
 
 class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private var backgroundAlertEnabled: Boolean = false
@@ -163,17 +163,19 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     }
 
                     if (event.strikes != null) {
-                        val strikes = if (event.updated > 0 && !initializeOverlay) {
-                            val size = event.strikes.size
-                            event.strikes.subList(size - event.updated, size)
-                        } else {
-                            event.strikes
-                        }
+                        val strikes =
+                            if (event.updated > 0 && !initializeOverlay) {
+                                val size = event.strikes.size
+                                event.strikes.subList(size - event.updated, size)
+                            } else {
+                                event.strikes
+                            }
                         strikeListOverlay.addStrikes(strikes)
                     }
 
                     binding.alertView.setColorHandler(
-                        strikeColorHandler, strikeListOverlay.parameters.intervalDuration
+                        strikeColorHandler,
+                        strikeListOverlay.parameters.intervalDuration,
                     )
 
                     strikeListOverlay.refresh()
@@ -231,13 +233,14 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         strikeColorHandler = StrikeColorHandler(preferences)
 
-        statusComponent = StatusComponent(
-            findViewById(R.id.warning),
-            findViewById(R.id.status),
-            findViewById(R.id.progress),
-            findViewById(R.id.error_indicator),
-            resources
-        )
+        statusComponent =
+            StatusComponent(
+                findViewById(R.id.warning),
+                findViewById(R.id.status),
+                findViewById(R.id.progress),
+                findViewById(R.id.error_indicator),
+                this,
+            )
 
         buttonColumnHandler = ButtonColumnHandler(if (TabletAwareView.isTablet(this)) 75f else 55f)
         configureMenuAccess()
@@ -245,7 +248,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         val historyButtons = historyController.getButtons()
         buttonColumnHandler.addAllElements(historyButtons, ButtonGroup.DATA_UPDATING)
 
-        //setupDetailModeButton()
+        // setupDetailModeButton()
 
         buttonColumnHandler.updateButtonColumn()
 
@@ -256,34 +259,41 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             changeLogComponent.showChangeLogDialog(this)
         }
 
-        binding.timeSlider.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
-                if (p2) {
-                    val changed = dataHandler.setPosition(p1)
-                    if (changed) {
-                        if (dataHandler.isRealtime) {
-                            dataHandler.restart()
-                        } else {
-                            Log.v(LOG_TAG, "TimeSlider call updateData()")
-                            dataHandler.updateData()
+        binding.timeSlider.setOnSeekBarChangeListener(
+            object : OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    p0: SeekBar?,
+                    p1: Int,
+                    p2: Boolean,
+                ) {
+                    if (p2) {
+                        val changed = dataHandler.setPosition(p1)
+                        if (changed) {
+                            if (dataHandler.isRealtime) {
+                                dataHandler.restart()
+                            } else {
+                                Log.v(LOG_TAG, "TimeSlider call updateData()")
+                                dataHandler.updateData()
+                            }
                         }
                     }
                 }
-            }
 
-            override fun onStartTrackingTouch(p0: SeekBar?) {
-            }
+                override fun onStartTrackingTouch(p0: SeekBar?) {
+                }
 
-            override fun onStopTrackingTouch(p0: SeekBar?) {
-            }
-        })
-
-        permissionRequesters = arrayOf(
-            LocationPermissionRequester(this, preferences),
-            NotificationPermissionRequester(this, preferences),
-            BackgroundLocationPermissionRequester(this, preferences),
-            WakeupPermissionRequester(this, preferences)
+                override fun onStopTrackingTouch(p0: SeekBar?) {
+                }
+            },
         )
+
+        permissionRequesters =
+            arrayOf(
+                LocationPermissionRequester(this, preferences),
+                NotificationPermissionRequester(this, preferences),
+                BackgroundLocationPermissionRequester(this, preferences),
+                WakeupPermissionRequester(this, preferences),
+            )
     }
 
     private fun initializeOsmDroid() {
@@ -337,11 +347,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             setOnClickListener {
                 val currentLocation = locationHandler.location
                 if (currentLocation != null) {
-                    val diameter = if (!keepZoomOnGotoOwnLocation) {
-                        determineTargetZoomRadius(alertHandler)
-                    } else {
-                        null
-                    }
+                    val diameter =
+                        if (!keepZoomOnGotoOwnLocation) {
+                            determineTargetZoomRadius(alertHandler)
+                        } else {
+                            null
+                        }
 
                     animateToLocationAndVisibleSize(currentLocation.longitude, currentLocation.latitude, diameter)
                 }
@@ -361,7 +372,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                         animateToLocationAndVisibleSize(
                             gridParameters.rectCenterLongitude,
                             gridParameters.rectCenterLatitude,
-                            if (parameters.region == LOCAL_REGION) 1800f else 5000f
+                            if (parameters.region == LOCAL_REGION) 1800f else 5000f,
                         )
                     } else {
                         animateToLocationAndVisibleSize(-30.0, 0.0, 40000f)
@@ -389,17 +400,22 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         dialog.show(supportFragmentManager, "QuickSettingsDialog")
     }
 
-    private fun animateToLocationAndVisibleSize(longitude: Double, latitude: Double, diameter: Float?) {
+    private fun animateToLocationAndVisibleSize(
+        longitude: Double,
+        latitude: Double,
+        diameter: Float?,
+    ) {
         Log.d(LOG_TAG, "Main.animateAndZoomTo() %.4f, %.4f, %.0fkm".format(longitude, latitude, diameter))
 
         val mapView = mapFragment.mapView
 
-        //If no diameter is provided, we keep the current zoomLevel
-        val targetZoomLevel = if (diameter != null) {
-            mapFragment.calculateTargetZoomLevel(diameter * 1000f) * 1.0
-        } else {
-            mapView.zoomLevelDouble
-        }
+        // If no diameter is provided, we keep the current zoomLevel
+        val targetZoomLevel =
+            if (diameter != null) {
+                mapFragment.calculateTargetZoomLevel(diameter * 1000f) * 1.0
+            } else {
+                mapView.zoomLevelDouble
+            }
 
         mapView.controller.animateTo(GeoPoint(latitude, longitude), targetZoomLevel, OwnMapView.DEFAULT_ZOOM_SPEED)
     }
@@ -448,7 +464,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         Log.d(LOG_TAG, "Main.onRestart()")
     }
 
-
     override fun onResume() {
         super.onResume()
 
@@ -458,7 +473,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PermissionsSupport.ensure(
-                this, *permissionRequesters
+                this,
+                *permissionRequesters,
             )
         }
 
@@ -585,10 +601,14 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         strikeListOverlay.clear()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray,
+    ) {
         Log.v(
             LOG_TAG,
-            "Main.onRequestPermissionResult() permissions: ${permissions.joinToString(",")}, requestCode: $requestCode"
+            "Main.onRequestPermissionResult() permissions: ${permissions.joinToString(",")}, requestCode: $requestCode",
         )
         for (requester in permissionRequesters) {
             val handled = requester.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -597,7 +617,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+    override fun onKeyUp(
+        keyCode: Int,
+        event: KeyEvent?,
+    ): Boolean {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             Log.v(LOG_TAG, "Main.onKeyUp(KEYCODE_MENU)")
             showPopupMenu(binding.upperRow)
@@ -606,7 +629,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         return super.onKeyUp(keyCode, event)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        key: PreferenceKey,
+    ) {
         when (key) {
             PreferenceKey.COLOR_SCHEME -> {
                 strikeListOverlay.refresh()

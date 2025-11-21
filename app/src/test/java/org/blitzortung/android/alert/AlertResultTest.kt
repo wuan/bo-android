@@ -10,10 +10,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-
 @RunWith(RobolectricTestRunner::class)
 class AlertResultTest {
-
     private lateinit var alertParameters: AlertParameters
 
     @Before
@@ -36,11 +34,12 @@ class AlertResultTest {
 
     @Test
     fun singleSectorResults() {
-        val uut = AlertResult(
-            listOf(AlertSector("foo", 1.0f, 2.0f, emptyList(), 10.0f)),
-            alertParameters,
-            System.currentTimeMillis()
-        )
+        val uut =
+            AlertResult(
+                listOf(AlertSector("foo", 1.0f, 2.0f, emptyList(), 10.0f)),
+                alertParameters,
+                System.currentTimeMillis(),
+            )
 
         assertThat(uut.closestStrikeDistance).isEqualTo(10.0f)
         assertThat(uut.bearingName).isEqualTo("foo")

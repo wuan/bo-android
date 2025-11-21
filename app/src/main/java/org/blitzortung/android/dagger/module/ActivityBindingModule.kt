@@ -7,7 +7,6 @@ import org.blitzortung.android.app.Main
 
 @Module
 interface ActivityBindingModule {
-
     @ContributesAndroidInjector
     fun contributeMainActivityInjector(): Main
 

@@ -9,10 +9,14 @@ import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
+import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.net.toUri
 import androidx.preference.PreferenceManager
+import javax.inject.Inject
+import javax.inject.Singleton
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
@@ -20,17 +24,15 @@ import org.blitzortung.android.app.view.PreferenceKey.ALERT_SOUND_SIGNAL
 import org.blitzortung.android.app.view.PreferenceKey.ALERT_VIBRATION_SIGNAL
 import org.blitzortung.android.app.view.get
 import org.blitzortung.android.util.isAtLeast
-import javax.inject.Inject
-import javax.inject.Singleton
-import androidx.core.net.toUri
 
 @Singleton
-class AlertSignal @Inject constructor(
+class AlertSignal
+@Inject
+constructor(
     private val context: Context,
     private val vibrator: Vibrator,
-    private val notificationManager: NotificationManager
+    private val notificationManager: NotificationManager,
 ) : OnSharedPreferenceChangeListener {
-
     init {
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         preferences.registerOnSharedPreferenceChangeListener(this)
@@ -41,12 +43,17 @@ class AlertSignal @Inject constructor(
 
     private var vibrationDuration = 0L
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
-
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        key: PreferenceKey,
+    ) {
         when (key) {
             ALERT_VIBRATION_SIGNAL -> {
                 vibrationDuration = sharedPreferences.get(key, 3) * 10L
-                Log.v(Main.LOG_TAG, "AlertHandler.onSharedPreferenceChanged() vibrationDuration = $vibrationDuration")
+                Log.v(
+                    Main.LOG_TAG,
+                    "AlertHandler.onSharedPreferenceChanged() vibrationDuration = $vibrationDuration",
+                )
             }
 
             ALERT_SOUND_SIGNAL -> {
@@ -68,7 +75,21 @@ class AlertSignal @Inject constructor(
     }
 
     private fun vibrateIfEnabled() {
-        vibrator.vibrate(vibrationDuration)
+        if (vibrationDuration > 0) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Android 8.0+ (API 26+): Use VibrationEffect
+                val vibrationEffect =
+                    VibrationEffect.createOneShot(
+                        vibrationDuration,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                vibrator.vibrate(vibrationEffect)
+            } else {
+                // Legacy devices: Use deprecated method
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(vibrationDuration)
+            }
+        }
     }
 
     private fun playSoundIfEnabled() {

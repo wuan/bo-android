@@ -30,9 +30,8 @@ import org.blitzortung.android.protocol.Event
 class HistoryController(
     private val binding: MainBinding,
     private val buttonHandler: ButtonColumnHandler<ImageButton, ButtonGroup>,
-    private val dataHandler: MainDataHandler
+    private val dataHandler: MainDataHandler,
 ) {
-
     private val buttons: MutableCollection<ImageButton> = arrayListOf()
 
     private var animationRunning = false
@@ -89,7 +88,10 @@ class HistoryController(
         }
     }
 
-    private fun addButtonWithOnClickAction(button: ImageButton, action: (View) -> Unit): ImageButton {
+    private fun addButtonWithOnClickAction(
+        button: ImageButton,
+        action: (View) -> Unit,
+    ): ImageButton {
         return button.apply {
             buttons.add(this)
             visibility = View.INVISIBLE

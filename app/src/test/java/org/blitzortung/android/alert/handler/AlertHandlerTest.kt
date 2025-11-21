@@ -68,12 +68,13 @@ class AlertHandlerTest {
         val gridSize = 5000
         val parameters =
             Parameters(interval = TimeInterval(offset = 0, duration = 60), region = LOCAL_REGION, gridSize = gridSize)
-        val resultEvent = ResultEvent(
-            strikes = listOf(GridElement(System.currentTimeMillis(), 11.0, 45.0, 5)),
-            gridParameters = GridParameters(10.0, 40.0, 10.0, 10.0, 20, 20, gridSize),
-            flags = Flags(),
-            parameters = parameters
-        )
+        val resultEvent =
+            ResultEvent(
+                strikes = listOf(GridElement(System.currentTimeMillis(), 11.0, 45.0, 5)),
+                gridParameters = GridParameters(10.0, 40.0, 10.0, 10.0, 20, 20, gridSize),
+                flags = Flags(),
+                parameters = parameters,
+            )
         mockAlertResult(System.currentTimeMillis(), 5.0f)
 
         uut.dataEventConsumer.invoke(resultEvent)
@@ -105,17 +106,19 @@ class AlertHandlerTest {
 
         every { alertDataHandler.getLatestTimstampWithin(any(), any()) } returns currentTime
 
-        val parameters = Parameters(
-            interval = TimeInterval(offset = 0, duration = 60),
-            region = LOCAL_REGION, gridSize = gridSize
-        )
+        val parameters =
+            Parameters(
+                interval = TimeInterval(offset = 0, duration = 60),
+                region = LOCAL_REGION,
+                gridSize = gridSize,
+            )
         uut.dataEventConsumer.invoke(
             ResultEvent(
                 strikes = strikeList,
                 gridParameters = gridParameters,
                 flags = Flags(),
-                parameters = parameters
-            )
+                parameters = parameters,
+            ),
         )
 
         assertThat(uut.alertEvent).isInstanceOf(AlertResultEvent::class.java)
@@ -143,17 +146,19 @@ class AlertHandlerTest {
 
         every { alertDataHandler.getLatestTimstampWithin(any(), any()) } returns currentTime
 
-        val parameters = Parameters(
-            interval = TimeInterval(offset = 0, duration = 60),
-            region = LOCAL_REGION, gridSize = gridSize
-        )
+        val parameters =
+            Parameters(
+                interval = TimeInterval(offset = 0, duration = 60),
+                region = LOCAL_REGION,
+                gridSize = gridSize,
+            )
         uut.dataEventConsumer.invoke(
             ResultEvent(
                 strikes = strikeList,
                 gridParameters = gridParameters,
                 flags = Flags(),
-                parameters = parameters
-            )
+                parameters = parameters,
+            ),
         )
 
         assertThat(uut.alertEvent).isInstanceOf(AlertResultEvent::class.java)
@@ -178,17 +183,19 @@ class AlertHandlerTest {
 
         mockAlertResult(currentTime, 0.0f)
 
-        val parameters = Parameters(
-            interval = TimeInterval(offset = 0, duration = 60),
-            region = LOCAL_REGION, gridSize = gridSize
-        )
+        val parameters =
+            Parameters(
+                interval = TimeInterval(offset = 0, duration = 60),
+                region = LOCAL_REGION,
+                gridSize = gridSize,
+            )
         uut.dataEventConsumer.invoke(
             ResultEvent(
                 strikes = strikeList,
                 gridParameters = gridParameters,
                 flags = Flags(),
-                parameters = parameters
-            )
+                parameters = parameters,
+            ),
         )
 
         assertThat(uut.alertEvent).isInstanceOf(AlertResultEvent::class.java)
@@ -211,10 +218,12 @@ class AlertHandlerTest {
         val strikeList = listOf(GridElement(currentTime, 11.0, 45.0, 5))
         val gridParameters = GridParameters(10.0, 40.0, 10.0, 10.0, 20, 20, gridSize)
 
-        val parameters = Parameters(
-            interval = TimeInterval(offset = -30, duration = 60),
-            region = LOCAL_REGION, gridSize = gridSize
-        )
+        val parameters =
+            Parameters(
+                interval = TimeInterval(offset = -30, duration = 60),
+                region = LOCAL_REGION,
+                gridSize = gridSize,
+            )
 
         var alertEvent: AlertEvent? = null
         uut.requestUpdates { event -> alertEvent = event }
@@ -224,8 +233,8 @@ class AlertHandlerTest {
                 strikes = strikeList,
                 gridParameters = gridParameters,
                 flags = Flags(),
-                parameters = parameters
-            )
+                parameters = parameters,
+            ),
         )
 
         assertThat(uut.alertEvent).isInstanceOf(AlertCancelEvent::class.java)
@@ -248,10 +257,12 @@ class AlertHandlerTest {
         val strikeList = listOf(GridElement(currentTime, 11.0, 45.0, 5))
         val gridParameters = GridParameters(10.0, 40.0, 10.0, 10.0, 20, 20, gridSize)
 
-        val parameters = Parameters(
-            interval = TimeInterval(offset = -30, duration = 60),
-            region = LOCAL_REGION, gridSize = gridSize
-        )
+        val parameters =
+            Parameters(
+                interval = TimeInterval(offset = -30, duration = 60),
+                region = LOCAL_REGION,
+                gridSize = gridSize,
+            )
 
         var alertEvent: AlertEvent? = null
         uut.requestUpdates { event -> alertEvent = event }
@@ -261,20 +272,23 @@ class AlertHandlerTest {
                 strikes = strikeList,
                 gridParameters = gridParameters,
                 flags = Flags(ignoreForAlerting = true),
-                parameters = parameters
-            )
+                parameters = parameters,
+            ),
         )
 
         assertThat(uut.alertEvent).isInstanceOf(AlertCancelEvent::class.java)
         assertThat(alertEvent).isNull()
     }
 
-    private fun mockAlertResult(currentTime: Long, closestDistance: Float) {
-        every { alertDataHandler.checkStrikes(any(), any(), any(), any()) } returns AlertResult(
-            sectors = listOf(AlertSector("foo", 0.0f, 1.0f, emptyList(), closestDistance)),
-            uut.alertParameters,
-            currentTime
-        )
+    private fun mockAlertResult(
+        currentTime: Long,
+        closestDistance: Float,
+    ) {
+        every { alertDataHandler.checkStrikes(any(), any(), any(), any()) } returns
+            AlertResult(
+                sectors = listOf(AlertSector("foo", 0.0f, 1.0f, emptyList(), closestDistance)),
+                uut.alertParameters,
+                currentTime,
+            )
     }
-
 }

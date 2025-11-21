@@ -13,7 +13,6 @@ import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
 
 class TimeSlider : AppCompatSeekBar {
-
     private val timeAxisPaint = Paint()
     private val timeAxisLinePaint = Paint()
     private var pastTimePaint = Paint()
@@ -49,18 +48,27 @@ class TimeSlider : AppCompatSeekBar {
 
     private var ticksPerHour: Int? = null
 
-    fun update(parameters: Parameters, history: History) {
+    fun update(
+        parameters: Parameters,
+        history: History,
+    ) {
         updatePositionAndRange(parameters, history)
         updateSecondaryPosition(parameters, history)
 
         invalidate()
     }
 
-    private fun updateSecondaryPosition(parameters: Parameters, history: History) {
+    private fun updateSecondaryPosition(
+        parameters: Parameters,
+        history: History,
+    ) {
         secondaryProgress = parameters.intervalPosition(history)
     }
 
-    private fun updatePositionAndRange(parameters: Parameters, history: History) {
+    private fun updatePositionAndRange(
+        parameters: Parameters,
+        history: History,
+    ) {
         ticksPerHour = 60 / history.timeIncrement
         val previousMax = max
         max = parameters.intervalMaxPosition(history)
@@ -88,19 +96,19 @@ class TimeSlider : AppCompatSeekBar {
             context.resources.getString(R.string.slider_current),
             width - paddingRight.toFloat(),
             height - bottomOffset,
-            currentTextPaint
+            currentTextPaint,
         )
         c.drawText(
             context.resources.getString(R.string.slider_legend),
             width / 2f,
             height - bottomOffset,
-            legendTextPaint
+            legendTextPaint,
         )
         c.drawText(
             context.resources.getString(R.string.slider_past),
             paddingLeft.toFloat(),
             height - bottomOffset,
-            pastTextPaint
+            pastTextPaint,
         )
     }
 
@@ -118,7 +126,7 @@ class TimeSlider : AppCompatSeekBar {
                 lineTo(secondPosition, base - distance)
                 close()
             },
-            timeAxisPaint
+            timeAxisPaint,
         )
     }
 
@@ -131,7 +139,7 @@ class TimeSlider : AppCompatSeekBar {
             base - axisWidth / 2,
             width - paddingRight.toFloat(),
             base + axisWidth / 2,
-            timeAxisPaint
+            timeAxisPaint,
         )
         val position = calculateX(progress)
         c.drawRect(position, base - axisWidth / 2, width - paddingRight.toFloat(), base + axisWidth / 2, pastTimePaint)
@@ -150,20 +158,19 @@ class TimeSlider : AppCompatSeekBar {
             val position = calculateX(i)
 
             val ticksPerHour = this.ticksPerHour
-            val tickLength = if (ticksPerHour != null && (max - i) % ticksPerHour == 0) {
-                val hour = (max - i) / ticksPerHour
-                c.drawText("$hour", position, textPosition, timeAxisPaint)
-                longTick
-            } else {
-                shortTick
-            }
+            val tickLength =
+                if (ticksPerHour != null && (max - i) % ticksPerHour == 0) {
+                    val hour = (max - i) / ticksPerHour
+                    c.drawText("$hour", position, textPosition, timeAxisPaint)
+                    longTick
+                } else {
+                    shortTick
+                }
 
             c.drawRect(position - unit, base - tickLength, position + unit, base + tickLength, timeAxisPaint)
         }
     }
 
-    private fun calculateX(progress: Int): Float {
-        return paddingLeft.toFloat() + (width - (paddingLeft.toFloat() + paddingRight.toFloat())) / max * progress
-    }
-
+    private fun calculateX(progress: Int): Float =
+        paddingLeft.toFloat() + (width - (paddingLeft.toFloat() + paddingRight.toFloat())) / max * progress
 }

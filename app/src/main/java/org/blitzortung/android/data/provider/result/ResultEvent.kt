@@ -18,13 +18,13 @@
 
 package org.blitzortung.android.data.provider.result
 
+import java.io.Serializable
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
-import java.io.Serializable
 
 data class ResultEvent(
     val strikes: List<Strike>? = null,
@@ -39,7 +39,6 @@ data class ResultEvent(
     val flags: Flags,
     val sequenceNumber: Long? = null,
 ) : DataEvent, Serializable {
-
     fun containsRealtimeData(): Boolean {
         return parameters.isRealtime()
     }

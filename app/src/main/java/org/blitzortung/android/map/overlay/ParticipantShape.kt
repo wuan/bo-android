@@ -24,7 +24,6 @@ import android.graphics.RectF
 import android.graphics.drawable.shapes.Shape
 
 class ParticipantShape : Shape() {
-
     private val rect: RectF = RectF()
     private var color: Int = 0
 
@@ -32,14 +31,20 @@ class ParticipantShape : Shape() {
         color = 0
     }
 
-    override fun draw(canvas: Canvas, paint: Paint) {
+    override fun draw(
+        canvas: Canvas,
+        paint: Paint,
+    ) {
         paint.color = color
         paint.alpha = 255
         paint.style = Paint.Style.FILL
         canvas.drawRect(rect, paint)
     }
 
-    fun update(size: Float, color: Int) {
+    fun update(
+        size: Float,
+        color: Int,
+    ) {
         val halfSize = size / 2f
         rect.set(-halfSize, -halfSize, halfSize, halfSize)
         resize(rect.width(), rect.width())

@@ -18,13 +18,12 @@
 
 package org.blitzortung.android.alert
 
-import android.content.res.Resources
-
+import android.content.Context
 import org.blitzortung.android.app.R
 
 class AlertLabelHandler(
     private val alertLabel: AlertLabel,
-    private val resources: Resources
+    private val context: Context,
 ) {
     fun apply(result: AlertResult?) {
         var warningText = ""
@@ -32,19 +31,20 @@ class AlertLabelHandler(
         var textColorResource = R.color.Green
 
         if (result != null && result.closestStrikeDistance < Float.POSITIVE_INFINITY) {
-            textColorResource = when (result.closestStrikeDistance) {
-                in 0.0..20.0 -> R.color.RedWarn
-                in 20.0..50.0 -> R.color.Yellow
-                else -> R.color.Green
-            }
-            val distanceUnit = resources.getString(result.parameters.measurementSystem.unitNameString)
+            textColorResource =
+                when (result.closestStrikeDistance) {
+                    in 0.0..20.0 -> R.color.RedWarn
+                    in 20.0..50.0 -> R.color.Yellow
+                    else -> R.color.Green
+                }
+            val distanceUnit = context.resources.getString(result.parameters.measurementSystem.unitNameString)
             warningText = "%.0f$distanceUnit".format(result.closestStrikeDistance)
             if (result.closestStrikeDistance > 0.1) {
                 warningText += " ${result.bearingName}"
             }
         }
 
-        val color = resources.getColor(textColorResource)
+        val color = context.getColor(textColorResource)
         alertLabel.setAlarmTextColor(color)
         alertLabel.setAlarmText(warningText)
     }

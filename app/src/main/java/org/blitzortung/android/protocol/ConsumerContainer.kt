@@ -19,7 +19,6 @@
 package org.blitzortung.android.protocol
 
 abstract class ConsumerContainer<P> {
-
     private val consumers: MutableSet<(P) -> Unit>
 
     var currentPayload: P? = null

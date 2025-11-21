@@ -1,6 +1,5 @@
 package org.blitzortung.android.app.permission.requester
 
-
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.Activity
@@ -33,7 +32,6 @@ import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
 class LocationPermissionRequesterTest {
-
     @MockK
     private lateinit var permissionsSupport: PermissionsSupport
 
@@ -47,9 +45,11 @@ class LocationPermissionRequesterTest {
     fun setUp() {
         MockKAnnotations.init(this, relaxed = true)
 
-        activity = Robolectric.buildActivity(Main::class.java)
-            .setup()
-            .get()
+        activity =
+            Robolectric
+                .buildActivity(Main::class.java)
+                .setup()
+                .get()
 
         val context = RuntimeEnvironment.getApplication()
         preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
@@ -71,7 +71,9 @@ class LocationPermissionRequesterTest {
 
         verify(exactly = 1) {
             permissionsSupport.request(
-                ACCESS_FINE_LOCATION, 1, R.string.location_permission_required
+                ACCESS_FINE_LOCATION,
+                1,
+                R.string.location_permission_required,
             )
         }
     }
@@ -101,18 +103,21 @@ class LocationPermissionRequesterTest {
 
         verify(exactly = 1) {
             permissionsSupport.request(
-                ACCESS_COARSE_LOCATION, 2, R.string.location_permission_required
+                ACCESS_COARSE_LOCATION,
+                2,
+                R.string.location_permission_required,
             )
         }
     }
 
     @Test
     fun `onRequestPermissionsResult returns false if request code does not match`() {
-        val result = locationPermissionRequester.onRequestPermissionsResult(
-            requestCode = 123,
-            permissions = arrayOf(ACCESS_FINE_LOCATION),
-            grantResults = intArrayOf(PackageManager.PERMISSION_GRANTED)
-        )
+        val result =
+            locationPermissionRequester.onRequestPermissionsResult(
+                requestCode = 123,
+                permissions = arrayOf(ACCESS_FINE_LOCATION),
+                grantResults = intArrayOf(PackageManager.PERMISSION_GRANTED),
+            )
         assertThat(result).isFalse()
     }
 
@@ -121,11 +126,12 @@ class LocationPermissionRequesterTest {
         val provider = PASSIVE_PROVIDER
         val providerRelation = LocationProviderRelation.byProviderName[provider]!!
 
-        val result = locationPermissionRequester.onRequestPermissionsResult(
-            requestCode = providerRelation.ordinal,
-            permissions = arrayOf(ACCESS_FINE_LOCATION),
-            grantResults = intArrayOf(PackageManager.PERMISSION_GRANTED)
-        )
+        val result =
+            locationPermissionRequester.onRequestPermissionsResult(
+                requestCode = providerRelation.ordinal,
+                permissions = arrayOf(ACCESS_FINE_LOCATION),
+                grantResults = intArrayOf(PackageManager.PERMISSION_GRANTED),
+            )
 
         assertThat(result).isTrue()
         assertThat(preferences.get(PreferenceKey.LOCATION_MODE, "")).isEqualTo(provider)
@@ -136,11 +142,12 @@ class LocationPermissionRequesterTest {
         val provider = GPS_PROVIDER
         val providerRelation = LocationProviderRelation.byProviderName[provider]!!
 
-        val result = locationPermissionRequester.onRequestPermissionsResult(
-            requestCode = providerRelation.ordinal,
-            permissions = arrayOf(ACCESS_FINE_LOCATION),
-            grantResults = intArrayOf(PackageManager.PERMISSION_GRANTED)
-        )
+        val result =
+            locationPermissionRequester.onRequestPermissionsResult(
+                requestCode = providerRelation.ordinal,
+                permissions = arrayOf(ACCESS_FINE_LOCATION),
+                grantResults = intArrayOf(PackageManager.PERMISSION_GRANTED),
+            )
 
         assertThat(result).isTrue()
         assertThat(preferences.get(PreferenceKey.LOCATION_MODE, "")).isEqualTo(provider)
@@ -151,11 +158,12 @@ class LocationPermissionRequesterTest {
         val provider = NETWORK_PROVIDER
         val providerRelation = LocationProviderRelation.byProviderName[provider]!!
 
-        val result = locationPermissionRequester.onRequestPermissionsResult(
-            requestCode = providerRelation.ordinal,
-            permissions = arrayOf(ACCESS_COARSE_LOCATION),
-            grantResults = intArrayOf(PackageManager.PERMISSION_GRANTED)
-        )
+        val result =
+            locationPermissionRequester.onRequestPermissionsResult(
+                requestCode = providerRelation.ordinal,
+                permissions = arrayOf(ACCESS_COARSE_LOCATION),
+                grantResults = intArrayOf(PackageManager.PERMISSION_GRANTED),
+            )
 
         assertThat(result).isTrue()
         assertThat(preferences.get(PreferenceKey.LOCATION_MODE, "")).isEqualTo(provider)
@@ -169,11 +177,12 @@ class LocationPermissionRequesterTest {
             put(PreferenceKey.LOCATION_MODE, provider)
         }
 
-        val result = locationPermissionRequester.onRequestPermissionsResult(
-            requestCode = providerRelation.ordinal,
-            permissions = arrayOf(ACCESS_COARSE_LOCATION),
-            grantResults = intArrayOf(PackageManager.PERMISSION_DENIED)
-        )
+        val result =
+            locationPermissionRequester.onRequestPermissionsResult(
+                requestCode = providerRelation.ordinal,
+                permissions = arrayOf(ACCESS_COARSE_LOCATION),
+                grantResults = intArrayOf(PackageManager.PERMISSION_DENIED),
+            )
 
         assertThat(result).isTrue()
         assertThat(preferences.get(PreferenceKey.LOCATION_MODE, "")).isEqualTo(MANUAL_PROVIDER)
@@ -189,11 +198,12 @@ class LocationPermissionRequesterTest {
             put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "300")
         }
 
-        val result = locationPermissionRequester.onRequestPermissionsResult(
-            requestCode = providerRelation.ordinal,
-            permissions = arrayOf(ACCESS_COARSE_LOCATION),
-            grantResults = intArrayOf(PackageManager.PERMISSION_DENIED)
-        )
+        val result =
+            locationPermissionRequester.onRequestPermissionsResult(
+                requestCode = providerRelation.ordinal,
+                permissions = arrayOf(ACCESS_COARSE_LOCATION),
+                grantResults = intArrayOf(PackageManager.PERMISSION_DENIED),
+            )
 
         assertThat(result).isTrue()
         assertThat(preferences.get(PreferenceKey.LOCATION_MODE, "")).isEqualTo(MANUAL_PROVIDER)

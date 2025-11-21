@@ -11,9 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import org.blitzortung.android.app.R
 
 class ChangelogDialog(
-    context: Context
+    context: Context,
 ) : android.app.AlertDialog(context) {
-
     init {
         setCancelable(true)
     }
@@ -56,41 +55,43 @@ interface ViewItem {
 
 class ReleaseEntry(
     val versionName: String,
-    val versionCode: Int
+    val versionCode: Int,
 ) : ViewItem {
     override val viewType = ChangeLogAdapter.Type.HEADER
     override val layoutId = R.layout.changelog_header
 }
 
 class ChangeEntry(
-    val description: String
+    val description: String,
 ) : ViewItem {
     override val viewType = ChangeLogAdapter.Type.ENTRY
     override val layoutId = R.layout.changelog_entry
 }
 
 class HeaderView(
-    view: View
+    view: View,
 ) : RecyclerView.ViewHolder(view) {
     val header = view.findViewById<TextView>(R.id.changelog_header)
 }
 
 class EntryView(
-    view: View
+    view: View,
 ) : RecyclerView.ViewHolder(view) {
     val description = view.findViewById<TextView>(R.id.changelog_description)
 }
 
 class ChangeLogAdapter(
     context: Context,
-    private val items: List<ViewItem>
+    private val items: List<ViewItem>,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
     private val inflater = LayoutInflater.from(context)
 
     enum class Type { ENTRY, HEADER }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): RecyclerView.ViewHolder {
         return when (viewType) {
             Type.HEADER.ordinal -> HeaderView(inflater.inflate(R.layout.changelog_header, parent, false))
             Type.ENTRY.ordinal -> EntryView(inflater.inflate(R.layout.changelog_entry, parent, false))
@@ -102,7 +103,10 @@ class ChangeLogAdapter(
         return items.size
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+    ) {
         val viewItem = items[position]
 
         when (viewItem.viewType) {

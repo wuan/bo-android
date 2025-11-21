@@ -13,9 +13,8 @@ abstract class ManagerLocationProvider(
     protected val context: Context,
     protected var isInBackground: Boolean,
     locationUpdate: (Location?) -> Unit,
-    override val type: String
+    override val type: String,
 ) : LocationProvider(locationUpdate), LocationListener {
-
     private val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
     protected open val minTime: Long
@@ -26,7 +25,7 @@ abstract class ManagerLocationProvider(
 
     override fun start() {
         Log.v(LOG_TAG, "ManagerLocationProvider.start()")
-        //Don't start the LocationProvider if we dont have any permissions
+        // Don't start the LocationProvider if we dont have any permissions
         if (!this.isPermissionGranted) {
             Log.d(LOG_TAG, "Tried to start provider '$type' without permission granted")
             return
@@ -36,7 +35,7 @@ abstract class ManagerLocationProvider(
 
         Log.v(
             LOG_TAG,
-            "ManagerLocationProvider.start() background: $isInBackground, type: $type, minTime: $minTime, minDistance: $minDistance"
+            "ManagerLocationProvider.start() background: $isInBackground, type: $type, minTime: $minTime, minDistance: $minDistance",
         )
         if (locationManager.allProviders.contains(type)) {
             try {
@@ -58,7 +57,7 @@ abstract class ManagerLocationProvider(
         updateToLastKnown()
         locationManager.requestLocationUpdates(type, minTime, minDistance, this)
 
-        //Now try to get the last known location from the current provider
+        // Now try to get the last known location from the current provider
         val lastKnownLocation = locationManager.getLastKnownLocation(type)
         if (lastKnownLocation != null) {
             val secondsElapsedSinceLastFix = (System.currentTimeMillis() - lastKnownLocation.time) / 1000
@@ -77,11 +76,14 @@ abstract class ManagerLocationProvider(
 
     override fun onProviderEnabled(provider: String) = Unit
 
-    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
+    override fun onStatusChanged(
+        provider: String?,
+        status: Int,
+        extras: Bundle?,
+    ) = Unit
 
     override val isEnabled: Boolean
         get() = locationManager.isProviderEnabled(type)
-
 
     override fun shutdown() {
         locationManager.removeUpdates(this)
@@ -120,11 +122,12 @@ abstract class ManagerLocationProvider(
         get() = "could not enable location manager $type"
 
     private fun updateToLastKnown() {
-        val location = try {
-            locationManager.getLastKnownLocation(type)
-        } catch (securityException: SecurityException) {
-            null
-        }
+        val location =
+            try {
+                locationManager.getLastKnownLocation(type)
+            } catch (securityException: SecurityException) {
+                null
+            }
         Log.v(LOG_TAG, "ManagerLocationProvider: last known $location")
         if (location != null) {
             onLocationChanged(location)

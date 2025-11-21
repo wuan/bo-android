@@ -5,7 +5,6 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 
 class TimeFormatTest {
-
     @Test
     fun testParseTimeWithMilliseconds() {
         val result = TimeFormat.parseTimeWithMilliseconds("20120901T20:10:05.123")

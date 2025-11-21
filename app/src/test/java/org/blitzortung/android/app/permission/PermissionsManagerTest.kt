@@ -21,7 +21,6 @@ import org.robolectric.shadows.ShadowPackageManager
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [Build.VERSION_CODES.P]) // Target a specific SDK relevant for permissions
 class PermissionsManagerTest {
-
     private class DummyActivity : Activity()
 
     private lateinit var activity: Activity
@@ -30,9 +29,9 @@ class PermissionsManagerTest {
 
     private lateinit var permissionsSupport: PermissionsSupport
 
-    private val PERMISSION_STRING = Manifest.permission.ACCESS_COARSE_LOCATION
-    private val REQUEST_CODE = 123
-    private val PERMISSION_RATIONALE_STRING_ID = R.string.ok // Dummy resource ID
+    private val permissionString = Manifest.permission.ACCESS_COARSE_LOCATION
+    private val requestCode = 123
+    private val permissionRationaleStringId = R.string.ok // Dummy resource ID
 
     @Before
     fun setUp() {
@@ -47,14 +46,15 @@ class PermissionsManagerTest {
 
     @Test
     fun `requestPermission when permission already granted should return false`() {
-        shadowActivity.grantPermissions(PERMISSION_STRING)
+        shadowActivity.grantPermissions(permissionString)
 
         // Act
-        val result = permissionsSupport.request(
-            PERMISSION_STRING,
-            REQUEST_CODE,
-            PERMISSION_RATIONALE_STRING_ID
-        )
+        val result =
+            permissionsSupport.request(
+                permissionString,
+                requestCode,
+                permissionRationaleStringId,
+            )
 
         assertThat(result).isFalse()
         assertThat(shadowActivity.lastRequestedPermission).isNull()
@@ -62,33 +62,35 @@ class PermissionsManagerTest {
 
     @Test
     fun `requestPermission when not granted and no rationale needed should request directly and return true`() {
-        shadowActivity.denyPermissions(PERMISSION_STRING)
-        shadowPackageManager.setShouldShowRequestPermissionRationale(PERMISSION_STRING, false)
+        shadowActivity.denyPermissions(permissionString)
+        shadowPackageManager.setShouldShowRequestPermissionRationale(permissionString, false)
 
-        val result = permissionsSupport.request(
-            PERMISSION_STRING,
-            REQUEST_CODE,
-            PERMISSION_RATIONALE_STRING_ID
-        )
+        val result =
+            permissionsSupport.request(
+                permissionString,
+                requestCode,
+                permissionRationaleStringId,
+            )
 
         assertThat(result).isTrue()
         val permissionRequest = shadowActivity.lastRequestedPermission
         assertThat(permissionRequest).isNotNull()
-        assertThat(permissionRequest.requestCode).isEqualTo(REQUEST_CODE)
-        assertThat(permissionRequest.requestedPermissions).isEqualTo(arrayOf(PERMISSION_STRING))
+        assertThat(permissionRequest.requestCode).isEqualTo(requestCode)
+        assertThat(permissionRequest.requestedPermissions).isEqualTo(arrayOf(permissionString))
     }
 
     @Test
     fun `requestPermission when not granted and rationale needed should show dialog then request and return true`() {
-        shadowActivity.denyPermissions(PERMISSION_STRING)
-        shadowPackageManager.setShouldShowRequestPermissionRationale(PERMISSION_STRING, true)
+        shadowActivity.denyPermissions(permissionString)
+        shadowPackageManager.setShouldShowRequestPermissionRationale(permissionString, true)
 
         // Act
-        val result = permissionsSupport.request(
-            PERMISSION_STRING,
-            REQUEST_CODE,
-            R.string.copy
-        )
+        val result =
+            permissionsSupport.request(
+                permissionString,
+                requestCode,
+                R.string.copy,
+            )
 
         // Assert
         assertThat(result).isTrue() // Indicates a request flow was initiated
@@ -105,16 +107,17 @@ class PermissionsManagerTest {
 
         val permissionRequest = shadowActivity.lastRequestedPermission
         assertThat(permissionRequest).isNotNull()
-        assertThat(permissionRequest.requestCode).isEqualTo(REQUEST_CODE)
-        assertThat(permissionRequest.requestedPermissions).isEqualTo(arrayOf(PERMISSION_STRING))
+        assertThat(permissionRequest.requestCode).isEqualTo(requestCode)
+        assertThat(permissionRequest.requestedPermissions).isEqualTo(arrayOf(permissionString))
     }
 
     // Mock PermissionRequester for testing ensurePermissions
     class MockPermissionRequester(
         override val name: String,
-        private val requestResult: Boolean
+        private val requestResult: Boolean,
     ) : PermissionRequester {
         var requestCalled = false
+
         override fun request(permissionsSupport: PermissionsSupport): Boolean {
             requestCalled = true
             return requestResult
@@ -171,14 +174,14 @@ class PermissionsManagerTest {
 
     @Test
     fun `default method should return false`() {
-       class TestPermissionRequester : PermissionRequester {
-           override val name: String
-               get() = "test"
+        class TestPermissionRequester : PermissionRequester {
+            override val name: String
+                get() = "test"
 
-           override fun request(permissionsSupport: PermissionsSupport): Boolean {
-               TODO("Not yet implemented")
-           }
-       }
+            override fun request(permissionsSupport: PermissionsSupport): Boolean {
+                TODO("Not yet implemented")
+            }
+        }
 
         val requester = TestPermissionRequester()
 
