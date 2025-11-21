@@ -22,7 +22,7 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.widget.RemoteViews
-import org.blitzortung.android.app.view.AlertView
+import org.blitzortung.android.app.view.AlarmView
 
 class WidgetProvider : AppWidgetProvider() {
     override fun onUpdate(
@@ -37,11 +37,11 @@ class WidgetProvider : AppWidgetProvider() {
     }
 
     private fun updateAppWidget(context: Context) {
-        val alertView = AlertView(context)
-        alertView.measure(150, 150)
-        alertView.layout(0, 0, 150, 150)
-        alertView.isDrawingCacheEnabled = true
-        val bitmap = alertView.drawingCache
+        val alarmView = AlarmView(context)
+        alarmView.measure(150, 150)
+        alarmView.layout(0, 0, 150, 150)
+        alarmView.isDrawingCacheEnabled = true
+        val bitmap = alarmView.drawingCache
 
         val remoteViews =
             RemoteViews(

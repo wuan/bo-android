@@ -12,7 +12,7 @@ import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.BuildVersion
 import org.blitzortung.android.app.components.ChangeLogComponent
 import org.blitzortung.android.data.MainDataHandler
-import org.blitzortung.android.dialogs.AlertDialog
+import org.blitzortung.android.dialogs.AlarmDialog
 import org.blitzortung.android.dialogs.AlertDialogColorHandler
 import org.blitzortung.android.dialogs.InfoDialog
 import org.blitzortung.android.dialogs.LogDialog
@@ -46,7 +46,7 @@ class MainPopupMenu(
                         R.id.menu_info -> InfoDialog(context, buildVersion)
 
                         R.id.menu_alarms ->
-                            AlertDialog(
+                            AlarmDialog(
                                 context,
                                 AlertDialogColorHandler(preferences),
                                 dataHandler,

@@ -18,45 +18,56 @@
 
 package org.blitzortung.android.dialogs
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
-import android.os.Bundle
 import android.view.KeyEvent
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.view.AlertView
+import org.blitzortung.android.app.view.AlarmView
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.map.overlay.color.ColorHandler
 
-class AlertDialog(
+class AlarmDialog(
     context: Context,
     private val colorHandler: ColorHandler,
     private val dataHandler: MainDataHandler,
     private val alertHandler: AlertHandler,
-) : android.app.AlertDialog(context) {
-    private lateinit var alertView: AlertView
+) : AlertDialog(context) {
+    private val alarmView: AlarmView
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    init {
+        setTitle(
+            context.getText(R.string.alarms)
+        )
 
-        setContentView(R.layout.alarm_dialog)
+        @SuppressLint("InflateParams")
+        val view = layoutInflater.inflate(R.layout.alarm_dialog, null)
+        alarmView = view.findViewById(R.id.alarm_diagram)
+
+        setView(view)
+
+        setButton(AlertDialog.BUTTON_NEUTRAL, context.resources.getText(R.string.ok)) { _, _ ->
+            dismiss()
+        }
     }
 
     override fun onStart() {
         super.onStart()
 
-        alertView = findViewById(R.id.alarm_diagram)
-        alertView.enableDescriptionText()
+        alarmView.enableDescriptionText()
+        alarmView.setOnClickListener { dismiss() }
 
-        alertView.setColorHandler(colorHandler, dataHandler.intervalDuration)
+        alarmView.setColorHandler(colorHandler, dataHandler.intervalDuration)
         colorHandler.updateTarget()
 
-        alertHandler.requestUpdates(alertView.alertEventConsumer)
+        alertHandler.requestUpdates(alarmView.alertEventConsumer)
     }
 
     override fun onStop() {
         super.onStop()
 
-        alertHandler.removeUpdates(alertView.alertEventConsumer)
+        alertHandler.removeUpdates(alarmView.alertEventConsumer)
     }
 
     override fun onKeyUp(

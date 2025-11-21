@@ -18,12 +18,12 @@
 
 package org.blitzortung.android.dialogs
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.Bundle
 import android.view.KeyEvent
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.net.toUri
@@ -37,35 +37,44 @@ class LogDialog(
     private val cacheSize: CacheSize,
     private val buildVersion: BuildVersion,
     private val logProvider: LogProvider = LogProvider(),
-) : android.app.AlertDialog(context) {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+) : AlertDialog(context) {
 
-        setContentView(R.layout.log_dialog)
+    private lateinit var logText: String
+
+    init {
+        setTitle(
+            context.getText(R.string.app_log),
+        )
+
+        @SuppressLint("InflateParams")
+        val view = layoutInflater.inflate(R.layout.log_dialog, null)
+        setView(view)
+
+        setButton(BUTTON_NEGATIVE, context.getText(R.string.cancel), { dialog, which -> dismiss() })
+        setButton(BUTTON_POSITIVE, context.getText(R.string.share_log), { dialog, which ->
+            sendEmail(logText)
+        })
     }
 
     override fun onStart() {
         super.onStart()
 
+        logText = composeBodyText()
+
+        with(findViewById<TextView>(R.id.log_text)) {
+            setHorizontallyScrolling(true)
+            text = logText
+        }
+    }
+
+    private fun composeBodyText(): String {
         val versionText = getVersionString()
         val deviceText = getDeviceString()
         val cacheText = getCacheString()
         val logLines = logProvider.getLogLines()
 
         val logText = versionText + "\n\n" + deviceText + "\n\n" + cacheText + "\n\n" + logLines.joinToString("\n")
-
-        with(findViewById<TextView>(R.id.log_text)) {
-            setHorizontallyScrolling(true)
-            text = logText
-        }
-
-        with(findViewById<Button>(R.id.log_send_email)) {
-            setOnClickListener { composeEmail(logText) }
-        }
-
-        with(findViewById<Button>(R.id.log_cancel)) {
-            setOnClickListener { dismiss() }
-        }
+        return logText
     }
 
     private fun getCacheString(): String {
@@ -86,7 +95,7 @@ class LogDialog(
         return buildVersion.run { "Version $versionName ($versionCode)" }
     }
 
-    private fun composeEmail(body: String) {
+    private fun sendEmail(body: String) {
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = "mailto:".toUri()
         intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(context.resources.getString(R.string.project_email)))

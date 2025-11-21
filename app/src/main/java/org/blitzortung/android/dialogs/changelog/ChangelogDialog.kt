@@ -1,5 +1,6 @@
 package org.blitzortung.android.dialogs.changelog
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,13 +15,14 @@ class ChangelogDialog(
     context: Context,
 ) : android.app.AlertDialog(context) {
     init {
+        setTitle(context.resources.getText(R.string.changelog))
+
+        @SuppressLint("InflateParams")
+        val view = layoutInflater.inflate(R.layout.changelog_dialog, null)
+        setView(view)
+
+        setButton(BUTTON_NEUTRAL, context.resources.getText(R.string.ok)) { _, _ -> dismiss()}
         setCancelable(true)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.changelog_dialog)
     }
 
     override fun onStart() {

@@ -45,13 +45,13 @@ import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.data.MainDataHandler
-import org.blitzortung.android.dialogs.AlertDialog
+import org.blitzortung.android.dialogs.AlarmDialog
 import org.blitzortung.android.dialogs.AlertDialogColorHandler
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.overlay.color.ColorHandler
 import org.blitzortung.android.util.TabletAwareView
 
-class AlertView
+class AlarmView
     @JvmOverloads
     constructor(
         context: Context,
@@ -110,7 +110,7 @@ class AlertView
 
             with(textStyle) {
                 color = 0xff404040.toInt()
-                textSize = 0.8f * this@AlertView.textSize * textSizeFactor(context)
+                textSize = 0.8f * this@AlarmView.textSize * textSizeFactor(context)
             }
 
             background.color = 0xffb0b0b0.toInt()
@@ -123,7 +123,7 @@ class AlertView
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
             setOnLongClickListener {
-                AlertDialog(context, AlertDialogColorHandler(sharedPreferences), dataHandler, alertHandler)
+                AlarmDialog(context, AlertDialogColorHandler(sharedPreferences), dataHandler, alertHandler)
                     .show()
 
                 true

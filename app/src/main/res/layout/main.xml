@@ -122,7 +122,7 @@
             android:src="@android:drawable/ic_menu_view"
             android:visibility="gone" />
 
-        <org.blitzortung.android.app.view.AlertView
+        <org.blitzortung.android.app.view.AlarmView
             android:id="@+id/alert_view"
             android:layout_width="100dp"
             android:layout_height="100dp"
