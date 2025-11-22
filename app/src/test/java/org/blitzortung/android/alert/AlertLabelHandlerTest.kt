@@ -24,9 +24,6 @@ class AlertLabelHandlerTest {
     @MockK
     private lateinit var alertLabel: AlertLabel
 
-    @MockK
-    private lateinit var localActivity: LocalActivity
-
     private lateinit var alertParameters: AlertParameters
 
     private lateinit var uut: AlertLabelHandler
@@ -96,6 +93,18 @@ class AlertLabelHandlerTest {
 
         verify { alertLabel.setAlarmText("0km") }
         verify { alertLabel.setAlarmTextColor(0xffff6644.toInt()) }
+    }
+
+    @Test
+    fun testWithoutActivity() {
+        val ranges = listOf(AlertSectorRange(1.0f, 2.0f, 3, 1000))
+        val sectors = listOf(AlertSector("NW", 10.0f, 30.0f, ranges, Float.POSITIVE_INFINITY))
+        val localActivity = LocalActivity(sectors, alertParameters, 1000)
+
+        uut.apply(localActivity)
+
+        verify { alertLabel.setAlarmText("") }
+        verify { alertLabel.setAlarmTextColor(0xff00ff00.toInt()) }
     }
 
 }
