@@ -25,7 +25,7 @@ class MainTest {
     @get:Rule
     val activityRule = ActivityScenarioRule(Main::class.java)
 
-    private lateinit var uiDevice: androidx.test.uiautomator.UiDevice
+    private lateinit var uiDevice: UiDevice
     private val timeout = 5000L // 5 seconds
 
     @Before

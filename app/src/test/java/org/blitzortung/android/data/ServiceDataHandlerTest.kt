@@ -8,17 +8,14 @@ import android.os.PowerManager
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.createLocationEvent
-import org.blitzortung.android.data.beans.Location
 import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.LocalData
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.DataEvent
-import org.blitzortung.android.location.LocationUpdate
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

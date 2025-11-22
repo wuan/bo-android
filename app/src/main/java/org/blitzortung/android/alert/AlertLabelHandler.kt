@@ -19,7 +19,6 @@
 package org.blitzortung.android.alert
 
 import android.content.Context
-import org.blitzortung.android.app.R
 import org.blitzortung.android.app.R.color.Green
 import org.blitzortung.android.app.R.color.RedWarn
 import org.blitzortung.android.app.R.color.Yellow
@@ -32,9 +31,9 @@ class AlertLabelHandler(
 
         val (warningText, textColorResource) = when (result) {
             is LocalActivity -> extractStatus(result)
-            Outlying -> "<->" to R.color.RedWarn
-            NoData -> "" to R.color.Green
-            NoLocation -> "?" to R.color.RedWarn
+            Outlying -> "<->" to RedWarn
+            NoData -> "" to Green
+            NoLocation -> "?" to RedWarn
         }
 
         val color = context.getColor(textColorResource)
@@ -59,7 +58,7 @@ class AlertLabelHandler(
                 }
             status to textColorResource
         } else {
-            "" to R.color.Green
+            "" to Green
         }
     }
 

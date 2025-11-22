@@ -108,7 +108,7 @@ constructor(
 
     val locationEventConsumer: (LocationEvent) -> Unit = { locationEvent ->
         Log.v(LOG_TAG, "AlertView received location ${locationEvent}")
-        location = locationEvent.location();
+        location = locationEvent.location()
         if (location != null) {
             updateData()
         }
@@ -310,7 +310,7 @@ constructor(
     }
 
     private fun showBlitzortungProviderWarning() =
-        CustomToast.Companion.makeText(context, R.string.provider_warning, Toast.LENGTH_LONG).show()
+        CustomToast.makeText(context, R.string.provider_warning, Toast.LENGTH_LONG).show()
 
     private fun updateProviderSpecifics() {
         val providerType = dataProvider!!.type

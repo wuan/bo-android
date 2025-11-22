@@ -158,7 +158,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
             PreferenceKey.MAP_SCALE -> {
                 val scaleFactor = sharedPreferences.get(key, 100) / 100f
-                Log.v(Main.LOG_TAG, "MapFragment scale $scaleFactor")
+                Log.v(LOG_TAG, "MapFragment scale $scaleFactor")
                 mapView.tilesScaleFactor = scaleFactor
             }
 

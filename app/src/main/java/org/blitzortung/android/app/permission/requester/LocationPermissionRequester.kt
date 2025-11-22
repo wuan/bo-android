@@ -92,7 +92,7 @@ class LocationPermissionRequester(
                     else -> null
                 }
             val requestCode =
-                (LocationProviderRelation.Companion.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
+                (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
             return Pair(permission, requestCode)
         }
     }

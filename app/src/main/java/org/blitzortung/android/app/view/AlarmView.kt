@@ -357,7 +357,7 @@ constructor(
         with(lines) {
             color = colorHandler.lineColor
             strokeWidth = (size / 80).toFloat()
-            pathEffect = DashPathEffect(floatArrayOf(15f,10f), 0f);
+            pathEffect = DashPathEffect(floatArrayOf(15f,10f), 0f)
         }
 
         with(hugeText) {
