@@ -43,13 +43,12 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
-import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
 import org.blitzortung.android.data.provider.data.initializeResult
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 
 @Singleton
 class BlitzortungHttpDataProvider
@@ -60,7 +59,6 @@ class BlitzortungHttpDataProvider
         mapBuilderFactory: MapBuilderFactory,
     ) : OnSharedPreferenceChangeListener, DataProvider {
         private val strikeMapBuilder: MapBuilder<Strike> = mapBuilderFactory.createStrikeMapBuilder()
-        private val stationMapBuilder: MapBuilder<Station> = mapBuilderFactory.createStationMapBuilder()
         private var latestTime: Long = 0
         private var strikes: List<Strike> = emptyList()
         private var parameters: Parameters? = null
@@ -174,7 +172,7 @@ class BlitzortungHttpDataProvider
                 parameters: Parameters,
                 history: History?,
                 flags: Flags,
-            ): ResultEvent {
+            ): DataReceived {
                 var result = initializeResult(parameters, history, flags)
 
                 if (parameters != this@BlitzortungHttpDataProvider.parameters) {
@@ -231,19 +229,8 @@ class BlitzortungHttpDataProvider
                 parameters: Parameters,
                 history: History?,
                 flags: Flags,
-            ): ResultEvent {
+            ): DataReceived {
                 return initializeResult(parameters, history, flags)
-            }
-
-            override fun getStations(region: Int): List<Station> {
-                Authenticator.setDefault(MyAuthenticator())
-
-                return retrieveData(
-                    "BlitzortungHttpDataProvider.getStations() read %d bytes (%d stations) from region $region",
-                    sequenceOf(readFromUrl(Type.STATIONS, region)),
-                ) {
-                    stationMapBuilder.buildFromLine(it)
-                }
             }
         }
 

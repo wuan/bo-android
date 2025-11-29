@@ -137,14 +137,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
 
         val intent = Intent(this, Main::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        val flags =
-            PendingIntent.FLAG_CANCEL_CURRENT or (
-                if (isAtLeast(Build.VERSION_CODES.M)) {
-                    PendingIntent.FLAG_IMMUTABLE
-                } else {
-                    0
-                }
-            )
+        val flags = PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         val contentIntent = PendingIntent.getActivity(this, 0, intent, flags)
 
         if (isAtLeast(29)) {
@@ -234,13 +227,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
                 Log.v(Main.LOG_TAG, "AppService.createAlarm() with backgroundPeriod=%d".format(backgroundPeriod))
                 val intent = Intent(this, AppService::class.java)
                 intent.action = RETRIEVE_DATA_ACTION
-                val flags =
-                    if (isAtLeast(Build.VERSION_CODES.M)) {
-                        PendingIntent.FLAG_IMMUTABLE
-                    } else {
-                        0
-                    }
-                val pendingIntent = PendingIntent.getService(this, 0, intent, flags)
+                val pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
                 this.pendingIntent = pendingIntent
 
                 val period = (backgroundPeriod * 1000).toLong()

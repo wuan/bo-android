@@ -19,7 +19,8 @@ import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.LocalData
 import org.blitzortung.android.data.provider.result.DataEvent
-import org.blitzortung.android.data.provider.result.StatusEvent
+import org.blitzortung.android.data.provider.result.NoData
+import org.blitzortung.android.data.provider.result.StatusUpdate
 import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.util.Period
 import org.junit.Before
@@ -109,7 +110,7 @@ class MainDataHandlerTest {
     fun tryDataModeRun() {
         uut.run()
 
-        assertThat(receivedEvents).contains(StatusEvent("0/60"))
+        assertThat(receivedEvents).contains(StatusUpdate("0/60"))
         verify { handler.postDelayed(uut, 1000) }
     }
 
@@ -171,7 +172,7 @@ class MainDataHandlerTest {
         verify { animator.addListener(capture(animatorListenerSlot)) }
         val captured = animatorListenerSlot.captured
 
-        assertThat(receivedEvents).isEmpty()
+        assertThat(receivedEvents).containsExactly(NoData)
         captured.onAnimationEnd(animator)
         assertThat(receivedEvents).contains(REQUEST_STARTED_EVENT)
     }

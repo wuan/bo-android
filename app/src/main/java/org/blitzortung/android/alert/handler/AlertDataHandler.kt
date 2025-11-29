@@ -23,8 +23,10 @@ import android.location.Location
 import android.util.Log
 import javax.inject.Inject
 import kotlin.math.max
+import org.blitzortung.android.alert.LocalActivity
 import org.blitzortung.android.alert.AlertParameters
-import org.blitzortung.android.alert.AlertResult
+import org.blitzortung.android.alert.Warning
+import org.blitzortung.android.alert.Outlying
 import org.blitzortung.android.alert.data.AlertSector
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.data.beans.GridElement
@@ -44,7 +46,7 @@ open class AlertDataHandler
             location: Location,
             parameters: AlertParameters,
             referenceTime: Long = System.currentTimeMillis(),
-        ): AlertResult? {
+        ): Warning {
             val gridParameters: GridParameters? = strikes.gridParameters
             if (gridParameters != null &&
                 !gridParameters.isGlobal &&
@@ -58,7 +60,7 @@ open class AlertDataHandler
                     LOG_TAG,
                     "Location $location is not in grid ${gridParameters.longitudeInterval} + ${gridParameters.latitudeInterval}",
                 )
-                return null
+                return Outlying
             }
 
             val sectors = createSectors(parameters)
@@ -83,7 +85,7 @@ open class AlertDataHandler
                 }
             }
 
-            return AlertResult(sectors.map { aggregatingAlertDataMapper.mapSector(it) }, parameters, referenceTime)
+            return LocalActivity(sectors.map { aggregatingAlertDataMapper.mapSector(it) }, parameters, referenceTime)
         }
 
         private fun checkStrike(
@@ -141,13 +143,13 @@ open class AlertDataHandler
 
         fun getLatestTimstampWithin(
             distanceLimit: Float,
-            alertResult: AlertResult,
+            alertResult: LocalActivity,
         ): Long = alertResult.sectors.fold(0L) { latestTimestamp, sector ->
             max(latestTimestamp, getLatestTimestampWithin(distanceLimit, sector))
         }
 
         fun getTextMessage(
-            alertResult: AlertResult,
+            alertResult: LocalActivity,
             notificationDistanceLimit: Float,
             resources: Resources,
         ): String = alertResult.sectorsByDistance

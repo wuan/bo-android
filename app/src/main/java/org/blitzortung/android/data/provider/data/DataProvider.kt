@@ -21,9 +21,8 @@ package org.blitzortung.android.data.provider.data
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
-import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.provider.DataProviderType
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 
 interface DataProvider {
     val type: DataProviderType
@@ -37,15 +36,13 @@ interface DataProvider {
             parameters: Parameters,
             history: History?,
             flags: Flags,
-        ): ResultEvent
+        ): DataReceived
 
         fun getStrikesGrid(
             parameters: Parameters,
             history: History?,
             flags: Flags,
-        ): ResultEvent
-
-        fun getStations(region: Int): List<Station>
+        ): DataReceived
     }
 }
 
@@ -53,5 +50,5 @@ fun initializeResult(
     parameters: Parameters,
     history: History?,
     flags: Flags,
-): ResultEvent =
-    ResultEvent(referenceTime = System.currentTimeMillis(), parameters = parameters, history = history, flags = flags)
+): DataReceived =
+    DataReceived(referenceTime = System.currentTimeMillis(), parameters = parameters, history = history, flags = flags)

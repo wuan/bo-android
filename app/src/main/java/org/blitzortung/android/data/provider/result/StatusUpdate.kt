@@ -16,8 +16,6 @@
 
 */
 
-package org.blitzortung.android.alert.event
+package org.blitzortung.android.data.provider.result
 
-import org.blitzortung.android.protocol.Event
-
-interface AlertEvent : Event
+data class StatusUpdate(val status: String) : DataEvent

@@ -21,9 +21,7 @@ package org.blitzortung.android.data.provider.standard
 import org.blitzortung.android.data.beans.DefaultStrike
 import org.blitzortung.android.data.beans.GridElement
 import org.blitzortung.android.data.beans.GridParameters
-import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
-import org.blitzortung.android.util.TimeFormat
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -75,27 +73,5 @@ internal class DataBuilder {
             latitude = gridParameters.getCenterLatitude(jsonArray.getInt(1)),
             multiplicity = jsonArray.getInt(2),
         )
-    }
-
-    fun createStation(jsonArray: JSONArray): Station {
-        val name: String
-        val longitude: Double
-        val latitude: Double
-        var offlineSince = Station.OFFLINE_SINCE_NOT_SET
-        try {
-            name = jsonArray.getString(1)
-            longitude = jsonArray.getDouble(3)
-            latitude = jsonArray.getDouble(4)
-            if (jsonArray.length() >= 6) {
-                val offlineSinceString = jsonArray.getString(5)
-                if (offlineSinceString.isNotEmpty()) {
-                    offlineSince = TimeFormat.parseTimeWithMilliseconds(offlineSinceString)
-                }
-            }
-        } catch (e: JSONException) {
-            throw IllegalStateException("error with JSON format while parsing participants data")
-        }
-
-        return Station(name = name, longitude = longitude, latitude = latitude, offlineSince = offlineSince)
     }
 }

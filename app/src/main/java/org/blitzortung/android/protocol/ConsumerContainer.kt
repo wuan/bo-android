@@ -18,21 +18,15 @@
 
 package org.blitzortung.android.protocol
 
-abstract class ConsumerContainer<P> {
-    private val consumers: MutableSet<(P) -> Unit>
+abstract class ConsumerContainer<P>(
+    initialValue: P
+) {
+    private val consumers: MutableSet<(P) -> Unit> = HashSet()
 
-    var currentPayload: P? = null
+    var currentPayload: P = initialValue
         private set
 
-    init {
-        consumers = HashSet()
-    }
-
-    open fun addConsumer(consumer: ((P) -> Unit)?) {
-        if (consumer == null) {
-            throw IllegalArgumentException("consumer may not be null")
-        }
-
+    open fun addConsumer(consumer: ((P) -> Unit)) {
         synchronized(consumers) {
             if (!consumers.contains(consumer)) {
                 val isFirst = consumers.isEmpty()

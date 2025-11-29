@@ -6,7 +6,7 @@ import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.TimeInterval
 import org.blitzortung.android.data.beans.GridElement
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 import org.junit.Before
 import org.junit.Test
 
@@ -38,7 +38,7 @@ class DataCacheTest {
 
     @Test
     fun cachePut() {
-        val dataEvent = ResultEvent(parameters = parameters, flags = Flags())
+        val dataEvent = DataReceived(parameters = parameters, flags = Flags())
         uut.put(parameters, dataEvent)
 
         val result = uut.get(parameters)
@@ -48,7 +48,7 @@ class DataCacheTest {
 
     @Test
     fun cacheClear() {
-        val dataEvent = ResultEvent(parameters = parameters, flags = Flags())
+        val dataEvent = DataReceived(parameters = parameters, flags = Flags())
         uut.put(parameters, dataEvent)
         uut.clear()
 
@@ -59,7 +59,7 @@ class DataCacheTest {
 
     @Test
     fun cachePutOutdated() {
-        val dataEvent = ResultEvent(parameters = parameters, flags = Flags())
+        val dataEvent = DataReceived(parameters = parameters, flags = Flags())
         uut.cache[parameters] = Timestamped(dataEvent, System.currentTimeMillis() - DataCache.DEFAULT_EXPIRY_TIME - 1)
 
         val result = uut.get(parameters)
@@ -75,12 +75,12 @@ class DataCacheTest {
                 GridElement(2, 3.0, 4.0, 2),
                 GridElement(4, -3.0, -4.0, 1),
             )
-        val dataEvent = ResultEvent(parameters = parameters, flags = Flags(), strikes = strikes)
+        val dataEvent = DataReceived(parameters = parameters, flags = Flags(), strikes = strikes)
 
         uut.put(parameters, dataEvent)
         uut.put(
             parameters.copy(interval = TimeInterval(offset = 60)),
-            ResultEvent(parameters = parameters, flags = Flags()),
+            DataReceived(parameters = parameters, flags = Flags()),
         )
 
         val result = uut.calculateTotalSize()

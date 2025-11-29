@@ -18,7 +18,7 @@ class CustomToast
             val inflater =
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val layout: View? = inflater.inflate(R.layout.toast, null)
-            t.setView(layout)
+            t.view = layout
             return t
         }
     }

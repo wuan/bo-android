@@ -2,16 +2,13 @@ package org.blitzortung.android.app.permission
 
 import android.app.Activity
 import android.content.pm.PackageManager
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 
 class PermissionsSupport(
     private val activity: Activity,
 ) {
-    @RequiresApi(Build.VERSION_CODES.M)
     fun request(
         permission: String,
         requestCode: Int,
@@ -36,7 +33,6 @@ class PermissionsSupport(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun requestAfterDialog(
         dialogTextResource: Int,
         permission: String,
@@ -55,7 +51,6 @@ class PermissionsSupport(
     }
 
     companion object {
-        @RequiresApi(Build.VERSION_CODES.M)
         fun ensure(
             activity: Activity,
             vararg permissionRequesters: PermissionRequester,

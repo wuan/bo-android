@@ -47,7 +47,7 @@ class AlarmDialog(
 
         setView(view)
 
-        setButton(AlertDialog.BUTTON_NEUTRAL, context.resources.getText(R.string.ok)) { _, _ ->
+        setButton(BUTTON_NEUTRAL, context.resources.getText(R.string.ok)) { _, _ ->
             dismiss()
         }
     }

@@ -4,22 +4,20 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.os.PowerManager
 import android.util.Log
-import kotlin.reflect.KSuspendFunction1
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.data.provider.data.DataProvider
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.util.isAtLeast
 
 internal class FetchBackgroundDataTask(
     dataMode: DataMode,
     dataProvider: DataProvider,
-    resultConsumer: (ResultEvent) -> Unit,
-    toast: KSuspendFunction1<Int, Unit>,
+    resultConsumer: (DataReceived) -> Unit,
     private val wakeLock: PowerManager.WakeLock,
 ) : FetchDataTask(dataMode, dataProvider, resultConsumer) {
-    override fun onPostExecute(result: ResultEvent?) {
+    override fun onPostExecute(result: DataReceived?) {
         super.onPostExecute(result)
         if (wakeLock.isHeld) {
             try {
@@ -40,7 +38,7 @@ internal class FetchBackgroundDataTask(
         parameters: Parameters,
         history: History?,
         flags: Flags,
-    ): ResultEvent? =
+    ): DataReceived? =
         withContext(Dispatchers.IO) {
             if (isAtLeast(Build.VERSION_CODES.N)) {
                 wakeLock.acquire(ServiceDataHandler.WAKELOCK_TIMEOUT)

@@ -24,8 +24,8 @@ import org.blitzortung.android.app.ButtonGroup
 import org.blitzortung.android.app.databinding.MainBinding
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.Mode
-import org.blitzortung.android.data.provider.result.ResultEvent
-import org.blitzortung.android.protocol.Event
+import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 
 class HistoryController(
     private val binding: MainBinding,
@@ -36,8 +36,8 @@ class HistoryController(
 
     private var animationRunning = false
 
-    val dataConsumer = { event: Event ->
-        if (event is ResultEvent) {
+    val dataConsumer = { event: DataEvent ->
+        if (event is DataReceived) {
             setRealtimeData(event.containsRealtimeData())
         }
     }

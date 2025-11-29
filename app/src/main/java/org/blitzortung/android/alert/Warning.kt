@@ -20,11 +20,20 @@ package org.blitzortung.android.alert
 
 import org.blitzortung.android.alert.data.AlertSector
 
-data class AlertResult(
+sealed interface Warning
+
+object Outlying : Warning
+
+object NoData : Warning
+
+object NoLocation : Warning
+
+data class LocalActivity(
     val sectors: List<AlertSector>,
     val parameters: AlertParameters,
     val referenceTime: Long,
-) {
+) : Warning {
+
     val sectorsByDistance: Map<Float, AlertSector> by lazy {
         sectors
             .filter { it.closestStrikeDistance < Float.POSITIVE_INFINITY }

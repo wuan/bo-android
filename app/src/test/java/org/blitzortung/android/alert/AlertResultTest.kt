@@ -25,7 +25,7 @@ class AlertResultTest {
 
     @Test
     fun emptySectorsResults() {
-        val uut = AlertResult(emptyList(), alertParameters, System.currentTimeMillis())
+        val uut = LocalActivity(emptyList(), alertParameters, System.currentTimeMillis())
 
         assertThat(uut.closestStrikeDistance).isInfinite()
         assertThat(uut.bearingName).isEqualTo("n/a")
@@ -35,7 +35,7 @@ class AlertResultTest {
     @Test
     fun singleSectorResults() {
         val uut =
-            AlertResult(
+            LocalActivity(
                 listOf(AlertSector("foo", 1.0f, 2.0f, emptyList(), 10.0f)),
                 alertParameters,
                 System.currentTimeMillis(),

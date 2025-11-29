@@ -1,7 +1,7 @@
 package org.blitzortung.android.data.provider
 
-import android.location.Location
 import org.assertj.core.api.Assertions.assertThat
+import org.blitzortung.android.createLocation
 import org.blitzortung.android.data.DataArea
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.GridParameters
@@ -19,7 +19,15 @@ class LocalDataTest {
 
     private lateinit var parameters: Parameters
 
-    private var globalGrid: GridParameters = GridParameters(longitudeStart=0.0, latitudeStart=0.0, longitudeDelta=0.318399, latitudeDelta=0.235637, longitudeBins=1130, latitudeBins=763, size=25000)
+    private var globalGrid: GridParameters = GridParameters(
+        longitudeStart = 0.0,
+        latitudeStart = 0.0,
+        longitudeDelta = 0.318399,
+        latitudeDelta = 0.235637,
+        longitudeBins = 1130,
+        latitudeBins = 763,
+        size = 25000
+    )
 
     @Before
     fun setUp() {
@@ -256,12 +264,4 @@ class LocalDataTest {
         assertThat(uut.dataArea).isEqualTo(DataArea(2, 8, 5))
     }
 
-    fun createLocation(
-        x: Double,
-        y: Double,
-    ): Location =
-        Location("").apply {
-            longitude = x
-            latitude = y
-        }
 }

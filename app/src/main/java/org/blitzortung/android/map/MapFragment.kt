@@ -11,7 +11,6 @@ import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import kotlin.math.min
-import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
@@ -158,7 +157,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
             PreferenceKey.MAP_SCALE -> {
                 val scaleFactor = sharedPreferences.get(key, 100) / 100f
-                Log.v(Main.LOG_TAG, "MapFragment scale $scaleFactor")
+                Log.v(LOG_TAG, "MapFragment scale $scaleFactor")
                 mapView.tilesScaleFactor = scaleFactor
             }
 

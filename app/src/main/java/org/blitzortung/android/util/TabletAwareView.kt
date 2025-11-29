@@ -33,12 +33,11 @@ open class TabletAwareView(
     defStyle: Int,
 ) : View(context, attrs, defStyle) {
     protected var padding: Float = 0.0f
-    protected var textSize: Float = 0.0f
+    protected var textSize: Float = 0.0f;
     protected var sizeFactor: Float = 0.0f
 
     init {
         context.withStyledAttributes(attrs, R.styleable.View, defStyle, 0) {
-
             val scaleForTablet = getBoolean(R.styleable.View_tablet_scaleable, false) && isTablet(context)
 
             padding = pxFromDp(context, padding(scaleForTablet))

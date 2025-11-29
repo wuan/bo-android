@@ -34,7 +34,7 @@ class InfoDialog(context: Context, private val buildVersion: BuildVersion) : Ale
         @SuppressLint("InflateParams")
         setView(this.layoutInflater.inflate(R.layout.info_dialog, null))
 
-        setButton(AlertDialog.BUTTON_NEUTRAL, context.resources.getText(R.string.ok)) { _, _ ->
+        setButton(BUTTON_NEUTRAL, context.resources.getText(R.string.ok)) { _, _ ->
             dismiss()
         }
     }

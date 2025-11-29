@@ -25,8 +25,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import org.blitzortung.android.alert.AlertLabel
 import org.blitzortung.android.alert.AlertLabelHandler
-import org.blitzortung.android.alert.event.AlertEvent
-import org.blitzortung.android.alert.event.AlertResultEvent
+import org.blitzortung.android.alert.Warning
 
 class StatusComponent(
     private val warning: TextView,
@@ -37,7 +36,7 @@ class StatusComponent(
 ) : AlertLabel {
     private val alertLabelHandler: AlertLabelHandler
 
-    val alertEventConsumer: (AlertEvent) -> Unit
+    val alertEventConsumer: (Warning) -> Unit
 
     init {
         progressBar.visibility = View.INVISIBLE
@@ -46,13 +45,7 @@ class StatusComponent(
         alertLabelHandler = AlertLabelHandler(this, context)
 
         alertEventConsumer = { event ->
-            alertLabelHandler.apply(
-                if (event is AlertResultEvent) {
-                    event.alertResult
-                } else {
-                    null
-                },
-            )
+                alertLabelHandler.apply(event)
         }
     }
 
