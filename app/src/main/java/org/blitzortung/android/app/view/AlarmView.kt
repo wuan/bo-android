@@ -98,8 +98,6 @@ constructor(
         if (location != newLocation) {
             Log.v(Main.LOG_TAG, "AlertView received location ${newLocation}")
             location = newLocation
-            val visibility = if (location != null) VISIBLE else INVISIBLE
-            setVisibility(visibility)
             invalidate()
         }
     }

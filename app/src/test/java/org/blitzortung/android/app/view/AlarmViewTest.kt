@@ -265,7 +265,7 @@ class AlarmViewTest {
     }
 
     @Test
-    fun shouldHandleTransitionFromLocationToNoLocation() {
+    fun transitionToNoLocationShouldNotChangeVisibility() {
         val location = createLocation()
         alarmView.locationEventConsumer(LocationUpdate(location))
         assertThat(alarmView.visibility).isEqualTo(View.VISIBLE)
@@ -273,7 +273,7 @@ class AlarmViewTest {
         val noLocationEvent: LocationEvent = org.blitzortung.android.location.NoLocation
         alarmView.locationEventConsumer(noLocationEvent)
 
-        assertThat(alarmView.visibility).isEqualTo(View.INVISIBLE)
+        assertThat(alarmView.visibility).isEqualTo(View.VISIBLE)
     }
 
     @Test
