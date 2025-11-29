@@ -31,7 +31,7 @@ class SymbolRenderer(
 
         with(hugeText) {
             color = 0xff404040.toInt()
-            textSize = textSize
+            textSize = this.textSize
         }
     }
 
