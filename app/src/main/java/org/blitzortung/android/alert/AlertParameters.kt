@@ -25,4 +25,6 @@ data class AlertParameters(
     val rangeSteps: List<Float>,
     val sectorLabels: List<String>,
     val measurementSystem: MeasurementSystem,
-)
+) {
+    val sectorWidth = (360 / sectorLabels.size).toFloat()
+}

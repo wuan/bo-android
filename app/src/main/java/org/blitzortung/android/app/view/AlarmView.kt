@@ -19,13 +19,10 @@
 package org.blitzortung.android.app.view
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Paint.Align
 import android.graphics.Paint.Style
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.location.Location
 import android.util.AttributeSet
@@ -79,6 +76,8 @@ constructor(
     private val primitiveRenderer: PrimitiveRenderer
     private lateinit var symbolRenderer: SymbolRenderer
 
+    private val alarmViewData = AlarmViewData()
+
     val alertEventConsumer: (Warning) -> Unit = { event ->
         val updated = warning != event
         if (updated) {
@@ -121,7 +120,8 @@ constructor(
         this.colorHandler = colorHandler
         this.intervalDuration = intervalDuration
 
-        symbolRenderer = SymbolRenderer(context, primitiveRenderer, colorHandler, textSize * textSizeFactor(this.context))
+        symbolRenderer =
+            SymbolRenderer(context, primitiveRenderer, colorHandler, textSize * textSizeFactor(this.context))
     }
 
     fun enableLongClickListener(
@@ -160,9 +160,9 @@ constructor(
     }
 
     data class AlarmViewData(
-        val size: Int,
-        val center: Float,
-        val radius: Float,
+        var size: Int = 0,
+        var center: Float = 0f,
+        var radius: Float = 0f,
     )
 
     override fun onDraw(canvas: Canvas) {
@@ -172,7 +172,11 @@ constructor(
         val center = size / 2.0f
         val radius = center - pad
 
-        val alarmViewData = AlarmViewData(size, center, radius)
+        with (alarmViewData) {
+            this.size = size
+            this.center = center
+            this.radius = radius
+        }
 
         drawCanvas = canvasProvider.provide(colorHandler.backgroundColor, width, height)
 
@@ -215,13 +219,12 @@ constructor(
     private fun renderLocalActivity(
         alertResult: LocalActivity,
         data: AlarmViewData,
-        temporaryCanvas: Canvas,
+        canvas: Canvas,
     ) {
         val alertParameters = alertResult.parameters
         val rangeSteps = alertParameters.rangeSteps
-        val rangeStepCount = rangeSteps.size
-        val radiusIncrement = data.radius / rangeStepCount
-        val sectorWidth = (360 / alertParameters.sectorLabels.size).toFloat()
+        val radiusIncrement = data.radius / rangeSteps.size
+        val sectorWidth = alertParameters.sectorWidth
 
         with(lines) {
             color = colorHandler.lineColor
@@ -236,40 +239,40 @@ constructor(
         val actualTime = System.currentTimeMillis()
 
         for (alertSector in alertResult.sectors) {
-            renderSectorBackground(alertSector, radiusIncrement, data, actualTime, temporaryCanvas, sectorWidth)
+            renderSectorBackground(alertSector, radiusIncrement, data, actualTime, sectorWidth, canvas)
         }
 
         for (alertSector in alertResult.sectors) {
-            renderSectorSideLines(alertSector, temporaryCanvas, data, radiusIncrement, sectorWidth)
+            renderSectorSideLines(alertSector, data, radiusIncrement, sectorWidth, canvas)
         }
 
         textStyle.textAlign = Align.RIGHT
         val textHeight = textStyle.getFontMetrics(null)
-        for (radiusIndex in 0 until rangeStepCount) {
-            renderRangeCircles(
+        for (radiusIndex in 0 until rangeSteps.size) {
+            renderRangeCircle(
                 radiusIndex,
-                rangeStepCount,
                 data,
                 radiusIncrement,
-                temporaryCanvas,
                 rangeSteps,
                 textHeight,
-                alertParameters
+                alertParameters,
+                canvas
             )
         }
     }
 
-    private fun renderRangeCircles(
+    private fun renderRangeCircle(
         radiusIndex: Int,
-        rangeStepCount: Int,
         data: AlarmViewData,
         radiusIncrement: Float,
-        canvas: Canvas,
         rangeSteps: List<Float>,
         textHeight: Float,
-        alertParameters: AlertParameters
+        alertParameters: AlertParameters,
+        canvas: Canvas
     ) {
-        if (radiusIndex == rangeStepCount - 1) {
+        val isOuterCircle = radiusIndex == rangeSteps.size - 1
+
+        if (isOuterCircle) {
             lines.strokeWidth = (data.size / 80).toFloat()
         }
         primitiveRenderer.drawCircle(
@@ -287,7 +290,7 @@ constructor(
                 data.center + textHeight / 3f,
                 textStyle,
             )
-            if (radiusIndex == rangeStepCount - 1) {
+            if (isOuterCircle) {
                 val distanceUnit = resources.getString(alertParameters.measurementSystem.unitNameString)
                 canvas.drawText(
                     distanceUnit,
@@ -301,10 +304,10 @@ constructor(
 
     private fun renderSectorSideLines(
         alertSector: AlertSector,
-        canvas: Canvas,
         data: AlarmViewData,
         radiusIncrement: Float,
-        sectorWidth: Float
+        sectorWidth: Float,
+        canvas: Canvas
     ) {
         val bearing = alertSector.minimumSectorBearing.toDouble()
         canvas.drawLine(
@@ -325,8 +328,8 @@ constructor(
         radiusIncrement: Float,
         data: AlarmViewData,
         actualTime: Long,
-        canvas: Canvas,
-        sectorWidth: Float
+        sectorWidth: Float,
+        canvas: Canvas
     ) {
         val startAngle = alertSector.minimumSectorBearing + 90f + 180f
 

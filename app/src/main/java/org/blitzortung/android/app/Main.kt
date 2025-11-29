@@ -20,7 +20,6 @@ package org.blitzortung.android.app
 
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.text.format.DateFormat
@@ -199,7 +198,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 setStatusString(event.status)
             }
 
-            NoData -> {}
+            NoData -> {
+                setStatusString("?")
+            }
         }
     }
 
