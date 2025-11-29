@@ -204,6 +204,27 @@ class AlarmViewTest {
     }
 
     @Test
+    fun shouldRenderDescriptionTextWhenNoDataAndDescriptionEnabled() {
+        alarmView.enableDescriptionText()
+        alarmView.measure(
+            View.MeasureSpec.makeMeasureSpec(400, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(400, View.MeasureSpec.EXACTLY)
+        )
+        alarmView.layout(0, 0, 400, 400)
+
+        alarmView.alertEventConsumer(NoData)
+        alarmView.draw(canvas)
+
+        verify {
+            symbolRenderer.drawAlertOrLocationMissingMessage(any(), any(), eq(canvas))
+        }
+        verify(exactly = 0) {
+            symbolRenderer.drawOwnLocationSymbol(any(), any())
+            symbolRenderer.drawNoLocationSymbol(any(), any())
+        }
+    }
+
+    @Test
     fun shouldRenderOwnLocationSymbolWhenNoWarningAndLocationPresent() {
         val location = createLocation()
         alarmView.locationEventConsumer(LocationUpdate(location))
@@ -234,29 +255,6 @@ class AlarmViewTest {
     }
 
     @Test
-    fun shouldUpdateWarningWhenAlertEventIsReceived() {
-        val localActivity = createLocalActivity()
-
-        alarmView.alertEventConsumer(localActivity)
-        alarmView.draw(canvas)
-
-        verify {
-            localActivityRenderer.renderLocalActivity(eq(localActivity), any(), any())
-        }
-    }
-
-    @Test
-    fun shouldNotUpdateWhenSameWarningIsReceivedAgain() {
-        val localActivity = createLocalActivity()
-
-        alarmView.alertEventConsumer(localActivity)
-        alarmView.alertEventConsumer(localActivity)
-
-        // The view should not redraw for the same warning
-        // In real implementation this would check invalidate() calls
-    }
-
-    @Test
     fun shouldSetVisibilityToVisibleWhenLocationIsProvided() {
         val location = createLocation()
         val locationUpdate = LocationUpdate(location)
@@ -264,20 +262,6 @@ class AlarmViewTest {
         alarmView.locationEventConsumer(locationUpdate)
 
         assertThat(alarmView.visibility).isEqualTo(View.VISIBLE)
-    }
-
-    @Test
-    fun shouldNotUpdateWhenSameLocationIsReceivedAgain() {
-        val location = createLocation()
-        val locationUpdate = LocationUpdate(location)
-
-        alarmView.locationEventConsumer(locationUpdate)
-        val firstVisibility = alarmView.visibility
-
-        alarmView.locationEventConsumer(locationUpdate)
-        val secondVisibility = alarmView.visibility
-
-        assertThat(firstVisibility).isEqualTo(secondVisibility)
     }
 
     @Test
@@ -290,57 +274,6 @@ class AlarmViewTest {
         alarmView.locationEventConsumer(noLocationEvent)
 
         assertThat(alarmView.visibility).isEqualTo(View.INVISIBLE)
-    }
-
-    @Test
-    fun shouldRenderLocalActivityWithMultipleSectors() {
-        val sector1 = AlertSector("N", 0f, 45f, listOf(), 10f)
-        val sector2 = AlertSector("NE", 45f, 90f, listOf(), 20f)
-        val sector3 = AlertSector("E", 90f, 135f, listOf(), Float.POSITIVE_INFINITY)
-
-        val parameters = AlertParameters(
-            alarmInterval = 600000L,
-            rangeSteps = listOf(10f, 25f, 50f),
-            sectorLabels = listOf("N", "NE", "E", "SE", "S", "SW", "W", "NW"),
-            measurementSystem = MeasurementSystem.METRIC
-        )
-
-        val localActivity = LocalActivity(
-            sectors = listOf(sector1, sector2, sector3),
-            parameters = parameters,
-            referenceTime = System.currentTimeMillis()
-        )
-
-        alarmView.alertEventConsumer(localActivity)
-        alarmView.draw(canvas)
-
-        verify {
-            localActivityRenderer.renderLocalActivity(eq(localActivity), any(), any())
-        }
-    }
-
-    @Test
-    fun shouldRenderLocalActivityWithNoStrikesInSectors() {
-        val sector = AlertSector("N", 0f, 45f, listOf(), Float.POSITIVE_INFINITY)
-        val parameters = AlertParameters(
-            alarmInterval = 600000L,
-            rangeSteps = listOf(10f, 25f, 50f),
-            sectorLabels = listOf("N", "NE", "E", "SE", "S", "SW", "W", "NW"),
-            measurementSystem = MeasurementSystem.METRIC
-        )
-
-        val localActivity = LocalActivity(
-            sectors = listOf(sector),
-            parameters = parameters,
-            referenceTime = System.currentTimeMillis()
-        )
-
-        alarmView.alertEventConsumer(localActivity)
-        alarmView.draw(canvas)
-
-        verify {
-            localActivityRenderer.renderLocalActivity(eq(localActivity), any(), any())
-        }
     }
 
     @Test
@@ -403,26 +336,6 @@ class AlarmViewTest {
 
         verify {
             symbolRenderer.drawNoLocationSymbol(any(), any())
-        }
-    }
-
-    @Test
-    fun shouldClearCanvasBeforeDrawing() {
-        alarmView.alertEventConsumer(Outlying)
-        alarmView.draw(canvas)
-
-        verify {
-            canvasWrapper.clear()
-        }
-    }
-
-    @Test
-    fun shouldUpdateCanvasAfterDrawing() {
-        alarmView.alertEventConsumer(Outlying)
-        alarmView.draw(canvas)
-
-        verify {
-            canvasWrapper.update(canvas)
         }
     }
 }

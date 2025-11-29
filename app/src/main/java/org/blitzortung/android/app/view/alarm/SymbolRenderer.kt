@@ -6,9 +6,7 @@ import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Paint.Align
 import android.graphics.Paint.Style
-import android.graphics.PathEffect
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.view.AlarmView
 import org.blitzortung.android.app.view.AlarmViewData
 import org.blitzortung.android.map.overlay.color.ColorHandler
 
