@@ -8,14 +8,15 @@ import android.graphics.Paint.Align
 import android.graphics.Paint.Style
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.AlarmView
+import org.blitzortung.android.app.view.AlarmViewData
 import org.blitzortung.android.map.overlay.color.ColorHandler
 
 class SymbolRenderer(
     val context: Context,
     val primitiveRenderer: PrimitiveRenderer,
-    val colorHandler: ColorHandler,
     val textSize: Float
 ) {
+    var colorHandler : ColorHandler? = null
     private val lines = Paint(Paint.ANTI_ALIAS_FLAG)
     private val hugeText = Paint(Paint.ANTI_ALIAS_FLAG)
     private val warnText = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -35,12 +36,9 @@ class SymbolRenderer(
         }
     }
 
-    fun drawOutOfRangeSymbol(
-        data: AlarmView.AlarmViewData,
-        canvas: Canvas,
-    ) {
+    fun drawOutOfRangeSymbol(data: AlarmViewData, canvas: Canvas) {
         with(lines) {
-            color = colorHandler.lineColor
+            colorHandler?.also { color = it.lineColor }
             strokeWidth = (data.size / 80).toFloat()
         }
 
@@ -51,11 +49,11 @@ class SymbolRenderer(
     }
 
     fun drawOwnLocationSymbol(
-        data: AlarmView.AlarmViewData,
+        data: AlarmViewData,
         canvas: Canvas,
     ) {
         with(lines) {
-            color = colorHandler.lineColor
+            colorHandler?.also { color = it.lineColor }
             strokeWidth = (data.size / 80).toFloat()
         }
 
@@ -64,17 +62,17 @@ class SymbolRenderer(
     }
 
     fun drawNoLocationSymbol(
-        data: AlarmView.AlarmViewData,
+        data: AlarmViewData,
         canvas: Canvas,
     ) {
         with(lines) {
-            color = colorHandler.lineColor
+            colorHandler?.also { color = it.lineColor }
             strokeWidth = (data.size / 80).toFloat()
             pathEffect = DashPathEffect(floatArrayOf(15f, 10f), 0f)
         }
 
         with(hugeText) {
-            color = colorHandler.lineColor
+            colorHandler?.also { color = it.lineColor }
             textSize = 3f * this@SymbolRenderer.textSize
         }
 
