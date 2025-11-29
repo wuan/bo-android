@@ -6,6 +6,7 @@ import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Paint.Align
 import android.graphics.Paint.Style
+import android.graphics.PathEffect
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.AlarmView
 import org.blitzortung.android.app.view.AlarmViewData
@@ -40,6 +41,7 @@ class SymbolRenderer(
         with(lines) {
             colorHandler?.also { color = it.lineColor }
             strokeWidth = (data.size / 80).toFloat()
+            pathEffect = null
         }
 
         primitiveRenderer.drawCross(data.center, data.radius * 0.1f, lines, canvas)
@@ -55,6 +57,7 @@ class SymbolRenderer(
         with(lines) {
             colorHandler?.also { color = it.lineColor }
             strokeWidth = (data.size / 80).toFloat()
+            pathEffect = null
         }
 
         primitiveRenderer.drawCircle(data.center, data.radius * 0.8f, lines, canvas)

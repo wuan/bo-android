@@ -37,7 +37,7 @@ class LocalActivityRenderer(
 
         with(textStyle) {
             color = 0xff404040.toInt()
-            textSize = 2f * this@LocalActivityRenderer.textSize
+            textSize = 0.8f * this@LocalActivityRenderer.textSize
         }
     }
 
