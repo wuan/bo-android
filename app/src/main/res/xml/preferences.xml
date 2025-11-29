@@ -1,49 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <ListPreference
-        android:defaultValue="0"
-        android:enabled="true"
-        android:entries="@array/regions"
-        android:entryValues="@array/regions_values"
-        android:key="region"
-        android:persistent="true"
-        android:selectable="true"
-        android:summary="@string/region_summary"
-        android:title="@string/region" />
-    <ListPreference
-        android:defaultValue="auto"
-        android:enabled="true"
-        android:entries="@array/grid_sizes"
-        android:entryValues="@array/grid_size_values"
-        android:key="grid_size"
-        android:persistent="true"
-        android:selectable="true"
-        android:summary="@string/grid_size_summary"
-        android:title="@string/grid_size" />
-    <ListPreference
-        android:defaultValue="60"
-        android:enabled="true"
-        android:entries="@array/interval_durations"
-        android:entryValues="@array/interval_duration_values"
-        android:key="interval_duration"
-        android:persistent="true"
-        android:selectable="true"
-        android:summary="@string/interval_duration_summary"
-        android:title="@string/interval_duration" />
-    <ListPreference
-        android:defaultValue="0"
-        android:enabled="true"
-        android:entries="@array/count_thresholds"
-        android:entryValues="@array/count_threshold_values"
-        android:key="count_threshold"
-        android:persistent="true"
-        android:selectable="true"
-        android:summary="@string/count_threshold_summary"
-        android:title="@string/count_threshold" />
-
-    <PreferenceScreen
-        android:summary="@string/map_settings_summary"
-        android:title="@string/map_settings">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory android:title="@string/map_settings">
         <ListPreference
             android:defaultValue="SATELLITE"
             android:enabled="true"
@@ -54,27 +12,29 @@
             android:selectable="true"
             android:summary="@string/map_mode_summary"
             android:title="@string/map_mode" />
-        <org.blitzortung.android.preferences.SlidePreferences
-            android:defaultValue="70"
+        <SeekBarPreference
+            android:defaultValue="75"
             android:key="map_scale"
-            android:min="25"
             android:max="150"
-            step="25"
             android:persistent="true"
             android:selectable="true"
             android:summary="@string/map_scale_summary"
             android:text="@string/percent"
-            android:title="@string/map_scale" />
-        <org.blitzortung.android.preferences.SlidePreferences
+            android:title="@string/map_scale"
+            app:min="25"
+            app:seekBarIncrement="25"
+            app:showSeekBarValue="true" />
+        <SeekBarPreference
             android:defaultValue="55"
             android:key="map_fade"
             android:max="90"
-            step="5"
             android:persistent="true"
             android:selectable="true"
             android:summary="@string/map_fade_summary"
             android:text="@string/percent"
-            android:title="@string/map_fade" />
+            android:title="@string/map_fade"
+            app:seekBarIncrement="5"
+            app:showSeekBarValue="true" />
         <ListPreference
             android:defaultValue="BLITZORTUNG"
             android:enabled="true"
@@ -85,98 +45,63 @@
             android:selectable="true"
             android:summary="@string/color_scheme_summary"
             android:title="@string/color_scheme" />
-        <PreferenceScreen
-            android:key="own_location_settings"
-            android:summary="@string/own_location_summary"
-            android:title="@string/own_location">
-
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:enabled="true"
-                android:key="location"
-                android:selectable="true"
-                android:summary="@string/show_location_summary"
-                android:title="@string/show_location" />
-            <org.blitzortung.android.preferences.SlidePreferences
-                android:title="@string/own_location_size"
-                android:summary="@string/own_location_size_summary"
-                android:defaultValue="100"
-                android:key="own_location_size"
-                android:max="400"
-                android:selectable="true"
-                android:persistent="true"
-                android:text="@string/percent"
-                min="50" />
-        </PreferenceScreen>
         <CheckBoxPreference
-            android:title="@string/keep_zoom_goto_own_location_title"
-            android:summary="@string/keep_zoom_goto_own_location_summary"
-            android:key="keep_zoom_goto_own_location"
-            android:selectable="true"
-            android:defaultValue="false"
-            android:persistent="true" />
-    </PreferenceScreen>
-    <PreferenceScreen
-        android:title="@string/animation_settings"
-        android:summary="@string/animation_settings_summary"
-        android:key="animation_settings">
-        <ListPreference
-            android:title="@string/animation_interval_duration"
-            android:summary="@string/animation_interval_duration_summary"
-            android:defaultValue="6"
+            android:defaultValue="true"
             android:enabled="true"
-            android:entries="@array/animation_interval_durations"
-            android:entryValues="@array/animation_interval_duration_values"
-            android:key="animation_interval_duration"
+            android:key="location"
+            android:selectable="true"
+            android:summary="@string/show_location_summary"
+            android:title="@string/show_location" />
+        <SeekBarPreference
+            min="50"
+            android:defaultValue="100"
+            android:key="own_location_size"
+            android:max="400"
             android:persistent="true"
-            android:selectable="true" />
-        <org.blitzortung.android.preferences.SlidePreferences
-            android:title="@string/animation_sleep_duration"
-            android:summary="@string/animation_sleep_duration_summary"
+            android:selectable="true"
+            android:summary="@string/own_location_size_summary"
+            android:text="@string/percent"
+            android:title="@string/own_location_size"
+            app:showSeekBarValue="true" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="keep_zoom_goto_own_location"
+            android:persistent="true"
+            android:selectable="true"
+            android:summary="@string/keep_zoom_goto_own_location_summary"
+            android:title="@string/keep_zoom_goto_own_location_title" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="animation_settings"
+        android:title="@string/animation_settings">
+        <SeekBarPreference
             android:defaultValue="200"
             android:key="animation_sleep_duration"
             android:max="500"
-            android:selectable="true"
             android:persistent="true"
+            android:selectable="true"
+            android:summary="@string/animation_sleep_duration_summary"
             android:text="@string/ms"
-            android:min="100"
-            step="50" />
-        <org.blitzortung.android.preferences.SlidePreferences
-            android:title="@string/animation_cycle_sleep_duration"
-            android:summary="@string/animation_cycle_sleep_duration_summary"
+            android:title="@string/animation_sleep_duration"
+            app:min="100"
+            app:seekBarIncrement="50"
+            app:showSeekBarValue="true" />
+        <SeekBarPreference
             android:defaultValue="3000"
             android:key="animation_cycle_sleep_duration"
             android:max="5000"
-            android:selectable="true"
             android:persistent="true"
+            android:selectable="true"
+            android:summary="@string/animation_cycle_sleep_duration_summary"
             android:text="@string/ms"
-            android:min="0"
-            step="500" />
-    </PreferenceScreen>
-    <PreferenceScreen
-        android:key="data_settings"
-        android:summary="@string/data_settings_summary"
-        android:title="@string/data_settings">
-        <ListPreference
-            android:defaultValue="30"
-            android:enabled="true"
-            android:entries="@array/historic_timesteps"
-            android:entryValues="@array/historic_timestep_values"
-            android:key="historic_timestep"
-            android:persistent="true"
-            android:selectable="true"
-            android:summary="@string/historic_timestep_summary"
-            android:title="@string/historic_timestep" />
-        <ListPreference
-            android:defaultValue="60"
-            android:enabled="true"
-            android:entries="@array/query_periods"
-            android:entryValues="@array/query_period_values"
-            android:key="query_period"
-            android:persistent="true"
-            android:selectable="true"
-            android:summary="@string/query_period_summary"
-            android:title="@string/query_period" />
+            android:title="@string/animation_cycle_sleep_duration"
+            app:min="0"
+            app:seekBarIncrement="500"
+            app:showSeekBarValue="true" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="data_source_settings"
+        android:title="@string/data_source_settings">
         <ListPreference
             android:defaultValue="RPC"
             android:enabled="true"
@@ -191,24 +116,19 @@
             android:defaultValue=""
             android:key="service_url"
             android:persistent="true"
-            android:summary="@string/service_url_summary"
             android:title="@string/service_url" />
         <EditTextPreference
             android:defaultValue=""
             android:key="username"
             android:persistent="true"
-            android:summary="@string/username_summary"
-            android:title="@string/username" />
+            android:title="@string/bo_username" />
         <EditTextPreference
             android:inputType="textPassword"
             android:key="password"
             android:persistent="true"
-            android:summary="@string/password_summary"
-            android:title="@string/password" />
-    </PreferenceScreen>
-    <PreferenceScreen
-        android:summary="@string/location_settings_summary"
-        android:title="@string/location_settings">
+            android:title="@string/bo_password" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/location_settings">
         <ListPreference
             android:defaultValue="network"
             android:enabled="true"
@@ -220,23 +140,19 @@
             android:summary="@string/location_mode_summary"
             android:title="@string/location_mode" />
         <EditTextPreference
-            android:defaultValue="11.0"
+            android:defaultValue=""
             android:inputType="numberDecimal|numberSigned"
             android:key="location_longitude"
             android:persistent="true"
-            android:summary="@string/location_longitude_summary"
             android:title="@string/longitude" />
         <EditTextPreference
-            android:defaultValue="49.0"
+            android:defaultValue=""
             android:inputType="numberDecimal|numberSigned"
             android:key="location_latitude"
             android:persistent="true"
-            android:summary="@string/location_latitude_summary"
             android:title="@string/latitude" />
-    </PreferenceScreen>
-    <PreferenceScreen
-        android:summary="@string/alarm_settings_summary"
-        android:title="@string/alarm_settings">
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/alarm_settings">
         <CheckBoxPreference
             android:defaultValue="true"
             android:enabled="true"
@@ -244,7 +160,7 @@
             android:selectable="true"
             android:summary="@string/alarm_enabled_summary"
             android:title="@string/alarm_enabled" />
-        <ListPreference
+        <org.blitzortung.android.app.view.MessageListPreference
             android:defaultValue="0"
             android:enabled="true"
             android:entries="@array/background_query_periods"
@@ -275,8 +191,8 @@
             android:selectable="true"
             android:summary="@string/signaling_distance_limit_summary"
             android:title="@string/signaling_distance_limit" />
-        <PreferenceScreen android:title="@string/alarm_signal_settings">
-            <RingtonePreference
+        <PreferenceCategory android:title="@string/alarm_signal_settings">
+            <Preference
                 android:defaultValue=""
                 android:enabled="true"
                 android:key="alarm_sound_signal"
@@ -284,9 +200,8 @@
                 android:ringtoneType="notification"
                 android:selectable="true"
                 android:showDefault="true"
-                android:summary="@string/alarm_audio_signal_summary"
                 android:title="@string/alarm_audio_signal" />
-            <org.blitzortung.android.preferences.SlidePreferences
+            <SeekBarPreference
                 android:defaultValue="3"
                 android:enabled="true"
                 android:key="alarm_vibration_signal"
@@ -295,20 +210,21 @@
                 android:selectable="true"
                 android:summary="@string/alarm_vibration_signal_summary"
                 android:text="@string/ms"
-                android:title="@string/alarm_vibration_signal" />
-        </PreferenceScreen>
+                android:title="@string/alarm_vibration_signal"
+                app:showSeekBarValue="true" />
+        </PreferenceCategory>
         <ListPreference
             android:defaultValue="0"
             android:enabled="true"
-            android:entries="@array/signaling_threshold_times"
-            android:entryValues="@array/signaling_threshold_time_values"
-            android:key="signaling_threshold_time"
+            android:entries="@array/signaling_suppression_times"
+            android:entryValues="@array/signaling_suppression_time_values"
+            android:key="signaling_suppression_time"
             android:persistent="true"
             android:selectable="true"
-            android:summary="@string/signaling_threshold_time_summary"
-            android:title="@string/signaling_threshold_time" />
-    </PreferenceScreen>
-    <PreferenceScreen android:title="@string/generic_settings">
+            android:summary="@string/signaling_suppression_time_summary"
+            android:title="@string/signaling_suppression_time" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/generic_settings">
         <ListPreference
             android:defaultValue="METRIC"
             android:enabled="true"
@@ -326,6 +242,13 @@
             android:selectable="true"
             android:summary="@string/do_not_sleep_summary"
             android:title="@string/do_not_sleep" />
-    </PreferenceScreen>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:enabled="true"
+            android:key="diagnosis_enabled"
+            android:selectable="true"
+            android:summary="@string/diagnosis_summary"
+            android:title="@string/diagnosis" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

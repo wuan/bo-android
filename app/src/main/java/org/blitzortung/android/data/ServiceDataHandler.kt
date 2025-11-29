@@ -22,9 +22,8 @@ import android.content.Context
 import android.location.Location
 import android.os.PowerManager
 import android.util.Log
-import android.widget.Toast
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import javax.inject.Inject
+import javax.inject.Singleton
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
@@ -32,56 +31,53 @@ import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.LocalData
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.provider.result.NoData
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.protocol.ConsumerContainer
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
-class ServiceDataHandler @Inject constructor(
+class ServiceDataHandler
+@Inject
+constructor(
     private val context: Context,
     private val wakeLock: PowerManager.WakeLock,
     dataProviderFactory: DataProviderFactory,
-    private val localData: LocalData
+    private val localData: LocalData,
 ) {
-
     private var location: Location? = null
 
-    private var dataProvider: DataProvider? = null
+    private val dataProvider: DataProvider = dataProviderFactory.getDataProviderForType(DataProviderType.RPC)
 
-    private val parameters = Parameters(
-        region = LOCAL_REGION, gridSize = 5000,
-        interval = TimeInterval.BACKGROUND,
-        countThreshold = 0,
-    )
+    private val parameters =
+        Parameters(
+            region = LOCAL_REGION,
+            gridSize = 5000,
+            interval = TimeInterval.BACKGROUND,
+            countThreshold = 0,
+        )
 
-    private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
-        override fun addedFirstConsumer() {
-            Log.d(Main.LOG_TAG, "ServiceDataHandler: added first data consumer")
+    private val dataConsumerContainer =
+        object : ConsumerContainer<DataEvent>(NoData) {
+            override fun addedFirstConsumer() {
+                Log.d(Main.LOG_TAG, "ServiceDataHandler: added first data consumer")
+            }
+
+            override fun removedLastConsumer() {
+                Log.d(Main.LOG_TAG, "ServiceDataHandler: removed last data consumer")
+            }
         }
-
-        override fun removedLastConsumer() {
-            Log.d(Main.LOG_TAG, "ServiceDataHandler: removed last data consumer")
-        }
-    }
 
     val locationEventConsumer: (LocationEvent) -> Unit = { locationEvent ->
-        Log.v(Main.LOG_TAG, "AlertView received location ${locationEvent.location}")
-        location = locationEvent.location
+        Log.v(Main.LOG_TAG, "AlertView received location ${locationEvent}")
+        location = locationEvent.location()
     }
 
     private val dataMode = DataMode(grid = true, region = false)
 
-    init {
-        dataProvider = dataProviderFactory.getDataProviderForType(DataProviderType.RPC)
-    }
-
     fun updateData() {
-        dataProvider?.let { dataProvider ->
-            Log.v(Main.LOG_TAG, "ServiceDataHandler.updateData() $activeParameters $wakeLock")
-            FetchBackgroundDataTask(dataMode, dataProvider, { sendEvent(it) }, ::toast, wakeLock)
-                .execute(activeParameters)
-        }
+        Log.v(Main.LOG_TAG, "ServiceDataHandler.updateData() $activeParameters $wakeLock")
+        FetchBackgroundDataTask(dataMode, dataProvider, { sendEvent(it) }, wakeLock)
+            .execute(activeParameters)
     }
 
     fun requestUpdates(dataConsumer: (DataEvent) -> Unit) {
@@ -97,10 +93,6 @@ class ServiceDataHandler @Inject constructor(
 
     private fun sendEvent(dataEvent: DataEvent) {
         dataConsumerContainer.broadcast(dataEvent)
-    }
-
-    private suspend fun toast(stringResource: Int) = withContext(Dispatchers.Main) {
-        Toast.makeText(context, stringResource, Toast.LENGTH_LONG).show()
     }
 
     companion object {

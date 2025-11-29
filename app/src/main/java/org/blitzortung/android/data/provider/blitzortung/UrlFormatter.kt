@@ -19,26 +19,29 @@
 package org.blitzortung.android.data.provider.blitzortung
 
 import android.text.format.DateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UrlFormatter @Inject constructor() {
-    fun getUrlFor(
-        type: BlitzortungHttpDataProvider.Type,
-        region: Int,
-        intervalTime: Calendar?,
-        useGzipCompression: Boolean
-    ): String {
+class UrlFormatter
+    @Inject
+    constructor() {
+        fun getUrlFor(
+            type: BlitzortungHttpDataProvider.Type,
+            region: Int,
+            intervalTime: Calendar?,
+            useGzipCompression: Boolean,
+        ): String {
+            val localPath: String =
+                if (type === BlitzortungHttpDataProvider.Type.STRIKES) {
+                    "Strikes_%d/".format(region) + DateFormat.format("yyyy/MM/dd/kk/mm", intervalTime!!) + ".log"
+                } else {
+                    type.name.lowercase(Locale.getDefault()) + ".txt"
+                }
 
-        val localPath: String = if (type === BlitzortungHttpDataProvider.Type.STRIKES) {
-            "Strikes_%d/".format(region) + DateFormat.format("yyyy/MM/dd/kk/mm", intervalTime!!) + ".log"
-        } else {
-            type.name.lowercase(Locale.getDefault()) + ".txt"
+            val urlFormatString = "http://data.blitzortung.org/Data/Protected/%s%s"
+            return urlFormatString.format(localPath, if (useGzipCompression) ".gz" else "")
         }
-
-        val urlFormatString = "http://data.blitzortung.org/Data/Protected/%s%s"
-        return urlFormatString.format(localPath, if (useGzipCompression) ".gz" else "")
     }
-}

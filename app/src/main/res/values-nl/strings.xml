@@ -37,13 +37,10 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="layers">Lagen</string>
     <string name="preferences">Instellingen</string>
     <string name="user_settings">Gebruiker instellingen</string>
-    <string name="username">Gebruiker</string>
-    <string name="username_summary">Gebruikersnaam voor blitzortung.org</string>
-    <string name="password">Wachtwoord</string>
-    <string name="password_summary">Wachtwoord voor blitzortung.org</string>
+    <string name="bo_username">Gebruiker Blitzortung.org</string>
+    <string name="bo_password">Wachtwoord Blitzortung.org</string>
     <string name="map_settings">Kaart instellingen</string>
     <string name="map_mode">Kaart mode</string>
-    <string name="map_mode_summary">Donker of lichte kaart</string>
     <string name="map_fade">Kaart vervagen</string>
     <string name="map_fade_summary">Vervaag kaart achtergrond om de zichtbaarheid van informatie te vergroten</string>
 
@@ -59,7 +56,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="color_scheme">Kleurenschema</string>
-    <string name="color_scheme_summary">Kleurenschema voor weergegave informatie</string>
 
     <string-array name="map_modes">
         <item>Donkere kaart</item>
@@ -70,14 +66,10 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Deelnemers locatie tonen</string>
-    <string name="show_participants_summary">toon locaties van alle meetstations op kaart (enkel zichtbaar voor de Blitzortung.org informatie)
-    </string>
     <string name="show_location">Eigen locatie tonen</string>
     <string name="show_location_summary">Toon symbool op kaart voor eigen locatie</string>
-    <string name="data_settings">Informatie overdracht</string>
+    <string name="data_source_settings">Informatie overdracht</string>
     <string name="region">Regio</string>
-    <string name="region_summary">selecteer Europa, Noord Amerika of Oceanië</string>
 
     <string-array name="regions">
         <item>Local</item>
@@ -103,7 +95,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="interval_duration">Tijd interval</string>
-    <string name="interval_duration_summary">Interval waarmee onweer informatie wordt getoond</string>
 
     <string-array name="interval_durations">
         <item>30 min</item>
@@ -122,7 +113,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="historic_timestep_limit_reached">24 uurs limiet bereikt</string>
     <string name="historic_timestep">Historische tijdinterval</string>
-    <string name="historic_timestep_summary">Stapgrootte voor bladeren door historische informatie</string>
 
     <string-array name="historic_timesteps">
         <item>15 min</item>
@@ -136,7 +126,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="query_period">Opvraag frequentie</string>
-    <string name="query_period_summary">frequentie voor het vernieuwen van informatie</string>
 
     <string-array name="query_periods">
         <item>20 s</item>
@@ -156,7 +145,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="grid_size">Raster grootte</string>
-    <string name="grid_size_summary">Grootte van raster kwadranten</string>
 
     <string-array name="grid_sizes">
         <item>auto</item>
@@ -176,7 +164,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Drempel bliksem</string>
-    <string name="count_threshold_summary">minimum aan bliksems per rasterkwadrant</string>
 
     <string-array name="count_thresholds">
         <item>uitgeschakeld</item>
@@ -196,8 +183,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="data_source">Informatiebron</string>
-    <string name="data_source_summary">geïntegreerde informatiebron of toegang tot blitzortung.org (enkel voor stations)
-    </string>
 
     <string-array name="data_sources">
         <item>Standaard</item>
@@ -222,16 +207,12 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
         <item>manual</item>
     </string-array>
     <string name="location_mode">locatie mode</string>
-    <string name="location_mode_summary">Selecteer methode welke gebruikt wordt om huidige locatie te bepalen</string>
     <string name="longitude">lengtegraad</string>
-    <string name="location_longitude_summary">handmatige ingave van lengtegraad</string>
     <string name="latitude">breedtegraad</string>
-    <string name="location_latitude_summary">handmatige ingave van de breedtegraad</string>
     <string name="alarm_settings">Meldingen instelling</string>
     <string name="alarm_enabled">Meldingen ingeschakeld</string>
     <string name="alarm_enabled_summary">controleer onweer activiteit in de buurt van huidige locatie</string>
     <string name="background_query_period">Verversperiode in achtergrond</string>
-    <string name="background_query_period_summary">wanneer geselecteerd; verversperiode in achtergrond waarmee meldingen worden gecontrolleerd wanneer de app niet actief is</string>
     <string name="background_query_toast">Schakel batterij optimalisatie uit voor deze app om volledig gebruik te kunnen maken van Melding- en Signaleringen in achtergrond.</string>
     <string name="open_battery_optimiziation">Schakel batterij optimalisatie uit voor deze app wanneer je gebruik wilt maken van verversen in achtergrond. Annuleer om verversen uit te zetten en OK om door te gaan en batterij optimalisatie aan te passen.</string>
 
@@ -259,9 +240,7 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="notification_distance_limit">Notificatie afstandslimiet</string>
-    <string name="notification_distance_limit_summary">wanneer geselecteerd; toon notificatie wanneer activiteit gedetecteerd is binnen geselecteerde afstand</string>
     <string name="signaling_distance_limit">Signalering afstandslimiet</string>
-    <string name="signaling_distance_limit_summary">wanneer geselecteerd; geluidsignaal wanneer activiteit gedetecteerd wordt binnen geselecteerde afstand</string>
 
     <string-array name="direction_names">
         <item>Z</item>
@@ -296,10 +275,9 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
         <item>500</item>
     </string-array>
 
-    <string name="signaling_threshold_time">Waarschuwing tijdslimiet</string>
-    <string name="signaling_threshold_time_summary">Voorkom waarschuwing binnen geselecteerd tijdlimiet</string>
+    <string name="signaling_suppression_time">Waarschuwing tijdslimiet</string>
 
-    <string-array name="signaling_threshold_times">
+    <string-array name="signaling_suppression_times">
         <item>uit</item>
         <item>5 min</item>
         <item>15 min</item>
@@ -307,7 +285,7 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
         <item>60 min.</item>
         <item>120 min.</item>
     </string-array>
-    <string-array name="signaling_threshold_time_values">
+    <string-array name="signaling_suppression_time_values">
         <item>0</item>
         <item>5</item>
         <item>15</item>
@@ -317,7 +295,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="generic_settings">Generieke instellingen</string>
     <string name="measurement_unit">Meet eenheid</string>
-    <string name="measurement_unit_summary">keuze uit kilometer en miles voor afstanden</string>
     <string-array name="measurement_units">
         <item>metrisch</item>
         <item>imperial</item>
@@ -328,29 +305,18 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="do_not_sleep">Slaapstand uitschakelen</string>
     <string name="do_not_sleep_summary">Schakel het scherm niet uit wanneer de applicatie actief is</string>
-    <string name="participants_layer">Deelnemer locatie</string>
-    <string name="own_location_layer">Eigen locatie</string>
-    <string name="strikes_layer">Bliksems</string>
-    <string name="data_settings_summary">gedetaileerde instellingen om controle te hebben op informatie- bronnen en overdracht</string>
-    <string name="map_settings_summary">Kaart mode en weergave gerelateerde instellingen</string>
-    <string name="location_settings_summary">Locatie detectie mode</string>
-    <string name="alarm_settings_summary">Meldingen activeren, achtergrondservice en radius</string>
     <string name="alarm_signal_settings">Meldingsignaal instellingen</string>
     <string name="alarm_audio_signal">Melding geluidsignaal</string>
     <string name="alarm_vibration_signal">Melding vibratieduur</string>
-    <string name="alarm_audio_signal_summary">kies een geluid signaal voor meldingen</string>
     <string name="alarm_vibration_signal_summary">kies vibratieduur voor een melding</string>
     <string name="location_provider_not_available">locatie provider \'%s\' is niet beschikbaar</string>
     <string name="location_provider_disabled">locatie provider \'%s\' is uitgeschakeld</string>
     <string name="service_url">Service URL</string>
-    <string name="service_url_summary">Overschrijft de standaard service URL wanneer deze is ingesteld</string>
     <string name="set_manual_location">Manuele locatie instellen</string>
     <string name="error_indicator">Fout indicator</string>
     <string name="share_log">Stuur email …</string>
     <string name="share_unavailable">E-mail delen is niet beschikbaar.</string>
     <string name="provider_warning">Gebruik Blitzortung.org niet als informatiebron bij hoge activiteit, dit beinvloed prestaties van kaartweergave negatief.</string>
-    <string name="own_location_summary">Eigen locatie weergave instellingen</string>
-    <string name="own_location">Eigen locatie</string>
     <string name="own_location_size">Locatie symbool grootte</string>
     <string name="own_location_size_summary">Stel de grootte van het locatiesymbool in</string>
     <string name="keep_zoom_goto_own_location_summary">Instelling huidige zoom niveau behouden wanneer je centreerd naar je eigen locatie</string>
@@ -368,4 +334,11 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="slider_past">Verleden</string>
     <string name="slider_legend">[Uren]</string>
     <string name="animation_interval_duration">Animatie-interval</string>
+    <string name="animation_settings">Animatie-instellingen</string>
+    <string name="undefined">ongedefinieerd</string>
+    <string name="background_query_period_dialog_message">Het gebruik van een periodieke achtergrondquery voor waarschuwingen wanneer de app niet actief is, vereist het lezen van de locatie van uw apparaat als dit niet is ingesteld op handmatige locatie.</string>
+    <string name="post_notifications_request">Schakel toestemming voor het plaatsen van meldingen in als u meldingen wenst te ontvangen.</string>
+    <string name="default_alarm_signal">Standaard alarmgeluid</string>
+    <string name="location_required_for_alerts">Locatie is vereist voor waarschuwingen, het uitschakelen van waarschuwingen en achtergrondquery\'s.</string>
+    <string name="post_notifications_required_for_alerts">Toestemming voor meldingen is vereist voor waarschuwingen, het uitschakelen van waarschuwingen en achtergrondquery\'s.</string>
 </resources>

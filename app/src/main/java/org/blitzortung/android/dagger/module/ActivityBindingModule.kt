@@ -4,21 +4,17 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import org.blitzortung.android.app.AppService
 import org.blitzortung.android.app.Main
-import org.blitzortung.android.app.Preferences
 import org.blitzortung.android.app.WidgetProvider
 
 @Module
-abstract class ActivityBindingModule {
+interface ActivityBindingModule {
 
     @ContributesAndroidInjector
-    abstract fun contributeMainActivityInjector(): Main
+    fun contributeMainActivityInjector(): Main
 
     @ContributesAndroidInjector
-    abstract fun contributePreferencesActivityInjector(): Preferences
+    fun contributesAppServiceInjector(): AppService
 
     @ContributesAndroidInjector
-    abstract fun contributesAppServiceInjector(): AppService
-
-    @ContributesAndroidInjector
-    abstract fun contributesWidgetProvider(): WidgetProvider
+    fun contributesWidgetProvider(): WidgetProvider
 }

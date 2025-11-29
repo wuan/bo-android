@@ -40,13 +40,10 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="layers">Slojevi</string>
     <string name="preferences">Postavke</string>
     <string name="user_settings">Korisničke postavke</string>
-    <string name="username">Korisničko ime</string>
-    <string name="username_summary">Korisničko ime za blitzortung.org servis</string>
-    <string name="password">Zaporka</string>
-    <string name="password_summary">Zaporka za blitzortung.org servis</string>
+    <string name="bo_username">Korisničko ime Blitzortung.org</string>
+    <string name="bo_password">Zaporka Blitzortung.org</string>
     <string name="map_settings">Postavke karte</string>
     <string name="map_mode">Prikaz karte</string>
-    <string name="map_mode_summary">Satelitski ili kartografski način prikaza</string>
     <string name="map_fade">Prozirnost karte</string>
     <string name="map_fade_summary">Razina prozirnosti karte radi povećanja vidljivosti podataka</string>
 
@@ -62,7 +59,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="color_scheme">Shema boja</string>
-    <string name="color_scheme_summary">Shema boja za prikaz podataka</string>
 
     <string-array name="map_modes">
         <item>Satelitski</item>
@@ -73,13 +69,10 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Prikaži lokacije učesnika</string>
-    <string name="show_participants_summary">Prikaz lokacije svih postaja na karti\n(samo ako je Blitzortung.org izvor podataka)</string>
     <string name="show_location">Prikaži vlastitu lokaciju</string>
     <string name="show_location_summary">Prikaz vlastite lokacije na karti</string>
-    <string name="data_settings">Prijenos podataka</string>
+    <string name="data_source_settings">Prijenos podataka</string>
     <string name="region">Područje</string>
-    <string name="region_summary">Odabir geografskog područja\n(Europa, Sjeverna Amerika, Oceanija, ..)</string>
 
     <string-array name="regions">
         <item>Local</item>
@@ -105,7 +98,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="interval_duration">Vremenski interval</string>
-    <string name="interval_duration_summary">Vremenski interval prikaza aktivnosti munja</string>
 
     <string-array name="interval_durations">
         <item>30 min</item>
@@ -124,7 +116,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="historic_timestep_limit_reached">Dosegnut 24-satni limit</string>
     <string name="historic_timestep">Povijesni podaci</string>
-    <string name="historic_timestep_summary">Vremenski interval za pregled povijesnih podataka</string>
 
     <string-array name="historic_timesteps">
         <item>15 min</item>
@@ -138,7 +129,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="query_period">Obnova podataka</string>
-    <string name="query_period_summary">Učestalost obnove podataka</string>
 
     <string-array name="query_periods">
         <item>20 s</item>
@@ -158,7 +148,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="grid_size">Veličina rastera</string>
-    <string name="grid_size_summary">Obuhvat površine za prikaz ukupnog broja munja</string>
 
     <string-array name="grid_sizes">
         <item>auto</item>
@@ -178,7 +167,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Prag broja munja</string>
-    <string name="count_threshold_summary">Minimalni broj munja za prikaz rastera</string>
 
     <string-array name="count_thresholds">
         <item>isključeno</item>
@@ -198,7 +186,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="data_source">Izvor podataka</string>
-    <string name="data_source_summary">Zadani izvor podataka ili blitzortung.org (samo za postaje)</string>
 
     <string-array name="data_sources">
         <item>zadani</item>
@@ -223,16 +210,12 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>manual</item>
     </string-array>
     <string name="location_mode">Metoda određivanja lokacije</string>
-    <string name="location_mode_summary">Odabir metode za određivanje vlastite lokacije</string>
     <string name="longitude">Dužina</string>
-    <string name="location_longitude_summary">Ručni unos geografske dužine vlastite lokacije</string>
     <string name="latitude">Širina</string>
-    <string name="location_latitude_summary">Ručni unos geografske širine vlastite lokacije</string>
     <string name="alarm_settings">Postavke alarma</string>
     <string name="alarm_enabled">Alarm uključen</string>
     <string name="alarm_enabled_summary">Prati aktivnosti munja oko vlastite lokacije</string>
     <string name="background_query_period">Pozadinska aktivnost</string>
-    <string name="background_query_period_summary">Ako je zadano: učestalost provjere prisutnosti munja dok je aplikacija neaktivna</string>
 
     <string-array name="background_query_periods">
         <item>isključeno</item>
@@ -260,9 +243,7 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <item name="alarm_notification_id" type="id" />
 
     <string name="notification_distance_limit">Obavješćivanje temeljem udaljenosti</string>
-    <string name="notification_distance_limit_summary">Ako je zadano: obavijesti o pojavi munja unutar zadanog radijusa</string>
     <string name="signaling_distance_limit">Signaliziranje temeljem udaljenosti</string>
-    <string name="signaling_distance_limit_summary">Ako je zadano: signaliziraj pojavu munja unutar zadanog radijusa</string>
 
     <string-array name="direction_names">
         <item>J</item>
@@ -297,10 +278,9 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>500</item>
     </string-array>
 
-    <string name="signaling_threshold_time">Ograničavanje ponavljanja signaliziranja</string>
-    <string name="signaling_threshold_time_summary">Onemogući ponovno signaliziranje tijekom odabranog vremenskog razdoblja</string>
+    <string name="signaling_suppression_time">Ograničavanje ponavljanja signaliziranja</string>
 
-    <string-array name="signaling_threshold_times">
+    <string-array name="signaling_suppression_times">
         <item>isključeno</item>
         <item>5 min</item>
         <item>15 min</item>
@@ -308,7 +288,7 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>60 min.</item>
         <item>120 min.</item>
     </string-array>
-    <string-array name="signaling_threshold_time_values">
+    <string-array name="signaling_suppression_time_values">
         <item>0</item>
         <item>5</item>
         <item>15</item>
@@ -318,7 +298,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="generic_settings">Opće postavke</string>
     <string name="measurement_unit">Mjerne jedinice</string>
-    <string name="measurement_unit_summary">Prikaz jednica za udaljenost u km ili miljama</string>
     <string-array name="measurement_units">
         <item>metrički sustav mjera</item>
         <item>imperijalni sustav mjera</item>
@@ -329,29 +308,18 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="do_not_sleep">Onemogući stanje mirovanja</string>
     <string name="do_not_sleep_summary">Dok je aplikacija aktivna onemogući prijelaz u stanje mirovanja</string>
-    <string name="participants_layer">Lokacija učesnika</string>
-    <string name="own_location_layer">Vlastita lokacija</string>
-    <string name="strikes_layer">Munje</string>
-    <string name="data_settings_summary">Postavke izvora i načina prijenosa podataka</string>
-    <string name="map_settings_summary">Postavke karti i načina prikaza podataka</string>
-    <string name="location_settings_summary">Postavke lokacijskih usluga</string>
-    <string name="alarm_settings_summary">Uključivanje alarma, pozadinski servisi i određivanje radijusa</string>
     <string name="alarm_signal_settings">Postavke signaliziranja alarma</string>
     <string name="alarm_audio_signal">Audio zvuka alarma</string>
     <string name="alarm_vibration_signal">Trajanje vibracije alarma</string>
-    <string name="alarm_audio_signal_summary">Odabir audio zvuka za signaliziranje alarma</string>
     <string name="alarm_vibration_signal_summary">Trajanja vibriranja mobitela u slučaju alarma</string>
     <string name="location_provider_not_available">Pružatelj lokacije \'%s\' nije dostupan.</string>
     <string name="location_provider_disabled">Pružatelj lokacije \'%s\' je isključen.</string>
     <string name="service_url">Alternativni URL servisa</string>
-    <string name="service_url_summary">Unos alternativnog URL-a servisa izvora podataka</string>
     <string name="set_manual_location">Ručni unos lokacije</string>
     <string name="error_indicator">Indikator pogreške</string>
     <string name="share_log">Pošalji email …</string>
     <string name="share_unavailable">Dijeljenje emaila nije dostupno.</string>
     <string name="provider_warning">Molimo nemojte koristiti Blitzortung.org kao izvor podataka tijekom učestalih aktivnosti munja jer će doći do degradacije pri prikazu karte.</string>
-    <string name="own_location_summary">Postavke prikaza vlastite lokacije</string>
-    <string name="own_location">Vlastita lokacija</string>
     <string name="own_location_size">Veličina simbola vlastite lokacije</string>
     <string name="own_location_size_summary">Određivanje veličine simbola vlastite lokacije</string>
     <string name="keep_zoom_goto_own_location_summary">Zadrži trenutno zumiranje pri centriranju vlastite lokacije</string>
@@ -360,4 +328,11 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_required">Dopuštenje za lokaciju potrebno je kada se koristi izvor lokacije uređaja.</string>
     <string name="location_permission_background_required">Dopuštenje za pozadinsko mjesto potrebno je kada se koristi izvor lokacije uređaja.</string>
     <string name="location_permission_background_disclosure">Ova aplikacija upotrebljava podatke o lokaciji čak i kada je aplikacija zatvorena ili se ne koristi kada upotrebljava pozadinske alarme s izvorom lokacije uređaja.</string>
+    <string name="animation_settings">Postavke animacije</string>
+    <string name="undefined">nedefinirano</string>
+    <string name="background_query_period_dialog_message">"Korištenje periodičnog pozadinskog upita za upozorenja kada aplikacija ne radi zahtijevat će očitavanje lokacije vašeg uređaja ako nije postavljeno ručno lociranje. "</string>
+    <string name="post_notifications_request">Omogućite dopuštenje za objavu obavijesti ako želite primati upozorenja o obavijestima.</string>
+    <string name="default_alarm_signal">Zadani zvuk alarma</string>
+    <string name="location_required_for_alerts">Za upozorenja je potrebna lokacija, onemogućavanje upozorenja i pozadinskih upita.</string>
+    <string name="post_notifications_required_for_alerts">Za upozorenja je potrebno dopuštenje za obavijesti, onemogućavanje upozorenja i pozadinskih upita.</string>
 </resources>

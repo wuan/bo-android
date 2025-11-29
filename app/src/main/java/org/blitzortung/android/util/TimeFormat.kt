@@ -20,10 +20,10 @@ package org.blitzortung.android.util
 
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
+import java.util.TimeZone
 
 object TimeFormat {
-
     private val DATE_TIME_MILLISECONDS_FORMATTER = SimpleDateFormat("yyyyMMdd'T'HH:mm:ss.SSS", Locale.US)
     private val JSON_DATE_TIME_FORMATTER = SimpleDateFormat("yyyyMMdd'T'HH:mm:ss", Locale.US)
 
@@ -54,6 +54,5 @@ object TimeFormat {
         } catch (e: ParseException) {
             throw IllegalArgumentException("Unable to parse time string '%s'".format(timestampString), e)
         }
-
     }
 }

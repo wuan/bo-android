@@ -38,13 +38,10 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="layers">Livelli</string>
     <string name="preferences">Preference</string>
     <string name="user_settings">Impostazioni utente</string>
-    <string name="username">Nome utente</string>
-    <string name="username_summary">Nome utente dell’account di blitzortung.org</string>
-    <string name="password">Password</string>
-    <string name="password_summary">Password dell’account di blitzortung.org</string>
+    <string name="bo_username">Nome utente Blitzortung.org</string>
+    <string name="bo_password">Password Blitzortung.org</string>
     <string name="map_settings">Impostazioni mappa</string>
     <string name="map_mode">Modalità mappa</string>
-    <string name="map_mode_summary">selezionare vista satellitare o mappa stradale</string>
     <string name="map_fade">Dissolvenza mappa</string>
     <string name="map_fade_summary">Dissolvi lo sfondo della mappa per aumentare la visibilità dei dati</string>
 
@@ -60,7 +57,6 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="color_scheme">Schema colori</string>
-    <string name="color_scheme_summary">Schema colori per la visualizzazione dei dati</string>
 
     <string-array name="map_modes">
         <item>Satellite</item>
@@ -71,14 +67,10 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Mostra le posizioni dei partecipanti</string>
-    <string name="show_participants_summary">mostra nella mappa la posizione di tutte le stazioni (solo fonti di dati di Blitzortung.org)
-    </string>
     <string name="show_location">Mostra propria posizione</string>
     <string name="show_location_summary">includi nella mappa un simbolo per la propria posizione</string>
-    <string name="data_settings">Trasmissione dei dati</string>
+    <string name="data_source_settings">Trasmissione dei dati</string>
     <string name="region">Regione</string>
-    <string name="region_summary">selezionare Europa, Nord America o Oceania</string>
 
     <string-array name="regions">
         <item>Local</item>
@@ -104,7 +96,6 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="interval_duration">Intervallo temporale</string>
-    <string name="interval_duration_summary">Intervallo temporale per cui mostrare l’attività dei fulmini</string>
 
     <string-array name="interval_durations">
         <item>30 min</item>
@@ -123,7 +114,6 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="historic_timestep_limit_reached">limite di 24 ore raggiunto</string>
     <string name="historic_timestep">Passo temporale storico</string>
-    <string name="historic_timestep_summary">Dimensione del passo temporale durante la consultazione dei dati storici</string>
 
     <string-array name="historic_timesteps">
         <item>15 min</item>
@@ -137,7 +127,6 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="query_period">Frequenza aggiornamento</string>
-    <string name="query_period_summary">Frequenza di aggiornamento dei dati</string>
 
     <string-array name="query_periods">
         <item>20 s</item>
@@ -157,7 +146,6 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="grid_size">Dimensioni cella</string>
-    <string name="grid_size_summary">dimensione del lato delle celle dei dati</string>
 
     <string-array name="grid_sizes">
         <item>auto</item>
@@ -177,7 +165,6 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Soglia conteggio lampi</string>
-    <string name="count_threshold_summary">numero minimo di lampi per cella</string>
 
     <string-array name="count_thresholds">
         <item>disabilitata</item>
@@ -197,8 +184,6 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="data_source">Fonte dei dati</string>
-    <string name="data_source_summary">fonte dei dati integrata o accesso a blitzortung.org (solo per le stazioni)
-    </string>
 
     <string-array name="data_sources">
         <item>predefinita</item>
@@ -223,16 +208,12 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
         <item>manual</item>
     </string-array>
     <string name="location_mode">modalità posizione</string>
-    <string name="location_mode_summary">Selezionare il metodo con cui viene determinata la posizione corrente</string>
     <string name="longitude">longitudine</string>
-    <string name="location_longitude_summary">inserimento manuale della longitudine</string>
     <string name="latitude">latitudine</string>
-    <string name="location_latitude_summary">inserimento manuale della latitudine</string>
     <string name="alarm_settings">Impostazioni avvisi</string>
     <string name="alarm_enabled">Avviso abilitato</string>
     <string name="alarm_enabled_summary">verifica la posizione dei fulmini nei pressi della posizione corrente</string>
     <string name="background_query_period">Frequenza di aggiornamento in background</string>
-    <string name="background_query_period_summary">se selezionata: frequenza di aggiornamento di verifica degli avvisi se l’applicazione non è attiva</string>
 
     <string-array name="background_query_periods">
         <item>spento</item>
@@ -260,9 +241,7 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     <item name="alarm_notification_id" type="id" />
 
     <string name="notification_distance_limit">Limite distanza notifiche</string>
-    <string name="notification_distance_limit_summary">se selezionata: mostra una notifica quando viene rilevata attività di fulmini entro la distanza selezionata</string>
     <string name="signaling_distance_limit">Limite distanza avvisi</string>
-    <string name="signaling_distance_limit_summary">se selezionata: mostra un allarme quando viene rilevata attività di fulmini entro la distanza selezionata</string>
 
     <string-array name="direction_names">
         <item>S</item>
@@ -297,10 +276,9 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
         <item>500</item>
     </string-array>
 
-    <string name="signaling_threshold_time">Soglia temporale allarmi</string>
-    <string name="signaling_threshold_time_summary">Ometti segnali d’allarme successivi entro l’intervallo temporale specificato</string>
+    <string name="signaling_suppression_time">Soglia temporale allarmi</string>
 
-    <string-array name="signaling_threshold_times">
+    <string-array name="signaling_suppression_times">
         <item>spento</item>
         <item>5 min</item>
         <item>15 min</item>
@@ -308,7 +286,7 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
         <item>60 min.</item>
         <item>120 min.</item>
     </string-array>
-    <string-array name="signaling_threshold_time_values">
+    <string-array name="signaling_suppression_time_values">
         <item>0</item>
         <item>5</item>
         <item>15</item>
@@ -318,7 +296,6 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="generic_settings">Impostazioni generali</string>
     <string name="measurement_unit">Unità di misura</string>
-    <string name="measurement_unit_summary">selezionare tra km and mi. for le distanza</string>
     <string-array name="measurement_units">
         <item>metrico</item>
         <item>imperiale</item>
@@ -329,22 +306,13 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="do_not_sleep">Mantieni attivo</string>
     <string name="do_not_sleep_summary">mantieni attivo il dispositivo mentre l’applicazione è avviata</string>
-    <string name="participants_layer">Posizione dei partecipanti</string>
-    <string name="own_location_layer">Propria posizione</string>
-    <string name="strikes_layer">Lampi</string>
-    <string name="data_settings_summary">impostazioni dettagliate per controllare la trasmissione e la fonte dei dati</string>
-    <string name="map_settings_summary">Opzioni relative alla modalità e all’aspetto della mappa</string>
-    <string name="location_settings_summary">Modalità di rilevamento della posizione</string>
-    <string name="alarm_settings_summary">Attivazione avvisi, servizio in backgroune e distanze</string>
     <string name="alarm_signal_settings">impostazioni segnali d’allarme</string>
     <string name="alarm_audio_signal">segnale audio degli allarmi</string>
     <string name="alarm_vibration_signal">durata vibrazione degli allarmi</string>
-    <string name="alarm_audio_signal_summary">selezionare una notifica audio per la segnalazione degli allarmi</string>
     <string name="alarm_vibration_signal_summary">selezionare la durata della vibrazione in caso si segnali un allarme</string>
     <string name="location_provider_not_available">fornitore della posizione \'%s\' non disponibile</string>
     <string name="location_provider_disabled">fornitore della posizione \'%s\' disabilitato</string>
     <string name="service_url">URL del servizio non predefinito</string>
-    <string name="service_url_summary">Se impostato, sovrascrive l’URL predefinito del servizio</string>
     <string name="set_manual_location">imposta posizione manualmente</string>
     <string name="error_indicator">indicatore errore</string>
     <string name="app_log">Log dell’applicazione</string>
@@ -355,4 +323,11 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_background_required">L\'autorizzazione alla posizione in background è necessaria quando si utilizza un\'origine della posizione del dispositivo.</string>
     <string name="location_permission_background_disclosure">Questa app utilizza i dati sulla posizione e i dati di rete anche quando l\'app è chiusa o non in uso quando si utilizzano allarmi in background con una fonte di posizione del dispositivo.</string>
     <string name="animation_interval_duration">Intervallo di animazione</string>
+    <string name="animation_settings">Impostazioni di animazione</string>
+    <string name="undefined">indefinito</string>
+    <string name="background_query_period_dialog_message">"L'utilizzo di una query periodica in background per gli avvisi quando l'app non è in esecuzione richiederà la lettura della posizione del dispositivo, se non è impostata sulla posizione manuale. "</string>
+    <string name="post_notifications_request">"Abilita l'autorizzazione per l'invio di notifiche se desideri ricevere avvisi di notifica."</string>
+    <string name="default_alarm_signal">Suono sveglia predefinito</string>
+    <string name="location_required_for_alerts">La posizione è richiesta per gli avvisi, disabilitando gli avvisi e le query in background.</string>
+    <string name="post_notifications_required_for_alerts">Per gli avvisi è richiesta l\'autorizzazione alla notifica, disabilitando gli avvisi e le query in background.</string>
 </resources>

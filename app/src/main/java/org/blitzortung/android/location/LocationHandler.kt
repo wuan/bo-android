@@ -18,11 +18,17 @@
 
 package org.blitzortung.android.location
 
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.location.Location
 import android.location.LocationManager
 import android.util.Log
 import android.widget.Toast
+import javax.inject.Inject
+import javax.inject.Singleton
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
@@ -31,15 +37,14 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.location.provider.LocationProvider
 import org.blitzortung.android.location.provider.createLocationProvider
 import org.blitzortung.android.protocol.ConsumerContainer
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
-class LocationHandler @Inject constructor(
+class LocationHandler
+@Inject
+constructor(
     private val context: Context,
-    sharedPreferences: SharedPreferences
+    sharedPreferences: SharedPreferences,
 ) : OnSharedPreferenceChangeListener {
-
     init {
         Log.v(Main.LOG_TAG, "LocationHandler() init")
     }
@@ -55,38 +60,47 @@ class LocationHandler @Inject constructor(
 
     private var provider: LocationProvider? = null
 
-    private val consumerContainer = object : ConsumerContainer<LocationEvent>() {
-        override fun addedFirstConsumer() {
-            provider?.run {
-                if (!isRunning) {
-                    start()
+    private val consumerContainer =
+        object : ConsumerContainer<LocationEvent>(NoLocation) {
+            override fun addedFirstConsumer() {
+                provider?.run {
+                    if (!isRunning) {
+                        start()
+                    }
                 }
             }
-        }
 
-        override fun removedLastConsumer() {
-            provider?.run {
-                if (isRunning) {
-                    shutdown()
+            override fun removedLastConsumer() {
+                provider?.run {
+                    if (isRunning) {
+                        shutdown()
+                    }
                 }
             }
         }
-    }
 
     init {
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         onSharedPreferenceChanged(sharedPreferences, PreferenceKey.LOCATION_MODE)
 
-        //We need to know when a LocationProvider is enabled/disabled
+        // We need to know when a LocationProvider is enabled/disabled
         val iFilter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
         context.registerReceiver(LocationProviderChangedReceiver(), iFilter)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        key: PreferenceKey,
+    ) {
         when (key) {
             PreferenceKey.LOCATION_MODE -> {
                 val providerFactory = { type: String ->
-                    createLocationProvider(context, backgroundMode, { location -> sendLocationUpdate(location) }, type)
+                    createLocationProvider(
+                        context,
+                        backgroundMode,
+                        { location -> sendLocationUpdate(location) },
+                        type,
+                    )
                 }
 
                 val newProvider = providerFactory(sharedPreferences.get(key, LocationManager.PASSIVE_PROVIDER))
@@ -104,23 +118,25 @@ class LocationHandler @Inject constructor(
 
     private fun enableNewProvider(newProvider: LocationProvider) {
         Log.v(Main.LOG_TAG, "LocationHandler.enableProvider(${newProvider.type})")
-        //If the current provider is not null and is Running, shut it down first
+        // If the current provider is not null and is Running, shut it down first
         provider?.let { provider ->
             if (provider.isRunning) {
                 provider.shutdown()
             }
         }
 
-        //TODO we need to tell the UI if the locationProvider is stopped/started
-        //Now start the new provider if it is enabled
-        this.provider = newProvider.apply {
-            if (!this.isEnabled) {
-                val message = context.resources.getString(R.string.location_provider_disabled).format(newProvider.type)
-                Toast.makeText(context, message, Toast.LENGTH_LONG)
-            } else {
-                start()
+        // TODO we need to tell the UI if the locationProvider is stopped/started
+        // Now start the new provider if it is enabled
+        this.provider =
+            newProvider.apply {
+                if (!this.isEnabled) {
+                    val message =
+                        context.resources.getString(R.string.location_provider_disabled).format(newProvider.type)
+                    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                } else {
+                    start()
+                }
             }
-        }
     }
 
     private fun sendLocationUpdate(location: Location?) {
@@ -128,7 +144,7 @@ class LocationHandler @Inject constructor(
         this.location = location
 
         Log.i(Main.LOG_TAG, "LocationHandler.sendLocationUpdate() location $location")
-        val event = LocationEvent(location)
+        val event = LocationEvent.from(location)
         if (location != null) {
             consumerContainer.storeAndBroadcast(event)
         } else {
@@ -157,7 +173,7 @@ class LocationHandler @Inject constructor(
 
     private fun updateProvider() {
         provider?.run {
-            //Reconfigure the Provider only, when its running
+            // Reconfigure the Provider only, when its running
             if (isRunning) {
                 reconfigureProvider(this@LocationHandler.backgroundMode)
             }
@@ -189,8 +205,11 @@ class LocationHandler @Inject constructor(
     }
 
     private inner class LocationProviderChangedReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            //TODO we need to tell the UI if the locationProvider is stopped/started
+        override fun onReceive(
+            context: Context?,
+            intent: Intent?,
+        ) {
+            // TODO we need to tell the UI if the locationProvider is stopped/started
 
             provider?.run {
                 if (!this.isRunning && this.isEnabled) {
@@ -205,5 +224,11 @@ class LocationHandler @Inject constructor(
     companion object {
         const val MANUAL_PROVIDER = "manual"
     }
-
 }
+
+private fun LocationEvent.Companion.from(location: Location?): LocationEvent =
+    if (location != null) {
+        LocationUpdate(location)
+    } else {
+        NoLocation
+    }

@@ -5,17 +5,6 @@
     android:orientation="vertical"
     android:padding="10dp">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/TextAppearance.AppCompat.Headline"
-        android:text="@string/app_log" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?android:attr/listDivider" />
-
     <ScrollView
         android:id="@+id/log_vertical_scroller"
         android:layout_width="match_parent"
@@ -36,16 +25,5 @@
 
         </HorizontalScrollView>
     </ScrollView>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?android:attr/listDivider" />
-
-    <Button
-        android:id="@+id/log_send_email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/share_log" />
 
 </LinearLayout>

@@ -18,23 +18,27 @@
 
 package org.blitzortung.android.data.provider
 
+import javax.inject.Inject
+import javax.inject.Singleton
 import org.blitzortung.android.data.provider.blitzortung.BlitzortungHttpDataProvider
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.standard.JsonRpcDataProvider
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
-class DataProviderFactory @Inject constructor(
-    defaultProvider: JsonRpcDataProvider,
-    blitzortungProvider: BlitzortungHttpDataProvider
-) {
-    private val dataProvidersByType: Map<DataProviderType, DataProvider> = listOf<DataProvider>(
-        defaultProvider, blitzortungProvider
-    ).groupBy { it.type }.mapValues { it.value.first() }
+class DataProviderFactory
+    @Inject
+    constructor(
+        defaultProvider: JsonRpcDataProvider,
+        blitzortungProvider: BlitzortungHttpDataProvider,
+    ) {
+        private val dataProvidersByType: Map<DataProviderType, DataProvider> =
+            listOf<DataProvider>(
+                defaultProvider,
+                blitzortungProvider,
+            ).groupBy { it.type }.mapValues { it.value.first() }
 
-    fun getDataProviderForType(providerType: DataProviderType): DataProvider {
-        return dataProvidersByType[providerType]
-            ?: throw IllegalStateException("unhandled data provider type '$providerType'")
+        fun getDataProviderForType(providerType: DataProviderType): DataProvider {
+            return dataProvidersByType[providerType]
+                ?: throw IllegalStateException("unhandled data provider type '$providerType'")
+        }
     }
-}

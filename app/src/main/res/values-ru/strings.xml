@@ -37,13 +37,10 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="layers">Слои</string>
     <string name="preferences">Настройки</string>
     <string name="user_settings">Параметры пользователя</string>
-    <string name="username">Имя пользователя</string>
-    <string name="username_summary">Имя пользователя участника blitzortung.org</string>
-    <string name="password">Пароль</string>
-    <string name="password_summary">Пароль участника blitzortung.org</string>
+    <string name="bo_username">Имя пользователя Blitzortung.org</string>
+    <string name="bo_password">Пароль Blitzortung.org</string>
     <string name="map_settings">Настройки карты</string>
     <string name="map_mode">Режим карты</string>
-    <string name="map_mode_summary">Выберите тип представления карты</string>
     <string name="map_fade">Прозрачность карты</string>
     <string name="map_fade_summary">Прозрачность карты улучшает восприятие данных</string>
 
@@ -59,7 +56,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="color_scheme">Цветовая схема</string>
-    <string name="color_scheme_summary">Цветовая схема представления данных</string>
 
     <string-array name="map_modes">
         <item>Темная</item>
@@ -70,15 +66,10 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Показать местоположения участников</string>
-    <string name="show_participants_summary">Показать местоположения всех станций на карте (только при выборе 
-       источника данных Blitzortung.org)
-    </string>
     <string name="show_location">Показать свое месторасположение</string>
     <string name="show_location_summary">Включить символ для собственного местоположения на карте</string>
-    <string name="data_settings">Передача данных</string>
+    <string name="data_source_settings">Передача данных</string>
     <string name="region">Регион</string>
-    <string name="region_summary">Выберите регион предоставления данных</string>
 
     <string-array name="regions">
         <item>Домашний регион</item>
@@ -104,7 +95,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="interval_duration">Временной интервал</string>
-    <string name="interval_duration_summary">Временной интервал, за который отображается активность молний</string>
 
     <string-array name="interval_durations">
         <item>30 минут</item>
@@ -123,7 +113,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="historic_timestep_limit_reached">Максимум 24 часа</string>
     <string name="historic_timestep">История</string>
-    <string name="historic_timestep_summary">Размер временного шага исторических данных</string>
 
     <string-array name="historic_timesteps">
         <item>15 минут</item>
@@ -137,7 +126,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="query_period">Период обновления данных</string>
-    <string name="query_period_summary">Частота запроса новых данных</string>
 
     <string-array name="query_periods">
         <item>20 секунд</item>
@@ -157,7 +145,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="grid_size">Размер квадрата</string>
-    <string name="grid_size_summary">Размер области представления данных</string>
 
     <string-array name="grid_sizes">
         <item>Авто</item>
@@ -177,7 +164,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Порог отображения молний</string>
-    <string name="count_threshold_summary">Минимальное количество молний на один квадрат</string>
 
     <string-array name="count_thresholds">
         <item>Отключено</item>
@@ -197,8 +183,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="data_source">Источник данных</string>
-    <string name="data_source_summary">Встроенный источник данных или данные с blitzortung.org (только для станций)
-    </string>
 
     <string-array name="data_sources">
         <item>Встроенный источник</item>
@@ -223,18 +207,12 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>manual</item>
     </string-array>
     <string name="location_mode">Режим определения местоположения</string>
-    <string name="location_mode_summary">Выберите метод, который используется для определения текущего местоположения</string>
     <string name="longitude">Долгота</string>
-    <string name="location_longitude_summary">Ручной ввод долготы</string>
     <string name="latitude">Широта</string>
-    <string name="location_latitude_summary">Ручной ввод широты</string>
     <string name="alarm_settings">Настройки предупреждений</string>
     <string name="alarm_enabled">Включение предупреждений</string>
     <string name="alarm_enabled_summary">Проверка активности молний вокруг текущего местоположения</string>
     <string name="background_query_period">Период опроса в фоне</string>
-    <string name="background_query_period_summary">Если выбрано: частота проверки предупреждений если приложение
-        не активно и работает в фоне
-    </string>
     <string name="background_query_toast">Пожалуйста, отключите оптимизацию батареи для этого приложения для полнофункциональной работы в фоне.</string>
     <string name="open_battery_optimiziation">Пожалуйста, отключите оптимизацию батареи для этого приложения, когда фоновый опрос включен. Нажмите Отмена, чтобы отключить фоновый опрос, и Ок, чтобы перейти к настройке оптимизации батареи.</string>
 
@@ -264,13 +242,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <item name="alarm_notification_id" type="id" />
 
     <string name="notification_distance_limit">Предел расстояния для уведомления</string>
-    <string name="notification_distance_limit_summary">Если выбрано: показать уведомления если замечена молния в
-        зоне выбранного расстояния
-    </string>
     <string name="signaling_distance_limit">Предел расстояния для сигнала</string>
-    <string name="signaling_distance_limit_summary">Если выбрано: звуковое уведомление если замечена молния в
-        зоне выбранного расстояния
-    </string>
 
     <string-array name="direction_names">
         <item>Ю</item>
@@ -305,10 +277,9 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>500</item>
     </string-array>
 
-    <string name="signaling_threshold_time">Время сигнализации</string>
-    <string name="signaling_threshold_time_summary">Выключить сигнал предупреждения через заданный промежуток времени</string>
+    <string name="signaling_suppression_time">Время сигнализации</string>
 
-    <string-array name="signaling_threshold_times">
+    <string-array name="signaling_suppression_times">
         <item>Выключено</item>
         <item>5 минут</item>
         <item>15 минут</item>
@@ -316,7 +287,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>60 минут</item>
         <item>120 минут</item>
     </string-array>
-    <string-array name="signaling_threshold_time_values">
+    <string-array name="signaling_suppression_time_values">
         <item>0</item>
         <item>5</item>
         <item>15</item>
@@ -326,7 +297,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="generic_settings">Основные настройки</string>
     <string name="measurement_unit">Единицы измерений</string>
-    <string name="measurement_unit_summary">Выберите км или мили для расстояний</string>
     <string-array name="measurement_units">
         <item>Метрическая система</item>
         <item>Британская/американская система</item>
@@ -337,30 +307,19 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="do_not_sleep">Спящий режим</string>
     <string name="do_not_sleep_summary">Не переходить в спящий режим когда приложение активно</string>
-    <string name="participants_layer">Месторасположение участников</string>
-    <string name="own_location_layer">Ваше месторасположение</string>
-    <string name="strikes_layer">Молнии</string>
-    <string name="data_settings_summary">Расширенные настройки для управления передачей данных и источника</string>
-    <string name="map_settings_summary">Настройки режима карты и внешнего вида</string>
-    <string name="location_settings_summary">Режим определения местоположения</string>
-    <string name="alarm_settings_summary">Активация предупреждений, фоновая служба и радиусы</string>
     <string name="alarm_signal_settings">Настройки сигнала предупреждений</string>
     <string name="alarm_audio_signal">Выбор сигнала предупреждений</string>
     <string name="alarm_vibration_signal">Продолжительность вибрации сигнала предупреждения</string>
-    <string name="alarm_audio_signal_summary">Выберите звук для предупреждения</string>
-    <string name="alarm_vibration_signal_summary">Выберите продолжительность вибрации в случае предупреждения</string>
+    <string name="alarm_vibration_signal_summary">Выберите продолжительность вибрации в случае предупреждения, мс</string>
     <string name="location_provider_not_available">Месторасположение \'%s\' не доступно</string>
     <string name="location_provider_disabled">Месторасположение \'%s\' отключено</string>
     <string name="service_url">URL адрес стороннего сервера</string>
-    <string name="service_url_summary">Установите адрес стороннего сервера данных</string>
     <string name="set_manual_location">Установить месторасположение вручную</string>
     <string name="error_indicator">Ошибка индикатора</string>
     <string name="app_log">Лог приложения</string>
     <string name="share_log">Отправить по email …</string>
     <string name="share_unavailable">Обмен по E-mail не доступен.</string>
     <string name="provider_warning">Пожалуйста, не используйте Blitzortung.org во время высокой активности молний, так как производительность отображения карты будет снижаться.</string>
-    <string name="own_location_summary">Настройки отображения Вашего месторасположения</string>
-    <string name="own_location">Ваше месторасположение</string>
     <string name="own_location_size">Символ Вашего месторасположения</string>
     <string name="own_location_size_summary">Установите размер символа Вашего месторасположения</string>
     <string name="keep_zoom_goto_own_location_summary">Установка сохранения Вашего текущего масштаба при центрировании собственного местоположения</string>
@@ -380,13 +339,11 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="slider_past">Прошлое</string>
     <string name="slider_legend">(Часы)</string>
     <string name="animation_settings">Анимация</string>
-    <string name="animation_settings_summary">Настройки анимации</string>
     <string name="animation_sleep_duration">Пауза между шагами</string>
     <string name="animation_sleep_duration_summary">Временной интервал между шагами, мс</string>
     <string name="animation_cycle_sleep_duration">Пауза в конце анимации</string>
     <string name="animation_cycle_sleep_duration_summary">Время паузы после завершения анимации, мс</string>
     <string name="animation_interval_duration">Интервал анимации</string>
-    <string name="animation_interval_duration_summary">Временной отрезок анимации, час</string>
     <string name="ok">Ок</string>
     <string name="cancel">Отмена</string>
     <string name="ms">мс</string>
@@ -404,4 +361,12 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>12</item>
         <item>24</item>
     </string-array>
+    <string name="diagnosis">Диагностика приложения</string>
+    <string name="diagnosis_summary">Функции диагностики работоспособности приложения</string>
+    <string name="undefined">Не установлен</string>
+    <string name="background_query_period_dialog_message">"Использование периодического фонового запроса оповещений, когда приложение не запущено, потребует считывания местоположения вашего устройства, если оно не настроено на определение местоположения вручную. "</string>
+    <string name="post_notifications_request">Включите разрешение на публикацию уведомлений, если вы хотите получать оповещения.</string>
+    <string name="default_alarm_signal">Звук предупреждений по умолчанию</string>
+    <string name="location_required_for_alerts">Местоположение требуется для оповещений, отключения оповещений и фоновых запросов.</string>
+    <string name="post_notifications_required_for_alerts">Для оповещений требуется разрешение на уведомление, отключение оповещений и фоновых запросов.</string>
 </resources>

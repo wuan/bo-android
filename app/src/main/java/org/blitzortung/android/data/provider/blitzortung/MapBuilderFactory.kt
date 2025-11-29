@@ -18,28 +18,23 @@
 
 package org.blitzortung.android.data.provider.blitzortung
 
-import org.blitzortung.android.data.beans.DefaultStrike
-import org.blitzortung.android.data.beans.Station
-import org.blitzortung.android.data.beans.Strike
-import org.blitzortung.android.util.TimeFormat
-import java.util.regex.Pattern
 import javax.inject.Inject
 import javax.inject.Singleton
+import org.blitzortung.android.data.beans.DefaultStrike
+import org.blitzortung.android.data.beans.Strike
+import org.blitzortung.android.util.TimeFormat
 
 class MapBuilderFailedException(message: String) : Throwable(message)
 
 @Singleton
 class MapBuilderFactory(
     private val strikeLineSplitter: (String) -> Array<String>,
-    private val stationLineSplitter: (String) -> Array<String>
 ) {
-
     @Inject
-    constructor() : this(::lineSplitter, ::stationLineSplitter)
+    constructor() : this(::lineSplitter)
 
     fun createStrikeMapBuilder(): MapBuilder<Strike> {
         return object : MapBuilder<Strike>(strikeLineSplitter) {
-
             init {
                 setBuilderMap()
             }
@@ -83,41 +78,8 @@ class MapBuilderFactory(
                     altitude,
                     amplitude,
                     stationCount,
-                    lateralError.toDouble()
+                    lateralError.toDouble(),
                 )
-            }
-        }
-    }
-
-    fun createStationMapBuilder(): MapBuilder<Station> {
-        return object : MapBuilder<Station>(stationLineSplitter) {
-
-            init {
-                setBuilderMap()
-            }
-
-            private var name: String = "n/a"
-            private var longitude: Double = 0.0
-            private var latitude: Double = 0.0
-            private var offlineSince: Long = 0
-
-            override fun prepare(fields: Array<String>) {
-            }
-
-            fun setBuilderMap() {
-                keyValueBuilderMap["city"] = { values -> name = values[0].replace("\"", "") }
-                keyValueBuilderMap["pos"] = { values ->
-                    longitude = values[1].toDouble()
-                    latitude = values[0].toDouble()
-                }
-                keyValueBuilderMap["last_signal"] = { values ->
-                    val dateString = values[0].replace("\"", "").replace("-", "").replace(" ", "T")
-                    offlineSince = TimeFormat.parseTime(dateString)
-                }
-            }
-
-            override fun build(): Station {
-                return Station(longitude = longitude, latitude = latitude, name = name, offlineSince = offlineSince)
             }
         }
     }
@@ -125,19 +87,4 @@ class MapBuilderFactory(
 
 fun lineSplitter(text: String): Array<String> {
     return text.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-}
-
-fun stationLineSplitter(text: String): Array<String> {
-    val matchList = ArrayList<String>()
-    val regex = Pattern.compile("(\\w+(;(\"[^\"]+?\"|\\S+))+)")
-    val regexMatcher = regex.matcher(text)
-    while (regexMatcher.find()) {
-        if (regexMatcher.group(0) != null) {
-            val element = regexMatcher.group(1)
-            if (element != null) {
-                matchList.add(element)
-            }
-        }
-    }
-    return matchList.toArray(arrayOfNulls<String>(matchList.size))
 }

@@ -54,14 +54,15 @@ enum class PreferenceKey(val key: String) {
     KEEP_ZOOM_GOTO_OWN_LOCATION("keep_zoom_goto_own_location"),
     ANIMATION_INTERVAL_DURATION("animation_interval_duration"),
     ANIMATION_SLEEP_DURATION("animation_sleep_duration"),
-    ANIMATION_CYCLE_SLEEP_DURATION("animation_cycle_sleep_duration");
+    ANIMATION_CYCLE_SLEEP_DURATION("animation_cycle_sleep_duration"),
+    DIAGNOSIS_ENABLED("diagnosis_enabled"),
+    ;
 
     override fun toString(): String {
         return key
     }
 
     companion object {
-
         private val stringToValueMap = HashMap<String, PreferenceKey>()
 
         init {
@@ -84,19 +85,23 @@ enum class PreferenceKey(val key: String) {
     }
 }
 
-//Helper function to retrieve a preference value of a PreferenceKey
-internal inline fun <reified T> SharedPreferences.get(prefKey: PreferenceKey, default: T): T {
+// Helper function to retrieve a preference value of a PreferenceKey
+internal inline fun <reified T> SharedPreferences.get(
+    prefKey: PreferenceKey,
+    default: T,
+): T {
     val key = prefKey.toString()
 
-    //Set<String> is not possible because of type erasure, so for Set<String> we still need to use the old way
-    val value: Any = when (default) {
-        is Long -> getLong(key, default)
-        is Int -> getInt(key, default)
-        is Boolean -> this.getBoolean(key, default)
-        is String -> getString(key, default) ?: default
-        is Float -> getFloat(key, default)
-        else -> throw IllegalArgumentException("Type ${T::class} cannot be retrieved from a SharedPreference")
-    }
+    // Set<String> is not possible because of type erasure, so for Set<String> we still need to use the old way
+    val value: Any =
+        when (default) {
+            is Long -> getLong(key, default)
+            is Int -> getInt(key, default)
+            is Boolean -> this.getBoolean(key, default)
+            is String -> getString(key, default) ?: default
+            is Float -> getFloat(key, default)
+            else -> throw IllegalArgumentException("Type ${T::class} cannot be retrieved from a SharedPreference")
+        }
 
     return value as T
 }
@@ -104,7 +109,7 @@ internal inline fun <reified T> SharedPreferences.get(prefKey: PreferenceKey, de
 internal inline fun <reified T, V> SharedPreferences.getAndConvert(
     prefKey: PreferenceKey,
     default: T,
-    convert: (T) -> V
+    convert: (T) -> V,
 ): V {
     val value = this.get(prefKey, default)
     return convert(value)
@@ -113,7 +118,10 @@ internal inline fun <reified T, V> SharedPreferences.getAndConvert(
 /**
  *  A generic extension function to set a SharedPreference-Value
  */
-internal inline fun <reified T> SharedPreferences.Editor.put(key: String, value: T) {
+internal inline fun <reified T> SharedPreferences.Editor.put(
+    key: String,
+    value: T,
+) {
     when (value) {
         is String -> putString(key, value)
         is Int -> putInt(key, value)
@@ -124,22 +132,33 @@ internal inline fun <reified T> SharedPreferences.Editor.put(key: String, value:
     }
 }
 
-internal inline fun <reified T> SharedPreferences.Editor.put(key: PreferenceKey, value: T) {
+internal inline fun <reified T> SharedPreferences.Editor.put(
+    key: PreferenceKey,
+    value: T,
+) {
     val keyString = key.key
 
     put(keyString, value)
 }
 
 interface OnSharedPreferenceChangeListener : SharedPreferences.OnSharedPreferenceChangeListener {
-    fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, vararg keys: PreferenceKey) {
+    fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        vararg keys: PreferenceKey,
+    ) {
         keys.forEach { onSharedPreferenceChanged(sharedPreferences, it) }
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, keyString: String?) {
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        keyString: String?,
+    ) {
         val key = PreferenceKey.fromString(keyString.orEmpty())
         key?.also { onSharedPreferenceChanged(sharedPreferences, it) }
     }
 
-    fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey)
-
+    fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        key: PreferenceKey,
+    )
 }

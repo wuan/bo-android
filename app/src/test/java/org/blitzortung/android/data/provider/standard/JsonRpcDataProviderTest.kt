@@ -4,18 +4,19 @@ import android.content.Context
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import java.net.URL
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.put
+import org.blitzortung.android.data.DataArea
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.History
-import org.blitzortung.android.data.LocalReference
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.TimeInterval
 import org.blitzortung.android.data.beans.GridElement
 import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.jsonrpc.JsonRpcClient
 import org.blitzortung.android.jsonrpc.JsonRpcResponse
 import org.json.JSONArray
@@ -25,13 +26,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
-import java.net.URL
 
 private const val SERVICE_URL = "http://service.url/"
 
 @RunWith(RobolectricTestRunner::class)
 class JsonRpcDataProviderTest {
-
     private lateinit var uut: JsonRpcDataProvider
 
     @MockK
@@ -51,18 +50,19 @@ class JsonRpcDataProviderTest {
         uut = JsonRpcDataProvider(preferences, client)
     }
 
-
     @Test
     fun getsGlobalData() {
-        val parameters = Parameters(
-            region = GLOBAL_REGION,
-            interval = TimeInterval(
-                offset = 30,
-                duration = 60
-            ),
-            countThreshold = 5,
-            gridSize = 5000
-        )
+        val parameters =
+            Parameters(
+                region = GLOBAL_REGION,
+                interval =
+                    TimeInterval(
+                        offset = 30,
+                        duration = 60,
+                    ),
+                countThreshold = 5,
+                gridSize = 25000,
+            )
         val history = History()
         val flags = Flags()
 
@@ -75,15 +75,15 @@ class JsonRpcDataProviderTest {
                 parameters.intervalDuration,
                 parameters.gridSize,
                 parameters.intervalOffset,
-                parameters.countThreshold
+                parameters.countThreshold,
             )
         } returns JsonRpcResponse(response)
 
-        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
+        val result: DataReceived = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
         assertThat(result.gridParameters?.latitudeStart).isEqualTo(0.0)
         assertThat(result.gridParameters?.longitudeStart).isEqualTo(0.0)
-        assertThat(result.gridParameters?.size).isEqualTo(5000)
+        assertThat(result.gridParameters?.size).isEqualTo(25000)
         assertThat(result.gridParameters?.latitudeBins).isEqualTo(24)
         assertThat(result.gridParameters?.longitudeBins).isEqualTo(24)
         assertThat(result.gridParameters?.latitudeDelta).isEqualTo(30.0)
@@ -97,17 +97,19 @@ class JsonRpcDataProviderTest {
 
     @Test
     fun getsLocalData() {
-        val localReference = LocalReference(5, 6)
-        val parameters = Parameters(
-            region = LOCAL_REGION,
-            interval = TimeInterval(
-                offset = 30,
-                duration = 60
-            ),
-            countThreshold = 5,
-            gridSize = 5000,
-            localReference = localReference
-        )
+        val dataArea = DataArea(5, 6, 5)
+        val parameters =
+            Parameters(
+                region = LOCAL_REGION,
+                interval =
+                    TimeInterval(
+                        offset = 30,
+                        duration = 60,
+                    ),
+                countThreshold = 5,
+                gridSize = 5000,
+                dataArea = dataArea,
+            )
         val history = History()
         val flags = Flags()
 
@@ -119,17 +121,17 @@ class JsonRpcDataProviderTest {
             client.call(
                 URL(SERVICE_URL),
                 "get_local_strikes_grid",
-                localReference.x,
-                localReference.y,
+                dataArea.x,
+                dataArea.y,
                 parameters.gridSize,
                 parameters.intervalDuration,
                 parameters.intervalOffset,
                 parameters.countThreshold,
-                parameters.dataArea,
+                dataArea.scale,
             )
         } returns JsonRpcResponse(response)
 
-        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
+        val result: DataReceived = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
         assertThat(result.gridParameters?.latitudeStart).isEqualTo(15.0)
         assertThat(result.gridParameters?.longitudeStart).isEqualTo(10.0)
@@ -147,17 +149,19 @@ class JsonRpcDataProviderTest {
 
     @Test
     fun getsRegionData() {
-        val localReference = LocalReference(5, 6)
-        val parameters = Parameters(
-            region = 2,
-            interval = TimeInterval(
-                offset = 30,
-                duration = 60
-            ),
-            countThreshold = 5,
-            gridSize = 5000,
-            localReference = localReference
-        )
+        val dataArea = DataArea(5, 6, 5)
+        val parameters =
+            Parameters(
+                region = 2,
+                interval =
+                    TimeInterval(
+                        offset = 30,
+                        duration = 60,
+                    ),
+                countThreshold = 5,
+                gridSize = 5000,
+                dataArea = dataArea,
+            )
         val history = History()
         val flags = Flags()
 
@@ -173,11 +177,11 @@ class JsonRpcDataProviderTest {
                 parameters.gridSize,
                 parameters.intervalOffset,
                 parameters.region,
-                parameters.countThreshold
+                parameters.countThreshold,
             )
         } returns JsonRpcResponse(response)
 
-        val result: ResultEvent = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
+        val result: DataReceived = uut.retrieveData { getStrikesGrid(parameters, history, flags) }
 
         assertThat(result.gridParameters?.latitudeStart).isEqualTo(15.0)
         assertThat(result.gridParameters?.longitudeStart).isEqualTo(10.0)

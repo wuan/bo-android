@@ -1,16 +1,20 @@
 package org.blitzortung.android.data
 
 import android.util.Log
-import kotlinx.coroutines.*
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.data.provider.data.DataProvider
-import org.blitzortung.android.data.provider.result.ResultEvent
-import kotlin.coroutines.CoroutineContext
+import org.blitzortung.android.data.provider.result.DataReceived
 
 internal open class FetchDataTask(
     private val dataMode: DataMode,
     private val dataProvider: DataProvider,
-    private val resultConsumer: (ResultEvent) -> Unit
+    private val resultConsumer: (DataReceived) -> Unit,
 ) : CoroutineScope {
     private var job: Job = Job()
 
@@ -21,11 +25,19 @@ internal open class FetchDataTask(
         job.cancel()
     }
 
-    fun execute(parameters: Parameters, history: History? = null, flags: Flags = Flags()) = launch {
+    fun execute(
+        parameters: Parameters,
+        history: History? = null,
+        flags: Flags = Flags(),
+    ) = launch {
         onPostExecute(doInBackground(parameters, history, flags))
     }
 
-    protected open suspend fun doInBackground(parameters: Parameters, history: History?, flags: Flags): ResultEvent? =
+    protected open suspend fun doInBackground(
+        parameters: Parameters,
+        history: History?,
+        flags: Flags,
+    ): DataReceived? =
         withContext(Dispatchers.IO) {
             try {
                 dataProvider.retrieveData {
@@ -38,17 +50,17 @@ internal open class FetchDataTask(
             } catch (e: RuntimeException) {
                 Log.e(Main.LOG_TAG, "error fetching data", e)
 
-                ResultEvent(
+                DataReceived(
                     failed = true,
                     referenceTime = System.currentTimeMillis(),
                     parameters = parameters,
                     history = history,
-                    flags = flags
+                    flags = flags,
                 )
             }
         }
 
-    open fun onPostExecute(result: ResultEvent?) {
+    open fun onPostExecute(result: DataReceived?) {
         if (result != null) {
             resultConsumer.invoke(result)
         }

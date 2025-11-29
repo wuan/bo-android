@@ -18,23 +18,11 @@
 
 package org.blitzortung.android.app
 
-import android.Manifest.permission.*
-import android.annotation.TargetApi
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
-import android.graphics.Color
-import android.location.LocationManager.*
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.PowerManager
-import android.preference.PreferenceManager
-import android.provider.Settings
 import android.text.format.DateFormat
-import android.util.AndroidRuntimeException
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
@@ -44,10 +32,15 @@ import android.widget.ImageButton
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import androidx.core.content.edit
+import androidx.core.view.WindowCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
+import androidx.preference.PreferenceManager
 import dagger.android.AndroidInjection
-import org.blitzortung.android.alert.event.AlertResultEvent
+import javax.inject.Inject
+import kotlin.math.roundToInt
+import org.blitzortung.android.alert.LocalActivity
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.BuildVersion
 import org.blitzortung.android.app.components.ChangeLogComponent
@@ -55,19 +48,26 @@ import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
 import org.blitzortung.android.app.databinding.MainBinding
+import org.blitzortung.android.app.permission.PermissionRequester
+import org.blitzortung.android.app.permission.PermissionsSupport
+import org.blitzortung.android.app.permission.requester.BackgroundLocationPermissionRequester
+import org.blitzortung.android.app.permission.requester.LocationPermissionRequester
+import org.blitzortung.android.app.permission.requester.NotificationPermissionRequester
+import org.blitzortung.android.app.permission.requester.WakeupPermissionRequester
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.app.view.get
-import org.blitzortung.android.app.view.put
-import org.blitzortung.android.data.DataChannel
+import org.blitzortung.android.data.AUTO_GRID_SIZE_VALUE
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.Mode
+import org.blitzortung.android.data.SequenceValidator
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.result.DataEvent
-import org.blitzortung.android.data.provider.result.RequestStartedEvent
-import org.blitzortung.android.data.provider.result.ResultEvent
-import org.blitzortung.android.data.provider.result.StatusEvent
+import org.blitzortung.android.data.provider.result.DataReceived
+import org.blitzortung.android.data.provider.result.NoData
+import org.blitzortung.android.data.provider.result.RequestStarted
+import org.blitzortung.android.data.provider.result.StatusUpdate
 import org.blitzortung.android.dialogs.QuickSettingsDialog
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.map.MapFragment
@@ -80,11 +80,9 @@ import org.blitzortung.android.util.LogUtil
 import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
 import org.osmdroid.config.Configuration
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
-import java.util.concurrent.atomic.AtomicLong
-import javax.inject.Inject
-import kotlin.math.roundToInt
 
 class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private var backgroundAlertEnabled: Boolean = false
@@ -96,7 +94,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private lateinit var strikeListOverlay: StrikeListOverlay
     private lateinit var ownLocationOverlay: OwnLocationOverlay
     private lateinit var fadeOverlay: FadeOverlay
-    private var currentSequenceNumber = AtomicLong()
 
     private var clearData: Boolean = false
 
@@ -120,74 +117,77 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     internal lateinit var versionComponent: VersionComponent
 
     @set:Inject
+    internal lateinit var sequenceValidator: SequenceValidator
+
+    @set:Inject
     internal lateinit var buildVersion: BuildVersion
 
     @set:Inject
     internal lateinit var changeLogComponent: ChangeLogComponent
 
-    private var currentResult: ResultEvent? = null
+    private lateinit var permissionRequesters: Array<PermissionRequester>
+
+    private var currentResult: DataReceived? = null
 
     private val keepZoomOnGotoOwnLocation: Boolean
         inline get() = preferences.get(PreferenceKey.KEEP_ZOOM_GOTO_OWN_LOCATION, false)
 
     private val dataEventConsumer: (DataEvent) -> Unit = { event ->
         when (event) {
-            is RequestStartedEvent -> {
+            is RequestStarted -> {
                 Log.d(LOG_TAG, "Main.onDataUpdate() received request started event")
                 statusComponent.startProgress()
             }
 
-            is ResultEvent -> {
+            is DataReceived -> {
 
                 statusComponent.indicateError(event.failed)
-                if (!event.failed && event.sequenceNumber != null) {
-                    val updatedSequenceNumber = determineUpdatedSequenceNumber(event.sequenceNumber)
-                    if (updatedSequenceNumber == event.sequenceNumber) {
-                        currentResult = event
+                if (!event.failed && sequenceValidator.isUpdate(event.sequenceNumber)) {
+                    currentResult = event
 
-                        Log.d(LOG_TAG, "Main.onDataUpdate() $event")
+                    Log.d(LOG_TAG, "Main.onDataUpdate() $event")
 
-                        val resultParameters = event.parameters
+                    val resultParameters = event.parameters
 
-                        clearDataIfRequested()
+                    clearDataIfRequested()
 
-                        val initializeOverlay = strikeListOverlay.parameters != resultParameters
-                        with(strikeListOverlay) {
-                            parameters = resultParameters
-                            gridParameters = event.gridParameters
-                            referenceTime = event.referenceTime
-                        }
+                    val initializeOverlay = strikeListOverlay.parameters != resultParameters
+                    with(strikeListOverlay) {
+                        parameters = resultParameters
+                        gridParameters = event.gridParameters
+                        referenceTime = event.referenceTime
+                    }
 
-                        if (event.updated >= 0 && !initializeOverlay) {
-                            strikeListOverlay.expireStrikes()
-                        } else {
-                            strikeListOverlay.clear()
-                        }
+                    if (event.updated >= 0 && !initializeOverlay) {
+                        strikeListOverlay.expireStrikes()
+                    } else {
+                        strikeListOverlay.clear()
+                    }
 
-                        if (event.strikes != null) {
-                            val strikes = if (event.updated > 0 && !initializeOverlay) {
+                    if (event.strikes != null) {
+                        val strikes =
+                            if (event.updated > 0 && !initializeOverlay) {
                                 val size = event.strikes.size
                                 event.strikes.subList(size - event.updated, size)
                             } else {
                                 event.strikes
                             }
-                            strikeListOverlay.addStrikes(strikes)
-                        }
+                        strikeListOverlay.addStrikes(strikes)
+                    }
 
-                        binding.alertView.setColorHandler(
-                            strikeColorHandler,
-                            strikeListOverlay.parameters.intervalDuration
-                        )
+                    binding.alertView.setColorHandler(
+                        strikeColorHandler,
+                        strikeListOverlay.parameters.intervalDuration,
+                    )
 
-                        strikeListOverlay.refresh()
-                        mapFragment.mapView.invalidate()
+                    strikeListOverlay.refresh()
+                    mapFragment.mapView.invalidate()
 
-                        binding.legendView.requestLayout()
-                        binding.timeSlider.update(event.parameters, event.history!!)
+                    binding.legendView.requestLayout()
+                    binding.timeSlider.update(event.parameters, event.history!!)
 
-                        if (event.flags.mode == Mode.ANIMATION || !event.containsRealtimeData()) {
-                            setHistoricStatusString()
-                        }
+                    if (event.flags.mode == Mode.ANIMATION || !event.containsRealtimeData()) {
+                        setHistoricStatusString()
                     }
                 }
 
@@ -196,22 +196,13 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 binding.legendView.invalidate()
             }
 
-            is StatusEvent -> {
+            is StatusUpdate -> {
                 setStatusString(event.status)
             }
-        }
-    }
 
-    private fun determineUpdatedSequenceNumber(sequenceNumber: Long) = if (isAtLeast(24)) {
-        currentSequenceNumber.updateAndGet { previousSequenceNumber ->
-            if (previousSequenceNumber < sequenceNumber) sequenceNumber else previousSequenceNumber
-        }
-    } else {
-        synchronized(currentSequenceNumber) {
-            val previousSequenceNumber = currentSequenceNumber.get()
-            val updated = if (previousSequenceNumber < sequenceNumber) sequenceNumber else previousSequenceNumber
-            currentSequenceNumber.set(updated)
-            updated
+            NoData -> {
+                setStatusString("?")
+            }
         }
     }
 
@@ -224,6 +215,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         binding = MainBinding.inflate(layoutInflater)
 
         Log.v(LOG_TAG, "Main.onCreate()")
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         try {
             super.onCreate(savedInstanceState)
@@ -244,15 +237,14 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
         preferences.registerOnSharedPreferenceChangeListener(this)
 
-        statusComponent = StatusComponent(
-            findViewById(R.id.warning),
-            findViewById(R.id.status),
-            findViewById(R.id.progress),
-            findViewById(R.id.error_indicator),
-            resources
-        )
-
-        hideActionBar()
+        statusComponent =
+            StatusComponent(
+                findViewById(R.id.warning),
+                findViewById(R.id.status),
+                findViewById(R.id.progress),
+                findViewById(R.id.error_indicator),
+                this,
+            )
 
         buttonColumnHandler = ButtonColumnHandler(if (TabletAwareView.isTablet(this)) 75f else 55f)
         configureMenuAccess()
@@ -260,7 +252,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         val historyButtons = historyController.getButtons()
         buttonColumnHandler.addAllElements(historyButtons, ButtonGroup.DATA_UPDATING)
 
-        //setupDetailModeButton()
+        // setupDetailModeButton()
 
         buttonColumnHandler.updateButtonColumn()
 
@@ -271,42 +263,49 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             changeLogComponent.showChangeLogDialog(this)
         }
 
-        binding.timeSlider.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
-                if (p2) {
-                    val changed = dataHandler.setPosition(p1)
-                    if (changed) {
-                        if (dataHandler.isRealtime) {
-                            dataHandler.restart()
-                        } else {
-                            dataHandler.updateData(setOf(DataChannel.STRIKES))
+        binding.timeSlider.setOnSeekBarChangeListener(
+            object : OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    p0: SeekBar?,
+                    p1: Int,
+                    p2: Boolean,
+                ) {
+                    if (p2) {
+                        val changed = dataHandler.setPosition(p1)
+                        if (changed) {
+                            if (dataHandler.isRealtime) {
+                                dataHandler.restart()
+                            } else {
+                                Log.v(LOG_TAG, "TimeSlider call updateData()")
+                                dataHandler.updateData()
+                            }
                         }
                     }
                 }
-            }
 
-            override fun onStartTrackingTouch(p0: SeekBar?) {
-            }
+                override fun onStartTrackingTouch(p0: SeekBar?) {
+                }
 
-            override fun onStopTrackingTouch(p0: SeekBar?) {
-            }
-        })
+                override fun onStopTrackingTouch(p0: SeekBar?) {
+                }
+            },
+        )
+
+        permissionRequesters =
+            arrayOf(
+                LocationPermissionRequester(this, preferences),
+                NotificationPermissionRequester(this, preferences),
+                BackgroundLocationPermissionRequester(this, preferences),
+                WakeupPermissionRequester(this, preferences),
+            )
     }
 
     private fun initializeOsmDroid() {
         val osmDroidConfig = Configuration.getInstance()
         osmDroidConfig.load(this, preferences)
-        Log.v(
-            LOG_TAG,
-            "Main.onCreate() osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}"
-        )
         if (!StorageUtils.isWritable(osmDroidConfig.osmdroidBasePath)) {
-            preferences.edit().remove("osmdroid.basePath").apply()
+            preferences.edit { remove("osmdroid.basePath") }
             osmDroidConfig.load(this, preferences)
-            Log.v(
-                LOG_TAG,
-                "Main.onCreate() updated osmdroid base ${osmDroidConfig.osmdroidBasePath} tiles ${osmDroidConfig.osmdroidTileCache}, size: ${osmDroidConfig.osmdroidTileCache.length()}"
-            )
             if (!StorageUtils.isWritable(osmDroidConfig.osmdroidTileCache)) {
                 Toast.makeText(baseContext, R.string.osmdroid_storage_warning, Toast.LENGTH_LONG).show()
             }
@@ -320,7 +319,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
             setOnClickListener {
                 dataHandler.toggleExtendedMode()
-                dataHandler.updateData(setOf(DataChannel.STRIKES))
+                dataHandler.updateData()
             }
 
             buttonColumnHandler.addElement(this, ButtonGroup.DATA_UPDATING)
@@ -347,18 +346,15 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         with(binding.alertView) {
             setColorHandler(strikeColorHandler, strikeListOverlay.parameters.intervalDuration)
-            setBackgroundColor(Color.TRANSPARENT)
-            setAlpha(200)
             setOnClickListener {
                 val currentLocation = locationHandler.location
                 if (currentLocation != null) {
-                    val diameter = if (!keepZoomOnGotoOwnLocation) {
-                        // Calculate the new diameter
-                        1.5f * determineTargetZoomRadius(alertHandler)
-                    } else {
-                        //User doesn't want to zoom, so we do not provide a diameter
-                        null
-                    }
+                    val diameter =
+                        if (!keepZoomOnGotoOwnLocation) {
+                            determineTargetZoomRadius(alertHandler)
+                        } else {
+                            null
+                        }
 
                     animateToLocationAndVisibleSize(currentLocation.longitude, currentLocation.latitude, diameter)
                 }
@@ -378,7 +374,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                         animateToLocationAndVisibleSize(
                             gridParameters.rectCenterLongitude,
                             gridParameters.rectCenterLatitude,
-                            if (parameters.region == LOCAL_REGION) 1800f else 5000f
+                            if (parameters.region == LOCAL_REGION) 1800f else 5000f,
                         )
                     } else {
                         animateToLocationAndVisibleSize(-30.0, 0.0, 40000f)
@@ -391,12 +387,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private fun determineTargetZoomRadius(alertHandler: AlertHandler): Float {
         var radius = alertHandler.maxDistance
 
-        val alertEvent = alertHandler.alertEvent
-        if (alertEvent is AlertResultEvent) {
-            val alertResult = alertEvent.alertResult
-            if (alertResult != null) {
-                radius = (alertResult.closestStrikeDistance * 1.2f).coerceIn(50f, radius)
-            }
+        val warning = alertHandler.alertEvent
+        if (warning is LocalActivity) {
+            radius = (warning.closestStrikeDistance * 1.2f).coerceIn(50f, radius)
         }
         return radius
     }
@@ -406,17 +399,22 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         dialog.show(supportFragmentManager, "QuickSettingsDialog")
     }
 
-    private fun animateToLocationAndVisibleSize(longitude: Double, latitude: Double, diameter: Float?) {
+    private fun animateToLocationAndVisibleSize(
+        longitude: Double,
+        latitude: Double,
+        diameter: Float?,
+    ) {
         Log.d(LOG_TAG, "Main.animateAndZoomTo() %.4f, %.4f, %.0fkm".format(longitude, latitude, diameter))
 
         val mapView = mapFragment.mapView
 
-        //If no diameter is provided, we keep the current zoomLevel
-        val targetZoomLevel = if (diameter != null) {
-            mapFragment.calculateTargetZoomLevel(diameter * 1000f) * 1.0
-        } else {
-            mapView.zoomLevelDouble
-        }
+        // If no diameter is provided, we keep the current zoomLevel
+        val targetZoomLevel =
+            if (diameter != null) {
+                mapFragment.calculateTargetZoomLevel(diameter * 1000f) * 1.0
+            } else {
+                mapView.zoomLevelDouble
+            }
 
         mapView.controller.animateTo(GeoPoint(latitude, longitude), targetZoomLevel, OwnMapView.DEFAULT_ZOOM_SPEED)
     }
@@ -432,6 +430,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         setHistoricStatusString()
         mapFragment.mapView.addMapListener(strikeListOverlay)
         mapFragment.mapView.addMapListener(dataHandler)
+        mapFragment.mapView.addMapListener(binding.regionView)
 
         fadeOverlay = FadeOverlay(strikeColorHandler)
 
@@ -448,6 +447,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT,
             PreferenceKey.DO_NOT_SLEEP,
             PreferenceKey.BACKGROUND_QUERY_PERIOD,
+            PreferenceKey.GRID_SIZE,
         )
 
         val overlays = mapFragment.mapView.overlays
@@ -470,10 +470,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         Log.v(LOG_TAG, "Main.onResume()")
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestLocationPermissions(preferences)
-            requestWakeupPermissions(baseContext)
-        }
+        PermissionsSupport.ensure(
+            this,
+            *permissionRequesters,
+        )
 
         mapFragment.updateForgroundColor(strikeColorHandler.lineColor)
 
@@ -488,8 +488,20 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         locationHandler.start()
 
+        if (mapFragment.mapView.isLaidOut) {
+            startDataHandler(mapFragment.mapView)
+        } else {
+            mapFragment.mapView.addOnFirstLayoutListener { thisMapView, _, _, _, _ ->
+                startDataHandler(thisMapView as OwnMapView)
+            }
+        }
+    }
+
+    private fun startDataHandler(mapView: OwnMapView) {
+        dataHandler.updateGrid(mapView, dataHandler.autoGridSize)
+        strikeListOverlay.onZoom(ZoomEvent(mapView, mapView.zoomLevelDouble))
+
         dataHandler.start()
-        dataHandler.updateAutoGridSize(mapFragment.zoomLevel)
     }
 
     private fun enableDataUpdates() {
@@ -509,6 +521,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             requestUpdates(alertHandler.dataEventConsumer)
             requestUpdates(historyController.dataConsumer)
             requestUpdates(binding.histogramView.dataConsumer)
+            requestUpdates(binding.regionView.dataConsumer)
         }
     }
 
@@ -561,6 +574,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         Log.v(LOG_TAG, "Main.onStop()")
 
         mapFragment.mapView.overlays.removeAll(setOf(fadeOverlay, ownLocationOverlay, strikeListOverlay))
+        mapFragment.mapView.removeMapListener(binding.regionView)
         mapFragment.mapView.removeMapListener(ownLocationOverlay)
         mapFragment.mapView.removeMapListener(strikeListOverlay)
         mapFragment.mapView.removeMapListener(dataHandler)
@@ -584,186 +598,26 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         strikeListOverlay.clear()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        Log.v(
-            LOG_TAG,
-            "Main.onRequestPermissionsResult() $requestCode - ${permissions.joinToString()} - ${grantResults.joinToString { it.toString() }}"
-        )
-        val providerRelation = LocationProviderRelation.byOrdinal[requestCode]
-        if (providerRelation != null) {
-            val providerName = providerRelation.providerName
-            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.i(LOG_TAG, "$providerName permission has now been granted.")
-                val editor = preferences.edit()
-                editor.put(PreferenceKey.LOCATION_MODE, providerName)
-                editor.apply()
-                locationHandler.update(preferences)
-            } else {
-                Log.i(LOG_TAG, "$providerName permission was NOT granted.")
-                locationHandler.shutdown()
-            }
-        } else {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    private fun requestLocationPermissions(sharedPreferences: SharedPreferences) {
-        val locationProviderName = sharedPreferences.get(PreferenceKey.LOCATION_MODE, PASSIVE_PROVIDER)
-        val permission = when (locationProviderName) {
-            PASSIVE_PROVIDER, GPS_PROVIDER -> ACCESS_FINE_LOCATION
-            NETWORK_PROVIDER -> ACCESS_COARSE_LOCATION
-            else -> null
-        }
-
-        if (permission != null) {
-            val requiresBackgroundPermission = if (isAtLeast(Build.VERSION_CODES.Q)) {
-                backgroundAlertEnabled && checkSelfPermission(ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED
-            } else {
-                false
-            }
-
-            val checkSelfPermission = checkSelfPermission(permission)
-            val requiresPermission = checkSelfPermission != PackageManager.PERMISSION_GRANTED
-            Log.v(
-                LOG_TAG,
-                "Main.requestLocationPermissions() self permission: $checkSelfPermission, required: $requiresPermission"
-            )
-
-            val requestCode = (LocationProviderRelation.byProviderName[locationProviderName]?.ordinal ?: Int.MAX_VALUE)
-            if (requiresPermission) {
-                requestPermission(
-                    permission, requestCode,
-                    R.string.location_permission_required
-                )
-            } else {
-                if (requiresBackgroundPermission && isAtLeast(Build.VERSION_CODES.Q)) {
-                    val locationText = this.resources.getString(R.string.location_permission_background_disclosure)
-                    AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
-                        .setPositiveButton(android.R.string.ok) { dialog, count ->
-                            requestPermission(
-                                ACCESS_BACKGROUND_LOCATION,
-                                requestCode,
-                                R.string.location_permission_background_required
-                            )
-                        }.show()
-                }
-            }
-        }
-    }
-
-
-    @TargetApi(Build.VERSION_CODES.M)
-    private fun requestPermission(permission: String, requestCode: Int, permissionRequiredStringId: Int) {
-        val shouldShowPermissionRationale = shouldShowRequestPermissionRationale(permission)
-        val permissionIsGranted = checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
-        Log.v(
-            LOG_TAG,
-            "Main.requestPermission() permission: $permission, isGranted: $permissionIsGranted, shouldShowRationale: ${!shouldShowPermissionRationale}"
-        )
-
-        if (!permissionIsGranted) {
-            if (shouldShowPermissionRationale) {
-                requestPermissionsAfterDialog(permissionRequiredStringId, permission, requestCode)
-            } else {
-                requestPermissions(arrayOf(permission), requestCode)
-            }
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    private fun requestPermissionsAfterDialog(
-        dialogTextResource: Int,
-        permission: String,
+    override fun onRequestPermissionsResult(
         requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray,
     ) {
         Log.v(
             LOG_TAG,
-            "Main.requestPermissionsAfterDialog() permission: $permission, dialogResource: $dialogTextResource, requestCode: $requestCode"
+            "Main.onRequestPermissionResult() permissions: ${permissions.joinToString(",")}, requestCode: $requestCode",
         )
-
-        val locationText = resources.getString(dialogTextResource)
-        AlertDialog.Builder(this).setMessage(locationText).setCancelable(false)
-            .setPositiveButton(android.R.string.ok) { dialog, count ->
-                Log.v(LOG_TAG, "Main.requestPermissionsAfterDialog() clicked OK, before request")
-                requestPermissions(arrayOf(permission), requestCode)
-                Log.v(LOG_TAG, "Main.requestPermissionsAfterDialog() clicked OK, after request")
-            }.show()
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    private fun requestWakeupPermissions(context: Context) {
-        Log.v(LOG_TAG, "requestWakeupPermissions() background alerts: $backgroundAlertEnabled")
-
-        if (backgroundAlertEnabled) {
-            val pm = context.getSystemService(POWER_SERVICE)
-            if (pm is PowerManager) {
-                val packageName = context.packageName
-                Log.v(LOG_TAG, "requestWakeupPermissions() package name $packageName")
-                if (!pm.isIgnoringBatteryOptimizations(packageName)) {
-                    val locationText = context.resources.getString(R.string.open_battery_optimiziation)
-
-                    val dialogClickListener = DialogInterface.OnClickListener { _, which ->
-                        when (which) {
-                            DialogInterface.BUTTON_POSITIVE -> {
-                                Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    val allowIgnoreBatteryOptimization =
-                                        context.checkSelfPermission(REQUEST_IGNORE_BATTERY_OPTIMIZATIONS) == PackageManager.PERMISSION_GRANTED
-                                    val intent = if (allowIgnoreBatteryOptimization) {
-                                        Intent(
-                                            Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                                            Uri.parse("package:$packageName")
-                                        )
-                                    } else {
-                                        Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-                                    }
-
-                                    try {
-                                        startActivity(intent)
-                                    } catch (e: AndroidRuntimeException) {
-                                        Toast.makeText(baseContext, R.string.background_query_toast, Toast.LENGTH_LONG)
-                                            .show()
-                                        Log.e(
-                                            LOG_TAG,
-                                            "requestWakeupPermissions() could not open battery optimization settings",
-                                            e
-                                        )
-                                    }
-                                }
-                            }
-
-                            DialogInterface.BUTTON_NEGATIVE -> {
-                                preferences.edit().apply {
-                                    putString(PreferenceKey.BACKGROUND_QUERY_PERIOD.toString(), 0.toString())
-                                    apply()
-                                }
-                            }
-                        }
-                    }
-
-                    AlertDialog.Builder(this).setMessage(locationText)
-                        .setPositiveButton(android.R.string.yes, dialogClickListener)
-                        .setNegativeButton(android.R.string.no, dialogClickListener).show()
-                }
-            } else {
-                Log.w(LOG_TAG, "requestWakeupPermissions() could not get PowerManager")
-            }
+        for (requester in permissionRequesters) {
+            val handled = requester.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            if (handled) return
         }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private enum class LocationProviderRelation(val providerName: String) {
-        GPS(GPS_PROVIDER), PASSIVE(PASSIVE_PROVIDER), NETWORK(NETWORK_PROVIDER);
-
-        companion object {
-            val byProviderName: Map<String, LocationProviderRelation> =
-                entries.groupBy { it.providerName }.mapValues { it.value.first() }
-            val byOrdinal: Map<Int, LocationProviderRelation> =
-                entries.groupBy { it.ordinal }.mapValues { it.value.first() }
-        }
-    }
-
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+    override fun onKeyUp(
+        keyCode: Int,
+        event: KeyEvent?,
+    ): Boolean {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             Log.v(LOG_TAG, "Main.onKeyUp(KEYCODE_MENU)")
             showPopupMenu(binding.upperRow)
@@ -772,7 +626,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         return super.onKeyUp(keyCode, event)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        key: PreferenceKey,
+    ) {
         when (key) {
             PreferenceKey.COLOR_SCHEME -> {
                 strikeListOverlay.refresh()
@@ -794,8 +651,23 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 }
             }
 
+            PreferenceKey.ALERT_ENABLED -> {
+                val alertEnabled = sharedPreferences.get(key, false)
+                if (!alertEnabled) {
+                    backgroundAlertEnabled = false
+                }
+            }
+
             PreferenceKey.BACKGROUND_QUERY_PERIOD -> {
-                backgroundAlertEnabled = sharedPreferences.get(key, "0").toInt() > 0
+                val alertEnabled = sharedPreferences.get(PreferenceKey.ALERT_ENABLED, false)
+                backgroundAlertEnabled = alertEnabled && sharedPreferences.get(key, "0").toInt() > 0
+                binding.backgroundAlerts.isVisible = backgroundAlertEnabled
+            }
+
+            PreferenceKey.GRID_SIZE -> {
+                val gridSizeString = sharedPreferences.get(key, AUTO_GRID_SIZE_VALUE)
+                val autoGridSize = gridSizeString == AUTO_GRID_SIZE_VALUE
+                dataHandler.updateGrid(mapFragment.mapView, autoGridSize)
             }
 
             else -> {}
@@ -813,7 +685,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         statusText += "/"
         val intervalDuration = strikeListOverlay.parameters.intervalDuration
         statusText += resources.getQuantityString(R.plurals.minute, intervalDuration, intervalDuration)
-        statusText += " " + runStatus
+        statusText += " $runStatus"
 
         statusComponent.setText(statusText)
     }
@@ -835,12 +707,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         val popupMenu =
             MainPopupMenu(this, anchor, preferences, dataHandler, alertHandler, buildVersion, changeLogComponent)
         popupMenu.showPopupMenu()
-    }
-
-    private fun hideActionBar() {
-        if (isAtLeast(Build.VERSION_CODES.HONEYCOMB)) {
-            actionBar?.hide()
-        }
     }
 
     companion object {

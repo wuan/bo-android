@@ -1,0 +1,298 @@
+package org.blitzortung.android.settings
+
+import android.content.Context
+import android.content.Context.LOCATION_SERVICE
+import android.content.Intent
+import android.content.SharedPreferences
+import android.location.LocationManager
+import android.media.RingtoneManager
+import android.net.Uri
+import android.os.Bundle
+import android.provider.Settings
+import android.util.Log
+import android.view.View
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.edit
+import androidx.core.net.toUri
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.preference.EditTextPreference
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SeekBarPreference
+import dagger.android.support.AndroidSupportInjection
+import java.util.Locale
+import javax.inject.Inject
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
+import org.blitzortung.android.app.R
+import org.blitzortung.android.app.view.MessageListPreference
+import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
+import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.get
+import org.blitzortung.android.data.provider.DataProviderType
+import org.blitzortung.android.location.LocationHandler
+
+class SettingsFragment :
+    PreferenceFragmentCompat(),
+    OnSharedPreferenceChangeListener {
+    @set:Inject
+    internal lateinit var preferences: SharedPreferences
+
+    private val originalSummaries = mutableMapOf<PreferenceKey, Int>()
+
+    // Modern Activity Result API for ringtone picker
+    private val ringtonePickerLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            result.data?.let { data ->
+                val ringtone = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI, Uri::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+                }
+                if (::preferences.isInitialized) {
+                    preferences.edit(commit = true) {
+                        putString(
+                            PreferenceKey.ALERT_SOUND_SIGNAL.toString(),
+                            ringtone?.toString() ?: "",
+                        )
+                    }
+                } else {
+                    Log.e(LOG_TAG, "SharedPreferences not initialized when handling ringtone result")
+                }
+            }
+        }
+
+    override fun onAttach(context: Context) {
+        Log.v(LOG_TAG, "SettingsFragment.onAttach()")
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
+
+    override fun onCreatePreferences(
+        savedInstanceState: Bundle?,
+        rootKey: String?,
+    ) {
+        Log.v(LOG_TAG, "SettingsFragment.onCreatePreferences()")
+
+        addPreferencesFromResource(R.xml.preferences)
+
+        if (::preferences.isInitialized) {
+            preferences.registerOnSharedPreferenceChangeListener(this)
+
+            configureDataSourcePreferences(preferences)
+            configureLocationProviderPreferences(preferences)
+            configureOwnLocationSizePreference(preferences)
+            configureAlertEnabledPreference(preferences)
+
+            // Initial summary update for EditTextPreferences
+            updateEditTextPreferenceSummaries()
+        } else {
+            Log.e(LOG_TAG, "SharedPreferences not initialized in SettingsFragment.onCreatePreferences")
+        }
+    }
+
+    private fun updateEditTextPreferenceSummaries() {
+        listOf(
+            PreferenceKey.USERNAME,
+            PreferenceKey.PASSWORD,
+            PreferenceKey.SERVICE_URL,
+            PreferenceKey.LOCATION_LONGITUDE,
+            PreferenceKey.LOCATION_LATITUDE,
+            PreferenceKey.ALERT_SOUND_SIGNAL,
+        ).forEach { key ->
+            findPreference<Preference>(key)?.let { updatePreferenceSummary(it) }
+        }
+    }
+
+    private fun updatePreferenceSummary(preference: Preference) {
+        val keyString = preference.key
+        val preferenceKey = PreferenceKey.fromString(keyString)
+
+        val currentValue = preferences.getString(preference.key, null)?.let { extractURITitle(it) }
+        val originalSummary = originalSummaries[preferenceKey]?.let { getString(it) } ?: ""
+        val undefinedSummary = context?.getString(R.string.undefined)
+
+        if (preferenceKey == PreferenceKey.PASSWORD) {
+            preference.summary =
+                if (!currentValue.isNullOrEmpty()) {
+                    "********"
+                } else {
+                    originalSummary
+                }
+        } else if (originalSummary.contains("%s")) {
+            preference.summary = String.format(originalSummary, currentValue ?: "")
+        } else {
+            if (!currentValue.isNullOrEmpty()) {
+                val summary = if (originalSummary.isEmpty()) "" else "$originalSummary: "
+                preference.summary = "$summary$currentValue"
+            } else {
+                preference.summary = originalSummary.ifEmpty { undefinedSummary }
+            }
+        }
+    }
+
+    private fun extractURITitle(value: String): String =
+        if (RingtoneManager.isDefault(value.toUri())) {
+            context?.getString(R.string.default_alarm_signal).toString()
+        } else {
+            value.toUri().getQueryParameter("title") ?: value
+        }
+
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
+        super.onViewCreated(view, savedInstanceState)
+        val recyclerView = listView
+        ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+    }
+
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        key: PreferenceKey,
+    ) {
+        when (key) {
+            PreferenceKey.DATA_SOURCE -> configureDataSourcePreferences(sharedPreferences)
+            PreferenceKey.LOCATION_MODE -> {
+                val provider = configureLocationProviderPreferences(sharedPreferences)
+                val context = this.context
+                if (context != null && provider != LocationHandler.MANUAL_PROVIDER &&
+                    !(context.getSystemService(LOCATION_SERVICE) as LocationManager).isProviderEnabled(provider)
+                ) {
+                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                }
+            }
+
+            PreferenceKey.SHOW_LOCATION -> configureOwnLocationSizePreference(sharedPreferences)
+            PreferenceKey.ALERT_ENABLED -> configureAlertEnabledPreference(sharedPreferences)
+            PreferenceKey.USERNAME,
+            PreferenceKey.PASSWORD,
+            PreferenceKey.SERVICE_URL,
+            PreferenceKey.LOCATION_LONGITUDE,
+            PreferenceKey.LOCATION_LATITUDE,
+            PreferenceKey.ALERT_SOUND_SIGNAL,
+                -> {
+                findPreference<Preference>(key)?.let { updatePreferenceSummary(it) }
+            }
+
+            else -> {
+                // No action needed for other keys
+            }
+        }
+    }
+
+    private fun configureAlertEnabledPreference(sharedPreferences: SharedPreferences) {
+        enableNotifications(sharedPreferences.get(PreferenceKey.ALERT_ENABLED, false))
+    }
+
+    private fun configureOwnLocationSizePreference(sharedPreferences: SharedPreferences) {
+        findPreference<SeekBarPreference>(PreferenceKey.OWN_LOCATION_SIZE.toString())?.isEnabled =
+            sharedPreferences.get(PreferenceKey.SHOW_LOCATION, false)
+    }
+
+    private fun configureDataSourcePreferences(sharedPreferences: SharedPreferences): DataProviderType {
+        val providerTypeString = sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.HTTP.toString())
+        val providerType = DataProviderType.valueOf(providerTypeString.uppercase(Locale.getDefault()))
+
+        when (providerType) {
+            DataProviderType.HTTP -> enableBlitzortungHttpMode()
+            DataProviderType.RPC -> enableAppServiceMode()
+        }
+        return providerType
+    }
+
+    private fun configureLocationProviderPreferences(sharedPreferences: SharedPreferences): String {
+        val locationProvider = sharedPreferences.get(PreferenceKey.LOCATION_MODE, LocationManager.NETWORK_PROVIDER)
+        enableManualLocationMode(locationProvider == LocationHandler.MANUAL_PROVIDER)
+        return locationProvider
+    }
+
+    private fun enableAppServiceMode() {
+        findPreference<ListPreference>(PreferenceKey.GRID_SIZE)?.isEnabled = true
+        findPreference<EditTextPreference>(PreferenceKey.SERVICE_URL)?.isEnabled = true
+        findPreference<EditTextPreference>(PreferenceKey.USERNAME)?.isEnabled = false
+        findPreference<EditTextPreference>(PreferenceKey.PASSWORD)?.isEnabled = false
+    }
+
+    private fun enableBlitzortungHttpMode() {
+        findPreference<ListPreference>(PreferenceKey.GRID_SIZE)?.isEnabled = false
+        findPreference<EditTextPreference>(PreferenceKey.SERVICE_URL)?.isEnabled = false
+        findPreference<EditTextPreference>(PreferenceKey.USERNAME)?.isEnabled = true
+        findPreference<EditTextPreference>(PreferenceKey.PASSWORD)?.isEnabled = true
+    }
+
+    private fun enableManualLocationMode(enabled: Boolean) {
+        findPreference<EditTextPreference>(PreferenceKey.LOCATION_LONGITUDE)?.isEnabled = enabled
+        findPreference<EditTextPreference>(PreferenceKey.LOCATION_LATITUDE)?.isEnabled = enabled
+    }
+
+    private fun enableNotifications(enabled: Boolean) {
+        findPreference<MessageListPreference>(PreferenceKey.BACKGROUND_QUERY_PERIOD)?.isEnabled = enabled
+        findPreference<ListPreference>(PreferenceKey.ALERT_NOTIFICATION_DISTANCE_LIMIT)?.isEnabled = enabled
+        findPreference<ListPreference>(PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT)?.isEnabled = enabled
+        findPreference<Preference>(PreferenceKey.ALERT_SOUND_SIGNAL)?.isEnabled = enabled
+        findPreference<SeekBarPreference>(PreferenceKey.ALERT_VIBRATION_SIGNAL)?.isEnabled = enabled
+        findPreference<EditTextPreference>(PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME)?.isEnabled = enabled
+    }
+
+    override fun onPreferenceTreeClick(preference: Preference): Boolean =
+        if (preference.key == PreferenceKey.ALERT_SOUND_SIGNAL.toString()) {
+            val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
+            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION)
+            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
+            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true)
+            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI, Settings.System.DEFAULT_NOTIFICATION_URI)
+
+            val existingValue: String? =
+                if (::preferences.isInitialized) {
+                    preferences.getString(PreferenceKey.ALERT_SOUND_SIGNAL, null)
+                } else {
+                    Log.e(LOG_TAG, "SharedPreferences not initialized in onPreferenceTreeClick")
+                    null
+                }
+
+            if (existingValue != null) {
+                if (existingValue.isEmpty()) {
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, null as Uri?)
+                } else {
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, existingValue.toUri())
+                }
+            } else {
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Settings.System.DEFAULT_NOTIFICATION_URI)
+            }
+
+            ringtonePickerLauncher.launch(intent)
+            true
+        } else {
+            super.onPreferenceTreeClick(preference)
+        }
+}
+
+fun <T : Preference> PreferenceFragmentCompat.findPreference(key: PreferenceKey): T? = findPreference<T>(key.toString())
+
+fun SharedPreferences.getString(
+    key: PreferenceKey,
+    defValue: String?,
+): String? = getString(key.toString(), defValue)
+
+fun SharedPreferences.getInt(
+    key: PreferenceKey,
+    defValue: Int,
+): Int = getInt(key.toString(), defValue)
+
+fun SharedPreferences.Editor.putString(
+    key: PreferenceKey,
+    value: String?,
+): SharedPreferences.Editor = putString(key.toString(), value)
+
+fun SharedPreferences.Editor.putInt(
+    key: PreferenceKey,
+    value: Int,
+): SharedPreferences.Editor = putInt(key.toString(), value)

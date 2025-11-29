@@ -26,6 +26,11 @@ import android.location.Location
 import android.os.Handler
 import android.util.Log
 import android.widget.Toast
+import java.util.Locale
+import java.util.concurrent.atomic.AtomicLong
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlin.properties.Delegates
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
@@ -38,9 +43,10 @@ import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.LocalData
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.DataEvent
-import org.blitzortung.android.data.provider.result.RequestStartedEvent
-import org.blitzortung.android.data.provider.result.ResultEvent
-import org.blitzortung.android.data.provider.result.StatusEvent
+import org.blitzortung.android.data.provider.result.NoData
+import org.blitzortung.android.data.provider.result.RequestStarted
+import org.blitzortung.android.data.provider.result.DataReceived
+import org.blitzortung.android.data.provider.result.StatusUpdate
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.protocol.ConsumerContainer
@@ -49,23 +55,19 @@ import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
 import org.osmdroid.util.BoundingBox
-import java.util.Locale
-import java.util.concurrent.atomic.AtomicLong
-import javax.inject.Inject
-import javax.inject.Singleton
-import kotlin.properties.Delegates
 
 @Singleton
-class MainDataHandler @Inject constructor(
+class MainDataHandler
+@Inject
+constructor(
     private val context: Context,
     private val dataProviderFactory: DataProviderFactory,
     private val preferences: SharedPreferences,
     private val handler: Handler,
     private val cache: DataCache,
     private val localData: LocalData,
-    private val updatePeriod: Period
+    private val updatePeriod: Period,
 ) : OnSharedPreferenceChangeListener, Runnable, MapListener {
-
     private var location: Location? = null
 
     @Volatile
@@ -90,21 +92,26 @@ class MainDataHandler @Inject constructor(
 
     private var animationHistory: History? = null
 
-    private var autoGridSize = false
+    var autoGridSize = false
+        private set
 
-    private val dataConsumerContainer = object : ConsumerContainer<DataEvent>() {
-        override fun addedFirstConsumer() {
-            Log.d(LOG_TAG, "MainDataHandler: added first data consumer")
-        }
+    private val dataConsumerContainer =
+        object : ConsumerContainer<DataEvent>(NoData) {
+            override fun addedFirstConsumer() {
+                Log.d(LOG_TAG, "MainDataHandler: added first data consumer")
+            }
 
-        override fun removedLastConsumer() {
-            Log.d(LOG_TAG, "MainDataHandler: removed last data consumer")
+            override fun removedLastConsumer() {
+                Log.d(LOG_TAG, "MainDataHandler: removed last data consumer")
+            }
         }
-    }
 
     val locationEventConsumer: (LocationEvent) -> Unit = { locationEvent ->
-        Log.v(LOG_TAG, "AlertView received location ${locationEvent.location}")
-        location = locationEvent.location
+        Log.v(LOG_TAG, "AlertView received location ${locationEvent}")
+        location = locationEvent.location()
+        if (location != null) {
+            updateData()
+        }
     }
 
     private var dataMode = DataMode()
@@ -142,7 +149,7 @@ class MainDataHandler @Inject constructor(
     val hasConsumers: Boolean
         get() = dataConsumerContainer.isEmpty
 
-    fun updateData(updateTargets: Set<DataChannel> = DEFAULT_DATA_CHANNELS) {
+    fun updateData() {
         if (updatesEnabled) {
             sendEvent(REQUEST_STARTED_EVENT)
 
@@ -191,22 +198,29 @@ class MainDataHandler @Inject constructor(
         }
 
     private fun sendEvent(dataEvent: DataEvent) {
-        if (dataEvent is ResultEvent) {
+        if (dataEvent is DataReceived) {
             localData.storeResult(dataEvent.gridParameters)
         }
-        if (dataEvent is ResultEvent && dataEvent.flags.storeResult) {
+        if (dataEvent is DataReceived && dataEvent.flags.storeResult) {
             dataConsumerContainer.storeAndBroadcast(dataEvent)
         } else {
             dataConsumerContainer.broadcast(dataEvent)
         }
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        key: PreferenceKey,
+    ) {
         when (key) {
             PreferenceKey.DATA_SOURCE, PreferenceKey.SERVICE_URL -> {
                 val providerTypeString =
-                    sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.RPC.toString())
-                val providerType = DataProviderType.valueOf(providerTypeString.uppercase(Locale.getDefault()))
+                    sharedPreferences.get(
+                        PreferenceKey.DATA_SOURCE,
+                        DataProviderType.RPC.toString(),
+                    )
+                val providerType =
+                    DataProviderType.valueOf(providerTypeString.uppercase(Locale.getDefault()))
                 val dataProvider = dataProviderFactory.getDataProviderForType(providerType)
                 this.dataProvider = dataProvider
 
@@ -247,10 +261,11 @@ class MainDataHandler @Inject constructor(
             }
 
             PreferenceKey.HISTORIC_TIMESTEP -> {
-                history = history.copy(
-                    timeIncrement =
-                    sharedPreferences.get(key, "30").toInt()
-                )
+                history =
+                    history.copy(
+                        timeIncrement =
+                            sharedPreferences.get(key, "30").toInt(),
+                    )
             }
 
             PreferenceKey.REGION -> {
@@ -266,14 +281,15 @@ class MainDataHandler @Inject constructor(
 
             PreferenceKey.ANIMATION_INTERVAL_DURATION -> {
                 val value = Integer.parseInt(sharedPreferences.get(key, "4"))
-                animationHistory = when (value) {
-                    2 -> History(5, 120, false)
-                    4 -> History(10, 240, false)
-                    6 -> History(10, 360, false)
-                    12 -> History(20, 720, false)
-                    24 -> History(30, 1440, true)
-                    else -> History(10, 240, false)
-                }
+                animationHistory =
+                    when (value) {
+                        2 -> History(5, 120, false)
+                        4 -> History(10, 240, false)
+                        6 -> History(10, 360, false)
+                        12 -> History(20, 720, false)
+                        24 -> History(30, 1440, true)
+                        else -> History(10, 240, false)
+                    }
                 if (mode == Mode.ANIMATION) {
                     history = animationHistory!!
                     cache.clear()
@@ -294,15 +310,16 @@ class MainDataHandler @Inject constructor(
     }
 
     private fun showBlitzortungProviderWarning() =
-        Toast.makeText(context, R.string.provider_warning, Toast.LENGTH_LONG).show()
+        CustomToast.makeText(context, R.string.provider_warning, Toast.LENGTH_LONG).show()
 
     private fun updateProviderSpecifics() {
         val providerType = dataProvider!!.type
 
-        dataMode = when (providerType) {
-            DataProviderType.RPC -> DataMode(grid = true, region = false)
-            DataProviderType.HTTP -> DataMode(grid = false, region = true)
-        }
+        dataMode =
+            when (providerType) {
+                DataProviderType.RPC -> DataMode(grid = true, region = false)
+                DataProviderType.HTTP -> DataMode(grid = false, region = true)
+            }
     }
 
     fun toggleExtendedMode() {
@@ -311,7 +328,7 @@ class MainDataHandler @Inject constructor(
         if (!isRealtime) {
             val dataChannels = HashSet<DataChannel>()
             dataChannels.add(DataChannel.STRIKES)
-            updateData(dataChannels)
+            updateData()
         }
     }
 
@@ -354,12 +371,13 @@ class MainDataHandler @Inject constructor(
                 }
 
                 if (updateTargets.isNotEmpty()) {
-                    updateData(updateTargets)
+                    updateData()
                 }
 
                 if (parameters.isRealtime()) {
-                    val statusString = "" + updatePeriod.getCurrentUpdatePeriod(currentTime, period) + "/" + period
-                    broadcastEvent(StatusEvent(statusString))
+                    val statusString =
+                        "" + updatePeriod.getCurrentUpdatePeriod(currentTime, period) + "/" + period
+                    broadcastEvent(StatusUpdate(statusString))
                     // Schedule the next update
                     handler.postDelayed(this, 1000)
                 }
@@ -367,9 +385,12 @@ class MainDataHandler @Inject constructor(
 
             Mode.ANIMATION -> {
                 parameters = parameters.animationStep(history)
-                val delay = if (parameters.isRealtime()) {
-                    if (animationCycleSleepDuration > 0) animationCycleSleepDuration else animationSleepDuration
-                } else animationSleepDuration
+                val delay =
+                    if (parameters.isRealtime()) {
+                        if (animationCycleSleepDuration > 0) animationCycleSleepDuration else animationSleepDuration
+                    } else {
+                        animationSleepDuration
+                    }
                 handler.postDelayed(this, delay)
                 updateUsingCache()
             }
@@ -404,58 +425,59 @@ class MainDataHandler @Inject constructor(
     }
 
     companion object {
-        val REQUEST_STARTED_EVENT = RequestStartedEvent()
+        val REQUEST_STARTED_EVENT = RequestStarted()
         val DEFAULT_DATA_CHANNELS = setOf(DataChannel.STRIKES)
     }
 
     override fun onScroll(event: ScrollEvent?): Boolean {
-        return if (event != null) {
-            val mapView = event.source as OwnMapView
-            val updated = updateLocation(mapView.boundingBox)
-            ensureUpdate(updated, mapView)
-        } else {
-            false
-        }
+        return event?.let { updateGrid(event.source as OwnMapView, this.autoGridSize) } ?: false
     }
 
     override fun onZoom(event: ZoomEvent?): Boolean {
-        return if (event != null) {
-            val mapView = event.source as OwnMapView
-            val updateAutoGridSize = updateAutoGridSize(event.zoomLevel)
-            val updateLocation = updateLocation(mapView.boundingBox, updateAutoGridSize)
-            val updated = updateLocation || updateAutoGridSize
-            ensureUpdate(updated, mapView)
-        } else {
-            false
-        }
+        return event?.let { updateGrid(event.source as OwnMapView, this.autoGridSize) } ?: false
     }
 
-    private fun ensureUpdate(updated: Boolean, mapView: OwnMapView): Boolean {
-        if (updated) {
+    fun updateGrid(
+        mapView: OwnMapView,
+        autoGridSize: Boolean,
+    ): Boolean {
+        val updatedAutoGridSize = updateAutoGridSize(mapView.zoomLevelDouble, autoGridSize)
+        val updatedLocation = mapView.boundingBox?.let { updateLocation(it, updatedAutoGridSize) } ?: false
+
+        if (updatedLocation || updatedAutoGridSize) {
+            Log.v(LOG_TAG, "MainDataHandler.updateGrid() location: $updatedLocation gridSize: $updatedAutoGridSize")
             if (mapView.isAnimating) {
                 addUpdateAfterAnimationListener(mapView)
             } else {
+                Log.v(LOG_TAG, "MainDataHandler.updateGrid() call updateData()")
                 updateData()
             }
         }
-        return updated
+        return updatedLocation || updatedAutoGridSize
     }
 
-    fun updateLocation(boundingBox: BoundingBox, force: Boolean = false): Boolean = localData.update(boundingBox, force)
+    fun updateLocation(
+        boundingBox: BoundingBox,
+        force: Boolean = false,
+    ): Boolean = localData.update(boundingBox, force)
 
-    fun updateAutoGridSize(zoomLevel: Double): Boolean =
+    fun updateAutoGridSize(
+        zoomLevel: Double,
+        autoGridSize: Boolean,
+    ): Boolean =
         if (autoGridSize) {
-            val gridSize = when {
-                zoomLevel >= 8f -> 5000
-                zoomLevel in 5.5f..8f -> 10000
-                zoomLevel in 4f..5.5f -> 25000
-                zoomLevel in 2f..4f -> 50000
-                else -> 100000
-            }
+            val gridSize =
+                when {
+                    zoomLevel >= 7.5f -> 5000
+                    zoomLevel in 5f..7.5f -> 10000
+                    zoomLevel in 3.5f..5f -> 25000
+                    zoomLevel in 2.5f..3.5f -> 50000
+                    else -> 100000
+                }
             if (parameters.gridSize != gridSize) {
                 Log.v(
                     LOG_TAG,
-                    "MainDataHandler.updateAutoGridSize() $zoomLevel : ${parameters.gridSize} -> $gridSize"
+                    "MainDataHandler.updateAutoGridSize() $zoomLevel : ${parameters.gridSize} -> $gridSize",
                 )
                 parameters = parameters.copy(gridSize = gridSize)
                 true
@@ -474,25 +496,25 @@ class MainDataHandler @Inject constructor(
         }
     }
 
-    private val animatorListener = object : AnimatorListener {
-        override fun onAnimationStart(animation: Animator) {
-        }
+    private val animatorListener =
+        object : AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {
+            }
 
-        override fun onAnimationEnd(animation: Animator) {
-            this@MainDataHandler.updateData()
-        }
+            override fun onAnimationEnd(animation: Animator) {
+                this@MainDataHandler.updateData()
+            }
 
-        override fun onAnimationCancel(animation: Animator) {
-            this@MainDataHandler.updateData()
-        }
+            override fun onAnimationCancel(animation: Animator) {
+                this@MainDataHandler.updateData()
+            }
 
-        override fun onAnimationRepeat(animation: Animator) {
+            override fun onAnimationRepeat(animation: Animator) {
+            }
         }
-    }
 
     fun calculateTotalCacheSize(): CacheSize = cache.calculateTotalSize()
 }
 
 internal const val DEFAULT_GRID_SIZE = 10000
 internal const val AUTO_GRID_SIZE_VALUE = "auto"
-

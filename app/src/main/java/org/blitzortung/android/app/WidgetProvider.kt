@@ -141,4 +141,3 @@ class WidgetProvider : AppWidgetProvider() {
         return views
     }
 }
-

@@ -1,38 +1,39 @@
 package org.blitzortung.android.data.provider.standard
 
+import java.net.URL
+import kotlin.math.max
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
+import org.blitzortung.android.data.provider.LOCAL_REGION_GRID_SIZE_THRESHOLD
 import org.blitzortung.android.jsonrpc.JsonRpcClient
 import org.blitzortung.android.jsonrpc.JsonRpcResponse
-import java.net.URL
 
 class JsonRpcData(
     private val client: JsonRpcClient,
     private val serviceUrl: URL,
 ) {
-
     fun requestData(parameters: Parameters): JsonRpcResponse {
         val intervalDuration = parameters.intervalDuration
         val intervalOffset = parameters.intervalOffset
         val gridSize = parameters.gridSize
         val countThreshold = parameters.countThreshold
         val region = parameters.region
-        val localReference = parameters.localReference
-        val dataArea = parameters.dataArea
+        val localReference = parameters.dataArea
 
         return when (region) {
             GLOBAL_REGION -> {
-                val jsonRpcResponse: JsonRpcResponse = client.call(
-                    serviceUrl,
-                    "get_global_strikes_grid",
-                    intervalDuration,
-                    gridSize,
-                    intervalOffset,
-                    countThreshold
-                )
+                val jsonRpcResponse: JsonRpcResponse =
+                    client.call(
+                        serviceUrl,
+                        "get_global_strikes_grid",
+                        intervalDuration,
+                        max(gridSize, LOCAL_REGION_GRID_SIZE_THRESHOLD),
+                        intervalOffset,
+                        countThreshold,
+                    )
                 with(
-                    jsonRpcResponse
+                    jsonRpcResponse,
                 ) {
                     data.put("y1", 0.0)
                     data.put("x0", 0.0)
@@ -50,7 +51,7 @@ class JsonRpcData(
                     intervalDuration,
                     intervalOffset,
                     countThreshold,
-                    dataArea,
+                    localReference.scale,
                 )
             }
 
@@ -62,10 +63,9 @@ class JsonRpcData(
                     gridSize,
                     intervalOffset,
                     region,
-                    countThreshold
+                    countThreshold,
                 )
             }
         }
-
     }
 }

@@ -24,7 +24,6 @@ import javax.inject.Singleton
 
 @Singleton
 open class StrikeColorHandler @Inject constructor(preferences: SharedPreferences) : ColorHandler(preferences) {
-
     private val streetmapColors = mutableMapOf<IntArray, IntArray>()
 
     override fun getColors(target: ColorTarget): IntArray {

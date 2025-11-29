@@ -1,17 +1,20 @@
 package org.blitzortung.android.jsonrpc
 
 import io.mockk.MockKAnnotations
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Test
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import java.net.*
+import java.net.HttpURLConnection
+import java.net.URL
+import java.net.URLConnection
+import java.net.URLStreamHandler
+import java.net.URLStreamHandlerFactory
 import java.util.zip.GZIPOutputStream
-
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Test
 
 class HttpServiceClientDefaultTest {
     private lateinit var uut: HttpServiceClientDefault
@@ -47,8 +50,8 @@ class HttpServiceClientDefaultTest {
                 Pair("Content-Type", "text/json"),
                 Pair("Content-Length", "${data.length}"),
                 Pair("User-Agent", "bo-android-foo"),
-                Pair("Accept-Encoding", "gzip")
-            )
+                Pair("Accept-Encoding", "gzip"),
+            ),
         )
 
         assertThat(handler.connection.outputStream.toString("UTF-8")).isEqualTo(data)
@@ -74,7 +77,9 @@ class HttpServiceClientDefaultTest {
     }
 }
 
-class MockURLStreamHandler : URLStreamHandler(), URLStreamHandlerFactory {
+class MockURLStreamHandler :
+    URLStreamHandler(),
+    URLStreamHandlerFactory {
     var response: ByteArray = ByteArray(0)
     var responseHeaders = mutableMapOf<String, String>()
 
@@ -89,45 +94,37 @@ class MockURLStreamHandler : URLStreamHandler(), URLStreamHandlerFactory {
     }
 
     // *** URLStreamHandlerFactory
-    override fun createURLStreamHandler(protocol: String?): URLStreamHandler {
-        return this
-    }
+    override fun createURLStreamHandler(protocol: String?): URLStreamHandler = this
 }
 
 class MockHttpURLConnection(
     val url: URL?,
     private val responseHeaders: MutableMap<String, String>,
     val responseSupplier: () -> ByteArray,
-
-    ) : HttpURLConnection(url) {
-
+) : HttpURLConnection(url) {
     val outputStream = ByteArrayOutputStream()
 
     val headers = mutableMapOf<String?, String?>()
 
     @Throws(IOException::class)
-    override fun getInputStream(): InputStream {
-        return responseSupplier().inputStream()
-    }
+    override fun getInputStream(): InputStream = responseSupplier().inputStream()
 
     @Throws(IOException::class)
     override fun connect() {
     }
 
     override fun disconnect() {}
-    override fun usingProxy(): Boolean {
-        return false
-    }
 
-    override fun getOutputStream(): OutputStream {
-        return outputStream
-    }
+    override fun usingProxy(): Boolean = false
 
-    override fun setRequestProperty(key: String?, value: String?) {
+    override fun getOutputStream(): OutputStream = outputStream
+
+    override fun setRequestProperty(
+        key: String?,
+        value: String?,
+    ) {
         headers.put(key, value)
     }
 
-    override fun getHeaderField(name: String?): String? {
-        return responseHeaders.get(name)
-    }
+    override fun getHeaderField(name: String?): String? = responseHeaders.get(name)
 }

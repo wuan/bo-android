@@ -5,12 +5,6 @@
     android:orientation="vertical"
     android:padding="12dp">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/TextAppearance.AppCompat.Headline"
-        android:text="@string/changelog" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/changelog"
         android:layout_width="match_parent"

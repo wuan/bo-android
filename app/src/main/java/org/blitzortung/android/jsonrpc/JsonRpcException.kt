@@ -18,9 +18,7 @@
 
 package org.blitzortung.android.jsonrpc
 
-
 class JsonRpcException(msg: String) : RuntimeException(msg) {
-
     companion object {
         private const val serialVersionUID = -8108432807261988215L
     }

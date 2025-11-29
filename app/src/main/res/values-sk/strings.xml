@@ -38,13 +38,10 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="layers">Vrstvy</string>
     <string name="preferences">Nastavenia</string>
     <string name="user_settings">Nastavenia užívateľa</string>
-    <string name="username">Prihlasovacie meno</string>
-    <string name="username_summary">Prihlasovacie meno na stránke blitzortung.org</string>
-    <string name="password">Heslo</string>
-    <string name="password_summary">Heslo na stránke blitzortung.org</string>
+    <string name="bo_username">Prihlasovacie meno Blitzortung.org</string>
+    <string name="bo_password">Heslo Blitzortung.org</string>
     <string name="map_settings">Nastavenie mapy</string>
     <string name="map_mode">Mapový podklad</string>
-    <string name="map_mode_summary">Vyberte si satelitnú mapu alebo základnú mapu</string>
     <string name="map_fade">Jas mapy</string>
     <string name="map_fade_summary">Zvýšte jas mapy pre zvýšenie viditeľnosti údajov</string>
 
@@ -60,7 +57,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="color_scheme">Farebná schéma</string>
-    <string name="color_scheme_summary">Zvoľte si farebnú schému pre údaje na mape</string>
 
     <string-array name="map_modes">
         <item>Satelitná mapa</item>
@@ -71,14 +67,10 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
         <item>STREETMAP</item>
     </string-array>
 
-    <string name="show_participants">Zobraziť polohu účastníkov</string>
-    <string name="show_participants_summary">Zobrazenie polohy všetkých staníc na mape (len údaje z Blitzortung.org)
-    </string>
     <string name="show_location">Zobraziť vlastnú polohu</string>
     <string name="show_location_summary">Zobraziť symbol vlastnej polohy na mape</string>
-    <string name="data_settings">Prenos údajov</string>
+    <string name="data_source_settings">Prenos údajov</string>
     <string name="region">Región</string>
-    <string name="region_summary">Vyberte si región korý si prajete sledovať</string>
 
     <string-array name="regions">
         <item>Local</item>
@@ -104,7 +96,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="interval_duration">Časový interval</string>
-    <string name="interval_duration_summary">Časový interval, počas ktorého je zobrazená činnosť bleskov</string>
 
     <string-array name="interval_durations">
         <item>30 minút</item>
@@ -123,7 +114,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="historic_timestep_limit_reached">Bol dosiahnutý 24 hodinový limit</string>
     <string name="historic_timestep">Historický časový krok</string>
-    <string name="historic_timestep_summary">Veľkosť časového kroku pri skúmaní historických údajov</string>
 
     <string-array name="historic_timesteps">
         <item>15 minút</item>
@@ -137,7 +127,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="query_period">Obnovenie údajov</string>
-    <string name="query_period_summary">Frekvencia obnovovania údajov</string>
 
     <string-array name="query_periods">
         <item>20 sekúnd</item>
@@ -157,7 +146,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="grid_size">Veľkosť rastra</string>
-    <string name="grid_size_summary">Veľkosť rastra údajov na mape</string>
 
     <string-array name="grid_sizes">
         <item>auto</item>
@@ -177,7 +165,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="count_threshold">Prah počtu bleskov</string>
-    <string name="count_threshold_summary">Minimálny počet bleskov aby sa zobrazil raster</string>
 
     <string-array name="count_thresholds">
         <item>Vypnuté</item>
@@ -197,8 +184,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
 
     <string name="data_source">Zdroj údajov</string>
-    <string name="data_source_summary">Integrovaný zdroj údajov alebo prístup k údajom blitzortung.org (len pre účastníkov)
-    </string>
 
     <string-array name="data_sources">
         <item>Prednasavené</item>
@@ -223,17 +208,12 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
         <item>manual</item>
     </string-array>
     <string name="location_mode">Poloha</string>
-    <string name="location_mode_summary">Vyberte akým spôsobom chcete zisťovať informáciu o svojej polohe</string>
     <string name="longitude">Zemepisná dĺžka</string>
-    <string name="location_longitude_summary">Ručné zadanie zemepisnej dĺžky</string>
     <string name="latitude">Zemepisná šírka</string>
-    <string name="location_latitude_summary">Ručné zadanie zemepisnej šírky</string>
     <string name="alarm_settings">Nastavenie upozornenia</string>
     <string name="alarm_enabled">Upozornenia povolené</string>
     <string name="alarm_enabled_summary">Kontrolujte sa aktivita bleskov okolo aktuálneho miesta</string>
     <string name="background_query_period">Frekvencia obnovy na pozadí</string>
-    <string name="background_query_period_summary">Ak sú upozornenia povolené: frekvencia dopytu na pozadí, ak chcete byť upozornený na bleskovú aktivitu a aplikácia nie je aktívna
-    </string>
 
     <string-array name="background_query_periods">
         <item>Vypnuté</item>
@@ -261,11 +241,7 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <item name="alarm_notification_id" type="id" />
 
     <string name="notification_distance_limit">Limit vzdialenosti pre oznámenie</string>
-    <string name="notification_distance_limit_summary">Ak je povolené: zobrazí oznámenie, keď je detekovaná aktivita blesku v rámci zvoleného rozsahu
-    </string>
     <string name="signaling_distance_limit">Limit vzdialenosti pre upozornenie</string>
-    <string name="signaling_distance_limit_summary">Ak je povolené: upozorní, keď je detekovaná aktivita blesku v rámci zvoleného rozsahu
-    </string>
 
     <string-array name="direction_names">
         <item>J</item>
@@ -300,10 +276,9 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
         <item>500</item>
     </string-array>
 
-    <string name="signaling_threshold_time">Čas prahu signalizácie</string>
-    <string name="signaling_threshold_time_summary">Pre daný časový rozsah nebude vykonané opätovné upozorenie</string>
+    <string name="signaling_suppression_time">Čas prahu signalizácie</string>
 
-    <string-array name="signaling_threshold_times">
+    <string-array name="signaling_suppression_times">
         <item>Vypnuté</item>
         <item>5 minút</item>
         <item>15 minút</item>
@@ -311,7 +286,7 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
         <item>60 minút</item>
         <item>120 minút</item>
     </string-array>
-    <string-array name="signaling_threshold_time_values">
+    <string-array name="signaling_suppression_time_values">
         <item>0</item>
         <item>5</item>
         <item>15</item>
@@ -322,7 +297,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
 
     <string name="generic_settings">Všeobecné nastavenia</string>
     <string name="measurement_unit">Jednotkový systém</string>
-    <string name="measurement_unit_summary">Vyberte si jednotkový systém (kilometre/míle)</string>
     <string-array name="measurement_units">
         <item>Metrický</item>
         <item>Imperiálny</item>
@@ -333,30 +307,19 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="do_not_sleep">Neuspávať zariadenie</string>
     <string name="do_not_sleep_summary">Neuspávať zariadenie keď je aplikácia otvorená</string>
-    <string name="participants_layer">Polohy účastníkov</string>
-    <string name="own_location_layer">Vlastná poloha</string>
-    <string name="strikes_layer">Blesky</string>
-    <string name="data_settings_summary">Podrobné nastavenia na prenos údajov a zdrojov</string>
-    <string name="map_settings_summary">Nastavenie mapového podkladu a vzhľadu</string>
-    <string name="location_settings_summary">Spôsob zisťovania polohy</string>
-    <string name="alarm_settings_summary">Upozornenia, vzdialenosť a interval</string>
     <string name="alarm_signal_settings">Nastavenie signalizácie upozornenia</string>
     <string name="alarm_audio_signal">Nstavenie zvuku upozornenia</string>
     <string name="alarm_vibration_signal">Trvanie vibrácii upozorenia</string>
-    <string name="alarm_audio_signal_summary">Vyberte zvuk pre signalizáciu upozornenia</string>
     <string name="alarm_vibration_signal_summary">Vyberte dĺžku vibrácie pre upozornenia</string>
     <string name="location_provider_not_available">Poskytovateľ polohy \'%s\' nie je dostupný</string>
     <string name="location_provider_disabled">Poskytovateľ polohy \'%s\' je vypnutý</string>
     <string name="service_url">URL adresa služby, ktorá nie je predvolená</string>
-    <string name="service_url_summary">Prepne predvolenú adresu URL služby</string>
     <string name="set_manual_location">Nastavte polohu ručne</string>
     <string name="error_indicator">Indikátor chyby</string>
     <string name="app_log" translatable="false">Application log</string>
     <string name="share_log">*Odoslať email …</string>
     <string name="share_unavailable">Zdieľanie e-mailov nie je k dispozícii.</string>
     <string name="provider_warning">Please do not use the Blitzortung.org data provider during high lightning activity, as the map display performance will degrade.</string>
-    <string name="own_location_summary">Nastavenie zobrazovania vlastnej polohy</string>
-    <string name="own_location">Vlastná poloha</string>
     <string name="own_location_size">Veľkosť symbolu vlastnej polohy</string>
     <string name="own_location_size_summary">Nastavte veľkosť vlastného symbolu polohy</string>
     <string name="keep_zoom_goto_own_location_summary">Nastavenie pre udržanie aktuálneho priblíženia pri centrovaní na vlastnú polohu</string>
@@ -365,4 +328,10 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_required">Pri použití zdroja polohy zariadenia je potrebné povolenie na umiestnenie.</string>
     <string name="location_permission_background_required">Pri použití zdroja umiestnenia zariadenia je potrebné povolenie na umiestnenie na pozadí.</string>
     <string name="location_permission_background_disclosure">Táto aplikácia používa údaje o polohe, aj keď je aplikácia zatvorená alebo sa nepoužíva, keď používate budíky na pozadí so zdrojom polohy zariadenia.</string>
+    <string name="animation_settings">Nastavení animace</string>
+    <string name="undefined">nedefinované</string>
+    <string name="background_query_period_dialog_message">"Používanie pravidelného dopytovania sa na pozadí pre upozornenia, keď aplikácia nie je spustená, bude vyžadovať načítanie polohy vášho zariadenia, ak nie je nastavené na manuálne určovanie polohy. "</string>
+    <string name="post_notifications_request">Ak chcete upozornenia na príspevky, povoľte povolenie na ich odosielanie.</string>
+    <string name="location_required_for_alerts">Pre upozornenia sa vyžaduje poloha, zakázanie upozornení a dopytov na pozadí.</string>
+    <string name="post_notifications_required_for_alerts">Pre upozornenia sa vyžaduje povolenie na odosielanie upozornení, zakázanie upozornení a dopytov na pozadí.</string>
 </resources>

@@ -21,12 +21,10 @@ package org.blitzortung.android.data.provider.data
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
-import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.provider.DataProviderType
-import org.blitzortung.android.data.provider.result.ResultEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 
 interface DataProvider {
-
     val type: DataProviderType
 
     fun reset()
@@ -34,11 +32,23 @@ interface DataProvider {
     fun <T> retrieveData(retrieve: DataRetriever.() -> T): T
 
     interface DataRetriever {
-        fun getStrikes(parameters: Parameters, history: History?, flags: Flags): ResultEvent
-        fun getStrikesGrid(parameters: Parameters, history: History?, flags: Flags): ResultEvent
-        fun getStations(region: Int): List<Station>
+        fun getStrikes(
+            parameters: Parameters,
+            history: History?,
+            flags: Flags,
+        ): DataReceived
+
+        fun getStrikesGrid(
+            parameters: Parameters,
+            history: History?,
+            flags: Flags,
+        ): DataReceived
     }
 }
 
-fun initializeResult(parameters: Parameters, history: History?, flags: Flags): ResultEvent =
-    ResultEvent(referenceTime = System.currentTimeMillis(), parameters = parameters, history = history, flags = flags)
+fun initializeResult(
+    parameters: Parameters,
+    history: History?,
+    flags: Flags,
+): DataReceived =
+    DataReceived(referenceTime = System.currentTimeMillis(), parameters = parameters, history = history, flags = flags)

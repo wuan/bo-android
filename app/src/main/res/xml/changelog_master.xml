@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
     <release
+        versionName="2.4"
+        versionCode="339">
+        <feature>SDK 35 update and rework of settings</feature>
+        <feature>Fixed issues with dynamic local data retrieval</feature>
+        <feature>Complete rework of permission management</feature>
+    </release>
+    <release
         versionName="2.3"
         versionCode="327">
         <feature>Dynamic local data retrieval</feature>

@@ -19,6 +19,5 @@
 package org.blitzortung.android.map.overlay
 
 interface LayerOverlay {
-    val name: String
     var visible: Boolean
 }

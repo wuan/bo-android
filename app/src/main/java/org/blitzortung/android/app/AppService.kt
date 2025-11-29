@@ -18,7 +18,6 @@
 
 package org.blitzortung.android.app
 
-import android.annotation.TargetApi
 import android.app.AlarmManager
 import android.app.Notification
 import android.app.PendingIntent
@@ -31,8 +30,10 @@ import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.ServiceCompat
 import dagger.android.AndroidInjection
+import javax.inject.Inject
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.controller.NotificationHandler.Companion.CHANNEL_ID
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
@@ -43,11 +44,8 @@ import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.util.LogUtil
 import org.blitzortung.android.util.isAtLeast
-import javax.inject.Inject
-
 
 class AppService : Service(), OnSharedPreferenceChangeListener {
-
     init {
         Log.d(Main.LOG_TAG, "AppService() create")
     }
@@ -83,7 +81,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     private var lastUpdateTime: Long? = null
 
     private val dataEventConsumer = { _: DataEvent ->
-        //releaseWakeLock()
+        // releaseWakeLock()
     }
 
     override fun onCreate() {
@@ -103,7 +101,11 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         configureServiceMode()
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int,
+    ): Int {
         Log.v(Main.LOG_TAG, "AppService.onStartCommand() startId: $startId $intent")
 
         if (!locationHandler.backgroundMode) {
@@ -115,9 +117,10 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         if (intent != null && RETRIEVE_DATA_ACTION == intent.action) {
             val currentTimeSeconds = System.currentTimeMillis() / 1000
 
-            val timeDifference = lastUpdateTime?.let {
-                currentTimeSeconds - it
-            }
+            val timeDifference =
+                lastUpdateTime?.let {
+                    currentTimeSeconds - it
+                }
             if (timeDifference == null || timeDifference > 0.6 * backgroundPeriod) {
                 Log.i(Main.LOG_TAG, "AppService.onStartCommand() with time difference ${timeDifference ?: 0} s")
                 lastUpdateTime = currentTimeSeconds
@@ -125,7 +128,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
             } else {
                 Log.d(
                     Main.LOG_TAG,
-                    "AppService.onStartCommand() skip with insufficient time passed: ${currentTimeSeconds - lastUpdateTime!!} s < $backgroundPeriod s"
+                    "AppService.onStartCommand() skip with insufficient time passed: ${currentTimeSeconds - lastUpdateTime!!} s < $backgroundPeriod s",
                 )
             }
         } else {
@@ -134,30 +137,27 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
 
         val intent = Intent(this, Main::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        val flags = PendingIntent.FLAG_CANCEL_CURRENT or (if (isAtLeast(Build.VERSION_CODES.M)) {
-            PendingIntent.FLAG_IMMUTABLE
-        } else {
-            0
-        })
+        val flags = PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         val contentIntent = PendingIntent.getActivity(this, 0, intent, flags)
 
-        if (isAtLeast(26)) {
-            startForground(contentIntent)
+        if (isAtLeast(29)) {
+            startForeground(contentIntent)
         }
 
         return START_STICKY
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
-    private fun startForground(contentIntent: PendingIntent?) {
-        val notification = Notification.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.icon)
-            .setContentTitle(this.resources.getText(R.string.app_name))
-            .setContentText("bla")
-            .setContentIntent(contentIntent)
-            .setAutoCancel(true)
-            .setWhen(System.currentTimeMillis())
-            .setShowWhen(true).build()
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun startForeground(contentIntent: PendingIntent?) {
+        val notification =
+            Notification.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.icon)
+                .setContentTitle(this.resources.getText(R.string.app_name))
+                .setContentText("bla")
+                .setContentIntent(contentIntent)
+                .setAutoCancel(true)
+                .setWhen(System.currentTimeMillis())
+                .setShowWhen(true).build()
 
         ServiceCompat.startForeground(this, 0, notification, FOREGROUND_SERVICE_TYPE_MANIFEST)
     }
@@ -191,7 +191,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         packageManager.setComponentEnabledSetting(
             receiver,
             if (enable) PackageManager.COMPONENT_ENABLED_STATE_ENABLED else PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-            PackageManager.DONT_KILL_APP
+            PackageManager.DONT_KILL_APP,
         )
     }
 
@@ -227,12 +227,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
                 Log.v(Main.LOG_TAG, "AppService.createAlarm() with backgroundPeriod=%d".format(backgroundPeriod))
                 val intent = Intent(this, AppService::class.java)
                 intent.action = RETRIEVE_DATA_ACTION
-                val flags = if (isAtLeast(Build.VERSION_CODES.M)) {
-                    PendingIntent.FLAG_IMMUTABLE
-                } else {
-                    0
-                }
-                val pendingIntent = PendingIntent.getService(this, 0, intent, flags)
+                val pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
                 this.pendingIntent = pendingIntent
 
                 val period = (backgroundPeriod * 1000).toLong()
@@ -255,7 +250,10 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         }
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: PreferenceKey) {
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        key: PreferenceKey,
+    ) {
         when (key) {
             PreferenceKey.ALERT_ENABLED -> {
                 alertEnabled = sharedPreferences.get(key, false)
