@@ -30,7 +30,6 @@ import android.graphics.RectF
 import android.location.Location
 import android.util.AttributeSet
 import android.util.Log
-import androidx.core.graphics.createBitmap
 import androidx.preference.PreferenceManager
 import kotlin.math.cos
 import kotlin.math.max
@@ -44,10 +43,11 @@ import org.blitzortung.android.alert.Warning
 import org.blitzortung.android.alert.data.AlertSector
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.Main
-import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.app.view.alarm.PrimitiveRenderer
 import org.blitzortung.android.app.view.alarm.SymbolRenderer
+import org.blitzortung.android.app.view.support.CanvasProvider
+import org.blitzortung.android.app.view.support.CanvasWrapper
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.dialogs.AlarmDialog
 import org.blitzortung.android.dialogs.AlertDialogColorHandler
@@ -65,20 +65,18 @@ constructor(
 ) : TabletAwareView(context, attrs, defStyle) {
 
     private val arcArea = RectF()
-    private val background = Paint()
     private val sectorPaint = Paint()
     private val lines = Paint(Paint.ANTI_ALIAS_FLAG)
     private val textStyle = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val transfer = Paint()
     private lateinit var colorHandler: ColorHandler
     private var intervalDuration: Int = 0
-    private var temporaryBitmap: Bitmap? = null
-    private var temporaryCanvas: Canvas? = null
     private var warning: Warning? = null
     private var location: Location? = null
     private var enableDescriptionText = false
 
-    private var primitiveRenderer: PrimitiveRenderer
+    private val canvasProvider: CanvasProvider
+    private var drawCanvas: CanvasWrapper? = null
+    private val primitiveRenderer: PrimitiveRenderer
     private lateinit var symbolRenderer: SymbolRenderer
 
     val alertEventConsumer: (Warning) -> Unit = { event ->
@@ -109,12 +107,11 @@ constructor(
 
         with(textStyle) {
             color = 0xff404040.toInt()
-            textSize = 0.8f * (textSize * textSizeFactor(context))
+            textSize = 2f * (textSize * textSizeFactor(context))
         }
 
-        background.color = 0xffb0b0b0.toInt()
-
         primitiveRenderer = PrimitiveRenderer()
+        canvasProvider = CanvasProvider(width, height)
     }
 
     fun setColorHandler(
@@ -177,62 +174,58 @@ constructor(
 
         val alarmViewData = AlarmViewData(size, center, radius)
 
+        drawCanvas = canvasProvider.provide(colorHandler.backgroundColor, width, height)
 
-        prepareTemporaryBitmap(size)
-
-        val alertResult = warning
-        val temporaryCanvas = temporaryCanvas
-        val temporaryBitmap = temporaryBitmap
-        if (temporaryBitmap != null && temporaryCanvas != null) {
-            when (alertResult) {
+        drawCanvas?.also { drawCanvas ->
+            drawCanvas.clear()
+            val warning = this@AlarmView.warning
+            when (warning) {
                 is LocalActivity if intervalDuration != 0 -> {
-                    renderLocalActivity(alertResult, radius, size, center, temporaryCanvas)
+                    renderLocalActivity(warning, alarmViewData, drawCanvas.canvas)
                 }
 
                 Outlying -> {
-                    symbolRenderer.drawOutOfRangeSymbol(alarmViewData, temporaryCanvas)
+                    symbolRenderer.drawOutOfRangeSymbol(alarmViewData, drawCanvas.canvas)
                 }
 
                 NoLocation -> {
                     if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
-                        symbolRenderer.drawAlertOrLocationMissingMessage(center, width, temporaryCanvas)
+                        symbolRenderer.drawAlertOrLocationMissingMessage(center, width, drawCanvas.canvas)
                     } else {
-                        symbolRenderer.drawNoLocationSymbol(center, radius, size, temporaryCanvas)
+                        symbolRenderer.drawNoLocationSymbol(alarmViewData, drawCanvas.canvas)
                     }
                 }
 
                 else -> {
                     if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
-                        symbolRenderer.drawAlertOrLocationMissingMessage(center, width, temporaryCanvas)
+                        symbolRenderer.drawAlertOrLocationMissingMessage(center, width, drawCanvas.canvas)
                     } else {
                         if (location != null) {
-                            symbolRenderer.drawOwnLocationSymbol(center, radius, size, temporaryCanvas)
+                            symbolRenderer.drawOwnLocationSymbol(alarmViewData, drawCanvas.canvas)
                         } else {
-                            symbolRenderer.drawNoLocationSymbol(center, radius, size, temporaryCanvas)
+                            symbolRenderer.drawNoLocationSymbol(alarmViewData, drawCanvas.canvas)
                         }
                     }
                 }
             }
-            canvas.drawBitmap(temporaryBitmap, 0f, 0f, transfer)
+            drawCanvas.update(canvas)
         }
     }
 
     private fun renderLocalActivity(
         alertResult: LocalActivity,
-        radius: Float,
-        size: Int,
-        center: Float,
-        temporaryCanvas: Canvas
+        data: AlarmViewData,
+        temporaryCanvas: Canvas,
     ) {
         val alertParameters = alertResult.parameters
         val rangeSteps = alertParameters.rangeSteps
         val rangeStepCount = rangeSteps.size
-        val radiusIncrement = radius / rangeStepCount
+        val radiusIncrement = data.radius / rangeStepCount
         val sectorWidth = (360 / alertParameters.sectorLabels.size).toFloat()
 
         with(lines) {
             color = colorHandler.lineColor
-            strokeWidth = (size / 150).toFloat()
+            strokeWidth = (data.size / 150).toFloat()
         }
 
         with(textStyle) {
@@ -243,11 +236,11 @@ constructor(
         val actualTime = System.currentTimeMillis()
 
         for (alertSector in alertResult.sectors) {
-            renderSectorBackground(alertSector, radiusIncrement, center, actualTime, temporaryCanvas, sectorWidth)
+            renderSectorBackground(alertSector, radiusIncrement, data, actualTime, temporaryCanvas, sectorWidth)
         }
 
         for (alertSector in alertResult.sectors) {
-            renderSectorSideLines(alertSector, temporaryCanvas, center, radius, size, radiusIncrement, sectorWidth)
+            renderSectorSideLines(alertSector, temporaryCanvas, data, radiusIncrement, sectorWidth)
         }
 
         textStyle.textAlign = Align.RIGHT
@@ -256,8 +249,7 @@ constructor(
             renderRangeCircles(
                 radiusIndex,
                 rangeStepCount,
-                size,
-                center,
+                data,
                 radiusIncrement,
                 temporaryCanvas,
                 rangeSteps,
@@ -270,38 +262,37 @@ constructor(
     private fun renderRangeCircles(
         radiusIndex: Int,
         rangeStepCount: Int,
-        size: Int,
-        center: Float,
+        data: AlarmViewData,
         radiusIncrement: Float,
-        temporaryCanvas: Canvas,
+        canvas: Canvas,
         rangeSteps: List<Float>,
         textHeight: Float,
         alertParameters: AlertParameters
     ) {
         if (radiusIndex == rangeStepCount - 1) {
-            lines.strokeWidth = (size / 80).toFloat()
+            lines.strokeWidth = (data.size / 80).toFloat()
         }
         primitiveRenderer.drawCircle(
-            center,
+            data.center,
             (radiusIndex + 1) * radiusIncrement,
             lines,
-            temporaryCanvas
+            canvas
         )
 
-        if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
+        if (enableDescriptionText && data.size > TEXT_MINIMUM_SIZE) {
             val text = "%.0f".format(rangeSteps[radiusIndex])
-            temporaryCanvas.drawText(
+            canvas.drawText(
                 text,
-                center + (radiusIndex + 0.85f) * radiusIncrement,
-                center + textHeight / 3f,
+                data.center + (radiusIndex + 0.85f) * radiusIncrement,
+                data.center + textHeight / 3f,
                 textStyle,
             )
             if (radiusIndex == rangeStepCount - 1) {
                 val distanceUnit = resources.getString(alertParameters.measurementSystem.unitNameString)
-                temporaryCanvas.drawText(
+                canvas.drawText(
                     distanceUnit,
-                    center + (radiusIndex + 0.85f) * radiusIncrement,
-                    center + textHeight * 1.33f,
+                    data.center + (radiusIndex + 0.85f) * radiusIncrement,
+                    data.center + textHeight * 1.33f,
                     textStyle,
                 )
             }
@@ -310,33 +301,31 @@ constructor(
 
     private fun renderSectorSideLines(
         alertSector: AlertSector,
-        temporaryCanvas: Canvas,
-        center: Float,
-        radius: Float,
-        size: Int,
+        canvas: Canvas,
+        data: AlarmViewData,
         radiusIncrement: Float,
         sectorWidth: Float
     ) {
         val bearing = alertSector.minimumSectorBearing.toDouble()
-        temporaryCanvas.drawLine(
-            center,
-            center,
-            center + (radius * sin(bearing / 180.0f * Math.PI)).toFloat(),
-            center + (radius * -cos(bearing / 180.0f * Math.PI)).toFloat(),
+        canvas.drawLine(
+            data.center,
+            data.center,
+            data.center + (data.radius * sin(bearing / 180.0f * Math.PI)).toFloat(),
+            data.center + (data.radius * -cos(bearing / 180.0f * Math.PI)).toFloat(),
             lines,
         )
 
-        if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
-            drawSectorLabel(center, radiusIncrement, alertSector, bearing + sectorWidth / 2.0)
+        if (enableDescriptionText && data.size > TEXT_MINIMUM_SIZE) {
+            drawSectorLabel(data.center, radiusIncrement, alertSector, bearing + sectorWidth / 2.0, canvas)
         }
     }
 
     private fun renderSectorBackground(
         alertSector: AlertSector,
         radiusIncrement: Float,
-        center: Float,
+        data: AlarmViewData,
         actualTime: Long,
-        temporaryCanvas: Canvas,
+        canvas: Canvas,
         sectorWidth: Float
     ) {
         val startAngle = alertSector.minimumSectorBearing + 90f + 180f
@@ -346,8 +335,8 @@ constructor(
             val alertSectorRange = ranges[rangeIndex]
 
             val sectorRadius = (rangeIndex + 1) * radiusIncrement
-            val leftTop = center - sectorRadius
-            val bottomRight = center + sectorRadius
+            val leftTop = data.center - sectorRadius
+            val bottomRight = data.center + sectorRadius
 
             val drawColor = alertSectorRange.strikeCount > 0
             if (drawColor) {
@@ -360,12 +349,12 @@ constructor(
                 sectorPaint.color = color
             }
             arcArea.set(leftTop, leftTop, bottomRight, bottomRight)
-            temporaryCanvas.drawArc(
+            canvas.drawArc(
                 arcArea,
                 startAngle,
                 sectorWidth,
                 true,
-                if (drawColor) sectorPaint else background,
+                if (drawColor) sectorPaint else drawCanvas!!.background,
             )
         }
     }
@@ -375,11 +364,12 @@ constructor(
         radiusIncrement: Float,
         sector: AlertSector,
         bearing: Double,
+        canvas: Canvas,
     ) {
         if (bearing != 90.0) {
             val text = sector.label
             val textRadius = (sector.ranges.size - 0.5f) * radiusIncrement
-            temporaryCanvas!!.drawText(
+            canvas.drawText(
                 text,
                 center + (textRadius * sin(bearing / 180.0 * Math.PI)).toFloat(),
                 center + (textRadius * -cos(bearing / 180.0 * Math.PI)).toFloat() + textStyle.getFontMetrics(null) / 3f,
@@ -388,31 +378,7 @@ constructor(
         }
     }
 
-    private fun prepareTemporaryBitmap(size: Int) {
-        if (temporaryBitmap == null) {
-            val temporaryBitmap = createBitmap(size, size)
-            this.temporaryBitmap = temporaryBitmap
-            temporaryCanvas = Canvas(temporaryBitmap)
-        }
-        background.color = colorHandler.backgroundColor
-        background.xfermode = XFERMODE_CLEAR
-        temporaryCanvas!!.drawPaint(background)
-
-        background.xfermode = XFERMODE_SRC
-    }
-
-    override fun setBackgroundColor(backgroundColor: Int) {
-        background.color = backgroundColor
-    }
-
-    fun setAlpha(alpha: Int) {
-        transfer.alpha = alpha
-    }
-
     companion object {
         private const val TEXT_MINIMUM_SIZE = 300
-        private const val DEFAULT_FONT_SIZE = 20
-        private val XFERMODE_CLEAR = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
-        private val XFERMODE_SRC = PorterDuffXfermode(PorterDuff.Mode.SRC)
     }
 }

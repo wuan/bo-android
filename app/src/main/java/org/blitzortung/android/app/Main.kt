@@ -345,8 +345,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         with(binding.alertView) {
             setColorHandler(strikeColorHandler, strikeListOverlay.parameters.intervalDuration)
-            setBackgroundColor(Color.TRANSPARENT)
-            setAlpha(200)
             setOnClickListener {
                 val currentLocation = locationHandler.location
                 if (currentLocation != null) {

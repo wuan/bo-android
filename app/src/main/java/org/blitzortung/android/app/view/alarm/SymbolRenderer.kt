@@ -37,55 +37,51 @@ class SymbolRenderer(
 
     fun drawOutOfRangeSymbol(
         data: AlarmView.AlarmViewData,
-        temporaryCanvas: Canvas,
+        canvas: Canvas,
     ) {
         with(lines) {
             color = colorHandler.lineColor
             strokeWidth = (data.size / 80).toFloat()
         }
 
-        primitiveRenderer.drawCross(data.center, data.radius * 0.1f, lines, temporaryCanvas)
-        primitiveRenderer.drawCircle(data.center, data.radius * 0.5f, lines, temporaryCanvas)
-        primitiveRenderer.drawCircle(data.center, data.radius * 0.8f, lines, temporaryCanvas)
-        primitiveRenderer.drawCircle(data.center, data.radius * 1.0f, lines, temporaryCanvas)
+        primitiveRenderer.drawCross(data.center, data.radius * 0.1f, lines, canvas)
+        primitiveRenderer.drawCircle(data.center, data.radius * 0.5f, lines, canvas)
+        primitiveRenderer.drawCircle(data.center, data.radius * 0.8f, lines, canvas)
+        primitiveRenderer.drawCircle(data.center, data.radius * 1.0f, lines, canvas)
     }
 
     fun drawOwnLocationSymbol(
-        center: Float,
-        radius: Float,
-        size: Int,
-        temporaryCanvas: Canvas,
+        data: AlarmView.AlarmViewData,
+        canvas: Canvas,
     ) {
         with(lines) {
             color = colorHandler.lineColor
-            strokeWidth = (size / 80).toFloat()
+            strokeWidth = (data.size / 80).toFloat()
         }
 
-        primitiveRenderer.drawCircle(center, radius * 0.8f, lines, temporaryCanvas)
-        primitiveRenderer.drawCross(center, radius * 0.6f, lines, temporaryCanvas)
+        primitiveRenderer.drawCircle(data.center, data.radius * 0.8f, lines, canvas)
+        primitiveRenderer.drawCross(data.center, data.radius * 0.6f, lines, canvas)
     }
 
     fun drawNoLocationSymbol(
-        center: Float,
-        radius: Float,
-        size: Int,
-        temporaryCanvas: Canvas,
+        data: AlarmView.AlarmViewData,
+        canvas: Canvas,
     ) {
         with(lines) {
             color = colorHandler.lineColor
-            strokeWidth = (size / 80).toFloat()
+            strokeWidth = (data.size / 80).toFloat()
             pathEffect = DashPathEffect(floatArrayOf(15f, 10f), 0f)
         }
 
         with(hugeText) {
             color = colorHandler.lineColor
-            textSize = 3f * textSize
+            textSize = 3f * this@SymbolRenderer.textSize
         }
 
         val noLocationText = "?"
 
-        primitiveRenderer.drawCenteredText(temporaryCanvas, noLocationText, center, hugeText)
-        primitiveRenderer.drawCircle(center, radius * 0.8f, lines, temporaryCanvas)
+        primitiveRenderer.drawCenteredText(canvas, noLocationText, data.center, hugeText)
+        primitiveRenderer.drawCircle(data.center, data.radius * 0.8f, lines, canvas)
     }
 
     fun drawAlertOrLocationMissingMessage(
