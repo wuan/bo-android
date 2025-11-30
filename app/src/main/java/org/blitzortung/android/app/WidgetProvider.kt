@@ -32,16 +32,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import org.blitzortung.android.alert.AlertResult
-import org.blitzortung.android.alert.event.AlertEvent
-import org.blitzortung.android.alert.event.AlertResultEvent
 import org.blitzortung.android.alert.handler.AlertDataHandler
 import org.blitzortung.android.alert.handler.AlertHandler
-import org.blitzortung.android.app.view.AlertView
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.TimeInterval
-import org.blitzortung.android.data.provider.result.ResultEvent
 import org.blitzortung.android.data.provider.standard.JsonRpcDataProvider
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
@@ -49,6 +44,11 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import org.blitzortung.android.alert.handler.Strikes
+import org.blitzortung.android.app.view.AlarmView
+import org.blitzortung.android.data.DataArea
+import org.blitzortung.android.data.provider.calculateLocalCoordinate
+import org.blitzortung.android.data.provider.result.DataReceived
 
 
 class WidgetProvider : AppWidgetProvider() {
@@ -106,32 +106,44 @@ class WidgetProvider : AppWidgetProvider() {
     }
 
     private fun getUpdatedViews(context: Context): RemoteViews {
-        val alertView = AlertView(context)
-        alertView.setColorHandler(colorHandler, 60)
+        val alarmView = AlarmView(context)
+        alarmView.setColorHandler(colorHandler, 60)
 
-        val parameters = Parameters(region = 0, gridSize = 5000, interval = TimeInterval(duration = 60))
+        val location = locationHandler.location!!
+        val scale = 5
+        val x = calculateLocalCoordinate(location.longitude, scale)
+        val y = calculateLocalCoordinate(location.latitude, scale)
+        val dataArea = DataArea(x, y, scale)
+
+        val parameters = Parameters(region = 0, gridSize = 5000, interval = TimeInterval(duration = 60), dataArea = dataArea)
         val result = runBlocking {
             withContext(Dispatchers.Default) {
                 async {
                     Log.v(Main.LOG_TAG, "Widget.getUpdatedViews() retrieve running in ${Thread.currentThread().name}")
-                    var result = ResultEvent(referenceTime = System.currentTimeMillis(), parameters = parameters, flags = Flags())
+                    var result = DataReceived(
+                        referenceTime = System.currentTimeMillis(),
+                        parameters = parameters,
+                        flags = Flags()
+                    )
                     dataProvider.retrieveData {
-                        result = getStrikesGrid(parameters, Flags())
+                        result = getStrikesGrid(parameters, null, Flags())
                     }
                     Log.v(Main.LOG_TAG, "Widget.getUpdatedViews() check running in ${Thread.currentThread().name}")
-                    alertDataHandler.checkStrikes(result.strikes!!, locationHandler.location!!, alertHandler.alertParameters, result.referenceTime)
+                    Log.v(Main.LOG_TAG, "Received ${result.parameters}, ${result.gridParameters} strikes")
+                    val strikes = Strikes(result.strikes!!, result.gridParameters)
+                    alertDataHandler.checkStrikes(strikes, location, alertHandler.alertParameters, result.referenceTime)
                 }.await()
             }
         }
 
         Log.v(Main.LOG_TAG, "Widget.getUpdatedViews() result in ${Thread.currentThread().name} $result")
-        alertView.alertEventConsumer.invoke(AlertResultEvent(result))
+        alarmView.alertEventConsumer.invoke(result)
 
-        alertView.measure(150, 150)
-        alertView.layout(0, 0, 150, 150)
-        alertView.isDrawingCacheEnabled = true
+        alarmView.measure(150, 150)
+        alarmView.layout(0, 0, 150, 150)
+        alarmView.isDrawingCacheEnabled = true
 
-        val bitmap = alertView.drawingCache
+        val bitmap = alarmView.drawingCache
 
         val views = RemoteViews(context.packageName, R.layout.widget)
         views.setImageViewBitmap(R.id.alarm_diagram, bitmap)
@@ -140,4 +152,6 @@ class WidgetProvider : AppWidgetProvider() {
         views.setTextViewText(R.id.widget_update_time, format)
         return views
     }
+
+
 }
