@@ -84,6 +84,14 @@ class WidgetProvider : AppWidgetProvider() {
         AndroidInjection.inject(this, context)
         Log.v(Main.LOG_TAG, "WidgetProvider.onAppWidgetOptionsChanged()")
         super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
+
+        // Update the widget with the new size
+        if (context != null && appWidgetManager != null) {
+            locationHandler.start()
+            val views = getUpdatedViews(context, appWidgetManager, appWidgetId)
+            appWidgetManager.updateAppWidget(appWidgetId, views)
+            locationHandler.shutdown()
+        }
     }
 
     override fun onReceive(context: Context?, intent: Intent) {
@@ -92,10 +100,14 @@ class WidgetProvider : AppWidgetProvider() {
         Log.v(Main.LOG_TAG, "WidgetProvider.onReceive() $action")
         if (ACTION_APPWIDGET_UPDATE == action) {
             locationHandler.start()
-            val views = getUpdatedViews(context!!)
-            AppWidgetManager.getInstance(context).updateAppWidget(
-                    ComponentName(context, WidgetProvider::class.java)
-                    , views)
+            val appWidgetManager = AppWidgetManager.getInstance(context!!)
+            val appWidgetIds = appWidgetManager.getAppWidgetIds(
+                ComponentName(context, WidgetProvider::class.java)
+            )
+            for (appWidgetId in appWidgetIds) {
+                val views = getUpdatedViews(context, appWidgetManager, appWidgetId)
+                appWidgetManager.updateAppWidget(appWidgetId, views)
+            }
             locationHandler.shutdown()
         }
     }
@@ -106,8 +118,8 @@ class WidgetProvider : AppWidgetProvider() {
 
         locationHandler.start()
 
-        val views = getUpdatedViews(context)
         for (appWidgetId in appWidgetIds) {
+            val views = getUpdatedViews(context, appWidgetManager, appWidgetId)
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
 
@@ -142,7 +154,25 @@ class WidgetProvider : AppWidgetProvider() {
         WorkManager.getInstance(context).cancelUniqueWork(WIDGET_UPDATE_WORK_NAME)
     }
 
-    private fun getUpdatedViews(context: Context): RemoteViews {
+    private fun getUpdatedViews(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int): RemoteViews {
+        // Get widget size from options
+        val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
+        val widthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
+        val heightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
+        Log.v(Main.LOG_TAG, "WidgetProvider.getUpdatedViews() $widthDp x $heightDp")
+
+        // Convert dp to pixels
+        val displayMetrics = context.resources.displayMetrics
+        val widthPx = (widthDp * displayMetrics.density).toInt()
+        val heightPx = (heightDp * displayMetrics.density).toInt()
+
+        // Use reasonable defaults if size is not available
+        val viewWidth = if (widthPx > 0) widthPx else 300
+        val viewHeight = if (heightPx > 0) heightPx else 300
+        Log.v(Main.LOG_TAG, "WidgetProvider.getUpdatedViews() $viewWidth x $viewHeight (view)")
+
+        Log.v(Main.LOG_TAG, "Widget size: ${widthDp}dp x ${heightDp}dp = ${viewWidth}px x ${viewHeight}px")
+
         val alarmView = AlarmView(context)
         alarmView.setColorHandler(colorHandler, 60)
 
@@ -166,7 +196,7 @@ class WidgetProvider : AppWidgetProvider() {
                         result = getStrikesGrid(parameters, null, Flags())
                     }
                     Log.v(Main.LOG_TAG, "Widget.getUpdatedViews() check running in ${Thread.currentThread().name}")
-                    Log.v(Main.LOG_TAG, "Received ${result.parameters}, ${result.gridParameters} strikes")
+                    Log.v(Main.LOG_TAG, "WidgetProvider.getUpdatedViews() received ${result.parameters}, ${result.gridParameters} strikes")
                     val strikes = Strikes(result.strikes!!, result.gridParameters)
                     alertDataHandler.checkStrikes(strikes, location, alertHandler.alertParameters, result.referenceTime)
                 }.await()
@@ -176,8 +206,8 @@ class WidgetProvider : AppWidgetProvider() {
         Log.v(Main.LOG_TAG, "Widget.getUpdatedViews() result in ${Thread.currentThread().name} $result")
         alarmView.alertEventConsumer.invoke(result)
 
-        alarmView.measure(150, 150)
-        alarmView.layout(0, 0, 150, 150)
+        alarmView.measure(viewWidth, viewHeight)
+        alarmView.layout(0, 0, viewWidth, viewHeight)
         alarmView.isDrawingCacheEnabled = true
 
         val bitmap = alarmView.drawingCache
