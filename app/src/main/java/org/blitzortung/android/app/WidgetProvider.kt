@@ -19,22 +19,12 @@
 package org.blitzortung.android.app
 
 import android.appwidget.AppWidgetManager
-import android.appwidget.AppWidgetManager.ACTION_APPWIDGET_UPDATE
 import android.appwidget.AppWidgetProvider
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.work.*
-import dagger.android.AndroidInjection
-import org.blitzortung.android.alert.handler.AlertDataHandler
-import org.blitzortung.android.alert.handler.AlertHandler
-import org.blitzortung.android.data.provider.standard.JsonRpcDataProvider
-import org.blitzortung.android.location.LocationHandler
-import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 class WidgetProvider : AppWidgetProvider() {
 
@@ -47,18 +37,6 @@ class WidgetProvider : AppWidgetProvider() {
         Log.v(Main.LOG_TAG, "WidgetProvider.onAppWidgetOptionsChanged()")
         super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
         update(context, appWidgetManager, intArrayOf(appWidgetId))
-    }
-
-    override fun onReceive(context: Context, intent: Intent) {
-        val action = intent.action
-        Log.v(Main.LOG_TAG, "WidgetProvider.onReceive() $action")
-        if (ACTION_APPWIDGET_UPDATE == action) {
-            val appWidgetManager = AppWidgetManager.getInstance(context)
-            val appWidgetIds = appWidgetManager.getAppWidgetIds(
-                ComponentName(context, WidgetProvider::class.java)
-            )
-            update(context, appWidgetManager, appWidgetIds)
-        }
     }
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
