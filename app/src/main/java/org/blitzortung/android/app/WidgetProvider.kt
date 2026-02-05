@@ -27,6 +27,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.RemoteViews
+import android.widget.TextView
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -157,21 +158,29 @@ class WidgetProvider : AppWidgetProvider() {
     private fun getUpdatedViews(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int): RemoteViews {
         // Get widget size from options
         val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
-        val widthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
-        val heightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
-        Log.v(Main.LOG_TAG, "WidgetProvider.getUpdatedViews() $widthDp x $heightDp")
+        val isPortrait = context.resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
+        val widthDp = options.getInt(if (isPortrait) AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH else AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH)
+        val heightDp = options.getInt(if (isPortrait) AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT else AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
 
         // Convert dp to pixels
         val displayMetrics = context.resources.displayMetrics
-        val widthPx = (widthDp * displayMetrics.density).toInt()
-        val heightPx = (heightDp * displayMetrics.density).toInt()
+        val density = displayMetrics.density
 
         // Use reasonable defaults if size is not available
-        val viewWidth = if (widthPx > 0) widthPx else 300
-        val viewHeight = if (heightPx > 0) heightPx else 300
-        Log.v(Main.LOG_TAG, "WidgetProvider.getUpdatedViews() $viewWidth x $viewHeight (view)")
+        val totalWidthPx = if (widthDp > 0) (widthDp * density).toInt() else 300
+        val totalHeightPx = if (heightDp > 0) (heightDp * density).toInt() else 300
 
-        Log.v(Main.LOG_TAG, "Widget size: ${widthDp}dp x ${heightDp}dp = ${viewWidth}px x ${viewHeight}px")
+        // Account for LinearLayout padding (10dp on each side)
+        val paddingPx = (10 * density).toInt()
+        val availableWidth = (totalWidthPx - paddingPx * 2).coerceAtLeast(100)
+
+        // Account for text view height and margin
+        val textHeightPx = (32 * density).toInt() // Headline text size
+        val textMarginPx = (4 * density).toInt()
+        val availableHeight = (totalHeightPx - paddingPx * 2 - textHeightPx - textMarginPx).coerceAtLeast(100)
+
+        Log.v(Main.LOG_TAG, "Widget total: ${widthDp}dp x ${heightDp}dp = ${totalWidthPx}px x ${totalHeightPx}px")
+        Log.v(Main.LOG_TAG, "Widget available for image: ${availableWidth}px x ${availableHeight}px")
 
         val alarmView = AlarmView(context)
         alarmView.setColorHandler(colorHandler, 60)
@@ -206,14 +215,26 @@ class WidgetProvider : AppWidgetProvider() {
         Log.v(Main.LOG_TAG, "Widget.getUpdatedViews() result in ${Thread.currentThread().name} $result")
         alarmView.alertEventConsumer.invoke(result)
 
-        alarmView.measure(viewWidth, viewHeight)
-        alarmView.layout(0, 0, viewWidth, viewHeight)
-        alarmView.isDrawingCacheEnabled = true
+        // Measure and layout the view with available dimensions
+        val widthSpec = android.view.View.MeasureSpec.makeMeasureSpec(availableWidth, android.view.View.MeasureSpec.EXACTLY)
+        val heightSpec = android.view.View.MeasureSpec.makeMeasureSpec(availableHeight, android.view.View.MeasureSpec.EXACTLY)
+        alarmView.measure(widthSpec, heightSpec)
+        alarmView.layout(0, 0, alarmView.measuredWidth, alarmView.measuredHeight)
 
-        val bitmap = alarmView.drawingCache
+        // Create bitmap and draw the view
+        val bitmap = android.graphics.Bitmap.createBitmap(
+            alarmView.measuredWidth,
+            alarmView.measuredHeight,
+            android.graphics.Bitmap.Config.ARGB_8888
+        )
+        val canvas = android.graphics.Canvas(bitmap)
+        alarmView.draw(canvas)
+
+        Log.v(Main.LOG_TAG, "Bitmap created: ${bitmap.width}px x ${bitmap.height}px")
 
         val views = RemoteViews(context.packageName, R.layout.widget)
         views.setImageViewBitmap(R.id.alarm_diagram, bitmap)
+
         val format = df.format(Date())
         Log.v(Main.LOG_TAG, "WidgetProvider.getUpdatedViews() $format")
         views.setTextViewText(R.id.widget_update_time, format)

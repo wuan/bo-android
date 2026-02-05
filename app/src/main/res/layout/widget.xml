@@ -1,22 +1,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/alarm_widget"
+  android:id="@+id/alarm_widget"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@drawable/rounded_box"
+  android:orientation="vertical"
+  android:padding="10dp">
+
+  <org.blitzortung.android.app.view.AlarmView
+    android:id="@+id/alarm_diagram"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/rounded_box"
-    android:orientation="vertical"
-    android:padding="10dp">
+    android:layout_height="match_parent" />
 
-    <ImageView
-        android:id="@+id/alarm_diagram"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <TextView
-        android:id="@+id/widget_update_time"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        style="@style/TextAppearance.AppCompat.Headline"
-        android:text="foobar"
-        />
+  <TextView
+    android:id="@+id/widget_update_time"
+    style="@style/TextAppearance.AppCompat.Headline"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:gravity="center"
+    android:text="foobar" />
 
 </LinearLayout>
