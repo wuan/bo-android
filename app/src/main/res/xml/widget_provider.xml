@@ -5,6 +5,6 @@
     android:previewImage="@drawable/abc_vector_test"
     android:minHeight="20dp"
     android:minWidth="20dp"
-    android:updatePeriodMillis="1800000"
+    android:updatePeriodMillis="0"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen" />

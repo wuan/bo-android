@@ -29,6 +29,9 @@ class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameters) :
     override fun doWork(): Result {
         val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
         val appWidgetIds = inputData.getIntArray("appWidgetIds")
+            ?: appWidgetManager.getAppWidgetIds(
+                android.content.ComponentName(applicationContext, WidgetProvider::class.java)
+            )
 
         val app = applicationContext as BOApplication
         val component = app.component
@@ -41,8 +44,7 @@ class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameters) :
         try {
             locationHandler.start()
 
-            if (appWidgetIds != null) {
-                for (appWidgetId in appWidgetIds) {
+            for (appWidgetId in appWidgetIds) {
                     try {
                         val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
 
@@ -114,7 +116,6 @@ class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameters) :
                         Log.e(Main.LOG_TAG, "WidgetUpdateWorker.doWork() failed for widget $appWidgetId", e)
                     }
                 }
-            }
         } catch (e: Throwable) {
             Log.e(Main.LOG_TAG, "WidgetUpdateWorker.doWork() failed", e)
         } finally {
