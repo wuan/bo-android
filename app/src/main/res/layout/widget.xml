@@ -1,14 +1,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/alarm_widget"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/rounded_box"
-    android:orientation="vertical"
-    android:padding="10dp">
+  android:id="@+id/alarm_widget"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@drawable/rounded_box"
+  android:orientation="vertical"
+  android:padding="10dp">
 
-    <ImageView
-        android:id="@+id/alarm_diagram"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+  <ImageView
+    android:id="@+id/alarm_diagram"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:scaleType="fitCenter" />
+
+  <TextView
+    android:id="@+id/widget_update_time"
+    style="@style/TextAppearance.AppCompat.Headline"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:gravity="center"
+    android:textColor="#FFFFFF"
+    android:text="" />
 
 </LinearLayout>

@@ -150,7 +150,7 @@ constructor(
     }
 
     override fun onDraw(canvas: Canvas) {
-        val size = max(width, height)
+        val size = min(width, height)
         val pad = ViewHelper.pxFromDp(context, 5f)
 
         val center = size / 2.0f

@@ -21,33 +21,66 @@ package org.blitzortung.android.app
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
-import android.widget.RemoteViews
-import org.blitzortung.android.app.view.AlarmView
+import android.os.Bundle
+import android.util.Log
+import androidx.work.*
+import java.util.concurrent.TimeUnit
 
 class WidgetProvider : AppWidgetProvider() {
-    override fun onUpdate(
-        context: Context,
-        appWidgetManager: AppWidgetManager,
-        appWidgetIds: IntArray,
-    ) {
-        for (element in appWidgetIds) {
-            element
-            updateAppWidget(context)
-        }
+
+    companion object {
+        private const val WIDGET_UPDATE_WORK_NAME = "widget_update_work"
+        private const val UPDATE_INTERVAL_MINUTES = 5L
     }
 
-    private fun updateAppWidget(context: Context) {
-        val alarmView = AlarmView(context)
-        alarmView.measure(150, 150)
-        alarmView.layout(0, 0, 150, 150)
-        alarmView.isDrawingCacheEnabled = true
-        val bitmap = alarmView.drawingCache
+    override fun onAppWidgetOptionsChanged(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int, newOptions: Bundle?) {
+        Log.v(Main.LOG_TAG, "WidgetProvider.onAppWidgetOptionsChanged()")
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
+        update(context, appWidgetManager, intArrayOf(appWidgetId))
+    }
 
-        val remoteViews =
-            RemoteViews(
-                context.packageName,
-                R.layout.widget,
-            )
-        remoteViews.setImageViewBitmap(R.layout.widget, bitmap)
+    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+        Log.v(Main.LOG_TAG, "WidgetProvider.onUpdate()")
+        update(context, appWidgetManager, appWidgetIds)
+    }
+
+    private fun update(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+        val workManager = WorkManager.getInstance(context)
+
+        val inputData = workDataOf("appWidgetIds" to appWidgetIds)
+
+        val workRequest = OneTimeWorkRequestBuilder<WidgetUpdateWorker>()
+            .setInputData(inputData)
+            .build()
+
+        workManager.enqueue(workRequest)
+    }
+
+    override fun onEnabled(context: Context) {
+        super.onEnabled(context)
+        Log.v(Main.LOG_TAG, "WidgetProvider.onEnabled() - Scheduling periodic updates")
+        schedulePeriodicUpdates(context)
+    }
+
+    override fun onDisabled(context: Context) {
+        super.onDisabled(context)
+        Log.v(Main.LOG_TAG, "WidgetProvider.onDisabled() - Cancelling periodic updates")
+        cancelPeriodicUpdates(context)
+    }
+
+    private fun schedulePeriodicUpdates(context: Context) {
+        val workRequest = PeriodicWorkRequestBuilder<WidgetUpdateWorker>(
+            UPDATE_INTERVAL_MINUTES, TimeUnit.MINUTES
+        ).build()
+
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            WIDGET_UPDATE_WORK_NAME,
+            ExistingPeriodicWorkPolicy.KEEP,
+            workRequest
+        )
+    }
+
+    private fun cancelPeriodicUpdates(context: Context) {
+        WorkManager.getInstance(context).cancelUniqueWork(WIDGET_UPDATE_WORK_NAME)
     }
 }

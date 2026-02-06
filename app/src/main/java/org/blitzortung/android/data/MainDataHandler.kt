@@ -82,7 +82,8 @@ constructor(
     private var period: Int = 0
     private var sequenceNumber = AtomicLong()
 
-    private var dataProvider: DataProvider? = null
+    var dataProvider: DataProvider? = null
+        private set
 
     var parameters = Parameters()
         private set
