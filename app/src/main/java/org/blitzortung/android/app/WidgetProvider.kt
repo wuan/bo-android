@@ -21,7 +21,6 @@ package org.blitzortung.android.app
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
-import android.os.Bundle
 import android.util.Log
 import androidx.work.*
 import java.util.concurrent.TimeUnit
@@ -33,27 +32,10 @@ class WidgetProvider : AppWidgetProvider() {
         private const val UPDATE_INTERVAL_MINUTES = 5L
     }
 
-    override fun onAppWidgetOptionsChanged(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int, newOptions: Bundle?) {
-        Log.v(Main.LOG_TAG, "WidgetProvider.onAppWidgetOptionsChanged()")
-        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
-        update(context, appWidgetManager, intArrayOf(appWidgetId))
-    }
-
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        Log.v(Main.LOG_TAG, "WidgetProvider.onUpdate()")
-        update(context, appWidgetManager, appWidgetIds)
-    }
-
-    private fun update(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        val workManager = WorkManager.getInstance(context)
-
-        val inputData = workDataOf("appWidgetIds" to appWidgetIds)
-
-        val workRequest = OneTimeWorkRequestBuilder<WidgetUpdateWorker>()
-            .setInputData(inputData)
-            .build()
-
-        workManager.enqueue(workRequest)
+        super.onUpdate(context, appWidgetManager, appWidgetIds)
+        Log.v(Main.LOG_TAG, "WidgetProvider.onUpdate() - ensuring periodic updates are scheduled")
+        schedulePeriodicUpdates(context)
     }
 
     override fun onEnabled(context: Context) {
