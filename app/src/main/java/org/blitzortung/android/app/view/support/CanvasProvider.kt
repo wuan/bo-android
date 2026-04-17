@@ -17,7 +17,7 @@ class CanvasProvider(
         if (width <= 0 || height <= 0) {
             return null
         }
-        if (canvas == null || canvas?.width != width || canvas?.height != height) {
+        if (canvas == null) {
             canvas = CanvasWrapper(width, height, backgroundColor)
         }
         return canvas

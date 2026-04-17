@@ -75,7 +75,7 @@ constructor(
 
     private val alarmViewData = AlarmViewData()
 
-    private var canvasProvider: CanvasProvider = CanvasProvider(0, 0)
+    private var canvasProvider: CanvasProvider? = canvasProvider
 
     private val primitiveRenderer: PrimitiveRenderer = primitiveRenderer ?: PrimitiveRenderer()
     private var symbolRenderer: SymbolRenderer =
@@ -146,7 +146,9 @@ constructor(
             MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY),
         )
 
-        canvasProvider = CanvasProvider(measuredWidth, measuredHeight)
+        if (canvasProvider == null) {
+            canvasProvider = CanvasProvider(measuredWidth, measuredHeight)
+        }
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -162,7 +164,7 @@ constructor(
             this.radius = radius
         }
 
-        drawCanvas = canvasProvider.provide(colorHandler.backgroundColor, width, height)
+        drawCanvas = canvasProvider?.provide(colorHandler.backgroundColor, width, height)
 
         drawCanvas?.also { drawCanvas ->
             drawCanvas.clear()
