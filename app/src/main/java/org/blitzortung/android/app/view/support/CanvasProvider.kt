@@ -14,6 +14,9 @@ class CanvasProvider(
     private var canvas: CanvasWrapper? = null
 
     fun provide(backgroundColor: Int, width: Int, height: Int): CanvasWrapper? {
+        if (width <= 0 || height <= 0) {
+            return null
+        }
         if (canvas == null || canvas?.width != width || canvas?.height != height) {
             canvas = CanvasWrapper(width, height, backgroundColor)
         }
@@ -24,7 +27,7 @@ class CanvasProvider(
 class CanvasWrapper(
     val width: Int,
     val height: Int,
-    backgroundColor: Int,
+    private val backgroundColor: Int,
 ) {
 
     private val bitmap: Bitmap = createBitmap(width, height)
@@ -37,9 +40,13 @@ class CanvasWrapper(
     }
 
     fun clear() {
-        background.xfermode = XFERMODE_CLEAR
-        canvas.drawPaint(background)
-        background.xfermode = XFERMODE_SRC
+        val clearPaint = Paint().apply {
+            color = android.graphics.Color.BLACK
+            xfermode = XFERMODE_CLEAR
+        }
+        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), clearPaint)
+        background.color = backgroundColor
+        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), background)
     }
 
     fun update(targetCanvas: Canvas) {

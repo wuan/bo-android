@@ -34,7 +34,8 @@ class WidgetProvider : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
-        Log.v(Main.LOG_TAG, "WidgetProvider.onUpdate() - ensuring periodic updates are scheduled")
+        Log.v(Main.LOG_TAG, "WidgetProvider.onUpdate() - re-rendering with new size")
+        scheduleImmediateUpdate(context)
         scheduleNextUpdate(context)
     }
 

@@ -59,6 +59,7 @@ class LocalActivityRenderer(
         with(textStyle) {
             textAlign = Align.CENTER
             colorHandler?.also { color = it.textColor }
+            textSize = 0.8f * this@LocalActivityRenderer.textSize
         }
 
         val actualTime = System.currentTimeMillis()
@@ -71,7 +72,7 @@ class LocalActivityRenderer(
             renderSectorSideLines(alertSector, data, radiusIncrement, sectorWidth, canvasWrapper.canvas)
         }
 
-        textStyle.textAlign = Align.RIGHT
+        textStyle.textSize = 0.8f * textSize
         val textHeight = textStyle.getFontMetrics(null)
         for (radiusIndex in 0 until rangeSteps.size) {
             renderRangeCircle(

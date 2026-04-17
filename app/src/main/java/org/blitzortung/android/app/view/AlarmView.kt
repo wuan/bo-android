@@ -75,7 +75,8 @@ constructor(
 
     private val alarmViewData = AlarmViewData()
 
-    private val canvasProvider = canvasProvider ?: CanvasProvider(width, height)
+    private var canvasProvider: CanvasProvider = CanvasProvider(0, 0)
+
     private val primitiveRenderer: PrimitiveRenderer = primitiveRenderer ?: PrimitiveRenderer()
     private var symbolRenderer: SymbolRenderer =
         symbolRenderer ?: SymbolRenderer(context, this.primitiveRenderer, textSize)
@@ -132,10 +133,7 @@ constructor(
         localActivityRenderer.enableDescriptionText = true
     }
 
-    override fun onMeasure(
-        widthMeasureSpec: Int,
-        heightMeasureSpec: Int,
-    ) {
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val getSize = fun(spec: Int) = MeasureSpec.getSize(spec)
 
         val parentWidth = getSize(widthMeasureSpec) * sizeFactor
@@ -147,6 +145,8 @@ constructor(
             MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY),
         )
+
+        canvasProvider = CanvasProvider(measuredWidth, measuredHeight)
     }
 
     override fun onDraw(canvas: Canvas) {

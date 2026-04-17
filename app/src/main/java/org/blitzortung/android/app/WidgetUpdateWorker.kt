@@ -1,7 +1,9 @@
 package org.blitzortung.android.app
 
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.util.Log
@@ -24,7 +26,7 @@ import org.blitzortung.android.alert.LocalActivity
 class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
 
-    private var df: DateFormat = SimpleDateFormat("HH:mm:ss")
+    private var df: DateFormat = SimpleDateFormat("HH:mm")
 
     override fun doWork(): Result {
         val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
@@ -108,17 +110,28 @@ class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameters) :
                     alarmView.layout(0, 0, alarmView.measuredWidth, alarmView.measuredHeight)
 
                     val bitmap = Bitmap.createBitmap(
-                        alarmView.measuredWidth, alarmView.measuredHeight, Bitmap.Config.ARGB_8888
+                        alarmView.measuredWidth * 2,
+                        alarmView.measuredHeight * 2,
+                        Bitmap.Config.ARGB_8888
                     )
                     val canvas = Canvas(bitmap)
+                    canvas.scale(2f, 2f)
                     alarmView.draw(canvas)
 
+                    val displayText = if (statusText != null) {
+                        "%s @ %s".format(statusText, df.format(Date()))
+                    } else {
+                        df.format(Date())
+                    }
                     val views = RemoteViews(applicationContext.packageName, R.layout.widget)
-                    views.setImageViewBitmap(R.id.alarm_diagram, bitmap)
-                    views.setTextViewText(
-                        R.id.widget_update_time,
-                        statusText ?: df.format(Date())
+                    val intent = Intent(applicationContext, Main::class.java)
+                    val pendingIntent = PendingIntent.getActivity(
+                        applicationContext, 0, intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
+                    views.setOnClickPendingIntent(R.id.alarm_widget, pendingIntent)
+                    views.setImageViewBitmap(R.id.alarm_diagram, bitmap)
+                    views.setTextViewText(R.id.widget_update_time, displayText)
                     appWidgetManager.partiallyUpdateAppWidget(appWidgetId, views)
                 } catch (e: Throwable) {
                     Log.e(Main.LOG_TAG, "WidgetUpdateWorker.doWork() failed for widget $appWidgetId", e)
