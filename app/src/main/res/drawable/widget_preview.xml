@@ -127,10 +127,7 @@
         android:strokeWidth="1"
         android:pathData="M90,90 L120.6,16.1" />
 
-    <!-- Direction markers (E and W) -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M170,87 L164,90 L170,93 Z" />
+    <!-- Direction markers (W) -->
     <path
         android:fillColor="#FFFFFF"
         android:pathData="M10,87 L16,90 L10,93 Z" />

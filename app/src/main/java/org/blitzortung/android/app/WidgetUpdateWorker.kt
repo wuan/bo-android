@@ -23,13 +23,15 @@ import java.util.*
 import kotlin.math.min
 import org.blitzortung.android.alert.LocalActivity
 
-class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameters) :
+open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
 
     private var df: DateFormat = SimpleDateFormat("HH:mm")
 
+    protected open fun getAppWidgetManager(): AppWidgetManager = AppWidgetManager.getInstance(applicationContext)
+
     override fun doWork(): Result {
-        val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
+        val appWidgetManager = getAppWidgetManager()
         val appWidgetIds = appWidgetManager.getAppWidgetIds(
             android.content.ComponentName(applicationContext, WidgetProvider::class.java)
         )

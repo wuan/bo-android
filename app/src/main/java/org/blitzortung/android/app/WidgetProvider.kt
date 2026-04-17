@@ -25,7 +25,7 @@ import android.util.Log
 import androidx.work.*
 import java.util.concurrent.TimeUnit
 
-class WidgetProvider : AppWidgetProvider() {
+open class WidgetProvider : AppWidgetProvider() {
 
     companion object {
         const val WIDGET_UPDATE_WORK_NAME = "widget_update_work"
@@ -46,16 +46,18 @@ class WidgetProvider : AppWidgetProvider() {
         scheduleNextUpdate(context)
     }
 
+    protected open fun getWorkManager(context: Context): WorkManager = WorkManager.getInstance(context)
+
     private fun scheduleImmediateUpdate(context: Context) {
         val workRequest = OneTimeWorkRequestBuilder<WidgetUpdateWorker>()
             .build()
-        WorkManager.getInstance(context).enqueue(workRequest)
+        getWorkManager(context).enqueue(workRequest)
     }
 
     override fun onDisabled(context: Context) {
         super.onDisabled(context)
         Log.v(Main.LOG_TAG, "WidgetProvider.onDisabled() - Cancelling periodic updates")
-        WorkManager.getInstance(context).cancelUniqueWork(WIDGET_UPDATE_WORK_NAME)
+        getWorkManager(context).cancelUniqueWork(WIDGET_UPDATE_WORK_NAME)
     }
 
     override fun onAppWidgetOptionsChanged(
@@ -73,7 +75,7 @@ class WidgetProvider : AppWidgetProvider() {
         val workRequest = PeriodicWorkRequestBuilder<WidgetUpdateWorker>(UPDATE_INTERVAL_MINUTES, TimeUnit.MINUTES)
             .build()
 
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+        getWorkManager(context).enqueueUniquePeriodicWork(
             WIDGET_UPDATE_WORK_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
             workRequest
