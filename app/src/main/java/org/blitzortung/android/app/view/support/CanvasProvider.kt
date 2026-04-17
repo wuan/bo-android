@@ -14,7 +14,7 @@ class CanvasProvider(
     private var canvas: CanvasWrapper? = null
 
     fun provide(backgroundColor: Int, width: Int, height: Int): CanvasWrapper? {
-        if (canvas == null) {
+        if (canvas == null || canvas?.width != width || canvas?.height != height) {
             canvas = CanvasWrapper(width, height, backgroundColor)
         }
         return canvas
@@ -22,8 +22,8 @@ class CanvasProvider(
 }
 
 class CanvasWrapper(
-    width: Int,
-    height: Int,
+    val width: Int,
+    val height: Int,
     backgroundColor: Int,
 ) {
 

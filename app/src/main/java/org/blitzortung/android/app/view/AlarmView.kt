@@ -71,6 +71,10 @@ constructor(
     private var location: Location? = null
     private var enableDescriptionText = false
 
+    private var drawCanvas: CanvasWrapper? = null
+
+    private val alarmViewData = AlarmViewData()
+
     private val canvasProvider = canvasProvider ?: CanvasProvider(width, height)
     private val primitiveRenderer: PrimitiveRenderer = primitiveRenderer ?: PrimitiveRenderer()
     private var symbolRenderer: SymbolRenderer =
@@ -79,10 +83,6 @@ constructor(
         context,
         this.primitiveRenderer, textSize * textSizeFactor(context)
     )
-
-    private var drawCanvas: CanvasWrapper? = null
-
-    private val alarmViewData = AlarmViewData()
 
     val alertEventConsumer: (Warning) -> Unit = { event ->
         val updated = warning != event

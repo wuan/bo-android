@@ -40,8 +40,15 @@ class WidgetProvider : AppWidgetProvider() {
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
-        Log.v(Main.LOG_TAG, "WidgetProvider.onEnabled() - Scheduling periodic updates")
+        Log.v(Main.LOG_TAG, "WidgetProvider.onEnabled() - Scheduling immediate and periodic updates")
+        scheduleImmediateUpdate(context)
         scheduleNextUpdate(context)
+    }
+
+    private fun scheduleImmediateUpdate(context: Context) {
+        val workRequest = OneTimeWorkRequestBuilder<WidgetUpdateWorker>()
+            .build()
+        WorkManager.getInstance(context).enqueue(workRequest)
     }
 
     override fun onDisabled(context: Context) {
