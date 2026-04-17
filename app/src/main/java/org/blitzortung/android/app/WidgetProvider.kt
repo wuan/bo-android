@@ -58,6 +58,17 @@ class WidgetProvider : AppWidgetProvider() {
         WorkManager.getInstance(context).cancelUniqueWork(WIDGET_UPDATE_WORK_NAME)
     }
 
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetId: Int,
+        newOptions: android.os.Bundle?
+    ) {
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
+        Log.v(Main.LOG_TAG, "WidgetProvider.onAppWidgetOptionsChanged() - re-rendering with new size")
+        scheduleImmediateUpdate(context)
+    }
+
     private fun scheduleNextUpdate(context: Context) {
         val workRequest = PeriodicWorkRequestBuilder<WidgetUpdateWorker>(UPDATE_INTERVAL_MINUTES, TimeUnit.MINUTES)
             .build()
