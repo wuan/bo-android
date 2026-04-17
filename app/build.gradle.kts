@@ -14,8 +14,8 @@ android {
         applicationId = "org.blitzortung.android.app"
         minSdk = 23
         targetSdk = 35
-        versionCode = 347
-        versionName = "2.4.6"
+        versionCode = 348
+        versionName = "2.5.0beta1"
         multiDexEnabled = false
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -76,7 +76,7 @@ android {
     buildToolsVersion = "35.0.0"
 }
 
-val daggerVersion = "2.59.1"
+val daggerVersion = "2.59.2"
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.1")

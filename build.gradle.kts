@@ -2,10 +2,10 @@
 plugins {
     id("com.android.application") version "9.1.1" apply false
     id("com.android.library") version "9.1.1" apply false
-    id("org.jetbrains.kotlin.android") version "2.3.10" apply false
-    id("org.sonarqube") version "7.2.2.6593"
+    id("org.jetbrains.kotlin.android") version "2.3.20" apply false
+    id("org.sonarqube") version "7.2.3.7755"
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
-    id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
 }
 
 tasks.register<Delete>("clean") {
