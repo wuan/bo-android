@@ -8,148 +8,138 @@
     <!-- Background -->
     <path
         android:fillColor="#CC000000"
-        android:pathData="M4,4 L176,4 Q180,4 180,8 L180,176 Q180,180 176,180 L4,180 Q0,180 0,176 L0,8 Q0,4 4,4 Z" />
+        android:pathData="M0,0 L180,0 L180,180 L0,180 Z" />
 
-    <!-- Border -->
-    <path
-        android:fillColor="#00000000"
-        android:strokeColor="#888888"
-        android:strokeWidth="3"
-        android:pathData="M4,4 L176,4 Q180,4 180,8 L180,176 Q180,180 176,180 L4,180 Q0,180 0,176 L0,8 Q0,4 4,4 Z" />
-
-    <!-- Radar center point -->
-    <!-- Outer ring (500 km) -->
-    <path
-        android:fillColor="#00000000"
-        android:strokeColor="#444444"
-        android:strokeWidth="1"
-        android:pathData="M90,82 m-68,0 a68,68 0 1,0 136,0 a68,68 0 1,0 -136,0" />
-
-    <!-- Ring 250 km -->
-    <path
-        android:fillColor="#00000000"
-        android:strokeColor="#444444"
-        android:strokeWidth="1"
-        android:pathData="M90,82 m-54,0 a54,54 0 1,0 108,0 a54,54 0 1,0 -108,0" />
-
-    <!-- Ring 100 km -->
+    <!-- 5 Equidistant concentric rings (center 90,90, radii 16,32,48,64,80) -->
     <path
         android:fillColor="#00000000"
         android:strokeColor="#555555"
         android:strokeWidth="1"
-        android:pathData="M90,82 m-40,0 a40,40 0 1,0 80,0 a80,80 0 1,0 -80,0" />
-
-    <!-- Ring 50 km -->
+        android:pathData="M90,90 m-16,0 a16,16 0 1,0 32,0 a16,16 0 1,0 -32,0" />
     <path
         android:fillColor="#00000000"
         android:strokeColor="#555555"
         android:strokeWidth="1"
-        android:pathData="M90,82 m-27,0 a27,27 0 1,0 54,0 a27,27 0 1,0 -54,0" />
-
-    <!-- Ring 25 km -->
+        android:pathData="M90,90 m-32,0 a32,32 0 1,0 64,0 a32,32 0 1,0 -64,0" />
     <path
         android:fillColor="#00000000"
-        android:strokeColor="#666666"
+        android:strokeColor="#555555"
         android:strokeWidth="1"
-        android:pathData="M90,82 m-16,0 a16,16 0 1,0 32,0 a16,16 0 1,0 -32,0" />
-
-    <!-- Ring 10 km -->
+        android:pathData="M90,90 m-48,0 a48,48 0 1,0 96,0 a48,48 0 1,0 -96,0" />
     <path
         android:fillColor="#00000000"
-        android:strokeColor="#666666"
+        android:strokeColor="#555555"
         android:strokeWidth="1"
-        android:pathData="M90,82 m-7,0 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0" />
+        android:pathData="M90,90 m-64,0 a64,64 0 1,0 128,0 a64,64 0 1,0 -128,0" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 m-80,0 a80,80 0 1,0 160,0 a80,80 0 1,0 -160,0" />
 
-    <!-- Sector lines (8 sectors: N/NE/E/SE/S/SW/W/NW) -->
-    <!-- N-S -->
-    <path
-        android:strokeColor="#444444"
-        android:strokeWidth="1"
-        android:pathData="M90,14 L90,150" />
-    <!-- N marker -->
+    <!-- Ring 1-2 (r16-r32) segments -->
+    <!-- S sector (157.5°-202.5°): white, inner arc CCW, outer arc CW -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M90,10 L87,14 L93,14 Z" />
-    <!-- S marker -->
+        android:pathData="M75.2,83.9 A16,16 0 0,0 83.9,96.1 L77.8,119.6 A32,32 0 0,1 60.4,102.2 Z" />
+    <!-- NE sector (22.5°-67.5°): orange, inner arc CW, outer arc CCW -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M90,154 L87,150 L93,150 Z" />
-    <!-- E-W -->
+        android:fillColor="#FFB060"
+        android:pathData="M104.8,96.1 A16,16 0 0,1 96.1,104.8 L102.2,119.6 A32,32 0 0,0 119.6,102.2 Z" />
+    <!-- NW sector (292.5°-337.5°): dark red, inner arc CCW, outer arc CW -->
     <path
-        android:strokeColor="#444444"
-        android:strokeWidth="1"
-        android:pathData="M22,82 L158,82" />
-    <!-- E marker -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M162,82 L158,79 L158,85 Z" />
-    <!-- W marker -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M18,82 L22,79 L22,85 Z" />
-    <!-- NE-SW (45°) -->
-    <path
-        android:strokeColor="#444444"
-        android:strokeWidth="1"
-        android:pathData="M42,34 L138,130" />
-    <!-- NE marker -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M140,32 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
-    <!-- SW marker -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M40,132 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
-    <!-- NW-SE (135°) -->
-    <path
-        android:strokeColor="#444444"
-        android:strokeWidth="1"
-        android:pathData="M138,34 L42,130" />
-    <!-- NW marker -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M38,32 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
-    <!-- SE marker -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M142,132 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
+        android:fillColor="#FFE05050"
+        android:pathData="M96.1,75.2 L102.2,60.4 A32,32 0 0,0 119.6,77.8 L104.8,83.9 A16,16 0 0,1 96.1,75.2 Z" />
 
-    <!-- Sample strikes (red = recent, yellow = older, blue = oldest) -->
+    <!-- Ring 2-3 (r32-r48) segments -->
+    <!-- E sector (67.5°-112.5°): yellow, inner arc CCW, outer arc CW -->
     <path
-        android:fillColor="#FF4444"
-        android:pathData="M110,62 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0" />
+        android:fillColor="#FFE079"
+        android:pathData="M102.2,119.6 L108.4,134.3 A48,48 0 0,0 71.6,134.3 L77.8,119.6 A32,32 0 0,1 102.2,119.6 Z" />
+    <!-- SW sector (202.5°-247.5°): orange, inner arc CW, outer arc CCW -->
     <path
-        android:fillColor="#FF4444"
-        android:pathData="M118,55 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
-    <path
-        android:fillColor="#FFAA00"
-        android:pathData="M130,50 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
-    <path
-        android:fillColor="#FFAA00"
-        android:pathData="M70,48 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
-    <path
-        android:fillColor="#4488FF"
-        android:pathData="M58,100 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
-    <path
-        android:fillColor="#4488FF"
-        android:pathData="M145,75 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0" />
-
-    <!-- Center dot -->
+        android:fillColor="#FFB060"
+        android:pathData="M60.4,102.2 L45.7,108.4 A48,48 0 0,1 45.7,71.6 L60.4,77.8 A32,32 0 0,0 60.4,102.2 Z" />
+    <!-- N sector (337.5°-22.5°): white, inner arc CW, outer arc CCW -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M90,82 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
+        android:pathData="M119.6,77.8 L134.3,71.6 A48,48 0 0,1 149.1,114.5 L119.6,102.2 A32,32 0 0,0 119.6,77.8 Z" />
 
-    <!-- Bottom status bar separator -->
+    <!-- Ring 3-4 (r48-r64) segments -->
+    <!-- SE sector (112.5°-157.5°): dark red, inner arc CW, outer arc CCW -->
     <path
-        android:strokeColor="#444444"
-        android:strokeWidth="1"
-        android:pathData="M8,155 L172,155" />
+        android:fillColor="#FFE05050"
+        android:pathData="M71.6,134.3 L65.5,149.1 A64,64 0 0,1 30.9,114.5 L45.7,108.4 A48,48 0 0,0 71.6,134.3 Z" />
+    <!-- W sector (247.5°-292.5°): yellow, inner arc CCW, outer arc CW -->
+    <path
+        android:fillColor="#FFE079"
+        android:pathData="M45.7,71.6 L30.9,65.5 A64,64 0 0,0 65.5,30.9 L71.6,45.7 A48,48 0 0,1 45.7,71.6 Z" />
+    <!-- NE sector (22.5°-67.5°): orange, inner arc CW, outer arc CCW -->
+    <path
+        android:fillColor="#FFB060"
+        android:pathData="M134.3,108.4 L149.1,114.5 A64,64 0 0,1 114.5,149.1 L108.4,134.3 A48,48 0 0,0 134.3,108.4 Z" />
 
-    <!-- Status text placeholder (three short lines to suggest text) -->
+    <!-- Ring 4-5 (r64-r80) segments -->
+    <!-- S sector (157.5°-202.5°): white, inner arc CCW, outer arc CW -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30.9,65.5 L16.1,59.4 A80,80 0 0,0 16.1,120.6 L30.9,114.5 A64,64 0 0,1 30.9,65.5 Z" />
+    <!-- SW sector (202.5°-247.5°): orange, inner arc CW, outer arc CCW -->
+    <path
+        android:fillColor="#FFB060"
+        android:pathData="M65.5,30.9 L59.4,16.1 A80,80 0 0,1 120.6,16.1 L114.5,30.9 A64,64 0 0,0 65.5,30.9 Z" />
+    <!-- N sector (337.5°-22.5°): yellow, inner arc CW, outer arc CCW -->
+    <path
+        android:fillColor="#FFE079"
+        android:pathData="M149.1,65.5 L163.9,59.4 A80,80 0 0,1 163.9,120.6 L149.1,114.5 A64,64 0 0,0 149.1,65.5 Z" />
+
+    <!-- 8 sector divider lines -->
+    <path
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 L164,59" />
+    <path
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 L164,121" />
+    <path
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 L121,164" />
+    <path
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 L59,164" />
+    <path
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 L16,121" />
+    <path
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 L16,59" />
+    <path
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 L59,16" />
+    <path
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 L121,16" />
+
+    <!-- Direction markers (E and W only) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M170,87 L164,90 L164,90 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,87 L16,90 L16,90 Z" />
+
+    <!-- Status text line -->
     <path
         android:strokeColor="#AAAAAA"
         android:strokeWidth="2"
         android:strokeLineCap="round"
-        android:pathData="M55,163 L125,163" />
+        android:pathData="M55,173 L125,173" />
 
 </vector>
