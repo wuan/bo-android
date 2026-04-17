@@ -39,6 +39,10 @@ class LocalActivityRenderer(
             color = 0xff404040.toInt()
             textSize = 0.8f * this@LocalActivityRenderer.textSize
         }
+
+        with(sectorPaint) {
+            style = Style.FILL
+        }
     }
 
     fun renderLocalActivity(
@@ -72,7 +76,8 @@ class LocalActivityRenderer(
             renderSectorSideLines(alertSector, data, radiusIncrement, sectorWidth, canvasWrapper.canvas)
         }
 
-        textStyle.textSize = 0.8f * textSize
+        //textStyle.textSize = 0.8f * textSize
+        textStyle.textAlign = Align.RIGHT
         val textHeight = textStyle.getFontMetrics(null)
         for (radiusIndex in 0 until rangeSteps.size) {
             renderRangeCircle(

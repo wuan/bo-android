@@ -40,13 +40,9 @@ class CanvasWrapper(
     }
 
     fun clear() {
-        val clearPaint = Paint().apply {
-            color = android.graphics.Color.BLACK
-            xfermode = XFERMODE_CLEAR
-        }
-        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), clearPaint)
-        background.color = backgroundColor
-        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), background)
+        background.xfermode = XFERMODE_CLEAR
+        canvas.drawPaint(background)
+        background.xfermode = XFERMODE_SRC
     }
 
     fun update(targetCanvas: Canvas) {
