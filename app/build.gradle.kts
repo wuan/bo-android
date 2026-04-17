@@ -2,8 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
+    id("com.android.legacy-kapt")
     id("jacoco")
 }
 
@@ -72,8 +71,6 @@ android {
     }
 
     namespace = "org.blitzortung.android.app"
-
-    buildToolsVersion = "35.0.0"
 }
 
 val daggerVersion = "2.59.2"
