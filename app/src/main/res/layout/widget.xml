@@ -15,10 +15,10 @@
 
   <TextView
     android:id="@+id/widget_update_time"
-    style="@style/TextAppearance.AppCompat.Headline"
+    style="@style/TextAppearance.AppCompat.Small"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="4dp"
+    android:layout_marginTop="3dp"
     android:gravity="center"
     android:textColor="#FFFFFF"
     android:text="" />

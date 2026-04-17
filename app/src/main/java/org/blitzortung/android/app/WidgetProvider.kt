@@ -28,41 +28,36 @@ import java.util.concurrent.TimeUnit
 class WidgetProvider : AppWidgetProvider() {
 
     companion object {
-        private const val WIDGET_UPDATE_WORK_NAME = "widget_update_work"
-        private const val UPDATE_INTERVAL_MINUTES = 5L
+        const val WIDGET_UPDATE_WORK_NAME = "widget_update_work"
+        const val UPDATE_INTERVAL_MINUTES = 15L
     }
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
         Log.v(Main.LOG_TAG, "WidgetProvider.onUpdate() - ensuring periodic updates are scheduled")
-        schedulePeriodicUpdates(context)
+        scheduleNextUpdate(context)
     }
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
         Log.v(Main.LOG_TAG, "WidgetProvider.onEnabled() - Scheduling periodic updates")
-        schedulePeriodicUpdates(context)
+        scheduleNextUpdate(context)
     }
 
     override fun onDisabled(context: Context) {
         super.onDisabled(context)
         Log.v(Main.LOG_TAG, "WidgetProvider.onDisabled() - Cancelling periodic updates")
-        cancelPeriodicUpdates(context)
+        WorkManager.getInstance(context).cancelUniqueWork(WIDGET_UPDATE_WORK_NAME)
     }
 
-    private fun schedulePeriodicUpdates(context: Context) {
-        val workRequest = PeriodicWorkRequestBuilder<WidgetUpdateWorker>(
-            UPDATE_INTERVAL_MINUTES, TimeUnit.MINUTES
-        ).build()
+    private fun scheduleNextUpdate(context: Context) {
+        val workRequest = PeriodicWorkRequestBuilder<WidgetUpdateWorker>(UPDATE_INTERVAL_MINUTES, TimeUnit.MINUTES)
+            .build()
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             WIDGET_UPDATE_WORK_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
             workRequest
         )
-    }
-
-    private fun cancelPeriodicUpdates(context: Context) {
-        WorkManager.getInstance(context).cancelUniqueWork(WIDGET_UPDATE_WORK_NAME)
     }
 }

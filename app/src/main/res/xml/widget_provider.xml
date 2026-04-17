@@ -2,7 +2,7 @@
 
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:initialLayout="@layout/widget"
-    android:previewImage="@drawable/abc_vector_test"
+    android:previewImage="@drawable/widget_preview"
     android:minHeight="20dp"
     android:minWidth="20dp"
     android:updatePeriodMillis="0"
