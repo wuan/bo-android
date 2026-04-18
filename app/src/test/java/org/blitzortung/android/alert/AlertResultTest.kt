@@ -45,4 +45,41 @@ class AlertResultTest {
         assertThat(uut.bearingName).isEqualTo("foo")
         assertThat(uut.sectorWithClosestStrike).isNotNull
     }
+
+    @Test
+    fun toStringUsesKmForMetric() {
+        val uut =
+            LocalActivity(
+                listOf(AlertSector("N", 1.0f, 2.0f, emptyList(), 15.5f)),
+                alertParameters,
+                System.currentTimeMillis(),
+            )
+
+        assertThat(uut.toString()).isEqualTo("N 15.5 km")
+    }
+
+    @Test
+    fun toStringUsesMiForImperial() {
+        val imperialParameters = AlertParameters(
+            alarmInterval = alertParameters.alarmInterval,
+            rangeSteps = alertParameters.rangeSteps,
+            sectorLabels = alertParameters.sectorLabels,
+            measurementSystem = MeasurementSystem.IMPERIAL,
+        )
+        val uut =
+            LocalActivity(
+                listOf(AlertSector("NE", 1.0f, 2.0f, emptyList(), 25.0f)),
+                imperialParameters,
+                System.currentTimeMillis(),
+            )
+
+        assertThat(uut.toString()).isEqualTo("NE 25.0 mi")
+    }
+
+    @Test
+    fun emptySectorsToStringReturnsOnlyBearingName() {
+        val uut = LocalActivity(emptyList(), alertParameters, System.currentTimeMillis())
+
+        assertThat(uut.toString()).isEqualTo("n/a")
+    }
 }

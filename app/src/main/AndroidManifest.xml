@@ -51,13 +51,23 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <!--<receiver android:name=".WidgetProvider">
-            <meta-data android:name="android.appwidget.provider"
-                       android:resource="@xml/widget_provider" />
+        <receiver
+            android:name=".WidgetClickReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="org.blitzortung.android.app.ACTION_WIDGET_CLICK" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".WidgetProvider"
+            android:exported="true">
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_provider" />
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-        </receiver>-->
+        </receiver>
     </application>
     <queries>
         <intent>

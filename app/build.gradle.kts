@@ -14,8 +14,8 @@ android {
         applicationId = "org.blitzortung.android.app"
         minSdk = 23
         targetSdk = 35
-        versionCode = 347
-        versionName = "2.4.6"
+        versionCode = 348
+        versionName = "2.5-beta1"
         multiDexEnabled = false
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -72,11 +72,9 @@ android {
     }
 
     namespace = "org.blitzortung.android.app"
-
-    buildToolsVersion = "35.0.0"
 }
 
-val daggerVersion = "2.57.2"
+val daggerVersion = "2.59.2"
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.1")
@@ -99,9 +97,9 @@ dependencies {
 
     // Unit Testing
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.assertj:assertj-core:3.27.6")
-    testImplementation("io.mockk:mockk:1.14.6")
-    testImplementation("org.robolectric:robolectric:4.16")
+    testImplementation("org.assertj:assertj-core:3.27.7")
+    testImplementation("io.mockk:mockk:1.14.9")
+    testImplementation("org.robolectric:robolectric:4.16.1")
     testImplementation("androidx.test:core:1.7.0")
     testImplementation("androidx.test:core-ktx:1.7.0")
     testImplementation("androidx.test.ext:junit:1.3.0")
@@ -131,12 +129,12 @@ dependencies {
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.ext:junit-ktx:1.3.0")
-    androidTestImplementation("io.mockk:mockk-android:1.14.6")
+    androidTestImplementation("io.mockk:mockk-android:1.14.9")
     androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
 
     // Compose Testing (if needed in future)
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.9.5")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.9.5")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.10.2")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.10.2")
 }
 
 kapt {
@@ -144,6 +142,7 @@ kapt {
 }
 
 tasks.withType<Test> {
+    jvmArgs("-Xmx4g", "-XX:MaxMetaspaceSize=1g")
     configure<JacocoTaskExtension> {
         isIncludeNoLocationClasses = true
         excludes = listOf("jdk.internal.*")

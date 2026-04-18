@@ -52,6 +52,10 @@ data class LocalActivity(
         get() = sectorWithClosestStrike?.label ?: "n/a"
 
     override fun toString(): String {
-        return "%s %.1f %s".format(bearingName, closestStrikeDistance, parameters.measurementSystem)
+        return if (closestStrikeDistance == Float.POSITIVE_INFINITY) {
+            bearingName
+        } else {
+            "%s %.1f %s".format(bearingName, closestStrikeDistance, parameters.measurementSystem.unitSymbol)
+        }
     }
 }

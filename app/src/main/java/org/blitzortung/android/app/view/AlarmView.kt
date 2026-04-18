@@ -71,7 +71,12 @@ constructor(
     private var location: Location? = null
     private var enableDescriptionText = false
 
-    private val canvasProvider = canvasProvider ?: CanvasProvider(width, height)
+    private var drawCanvas: CanvasWrapper? = null
+
+    private val alarmViewData = AlarmViewData()
+
+    private var canvasProvider: CanvasProvider? = canvasProvider
+
     private val primitiveRenderer: PrimitiveRenderer = primitiveRenderer ?: PrimitiveRenderer()
     private var symbolRenderer: SymbolRenderer =
         symbolRenderer ?: SymbolRenderer(context, this.primitiveRenderer, textSize)
@@ -79,10 +84,6 @@ constructor(
         context,
         this.primitiveRenderer, textSize * textSizeFactor(context)
     )
-
-    private var drawCanvas: CanvasWrapper? = null
-
-    private val alarmViewData = AlarmViewData()
 
     val alertEventConsumer: (Warning) -> Unit = { event ->
         val updated = warning != event
@@ -132,10 +133,7 @@ constructor(
         localActivityRenderer.enableDescriptionText = true
     }
 
-    override fun onMeasure(
-        widthMeasureSpec: Int,
-        heightMeasureSpec: Int,
-    ) {
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val getSize = fun(spec: Int) = MeasureSpec.getSize(spec)
 
         val parentWidth = getSize(widthMeasureSpec) * sizeFactor
@@ -147,10 +145,14 @@ constructor(
             MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY),
         )
+
+        if (canvasProvider == null) {
+            canvasProvider = CanvasProvider(measuredWidth, measuredHeight)
+        }
     }
 
     override fun onDraw(canvas: Canvas) {
-        val size = max(width, height)
+        val size = min(width, height)
         val pad = ViewHelper.pxFromDp(context, 5f)
 
         val center = size / 2.0f
@@ -162,7 +164,7 @@ constructor(
             this.radius = radius
         }
 
-        drawCanvas = canvasProvider.provide(colorHandler.backgroundColor, width, height)
+        drawCanvas = canvasProvider?.provide(colorHandler.backgroundColor, width, height)
 
         drawCanvas?.also { drawCanvas ->
             drawCanvas.clear()

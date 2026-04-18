@@ -14,6 +14,9 @@ class CanvasProvider(
     private var canvas: CanvasWrapper? = null
 
     fun provide(backgroundColor: Int, width: Int, height: Int): CanvasWrapper? {
+        if (width <= 0 || height <= 0) {
+            return null
+        }
         if (canvas == null) {
             canvas = CanvasWrapper(width, height, backgroundColor)
         }
@@ -22,9 +25,9 @@ class CanvasProvider(
 }
 
 class CanvasWrapper(
-    width: Int,
-    height: Int,
-    backgroundColor: Int,
+    val width: Int,
+    val height: Int,
+    private val backgroundColor: Int,
 ) {
 
     private val bitmap: Bitmap = createBitmap(width, height)

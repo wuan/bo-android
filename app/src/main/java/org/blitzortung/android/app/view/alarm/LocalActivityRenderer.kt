@@ -39,6 +39,10 @@ class LocalActivityRenderer(
             color = 0xff404040.toInt()
             textSize = 0.8f * this@LocalActivityRenderer.textSize
         }
+
+        with(sectorPaint) {
+            style = Style.FILL
+        }
     }
 
     fun renderLocalActivity(
@@ -59,6 +63,7 @@ class LocalActivityRenderer(
         with(textStyle) {
             textAlign = Align.CENTER
             colorHandler?.also { color = it.textColor }
+            textSize = 0.8f * this@LocalActivityRenderer.textSize
         }
 
         val actualTime = System.currentTimeMillis()

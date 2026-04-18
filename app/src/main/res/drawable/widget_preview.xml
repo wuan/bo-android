@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="180dp"
+    android:height="180dp"
+    android:viewportWidth="180"
+    android:viewportHeight="180">
+
+    <!-- Background -->
+    <path
+        android:fillColor="#CC000000"
+        android:pathData="M0,0 L180,0 L180,180 L0,180 Z" />
+
+    <!-- 5 Equidistant concentric rings (center 90,90, radii 16,32,48,64,80) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 m-16,0 a16,16 0 1,0 32,0 a16,16 0 1,0 -32,0" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 m-32,0 a32,32 0 1,0 64,0 a32,32 0 1,0 -64,0" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 m-48,0 a48,48 0 1,0 96,0 a48,48 0 1,0 -96,0" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 m-64,0 a64,64 0 1,0 128,0 a64,64 0 1,0 -128,0" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 m-80,0 a80,80 0 1,0 160,0 a80,80 0 1,0 -160,0" />
+
+    <!-- Ring 1-2 (r16-r32) segments -->
+    <!-- NW sector (292.5-337.5): white -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M75.2,83.9 L60.4,77.8 A32,32 0 0,1 77.8,60.4 L83.9,75.2 A16,16 0 0,0 75.2,83.9 Z" />
+    <!-- SE sector (112.5-157.5): orange -->
+    <path
+        android:fillColor="#FFB060"
+        android:pathData="M104.8,96.1 A16,16 0 0,1 96.1,104.8 L102.2,119.6 A32,32 0 0,0 119.6,102.2 Z" />
+    <!-- NE sector (22.5-67.5): dark red -->
+    <path
+        android:fillColor="#FFE05050"
+        android:pathData="M96.1,75.2 L102.2,60.4 A32,32 0 0,1 119.6,77.8 L104.8,83.9 A16,16 0 0,0 96.1,75.2 Z" />
+
+    <!-- Ring 2-3 (r32-r48) segments -->
+    <!-- S sector (157.5-202.5): yellow -->
+    <path
+        android:fillColor="#FFE079"
+        android:pathData="M102.2,119.6 L108.4,134.3 A48,48 0 0,1 71.6,134.3 L77.8,119.6 A32,32 0 0,0 102.2,119.6 Z" />
+    <!-- W sector (247.5-292.5): orange -->
+    <path
+        android:fillColor="#FFB060"
+        android:pathData="M60.4,102.2 L45.7,108.4 A48,48 0 0,1 45.7,71.6 L60.4,77.8 A32,32 0 0,0 60.4,102.2 Z" />
+    <!-- E sector (67.5-112.5): white -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M119.6,77.8 L134.3,71.6 A48,48 0 0,1 134.3,108.4 L119.6,102.2 A32,32 0 0,0 119.6,77.8 Z" />
+
+    <!-- Ring 3-4 (r48-r64) segments -->
+    <!-- SW sector (202.5-247.5): dark red -->
+    <path
+        android:fillColor="#FFE05050"
+        android:pathData="M71.6,134.3 L65.5,149.1 A64,64 0 0,1 30.9,114.5 L45.7,108.4 A48,48 0 0,0 71.6,134.3 Z" />
+    <!-- NW sector (292.5-337.5): yellow -->
+    <path
+        android:fillColor="#FFE079"
+        android:pathData="M45.7,71.6 L30.9,65.5 A64,64 0 0,1 65.5,30.9 L71.6,45.7 A48,48 0 0,0 45.7,71.6 Z" />
+    <!-- SE sector (112.5-157.5): orange -->
+    <path
+        android:fillColor="#FFB060"
+        android:pathData="M134.3,108.4 L149.1,114.5 A64,64 0 0,1 114.5,149.1 L108.4,134.3 A48,48 0 0,0 134.3,108.4 Z" />
+
+    <!-- Ring 4-5 (r64-r80) segments -->
+    <!-- W sector (247.5-292.5): white -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30.9,65.5 L16.1,59.4 A80,80 0 0,0 16.1,120.6 L30.9,114.5 A64,64 0 0,1 30.9,65.5 Z" />
+    <!-- N sector (337.5-22.5): orange -->
+    <path
+        android:fillColor="#FFB060"
+        android:pathData="M65.5,30.9 L59.4,16.1 A80,80 0 0,1 120.6,16.1 L114.5,30.9 A64,64 0 0,0 65.5,30.9 Z" />
+    <!-- E sector (67.5-112.5): yellow -->
+    <path
+        android:fillColor="#FFE079"
+        android:pathData="M149.1,65.5 L163.9,59.4 A80,80 0 0,1 163.9,120.6 L149.1,114.5 A64,64 0 0,0 149.1,65.5 Z" />
+
+    <!-- 8 sector divider lines (from center to outermost circle) -->
+    <path
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 L163.9,59.4" />
+    <path
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 L163.9,120.6" />
+    <path
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 L120.6,163.9" />
+    <path
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 L59.4,163.9" />
+    <path
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 L16.1,120.6" />
+    <path
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 L16.1,59.4" />
+    <path
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 L59.4,16.1" />
+    <path
+        android:strokeColor="#555555"
+        android:strokeWidth="1"
+        android:pathData="M90,90 L120.6,16.1" />
+
+    <!-- Direction markers (W) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,87 L16,90 L10,93 Z" />
+
+    <!-- Status text line -->
+    <path
+        android:strokeColor="#AAAAAA"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M55,173 L125,173" />
+
+</vector>
