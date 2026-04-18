@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.location.Location
+import android.location.LocationManager
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
@@ -31,25 +33,38 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
     protected open fun getAppWidgetManager(): AppWidgetManager = AppWidgetManager.getInstance(applicationContext)
 
     override fun doWork(): Result {
+        Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() started")
+
         val appWidgetManager = getAppWidgetManager()
         val appWidgetIds = appWidgetManager.getAppWidgetIds(
             android.content.ComponentName(applicationContext, WidgetProvider::class.java)
         )
 
         if (appWidgetIds.isEmpty()) {
+            Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() no widgets found")
             return Result.success()
         }
 
-        val app = applicationContext as BOApplication
+        val app = applicationContext as? BOApplication
+        if (app == null) {
+            Log.e(Main.LOG_TAG, "WidgetUpdateWorker.doWork() failed: BOApplication not available")
+            return Result.failure()
+        }
+
         val component = app.component
+
+        Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() got component, starting update")
+
         val colorHandler = component.strikeColorHandler()
         val alertHandler = component.alertHandler()
         val alertDataHandler = component.alertDataHandler()
-        val locationHandler = component.locationHandler()
+        val locationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val dataProvider = component.jsonRpcDataProvider()
 
         try {
-            locationHandler.start()
+            // Get last known location directly without starting the provider (avoids thread issue)
+            val location = getLastKnownLocation(locationManager)
+            Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() got location: $location")
 
             for (appWidgetId in appWidgetIds) {
                 try {
@@ -67,7 +82,6 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
                     alarmView.setColorHandler(colorHandler, 60)
 
                     var statusText: String? = null
-                    val location = locationHandler.location
 
                     if (location != null) {
                         val scale = 5
@@ -82,9 +96,11 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
                             dataArea = dataArea
                         )
 
+                        Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() fetching strike data")
                         val result = dataProvider.retrieveData {
                             getStrikesGrid(parameters, null, Flags())
                         }
+                        Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() fetched strike data")
 
                         val strikes = result.strikes?.let { Strikes(it, result.gridParameters) }
 
@@ -145,10 +161,35 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
             }
         } catch (e: Throwable) {
             Log.e(Main.LOG_TAG, "WidgetUpdateWorker.doWork() failed", e)
-        } finally {
-            locationHandler.shutdown()
         }
 
+        Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() completed successfully")
         return Result.success()
+    }
+
+    private fun getLastKnownLocation(locationManager: LocationManager): Location? {
+        val providers = listOf(
+            LocationManager.GPS_PROVIDER,
+            LocationManager.NETWORK_PROVIDER,
+            LocationManager.PASSIVE_PROVIDER
+        )
+
+        var bestLocation: Location? = null
+        for (provider in providers) {
+            try {
+                val location = locationManager.getLastKnownLocation(provider)
+                if (location != null) {
+                    if (bestLocation == null || location.accuracy < bestLocation.accuracy) {
+                        bestLocation = location
+                    }
+                }
+            } catch (e: SecurityException) {
+                Log.w(Main.LOG_TAG, "No permission for location provider: $provider")
+            } catch (e: Exception) {
+                Log.w(Main.LOG_TAG, "Failed to get location from provider: $provider", e)
+            }
+        }
+
+        return bestLocation
     }
 }
