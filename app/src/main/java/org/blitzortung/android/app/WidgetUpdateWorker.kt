@@ -126,14 +126,18 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
                         df.format(Date())
                     }
                     val views = RemoteViews(applicationContext.packageName, R.layout.widget)
-                    val intent = Intent(applicationContext, Main::class.java)
-                    val pendingIntent = PendingIntent.getActivity(
+
+                    val intent = Intent(applicationContext, WidgetClickReceiver::class.java).apply {
+                        action = WidgetClickReceiver.ACTION_WIDGET_CLICK
+                    }
+                    val pendingIntent = PendingIntent.getBroadcast(
                         applicationContext, 0, intent,
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
                     views.setOnClickPendingIntent(R.id.alarm_widget, pendingIntent)
                     views.setImageViewBitmap(R.id.alarm_diagram, bitmap)
                     views.setTextViewText(R.id.widget_update_time, displayText)
+                    views.setViewVisibility(R.id.widget_progress, View.GONE)
                     appWidgetManager.partiallyUpdateAppWidget(appWidgetId, views)
                 } catch (e: Throwable) {
                     Log.e(Main.LOG_TAG, "WidgetUpdateWorker.doWork() failed for widget $appWidgetId", e)
