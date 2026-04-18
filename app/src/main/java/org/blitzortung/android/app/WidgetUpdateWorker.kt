@@ -47,166 +47,87 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() started")
 
         val appWidgetManager = getAppWidgetManager()
-        val appWidgetIds = appWidgetManager.getAppWidgetIds(
-            android.content.ComponentName(applicationContext, WidgetProvider::class.java)
-        )
+        val appWidgetIds = getWidgetIds(appWidgetManager)
 
         if (appWidgetIds.isEmpty()) {
             Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() no widgets found")
             return Result.success()
         }
 
-        val app = applicationContext as? BOApplication
-        if (app == null) {
+        val appComponents = getAppComponents()
+        if (appComponents == null) {
             Log.e(Main.LOG_TAG, "WidgetUpdateWorker.doWork() failed: BOApplication not available")
             return Result.failure()
         }
 
+        val location = resolveLocation(appComponents.locationManager, appComponents.preferences)
+        val locationInfo = formatLocationInfo(location)
+
+        return updateWidgets(appWidgetIds, appWidgetManager, appComponents, location, locationInfo)
+    }
+
+    private fun getWidgetIds(appWidgetManager: AppWidgetManager): IntArray {
+        return appWidgetManager.getAppWidgetIds(
+            android.content.ComponentName(applicationContext, WidgetProvider::class.java)
+        )
+    }
+
+    private data class AppComponents(
+        val colorHandler: org.blitzortung.android.map.overlay.color.StrikeColorHandler,
+        val alertHandler: org.blitzortung.android.alert.handler.AlertHandler,
+        val alertDataHandler: org.blitzortung.android.alert.handler.AlertDataHandler,
+        val locationManager: LocationManager,
+        val dataProvider: org.blitzortung.android.data.provider.standard.JsonRpcDataProvider,
+        val preferences: SharedPreferences
+    )
+
+    private fun getAppComponents(): AppComponents? {
+        val app = applicationContext as? BOApplication ?: return null
         val component = app.component
 
-        Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() got component, starting update")
+        return AppComponents(
+            colorHandler = component.strikeColorHandler(),
+            alertHandler = component.alertHandler(),
+            alertDataHandler = component.alertDataHandler(),
+            locationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager,
+            dataProvider = component.jsonRpcDataProvider(),
+            preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        )
+    }
 
-        val colorHandler = component.strikeColorHandler()
-        val alertHandler = component.alertHandler()
-        val alertDataHandler = component.alertDataHandler()
-        val locationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val dataProvider = component.jsonRpcDataProvider()
-
-        // Get location mode from preferences
-        val preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+    private fun resolveLocation(locationManager: LocationManager, preferences: SharedPreferences): Location? {
         val locationMode = preferences.get(PreferenceKey.LOCATION_MODE, LocationHandler.MANUAL_PROVIDER)
-        Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() location mode: $locationMode")
-
-        // Get manual location if configured
         val manualLocation = getManualLocation(preferences)
 
+        val location = when {
+            locationMode == LocationHandler.MANUAL_PROVIDER && manualLocation != null -> {
+                Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() using manual location")
+                manualLocation
+            }
+            locationMode != LocationHandler.MANUAL_PROVIDER -> {
+                getLastKnownLocationFromProvider(locationManager, locationMode)
+            }
+            else -> {
+                getLastKnownLocation(locationManager)
+            }
+        }
+        Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() got location: $location")
+        return location
+    }
+
+    private fun updateWidgets(
+        appWidgetIds: IntArray,
+        appWidgetManager: AppWidgetManager,
+        appComponents: AppComponents,
+        location: Location?,
+        locationInfo: String?
+    ): Result {
         var anyWidgetUpdated = false
 
         try {
-            // Get last known location directly without starting the provider (avoids thread issue)
-            // Respect user's location mode setting
-            val location = if (locationMode == LocationHandler.MANUAL_PROVIDER && manualLocation != null) {
-                Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() using manual location")
-                manualLocation
-            } else if (locationMode != LocationHandler.MANUAL_PROVIDER) {
-                getLastKnownLocationFromProvider(locationManager, locationMode)
-            } else {
-                // Manual mode but no manual location set, try to get any available location
-                getLastKnownLocation(locationManager)
-            }
-            Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() got location: $location")
-
-            // Format location info for overlay
-            val locationInfo = formatLocationInfo(location)
-
             for (appWidgetId in appWidgetIds) {
                 try {
-                    val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
-
-                    val displayMetrics = applicationContext.resources.displayMetrics
-                    val density = displayMetrics.density
-                    val minWidthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
-                    val minHeightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
-
-                    val widthPx = ((if (minWidthDp > 0) minWidthDp else 100) * density).toInt()
-                    val heightPx = ((if (minHeightDp > 0) minHeightDp else 100) * density).toInt()
-
-                    val alarmView = AlarmView(applicationContext)
-                    alarmView.setColorHandler(colorHandler, 60)
-
-                    var statusText: String? = null
-
-                    if (location != null) {
-                        val scale = 5
-                        val x = calculateLocalCoordinate(location.longitude, scale)
-                        val y = calculateLocalCoordinate(location.latitude, scale)
-                        val dataArea = DataArea(x, y, scale)
-
-                        val parameters = Parameters(
-                            region = 0,
-                            gridSize = 5000,
-                            interval = TimeInterval(duration = 60),
-                            dataArea = dataArea
-                        )
-
-                        Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() fetching strike data")
-                        val result = dataProvider.retrieveData {
-                            getStrikesGrid(parameters, null, Flags())
-                        }
-                        Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() fetched strike data")
-
-                        val strikes = result.strikes?.let { Strikes(it, result.gridParameters) }
-
-                        if (strikes != null) {
-                            val alertResult = alertDataHandler.checkStrikes(
-                                strikes, location, alertHandler.alertParameters, result.referenceTime
-                            )
-
-                            if (alertResult is LocalActivity) {
-                                statusText = alertResult.toString()
-                            }
-
-                            alarmView.alertEventConsumer.invoke(alertResult)
-                        } else {
-                            statusText = applicationContext.getString(R.string.widget_no_strike_data)
-                        }
-                    } else {
-                        statusText = applicationContext.getString(R.string.widget_location_not_available)
-                    }
-
-                    // AlarmView forces square — measure with min(width, height)
-                    val diagramSize = min(widthPx, heightPx)
-                    val spec = View.MeasureSpec.makeMeasureSpec(diagramSize, View.MeasureSpec.EXACTLY)
-                    alarmView.measure(spec, spec)
-                    alarmView.layout(0, 0, alarmView.measuredWidth, alarmView.measuredHeight)
-
-                    // Calculate target size (2x for high DPI), capped at MAX_BITMAP_SIZE to prevent OOM
-                    var targetWidth = alarmView.measuredWidth * 2
-                    var targetHeight = alarmView.measuredHeight * 2
-
-                    if (targetWidth > MAX_BITMAP_SIZE || targetHeight > MAX_BITMAP_SIZE) {
-                        val scale = MAX_BITMAP_SIZE.toFloat() / maxOf(targetWidth, targetHeight)
-                        targetWidth = (targetWidth * scale).toInt()
-                        targetHeight = (targetHeight * scale).toInt()
-                    }
-
-                    val bitmap = Bitmap.createBitmap(
-                        targetWidth,
-                        targetHeight,
-                        Bitmap.Config.ARGB_8888
-                    )
-                    val canvas = Canvas(bitmap)
-                    val canvasScale = targetWidth.toFloat() / alarmView.measuredWidth
-                    canvas.scale(canvasScale, canvasScale)
-                    alarmView.draw(canvas)
-
-                    val displayText = if (statusText != null) {
-                        "%s @ %s".format(statusText, df.format(Date()))
-                    } else {
-                        df.format(Date())
-                    }
-                    val views = RemoteViews(applicationContext.packageName, R.layout.widget)
-
-                    val intent = Intent(applicationContext, WidgetClickReceiver::class.java).apply {
-                        action = WidgetClickReceiver.ACTION_WIDGET_CLICK
-                    }
-                    val pendingIntent = PendingIntent.getBroadcast(
-                        applicationContext, 0, intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
-                    views.setOnClickPendingIntent(R.id.alarm_widget, pendingIntent)
-                    views.setImageViewBitmap(R.id.alarm_diagram, bitmap)
-                    views.setTextViewText(R.id.widget_update_time, displayText)
-                    views.setViewVisibility(R.id.widget_progress, View.GONE)
-
-                    if (locationInfo != null) {
-                        views.setTextViewText(R.id.widget_location_info, locationInfo)
-                        views.setViewVisibility(R.id.widget_location_info, View.VISIBLE)
-                    } else {
-                        views.setViewVisibility(R.id.widget_location_info, View.GONE)
-                    }
-
-                    appWidgetManager.partiallyUpdateAppWidget(appWidgetId, views)
+                    updateSingleWidget(appWidgetId, appWidgetManager, appComponents, location, locationInfo)
                     anyWidgetUpdated = true
                 } catch (e: Throwable) {
                     Log.e(Main.LOG_TAG, "WidgetUpdateWorker.doWork() failed for widget $appWidgetId", e)
@@ -217,13 +138,156 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
             return if (anyWidgetUpdated) {
                 Result.success()
             } else {
-                // Retry for transient failures like network errors
                 Result.retry()
             }
         }
 
         Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() completed successfully")
         return Result.success()
+    }
+
+    private fun updateSingleWidget(
+        appWidgetId: Int,
+        appWidgetManager: AppWidgetManager,
+        appComponents: AppComponents,
+        location: Location?,
+        locationInfo: String?
+    ) {
+        val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
+        val displayMetrics = applicationContext.resources.displayMetrics
+
+        val (widthPx, heightPx) = calculateWidgetDimensions(options, displayMetrics)
+        val alarmView = createAlarmView(appComponents.colorHandler)
+        val (statusText, alertResult) = fetchStrikeData(appComponents, location, alarmView)
+        val bitmap = renderWidgetBitmap(alarmView, widthPx, heightPx)
+        val displayText = formatDisplayText(statusText)
+        val views = buildRemoteViews(bitmap, displayText, locationInfo)
+
+        appWidgetManager.partiallyUpdateAppWidget(appWidgetId, views)
+    }
+
+    private fun calculateWidgetDimensions(options: android.os.Bundle, displayMetrics: android.util.DisplayMetrics): Pair<Int, Int> {
+        val density = displayMetrics.density
+        val minWidthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
+        val minHeightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
+
+        val widthPx = ((if (minWidthDp > 0) minWidthDp else 100) * density).toInt()
+        val heightPx = ((if (minHeightDp > 0) minHeightDp else 100) * density).toInt()
+
+        return Pair(widthPx, heightPx)
+    }
+
+    private fun createAlarmView(colorHandler: org.blitzortung.android.map.overlay.color.StrikeColorHandler): AlarmView {
+        val alarmView = AlarmView(applicationContext)
+        alarmView.setColorHandler(colorHandler, 60)
+        return alarmView
+    }
+
+    private fun fetchStrikeData(
+        appComponents: AppComponents,
+        location: Location?,
+        alarmView: AlarmView
+    ): Pair<String?, Any?> {
+        var statusText: String? = null
+        var alertResult: Any? = null
+
+        if (location != null) {
+            val scale = 5
+            val x = calculateLocalCoordinate(location.longitude, scale)
+            val y = calculateLocalCoordinate(location.latitude, scale)
+            val dataArea = DataArea(x, y, scale)
+
+            val parameters = Parameters(
+                region = 0,
+                gridSize = 5000,
+                interval = TimeInterval(duration = 60),
+                dataArea = dataArea
+            )
+
+            Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() fetching strike data")
+            val result = appComponents.dataProvider.retrieveData {
+                getStrikesGrid(parameters, null, Flags())
+            }
+            Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() fetched strike data")
+
+            val strikes = result.strikes?.let { Strikes(it, result.gridParameters) }
+
+            if (strikes != null) {
+                alertResult = appComponents.alertDataHandler.checkStrikes(
+                    strikes, location, appComponents.alertHandler.alertParameters, result.referenceTime
+                )
+
+                if (alertResult is LocalActivity) {
+                    statusText = alertResult.toString()
+                }
+
+                alarmView.alertEventConsumer.invoke(alertResult)
+            } else {
+                statusText = applicationContext.getString(R.string.widget_no_strike_data)
+            }
+        } else {
+            statusText = applicationContext.getString(R.string.widget_location_not_available)
+        }
+
+        return Pair(statusText, alertResult)
+    }
+
+    private fun renderWidgetBitmap(alarmView: AlarmView, widthPx: Int, heightPx: Int): Bitmap {
+        val diagramSize = min(widthPx, heightPx)
+        val spec = View.MeasureSpec.makeMeasureSpec(diagramSize, View.MeasureSpec.EXACTLY)
+        alarmView.measure(spec, spec)
+        alarmView.layout(0, 0, alarmView.measuredWidth, alarmView.measuredHeight)
+
+        var targetWidth = alarmView.measuredWidth * 2
+        var targetHeight = alarmView.measuredHeight * 2
+
+        if (targetWidth > MAX_BITMAP_SIZE || targetHeight > MAX_BITMAP_SIZE) {
+            val scale = MAX_BITMAP_SIZE.toFloat() / maxOf(targetWidth, targetHeight)
+            targetWidth = (targetWidth * scale).toInt()
+            targetHeight = (targetHeight * scale).toInt()
+        }
+
+        val bitmap = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val canvasScale = targetWidth.toFloat() / alarmView.measuredWidth
+        canvas.scale(canvasScale, canvasScale)
+        alarmView.draw(canvas)
+
+        return bitmap
+    }
+
+    private fun formatDisplayText(statusText: String?): String {
+        return if (statusText != null) {
+            "%s @ %s".format(statusText, df.format(Date()))
+        } else {
+            df.format(Date())
+        }
+    }
+
+    private fun buildRemoteViews(bitmap: Bitmap, displayText: String, locationInfo: String?): RemoteViews {
+        val views = RemoteViews(applicationContext.packageName, R.layout.widget)
+
+        val intent = Intent(applicationContext, WidgetClickReceiver::class.java).apply {
+            action = WidgetClickReceiver.ACTION_WIDGET_CLICK
+        }
+        val pendingIntent = PendingIntent.getBroadcast(
+            applicationContext, 0, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        views.setOnClickPendingIntent(R.id.alarm_widget, pendingIntent)
+        views.setImageViewBitmap(R.id.alarm_diagram, bitmap)
+        views.setTextViewText(R.id.widget_update_time, displayText)
+        views.setViewVisibility(R.id.widget_progress, View.GONE)
+
+        if (locationInfo != null) {
+            views.setTextViewText(R.id.widget_location_info, locationInfo)
+            views.setViewVisibility(R.id.widget_location_info, View.VISIBLE)
+        } else {
+            views.setViewVisibility(R.id.widget_location_info, View.GONE)
+        }
+
+        return views
     }
 
     protected fun getLastKnownLocation(locationManager: LocationManager): Location? {
@@ -264,7 +328,7 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         }
     }
 
-    private fun getManualLocation(preferences: SharedPreferences): Location? {
+    protected fun getManualLocation(preferences: SharedPreferences): Location? {
         val longitudeStr = preferences.getString(PreferenceKey.LOCATION_LONGITUDE.key, null)
         val latitudeStr = preferences.getString(PreferenceKey.LOCATION_LATITUDE.key, null)
 
@@ -282,7 +346,7 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         }
     }
 
-    private fun formatLocationInfo(location: Location?): String? {
+    protected fun formatLocationInfo(location: Location?): String? {
         if (location == null) return null
 
         val providerType = when (location.provider) {

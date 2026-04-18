@@ -1,5 +1,6 @@
 package org.blitzortung.android.app
 
+import android.content.SharedPreferences
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
@@ -123,6 +124,106 @@ class WidgetUpdateWorkerTest {
         assertThat(location).isNull()
     }
 
+    @Test
+    fun formatLocationInfo_returnsGpsLocation() {
+        val worker = TestableWidgetUpdateWorker(context, workerParams)
+        val location = createLocation(51.0, 7.0, 10f).apply { provider = LocationManager.GPS_PROVIDER }
+
+        val result = worker.testFormatLocationInfo(location)
+
+        assertThat(result).isNotNull
+        assertThat(result).contains("gps")
+        assertThat(result).contains("51.000")
+        assertThat(result).contains("7.000")
+    }
+
+    @Test
+    fun formatLocationInfo_returnsNetworkLocation() {
+        val worker = TestableWidgetUpdateWorker(context, workerParams)
+        val location = createLocation(52.0, 8.0, 50f).apply { provider = LocationManager.NETWORK_PROVIDER }
+
+        val result = worker.testFormatLocationInfo(location)
+
+        assertThat(result).isNotNull
+        assertThat(result).contains("network")
+    }
+
+    @Test
+    fun formatLocationInfo_returnsNullForNullLocation() {
+        val worker = TestableWidgetUpdateWorker(context, workerParams)
+
+        val result = worker.testFormatLocationInfo(null)
+
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun getLastKnownLocationFromProvider_returnsLocation() {
+        val location = createLocation(51.0, 7.0, 10f)
+        val mockLocationManager = mockk<LocationManager>()
+        every { mockLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) } returns location
+
+        val worker = TestableWidgetUpdateWorker(context, workerParams)
+        worker.setLocationManager(mockLocationManager)
+
+        val result = worker.testGetLastKnownLocationFromProvider(LocationManager.GPS_PROVIDER)
+
+        assertThat(result).isNotNull
+        assertThat(result!!.latitude).isEqualTo(51.0)
+    }
+
+    @Test
+    fun getLastKnownLocationFromProvider_returnsNullOnSecurityException() {
+        val mockLocationManager = mockk<LocationManager>()
+        every { mockLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) } throws SecurityException()
+
+        val worker = TestableWidgetUpdateWorker(context, workerParams)
+        worker.setLocationManager(mockLocationManager)
+
+        val result = worker.testGetLastKnownLocationFromProvider(LocationManager.GPS_PROVIDER)
+
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun getManualLocation_returnsLocationWhenConfigured() {
+        val mockPreferences = mockk<SharedPreferences>()
+        every { mockPreferences.getString("location_longitude", null) } returns "7.0"
+        every { mockPreferences.getString("location_latitude", null) } returns "51.0"
+
+        val worker = TestableWidgetUpdateWorker(context, workerParams)
+        val location = worker.testGetManualLocation(mockPreferences)
+
+        assertThat(location).isNotNull
+        assertThat(location!!.latitude).isEqualTo(51.0)
+        assertThat(location.longitude).isEqualTo(7.0)
+        assertThat(location.accuracy).isEqualTo(0f)
+    }
+
+    @Test
+    fun getManualLocation_returnsNullWhenNotConfigured() {
+        val mockPreferences = mockk<SharedPreferences>()
+        every { mockPreferences.getString("location_longitude", null) } returns null
+        every { mockPreferences.getString("location_latitude", null) } returns null
+
+        val worker = TestableWidgetUpdateWorker(context, workerParams)
+        val location = worker.testGetManualLocation(mockPreferences)
+
+        assertThat(location).isNull()
+    }
+
+    @Test
+    fun getManualLocation_returnsNullOnInvalidFormat() {
+        val mockPreferences = mockk<SharedPreferences>()
+        every { mockPreferences.getString("location_longitude", null) } returns "invalid"
+        every { mockPreferences.getString("location_latitude", null) } returns "51.0"
+
+        val worker = TestableWidgetUpdateWorker(context, workerParams)
+        val location = worker.testGetManualLocation(mockPreferences)
+
+        assertThat(location).isNull()
+    }
+
     private fun createLocation(latitude: Double, longitude: Double, accuracy: Float): Location {
         return Location("test").apply {
             this.latitude = latitude
@@ -145,6 +246,18 @@ class WidgetUpdateWorkerTest {
 
         fun testGetLastKnownLocation(): Location? {
             return getLastKnownLocation(mockLocationManager!!)
+        }
+
+        fun testFormatLocationInfo(location: Location?): String? {
+            return formatLocationInfo(location)
+        }
+
+        fun testGetLastKnownLocationFromProvider(provider: String): Location? {
+            return getLastKnownLocationFromProvider(mockLocationManager!!, provider)
+        }
+
+        fun testGetManualLocation(preferences: SharedPreferences): Location? {
+            return getManualLocation(preferences)
         }
 
         override fun getAppWidgetManager(): android.appwidget.AppWidgetManager {

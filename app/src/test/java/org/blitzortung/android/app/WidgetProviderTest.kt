@@ -51,6 +51,16 @@ class WidgetProviderTest {
         assertThat(isPublic).isTrue()
     }
 
+    @Test
+    fun immediateUpdateWorkNameIsDefined() {
+        assertThat(WidgetProvider.WIDGET_IMMEDIATE_UPDATE_WORK_NAME).isEqualTo("widget_immediate_update_work")
+    }
+
+    @Test
+    fun widgetUpdateWorkNameIsDefined() {
+        assertThat(WidgetProvider.WIDGET_UPDATE_WORK_NAME).isEqualTo("widget_update_work")
+    }
+
     private inner class TestableWidgetProvider : WidgetProvider() {
         override fun getWorkManager(context: Context): androidx.work.WorkManager = workManager
     }
