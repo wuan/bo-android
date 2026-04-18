@@ -174,10 +174,3 @@ tasks.register<JacocoReport>("jacocoTestReport") {
         },
     )
 }
-
-sonar {
-    properties {
-        property("sonar.junit.reportPaths", "build/test-results/testDebugUnitTest/")
-        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
-    }
-}

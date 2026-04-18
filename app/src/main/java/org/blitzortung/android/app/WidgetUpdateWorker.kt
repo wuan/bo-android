@@ -4,6 +4,8 @@ import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
+import android.preference.PreferenceManager
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.location.Location
@@ -15,6 +17,8 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import org.blitzortung.android.alert.handler.Strikes
 import org.blitzortung.android.app.view.AlarmView
+import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.DataArea
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Parameters
@@ -26,6 +30,7 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.min
 import org.blitzortung.android.alert.LocalActivity
+import org.blitzortung.android.location.LocationHandler
 
 open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
@@ -63,11 +68,28 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         val locationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val dataProvider = component.jsonRpcDataProvider()
 
+        // Get location mode from preferences
+        val preferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        val locationMode = preferences.get(PreferenceKey.LOCATION_MODE, LocationHandler.MANUAL_PROVIDER)
+        Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() location mode: $locationMode")
+
+        // Get manual location if configured
+        val manualLocation = getManualLocation(preferences)
+
         var anyWidgetUpdated = false
 
         try {
             // Get last known location directly without starting the provider (avoids thread issue)
-            val location = getLastKnownLocation(locationManager)
+            // Respect user's location mode setting
+            val location = if (locationMode == LocationHandler.MANUAL_PROVIDER && manualLocation != null) {
+                Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() using manual location")
+                manualLocation
+            } else if (locationMode != LocationHandler.MANUAL_PROVIDER) {
+                getLastKnownLocationFromProvider(locationManager, locationMode)
+            } else {
+                // Manual mode but no manual location set, try to get any available location
+                getLastKnownLocation(locationManager)
+            }
             Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() got location: $location")
 
             // Format location info for overlay
@@ -213,6 +235,36 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         }
 
         return bestLocation
+    }
+
+    protected fun getLastKnownLocationFromProvider(locationManager: LocationManager, provider: String): Location? {
+        return try {
+            locationManager.getLastKnownLocation(provider)
+        } catch (e: SecurityException) {
+            Log.w(Main.LOG_TAG, "No permission for location provider: $provider")
+            null
+        } catch (e: Exception) {
+            Log.w(Main.LOG_TAG, "Failed to get location from provider: $provider", e)
+            null
+        }
+    }
+
+    private fun getManualLocation(preferences: SharedPreferences): Location? {
+        val longitudeStr = preferences.getString(PreferenceKey.LOCATION_LONGITUDE.key, null)
+        val latitudeStr = preferences.getString(PreferenceKey.LOCATION_LATITUDE.key, null)
+
+        val longitude = longitudeStr?.toDoubleOrNull()
+        val latitude = latitudeStr?.toDoubleOrNull()
+
+        return if (longitude != null && latitude != null) {
+            Location(LocationManager.GPS_PROVIDER).also {
+                it.longitude = longitude
+                it.latitude = latitude
+                it.accuracy = 0f // Manual location is exact
+            }
+        } else {
+            null
+        }
     }
 
     private fun formatLocationInfo(location: Location?): String? {
