@@ -12,14 +12,14 @@ tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
 
- sonar {
-     properties {
-         property("sonar.projectKey", "wuan_bo-android")
-         property("sonar.organization", "wuan")
-         property("sonar.host.url", "https://sonarcloud.io")
-         property("sonar.androidLint.reportPaths", "app/build/reports/lint-results-debug.xml")
-     }
- }
+sonar {
+    properties {
+        property("sonar.projectKey", "wuan_bo-android")
+        property("sonar.organization", "wuan")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.androidLint.reportPaths", "app/build/reports/lint-results-debug.xml")
+    }
+}
 
 detekt {
     buildUponDefaultConfig = true
@@ -32,12 +32,12 @@ subprojects {
     apply(plugin = "io.gitlab.arturbosch.detekt")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
- detekt {
-     buildUponDefaultConfig = true
-     allRules = false
-     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
-     baseline = file("$rootDir/config/detekt/baseline.xml")
- }
+    detekt {
+        buildUponDefaultConfig = true
+        allRules = false
+        config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+        baseline = file("$rootDir/config/detekt/baseline.xml")
+    }
 
     ktlint {
         android.set(true)
