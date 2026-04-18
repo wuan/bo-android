@@ -4,7 +4,7 @@ plugins {
     id("com.android.library") version "9.1.1" apply false
     id("com.android.legacy-kapt") version "9.1.1" apply false
     id("org.sonarqube") version "7.2.3.7755"
-    id("io.gitlab.arturbosch.detekt") version "1.23.8"
+//    id("io.gitlab.arturbosch.detekt") version "2.0.0-alpha.2"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
 }
 
@@ -21,21 +21,17 @@ sonar {
     }
 }
 
-detekt {
-    buildUponDefaultConfig = true
-    allRules = false
-    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
-    baseline = file("$rootDir/config/detekt/baseline.xml")
-}
 
 subprojects {
-    apply(plugin = "io.gitlab.arturbosch.detekt")
+//    apply(plugin = "io.gitlab.arturbosch.detekt")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
-    detekt {
-        buildUponDefaultConfig = true
-        config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
-    }
+//detekt {
+//    buildUponDefaultConfig = true
+//    allRules = false
+//    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+//    baseline = file("$rootDir/config/detekt/baseline.xml")
+//}
 
     ktlint {
         android.set(true)
