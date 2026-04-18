@@ -30,6 +30,7 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.min
 import org.blitzortung.android.alert.LocalActivity
+import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.location.LocationHandler
 
 open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameters) :
@@ -72,7 +73,7 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         )
     }
 
-    private data class AppComponents(
+    protected data class AppComponents(
         val colorHandler: org.blitzortung.android.map.overlay.color.StrikeColorHandler,
         val alertHandler: org.blitzortung.android.alert.handler.AlertHandler,
         val alertDataHandler: org.blitzortung.android.alert.handler.AlertDataHandler,
@@ -183,7 +184,7 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         return alarmView
     }
 
-    private fun fetchStrikeData(
+    protected fun fetchStrikeData(
         appComponents: AppComponents,
         location: Location?,
         alarmView: AlarmView
@@ -198,9 +199,9 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
             val dataArea = DataArea(x, y, scale)
 
             val parameters = Parameters(
-                region = 0,
+                region = LOCAL_REGION,
                 gridSize = 5000,
-                interval = TimeInterval(duration = 60),
+                interval = TimeInterval(duration = 10),
                 dataArea = dataArea
             )
 
