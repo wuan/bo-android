@@ -62,9 +62,8 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         }
 
         val location = resolveLocation(appComponents.locationManager, appComponents.preferences)
-        val locationInfo = formatLocationInfo(location)
 
-        return updateWidgets(appWidgetIds, appWidgetManager, appComponents, location, locationInfo)
+        return updateWidgets(appWidgetIds, appWidgetManager, appComponents, location)
     }
 
     private fun getWidgetIds(appWidgetManager: AppWidgetManager): IntArray {
@@ -120,15 +119,14 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         appWidgetIds: IntArray,
         appWidgetManager: AppWidgetManager,
         appComponents: AppComponents,
-        location: Location?,
-        locationInfo: String?
+        location: Location?
     ): Result {
         var anyWidgetUpdated = false
 
         try {
             for (appWidgetId in appWidgetIds) {
                 try {
-                    updateSingleWidget(appWidgetId, appWidgetManager, appComponents, location, locationInfo)
+                    updateSingleWidget(appWidgetId, appWidgetManager, appComponents, location)
                     anyWidgetUpdated = true
                 } catch (e: Throwable) {
                     Log.e(Main.LOG_TAG, "WidgetUpdateWorker.doWork() failed for widget $appWidgetId", e)
@@ -151,8 +149,7 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         appWidgetId: Int,
         appWidgetManager: AppWidgetManager,
         appComponents: AppComponents,
-        location: Location?,
-        locationInfo: String?
+        location: Location?
     ) {
         val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
         val displayMetrics = applicationContext.resources.displayMetrics
@@ -162,7 +159,7 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         val (statusText, alertResult) = fetchStrikeData(appComponents, location, alarmView)
         val bitmap = renderWidgetBitmap(alarmView, widthPx, heightPx)
         val displayText = formatDisplayText(statusText)
-        val views = buildRemoteViews(bitmap, displayText, locationInfo)
+        val views = buildRemoteViews(bitmap, displayText)
 
         appWidgetManager.partiallyUpdateAppWidget(appWidgetId, views)
     }
@@ -265,7 +262,7 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         }
     }
 
-    private fun buildRemoteViews(bitmap: Bitmap, displayText: String, locationInfo: String?): RemoteViews {
+    private fun buildRemoteViews(bitmap: Bitmap, displayText: String): RemoteViews {
         val views = RemoteViews(applicationContext.packageName, R.layout.widget)
 
         val intent = Intent(applicationContext, WidgetClickReceiver::class.java).apply {
@@ -280,13 +277,6 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         views.setImageViewBitmap(R.id.alarm_diagram, bitmap)
         views.setTextViewText(R.id.widget_update_time, displayText)
         views.setViewVisibility(R.id.widget_progress, View.GONE)
-
-        if (locationInfo != null) {
-            views.setTextViewText(R.id.widget_location_info, locationInfo)
-            views.setViewVisibility(R.id.widget_location_info, View.VISIBLE)
-        } else {
-            views.setViewVisibility(R.id.widget_location_info, View.GONE)
-        }
 
         return views
     }
@@ -345,21 +335,5 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         } else {
             null
         }
-    }
-
-    protected fun formatLocationInfo(location: Location?): String? {
-        if (location == null) return null
-
-        val providerType = when (location.provider) {
-            LocationManager.GPS_PROVIDER -> "gps"
-            LocationManager.NETWORK_PROVIDER -> "network"
-            LocationManager.PASSIVE_PROVIDER -> "passive"
-            else -> location.provider ?: "unknown"
-        }
-
-        val lat = String.format(Locale.getDefault(), "%.3f", location.latitude)
-        val lon = String.format(Locale.getDefault(), "%.3f", location.longitude)
-
-        return "$providerType\n$lat, $lon"
     }
 }

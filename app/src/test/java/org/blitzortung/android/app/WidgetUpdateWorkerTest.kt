@@ -132,39 +132,6 @@ class WidgetUpdateWorkerTest {
     }
 
     @Test
-    fun formatLocationInfo_returnsGpsLocation() {
-        val worker = TestableWidgetUpdateWorker(context, workerParams)
-        val location = createLocation(51.0, 7.0, 10f).apply { provider = LocationManager.GPS_PROVIDER }
-
-        val result = worker.testFormatLocationInfo(location)
-
-        assertThat(result).isNotNull
-        assertThat(result).contains("gps")
-        assertThat(result).contains("51.000")
-        assertThat(result).contains("7.000")
-    }
-
-    @Test
-    fun formatLocationInfo_returnsNetworkLocation() {
-        val worker = TestableWidgetUpdateWorker(context, workerParams)
-        val location = createLocation(52.0, 8.0, 50f).apply { provider = LocationManager.NETWORK_PROVIDER }
-
-        val result = worker.testFormatLocationInfo(location)
-
-        assertThat(result).isNotNull
-        assertThat(result).contains("network")
-    }
-
-    @Test
-    fun formatLocationInfo_returnsNullForNullLocation() {
-        val worker = TestableWidgetUpdateWorker(context, workerParams)
-
-        val result = worker.testFormatLocationInfo(null)
-
-        assertThat(result).isNull()
-    }
-
-    @Test
     fun getLastKnownLocationFromProvider_returnsLocation() {
         val location = createLocation(51.0, 7.0, 10f)
         val mockLocationManager = mockk<LocationManager>()
@@ -364,10 +331,6 @@ class WidgetUpdateWorkerTest {
 
         fun testGetLastKnownLocation(): Location? {
             return getLastKnownLocation(mockLocationManager!!)
-        }
-
-        fun testFormatLocationInfo(location: Location?): String? {
-            return formatLocationInfo(location)
         }
 
         fun testGetLastKnownLocationFromProvider(provider: String): Location? {
