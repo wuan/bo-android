@@ -2,7 +2,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     id("com.android.application")
-    id("com.android.legacy-kapt")
+    id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
     id("jacoco")
 }
 
@@ -173,4 +174,11 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             include("outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec")
         },
     )
+}
+
+sonar {
+    properties {
+        property("sonar.junit.reportPaths", "build/test-results/testDebugUnitTest/")
+        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+    }
 }
