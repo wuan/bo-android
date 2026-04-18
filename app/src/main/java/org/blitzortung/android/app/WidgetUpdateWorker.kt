@@ -198,7 +198,7 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
             val parameters = Parameters(
                 region = LOCAL_REGION,
                 gridSize = 5000,
-                interval = TimeInterval(duration = 10),
+                interval = TimeInterval(duration = 60),
                 dataArea = dataArea
             )
 

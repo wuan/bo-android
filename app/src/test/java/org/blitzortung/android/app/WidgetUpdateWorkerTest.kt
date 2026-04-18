@@ -290,7 +290,7 @@ class WidgetUpdateWorkerTest {
         val params = capturedParamsSlot.captured
         assertThat(params.region).isEqualTo(org.blitzortung.android.data.provider.LOCAL_REGION)
         assertThat(params.gridSize).isEqualTo(5000)
-        assertThat(params.interval.duration).isEqualTo(10)
+        assertThat(params.interval.duration).isEqualTo(60)
     }
 
     private fun createAppComponents(
