@@ -142,6 +142,7 @@ kapt {
 }
 
 tasks.withType<Test> {
+    jvmArgs("-Xmx4g", "-XX:MaxMetaspaceSize=1g")
     configure<JacocoTaskExtension> {
         isIncludeNoLocationClasses = true
         excludes = listOf("jdk.internal.*")
