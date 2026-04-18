@@ -178,7 +178,7 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         return Result.success()
     }
 
-    private fun getLastKnownLocation(locationManager: LocationManager): Location? {
+    protected fun getLastKnownLocation(locationManager: LocationManager): Location? {
         val providers = listOf(
             LocationManager.GPS_PROVIDER,
             LocationManager.NETWORK_PROVIDER,
