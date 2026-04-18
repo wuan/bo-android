@@ -29,6 +29,7 @@ open class WidgetProvider : AppWidgetProvider() {
 
     companion object {
         const val WIDGET_UPDATE_WORK_NAME = "widget_update_work"
+        const val WIDGET_IMMEDIATE_UPDATE_WORK_NAME = "widget_immediate_update_work"
         const val UPDATE_INTERVAL_MINUTES = 15L
     }
 
@@ -51,7 +52,11 @@ open class WidgetProvider : AppWidgetProvider() {
     private fun scheduleImmediateUpdate(context: Context) {
         val workRequest = OneTimeWorkRequestBuilder<WidgetUpdateWorker>()
             .build()
-        getWorkManager(context).enqueue(workRequest)
+        getWorkManager(context).enqueueUniqueWork(
+            WIDGET_IMMEDIATE_UPDATE_WORK_NAME,
+            ExistingWorkPolicy.REPLACE,
+            workRequest
+        )
     }
 
     override fun onDisabled(context: Context) {

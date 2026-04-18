@@ -61,6 +61,8 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         val locationManager = applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val dataProvider = component.jsonRpcDataProvider()
 
+        var anyWidgetUpdated = false
+
         try {
             // Get last known location directly without starting the provider (avoids thread issue)
             val location = getLastKnownLocation(locationManager)
@@ -115,10 +117,10 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
 
                             alarmView.alertEventConsumer.invoke(alertResult)
                         } else {
-                            statusText = "no strike data"
+                            statusText = applicationContext.getString(R.string.widget_no_strike_data)
                         }
                     } else {
-                        statusText = "location not available"
+                        statusText = applicationContext.getString(R.string.widget_location_not_available)
                     }
 
                     // AlarmView forces square — measure with min(width, height)
@@ -155,12 +157,19 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
                     views.setTextViewText(R.id.widget_update_time, displayText)
                     views.setViewVisibility(R.id.widget_progress, View.GONE)
                     appWidgetManager.partiallyUpdateAppWidget(appWidgetId, views)
+                    anyWidgetUpdated = true
                 } catch (e: Throwable) {
                     Log.e(Main.LOG_TAG, "WidgetUpdateWorker.doWork() failed for widget $appWidgetId", e)
                 }
             }
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
             Log.e(Main.LOG_TAG, "WidgetUpdateWorker.doWork() failed", e)
+            return if (anyWidgetUpdated) {
+                Result.success()
+            } else {
+                // Retry for transient failures like network errors
+                Result.retry()
+            }
         }
 
         Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() completed successfully")

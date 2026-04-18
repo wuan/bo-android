@@ -4,6 +4,8 @@
     <string name="app_name">Blitzortung Lightning Monitor</string>
     <string name="ok" translatable="false">@android:string/ok</string>
     <string name="cancel" translatable="false">@android:string/cancel</string>
+    <string name="widget_no_strike_data">no strike data</string>
+    <string name="widget_location_not_available">location not available</string>
 
     <plurals name="strike">
         <item quantity="zero">no strike</item>
