@@ -76,7 +76,6 @@ class LocalActivityRenderer(
             renderSectorSideLines(alertSector, data, radiusIncrement, sectorWidth, canvasWrapper.canvas)
         }
 
-        //textStyle.textSize = 0.8f * textSize
         textStyle.textAlign = Align.RIGHT
         val textHeight = textStyle.getFontMetrics(null)
         for (radiusIndex in 0 until rangeSteps.size) {
