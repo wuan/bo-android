@@ -70,6 +70,9 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
             val location = getLastKnownLocation(locationManager)
             Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() got location: $location")
 
+            // Format location info for overlay
+            val locationInfo = formatLocationInfo(location)
+
             for (appWidgetId in appWidgetIds) {
                 try {
                     val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
@@ -158,6 +161,14 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
                     views.setImageViewBitmap(R.id.alarm_diagram, bitmap)
                     views.setTextViewText(R.id.widget_update_time, displayText)
                     views.setViewVisibility(R.id.widget_progress, View.GONE)
+
+                    if (locationInfo != null) {
+                        views.setTextViewText(R.id.widget_location_info, locationInfo)
+                        views.setViewVisibility(R.id.widget_location_info, View.VISIBLE)
+                    } else {
+                        views.setViewVisibility(R.id.widget_location_info, View.GONE)
+                    }
+
                     appWidgetManager.partiallyUpdateAppWidget(appWidgetId, views)
                     anyWidgetUpdated = true
                 } catch (e: Throwable) {
@@ -202,5 +213,21 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         }
 
         return bestLocation
+    }
+
+    private fun formatLocationInfo(location: Location?): String? {
+        if (location == null) return null
+
+        val providerType = when (location.provider) {
+            LocationManager.GPS_PROVIDER -> "gps"
+            LocationManager.NETWORK_PROVIDER -> "network"
+            LocationManager.PASSIVE_PROVIDER -> "passive"
+            else -> location.provider ?: "unknown"
+        }
+
+        val lat = String.format(Locale.getDefault(), "%.3f", location.latitude)
+        val lon = String.format(Locale.getDefault(), "%.3f", location.longitude)
+
+        return "$providerType\n$lat, $lon"
     }
 }
