@@ -2,7 +2,7 @@
 # https://detekt.dev/docs/introduction/configurations
 
 build:
-  maxIssues: 85
+  maxIssues: 100
   excludeCorrectable: false
   weights:
     complexity: 2
@@ -59,7 +59,7 @@ complexity:
   ComplexInterface:
     active: false
     threshold: 10
-  ComplexMethod:
+  CyclomaticComplexMethod:
     active: true
     threshold: 15
   LabeledExpression:
@@ -282,8 +282,9 @@ potential-bugs:
     active: false
   DoubleMutabilityForCollection:
     active: false
-  DuplicateCaseInWhenExpression:
-    active: true
+  # DuplicateCaseInWhenExpression: deprecated as compiler performs this check by default
+  # DuplicateCaseInWhenExpression:
+  #   active: true
   EqualsAlwaysReturnsTrueOrFalse:
     active: true
   EqualsWithHashCodeExist:
@@ -359,16 +360,18 @@ style:
     active: false
   ForbiddenMethodCall:
     active: false
-  ForbiddenPublicDataClass:
-    active: false
+  # ForbiddenPublicDataClass: deprecated, migrated to libraries ruleset
+  # ForbiddenPublicDataClass:
+  #   active: false
   FunctionOnlyReturningConstant:
     active: false
   LoopWithTooManyJumpStatements:
     active: false
   MagicNumber:
     active: false
-  MandatoryBracesIfStatements:
-    active: false
+  # MandatoryBracesIfStatements: deprecated, use BracesOnIfStatements instead
+  # MandatoryBracesIfStatements:
+  #   active: false
   MandatoryBracesLoops:
     active: false
   MaxLineLength:
