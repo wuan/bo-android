@@ -22,7 +22,13 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.util.Log
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
 
 open class WidgetProvider : AppWidgetProvider() {
@@ -50,7 +56,11 @@ open class WidgetProvider : AppWidgetProvider() {
     protected open fun getWorkManager(context: Context): WorkManager = WorkManager.getInstance(context)
 
     private fun scheduleImmediateUpdate(context: Context) {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
         val workRequest = OneTimeWorkRequestBuilder<WidgetUpdateWorker>()
+            .setConstraints(constraints)
             .build()
         getWorkManager(context).enqueueUniqueWork(
             WIDGET_IMMEDIATE_UPDATE_WORK_NAME,
@@ -77,7 +87,11 @@ open class WidgetProvider : AppWidgetProvider() {
     }
 
     private fun scheduleNextUpdate(context: Context) {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
         val workRequest = PeriodicWorkRequestBuilder<WidgetUpdateWorker>(UPDATE_INTERVAL_MINUTES, TimeUnit.MINUTES)
+            .setConstraints(constraints)
             .build()
 
         getWorkManager(context).enqueueUniquePeriodicWork(

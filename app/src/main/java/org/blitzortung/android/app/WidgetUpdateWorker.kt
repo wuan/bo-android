@@ -11,7 +11,8 @@ import android.location.LocationManager
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
-import androidx.work.*
+import androidx.work.Worker
+import androidx.work.WorkerParameters
 import org.blitzortung.android.alert.handler.Strikes
 import org.blitzortung.android.app.view.AlarmView
 import org.blitzortung.android.data.DataArea
@@ -21,14 +22,15 @@ import org.blitzortung.android.data.TimeInterval
 import org.blitzortung.android.data.provider.calculateLocalCoordinate
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import kotlin.math.min
 import org.blitzortung.android.alert.LocalActivity
 
 open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
 
-    private var df: DateFormat = SimpleDateFormat("HH:mm")
+    private var df: DateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     protected open fun getAppWidgetManager(): AppWidgetManager = AppWidgetManager.getInstance(applicationContext)
 
