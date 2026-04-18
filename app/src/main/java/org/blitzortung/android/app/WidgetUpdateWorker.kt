@@ -35,6 +35,10 @@ import org.blitzortung.android.location.LocationHandler
 open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
 
+    companion object {
+        private const val MAX_BITMAP_SIZE = 1024
+    }
+
     private var df: DateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     protected open fun getAppWidgetManager(): AppWidgetManager = AppWidgetManager.getInstance(applicationContext)
@@ -156,13 +160,24 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
                     alarmView.measure(spec, spec)
                     alarmView.layout(0, 0, alarmView.measuredWidth, alarmView.measuredHeight)
 
+                    // Calculate target size (2x for high DPI), capped at MAX_BITMAP_SIZE to prevent OOM
+                    var targetWidth = alarmView.measuredWidth * 2
+                    var targetHeight = alarmView.measuredHeight * 2
+
+                    if (targetWidth > MAX_BITMAP_SIZE || targetHeight > MAX_BITMAP_SIZE) {
+                        val scale = MAX_BITMAP_SIZE.toFloat() / maxOf(targetWidth, targetHeight)
+                        targetWidth = (targetWidth * scale).toInt()
+                        targetHeight = (targetHeight * scale).toInt()
+                    }
+
                     val bitmap = Bitmap.createBitmap(
-                        alarmView.measuredWidth * 2,
-                        alarmView.measuredHeight * 2,
+                        targetWidth,
+                        targetHeight,
                         Bitmap.Config.ARGB_8888
                     )
                     val canvas = Canvas(bitmap)
-                    canvas.scale(2f, 2f)
+                    val canvasScale = targetWidth.toFloat() / alarmView.measuredWidth
+                    canvas.scale(canvasScale, canvasScale)
                     alarmView.draw(canvas)
 
                     val displayText = if (statusText != null) {
