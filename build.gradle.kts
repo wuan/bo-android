@@ -21,17 +21,16 @@ sonar {
     }
 }
 
-
 subprojects {
 //    apply(plugin = "io.gitlab.arturbosch.detekt")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
-//detekt {
-//    buildUponDefaultConfig = true
-//    allRules = false
-//    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
-//    baseline = file("$rootDir/config/detekt/baseline.xml")
-//}
+// detekt {
+//     buildUponDefaultConfig = true
+//     allRules = false
+//     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+//     baseline = file("$rootDir/config/detekt/baseline.xml")
+// }
 
     ktlint {
         android.set(true)
