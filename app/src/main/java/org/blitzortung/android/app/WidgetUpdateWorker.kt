@@ -220,9 +220,10 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
                 )
 
                 if (alertResult is LocalActivity) {
-                    val test = AlertLabelHandler.extractStatus(alertResult, this.applicationContext)
-                    statusText = test.first
-                    statusColorResource = test.second
+                    AlertLabelHandler.extractStatus(alertResult, this.applicationContext).let { (text, colorResource) ->
+                        statusText = text
+                        statusColorResource = colorResource
+                    }
                 }
 
                 alarmView.alertEventConsumer.invoke(alertResult)
