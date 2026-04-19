@@ -29,6 +29,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.min
+import org.blitzortung.android.alert.AlertLabelHandler
+import org.blitzortung.android.app.R.color.Green
+import org.blitzortung.android.app.R.color.Yellow
 import org.blitzortung.android.alert.LocalActivity
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.location.LocationHandler
@@ -156,10 +159,10 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
 
         val (widthPx, heightPx) = calculateWidgetDimensions(options, displayMetrics)
         val alarmView = createAlarmView(appComponents.colorHandler)
-        val (statusText, alertResult) = fetchStrikeData(appComponents, location, alarmView)
+        val (statusText, statusColor) = fetchStrikeData(appComponents, location, alarmView)
         val bitmap = renderWidgetBitmap(alarmView, widthPx, heightPx)
         val displayText = formatDisplayText(statusText)
-        val views = buildRemoteViews(bitmap, displayText)
+        val views = buildRemoteViews(bitmap, displayText, statusColor)
 
         appWidgetManager.partiallyUpdateAppWidget(appWidgetId, views)
     }
@@ -185,8 +188,9 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         appComponents: AppComponents,
         location: Location?,
         alarmView: AlarmView
-    ): Pair<String?, Any?> {
+    ): Pair<String?, Int> {
         var statusText: String? = null
+        var statusColorResource: Int = Green
         var alertResult: Any? = null
 
         if (location != null) {
@@ -216,18 +220,22 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
                 )
 
                 if (alertResult is LocalActivity) {
-                    statusText = alertResult.toString()
+                    val test = AlertLabelHandler.extractStatus(alertResult, this.applicationContext)
+                    statusText = test.first
+                    statusColorResource = test.second
                 }
 
                 alarmView.alertEventConsumer.invoke(alertResult)
             } else {
                 statusText = applicationContext.getString(R.string.widget_no_strike_data)
+                statusColorResource = Yellow
             }
         } else {
             statusText = applicationContext.getString(R.string.widget_location_not_available)
+            statusColorResource = Yellow
         }
 
-        return Pair(statusText, alertResult)
+        return Pair(statusText, applicationContext.getColor(statusColorResource))
     }
 
     private fun renderWidgetBitmap(alarmView: AlarmView, widthPx: Int, heightPx: Int): Bitmap {
@@ -255,14 +263,15 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
     }
 
     private fun formatDisplayText(statusText: String?): String {
+        val updateTime = df.format(Date())
         return if (statusText != null) {
-            "%s @ %s".format(statusText, df.format(Date()))
+            "%s %s".format(statusText, updateTime)
         } else {
-            df.format(Date())
+            updateTime
         }
     }
 
-    private fun buildRemoteViews(bitmap: Bitmap, displayText: String): RemoteViews {
+    private fun buildRemoteViews(bitmap: Bitmap, displayText: String, statusColor: Int): RemoteViews {
         val views = RemoteViews(applicationContext.packageName, R.layout.widget)
 
         val intent = Intent(applicationContext, WidgetClickReceiver::class.java).apply {
@@ -275,7 +284,8 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
 
         views.setOnClickPendingIntent(R.id.alarm_widget, pendingIntent)
         views.setImageViewBitmap(R.id.alarm_diagram, bitmap)
-        views.setTextViewText(R.id.widget_update_time, displayText)
+        views.setTextViewText(R.id.widget_status, displayText)
+        views.setTextColor(R.id.widget_status, statusColor)
         views.setViewVisibility(R.id.widget_progress, View.GONE)
 
         return views

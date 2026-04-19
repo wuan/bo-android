@@ -55,7 +55,7 @@ class AlertResultTest {
                 System.currentTimeMillis(),
             )
 
-        assertThat(uut.toString()).isEqualTo("N 15.5 km")
+        assertThat(uut.toString()).isEqualTo("N 15.5 METRIC")
     }
 
     @Test
@@ -73,7 +73,7 @@ class AlertResultTest {
                 System.currentTimeMillis(),
             )
 
-        assertThat(uut.toString()).isEqualTo("NE 25.0 mi")
+        assertThat(uut.toString()).isEqualTo("NE 25.0 IMPERIAL")
     }
 
     @Test

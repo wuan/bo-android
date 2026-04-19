@@ -29,10 +29,4 @@ enum class MeasurementSystem(
     ;
 
     fun calculateDistance(meters: Float): Float = meters / factor
-
-    val unitSymbol: String
-        get() = when (this) {
-            METRIC -> "km"
-            IMPERIAL -> "mi"
-        }
 }

@@ -55,7 +55,7 @@ data class LocalActivity(
         return if (closestStrikeDistance == Float.POSITIVE_INFINITY) {
             bearingName
         } else {
-            "%s %.1f %s".format(bearingName, closestStrikeDistance, parameters.measurementSystem.unitSymbol)
+            "%s %.1f %s".format(bearingName, closestStrikeDistance, parameters.measurementSystem)
         }
     }
 }

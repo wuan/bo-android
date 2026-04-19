@@ -30,7 +30,7 @@ class AlertLabelHandler(
     fun apply(result: Warning) {
 
         val (warningText, textColorResource) = when (result) {
-            is LocalActivity -> extractStatus(result)
+            is LocalActivity -> extractStatus(result, context)
             Outlying -> "<->" to RedWarn
             NoData -> "" to Green
             NoLocation -> "?" to RedWarn
@@ -41,24 +41,26 @@ class AlertLabelHandler(
         alertLabel.setAlarmText(warningText)
     }
 
-    fun extractStatus(result: LocalActivity): Pair<String, Int> {
-        return if (result.closestStrikeDistance < Float.POSITIVE_INFINITY) {
-            val textColorResource =
-                when (result.closestStrikeDistance) {
-                    in 0.0..20.0 -> RedWarn
-                    in 20.0..50.0 -> Yellow
-                    else -> Green
-                }
-            val distanceUnit = context.resources.getString(result.parameters.measurementSystem.unitNameString)
-            val status =
-                "%.0f$distanceUnit".format(result.closestStrikeDistance) + if (result.closestStrikeDistance > 0.1) {
-                    " ${result.bearingName}"
-                } else {
-                    ""
-                }
-            status to textColorResource
-        } else {
-            "" to Green
+    companion object {
+        fun extractStatus(result: LocalActivity, context: Context): Pair<String, Int> {
+            return if (result.closestStrikeDistance < Float.POSITIVE_INFINITY) {
+                val textColorResource =
+                    when (result.closestStrikeDistance) {
+                        in 0.0..20.0 -> RedWarn
+                        in 20.0..50.0 -> Yellow
+                        else -> Green
+                    }
+                val distanceUnit = context.resources.getString(result.parameters.measurementSystem.unitNameString)
+                val status =
+                    "%.0f$distanceUnit".format(result.closestStrikeDistance) + if (result.closestStrikeDistance > 0.1) {
+                        " ${result.bearingName}"
+                    } else {
+                        ""
+                    }
+                status to textColorResource
+            } else {
+                "" to Green
+            }
         }
     }
 
