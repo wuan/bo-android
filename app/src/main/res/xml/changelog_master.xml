@@ -1,41 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
-    <release
-        versionName="2.4"
-        versionCode="339">
-        <feature>SDK 35 update and rework of settings</feature>
-        <feature>Fixed issues with dynamic local data retrieval</feature>
-        <feature>Complete rework of permission management</feature>
-    </release>
-    <release
-        versionName="2.3"
-        versionCode="327">
-        <feature>Dynamic local data retrieval</feature>
-    </release>
-    <release
-        versionName="2.2"
-        versionCode="293">
-        <feature>Time slider replaces buttons</feature>
-        <feature>Animated history</feature>
-    </release>
-    <release
-        versionName="2.1"
-        versionCode="259">
-        <feature>Global data mode</feature>
-        <feature>Local data mode</feature>
-        <feature>Automatic grid size</feature>
-        <feature>Change log</feature>
-        <improvement>Internal improvements</improvement>
-    </release>
-    <release
-        versionName="2.0"
-        versionCode="250">
-        <feature>OSM based map scheme</feature>
-        <feature>Customize map tile scaling</feature>
-        <improvment>Improved handling of missing permissions</improvment>
-        <bugfix>Fix Blitzortung.org data access</bugfix>
-        <bugfix>Fix notifications for newer devices</bugfix>
-        <bugfix>Improve location detection</bugfix>
-        <improvement>Use Dagger2 for dependency injection</improvement>
-    </release>
+  <release
+    versionCode="349"
+    versionName="2.5">
+    <feature>Alert view widget</feature>
+  </release>
+  <release
+    versionCode="339"
+    versionName="2.4">
+    <feature>SDK 35 update and rework of settings</feature>
+    <feature>Fixed issues with dynamic local data retrieval</feature>
+    <feature>Complete rework of permission management</feature>
+  </release>
+  <release
+    versionCode="327"
+    versionName="2.3">
+    <feature>Dynamic local data retrieval</feature>
+  </release>
+  <release
+    versionCode="293"
+    versionName="2.2">
+    <feature>Time slider replaces buttons</feature>
+    <feature>Animated history</feature>
+  </release>
+  <release
+    versionCode="259"
+    versionName="2.1">
+    <feature>Global data mode</feature>
+    <feature>Local data mode</feature>
+    <feature>Automatic grid size</feature>
+    <feature>Change log</feature>
+    <improvement>Internal improvements</improvement>
+  </release>
+  <release
+    versionCode="250"
+    versionName="2.0">
+    <feature>OSM based map scheme</feature>
+    <feature>Customize map tile scaling</feature>
+    <improvment>Improved handling of missing permissions</improvment>
+    <bugfix>Fix Blitzortung.org data access</bugfix>
+    <bugfix>Fix notifications for newer devices</bugfix>
+    <bugfix>Improve location detection</bugfix>
+    <improvement>Use Dagger2 for dependency injection</improvement>
+  </release>
 </changelog>
