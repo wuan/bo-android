@@ -33,8 +33,10 @@ import org.blitzortung.android.alert.AlertLabelHandler
 import org.blitzortung.android.app.R.color.Green
 import org.blitzortung.android.app.R.color.Yellow
 import org.blitzortung.android.alert.LocalActivity
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.location.LocationHandler
+import androidx.core.graphics.createBitmap
 
 open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
@@ -169,11 +171,21 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
 
     private fun calculateWidgetDimensions(options: android.os.Bundle, displayMetrics: android.util.DisplayMetrics): Pair<Int, Int> {
         val density = displayMetrics.density
+
+        // Get min dimensions
         val minWidthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
         val minHeightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
 
-        val widthPx = ((if (minWidthDp > 0) minWidthDp else 100) * density).toInt()
-        val heightPx = ((if (minHeightDp > 0) minHeightDp else 100) * density).toInt()
+        // Try to get max dimensions (actual widget size when resized)
+        val maxWidthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minWidthDp)
+        val maxHeightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minHeightDp)
+
+        // Use max dimensions if they differ from min (indicates resizable widget with actual size)
+        val targetWidthDp = if (maxWidthDp > minWidthDp) maxWidthDp else minWidthDp
+        val targetHeightDp = if (maxHeightDp > minHeightDp) maxHeightDp else minHeightDp
+
+        val widthPx = ((if (targetWidthDp > 0) targetWidthDp else 100) * density).toInt()
+        val heightPx = ((if (targetHeightDp > 0) targetHeightDp else 100) * density).toInt()
 
         return Pair(widthPx, heightPx)
     }
@@ -254,7 +266,7 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
             targetHeight = (targetHeight * scale).toInt()
         }
 
-        val bitmap = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(targetWidth, targetHeight)
         val canvas = Canvas(bitmap)
         val canvasScale = targetWidth.toFloat() / alarmView.measuredWidth
         canvas.scale(canvasScale, canvasScale)

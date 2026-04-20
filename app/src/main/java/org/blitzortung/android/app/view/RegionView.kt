@@ -6,7 +6,9 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.util.Log
 import androidx.preference.PreferenceManager
+import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.provider.result.DataEvent
@@ -190,6 +192,7 @@ class RegionView
 
         override fun onZoom(event: ZoomEvent?): Boolean {
             return if (event != null) {
+                Log.d(LOG_TAG, "RebionView.onZoom(): ${event.zoomLevel}")
                 mapArea = event.source.boundingBox
                 zoomLevel = event.zoomLevel
                 updateViewSize()
