@@ -25,10 +25,13 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Overlay
 
 class FadeOverlay(private val colorHandler: ColorHandler) : Overlay() {
-
     private var alphaValue = 0
 
-    override fun draw(canvas: Canvas?, mapView: MapView?, shadow: Boolean) {
+    override fun draw(
+        canvas: Canvas?,
+        mapView: MapView?,
+        shadow: Boolean,
+    ) {
         if (!shadow) {
             val rect = canvas!!.clipBounds
             val paint = Paint()

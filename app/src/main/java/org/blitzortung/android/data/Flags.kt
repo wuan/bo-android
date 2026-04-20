@@ -27,5 +27,6 @@ data class Flags(
 ) : Serializable
 
 enum class Mode {
-    DATA, ANIMATION
+    DATA,
+    ANIMATION,
 }

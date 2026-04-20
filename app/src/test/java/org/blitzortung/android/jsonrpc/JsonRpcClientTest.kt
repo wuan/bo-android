@@ -4,6 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
+import java.net.URL
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.json.JSONArray
@@ -12,7 +13,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.net.URL
 
 @RunWith(RobolectricTestRunner::class)
 class JsonRpcClientTest {
@@ -69,7 +69,7 @@ class JsonRpcClientTest {
         every {
             httpClient.doRequest(
                 any(),
-                any()
+                any(),
             )
         } answers { HttpServiceClientResult("{\"fault\":true,\"faultString\": \"foo\",\"faultCode\":\"1234\"}") }
 

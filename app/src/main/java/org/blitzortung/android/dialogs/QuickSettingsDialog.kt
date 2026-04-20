@@ -37,51 +37,62 @@ import org.blitzortung.android.app.view.get
 import org.blitzortung.android.settings.putString
 
 class QuickSettingsDialog : DialogFragment() {
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = Builder(activity)
         val layoutInflater = requireActivity().layoutInflater
-        @SuppressLint("InflateParams") val view = layoutInflater.inflate(R.layout.quick_settings_dialog, null, false)
+
+        @SuppressLint("InflateParams")
+        val view = layoutInflater.inflate(R.layout.quick_settings_dialog, null, false)
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(activity as Context)
 
         val spinnerManager = SpinnerManager(resources, view, preferences)
 
         spinnerManager.add(
-            R.array.regions_values, PreferenceKey.REGION, R.id.selected_region, defaultIndex = 1
+            R.array.regions_values,
+            PreferenceKey.REGION,
+            R.id.selected_region,
+            defaultIndex = 1,
         )
 
         spinnerManager.add(
-            R.array.grid_size_values, PreferenceKey.GRID_SIZE, R.id.selected_grid_size,
+            R.array.grid_size_values,
+            PreferenceKey.GRID_SIZE,
+            R.id.selected_grid_size,
         )
 
         spinnerManager.add(
-            R.array.count_threshold_values, PreferenceKey.COUNT_THRESHOLD, R.id.selected_count_threshold,
+            R.array.count_threshold_values,
+            PreferenceKey.COUNT_THRESHOLD,
+            R.id.selected_count_threshold,
         )
 
         spinnerManager.add(
-            R.array.query_period_values, PreferenceKey.QUERY_PERIOD, R.id.selected_query_period, defaultIndex = 2
+            R.array.query_period_values,
+            PreferenceKey.QUERY_PERIOD,
+            R.id.selected_query_period,
+            defaultIndex = 2,
         )
 
         spinnerManager.add(
             R.array.interval_duration_values,
             PreferenceKey.INTERVAL_DURATION,
             R.id.selected_interval_duration,
-            defaultIndex = 1
+            defaultIndex = 1,
         )
 
         spinnerManager.add(
             R.array.historic_timestep_values,
             PreferenceKey.HISTORIC_TIMESTEP,
             R.id.selected_historic_timestep,
-            defaultIndex = 1
+            defaultIndex = 1,
         )
 
         spinnerManager.add(
             R.array.animation_interval_duration_values,
             PreferenceKey.ANIMATION_INTERVAL_DURATION,
             R.id.selected_animation_interval_durations,
-            defaultIndex = 1
+            defaultIndex = 1,
         )
 
         return builder.setView(view)
@@ -92,7 +103,9 @@ class QuickSettingsDialog : DialogFragment() {
 }
 
 class SpinnerManager(
-    val resources: Resources, val view: View, val preferences: SharedPreferences,
+    val resources: Resources,
+    val view: View,
+    val preferences: SharedPreferences,
 ) {
     private val entries = mutableListOf<Pair<PreferenceKey, () -> String?>>()
 
@@ -100,7 +113,7 @@ class SpinnerManager(
         valuesId: Int,
         preferenceKey: PreferenceKey,
         viewId: Int,
-        defaultIndex: Int = 0
+        defaultIndex: Int = 0,
     ) {
         val values = resources.getStringArray(valuesId)
         val currentValue = preferences.get(preferenceKey, values[defaultIndex])
@@ -110,7 +123,10 @@ class SpinnerManager(
         entries.add(Pair(preferenceKey) { values[spinner.selectedItemPosition] })
     }
 
-    private fun getSelectedIndex(values: Array<String>, currentValue: String): Int {
+    private fun getSelectedIndex(
+        values: Array<String>,
+        currentValue: String,
+    ): Int {
         var selectedIndex = 0
         for (regionValue in values) {
             if (regionValue == currentValue) {

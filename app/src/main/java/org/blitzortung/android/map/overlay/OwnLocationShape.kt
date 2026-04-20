@@ -23,8 +23,10 @@ import android.graphics.Paint
 import android.graphics.drawable.shapes.Shape
 
 class OwnLocationShape(private val size: Float) : Shape() {
-
-    override fun draw(canvas: Canvas, paint: Paint) {
+    override fun draw(
+        canvas: Canvas,
+        paint: Paint,
+    ) {
         paint.style = Paint.Style.FILL
         paint.color = -2007673515
         canvas.drawCircle(0.0f, 0.0f, size / 1.3f, paint)
@@ -37,5 +39,4 @@ class OwnLocationShape(private val size: Float) : Shape() {
         paint.color = -13391105
         canvas.drawCircle(0.0f, 0.0f, size / 1.3f, paint)
     }
-
 }

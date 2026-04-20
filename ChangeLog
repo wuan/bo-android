@@ -2,6 +2,50 @@
 
 ## English
 
+### Version 2.4.5
+
+  - update test dependencies
+  - add static analysis
+  - improve Gradle build
+  - enable ProGuard/R8
+  - update backlog
+  - fix deprecated vibration API
+  - fix deprecated onActivityResult
+
+### Version 2.4.0
+
+  - add german F-Droid entry and update many screenshots
+  - better handling of denied location permissions
+  - alert enabled should only control notifications
+  - disable alerts with missing notification permission
+  - add cancel button to log dialog
+  - refactor permission grant to separate methods / classes
+  - fix edge-to-edge display for Main activity
+  - updated Polish translation
+  - fix handling of multiple permission dialogs
+  - fix start of DataHandler when map is ready
+  - further improve automatic local data mode transition
+  - improve local data mode
+  - fixed the default notification sound display
+  - fix auto grid and local data
+  - update intent flags to open app from notification
+  - control background alert icon
+
+### Version 2.3.0
+
+  - time slider for history
+  - improve auto raster size
+
+### Version 2.2.0
+
+  - use coroutines and cleanup
+  - update zoom to activity
+
+### Version 2.1.0
+
+  - update data service target
+  - fix NotificationHandler
+
 ### Version 2.0
 
   - new OSM based map scheme
@@ -242,6 +286,50 @@
   * notification and vibration alarm with preference integration
 
 ## German
+
+### Version 2.4.5
+
+  - Testabhängigkeiten aktualisiert
+  - Statische Code-Analyse hinzugefügt
+  - Gradle Build-Prozess verbessert
+  - ProGuard/R8 aktiviert
+  - Backlog aktualisiert
+  - Veraltete Vibrations-API ersetzt
+  - Veraltetes onActivityResult ersetzt
+
+### Version 2.4.0
+
+  - Deutscher F-Droid Eintrag hinzugefügt und viele Screenshots aktualisiert
+  - Besserer Umgang mit verweigerten Standortberechtigungen
+  - "Alarm aktiviert" steuert nur noch Benachrichtigungen
+  - Warnungen deaktiviert, wenn Benachrichtigungsberechtigung fehlt
+  - Abbrechen-Button zum Log-Dialog hinzugefügt
+  - Berechtigungsanfrage in separate Klassen/Methoden ausgelagert
+  - Edge-to-Edge Anzeige für Hauptaktivität korrigiert
+  - Polnische Übersetzung aktualisiert
+  - Umgang mit mehreren Berechtigungsdialogen korrigiert
+  - Start des DataHandlers korrigiert, wenn Karte bereit ist
+  - Automatischen Wechsel zum lokalen Datenmodus weiter verbessert
+  - Lokalen Datenmodus verbessert
+  - Anzeige des Standard-Benachrichtigungstons korrigiert
+  - Auto-Raster und lokale Daten korrigiert
+  - Intent-Flags zum Öffnen der App aus Benachrichtigung aktualisiert
+  - Icon für Hintergrundalarm konfigurierbar
+
+### Version 2.3.0
+
+  - Zeitschieberegler für Verlauf
+  - automatische Rastergröße verbessert
+
+### Version 2.2.0
+
+  - Verwendung von Coroutinen und Bereinigung
+  - Zoom auf Aktivität aktualisiert
+
+### Version 2.1.0
+
+  - Ziel des Datendienstes aktualisiert
+  - NotificationHandler korrigiert
 
 ### Version 2.0
 

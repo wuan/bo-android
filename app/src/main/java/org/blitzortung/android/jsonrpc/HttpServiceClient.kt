@@ -25,8 +25,11 @@ data class HttpServiceClientResult(
 )
 
 interface HttpServiceClient {
-    fun doRequest(baseUrl: URL, data: String): HttpServiceClientResult
+    fun doRequest(
+        baseUrl: URL,
+        data: String,
+    ): HttpServiceClientResult
+
     var socketTimeout: Int
     var connectionTimeout: Int
 }
-

@@ -16,7 +16,6 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 class VersionComponentTest {
-
     private lateinit var versionComponent: VersionComponent
 
     @MockK
@@ -107,4 +106,3 @@ class BuildVersionTest {
         assertThat(buildVersion.majorVersion).isGreaterThanOrEqualTo(-1)
     }
 }
-

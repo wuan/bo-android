@@ -19,7 +19,8 @@ import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.LocalData
 import org.blitzortung.android.data.provider.result.DataEvent
-import org.blitzortung.android.data.provider.result.StatusEvent
+import org.blitzortung.android.data.provider.result.NoData
+import org.blitzortung.android.data.provider.result.StatusUpdate
 import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.util.Period
 import org.junit.Before
@@ -35,7 +36,6 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 class MainDataHandlerTest {
-
     private lateinit var preferences: SharedPreferences
 
     @MockK
@@ -51,7 +51,6 @@ class MainDataHandlerTest {
     private lateinit var period: Period
 
     private lateinit var receivedEvents: MutableList<DataEvent>
-
 
     private lateinit var uut: MainDataHandler
 
@@ -82,8 +81,9 @@ class MainDataHandlerTest {
     }
 
     @Test
-    fun SharedPreferencesChangedForDataSource() {
-        preferences.edit()
+    fun sharedPreferencesChangedForDataSource() {
+        preferences
+            .edit()
             .putString(PreferenceKey.DATA_SOURCE.toString(), DataProviderType.HTTP.toString())
             .commit()
 
@@ -94,8 +94,9 @@ class MainDataHandlerTest {
     }
 
     @Test
-    fun SharedPreferencesChangedForGridSize() {
-        preferences.edit()
+    fun sharedPreferencesChangedForGridSize() {
+        preferences
+            .edit()
             .putString(PreferenceKey.GRID_SIZE.toString(), "5000")
             .commit()
 
@@ -109,7 +110,7 @@ class MainDataHandlerTest {
     fun tryDataModeRun() {
         uut.run()
 
-        assertThat(receivedEvents).contains(StatusEvent("0/60"))
+        assertThat(receivedEvents).contains(StatusUpdate("0/60"))
         verify { handler.postDelayed(uut, 1000) }
     }
 
@@ -171,7 +172,7 @@ class MainDataHandlerTest {
         verify { animator.addListener(capture(animatorListenerSlot)) }
         val captured = animatorListenerSlot.captured
 
-        assertThat(receivedEvents).isEmpty()
+        assertThat(receivedEvents).containsExactly(NoData)
         captured.onAnimationEnd(animator)
         assertThat(receivedEvents).contains(REQUEST_STARTED_EVENT)
     }
@@ -228,4 +229,3 @@ class MainDataHandlerTest {
         assertThat(result).isTrue
     }
 }
-

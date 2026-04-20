@@ -19,7 +19,6 @@
 package org.blitzortung.android.util
 
 class Period {
-
     internal var lastUpdateTime: Long = 0L
 
     internal var updateCount: Int = 0
@@ -29,23 +28,24 @@ class Period {
         restart()
     }
 
-    fun shouldUpdate(currentTime: Long, currentPeriod: Int): Boolean {
-        return if (currentTime >= lastUpdateTime + currentPeriod) {
+    fun shouldUpdate(
+        currentTime: Long,
+        currentPeriod: Int,
+    ): Boolean =
+        if (currentTime >= lastUpdateTime + currentPeriod) {
             updateCount++
             lastUpdateTime = currentTime
             true
         } else {
             false
         }
-    }
 
-    fun isNthUpdate(countPeriod: Int): Boolean {
-        return (updateCount % countPeriod) == 0
-    }
+    fun isNthUpdate(countPeriod: Int): Boolean = (updateCount % countPeriod) == 0
 
-    fun getCurrentUpdatePeriod(currentTime: Long, currentPeriod: Int): Long {
-        return currentPeriod - (currentTime - lastUpdateTime)
-    }
+    fun getCurrentUpdatePeriod(
+        currentTime: Long,
+        currentPeriod: Int,
+    ): Long = currentPeriod - (currentTime - lastUpdateTime)
 
     fun restart() {
         lastUpdateTime = 0

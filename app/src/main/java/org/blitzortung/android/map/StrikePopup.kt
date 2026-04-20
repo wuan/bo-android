@@ -8,8 +8,10 @@ import org.blitzortung.android.map.overlay.GridShape
 import org.blitzortung.android.map.overlay.StrikeOverlay
 import org.blitzortung.android.map.overlay.StrikeShape
 
-
-fun createStrikePopUp(popUp: View, strikeOverlay: StrikeOverlay): View {
+fun createStrikePopUp(
+    popUp: View,
+    strikeOverlay: StrikeOverlay,
+): View {
     var result = DateFormat.format("kk:mm:ss", strikeOverlay.timestamp) as String
 
     if (strikeOverlay.shape is GridShape) {

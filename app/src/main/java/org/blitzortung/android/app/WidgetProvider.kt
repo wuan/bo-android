@@ -21,31 +21,83 @@ package org.blitzortung.android.app
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
-import android.widget.RemoteViews
-import org.blitzortung.android.app.view.AlertView
+import android.util.Log
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import java.util.concurrent.TimeUnit
 
-class WidgetProvider : AppWidgetProvider() {
+open class WidgetProvider : AppWidgetProvider() {
 
-    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        for (element in appWidgetIds) {
-            element
-            updateAppWidget(context)
-        }
+    companion object {
+        const val WIDGET_UPDATE_WORK_NAME = "widget_update_work"
+        const val WIDGET_IMMEDIATE_UPDATE_WORK_NAME = "widget_immediate_update_work"
+        const val UPDATE_INTERVAL_MINUTES = 15L
     }
 
-    private fun updateAppWidget(context: Context) {
+    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds)
+        Log.v(Main.LOG_TAG, "WidgetProvider.onUpdate() - re-rendering with new size")
+        scheduleImmediateUpdate(context)
+        scheduleNextUpdate(context)
+    }
 
-        val alertView = AlertView(context)
-        alertView.measure(150, 150)
-        alertView.layout(0, 0, 150, 150)
-        alertView.isDrawingCacheEnabled = true
-        val bitmap = alertView.drawingCache
+    override fun onEnabled(context: Context) {
+        super.onEnabled(context)
+        Log.v(Main.LOG_TAG, "WidgetProvider.onEnabled() - Scheduling immediate and periodic updates")
+        scheduleImmediateUpdate(context)
+        scheduleNextUpdate(context)
+    }
 
-        val remoteViews = RemoteViews(
-            context.packageName,
-            R.layout.widget
+    protected open fun getWorkManager(context: Context): WorkManager = WorkManager.getInstance(context)
+
+    private fun scheduleImmediateUpdate(context: Context) {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+        val workRequest = OneTimeWorkRequestBuilder<WidgetUpdateWorker>()
+            .setConstraints(constraints)
+            .build()
+        getWorkManager(context).enqueueUniqueWork(
+            WIDGET_IMMEDIATE_UPDATE_WORK_NAME,
+            ExistingWorkPolicy.REPLACE,
+            workRequest
         )
-        remoteViews.setImageViewBitmap(R.layout.widget, bitmap)
+    }
 
+    override fun onDisabled(context: Context) {
+        super.onDisabled(context)
+        Log.v(Main.LOG_TAG, "WidgetProvider.onDisabled() - Cancelling periodic updates")
+        getWorkManager(context).cancelUniqueWork(WIDGET_UPDATE_WORK_NAME)
+    }
+
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetId: Int,
+        newOptions: android.os.Bundle?
+    ) {
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
+        Log.v(Main.LOG_TAG, "WidgetProvider.onAppWidgetOptionsChanged() - re-rendering with new size")
+        scheduleImmediateUpdate(context)
+    }
+
+    private fun scheduleNextUpdate(context: Context) {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+        val workRequest = PeriodicWorkRequestBuilder<WidgetUpdateWorker>(UPDATE_INTERVAL_MINUTES, TimeUnit.MINUTES)
+            .setConstraints(constraints)
+            .build()
+
+        getWorkManager(context).enqueueUniquePeriodicWork(
+            WIDGET_UPDATE_WORK_NAME,
+            ExistingPeriodicWorkPolicy.KEEP,
+            workRequest
+        )
     }
 }

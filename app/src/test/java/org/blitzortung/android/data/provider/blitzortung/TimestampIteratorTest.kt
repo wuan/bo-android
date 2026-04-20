@@ -5,10 +5,8 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 
 class TimestampIteratorTest {
-
     @Test
     fun checkNormalOperation() {
-
         assertThat(TimestampIterator(1000, 10001, 12999))
             .toIterable()
             .containsExactly(10000L, 11000L, 12000L)

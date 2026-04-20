@@ -1,6 +1,5 @@
 package org.blitzortung.android.app.permission.requester
 
-
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
@@ -31,7 +30,6 @@ import org.robolectric.shadows.ShadowLooper
 
 @RunWith(RobolectricTestRunner::class)
 class WakeupPermissionRequesterTest {
-
     @MockK
     private lateinit var permissionsSupport: PermissionsSupport
 
@@ -45,9 +43,11 @@ class WakeupPermissionRequesterTest {
     fun setUp() {
         MockKAnnotations.init(this, relaxed = true)
 
-        activity = Robolectric.buildActivity(Main::class.java)
-            .setup()
-            .get()
+        activity =
+            Robolectric
+                .buildActivity(Main::class.java)
+                .setup()
+                .get()
 
         val context = RuntimeEnvironment.getApplication()
 
@@ -71,7 +71,7 @@ class WakeupPermissionRequesterTest {
         val result = wakeupPermissionRequester.request(permissionsSupport)
 
         assertThat(result).isFalse()
-        verify(exactly = 0) { permissionsSupport.requestPermission(any(), any(), any()) }
+        verify(exactly = 0) { permissionsSupport.request(any(), any(), any()) }
     }
 
     @Test
@@ -91,13 +91,12 @@ class WakeupPermissionRequesterTest {
 
         assertThat(openedIntent.action).isEqualTo(ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
         assertThat(preferences.getString(PreferenceKey.BACKGROUND_QUERY_PERIOD, "")).isEqualTo("300")
-        verify(exactly = 0) { permissionsSupport.requestPermission(any(), any(), any()) }
+        verify(exactly = 0) { permissionsSupport.request(any(), any(), any()) }
     }
 
     @Test
     @Config(sdk = [Build.VERSION_CODES.Q])
     fun `request should open the dialog if all conditions are valid and request permission on clicking Cancel`() {
-
         val result = wakeupPermissionRequester.request(permissionsSupport)
         assertThat(result).isTrue()
 
@@ -109,8 +108,6 @@ class WakeupPermissionRequesterTest {
         assertThat(dialog.isShowing).isFalse()
 
         assertThat(preferences.getString(PreferenceKey.BACKGROUND_QUERY_PERIOD, "")).isEqualTo("0")
-        verify(exactly = 0) { permissionsSupport.requestPermission(any(), any(), any()) }
+        verify(exactly = 0) { permissionsSupport.request(any(), any(), any()) }
     }
-
-
 }

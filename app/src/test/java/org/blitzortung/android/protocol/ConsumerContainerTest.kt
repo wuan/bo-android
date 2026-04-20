@@ -1,13 +1,12 @@
 package org.blitzortung.android.protocol
 
+import java.util.concurrent.atomic.AtomicInteger
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
 import org.junit.Test
-import java.util.concurrent.atomic.AtomicInteger
 
 class ConsumerContainerTest {
-
     private lateinit var testConsumerContainer: TestConsumerContainer
 
     @Before
@@ -42,7 +41,7 @@ class ConsumerContainerTest {
     fun consumerShoudNotStoreCurrentBroadcast() {
         testConsumerContainer.broadcast("foo")
 
-        assertThat(testConsumerContainer.currentPayload).isNull()
+        assertThat(testConsumerContainer.currentPayload).isEqualTo("initial")
     }
 
     @Test
@@ -68,20 +67,11 @@ class ConsumerContainerTest {
     }
 
     @Test
-    fun addingNullConsumerShouldThrow() {
-        assertThatThrownBy {
-            testConsumerContainer.addConsumer(null)
-        }
-            .isInstanceOf(IllegalArgumentException::class.java)
-            .hasMessage("consumer may not be null")
-    }
-
-    @Test
     fun addedConsumerShouldReceiveNoDataWithNoCurrentPayloadSet() {
         var result: String? = null
         testConsumerContainer.addConsumer { string -> result = string }
 
-        assertThat(result).isNull()
+        assertThat(result).isEqualTo("initial")
     }
 
     @Test
@@ -125,8 +115,7 @@ class ConsumerContainerTest {
     }
 }
 
-class TestConsumerContainer : ConsumerContainer<String>() {
-
+class TestConsumerContainer : ConsumerContainer<String>("initial") {
     val firstConsumersAdded = AtomicInteger()
 
     val lastConsumersRemoved = AtomicInteger()

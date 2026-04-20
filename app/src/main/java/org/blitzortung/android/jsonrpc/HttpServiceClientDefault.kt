@@ -26,43 +26,47 @@ import java.util.zip.GZIPInputStream
 import javax.inject.Inject
 import javax.inject.Named
 
-class HttpServiceClientDefault @Inject constructor(
-    @Named("agentSuffix") agentSuffix: String
-) : HttpServiceClient {
+class HttpServiceClientDefault
+    @Inject
+    constructor(
+        @Named("agentSuffix") agentSuffix: String,
+    ) : HttpServiceClient {
+        private val userAgentString: String = "bo-android$agentSuffix"
+        override var socketTimeout = 0
+        override var connectionTimeout = 0
 
-    private val userAgentString: String = "bo-android$agentSuffix"
-    override var socketTimeout = 0
-    override var connectionTimeout = 0
+        override fun doRequest(
+            baseUrl: URL,
+            data: String,
+        ): HttpServiceClientResult {
+            val connection = baseUrl.openConnection() as HttpURLConnection
 
-    override fun doRequest(baseUrl: URL, data: String): HttpServiceClientResult {
-        val connection = baseUrl.openConnection() as HttpURLConnection
+            connection.requestMethod = "POST"
 
-        connection.requestMethod = "POST"
+            val dataBytes = data.toByteArray(Charset.forName("UTF-8"))
 
-        val dataBytes = data.toByteArray(Charset.forName("UTF-8"))
+            connection.setRequestProperty("Content-Type", "text/json")
+            connection.setRequestProperty("Content-Length", dataBytes.size.toString())
+            connection.setRequestProperty("User-Agent", userAgentString)
+            connection.setRequestProperty("Accept-Encoding", "gzip")
 
-        connection.setRequestProperty("Content-Type", "text/json")
-        connection.setRequestProperty("Content-Length", dataBytes.size.toString())
-        connection.setRequestProperty("User-Agent", userAgentString)
-        connection.setRequestProperty("Accept-Encoding", "gzip")
+            connection.doOutput = true
+            connection.outputStream.write(dataBytes)
+            connection.connectTimeout = connectionTimeout
+            connection.readTimeout = socketTimeout
 
-        connection.doOutput = true
-        connection.outputStream.write(dataBytes)
-        connection.connectTimeout = connectionTimeout
-        connection.readTimeout = socketTimeout
+            var inputStream = connection.inputStream
 
-        var inputStream = connection.inputStream
-
-        when (connection.contentEncoding) {
-            "gzip" -> {
-                inputStream = GZIPInputStream(inputStream)
+            when (connection.contentEncoding) {
+                "gzip" -> {
+                    inputStream = GZIPInputStream(inputStream)
+                }
             }
+
+            // Do not disconnect the connection here as it will be potentially reused
+
+            return HttpServiceClientResult(
+                body = InputStreamReader(inputStream, "UTF-8").use { it.readText() },
+            )
         }
-
-        // Do not disconnect the connection here as it will be potentially reused
-
-        return HttpServiceClientResult(
-            body = InputStreamReader(inputStream, "UTF-8").use { it.readText() },
-        )
     }
-}

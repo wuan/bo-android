@@ -20,13 +20,12 @@ package org.blitzortung.android.map.overlay.color
 
 import android.content.SharedPreferences
 import android.graphics.Color
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.get
 import kotlin.math.max
 import kotlin.math.min
+import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.get
 
 abstract class ColorHandler(private val preferences: SharedPreferences) {
-
     var colorScheme: ColorScheme = ColorScheme.BLITZORTUNG
         private set
 
@@ -55,14 +54,22 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
 
     abstract fun getColors(target: ColorTarget): IntArray
 
-    fun getColorSection(referenceTime: Long, eventTime: Long, intervalDuration: Int): Int {
+    fun getColorSection(
+        referenceTime: Long,
+        eventTime: Long,
+        intervalDuration: Int,
+    ): Int {
         val minutesPerColor = intervalDuration / colors.size
         val section =
             if (minutesPerColor > 0) ((referenceTime - eventTime) / 1000 / 60 / minutesPerColor).toInt() else 0
         return limitToValidRange(section)
     }
 
-    fun getColor(referenceTime: Long, eventTime: Long, intervalDuration: Int): Int {
+    fun getColor(
+        referenceTime: Long,
+        eventTime: Long,
+        intervalDuration: Int,
+    ): Int {
         return getColor(getColorSection(referenceTime, eventTime, intervalDuration))
     }
 
@@ -107,7 +114,10 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
     val numberOfColors: Int
         get() = colors.size
 
-    fun modifyBrightness(colors: IntArray, factor: Float): IntArray {
+    fun modifyBrightness(
+        colors: IntArray,
+        factor: Float,
+    ): IntArray {
         val hsvValues = FloatArray(3)
 
         return colors.map {
@@ -116,5 +126,4 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
             Color.HSVToColor(hsvValues)
         }.toIntArray()
     }
-
 }

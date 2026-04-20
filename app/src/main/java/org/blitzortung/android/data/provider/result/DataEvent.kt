@@ -18,6 +18,6 @@
 
 package org.blitzortung.android.data.provider.result
 
-import org.blitzortung.android.protocol.Event
+sealed interface DataEvent
 
-interface DataEvent : Event
+object NoData: DataEvent

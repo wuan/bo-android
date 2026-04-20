@@ -24,9 +24,8 @@ internal class AggregatingAlertSector(
     val label: String,
     val minimumSectorBearing: Float,
     val maximumSectorBearing: Float,
-    val ranges: List<AggregatingAlertSectorRange>
+    val ranges: List<AggregatingAlertSectorRange>,
 ) {
-
     var closestStrikeDistance: Float = Float.POSITIVE_INFINITY
         private set
 

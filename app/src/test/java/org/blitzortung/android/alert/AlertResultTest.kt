@@ -10,10 +10,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-
 @RunWith(RobolectricTestRunner::class)
 class AlertResultTest {
-
     private lateinit var alertParameters: AlertParameters
 
     @Before
@@ -27,7 +25,7 @@ class AlertResultTest {
 
     @Test
     fun emptySectorsResults() {
-        val uut = AlertResult(emptyList(), alertParameters, System.currentTimeMillis())
+        val uut = LocalActivity(emptyList(), alertParameters, System.currentTimeMillis())
 
         assertThat(uut.closestStrikeDistance).isInfinite()
         assertThat(uut.bearingName).isEqualTo("n/a")
@@ -36,14 +34,52 @@ class AlertResultTest {
 
     @Test
     fun singleSectorResults() {
-        val uut = AlertResult(
-            listOf(AlertSector("foo", 1.0f, 2.0f, emptyList(), 10.0f)),
-            alertParameters,
-            System.currentTimeMillis()
-        )
+        val uut =
+            LocalActivity(
+                listOf(AlertSector("foo", 1.0f, 2.0f, emptyList(), 10.0f)),
+                alertParameters,
+                System.currentTimeMillis(),
+            )
 
         assertThat(uut.closestStrikeDistance).isEqualTo(10.0f)
         assertThat(uut.bearingName).isEqualTo("foo")
         assertThat(uut.sectorWithClosestStrike).isNotNull
+    }
+
+    @Test
+    fun toStringUsesKmForMetric() {
+        val uut =
+            LocalActivity(
+                listOf(AlertSector("N", 1.0f, 2.0f, emptyList(), 15.5f)),
+                alertParameters,
+                System.currentTimeMillis(),
+            )
+
+        assertThat(uut.toString()).isEqualTo("N 15.5 METRIC")
+    }
+
+    @Test
+    fun toStringUsesMiForImperial() {
+        val imperialParameters = AlertParameters(
+            alarmInterval = alertParameters.alarmInterval,
+            rangeSteps = alertParameters.rangeSteps,
+            sectorLabels = alertParameters.sectorLabels,
+            measurementSystem = MeasurementSystem.IMPERIAL,
+        )
+        val uut =
+            LocalActivity(
+                listOf(AlertSector("NE", 1.0f, 2.0f, emptyList(), 25.0f)),
+                imperialParameters,
+                System.currentTimeMillis(),
+            )
+
+        assertThat(uut.toString()).isEqualTo("NE 25.0 IMPERIAL")
+    }
+
+    @Test
+    fun emptySectorsToStringReturnsOnlyBearingName() {
+        val uut = LocalActivity(emptyList(), alertParameters, System.currentTimeMillis())
+
+        assertThat(uut.toString()).isEqualTo("n/a")
     }
 }

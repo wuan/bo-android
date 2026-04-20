@@ -26,30 +26,37 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.Projection
 
 class StrikeShape(private val center: IGeoPoint) : LightningShape {
-    override fun isPointInside(tappedGeoPoint: IGeoPoint, projection: Projection): Boolean {
+    override fun isPointInside(
+        tappedGeoPoint: IGeoPoint,
+        projection: Projection,
+    ): Boolean {
         val shapeCenter = Point()
         projection.toPixels(center, shapeCenter)
 
         val tappedPoint = Point()
         projection.toPixels(tappedGeoPoint, tappedPoint)
 
-        return tappedPoint.x >= shapeCenter.x - size / 2 && tappedPoint.x <= shapeCenter.x + size / 2
-                && tappedPoint.y >= shapeCenter.y - size / 2 && tappedPoint.y <= shapeCenter.y + size / 2
+        return tappedPoint.x >= shapeCenter.x - size / 2 && tappedPoint.x <= shapeCenter.x + size / 2 &&
+            tappedPoint.y >= shapeCenter.y - size / 2 && tappedPoint.y <= shapeCenter.y + size / 2
     }
 
     private var size: Float = 0.toFloat()
     private var color: Int = 0
 
-    override fun draw(canvas: Canvas, mapView: MapView, paint: Paint) {
+    override fun draw(
+        canvas: Canvas,
+        mapView: MapView,
+        paint: Paint,
+    ) {
         mapView.projection.toPixels(center, centerPoint)
 
-        //Only draw it when its visible
+        // Only draw it when its visible
         if (canvas.quickReject(
                 centerPoint.x - size / 2,
                 centerPoint.y - size / 2,
                 centerPoint.x + size / 2,
                 centerPoint.y + size / 2,
-                Canvas.EdgeType.BW
+                Canvas.EdgeType.BW,
             )
         ) {
             return
@@ -64,7 +71,7 @@ class StrikeShape(private val center: IGeoPoint) : LightningShape {
             centerPoint.y.toFloat(),
             centerPoint.x + size / 2,
             centerPoint.y.toFloat(),
-            paint
+            paint,
         )
 
         canvas.drawLine(
@@ -72,11 +79,14 @@ class StrikeShape(private val center: IGeoPoint) : LightningShape {
             centerPoint.y - size / 2,
             centerPoint.x.toFloat(),
             centerPoint.y + size / 2,
-            paint
+            paint,
         )
     }
 
-    fun update(size: Float, color: Int) {
+    fun update(
+        size: Float,
+        color: Int,
+    ) {
         this.size = size
         this.color = color
     }

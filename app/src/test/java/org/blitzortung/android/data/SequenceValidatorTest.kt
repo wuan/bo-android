@@ -11,7 +11,6 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [Build.VERSION_CODES.N, Build.VERSION_CODES.M])
 class SequenceValidatorTest {
-
     @Test
     fun nullValueIsIgnored() {
         val validator = SequenceValidator()

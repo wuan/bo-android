@@ -1,0 +1,24 @@
+Mit der einfach bedienbaren Visualisierung von Echtzeit-Blitzdaten des Blitzortung.org Gemeinschaftsprojekts haben Sie alle Gewitter in der Region immer im Blick. Mit Hilfe der integrierten Gewitterwarnung sind aufziehende Gewitter keine Überraschung mehr.
+
+Eigenschaften der App:
+
+ - Darstellung von Gewitterblitzen in Echtzeit
+ - interaktive Anzeige historischer Blitzdaten der letzten 24 Stunden
+ - Regionen Europa, Nord- & Südamerika, Asien, Afrika und Australien/Neuseeland
+ - Farbkodierung der Blitzzeiten ermöglicht eine Vorhersage der Gewitterentwicklung
+ - Geringes Datenvolumen und schnelle Reaktionszeit auch bei hoher Gewitteraktivität
+ - Anzeige von Blitzzahl und aktuellster Blitzzeit
+ - Optionale Anzeige des eigenen Standorts
+ - Alarmfunktion mit Anzeige von Entfernung und Himmelsrichtung
+ - Alarmfunktion als Hintergrunddienst
+ - Darstellung von Einzelblitzen für Teilnehmer des Blitzortung.org Projekts
+
+Weitere Informationen zum Gemeinschaftsprojekt zur Blitzortung finden Sie unter http://www.blitzortung.org.
+
+Die Rasterdarstellung der Blitzdaten als Raster dient der schnellen Anzeige auch bei starker Gewitteraktivität. Teilnehmer von Blitzortung.org können auch die Orte aller Einzelblitze sichtbar machen.
+
+Projekt: https://github.com/wuan/bo-android
+
+Detaillierte Beschreibung: https://blitzortung.tryb.de/docs/apps/android/basic/
+
+<b>Der Hintergrunddienst führt in Verbindung mit der GPS-Ortsbestimmung zu einem hohen Batterieverbrauch. Bitte verwenden sie die Ortsbestimmung über das Netzwerk oder noch besser die passive Ortsbestimmung für die Benutzung mit dem Hintergrunddienst.</b>

@@ -26,8 +26,8 @@ enum class ColorScheme(val strikeColors: IntArray) {
             0xffffe079.toInt(),
             0xffffb060.toInt(),
             0xfff08060.toInt(),
-            0xffe05050.toInt()
-        )
+            0xffe05050.toInt(),
+        ),
     ),
     RAINBOW(
         intArrayOf(
@@ -36,8 +36,8 @@ enum class ColorScheme(val strikeColors: IntArray) {
             0xffffff00.toInt(),
             0xff99ff22.toInt(),
             0xff00ffff.toInt(),
-            0xff6699ff.toInt()
-        )
+            0xff6699ff.toInt(),
+        ),
     ),
     TEMPERATURE(
         intArrayOf(
@@ -46,7 +46,7 @@ enum class ColorScheme(val strikeColors: IntArray) {
             0xffe0b0c0.toInt(),
             0xffc0c0f0.toInt(),
             0xff5080f0.toInt(),
-            0xff4060ff.toInt()
-        )
-    );
+            0xff4060ff.toInt(),
+        ),
+    ),
 }

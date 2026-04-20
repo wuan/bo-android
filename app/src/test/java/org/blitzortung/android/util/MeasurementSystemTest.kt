@@ -10,7 +10,6 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 class MeasurementSystemTest {
-
     @Test
     fun testMetricFactor() {
         val metricDistance = MeasurementSystem.METRIC.calculateDistance(123456f)

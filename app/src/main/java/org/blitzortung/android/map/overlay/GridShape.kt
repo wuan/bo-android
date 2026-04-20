@@ -23,30 +23,34 @@ import android.graphics.Paint
 import android.graphics.Paint.Align
 import android.graphics.Point
 import android.graphics.RectF
+import kotlin.math.max
+import kotlin.math.min
 import org.osmdroid.api.IGeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.Projection
-import kotlin.math.max
-import kotlin.math.min
 
 class GridShape(private val center: IGeoPoint) : LightningShape {
-
     private val size: RectF = RectF()
     private var color: Int = 0
     private var alpha: Int = 0
     private var multiplicity: Int = 0
     private var textColor: Int = 0
 
-    override fun draw(canvas: Canvas, mapView: MapView, paint: Paint) {
+    override fun draw(
+        canvas: Canvas,
+        mapView: MapView,
+        paint: Paint,
+    ) {
         val centerPoint = Point()
         mapView.projection.toPixels(center, centerPoint)
 
-        val rect = RectF(
-            centerPoint.x + size.left,
-            centerPoint.y + size.top,
-            centerPoint.x + size.right,
-            centerPoint.y + size.bottom
-        )
+        val rect =
+            RectF(
+                centerPoint.x + size.left,
+                centerPoint.y + size.top,
+                centerPoint.x + size.right,
+                centerPoint.y + size.bottom,
+            )
 
         // Only draw visible Grid-Items
         if (canvas.quickReject(rect, Canvas.EdgeType.BW)) {
@@ -67,23 +71,32 @@ class GridShape(private val center: IGeoPoint) : LightningShape {
                 multiplicity.toString(),
                 centerPoint.x.toFloat(),
                 centerPoint.y.toFloat() + textSize / 2,
-                paint
+                paint,
             )
         }
     }
 
-    override fun isPointInside(tappedGeoPoint: IGeoPoint, projection: Projection): Boolean {
+    override fun isPointInside(
+        tappedGeoPoint: IGeoPoint,
+        projection: Projection,
+    ): Boolean {
         val shapeCenter = Point()
         projection.toPixels(center, shapeCenter)
 
         val tappedPoint = Point()
         projection.toPixels(tappedGeoPoint, tappedPoint)
 
-        return tappedPoint.x >= shapeCenter.x + size.left && tappedPoint.x <= shapeCenter.x + size.right
-                && tappedPoint.y >= shapeCenter.y + size.top && tappedPoint.y <= shapeCenter.y + size.bottom
+        return tappedPoint.x >= shapeCenter.x + size.left && tappedPoint.x <= shapeCenter.x + size.right &&
+            tappedPoint.y >= shapeCenter.y + size.top && tappedPoint.y <= shapeCenter.y + size.bottom
     }
 
-    fun update(topLeft: Point, bottomRight: Point, color: Int, multiplicity: Int, textColor: Int) {
+    fun update(
+        topLeft: Point,
+        bottomRight: Point,
+        color: Int,
+        multiplicity: Int,
+        textColor: Int,
+    ) {
         val x1 = min(topLeft.x.toFloat(), -MIN_SIZE)
         val y1 = min(topLeft.y.toFloat(), -MIN_SIZE)
         val x2 = max(bottomRight.x.toFloat(), MIN_SIZE)
@@ -97,7 +110,13 @@ class GridShape(private val center: IGeoPoint) : LightningShape {
         alpha = calculateAlphaValue(size.width(), 10, 40, 255, 100)
     }
 
-    private fun calculateAlphaValue(value: Float, minValue: Int, maxValue: Int, maxAlpha: Int, minAlpha: Int): Int {
+    private fun calculateAlphaValue(
+        value: Float,
+        minValue: Int,
+        maxValue: Int,
+        maxAlpha: Int,
+        minAlpha: Int,
+    ): Int {
         val targetValue = ((value - minValue) / (maxValue - minValue)).coerceIn(0.0f, 1.0f)
         return minAlpha + ((maxAlpha - minAlpha) * (1.0 - targetValue)).toInt()
     }

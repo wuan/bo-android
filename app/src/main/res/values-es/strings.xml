@@ -333,4 +333,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="background_query_period_dialog_message">El uso de una consulta periódica en segundo plano para alertas cuando la aplicación no se está ejecutando requerirá leer la ubicación de su dispositivo si no está configurado en ubicación manual.</string>
     <string name="post_notifications_request">Habilite el permiso para publicar notificaciones si desea recibir alertas de notificación.</string>
     <string name="default_alarm_signal">Sonido de alarma predeterminado</string>
+    <string name="location_required_for_alerts">Se requiere la ubicación para las alertas, deshabilitando las alertas y las consultas en segundo plano.</string>
+    <string name="post_notifications_required_for_alerts">Se requiere permiso de notificación para las alertas, deshabilitando las alertas y las consultas en segundo plano.</string>
 </resources>

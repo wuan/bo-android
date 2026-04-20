@@ -24,6 +24,8 @@ import android.graphics.Paint.Style
 import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewGroup
+import kotlin.math.max
+import kotlin.math.min
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.GridParameters
@@ -39,11 +41,11 @@ import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Overlay
-import kotlin.math.max
-import kotlin.math.min
 
-class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: StrikeColorHandler) : Overlay(),
-    LayerOverlay, MapListener {
+class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: StrikeColorHandler) :
+    Overlay(),
+    LayerOverlay,
+    MapListener {
     private val strikeList = mutableListOf<StrikeOverlay>()
 
     private val layerOverlayComponent: LayerOverlayComponent = LayerOverlayComponent()
@@ -57,7 +59,11 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
         zoomLevel = mapFragment.mapView.zoomLevelDouble
     }
 
-    override fun draw(canvas: Canvas?, mapView: MapView?, shadow: Boolean) {
+    override fun draw(
+        canvas: Canvas?,
+        mapView: MapView?,
+        shadow: Boolean,
+    ) {
         if (!shadow) {
             if (canvas == null || mapView == null) {
                 return
@@ -84,7 +90,11 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
         updateTotalNumberOfStrikes()
     }
 
-    private fun drawDataAreaRect(canvas: Canvas, mapView: MapView, paint: Paint) {
+    private fun drawDataAreaRect(
+        canvas: Canvas,
+        mapView: MapView,
+        paint: Paint,
+    ) {
         val clipBounds = canvas.clipBounds
         val currentGridParameters = gridParameters
         if (currentGridParameters != null) {
@@ -96,7 +106,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
                     max(rect.top, clipBounds.top.toFloat()),
                     rect.left,
                     min(rect.bottom, clipBounds.bottom.toFloat()),
-                    paint
+                    paint,
                 )
             }
             if (rect.right >= clipBounds.left && rect.right <= clipBounds.right) {
@@ -105,7 +115,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
                     max(rect.top, clipBounds.top.toFloat()),
                     rect.right,
                     min(rect.bottom, clipBounds.bottom.toFloat()),
-                    paint
+                    paint,
                 )
             }
             if (rect.bottom <= clipBounds.bottom && rect.bottom >= clipBounds.top) {
@@ -114,7 +124,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
                     rect.bottom,
                     min(rect.right, clipBounds.right.toFloat()),
                     rect.bottom,
-                    paint
+                    paint,
                 )
             }
             if (rect.top <= clipBounds.bottom && rect.top >= clipBounds.top) {
@@ -123,7 +133,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
                     rect.top,
                     min(rect.right, clipBounds.right.toFloat()),
                     rect.top,
-                    paint
+                    paint,
                 )
             }
         }
@@ -138,7 +148,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
         strikeList.removeAll { it.timestamp < expireTime }
         Log.v(
             Main.LOG_TAG,
-            "StrikesListOverlay.expireStrikes() expired ${sizeBefore - strikeList.size} from $sizeBefore (first: $firstTime, difference: $difference, ref: $referenceTime"
+            "StrikesListOverlay.expireStrikes() expired ${sizeBefore - strikeList.size} from $sizeBefore (first: $firstTime, difference: $difference, ref: $referenceTime",
         )
 
         updateTotalNumberOfStrikes()
@@ -150,7 +160,10 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
         updateTotalNumberOfStrikes()
     }
 
-    override fun onSingleTapUp(e: MotionEvent?, mapView: MapView?): Boolean {
+    override fun onSingleTapUp(
+        e: MotionEvent?,
+        mapView: MapView?,
+    ): Boolean {
         if (e != null && mapView != null) {
             val point = mapView.projection.fromPixels(e.x.toInt(), e.y.toInt())
 
@@ -163,10 +176,15 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
                 if (strikeTapped != null) {
                     val newPopup = createStrikePopUp(popup, strikeTapped)
 
-                    val mapParams = MapView.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
-                        point, 0, 0, MapView.LayoutParams.BOTTOM_CENTER
-                    )
+                    val mapParams =
+                        MapView.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            point,
+                            0,
+                            0,
+                            MapView.LayoutParams.BOTTOM_CENTER,
+                        )
 
                     mapView.addView(newPopup, mapParams)
 
@@ -185,13 +203,16 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
         var drawable: LightningShape? = null
 
         for (item in strikeList) {
-            val section = colorHandler.getColorSection(
-                if (hasRealtimeData())
-                    System.currentTimeMillis()
-                else
-                    referenceTime,
-                item.timestamp, parameters.intervalDuration
-            )
+            val section =
+                colorHandler.getColorSection(
+                    if (hasRealtimeData()) {
+                        System.currentTimeMillis()
+                    } else {
+                        referenceTime
+                    },
+                    item.timestamp,
+                    parameters.intervalDuration,
+                )
 
             if (usesGrid() || currentSection != section) {
                 drawable = updateAndReturnDrawable(item, section, colorHandler)
@@ -203,7 +224,11 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
         }
     }
 
-    private fun updateAndReturnDrawable(item: StrikeOverlay, section: Int, colorHandler: ColorHandler): LightningShape {
+    private fun updateAndReturnDrawable(
+        item: StrikeOverlay,
+        section: Int,
+        colorHandler: ColorHandler,
+    ): LightningShape {
         val projection = mapFragment.mapView.projection
         val color = colorHandler.getColor(section)
         val textColor = colorHandler.textColor
@@ -227,7 +252,6 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
         }
         return false
     }
-
 
     fun usesGrid(): Boolean {
         return gridParameters != null

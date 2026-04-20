@@ -18,7 +18,11 @@ class StrikeOverlay(strike: Strike) {
 
     var shape: LightningShape? = null
 
-    fun draw(canvas: Canvas, mapView: MapView, paint: Paint) {
+    fun draw(
+        canvas: Canvas,
+        mapView: MapView,
+        paint: Paint,
+    ) {
         shape?.run {
             draw(canvas, mapView, paint)
         }
@@ -29,7 +33,7 @@ class StrikeOverlay(strike: Strike) {
         projection: Projection,
         color: Int,
         textColor: Int,
-        zoomLevel: Double
+        zoomLevel: Double,
     ) {
         var shape: LightningShape? = shape
         if (gridParameters != null) {
@@ -44,14 +48,16 @@ class StrikeOverlay(strike: Strike) {
             projection.toPixels(
                 GeoPoint(
                     center.latitude + latDelta,
-                    center.longitude - lonDelta
-                ), topLeft
+                    center.longitude - lonDelta,
+                ),
+                topLeft,
             )
             projection.toPixels(
                 GeoPoint(
                     center.latitude - latDelta,
-                    center.longitude + lonDelta
-                ), bottomRight
+                    center.longitude + lonDelta,
+                ),
+                bottomRight,
             )
             topLeft.offset(-centerPoint.x, -centerPoint.y)
             bottomRight.offset(-centerPoint.x, -centerPoint.y)
@@ -69,7 +75,10 @@ class StrikeOverlay(strike: Strike) {
         this.shape = shape
     }
 
-    fun pointIsInside(point: IGeoPoint, projection: Projection): Boolean {
+    fun pointIsInside(
+        point: IGeoPoint,
+        projection: Projection,
+    ): Boolean {
         return shape?.isPointInside(point, projection) == true
     }
 

@@ -5,7 +5,6 @@ import org.junit.Before
 import org.junit.Test
 
 class PeriodTest {
-
     private val currentTime = Period.currentTime
 
     private val currentPeriod = 60

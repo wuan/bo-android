@@ -19,12 +19,10 @@
 package org.blitzortung.android.dialogs
 
 import android.content.SharedPreferences
-
 import org.blitzortung.android.map.overlay.color.ColorTarget
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 
 class AlertDialogColorHandler(preferences: SharedPreferences) : StrikeColorHandler(preferences) {
-
     override fun getTextColor(target: ColorTarget): Int {
         return when (target) {
             ColorTarget.SATELLITE -> 0xFF000000

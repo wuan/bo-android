@@ -1,23 +1,21 @@
 package org.blitzortung.android.data.provider.blitzortung
 
+import java.time.Instant
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.data.beans.DefaultStrike
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.time.Instant
 
 @RunWith(RobolectricTestRunner::class)
 class MapBuilderTest {
-
     private lateinit var mapBuilderFactory: MapBuilderFactory
 
     @Before
     fun setUp() {
         mapBuilderFactory = MapBuilderFactory()
     }
-
 
     @Test
     fun parsesLine() {

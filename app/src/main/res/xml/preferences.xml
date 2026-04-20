@@ -140,13 +140,13 @@
             android:summary="@string/location_mode_summary"
             android:title="@string/location_mode" />
         <EditTextPreference
-            android:defaultValue="11.0"
+            android:defaultValue=""
             android:inputType="numberDecimal|numberSigned"
             android:key="location_longitude"
             android:persistent="true"
             android:title="@string/longitude" />
         <EditTextPreference
-            android:defaultValue="49.0"
+            android:defaultValue=""
             android:inputType="numberDecimal|numberSigned"
             android:key="location_latitude"
             android:persistent="true"

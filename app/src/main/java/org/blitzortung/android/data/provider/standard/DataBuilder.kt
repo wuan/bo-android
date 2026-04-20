@@ -21,16 +21,16 @@ package org.blitzortung.android.data.provider.standard
 import org.blitzortung.android.data.beans.DefaultStrike
 import org.blitzortung.android.data.beans.GridElement
 import org.blitzortung.android.data.beans.GridParameters
-import org.blitzortung.android.data.beans.Station
 import org.blitzortung.android.data.beans.Strike
-import org.blitzortung.android.util.TimeFormat
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
 internal class DataBuilder {
-
-    fun createDefaultStrike(referenceTimestamp: Long, jsonArray: JSONArray): Strike {
+    fun createDefaultStrike(
+        referenceTimestamp: Long,
+        jsonArray: JSONArray,
+    ): Strike {
         try {
             return DefaultStrike(
                 timestamp = referenceTimestamp - 1000 * jsonArray.getInt(0),
@@ -43,11 +43,13 @@ internal class DataBuilder {
         } catch (e: JSONException) {
             throw IllegalStateException("error with JSON format while parsing strike data", e)
         }
-
     }
 
     @Throws(JSONException::class)
-    fun createGridParameters(response: JSONObject, gridSize: Int): GridParameters {
+    fun createGridParameters(
+        response: JSONObject,
+        gridSize: Int,
+    ): GridParameters {
         return GridParameters(
             longitudeStart = response.getDouble("x0"),
             latitudeStart = response.getDouble("y1"),
@@ -55,7 +57,7 @@ internal class DataBuilder {
             latitudeDelta = response.getDouble("yd"),
             longitudeBins = response.getInt("xc"),
             latitudeBins = response.getInt("yc"),
-            size = gridSize
+            size = gridSize,
         )
     }
 
@@ -63,36 +65,13 @@ internal class DataBuilder {
     fun createGridElement(
         gridParameters: GridParameters,
         referenceTimestamp: Long,
-        jsonArray: JSONArray
+        jsonArray: JSONArray,
     ): GridElement {
         return GridElement(
             timestamp = referenceTimestamp + 1000 * jsonArray.getInt(3),
             longitude = gridParameters.getCenterLongitude(jsonArray.getInt(0)),
             latitude = gridParameters.getCenterLatitude(jsonArray.getInt(1)),
-            multiplicity = jsonArray.getInt(2)
+            multiplicity = jsonArray.getInt(2),
         )
-    }
-
-    fun createStation(jsonArray: JSONArray): Station {
-        val name: String
-        val longitude: Double
-        val latitude: Double
-        var offlineSince = Station.OFFLINE_SINCE_NOT_SET
-        try {
-            name = jsonArray.getString(1)
-            longitude = jsonArray.getDouble(3)
-            latitude = jsonArray.getDouble(4)
-            if (jsonArray.length() >= 6) {
-
-                val offlineSinceString = jsonArray.getString(5)
-                if (offlineSinceString.isNotEmpty()) {
-                    offlineSince = TimeFormat.parseTimeWithMilliseconds(offlineSinceString)
-                }
-            }
-        } catch (e: JSONException) {
-            throw IllegalStateException("error with JSON format while parsing participants data")
-        }
-
-        return Station(name = name, longitude = longitude, latitude = latitude, offlineSince = offlineSince)
     }
 }

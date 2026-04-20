@@ -18,6 +18,4 @@
 
 package org.blitzortung.android.util
 
-fun isAtLeast(sdkVersion: Int): Boolean {
-    return android.os.Build.VERSION.SDK_INT >= sdkVersion
-}
+fun isAtLeast(sdkVersion: Int): Boolean = android.os.Build.VERSION.SDK_INT >= sdkVersion

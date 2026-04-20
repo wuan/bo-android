@@ -4,9 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.data.beans.GridParameters
 import org.junit.Test
 
-
 class GridParametersTest {
-
     private val parameters = GridParameters(10.0, 45.0, 0.2, 0.2, 20, 15)
 
     @Test

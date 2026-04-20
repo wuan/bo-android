@@ -1,7 +1,7 @@
 package org.blitzortung.android.data.provider
 
-import android.location.Location
 import org.assertj.core.api.Assertions.assertThat
+import org.blitzortung.android.createLocation
 import org.blitzortung.android.data.DataArea
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.GridParameters
@@ -15,10 +15,19 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 class LocalDataTest {
-
     private lateinit var uut: LocalData
 
     private lateinit var parameters: Parameters
+
+    private var globalGrid: GridParameters = GridParameters(
+        longitudeStart = 0.0,
+        latitudeStart = 0.0,
+        longitudeDelta = 0.318399,
+        latitudeDelta = 0.235637,
+        longitudeBins = 1130,
+        latitudeBins = 763,
+        size = 25000
+    )
 
     @Before
     fun setUp() {
@@ -107,7 +116,7 @@ class LocalDataTest {
         val result = uut.updateParameters(parameters, null)
 
         assertThat(result.region).isEqualTo(LOCAL_REGION)
-        assertThat(result.dataArea).isEqualTo(DataArea(2,9,5))
+        assertThat(result.dataArea).isEqualTo(DataArea(2, 9, 5))
         assertThat(result.gridSize).isEqualTo(10000)
     }
 
@@ -157,7 +166,7 @@ class LocalDataTest {
         val result = uut.update(boundingBox2)
 
         assertThat(result).isTrue
-        assertThat(uut.dataArea).isEqualTo(DataArea(2, 10,5))
+        assertThat(uut.dataArea).isEqualTo(DataArea(2, 10, 5))
     }
 
     @Test
@@ -224,6 +233,8 @@ class LocalDataTest {
     fun updateOfLocalDataOnZoomOutsideLocalArea() {
         val boundingBox1 = BoundingBox(45.5, 10.5, 44.5, 9.5)
         uut.update(boundingBox1)
+        val parameters = parameters.copy(region = LOCAL_REGION, gridSize = 10000)
+        uut.updateParameters(parameters, null)
 
         val boundingBox2 = BoundingBox(51.0, 15.0, -40.0, 5.0)
         val result = uut.update(boundingBox2)
@@ -232,10 +243,25 @@ class LocalDataTest {
         assertThat(uut.dataArea).isNull()
     }
 
-    fun createLocation(x: Double, y: Double): Location {
-        return Location("").apply {
-            longitude = x
-            latitude = y
-        }
+    @Test
+    fun updateOfInitialGlobalDataOnZoomIntoLocalArea() {
+        val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
+
+        val result = uut.update(boundingBox)
+
+        assertThat(result).isTrue
+        assertThat(uut.dataArea).isEqualTo(DataArea(2, 8, 5))
     }
+
+    @Test
+    fun updateOfGlobalDataOnZoomIntoLocalArea() {
+        uut.storeResult(globalGrid)
+        val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
+
+        val result = uut.update(boundingBox)
+
+        assertThat(result).isTrue
+        assertThat(uut.dataArea).isEqualTo(DataArea(2, 8, 5))
+    }
+
 }

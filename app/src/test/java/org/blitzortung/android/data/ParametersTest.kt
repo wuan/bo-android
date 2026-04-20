@@ -3,9 +3,7 @@ package org.blitzortung.android.data
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-
 class ParametersTest {
-
     private val parameters = Parameters()
     private val history = History()
 
@@ -37,7 +35,6 @@ class ParametersTest {
 
         assertThat(result.isRealtime()).isTrue()
     }
-
 
     @Test
     fun goToHistory() {

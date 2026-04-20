@@ -24,8 +24,10 @@ data class TimeInterval(
     val offset: Int = 0,
     val duration: Int = DEFAULT_DURATION,
 ) : Serializable {
-
-    fun withOffset(offset: Int, history: History): TimeInterval {
+    fun withOffset(
+        offset: Int,
+        history: History,
+    ): TimeInterval {
         if (offset in history.lowerLimit(this)..0) {
             return copy(offset = offset)
         }
@@ -54,17 +56,24 @@ data class TimeInterval(
         return copy(offset = 0)
     }
 
-    private fun updateIntervalOffset(history: History, operation: (Int, Int) -> Int): TimeInterval {
+    private fun updateIntervalOffset(
+        history: History,
+        operation: (Int, Int) -> Int,
+    ): TimeInterval {
         val intervalOffset = operation.invoke(offset, history.timeIncrement)
         return this.copy(
-            offset = alignValue(
-                intervalOffset.coerceIn(history.lowerLimit(this), 0),
-                history.timeIncrement
-            )
+            offset =
+                alignValue(
+                    intervalOffset.coerceIn(history.lowerLimit(this), 0),
+                    history.timeIncrement,
+                ),
         )
     }
 
-    private fun alignValue(value: Int, offsetIncrement: Int): Int {
+    private fun alignValue(
+        value: Int,
+        offsetIncrement: Int,
+    ): Int {
         return (value / offsetIncrement) * offsetIncrement
     }
 

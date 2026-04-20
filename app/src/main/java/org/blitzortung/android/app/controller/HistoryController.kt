@@ -24,21 +24,20 @@ import org.blitzortung.android.app.ButtonGroup
 import org.blitzortung.android.app.databinding.MainBinding
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.Mode
-import org.blitzortung.android.data.provider.result.ResultEvent
-import org.blitzortung.android.protocol.Event
+import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.provider.result.DataReceived
 
 class HistoryController(
     private val binding: MainBinding,
     private val buttonHandler: ButtonColumnHandler<ImageButton, ButtonGroup>,
-    private val dataHandler: MainDataHandler
+    private val dataHandler: MainDataHandler,
 ) {
-
     private val buttons: MutableCollection<ImageButton> = arrayListOf()
 
     private var animationRunning = false
 
-    val dataConsumer = { event: Event ->
-        if (event is ResultEvent) {
+    val dataConsumer = { event: DataEvent ->
+        if (event is DataReceived) {
             setRealtimeData(event.containsRealtimeData())
         }
     }
@@ -89,7 +88,10 @@ class HistoryController(
         }
     }
 
-    private fun addButtonWithOnClickAction(button: ImageButton, action: (View) -> Unit): ImageButton {
+    private fun addButtonWithOnClickAction(
+        button: ImageButton,
+        action: (View) -> Unit,
+    ): ImageButton {
         return button.apply {
             buttons.add(this)
             visibility = View.INVISIBLE

@@ -29,18 +29,15 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.PreferenceManager
+import java.util.Locale
 import org.blitzortung.android.app.Main
-import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.location.LocationHandler
 import org.osmdroid.views.MapController
 import org.osmdroid.views.MapView
-import java.util.Locale
-
 
 class OwnMapView(context: Context) : MapView(context) {
-
     private val gestureDetector: GestureDetector = GestureDetector(context, GestureListener())
 
     init {
@@ -49,7 +46,6 @@ class OwnMapView(context: Context) : MapView(context) {
     }
 
     inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
-
         private val point: Point = Point()
 
         override fun onDoubleTap(event: MotionEvent): Boolean {
@@ -70,24 +66,26 @@ class OwnMapView(context: Context) : MapView(context) {
             val context = this@OwnMapView.context
             val locationText = context.resources.getString(R.string.set_manual_location)
 
-            val dialogClickListener = DialogInterface.OnClickListener { _, which ->
-                when (which) {
-                    DialogInterface.BUTTON_POSITIVE -> {
-                        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-                        preferences.edit().apply {
-                            putString(PreferenceKey.LOCATION_LONGITUDE.toString(), roundCoordinate(longitude))
-                            putString(PreferenceKey.LOCATION_LATITUDE.toString(), roundCoordinate(latitude))
-                            putString(PreferenceKey.LOCATION_MODE.toString(), LocationHandler.MANUAL_PROVIDER)
-                            apply()
+            val dialogClickListener =
+                DialogInterface.OnClickListener { _, which ->
+                    when (which) {
+                        DialogInterface.BUTTON_POSITIVE -> {
+                            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+                            preferences.edit().apply {
+                                putString(PreferenceKey.LOCATION_LONGITUDE.toString(), roundCoordinate(longitude))
+                                putString(PreferenceKey.LOCATION_LATITUDE.toString(), roundCoordinate(latitude))
+                                putString(PreferenceKey.LOCATION_MODE.toString(), LocationHandler.MANUAL_PROVIDER)
+                                apply()
+                            }
+                        }
+
+                        DialogInterface.BUTTON_NEGATIVE -> {
                         }
                     }
-
-                    DialogInterface.BUTTON_NEGATIVE -> {
-                    }
                 }
-            }
 
-            AlertDialog.Builder(context)
+            AlertDialog
+                .Builder(context)
                 .setMessage("$locationText: %.4f %.4f?".format(longitude, latitude))
                 .setPositiveButton(android.R.string.ok, dialogClickListener)
                 .setNegativeButton(android.R.string.cancel, dialogClickListener)
@@ -97,13 +95,12 @@ class OwnMapView(context: Context) : MapView(context) {
         private fun roundCoordinate(value: Double): String = String.format(Locale.ROOT, COORDINATE_FORMAT, value)
     }
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        return if (gestureDetector.onTouchEvent(event)) {
+    override fun onTouchEvent(event: MotionEvent): Boolean =
+        if (gestureDetector.onTouchEvent(event)) {
             true
         } else {
             super.onTouchEvent(event)
         }
-    }
 
     val popup: View by lazy { LayoutInflater.from(context).inflate(R.layout.popup, this, false) }
 

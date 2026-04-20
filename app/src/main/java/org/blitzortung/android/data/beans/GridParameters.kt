@@ -20,9 +20,9 @@ package org.blitzortung.android.data.beans
 
 import android.graphics.Point
 import android.graphics.RectF
+import java.io.Serializable
 import org.blitzortung.android.data.Coordsys
 import org.osmdroid.views.Projection
-import java.io.Serializable
 
 data class GridParameters(
     val longitudeStart: Double,
@@ -31,9 +31,8 @@ data class GridParameters(
     val latitudeDelta: Double,
     val longitudeBins: Int,
     val latitudeBins: Int,
-    val size: Int? = null
+    val size: Int? = null,
 ) : Serializable {
-
     val rectCenterLongitude: Double = longitudeStart + longitudeDelta * longitudeBins / 2.0
 
     val rectCenterLatitude: Double = latitudeStart - latitudeDelta * latitudeBins / 2.0
@@ -58,24 +57,31 @@ data class GridParameters(
 
     fun getRect(projection: Projection): RectF {
         var leftTop = Point()
-        leftTop = projection.toPixels(
-            Coordsys.toMapCoords(longitudeStart, latitudeStart), leftTop
-        )
+        leftTop =
+            projection.toPixels(
+                Coordsys.toMapCoords(longitudeStart, latitudeStart), leftTop,
+            )
         var bottomRight = Point()
         val longitudeEnd = longitudeStart + longitudeInterval
         val latitudeEnd = latitudeStart - latitudeInterval
-        bottomRight = projection.toPixels(
-            Coordsys.toMapCoords(
-                longitudeEnd,
-                latitudeEnd
-            ), bottomRight
-        )
+        bottomRight =
+            projection.toPixels(
+                Coordsys.toMapCoords(
+                    longitudeEnd,
+                    latitudeEnd,
+                ),
+                bottomRight,
+            )
 
         // Log.d(Main.LOG_TAG, "GridParameters.getRect() $longitudeStart - $longitudeEnd ($longitudeDelta, #$longitudeBins) $latitudeEnd - $latitudeStart ($latitudeDelta, #$latitudeBins)")
         return RectF(leftTop.x.toFloat(), leftTop.y.toFloat(), bottomRight.x.toFloat(), bottomRight.y.toFloat())
     }
 
-    fun contains(longitude: Double, latitude: Double, inset: Double = 0.0): Boolean {
+    fun contains(
+        longitude: Double,
+        latitude: Double,
+        inset: Double = 0.0,
+    ): Boolean {
         val inLongitude = longitude in longitudeStart + inset..longitudeEnd - inset
         val inLatitude = latitude in latitudeStart - latitudeDelta * latitudeBins + inset..latitudeStart - inset
         return inLongitude && inLatitude

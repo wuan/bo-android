@@ -21,5 +21,5 @@ package org.blitzortung.android.map.components
 import org.blitzortung.android.map.overlay.LayerOverlay
 
 class LayerOverlayComponent(
-    override var visible: Boolean = true
+    override var visible: Boolean = true,
 ) : LayerOverlay
