@@ -332,6 +332,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest uprawnienie do lokalizacji.</string>
     <string name="location_permission_background_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest uprawnienie do lokalizacji w tle.</string>
     <string name="location_permission_background_disclosure">Przy użyciu źródła lokalizacji urządzenia ta aplikacja uzyskuje dostęp do danych lokalizacyjnych w tle, gdy alarmy w tle są włączone lub widżet ekranu głównego jest aktywny.</string>
+    <string name="widget_tap_to_grant_location">Dotknij, aby przyznać dostęp do lokalizacji</string>
     <string name="osmdroid_storage_warning">Nie można znaleźć miejsca do zapisu mapy. Proszę zgłosić.</string>
     <string name="changelog">Dziennik zmian</string>
     <string name="menu">Otwórz menu</string>

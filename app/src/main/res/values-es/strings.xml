@@ -324,6 +324,7 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_required">Se requiere permiso de ubicación cuando se usa una fuente de ubicación de dispositivo.</string>
     <string name="location_permission_background_required">Se requiere permiso de ubicación en segundo plano cuando se utiliza una fuente de ubicación de dispositivo.</string>
     <string name="location_permission_background_disclosure">Al usar una fuente de ubicación del dispositivo, esta aplicación accede a los datos de ubicación en segundo plano cuando las alertas en segundo plano están habilitadas o el widget de pantalla de inicio está activo.</string>
+    <string name="widget_tap_to_grant_location">Toca para conceder acceso a la ubicación</string>
     <string name="menu">Menú abierto</string>
     <string name="slider_current">ahora</string>
     <string name="slider_past">Pasado</string>

@@ -328,6 +328,7 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_required">Dopuštenje za lokaciju potrebno je kada se koristi izvor lokacije uređaja.</string>
     <string name="location_permission_background_required">Dopuštenje za pozadinsko mjesto potrebno je kada se koristi izvor lokacije uređaja.</string>
     <string name="location_permission_background_disclosure">Kada se koristi izvor lokacije uređaja, ova aplikacija pristupa podacima o lokaciji u pozadini kada su pozadinska upozorenja omogućena ili je widget početnog zaslona aktivan.</string>
+    <string name="widget_tap_to_grant_location">Dodirnite za odobrenje pristupa lokaciji</string>
     <string name="animation_settings">Postavke animacije</string>
     <string name="undefined">nedefinirano</string>
     <string name="background_query_period_dialog_message">"Korištenje periodičnog pozadinskog upita za upozorenja kada aplikacija ne radi zahtijevat će očitavanje lokacije vašeg uređaja ako nije postavljeno ručno lociranje. Widget početnog zaslona također koristi podatke o lokaciji u pozadini."</string>

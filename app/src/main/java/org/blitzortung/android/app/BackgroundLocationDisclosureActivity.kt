@@ -50,11 +50,6 @@ class BackgroundLocationDisclosureActivity : AppCompatActivity() {
         }
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        // Prevent dismissal via back press — user must make an explicit choice
-    }
-
     companion object {
         private const val REQUEST_CODE = 200
     }

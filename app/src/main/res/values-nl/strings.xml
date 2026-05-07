@@ -329,6 +329,7 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="changelog">Change log</string>
     <string name="location_permission_background_required">Achtergrondlocatietoestemming is vereist bij het gebruik van een apparaatlocatiebron.</string>
     <string name="location_permission_background_disclosure">Bij gebruik van een apparaatlocatiebron heeft deze app op de achtergrond toegang tot locatiegegevens wanneer achtergrondwaarschuwingen zijn ingeschakeld of de widget op het startscherm actief is.</string>
+    <string name="widget_tap_to_grant_location">Tik om locatietoegang te verlenen</string>
     <string name="menu">Menu openen</string>
     <string name="slider_current">nu</string>
     <string name="slider_past">Verleden</string>
