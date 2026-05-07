@@ -50,6 +50,7 @@ import org.blitzortung.android.app.controller.HistoryController
 import org.blitzortung.android.app.databinding.MainBinding
 import org.blitzortung.android.app.permission.PermissionRequester
 import org.blitzortung.android.app.permission.PermissionsSupport
+import org.blitzortung.android.app.permission.requester.BackgroundLocationDisclosureRequester
 import org.blitzortung.android.app.permission.requester.BackgroundLocationPermissionRequester
 import org.blitzortung.android.app.permission.requester.LocationPermissionRequester
 import org.blitzortung.android.app.permission.requester.NotificationPermissionRequester
@@ -295,6 +296,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             arrayOf(
                 LocationPermissionRequester(this, preferences),
                 NotificationPermissionRequester(this, preferences),
+                BackgroundLocationDisclosureRequester(this, preferences),
                 BackgroundLocationPermissionRequester(this, preferences),
                 WakeupPermissionRequester(this, preferences),
             )

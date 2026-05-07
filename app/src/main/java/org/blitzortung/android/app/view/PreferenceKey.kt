@@ -34,6 +34,7 @@ enum class PreferenceKey(val key: String) {
     COLOR_SCHEME("color_scheme"),
     QUERY_PERIOD("query_period"),
     BACKGROUND_QUERY_PERIOD("background_query_period"),
+    BACKGROUND_LOCATION_DISCLOSURE_SHOWN("background_location_disclosure_shown"),
     SHOW_LOCATION("location"),
     OWN_LOCATION_SIZE("own_location_size"),
     ALERT_ENABLED("alarm_enabled"),
@@ -105,6 +106,9 @@ internal inline fun <reified T> SharedPreferences.get(
 
     return value as T
 }
+
+internal fun SharedPreferences.wasBackgroundLocationDisclosureShown(): Boolean =
+    get(PreferenceKey.BACKGROUND_LOCATION_DISCLOSURE_SHOWN, false)
 
 internal inline fun <reified T, V> SharedPreferences.getAndConvert(
     prefKey: PreferenceKey,

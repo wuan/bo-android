@@ -331,7 +331,8 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="map_scale_summary">Wybierz skalowanie [%] kafelków mapy</string>
     <string name="location_permission_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest uprawnienie do lokalizacji.</string>
     <string name="location_permission_background_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest uprawnienie do lokalizacji w tle.</string>
-    <string name="location_permission_background_disclosure">Ta aplikacja korzysta z danych o lokalizacji i transferze danych sieciowych nawet wtedy, gdy jest zamknięta lub nieużywana, podczas korzystania z alarmów w tle.</string>
+    <string name="location_permission_background_disclosure">Przy użyciu źródła lokalizacji urządzenia ta aplikacja uzyskuje dostęp do danych lokalizacyjnych w tle, gdy alarmy w tle są włączone lub widżet ekranu głównego jest aktywny.</string>
+    <string name="widget_tap_to_grant_location">Dotknij, aby przyznać dostęp do lokalizacji</string>
     <string name="osmdroid_storage_warning">Nie można znaleźć miejsca do zapisu mapy. Proszę zgłosić.</string>
     <string name="changelog">Dziennik zmian</string>
     <string name="menu">Otwórz menu</string>
@@ -361,7 +362,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="diagnosis">Funkcje diagnostyczne</string>
     <string name="diagnosis_summary">Włącz funkcje obsługujące diagnozę działania aplikacji</string>
     <string name="undefined">Niezdefiniowany</string>
-    <string name="background_query_period_dialog_message">"Korzystanie z okresowego odpytywania w tle w celu wysyłania alarmów, gdy aplikacja nie jest uruchomiona, będzie wymagać odczytywania lokalizacji Twojego urządzenia, jeśli nie została ona ustawiona ręcznie."</string>
+    <string name="background_query_period_dialog_message">"Korzystanie z okresowego odpytywania w tle w celu wysyłania alarmów, gdy aplikacja nie jest uruchomiona, będzie wymagać odczytywania lokalizacji Twojego urządzenia, jeśli nie została ona ustawiona ręcznie. Widżet ekranu głównego również korzysta z danych o lokalizacji w tle."</string>
     <string name="post_notifications_request">Włącz uprawnienie do wysyłania powiadomień, jeśli chcesz otrzymywać alarmy.</string>
     <string name="default_alarm_signal">Domyślny dźwięk alarmu</string>
     <string name="location_required_for_alerts">Lokalizacja jest wymagana do alertów, wyłączania alertów i zapytań w tle.</string>

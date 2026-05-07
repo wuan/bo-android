@@ -1,42 +1,46 @@
 package org.blitzortung.android.app
 
+import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
-import android.preference.PreferenceManager
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.location.Location
 import android.location.LocationManager
+import android.os.Build
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
+import androidx.core.graphics.createBitmap
+import androidx.preference.PreferenceManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import org.blitzortung.android.alert.handler.Strikes
-import org.blitzortung.android.app.view.AlarmView
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.get
-import org.blitzortung.android.data.DataArea
-import org.blitzortung.android.data.Flags
-import org.blitzortung.android.data.Parameters
-import org.blitzortung.android.data.TimeInterval
-import org.blitzortung.android.data.provider.calculateLocalCoordinate
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.min
 import org.blitzortung.android.alert.AlertLabelHandler
+import org.blitzortung.android.alert.LocalActivity
+import org.blitzortung.android.alert.handler.Strikes
 import org.blitzortung.android.app.R.color.Green
 import org.blitzortung.android.app.R.color.Yellow
-import org.blitzortung.android.alert.LocalActivity
-import org.blitzortung.android.app.Main.Companion.LOG_TAG
+import org.blitzortung.android.app.view.AlarmView
+import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.get
+import org.blitzortung.android.app.view.wasBackgroundLocationDisclosureShown
+import org.blitzortung.android.data.DataArea
+import org.blitzortung.android.data.Flags
+import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.TimeInterval
 import org.blitzortung.android.data.provider.LOCAL_REGION
+import org.blitzortung.android.data.provider.calculateLocalCoordinate
 import org.blitzortung.android.location.LocationHandler
-import androidx.core.graphics.createBitmap
+import org.blitzortung.android.util.isAtLeast
 
 open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
@@ -66,9 +70,37 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
             return Result.failure()
         }
 
+        if (isDisclosureNeeded(appComponents.preferences)) {
+            return showDisclosurePrompt(appWidgetIds, appWidgetManager)
+        }
+
         val location = resolveLocation(appComponents.locationManager, appComponents.preferences)
 
         return updateWidgets(appWidgetIds, appWidgetManager, appComponents, location)
+    }
+
+    internal fun isDisclosureNeeded(preferences: SharedPreferences): Boolean {
+        if (!isAtLeast(Build.VERSION_CODES.Q)) return false
+        val disclosed = preferences.wasBackgroundLocationDisclosureShown()
+        val hasPermission =
+            applicationContext.checkSelfPermission(ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+        return !disclosed && !hasPermission
+    }
+
+    private fun showDisclosurePrompt(appWidgetIds: IntArray, appWidgetManager: AppWidgetManager): Result {
+        val intent = Intent(applicationContext, BackgroundLocationDisclosureActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(
+            applicationContext, 0, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val views = RemoteViews(applicationContext.packageName, R.layout.widget)
+        views.setOnClickPendingIntent(R.id.alarm_widget, pendingIntent)
+        views.setTextViewText(R.id.widget_status, applicationContext.getString(R.string.widget_tap_to_grant_location))
+        views.setViewVisibility(R.id.widget_progress, View.GONE)
+        for (appWidgetId in appWidgetIds) {
+            appWidgetManager.partiallyUpdateAppWidget(appWidgetId, views)
+        }
+        return Result.success()
     }
 
     private fun getWidgetIds(appWidgetManager: AppWidgetManager): IntArray {
@@ -109,9 +141,11 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
                 Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() using manual location")
                 manualLocation
             }
+
             locationMode != LocationHandler.MANUAL_PROVIDER -> {
                 getLastKnownLocationFromProvider(locationManager, locationMode)
             }
+
             else -> {
                 getLastKnownLocation(locationManager)
             }
@@ -169,7 +203,10 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         appWidgetManager.partiallyUpdateAppWidget(appWidgetId, views)
     }
 
-    private fun calculateWidgetDimensions(options: android.os.Bundle, displayMetrics: android.util.DisplayMetrics): Pair<Int, Int> {
+    private fun calculateWidgetDimensions(
+        options: android.os.Bundle,
+        displayMetrics: android.util.DisplayMetrics
+    ): Pair<Int, Int> {
         val density = displayMetrics.density
 
         // Get min dimensions
