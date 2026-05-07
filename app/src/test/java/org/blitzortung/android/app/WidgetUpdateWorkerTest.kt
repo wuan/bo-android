@@ -1,9 +1,11 @@
 package org.blitzortung.android.app
 
+import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.content.SharedPreferences
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
+import androidx.core.content.edit
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.WorkerParameters
 import io.mockk.MockKAnnotations
@@ -18,12 +20,16 @@ import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.app.view.AlarmView
+import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.app.view.put
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
@@ -293,6 +299,48 @@ class WidgetUpdateWorkerTest {
         assertThat(params.interval.duration).isEqualTo(60)
     }
 
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.Q])
+    fun isDisclosureNeeded_returnsTrueWhenNotDisclosedAndPermissionNotGranted() {
+        val prefs = RuntimeEnvironment.getApplication()
+            .getSharedPreferences("test", android.content.Context.MODE_PRIVATE)
+        val worker = TestableWidgetUpdateWorker(context, workerParams)
+
+        assertThat(worker.testIsDisclosureNeeded(prefs)).isTrue()
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.Q])
+    fun isDisclosureNeeded_returnsFalseWhenDisclosureAlreadyShown() {
+        val prefs = RuntimeEnvironment.getApplication()
+            .getSharedPreferences("test", android.content.Context.MODE_PRIVATE)
+        prefs.edit { put(PreferenceKey.BACKGROUND_LOCATION_DISCLOSURE_SHOWN, true) }
+        val worker = TestableWidgetUpdateWorker(context, workerParams)
+
+        assertThat(worker.testIsDisclosureNeeded(prefs)).isFalse()
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.Q])
+    fun isDisclosureNeeded_returnsFalseWhenPermissionAlreadyGranted() {
+        val prefs = RuntimeEnvironment.getApplication()
+            .getSharedPreferences("test", android.content.Context.MODE_PRIVATE)
+        shadowOf(RuntimeEnvironment.getApplication()).grantPermissions(ACCESS_BACKGROUND_LOCATION)
+        val worker = TestableWidgetUpdateWorker(context, workerParams)
+
+        assertThat(worker.testIsDisclosureNeeded(prefs)).isFalse()
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.P])
+    fun isDisclosureNeeded_returnsFalseOnAndroidBelowQ() {
+        val prefs = RuntimeEnvironment.getApplication()
+            .getSharedPreferences("test", android.content.Context.MODE_PRIVATE)
+        val worker = TestableWidgetUpdateWorker(context, workerParams)
+
+        assertThat(worker.testIsDisclosureNeeded(prefs)).isFalse()
+    }
+
     private fun createAppComponents(
         colorHandler: StrikeColorHandler,
         alertHandler: AlertHandler,
@@ -356,6 +404,9 @@ class WidgetUpdateWorkerTest {
             )
             return fetchStrikeData(components, location, alarmView)
         }
+
+        fun testIsDisclosureNeeded(preferences: SharedPreferences): Boolean =
+            isDisclosureNeeded(preferences)
 
         override fun getAppWidgetManager(): android.appwidget.AppWidgetManager {
             return mockk(relaxed = true)

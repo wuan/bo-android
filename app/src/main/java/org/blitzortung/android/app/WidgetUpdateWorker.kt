@@ -79,7 +79,7 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         return updateWidgets(appWidgetIds, appWidgetManager, appComponents, location)
     }
 
-    private fun isDisclosureNeeded(preferences: SharedPreferences): Boolean {
+    internal fun isDisclosureNeeded(preferences: SharedPreferences): Boolean {
         if (!isAtLeast(Build.VERSION_CODES.Q)) return false
         val disclosed = preferences.wasBackgroundLocationDisclosureShown()
         val hasPermission =

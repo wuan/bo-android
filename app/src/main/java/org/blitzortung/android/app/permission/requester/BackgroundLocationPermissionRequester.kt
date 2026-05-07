@@ -13,6 +13,7 @@ import org.blitzortung.android.app.permission.PermissionsSupport
 import org.blitzortung.android.app.permission.requester.LocationPermissionRequester.Companion.getLocationPermission
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.app.view.wasBackgroundLocationDisclosureShown
 import org.blitzortung.android.util.isAtLeast
 
 class BackgroundLocationPermissionRequester(
