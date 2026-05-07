@@ -73,7 +73,7 @@ open class NotificationHandler
             notificationText: String,
         ): Notification {
             return Notification.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.icon)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(context.resources.getText(R.string.app_name))
                 .setContentText(notificationText)
                 .setContentIntent(contentIntent)
@@ -88,7 +88,7 @@ open class NotificationHandler
         ): Notification {
             val builder =
                 Notification.Builder(context)
-                    .setSmallIcon(R.drawable.icon)
+                    .setSmallIcon(R.drawable.ic_launcher_foreground)
                     .setContentTitle(context.resources.getText(R.string.app_name))
                     .setContentText(notificationText)
                     .setContentIntent(contentIntent)

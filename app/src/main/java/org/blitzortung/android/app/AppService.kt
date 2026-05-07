@@ -151,7 +151,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     private fun startForeground(contentIntent: PendingIntent?) {
         val notification =
             Notification.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.icon)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(this.resources.getText(R.string.app_name))
                 .setContentText("bla")
                 .setContentIntent(contentIntent)
