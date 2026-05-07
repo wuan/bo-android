@@ -323,7 +323,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="location_permission_required">Für die Ortsbestimmung über den Gerätestandort ist die Berechtigung erforderlich.</string>
     <string name="location_permission_background_required">Für die Ortsbestimmung über den Gerätestandort im Hintergrund ist die Berechtigung erforderlich.</string>
     <string name="changelog">Änderungsprotokoll</string>
-    <string name="location_permission_background_disclosure">Diese App erfasst Standortdaten für Hintergrundwarnungen und das Homescreen-Widget, auch wenn die App geschlossen ist oder nicht verwendet wird.</string>
+    <string name="location_permission_background_disclosure">Bei Verwendung einer Gerätestandortquelle greift diese App im Hintergrund auf Standortdaten zu, wenn Hintergrundwarnungen aktiviert sind oder das Homescreen-Widget aktiv ist.</string>
     <string name="menu">Menü öffnen</string>
     <string name="slider_current">jetzt</string>
     <string name="slider_past">Vergangenheit</string>

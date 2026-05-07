@@ -299,7 +299,7 @@ Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="changelog">Change log</string>
     <string name="location_permission_required">Při použití zdroje umístění zařízení je vyžadováno oprávnění k poloze.</string>
     <string name="location_permission_background_required">Při použití zdroje umístění zařízení je vyžadováno oprávnění k umístění na pozadí.</string>
-    <string name="location_permission_background_disclosure">Tato aplikace shromažďuje údaje o poloze pro upozornění na bouřky na pozadí a widget domovské obrazovky, i když je aplikace zavřená nebo se nepoužívá.</string>
+    <string name="location_permission_background_disclosure">Při použití zdroje polohy zařízení tato aplikace přistupuje k údajům o poloze na pozadí, pokud jsou povolena upozornění na pozadí nebo je aktivní widget domovské obrazovky.</string>
     <string name="animation_settings">Nastavení animace</string>
     <string name="signaling_suppression_time">Doba potlačení signalizace</string>
     <string name="service_url">URL adresa vlastní služby</string>

@@ -323,7 +323,7 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="changelog">Change log</string>
     <string name="location_permission_required">Se requiere permiso de ubicación cuando se usa una fuente de ubicación de dispositivo.</string>
     <string name="location_permission_background_required">Se requiere permiso de ubicación en segundo plano cuando se utiliza una fuente de ubicación de dispositivo.</string>
-    <string name="location_permission_background_disclosure">Esta aplicación recopila datos de ubicación para las alertas de tormentas en segundo plano y el widget de pantalla de inicio, incluso cuando la aplicación está cerrada o no está en uso.</string>
+    <string name="location_permission_background_disclosure">Al usar una fuente de ubicación del dispositivo, esta aplicación accede a los datos de ubicación en segundo plano cuando las alertas en segundo plano están habilitadas o el widget de pantalla de inicio está activo.</string>
     <string name="menu">Menú abierto</string>
     <string name="slider_current">ahora</string>
     <string name="slider_past">Pasado</string>

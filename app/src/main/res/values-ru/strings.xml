@@ -333,7 +333,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="osmdroid_storage_warning">Не удается найти доступное место на карте памяти. Пожалуйста, сообщите разработчику.</string>
     <string name="changelog">Список изменений</string>
     <string name="location_permission_background_required">Разрешение фонового определения местоположения требуется при использовании источника местоположения устройства.</string>
-    <string name="location_permission_background_disclosure">Это приложение собирает данные о местоположении для фоновых предупреждений о грозах и виджета главного экрана, даже когда приложение закрыто или не используется.</string>
+    <string name="location_permission_background_disclosure">При использовании источника местоположения устройства это приложение получает доступ к данным о местоположении в фоновом режиме, когда включены фоновые оповещения или активен виджет главного экрана.</string>
     <string name="menu">Меню</string>
     <string name="slider_current">Сейчас</string>
     <string name="slider_past">Прошлое</string>

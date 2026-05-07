@@ -18,14 +18,9 @@
 
 package org.blitzortung.android.app
 
-import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
-import android.preference.PreferenceManager
 import android.util.Log
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -35,9 +30,6 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.get
-import org.blitzortung.android.util.isAtLeast
 
 open class WidgetProvider : AppWidgetProvider() {
 
@@ -59,19 +51,6 @@ open class WidgetProvider : AppWidgetProvider() {
         Log.v(Main.LOG_TAG, "WidgetProvider.onEnabled() - Scheduling immediate and periodic updates")
         scheduleImmediateUpdate(context)
         scheduleNextUpdate(context)
-        showDisclosureIfNeeded(context)
-    }
-
-    private fun showDisclosureIfNeeded(context: Context) {
-        if (!isAtLeast(Build.VERSION_CODES.Q)) return
-        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        val disclosed = prefs.get(PreferenceKey.BACKGROUND_LOCATION_DISCLOSURE_SHOWN, false)
-        val hasPermission = context.checkSelfPermission(ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
-        if (!disclosed && !hasPermission) {
-            val intent = Intent(context, BackgroundLocationDisclosureActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(intent)
-        }
     }
 
     protected open fun getWorkManager(context: Context): WorkManager = WorkManager.getInstance(context)
