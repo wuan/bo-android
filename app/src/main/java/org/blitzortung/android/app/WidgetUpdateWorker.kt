@@ -32,6 +32,7 @@ import org.blitzortung.android.app.R.color.Yellow
 import org.blitzortung.android.app.view.AlarmView
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.app.view.wasBackgroundLocationDisclosureShown
 import org.blitzortung.android.data.DataArea
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Parameters
@@ -80,7 +81,7 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
 
     private fun isDisclosureNeeded(preferences: SharedPreferences): Boolean {
         if (!isAtLeast(Build.VERSION_CODES.Q)) return false
-        val disclosed = preferences.get(PreferenceKey.BACKGROUND_LOCATION_DISCLOSURE_SHOWN, false)
+        val disclosed = preferences.wasBackgroundLocationDisclosureShown()
         val hasPermission =
             applicationContext.checkSelfPermission(ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
         return !disclosed && !hasPermission

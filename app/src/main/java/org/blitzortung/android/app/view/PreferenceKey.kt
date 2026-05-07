@@ -107,6 +107,9 @@ internal inline fun <reified T> SharedPreferences.get(
     return value as T
 }
 
+internal fun SharedPreferences.wasBackgroundLocationDisclosureShown(): Boolean =
+    get(PreferenceKey.BACKGROUND_LOCATION_DISCLOSURE_SHOWN, false)
+
 internal inline fun <reified T, V> SharedPreferences.getAndConvert(
     prefKey: PreferenceKey,
     default: T,

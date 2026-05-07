@@ -9,8 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.get
 import org.blitzortung.android.app.view.put
+import org.blitzortung.android.app.view.wasBackgroundLocationDisclosureShown
 import org.blitzortung.android.util.isAtLeast
 
 class BackgroundLocationDisclosureActivity : AppCompatActivity() {
@@ -20,7 +20,7 @@ class BackgroundLocationDisclosureActivity : AppCompatActivity() {
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
 
-        val alreadyDisclosed = preferences.get(PreferenceKey.BACKGROUND_LOCATION_DISCLOSURE_SHOWN, false)
+        val alreadyDisclosed = preferences.wasBackgroundLocationDisclosureShown()
         val alreadyGranted = isAtLeast(Build.VERSION_CODES.Q) &&
             checkSelfPermission(ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
 

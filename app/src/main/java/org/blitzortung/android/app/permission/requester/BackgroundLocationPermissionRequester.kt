@@ -24,7 +24,7 @@ class BackgroundLocationPermissionRequester(
     override fun request(permissionsSupport: PermissionsSupport): Boolean {
         return if (isAtLeast(Build.VERSION_CODES.Q) &&
             isBackgroundAlertEnabled(preferences) &&
-            wasDisclosureShown(preferences) &&
+            preferences.wasBackgroundLocationDisclosureShown() &&
             activity.checkSelfPermission(ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED &&
             getLocationPermission(preferences).first != null
         ) {
@@ -39,9 +39,6 @@ class BackgroundLocationPermissionRequester(
             false
         }
     }
-
-    private fun wasDisclosureShown(preferences: SharedPreferences): Boolean =
-        preferences.get(PreferenceKey.BACKGROUND_LOCATION_DISCLOSURE_SHOWN, false)
 
     companion object {
         internal fun isBackgroundAlertEnabled(preferences: SharedPreferences): Boolean =
