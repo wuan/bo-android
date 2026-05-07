@@ -294,9 +294,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         permissionRequesters =
             arrayOf(
+                BackgroundLocationDisclosureRequester(this, preferences, ::ensurePermissions),
                 LocationPermissionRequester(this, preferences),
                 NotificationPermissionRequester(this, preferences),
-                BackgroundLocationDisclosureRequester(this, preferences),
                 BackgroundLocationPermissionRequester(this, preferences),
                 WakeupPermissionRequester(this, preferences),
             )
@@ -459,6 +459,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         setupCustomViews()
     }
 
+    private fun ensurePermissions() {
+        PermissionsSupport.ensure(this, *permissionRequesters)
+    }
+
     override fun onRestart() {
         super.onRestart()
 
@@ -472,10 +476,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         Log.v(LOG_TAG, "Main.onResume()")
 
-        PermissionsSupport.ensure(
-            this,
-            *permissionRequesters,
-        )
+        ensurePermissions()
 
         mapFragment.updateForgroundColor(strikeColorHandler.lineColor)
 

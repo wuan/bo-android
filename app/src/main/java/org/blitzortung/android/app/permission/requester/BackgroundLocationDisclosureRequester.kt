@@ -1,8 +1,6 @@
 package org.blitzortung.android.app.permission.requester
 
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.Activity
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -22,14 +20,14 @@ import org.blitzortung.android.util.isAtLeast
 class BackgroundLocationDisclosureRequester(
     private val activity: Activity,
     private val preferences: SharedPreferences,
+    private val onAccepted: () -> Unit = {},
 ) : PermissionRequester {
     override val name: String = "background location disclosure"
 
     override fun request(permissionsSupport: PermissionsSupport): Boolean {
         return if (isAtLeast(Build.VERSION_CODES.Q) &&
             !preferences.wasBackgroundLocationDisclosureShown() &&
-            activity.checkSelfPermission(ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            hasForegroundLocation()
+            activity.checkSelfPermission(ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED
         ) {
             Log.v(LOG_TAG, "Main.requestBackgroundLocationDisclosure() show disclosure")
             showProminentDisclosure()
@@ -39,10 +37,6 @@ class BackgroundLocationDisclosureRequester(
         }
     }
 
-    private fun hasForegroundLocation(): Boolean =
-        activity.checkSelfPermission(ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-        activity.checkSelfPermission(ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-
     private fun showProminentDisclosure() {
         val message = activity.getString(R.string.location_permission_background_disclosure)
         AlertDialog.Builder(activity)
@@ -50,6 +44,7 @@ class BackgroundLocationDisclosureRequester(
             .setCancelable(false)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 preferences.edit { put(PreferenceKey.BACKGROUND_LOCATION_DISCLOSURE_SHOWN, true) }
+                onAccepted()
             }
             .show()
     }

@@ -1,7 +1,6 @@
 package org.blitzortung.android.app.permission.requester
 
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.Activity
 import android.content.Context
@@ -50,19 +49,7 @@ class BackgroundLocationDisclosureRequesterTest {
 
     @Test
     @Config(sdk = [Build.VERSION_CODES.Q])
-    fun `request should show disclosure when foreground location is granted and disclosure not yet shown`() {
-        shadowOf(activity.application).grantPermissions(ACCESS_FINE_LOCATION)
-
-        val result = requester.request(permissionsSupport)
-
-        assertThat(result).isTrue()
-    }
-
-    @Test
-    @Config(sdk = [Build.VERSION_CODES.Q])
-    fun `request should show disclosure when only coarse location is granted`() {
-        shadowOf(activity.application).grantPermissions(ACCESS_COARSE_LOCATION)
-
+    fun `request should show disclosure on Android Q or higher without any permissions granted`() {
         val result = requester.request(permissionsSupport)
 
         assertThat(result).isTrue()
@@ -71,7 +58,6 @@ class BackgroundLocationDisclosureRequesterTest {
     @Test
     @Config(sdk = [Build.VERSION_CODES.Q])
     fun `request should not show disclosure when already shown`() {
-        shadowOf(activity.application).grantPermissions(ACCESS_FINE_LOCATION)
         preferences.edit { put(PreferenceKey.BACKGROUND_LOCATION_DISCLOSURE_SHOWN, true) }
 
         val result = requester.request(permissionsSupport)
@@ -90,18 +76,8 @@ class BackgroundLocationDisclosureRequesterTest {
     }
 
     @Test
-    @Config(sdk = [Build.VERSION_CODES.Q])
-    fun `request should not show disclosure when no foreground location is granted`() {
-        val result = requester.request(permissionsSupport)
-
-        assertThat(result).isFalse()
-    }
-
-    @Test
     @Config(sdk = [Build.VERSION_CODES.P])
     fun `request should not show disclosure below Android Q`() {
-        shadowOf(activity.application).grantPermissions(ACCESS_FINE_LOCATION)
-
         val result = requester.request(permissionsSupport)
 
         assertThat(result).isFalse()
@@ -110,7 +86,6 @@ class BackgroundLocationDisclosureRequesterTest {
     @Test
     @Config(sdk = [Build.VERSION_CODES.Q])
     fun `request should show disclosure regardless of background alert setting`() {
-        shadowOf(activity.application).grantPermissions(ACCESS_FINE_LOCATION)
         preferences.edit { put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0") }
 
         val result = requester.request(permissionsSupport)
