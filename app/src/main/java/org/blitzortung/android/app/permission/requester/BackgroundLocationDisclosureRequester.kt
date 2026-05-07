@@ -27,7 +27,6 @@ class BackgroundLocationDisclosureRequester(
 
     override fun request(permissionsSupport: PermissionsSupport): Boolean {
         return if (isAtLeast(Build.VERSION_CODES.Q) &&
-            BackgroundLocationPermissionRequester.isBackgroundAlertEnabled(preferences) &&
             !wasDisclosureShown(preferences) &&
             activity.checkSelfPermission(ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED &&
             hasForegroundLocation()
@@ -52,14 +51,8 @@ class BackgroundLocationDisclosureRequester(
         AlertDialog.Builder(activity)
             .setMessage(message)
             .setCancelable(false)
-            .setPositiveButton(R.string.i_understand) { _, _ ->
+            .setPositiveButton(android.R.string.ok) { _, _ ->
                 preferences.edit { put(PreferenceKey.BACKGROUND_LOCATION_DISCLOSURE_SHOWN, true) }
-            }
-            .setNegativeButton(R.string.no_thanks) { _, _ ->
-                preferences.edit {
-                    put(PreferenceKey.BACKGROUND_QUERY_PERIOD, "0")
-                    put(PreferenceKey.BACKGROUND_LOCATION_DISCLOSURE_SHOWN, true)
-                }
             }
             .show()
     }

@@ -350,8 +350,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_required">Location permission is required when using a device location source.</string>
     <string name="location_permission_background_required">Background location permission is required when using a device location source.</string>
     <string name="location_permission_background_disclosure">This app collects location data to power background storm alerts and the home screen widget, even when the app is closed or not in use.</string>
-    <string name="i_understand">I understand</string>
-    <string name="no_thanks">No thanks</string>
+
     <string name="osmdroid_storage_warning">Cannot find writable storage for map. Please report.</string>
     <string name="changelog">Change log</string>
     <string name="menu">Open menu</string>
