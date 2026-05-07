@@ -329,6 +329,8 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="changelog">Change log</string>
     <string name="location_permission_background_required">Achtergrondlocatietoestemming is vereist bij het gebruik van een apparaatlocatiebron.</string>
     <string name="location_permission_background_disclosure">Bij gebruik van een apparaatlocatiebron heeft deze app op de achtergrond toegang tot locatiegegevens wanneer achtergrondwaarschuwingen zijn ingeschakeld of de widget op het startscherm actief is.</string>
+    <string name="widget_location_not_available">locatie niet beschikbaar</string>
+    <string name="widget_no_strike_data">geen gegevens</string>
     <string name="widget_tap_to_grant_location">Tik om locatietoegang te verlenen</string>
     <string name="menu">Menu openen</string>
     <string name="slider_current">nu</string>
@@ -336,6 +338,8 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="slider_legend">[Uren]</string>
     <string name="animation_interval_duration">Animatie-interval</string>
     <string name="animation_settings">Animatie-instellingen</string>
+    <string name="diagnosis">Diagnostische functies</string>
+    <string name="diagnosis_summary">Schakel functies in voor diagnose van de app-functionaliteit</string>
     <string name="undefined">ongedefinieerd</string>
     <string name="background_query_period_dialog_message">Het gebruik van een periodieke achtergrondquery voor waarschuwingen wanneer de app niet actief is, vereist het lezen van de locatie van uw apparaat als dit niet is ingesteld op handmatige locatie. De widget op het startscherm gebruikt ook locatiegegevens op de achtergrond.</string>
     <string name="post_notifications_request">Schakel toestemming voor het plaatsen van meldingen in als u meldingen wenst te ontvangen.</string>

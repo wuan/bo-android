@@ -328,11 +328,16 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_required">Pri použití zdroja polohy zariadenia je potrebné povolenie na umiestnenie.</string>
     <string name="location_permission_background_required">Pri použití zdroja umiestnenia zariadenia je potrebné povolenie na umiestnenie na pozadí.</string>
     <string name="location_permission_background_disclosure">Pri použití zdroja polohy zariadenia táto aplikácia pristupuje k údajom o polohe na pozadí, keď sú povolené upozornenia na pozadí alebo je aktívny widget domovskej obrazovky.</string>
+    <string name="widget_location_not_available">poloha nie je dostupná</string>
+    <string name="widget_no_strike_data">bez údajov</string>
     <string name="widget_tap_to_grant_location">Klepnite pre udelenie prístupu k polohe</string>
     <string name="animation_settings">Nastavení animace</string>
+    <string name="diagnosis">Diagnostické funkcie</string>
+    <string name="diagnosis_summary">Povolte funkcie na diagnostiku funkčnosti aplikácie</string>
     <string name="undefined">nedefinované</string>
     <string name="background_query_period_dialog_message">"Používanie pravidelného dopytovania sa na pozadí pre upozornenia, keď aplikácia nie je spustená, bude vyžadovať načítanie polohy vášho zariadenia, ak nie je nastavené na manuálne určovanie polohy. Widget domovskej obrazovky tiež používa údaje o polohe na pozadí."</string>
     <string name="post_notifications_request">Ak chcete upozornenia na príspevky, povoľte povolenie na ich odosielanie.</string>
+    <string name="default_alarm_signal">Predvolený zvuk alarmu</string>
     <string name="location_required_for_alerts">Pre upozornenia sa vyžaduje poloha, zakázanie upozornení a dopytov na pozadí.</string>
     <string name="post_notifications_required_for_alerts">Pre upozornenia sa vyžaduje povolenie na odosielanie upozornení, zakázanie upozornení a dopytov na pozadí.</string>
 </resources>

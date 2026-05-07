@@ -327,12 +327,16 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_required">L\'autorisation de localisation est requise lors de l\'utilisation d\'une source de localisation de périphérique.</string>
     <string name="location_permission_background_required">L\'autorisation de localisation en arrière-plan est requise lors de l\'utilisation d\'une source de localisation de périphérique.</string>
     <string name="location_permission_background_disclosure">Lors de l\'utilisation d\'une source de localisation de l\'appareil, cette application accède aux données de localisation en arrière-plan lorsque les alertes en arrière-plan sont activées ou que le widget de l\'écran d\'accueil est actif.</string>
+    <string name="widget_location_not_available">localisation non disponible</string>
+    <string name="widget_no_strike_data">pas de données</string>
     <string name="widget_tap_to_grant_location">Appuyer pour autoriser l\'accès à la localisation</string>
     <string name="slider_current">maintenant</string>
     <string name="slider_past">Passé</string>
     <string name="slider_legend">[Heures]</string>
     <string name="animation_interval_duration">Intervalle d\'animation</string>
     <string name="animation_settings">Paramètres d\'animation</string>
+    <string name="diagnosis">Fonctionnalités de diagnostic</string>
+    <string name="diagnosis_summary">Activer les fonctionnalités de diagnostic de l\'application</string>
     <string name="undefined">indéfinie</string>
     <string name="background_query_period_dialog_message">"L'utilisation d'une requête d'arrière-plan périodique pour les alertes lorsque l'application n'est pas en cours d'exécution nécessitera la lecture de l'emplacement de votre appareil s'il n'est pas défini sur l'emplacement manuel. Le widget de l'écran d'accueil utilise également les données de localisation en arrière-plan."</string>
     <string name="post_notifications_request">"Activez l'autorisation de publication des notifications si vous souhaitez recevoir des alertes de notification."</string>

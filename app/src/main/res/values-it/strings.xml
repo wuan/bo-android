@@ -322,9 +322,13 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_required">L\'autorizzazione alla posizione è richiesta quando si utilizza un\'origine della posizione del dispositivo.</string>
     <string name="location_permission_background_required">L\'autorizzazione alla posizione in background è necessaria quando si utilizza un\'origine della posizione del dispositivo.</string>
     <string name="location_permission_background_disclosure">Quando si utilizza una fonte di posizione del dispositivo, questa app accede ai dati sulla posizione in background quando gli avvisi in background sono abilitati o il widget della schermata principale è attivo.</string>
+    <string name="widget_location_not_available">posizione non disponibile</string>
+    <string name="widget_no_strike_data">nessun dato</string>
     <string name="widget_tap_to_grant_location">Tocca per concedere l\'accesso alla posizione</string>
     <string name="animation_interval_duration">Intervallo di animazione</string>
     <string name="animation_settings">Impostazioni di animazione</string>
+    <string name="diagnosis">Funzioni diagnostiche</string>
+    <string name="diagnosis_summary">Abilita funzioni per la diagnosi della funzionalità dell\'app</string>
     <string name="undefined">indefinito</string>
     <string name="background_query_period_dialog_message">"L'utilizzo di una query periodica in background per gli avvisi quando l'app non è in esecuzione richiederà la lettura della posizione del dispositivo, se non è impostata sulla posizione manuale. Anche il widget della schermata principale utilizza i dati sulla posizione in background."</string>
     <string name="post_notifications_request">"Abilita l'autorizzazione per l'invio di notifiche se desideri ricevere avvisi di notifica."</string>
