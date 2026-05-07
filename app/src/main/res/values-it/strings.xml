@@ -321,11 +321,11 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="changelog">Change log</string>
     <string name="location_permission_required">L\'autorizzazione alla posizione è richiesta quando si utilizza un\'origine della posizione del dispositivo.</string>
     <string name="location_permission_background_required">L\'autorizzazione alla posizione in background è necessaria quando si utilizza un\'origine della posizione del dispositivo.</string>
-    <string name="location_permission_background_disclosure">Questa app utilizza i dati sulla posizione e i dati di rete anche quando l\'app è chiusa o non in uso quando si utilizzano allarmi in background con una fonte di posizione del dispositivo.</string>
+    <string name="location_permission_background_disclosure">Questa app raccoglie dati sulla posizione per gli avvisi di temporali in background e il widget della schermata principale, anche quando l\'app è chiusa o non in uso.</string>
     <string name="animation_interval_duration">Intervallo di animazione</string>
     <string name="animation_settings">Impostazioni di animazione</string>
     <string name="undefined">indefinito</string>
-    <string name="background_query_period_dialog_message">"L'utilizzo di una query periodica in background per gli avvisi quando l'app non è in esecuzione richiederà la lettura della posizione del dispositivo, se non è impostata sulla posizione manuale. "</string>
+    <string name="background_query_period_dialog_message">"L'utilizzo di una query periodica in background per gli avvisi quando l'app non è in esecuzione richiederà la lettura della posizione del dispositivo, se non è impostata sulla posizione manuale. Anche il widget della schermata principale utilizza i dati sulla posizione in background."</string>
     <string name="post_notifications_request">"Abilita l'autorizzazione per l'invio di notifiche se desideri ricevere avvisi di notifica."</string>
     <string name="default_alarm_signal">Suono sveglia predefinito</string>
     <string name="location_required_for_alerts">La posizione è richiesta per gli avvisi, disabilitando gli avvisi e le query in background.</string>

@@ -333,7 +333,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="osmdroid_storage_warning">Не удается найти доступное место на карте памяти. Пожалуйста, сообщите разработчику.</string>
     <string name="changelog">Список изменений</string>
     <string name="location_permission_background_required">Разрешение фонового определения местоположения требуется при использовании источника местоположения устройства.</string>
-    <string name="location_permission_background_disclosure">Это приложение использует данные о местоположении, даже когда приложение закрыто или не используется, при использовании фоновых сигналов тревоги с источником местоположения устройства.</string>
+    <string name="location_permission_background_disclosure">Это приложение собирает данные о местоположении для фоновых предупреждений о грозах и виджета главного экрана, даже когда приложение закрыто или не используется.</string>
     <string name="menu">Меню</string>
     <string name="slider_current">Сейчас</string>
     <string name="slider_past">Прошлое</string>
@@ -364,7 +364,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="diagnosis">Диагностика приложения</string>
     <string name="diagnosis_summary">Функции диагностики работоспособности приложения</string>
     <string name="undefined">Не установлен</string>
-    <string name="background_query_period_dialog_message">"Использование периодического фонового запроса оповещений, когда приложение не запущено, потребует считывания местоположения вашего устройства, если оно не настроено на определение местоположения вручную. "</string>
+    <string name="background_query_period_dialog_message">"Использование периодического фонового запроса оповещений, когда приложение не запущено, потребует считывания местоположения вашего устройства, если оно не настроено на определение местоположения вручную. Виджет главного экрана также использует данные о местоположении в фоновом режиме."</string>
     <string name="post_notifications_request">Включите разрешение на публикацию уведомлений, если вы хотите получать оповещения.</string>
     <string name="default_alarm_signal">Звук предупреждений по умолчанию</string>
     <string name="location_required_for_alerts">Местоположение требуется для оповещений, отключения оповещений и фоновых запросов.</string>

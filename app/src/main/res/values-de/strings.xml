@@ -323,7 +323,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="location_permission_required">Für die Ortsbestimmung über den Gerätestandort ist die Berechtigung erforderlich.</string>
     <string name="location_permission_background_required">Für die Ortsbestimmung über den Gerätestandort im Hintergrund ist die Berechtigung erforderlich.</string>
     <string name="changelog">Änderungsprotokoll</string>
-    <string name="location_permission_background_disclosure">Diese App verwendet Standortdaten und Datenübertragung, auch wenn die App geschlossen ist oder nicht verwendet wird, <b>sofern Warnungen im Hintergrund aktiviert wurden</b>.</string>
+    <string name="location_permission_background_disclosure">Diese App erfasst Standortdaten für Hintergrundwarnungen und das Homescreen-Widget, auch wenn die App geschlossen ist oder nicht verwendet wird.</string>
     <string name="menu">Menü öffnen</string>
     <string name="slider_current">jetzt</string>
     <string name="slider_past">Vergangenheit</string>
@@ -351,7 +351,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="diagnosis">Diagnosefeatures</string>
     <string name="diagnosis_summary">Aktiviert  Features für die App-Analyse</string>
     <string name="undefined">nicht definiert</string>
-    <string name="background_query_period_dialog_message">Die Verwendung einer periodischen Hintergrundabfrage für Warnungen, wenn die App nicht ausgeführt wird, erfordert das Auslesen des Standorts Ihres Geräts, sofern dieser nicht auf manuellen Standort eingestellt ist.</string>
+    <string name="background_query_period_dialog_message">Die Verwendung einer periodischen Hintergrundabfrage für Warnungen, wenn die App nicht ausgeführt wird, erfordert das Auslesen des Standorts Ihres Geräts, sofern dieser nicht auf manuellen Standort eingestellt ist. Das Homescreen-Widget verwendet ebenfalls Standortdaten im Hintergrund.</string>
     <string name="post_notifications_request">Aktivieren Sie die Berechtigung zum Posten von Benachrichtigungen, wenn Benachrichtigungswarnungen gewünscht sind.</string>
     <string name="default_alarm_signal">Standard-Alarmton</string>
     <string name="location_required_for_alerts">Für Warnungen ist eine Standortbestimmung erforderlich. Warnungen und Hintergrundabfragen werden deaktiviert.</string>

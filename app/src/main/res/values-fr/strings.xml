@@ -326,14 +326,14 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="changelog">Change log</string>
     <string name="location_permission_required">L\'autorisation de localisation est requise lors de l\'utilisation d\'une source de localisation de périphérique.</string>
     <string name="location_permission_background_required">L\'autorisation de localisation en arrière-plan est requise lors de l\'utilisation d\'une source de localisation de périphérique.</string>
-    <string name="location_permission_background_disclosure">Cette application utilise les données de localisation et les données réseau même lorsque l\'application est fermée ou n\'est pas utilisée lors de l\'utilisation d\'alarmes en arrière-plan avec une source de localisation d\'appareil.</string>
+    <string name="location_permission_background_disclosure">Cette application collecte des données de localisation pour les alertes orages en arrière-plan et le widget de l\'écran d\'accueil, même lorsque l\'application est fermée ou n\'est pas utilisée.</string>
     <string name="slider_current">maintenant</string>
     <string name="slider_past">Passé</string>
     <string name="slider_legend">[Heures]</string>
     <string name="animation_interval_duration">Intervalle d\'animation</string>
     <string name="animation_settings">Paramètres d\'animation</string>
     <string name="undefined">indéfinie</string>
-    <string name="background_query_period_dialog_message">"L'utilisation d'une requête d'arrière-plan périodique pour les alertes lorsque l'application n'est pas en cours d'exécution nécessitera la lecture de l'emplacement de votre appareil s'il n'est pas défini sur l'emplacement manuel. "</string>
+    <string name="background_query_period_dialog_message">"L'utilisation d'une requête d'arrière-plan périodique pour les alertes lorsque l'application n'est pas en cours d'exécution nécessitera la lecture de l'emplacement de votre appareil s'il n'est pas défini sur l'emplacement manuel. Le widget de l'écran d'accueil utilise également les données de localisation en arrière-plan."</string>
     <string name="post_notifications_request">"Activez l'autorisation de publication des notifications si vous souhaitez recevoir des alertes de notification."</string>
     <string name="default_alarm_signal">Son d\'alarme par défaut</string>
     <string name="location_required_for_alerts">La localisation est requise pour les alertes, la désactivation des alertes et les requêtes en arrière-plan.</string>

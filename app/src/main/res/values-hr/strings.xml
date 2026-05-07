@@ -327,10 +327,10 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="changelog">Change log</string>
     <string name="location_permission_required">Dopuštenje za lokaciju potrebno je kada se koristi izvor lokacije uređaja.</string>
     <string name="location_permission_background_required">Dopuštenje za pozadinsko mjesto potrebno je kada se koristi izvor lokacije uređaja.</string>
-    <string name="location_permission_background_disclosure">Ova aplikacija upotrebljava podatke o lokaciji čak i kada je aplikacija zatvorena ili se ne koristi kada upotrebljava pozadinske alarme s izvorom lokacije uređaja.</string>
+    <string name="location_permission_background_disclosure">Ova aplikacija prikuplja podatke o lokaciji za pozadinska upozorenja o oluji i widget početnog zaslona, čak i kada je aplikacija zatvorena ili se ne koristi.</string>
     <string name="animation_settings">Postavke animacije</string>
     <string name="undefined">nedefinirano</string>
-    <string name="background_query_period_dialog_message">"Korištenje periodičnog pozadinskog upita za upozorenja kada aplikacija ne radi zahtijevat će očitavanje lokacije vašeg uređaja ako nije postavljeno ručno lociranje. "</string>
+    <string name="background_query_period_dialog_message">"Korištenje periodičnog pozadinskog upita za upozorenja kada aplikacija ne radi zahtijevat će očitavanje lokacije vašeg uređaja ako nije postavljeno ručno lociranje. Widget početnog zaslona također koristi podatke o lokaciji u pozadini."</string>
     <string name="post_notifications_request">Omogućite dopuštenje za objavu obavijesti ako želite primati upozorenja o obavijestima.</string>
     <string name="default_alarm_signal">Zadani zvuk alarma</string>
     <string name="location_required_for_alerts">Za upozorenja je potrebna lokacija, onemogućavanje upozorenja i pozadinskih upita.</string>
