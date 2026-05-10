@@ -2,6 +2,12 @@
 
 ## English
 
+### Version 2.5.2
+
+  - add initial version of a alert widget
+  - alert view shows when location is ouside of the current data area
+
+
 ### Version 2.4.5
 
   - update test dependencies
@@ -286,6 +292,11 @@
   * notification and vibration alarm with preference integration
 
 ## German
+
+### Version 2.5.2
+
+  - Erste Version eine Alarm-Widgets
+  - Alarm-View zeigt an, falls der aktuelle Standort außerhalb des Datenbereichs liegt
 
 ### Version 2.4.5
 
