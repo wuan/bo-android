@@ -214,7 +214,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_enabled">Alarm włączony</string>
     <string name="alarm_enabled_summary">Sprawdzaj aktywność wyładowań wokół aktualnej lokalizacji</string>
     <string name="background_query_period">Częstotliwość odpytywania w tle</string>
-    <string name="background_query_toast">Wyłącz optymalizację baterii dla tej aplikacji, aby alarmy w tle były w pełni funkcjonalne.</string>
+    <string name="background_query_toast">Wyłącz optymalizację baterii dla tej aplikacji, aby alarmy w tle były w pełni funkcjonalne</string>
     <string name="open_battery_optimiziation">Wyłącz optymalizację baterii dla tej aplikacji, gdy włączone jest odpytywanie w tle. Naciśnij ANULUJ, aby wyłączyć odpytywanie, i OK, aby przejść do ustawień optymalizacji baterii.</string>
 
     <string-array name="background_query_periods">
@@ -319,8 +319,8 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="error_indicator">Wskaźnik błędu</string>
     <string name="app_log">Logi aplikacji</string>
     <string name="share_log">Wyślij e-mail …</string>
-    <string name="share_unavailable">Udostępnianie e-maili jest niedostępne.</string>
-    <string name="provider_warning">Nie używaj dostawcy danych Blitzortung.org podczas intensywnej aktywności wyładowań, ponieważ wydajność wyświetlania mapy ulegnie pogorszeniu.</string>
+    <string name="share_unavailable">Udostępnianie e-maili jest niedostępne</string>
+    <string name="provider_warning">Nie używaj dostawcy danych Blitzortung.org podczas intensywnej aktywności wyładowań, ponieważ wydajność wyświetlania mapy ulegnie pogorszeniu</string>
     <string name="own_location_size">Rozmiar symbolu własnej lokalizacji</string>
     <string name="own_location_size_summary">Ustaw rozmiar symbolu własnej lokalizacji</string>
     <string name="keep_zoom_goto_own_location_summary">Ustawienie do utrzymania aktualnego powiększenia podczas centrowania własnej lokalizacji</string>
@@ -331,11 +331,11 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="map_scale_summary">Wybierz skalowanie [%] kafelków mapy</string>
     <string name="location_permission_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest uprawnienie do lokalizacji.</string>
     <string name="location_permission_background_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest uprawnienie do lokalizacji w tle.</string>
-    <string name="location_permission_background_disclosure">Przy użyciu źródła lokalizacji urządzenia ta aplikacja uzyskuje dostęp do danych lokalizacyjnych w tle, gdy alarmy w tle są włączone lub widżet ekranu głównego jest aktywny.</string>
+    <string name="location_permission_background_disclosure">W przypadku korzystania ze źródła lokalizacji urządzenia ta aplikacja uzyskuje dostęp do danych o lokalizacji w tle, gdy alarmy w tle są włączone lub widżet na ekranie głównym jest aktywny.</string>
     <string name="widget_location_not_available">lokalizacja niedostępna</string>
-    <string name="widget_no_strike_data">brak danych</string>
-    <string name="widget_tap_to_grant_location">Dotknij, aby przyznać dostęp do lokalizacji</string>
-    <string name="osmdroid_storage_warning">Nie można znaleźć miejsca do zapisu mapy. Proszę zgłosić.</string>
+    <string name="widget_no_strike_data">brak danych o wyładowaniach</string>
+    <string name="widget_tap_to_grant_location">Naciśnij, aby przyznać dostęp do lokalizacji</string>
+    <string name="osmdroid_storage_warning">Nie można znaleźć miejsca do zapisu mapy. Zgłoś to.</string>
     <string name="changelog">Dziennik zmian</string>
     <string name="menu">Otwórz menu</string>
     <string name="slider_current">teraz</string>
@@ -364,9 +364,9 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="diagnosis">Funkcje diagnostyczne</string>
     <string name="diagnosis_summary">Włącz funkcje obsługujące diagnozę działania aplikacji</string>
     <string name="undefined">Niezdefiniowany</string>
-    <string name="background_query_period_dialog_message">"Korzystanie z okresowego odpytywania w tle w celu wysyłania alarmów, gdy aplikacja nie jest uruchomiona, będzie wymagać odczytywania lokalizacji Twojego urządzenia, jeśli nie została ona ustawiona ręcznie. Widżet ekranu głównego również korzysta z danych o lokalizacji w tle."</string>
+    <string name="background_query_period_dialog_message">"Korzystanie z okresowego odpytywania w tle w celu wysyłania alarmów, gdy aplikacja nie jest uruchomiona, będzie wymagać odczytywania lokalizacji Twojego urządzenia, jeśli nie została ona ustawiona ręcznie. Widżet na ekranie głównym również korzysta z danych o lokalizacji w tle."</string>
     <string name="post_notifications_request">Włącz uprawnienie do wysyłania powiadomień, jeśli chcesz otrzymywać alarmy.</string>
     <string name="default_alarm_signal">Domyślny dźwięk alarmu</string>
-    <string name="location_required_for_alerts">Lokalizacja jest wymagana do alertów, wyłączania alertów i zapytań w tle.</string>
-    <string name="post_notifications_required_for_alerts">Zezwolenie na powiadomienia jest wymagane w przypadku alertów, wyłączania alertów i zapytań w tle.</string>
+    <string name="location_required_for_alerts">Lokalizacja jest wymagana dla alarmów i zapytań w tle</string>
+    <string name="post_notifications_required_for_alerts">Uprawnienie do powiadomień jest wymagane dla alarmów i zapytań w tle</string>
 </resources>
