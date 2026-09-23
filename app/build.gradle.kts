@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     id("com.android.application")
-    id("com.android.legacy-kapt")
+    id("com.google.devtools.ksp")
     id("jacoco")
 }
 
@@ -90,9 +90,8 @@ dependencies {
     implementation("com.google.dagger:dagger-android:$daggerVersion")
     implementation("com.google.dagger:dagger-android-support:$daggerVersion")
     implementation("androidx.test.ext:junit-ktx:1.3.0")
-    kapt("com.google.dagger:dagger-android-processor:$daggerVersion")
-    kapt("com.google.dagger:dagger-compiler:$daggerVersion")
-    compileOnly("javax.annotation:jsr250-api:1.0")
+    ksp("com.google.dagger:dagger-android-processor:$daggerVersion")
+    ksp("com.google.dagger:dagger-compiler:$daggerVersion")
 
     // Unit Testing
     testImplementation("junit:junit:4.13.2")
@@ -134,10 +133,6 @@ dependencies {
     // Compose Testing (if needed in future)
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.10.2")
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.10.2")
-}
-
-kapt {
-    includeCompileClasspath = false
 }
 
 tasks.withType<Test> {

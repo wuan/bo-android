@@ -11,7 +11,7 @@ buildscript {
 plugins {
     id("com.android.application") version "9.4.1" apply false
     id("com.android.library") version "9.4.1" apply false
-    id("com.android.legacy-kapt") version "9.4.1" apply false
+    id("com.google.devtools.ksp") version "2.3.12" apply false
     id("org.sonarqube") version "7.5.0.8588"
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
