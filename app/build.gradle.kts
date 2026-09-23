@@ -2,8 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
+    id("com.android.legacy-kapt")
     id("jacoco")
 }
 
@@ -45,13 +44,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
 
-    kotlin {
-        jvmToolchain(21)
-        compilerOptions {
-            apiVersion.set(KotlinVersion.KOTLIN_2_2)
-        }
-    }
-
     testOptions {
         unitTests {
             isReturnDefaultValues = true
@@ -72,6 +64,13 @@ android {
     }
 
     namespace = "org.blitzortung.android.app"
+}
+
+kotlin {
+    jvmToolchain(21)
+    compilerOptions {
+        apiVersion.set(KotlinVersion.KOTLIN_2_2)
+    }
 }
 
 val daggerVersion = "2.60.1"

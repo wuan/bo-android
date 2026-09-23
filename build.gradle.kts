@@ -1,9 +1,18 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+// AGP's built-in Kotlin pins KGP 2.2.10. Override the classpath to keep the
+// project on its existing Kotlin version.
+buildscript {
+    dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.20")
+    }
+}
+
 plugins {
     id("com.android.application") version "9.4.1" apply false
     id("com.android.library") version "9.4.1" apply false
-    id("org.jetbrains.kotlin.android") version "2.3.20" apply false
-    id("org.sonarqube") version "7.2.3.7755"
+    id("com.android.legacy-kapt") version "9.4.1" apply false
+    id("org.sonarqube") version "7.5.0.8588"
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
 }
