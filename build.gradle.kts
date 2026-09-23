@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id("com.android.application") version "8.13.2" apply false
-    id("com.android.library") version "8.13.2" apply false
+    id("com.android.application") version "9.4.1" apply false
+    id("com.android.library") version "9.4.1" apply false
     id("org.jetbrains.kotlin.android") version "2.3.20" apply false
     id("org.sonarqube") version "7.2.3.7755"
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
