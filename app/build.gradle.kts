@@ -155,13 +155,18 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     val fileFilter = listOf("**/*Dagger.*")
 
     val kotlinDebugTree =
-        fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug") {
+        fileTree("${layout.buildDirectory.get()}/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes") {
+            exclude(fileFilter)
+        }
+
+    val javaDebugTree =
+        fileTree("${layout.buildDirectory.get()}/intermediates/javac/debug/compileDebugJavaWithJavac/classes") {
             exclude(fileFilter)
         }
 
     val mainSrc = "$projectDir/src/main/java"
     sourceDirectories.setFrom(files(mainSrc))
-    classDirectories.setFrom(files(kotlinDebugTree))
+    classDirectories.setFrom(files(kotlinDebugTree, javaDebugTree))
 
     // Make sure the path is correct (if not run the unit tests and try find the .exec file that is generated after the unit tests are finished should be similar to that one)
     executionData.setFrom(
