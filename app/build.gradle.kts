@@ -137,6 +137,7 @@ dependencies {
 
 tasks.withType<Test> {
     jvmArgs("-Xmx4g", "-XX:MaxMetaspaceSize=1g")
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceIn(1, 2)
     configure<JacocoTaskExtension> {
         isIncludeNoLocationClasses = true
         excludes = listOf("jdk.internal.*")
