@@ -5,6 +5,10 @@ on:
   pull_request:
     branches: [ main, beta ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build and Test
@@ -42,8 +46,8 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Run static analysis (Detekt, ktlint)
-        run: ./gradlew detekt ktlintCheck
+      - name: Run static analysis (Detekt, ktlint, lint)
+        run: ./gradlew detekt ktlintCheck :app:lint
 
       - name: Upload Detekt reports
         if: always()
@@ -67,14 +71,25 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         run: |
           echo "Secret source: \"${{ github.secret_source }}\""
-          ./gradlew build jacocoTestReport app:bundleRelease
+          # Only produce release artifacts on push (main/beta); PRs get debug only.
+          RELEASE_TASKS=""
+          if [ "${{ github.event_name }}" = "push" ]; then
+            RELEASE_TASKS="assembleRelease bundleRelease"
+          fi
+          ./gradlew testDebugUnitTest jacocoTestReport assembleDebug $RELEASE_TASKS
 
       - name: Build and analyze (Sonar)
         if: ${{ github.secret_source == 'Actions' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build jacocoTestReport sonar app:bundleRelease
+        run: |
+          # Only produce release artifacts on push (main/beta); PRs get debug only.
+          RELEASE_TASKS=""
+          if [ "${{ github.event_name }}" = "push" ]; then
+            RELEASE_TASKS="assembleRelease bundleRelease"
+          fi
+          ./gradlew testDebugUnitTest jacocoTestReport assembleDebug sonar $RELEASE_TASKS
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
