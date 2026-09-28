@@ -239,7 +239,7 @@ class SettingsFragment :
         findPreference<ListPreference>(PreferenceKey.ALERT_SIGNALING_DISTANCE_LIMIT)?.isEnabled = enabled
         findPreference<Preference>(PreferenceKey.ALERT_SOUND_SIGNAL)?.isEnabled = enabled
         findPreference<SeekBarPreference>(PreferenceKey.ALERT_VIBRATION_SIGNAL)?.isEnabled = enabled
-        findPreference<EditTextPreference>(PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME)?.isEnabled = enabled
+        findPreference<ListPreference>(PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME)?.isEnabled = enabled
     }
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean =
