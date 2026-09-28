@@ -1,5 +1,11 @@
 package org.blitzortung.android.settings
 
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.core.content.edit
+import androidx.preference.PreferenceManager
+import org.blitzortung.android.app.R
+import org.blitzortung.android.app.view.put
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -71,7 +77,7 @@ object PreferencesBackup {
                 return BackupParseResult.Failure(BackupFailureReason.MALFORMED_JSON, e.message)
             }
 
-        val format = root.optString(FIELD_FORMAT, null)
+        val format = if (root.has(FIELD_FORMAT)) root.optString(FIELD_FORMAT) else null
         if (format != FORMAT_ID) {
             return BackupParseResult.Failure(
                 BackupFailureReason.NOT_A_BACKUP,
@@ -153,6 +159,43 @@ object PreferencesBackup {
                 missingKeys = missingKeys,
             ),
         )
+    }
+
+    /** Snapshot of the currently stored values, suitable for [serialize] or [planImport]. */
+    fun snapshot(preferences: SharedPreferences): Map<String, Any> =
+        preferences.all
+            .mapNotNull { (key, value) -> value?.let { key to it } }
+            .toMap()
+
+    /**
+     * Restores every preference to the default declared in `preferences.xml`.
+     *
+     * The current values are cleared first so that keys without a declared default
+     * (notably the account credentials) end up absent rather than retained.
+     */
+    fun resetToDefaults(
+        context: Context,
+        preferences: SharedPreferences,
+    ) {
+        preferences.edit(commit = true) { clear() }
+        PreferenceManager.setDefaultValues(context, R.xml.preferences, true)
+    }
+
+    /**
+     * Replaces the current preferences with the recognized values in [plan]:
+     * clears, re-applies the XML defaults, then overlays the file values. Keys that
+     * are absent from the file therefore fall back to their defaults, and excluded
+     * keys (credentials, device-specific map path) are not restored.
+     */
+    fun applyImport(
+        context: Context,
+        preferences: SharedPreferences,
+        plan: ImportPlan,
+    ) {
+        resetToDefaults(context, preferences)
+        preferences.edit(commit = true) {
+            plan.toApply.forEach { (key, value) -> put(key, value) }
+        }
     }
 
     internal fun coerce(

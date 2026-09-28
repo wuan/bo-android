@@ -391,4 +391,29 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="default_alarm_signal">Default alarm sound</string>
     <string name="location_required_for_alerts">Location is required for alerts, disabling alerts and background queries.</string>
     <string name="post_notifications_required_for_alerts">Notification permission is required for alerts, disabling alerts and background queries.</string>
+    <string name="backup_settings">Backup</string>
+    <string name="backup_export">Export preferences</string>
+    <string name="backup_export_summary">Save the current settings to a JSON file</string>
+    <string name="backup_import">Import preferences</string>
+    <string name="backup_import_summary">Replace the current settings from a backup file</string>
+    <string name="backup_reset">Reset to defaults</string>
+    <string name="backup_reset_summary">Restore all settings to their default values</string>
+    <string name="backup_export_file_name" translatable="false">blitzortung-preferences.json</string>
+    <string name="backup_export_success">Preferences exported</string>
+    <string name="backup_export_failed">Could not write the backup file</string>
+    <string name="backup_import_read_failed">The selected file could not be read as a backup.</string>
+    <string name="backup_import_unsupported">The selected file is not a supported backup.</string>
+    <string name="backup_import_invalid_value">The backup contains an invalid value for \"%s\".</string>
+    <string name="backup_import_warning_title">Warning</string>
+    <string name="backup_import_unknown_keys">This backup contains settings this app does not recognize: %s. They will be ignored.</string>
+    <string name="backup_import_confirm_title">Import preferences</string>
+    <string name="backup_import_confirm_message">This replaces all current settings. Your saved account credentials will be cleared and must be entered again.</string>
+    <string name="backup_import_missing_keys">Settings not present in the backup will be reset to their defaults: %s.</string>
+    <string name="backup_reset_confirm_title">Reset to defaults</string>
+    <string name="backup_reset_confirm_message">This restores all settings to their default values and clears your saved account credentials. Continue?</string>
+    <string name="backup_restart_title">Restart required</string>
+    <string name="backup_restart_message">The app must be restarted for the changes to take effect.</string>
+    <string name="backup_restart_now">Restart now</string>
+    <string name="backup_restart_later">Later</string>
+    <string name="backup_cancel">Cancel</string>
 </resources>

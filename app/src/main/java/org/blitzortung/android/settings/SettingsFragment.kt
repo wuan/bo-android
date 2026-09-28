@@ -1,9 +1,11 @@
 package org.blitzortung.android.settings
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageInfo
 import android.location.LocationManager
 import android.media.RingtoneManager
 import android.net.Uri
@@ -11,9 +13,11 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.edit
+import androidx.core.content.pm.PackageInfoCompat
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -23,8 +27,11 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SeekBarPreference
 import dagger.android.support.AndroidSupportInjection
+import java.io.IOException
 import java.util.Locale
 import javax.inject.Inject
+import org.blitzortung.android.app.AppService
+import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.MessageListPreference
@@ -39,6 +46,9 @@ class SettingsFragment :
     OnSharedPreferenceChangeListener {
     @set:Inject
     internal lateinit var preferences: SharedPreferences
+
+    @set:Inject
+    internal lateinit var packageInfo: PackageInfo
 
     private val originalSummaries = mutableMapOf<PreferenceKey, Int>()
 
@@ -65,6 +75,16 @@ class SettingsFragment :
             }
         }
 
+    private val exportPreferencesLauncher: ActivityResultLauncher<String> =
+        registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+            uri?.let { exportPreferences(it) }
+        }
+
+    private val importPreferencesLauncher: ActivityResultLauncher<Array<String>> =
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+            uri?.let { importPreferences(it) }
+        }
+
     override fun onAttach(context: Context) {
         Log.v(LOG_TAG, "SettingsFragment.onAttach()")
         AndroidSupportInjection.inject(this)
@@ -86,6 +106,7 @@ class SettingsFragment :
             configureLocationProviderPreferences(preferences)
             configureOwnLocationSizePreference(preferences)
             configureAlertEnabledPreference(preferences)
+            configureBackupPreferences()
 
             // Initial summary update for EditTextPreferences
             updateEditTextPreferenceSummaries()
@@ -242,6 +263,162 @@ class SettingsFragment :
         findPreference<ListPreference>(PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME)?.isEnabled = enabled
     }
 
+    private fun configureBackupPreferences() {
+        findPreference<Preference>(BACKUP_EXPORT_KEY)?.setOnPreferenceClickListener {
+            exportPreferencesLauncher.launch(getString(R.string.backup_export_file_name))
+            true
+        }
+        findPreference<Preference>(BACKUP_IMPORT_KEY)?.setOnPreferenceClickListener {
+            importPreferencesLauncher.launch(arrayOf("application/json", "text/plain", "application/octet-stream"))
+            true
+        }
+        findPreference<Preference>(BACKUP_RESET_KEY)?.setOnPreferenceClickListener {
+            confirmReset()
+            true
+        }
+    }
+
+    private fun exportPreferences(uri: Uri) {
+        val context = context ?: return
+        val json =
+            PreferencesBackup.serialize(
+                PreferencesBackup.snapshot(preferences),
+                PackageInfoCompat.getLongVersionCode(packageInfo).toInt(),
+            )
+        try {
+            context.contentResolver.openOutputStream(uri)?.use { output ->
+                output.write(json.toByteArray(Charsets.UTF_8))
+            } ?: throw IOException("no output stream for $uri")
+            Toast.makeText(context, R.string.backup_export_success, Toast.LENGTH_SHORT).show()
+        } catch (e: IOException) {
+            Log.e(LOG_TAG, "failed to export preferences", e)
+            Toast.makeText(context, R.string.backup_export_failed, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun importPreferences(uri: Uri) {
+        val context = context ?: return
+        val json =
+            try {
+                context.contentResolver.openInputStream(uri)?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }
+            } catch (e: IOException) {
+                Log.e(LOG_TAG, "failed to read backup file", e)
+                null
+            }
+
+        if (json == null) {
+            showMessage(getString(R.string.backup_import_read_failed))
+            return
+        }
+
+        when (val parsed = PreferencesBackup.parse(json)) {
+            is BackupParseResult.Failure -> {
+                val messageRes =
+                    when (parsed.reason) {
+                        BackupFailureReason.MALFORMED_JSON,
+                        BackupFailureReason.INVALID_PREFERENCES,
+                        -> R.string.backup_import_read_failed
+
+                        BackupFailureReason.NOT_A_BACKUP,
+                        BackupFailureReason.UNSUPPORTED_VERSION,
+                        -> R.string.backup_import_unsupported
+                    }
+                showMessage(getString(messageRes))
+            }
+
+            is BackupParseResult.Success -> {
+                when (val planResult = PreferencesBackup.planImport(parsed.preferences, PreferencesBackup.snapshot(preferences))) {
+                    is ImportPlanResult.Failure ->
+                        showMessage(getString(R.string.backup_import_invalid_value, planResult.key), asError = true)
+
+                    is ImportPlanResult.Success -> confirmImport(planResult.plan)
+                }
+            }
+        }
+    }
+
+    private fun confirmImport(plan: ImportPlan) {
+        if (plan.unknownKeys.isNotEmpty()) {
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.backup_import_warning_title)
+                .setMessage(
+                    getString(R.string.backup_import_unknown_keys, plan.unknownKeys.joinToString(", ")),
+                )
+                .setNegativeButton(R.string.backup_cancel, null)
+                .setPositiveButton(android.R.string.ok) { _, _ -> showImportConfirmation(plan) }
+                .show()
+        } else {
+            showImportConfirmation(plan)
+        }
+    }
+
+    private fun showImportConfirmation(plan: ImportPlan) {
+        val message =
+            buildString {
+                append(getString(R.string.backup_import_confirm_message))
+                if (plan.missingKeys.isNotEmpty()) {
+                    append("\n\n")
+                    append(getString(R.string.backup_import_missing_keys, plan.missingKeys.joinToString(", ")))
+                }
+            }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.backup_import_confirm_title)
+            .setMessage(message)
+            .setNegativeButton(R.string.backup_cancel, null)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val context = context ?: return@setPositiveButton
+                PreferencesBackup.applyImport(context, preferences, plan)
+                promptRestart()
+            }
+            .show()
+    }
+
+    private fun confirmReset() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.backup_reset_confirm_title)
+            .setMessage(R.string.backup_reset_confirm_message)
+            .setNegativeButton(R.string.backup_cancel, null)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val context = context ?: return@setPositiveButton
+                PreferencesBackup.resetToDefaults(context, preferences)
+                promptRestart()
+            }
+            .show()
+    }
+
+    private fun promptRestart() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.backup_restart_title)
+            .setMessage(R.string.backup_restart_message)
+            .setCancelable(false)
+            .setNegativeButton(R.string.backup_restart_later, null)
+            .setPositiveButton(R.string.backup_restart_now) { _, _ -> restartApp() }
+            .show()
+    }
+
+    private fun restartApp() {
+        val context = context ?: return
+        context.stopService(Intent(context, AppService::class.java))
+        val intent =
+            Intent(context, Main::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+        context.startActivity(intent)
+        activity?.finish()
+    }
+
+    private fun showMessage(
+        message: CharSequence,
+        asError: Boolean = false,
+    ) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(if (asError) R.string.backup_import_warning_title else R.string.app_name)
+            .setMessage(message)
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
+    }
+
     override fun onPreferenceTreeClick(preference: Preference): Boolean =
         if (preference.key == PreferenceKey.ALERT_SOUND_SIGNAL.toString()) {
             val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
@@ -273,6 +450,12 @@ class SettingsFragment :
         } else {
             super.onPreferenceTreeClick(preference)
         }
+
+    companion object {
+        private const val BACKUP_EXPORT_KEY = "backup_export"
+        private const val BACKUP_IMPORT_KEY = "backup_import"
+        private const val BACKUP_RESET_KEY = "backup_reset"
+    }
 }
 
 fun <T : Preference> PreferenceFragmentCompat.findPreference(key: PreferenceKey): T? = findPreference<T>(key.toString())
