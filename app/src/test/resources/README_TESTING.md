@@ -329,8 +329,8 @@ assertThat(list).hasSize(3)
 # Run specific test class
 ./gradlew testDebugUnitTest --tests "*.MainDataHandlerTest"
 
-# Run with coverage
-./gradlew testDebugUnitTest jacocoTestReport
+# Run with coverage (JaCoCo instrumentation is opt-in to keep debug builds fast)
+./gradlew testDebugUnitTest jacocoTestReport -PenableCoverage=true
 
 # Run instrumented tests
 ./gradlew connectedDebugAndroidTest

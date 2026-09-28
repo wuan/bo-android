@@ -76,7 +76,7 @@ jobs:
           if [ "${{ github.event_name }}" = "push" ]; then
             RELEASE_TASKS="assembleRelease bundleRelease"
           fi
-          ./gradlew testDebugUnitTest jacocoTestReport assembleDebug $RELEASE_TASKS
+          ./gradlew testDebugUnitTest jacocoTestReport assembleDebug $RELEASE_TASKS -PenableCoverage=true
 
       - name: Build and analyze (Sonar)
         if: ${{ github.secret_source == 'Actions' }}
@@ -89,7 +89,7 @@ jobs:
           if [ "${{ github.event_name }}" = "push" ]; then
             RELEASE_TASKS="assembleRelease bundleRelease"
           fi
-          ./gradlew testDebugUnitTest jacocoTestReport assembleDebug sonar $RELEASE_TASKS
+          ./gradlew testDebugUnitTest jacocoTestReport assembleDebug sonar $RELEASE_TASKS -PenableCoverage=true
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

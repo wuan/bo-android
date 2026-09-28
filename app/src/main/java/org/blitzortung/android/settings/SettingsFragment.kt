@@ -278,7 +278,7 @@ class SettingsFragment :
         }
     }
 
-    private fun exportPreferences(uri: Uri) {
+    internal fun exportPreferences(uri: Uri) {
         val context = context ?: return
         val json =
             PreferencesBackup.serialize(
@@ -296,7 +296,7 @@ class SettingsFragment :
         }
     }
 
-    private fun importPreferences(uri: Uri) {
+    internal fun importPreferences(uri: Uri) {
         val context = context ?: return
         val json =
             try {
