@@ -23,8 +23,8 @@ Project documentation: https://blitzortung.tryb.de
 # Run specific test class
 ./gradlew testDebugUnitTest --tests "org.blitzortung.android.alert.AlertResultTest"
 
-# Run tests with coverage report
-./gradlew testDebugUnitTest jacocoTestReport
+# Run tests with coverage report (JaCoCo instrumentation is opt-in to keep debug builds fast)
+./gradlew testDebugUnitTest jacocoTestReport -PenableCoverage=true
 # Coverage report: app/build/reports/jacoco/jacocoTestReport/html/index.html
 ```
 

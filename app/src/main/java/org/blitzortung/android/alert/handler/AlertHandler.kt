@@ -169,7 +169,7 @@ constructor(
             }
 
             PreferenceKey.ALERT_SIGNALING_THRESHOLD_TIME -> {
-                signalingThresholdTime = sharedPreferences.get(key, "25").toLong() * 1000 * 60
+                signalingThresholdTime = sharedPreferences.get(key, "0").toLong() * 1000 * 60
                 Log.v(
                     Main.LOG_TAG,
                     "AlertHandler.onSharedPreferenceChanged() signalingThresholdTime = $signalingThresholdTime",

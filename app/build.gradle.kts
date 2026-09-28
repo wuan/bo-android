@@ -6,6 +6,8 @@ plugins {
     id("jacoco")
 }
 
+val enableCoverage = providers.gradleProperty("enableCoverage").getOrElse("false").toBoolean()
+
 android {
     compileSdk = 37
 
@@ -34,8 +36,8 @@ android {
             )
         }
         debug {
-            enableUnitTestCoverage = true
-            enableAndroidTestCoverage = true
+            enableUnitTestCoverage = enableCoverage
+            enableAndroidTestCoverage = enableCoverage
         }
     }
 

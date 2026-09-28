@@ -250,5 +250,25 @@
             android:summary="@string/diagnosis_summary"
             android:title="@string/diagnosis" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/backup_settings">
+        <Preference
+            android:key="backup_export"
+            android:persistent="false"
+            android:selectable="true"
+            android:summary="@string/backup_export_summary"
+            android:title="@string/backup_export" />
+        <Preference
+            android:key="backup_import"
+            android:persistent="false"
+            android:selectable="true"
+            android:summary="@string/backup_import_summary"
+            android:title="@string/backup_import" />
+        <Preference
+            android:key="backup_reset"
+            android:persistent="false"
+            android:selectable="true"
+            android:summary="@string/backup_reset_summary"
+            android:title="@string/backup_reset" />
+    </PreferenceCategory>
 
 </PreferenceScreen>
