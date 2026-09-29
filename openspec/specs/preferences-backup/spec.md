@@ -4,7 +4,7 @@ Lets users save their application preferences to a portable JSON file, restore
 them on another device or after a reinstall, and restore all preferences to
 factory defaults, without relying on opaque platform auto-backup.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Export preferences to a backup file
 
