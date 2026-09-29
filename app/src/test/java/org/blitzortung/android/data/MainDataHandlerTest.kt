@@ -81,6 +81,14 @@ class MainDataHandlerTest {
     }
 
     @Test
+    fun updateDataIgnoresDuplicateRequestWithinCoalescingWindow() {
+        uut.updateData()
+        uut.updateData()
+
+        assertThat(receivedEvents.count { it == REQUEST_STARTED_EVENT }).isEqualTo(1)
+    }
+
+    @Test
     fun sharedPreferencesChangedForDataSource() {
         preferences
             .edit()
