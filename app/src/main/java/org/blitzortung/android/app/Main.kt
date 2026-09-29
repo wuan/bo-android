@@ -513,11 +513,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                         statusComponent.indicateError(hasError)
                     }
                 }
-                launch {
-                    viewModel.currentResult.collect { result ->
-                        result?.let { handleDataReceived(it) }
-                    }
-                }
+                viewModel.currentResult.value?.let { handleDataReceived(it) }
                 launch {
                     viewModel.dataEvents.collect { event ->
                         dispatchDataEvent(event)

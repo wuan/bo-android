@@ -27,20 +27,26 @@ class SequenceValidator
     constructor() {
         private val currentSequenceNumber = AtomicLong()
 
-        fun isUpdate(sequenceNumber: Long?) =
-            sequenceNumber != null && sequenceNumber == determineUpdatedSequenceNumber(sequenceNumber)
-
-        private fun determineUpdatedSequenceNumber(sequenceNumber: Long) =
-            if (isAtLeast(24)) {
-                currentSequenceNumber.updateAndGet { previousSequenceNumber ->
-                    if (previousSequenceNumber < sequenceNumber) sequenceNumber else previousSequenceNumber
-                }
-            } else {
-                synchronized(currentSequenceNumber) {
-                    val previousSequenceNumber = currentSequenceNumber.get()
-                    val updated = if (previousSequenceNumber < sequenceNumber) sequenceNumber else previousSequenceNumber
-                    currentSequenceNumber.set(updated)
-                    updated
-                }
+        fun isUpdate(sequenceNumber: Long?): Boolean {
+            if (sequenceNumber == null) {
+                return false
             }
+
+            val previousSequenceNumber =
+                if (isAtLeast(24)) {
+                    currentSequenceNumber.getAndUpdate { previous ->
+                        if (previous < sequenceNumber) sequenceNumber else previous
+                    }
+                } else {
+                    synchronized(currentSequenceNumber) {
+                        val previous = currentSequenceNumber.get()
+                        if (previous < sequenceNumber) {
+                            currentSequenceNumber.set(sequenceNumber)
+                        }
+                        previous
+                    }
+                }
+
+            return sequenceNumber > previousSequenceNumber
+        }
     }
