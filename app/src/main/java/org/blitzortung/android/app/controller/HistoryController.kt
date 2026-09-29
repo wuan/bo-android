@@ -22,7 +22,7 @@ import android.view.View
 import android.widget.ImageButton
 import org.blitzortung.android.app.ButtonGroup
 import org.blitzortung.android.app.databinding.MainBinding
-import org.blitzortung.android.data.MainDataHandler
+import org.blitzortung.android.app.viewmodel.MainViewModel
 import org.blitzortung.android.data.Mode
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.DataReceived
@@ -30,7 +30,7 @@ import org.blitzortung.android.data.provider.result.DataReceived
 class HistoryController(
     private val binding: MainBinding,
     private val buttonHandler: ButtonColumnHandler<ImageButton, ButtonGroup>,
-    private val dataHandler: MainDataHandler,
+    private val viewModel: MainViewModel,
 ) {
     private val buttons: MutableCollection<ImageButton> = arrayListOf()
 
@@ -60,20 +60,20 @@ class HistoryController(
     private fun setupStartStopAnimationButton() {
         addButtonWithOnClickAction(binding.startStopAnimation) {
             if (animationRunning) {
-                dataHandler.stop()
+                viewModel.stop()
                 binding.startStopAnimation.setImageResource(android.R.drawable.ic_media_play)
-                dataHandler.goRealtime()
+                viewModel.goRealtime()
                 configureForRealtimeOperation()
 
                 animationRunning = false
                 setRealtimeData(true)
                 binding.timeSlider.isEnabled = true
             } else {
-                dataHandler.stop()
+                viewModel.stop()
                 binding.startStopAnimation.setImageResource(android.R.drawable.ic_media_pause)
                 animationRunning = true
                 binding.timeSlider.isEnabled = false
-                dataHandler.startAnimation()
+                viewModel.startAnimation()
             }
         }
 
@@ -82,7 +82,7 @@ class HistoryController(
 
     private fun setupGoRealtimeButton() {
         addButtonWithOnClickAction(binding.goRealtime) {
-            if (dataHandler.goRealtime()) {
+            if (viewModel.goRealtime()) {
                 configureForRealtimeOperation()
             }
         }
@@ -103,8 +103,8 @@ class HistoryController(
         binding.goRealtime.visibility = View.INVISIBLE
         updateButtonColumn()
 
-        dataHandler.restart()
-        val historySteps = dataHandler.historySteps()
+        viewModel.restart()
+        val historySteps = viewModel.historySteps()
         binding.timeSlider.max = historySteps
         binding.timeSlider.progress = historySteps
     }
@@ -118,7 +118,7 @@ class HistoryController(
     }
 
     fun onResume() {
-        animationRunning = dataHandler.mode == Mode.ANIMATION
+        animationRunning = viewModel.getMode() == Mode.ANIMATION
         if (animationRunning) {
             binding.startStopAnimation.setImageResource(android.R.drawable.ic_media_pause)
             binding.timeSlider.isEnabled = false

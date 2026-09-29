@@ -21,6 +21,11 @@ import androidx.core.content.pm.PackageInfoCompat
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
@@ -30,25 +35,28 @@ import dagger.android.support.AndroidSupportInjection
 import java.io.IOException
 import java.util.Locale
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 import org.blitzortung.android.app.AppService
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.MessageListPreference
-import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.get
+import org.blitzortung.android.app.viewmodel.SettingsViewModel
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.location.LocationHandler
 
-class SettingsFragment :
-    PreferenceFragmentCompat(),
-    OnSharedPreferenceChangeListener {
+class SettingsFragment : PreferenceFragmentCompat() {
     @set:Inject
     internal lateinit var preferences: SharedPreferences
 
     @set:Inject
     internal lateinit var packageInfo: PackageInfo
+
+    @set:Inject
+    internal lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val viewModel: SettingsViewModel by viewModels { viewModelFactory }
 
     private val originalSummaries = mutableMapOf<PreferenceKey, Int>()
 
@@ -100,12 +108,10 @@ class SettingsFragment :
         addPreferencesFromResource(R.xml.preferences)
 
         if (::preferences.isInitialized) {
-            preferences.registerOnSharedPreferenceChangeListener(this)
-
-            configureDataSourcePreferences(preferences)
-            configureLocationProviderPreferences(preferences)
-            configureOwnLocationSizePreference(preferences)
-            configureAlertEnabledPreference(preferences)
+            configureDataSourcePreferences()
+            configureLocationProviderPreferences()
+            configureOwnLocationSizePreference()
+            configureAlertEnabledPreference()
             configureBackupPreferences()
 
             // Initial summary update for EditTextPreferences
@@ -173,16 +179,25 @@ class SettingsFragment :
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        observePreferenceChanges()
     }
 
-    override fun onSharedPreferenceChanged(
-        sharedPreferences: SharedPreferences,
-        key: PreferenceKey,
-    ) {
+    private fun observePreferenceChanges() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.preferenceChanged.collect { key ->
+                    handlePreferenceChange(key)
+                }
+            }
+        }
+    }
+
+    private fun handlePreferenceChange(key: PreferenceKey) {
         when (key) {
-            PreferenceKey.DATA_SOURCE -> configureDataSourcePreferences(sharedPreferences)
+            PreferenceKey.DATA_SOURCE -> configureDataSourcePreferences()
             PreferenceKey.LOCATION_MODE -> {
-                val provider = configureLocationProviderPreferences(sharedPreferences)
+                val provider = configureLocationProviderPreferences()
                 val context = this.context
                 if (context != null && provider != LocationHandler.MANUAL_PROVIDER &&
                     !(context.getSystemService(LOCATION_SERVICE) as LocationManager).isProviderEnabled(provider)
@@ -191,8 +206,8 @@ class SettingsFragment :
                 }
             }
 
-            PreferenceKey.SHOW_LOCATION -> configureOwnLocationSizePreference(sharedPreferences)
-            PreferenceKey.ALERT_ENABLED -> configureAlertEnabledPreference(sharedPreferences)
+            PreferenceKey.SHOW_LOCATION -> configureOwnLocationSizePreference()
+            PreferenceKey.ALERT_ENABLED -> configureAlertEnabledPreference()
             PreferenceKey.USERNAME,
             PreferenceKey.PASSWORD,
             PreferenceKey.SERVICE_URL,
@@ -209,17 +224,18 @@ class SettingsFragment :
         }
     }
 
-    private fun configureAlertEnabledPreference(sharedPreferences: SharedPreferences) {
-        enableNotifications(sharedPreferences.get(PreferenceKey.ALERT_ENABLED, false))
+    private fun configureAlertEnabledPreference() {
+        enableNotifications(viewModel.getBooleanPreference(PreferenceKey.ALERT_ENABLED, false))
     }
 
-    private fun configureOwnLocationSizePreference(sharedPreferences: SharedPreferences) {
+    private fun configureOwnLocationSizePreference() {
         findPreference<SeekBarPreference>(PreferenceKey.OWN_LOCATION_SIZE.toString())?.isEnabled =
-            sharedPreferences.get(PreferenceKey.SHOW_LOCATION, false)
+            viewModel.getBooleanPreference(PreferenceKey.SHOW_LOCATION, false)
     }
 
-    private fun configureDataSourcePreferences(sharedPreferences: SharedPreferences): DataProviderType {
-        val providerTypeString = sharedPreferences.get(PreferenceKey.DATA_SOURCE, DataProviderType.HTTP.toString())
+    private fun configureDataSourcePreferences(): DataProviderType {
+        val providerTypeString =
+            viewModel.getStringPreference(PreferenceKey.DATA_SOURCE, DataProviderType.HTTP.toString())
         val providerType = DataProviderType.valueOf(providerTypeString.uppercase(Locale.getDefault()))
 
         when (providerType) {
@@ -229,8 +245,9 @@ class SettingsFragment :
         return providerType
     }
 
-    private fun configureLocationProviderPreferences(sharedPreferences: SharedPreferences): String {
-        val locationProvider = sharedPreferences.get(PreferenceKey.LOCATION_MODE, LocationManager.NETWORK_PROVIDER)
+    private fun configureLocationProviderPreferences(): String {
+        val locationProvider =
+            viewModel.getStringPreference(PreferenceKey.LOCATION_MODE, LocationManager.NETWORK_PROVIDER)
         enableManualLocationMode(locationProvider == LocationHandler.MANUAL_PROVIDER)
         return locationProvider
     }

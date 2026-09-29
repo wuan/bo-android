@@ -32,4 +32,12 @@ class SequenceValidatorTest {
         validator.isUpdate(10)
         assertFalse(validator.isUpdate(9))
     }
+
+    @Test
+    fun sameNumberIsNoUpdate() {
+        val validator = SequenceValidator()
+
+        assertTrue(validator.isUpdate(10))
+        assertFalse(validator.isUpdate(10))
+    }
 }
