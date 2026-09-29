@@ -2,7 +2,7 @@
 
 ### Requirement: Main ViewModel exposes UI state
 
-The system SHALL provide a `MainViewModel` that derives UI state from repository event flows and exposes it as `StateFlow`.
+The system SHALL provide a `MainViewModel` that derives UI state from repository event flows, exposing persisted state as `StateFlow` and transient data events as a non-conflating `SharedFlow`.
 
 #### Scenario: Loading and error state derived from data events
 
@@ -20,7 +20,9 @@ The system SHALL provide a `MainViewModel` that derives UI state from repository
 
 #### Scenario: Event flows exposed
 
-- **WHEN** a collector observes `dataEvents`, `locationEvents`, or `alertEvents`
+- **WHEN** a collector observes `dataEvents`
+- **THEN** it SHALL emit subsequent data events without conflation, and a new subscription SHALL receive the handler's cached result when one exists
+- **WHEN** a collector observes `locationEvents` or `alertEvents`
 - **THEN** each SHALL emit the latest event and subsequent events from the corresponding repository
 
 ### Requirement: Main ViewModel commands

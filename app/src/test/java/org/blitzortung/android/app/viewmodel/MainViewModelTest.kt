@@ -82,6 +82,22 @@ class MainViewModelTest {
         }
 
     @Test
+    fun dataEventsAreNotConflated() =
+        runTest {
+            val received = mutableListOf<DataEvent>()
+            backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+                uut.dataEvents.collect { received.add(it) }
+            }
+
+            dataEvents.emit(RequestStarted())
+            dataEvents.emit(NoData)
+
+            assertThat(received).hasSize(2)
+            assertThat(received[0]).isInstanceOf(RequestStarted::class.java)
+            assertThat(received[1]).isSameAs(NoData)
+        }
+
+    @Test
     fun successfulDataReceivedClearsLoadingAndStoresResult() =
         runTest {
             collectDataEvents()

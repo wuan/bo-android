@@ -527,7 +527,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.dataEvents.collect { event ->
-                        event?.let { dispatchDataEvent(it) }
+                        dispatchDataEvent(event)
                     }
                 }
                 launch {

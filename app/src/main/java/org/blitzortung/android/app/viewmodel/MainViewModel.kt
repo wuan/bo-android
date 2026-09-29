@@ -22,10 +22,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import org.blitzortung.android.alert.AlertRepository
 import org.blitzortung.android.alert.Warning
@@ -63,14 +65,14 @@ class MainViewModel
         private val _currentResult = MutableStateFlow<DataReceived?>(null)
         val currentResult: StateFlow<DataReceived?> = _currentResult.asStateFlow()
 
-        val dataEvents: StateFlow<DataEvent?> =
+        val dataEvents: SharedFlow<DataEvent> =
             strikeDataRepository
                 .observeDataEvents()
                 .onEach(::reduceDataEvent)
-                .stateIn(
+                .shareIn(
                     scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(5000),
-                    initialValue = null,
+                    started = SharingStarted.WhileSubscribed(),
+                    replay = 0,
                 )
 
         val locationEvents: StateFlow<LocationEvent?> =
