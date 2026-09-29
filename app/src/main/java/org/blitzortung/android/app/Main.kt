@@ -471,6 +471,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         mapFragment.updateForgroundColor(strikeColorHandler.lineColor)
 
+        dataHandler.setLocationUpdatesEnabled(true)
+
         if (locationHandler.backgroundMode) {
             locationHandler.shutdown()
             locationHandler.disableBackgroundMode()
@@ -561,6 +563,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     override fun onPause() {
         super.onPause()
         Log.v(LOG_TAG, "Main.onPause()")
+
+        dataHandler.setLocationUpdatesEnabled(false)
 
         if (backgroundAlertEnabled) {
             startService()

@@ -13,6 +13,7 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.createLocationEvent
 import org.blitzortung.android.data.MainDataHandler.Companion.REQUEST_STARTED_EVENT
 import org.blitzortung.android.data.cache.DataCache
 import org.blitzortung.android.data.provider.DataProviderFactory
@@ -84,6 +85,24 @@ class MainDataHandlerTest {
     fun updateDataIgnoresDuplicateRequestWithinCoalescingWindow() {
         uut.updateData()
         uut.updateData()
+
+        assertThat(receivedEvents.count { it == REQUEST_STARTED_EVENT }).isEqualTo(1)
+    }
+
+    @Test
+    fun locationEventDoesNotTriggerRequestWhenLocationUpdatesDisabled() {
+        uut.setLocationUpdatesEnabled(false)
+
+        uut.locationEventConsumer.invoke(createLocationEvent(11.0, 49.0))
+
+        assertThat(receivedEvents.count { it == REQUEST_STARTED_EVENT }).isZero()
+    }
+
+    @Test
+    fun locationEventTriggersRequestWhenLocationUpdatesEnabled() {
+        uut.setLocationUpdatesEnabled(true)
+
+        uut.locationEventConsumer.invoke(createLocationEvent(11.0, 49.0))
 
         assertThat(receivedEvents.count { it == REQUEST_STARTED_EVENT }).isEqualTo(1)
     }
