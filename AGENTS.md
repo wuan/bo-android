@@ -200,7 +200,7 @@ Overlays subscribe to events for automatic updates:
 ### Component Lifecycle
 
 **Main Activity (foreground)**:
-- Collects `MainViewModel` flows inside `repeatOnLifecycle(RESUMED)` and fans events out to overlay/view consumers; no manual `requestUpdates`/`removeUpdates`
+- Collects `MainViewModel` flows inside `repeatOnLifecycle(STARTED)` and fans transient events out to overlay/view consumers; the retained `isLoading`/`hasError`/`currentResult` state flows drive progress, error, and strike rendering; no manual `requestUpdates`/`removeUpdates`
 - `onResume()`: starts location updates, enables automatic data refresh
 - `onPause()`: stops data updates via the ViewModel, stops location updates, optionally starts AppService for background alerts
 

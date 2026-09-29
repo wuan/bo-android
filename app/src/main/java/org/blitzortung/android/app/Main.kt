@@ -75,7 +75,6 @@ import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.data.provider.result.NoData
-import org.blitzortung.android.data.provider.result.RequestStarted
 import org.blitzortung.android.data.provider.result.StatusUpdate
 import org.blitzortung.android.dialogs.QuickSettingsDialog
 import org.blitzortung.android.location.LocationEvent
@@ -145,31 +144,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private val keepZoomOnGotoOwnLocation: Boolean
         inline get() = preferences.get(PreferenceKey.KEEP_ZOOM_GOTO_OWN_LOCATION, false)
 
-    private fun handleDataEvent(event: DataEvent) {
-        when (event) {
-            is RequestStarted -> {
-                Log.d(LOG_TAG, "Main.onDataUpdate() received request started event")
-                statusComponent.startProgress()
-            }
-
-            is DataReceived -> {
-                handleDataReceived(event)
-            }
-
-            is StatusUpdate -> {
-                setStatusString(event.status)
-            }
-
-            NoData -> {
-                setStatusString("?")
-            }
-        }
-    }
-
     private fun handleDataReceived(event: DataReceived) {
-        statusComponent.indicateError(event.failed)
-
-        if (!event.failed && sequenceValidator.isUpdate(event.sequenceNumber)) {
+        if (sequenceValidator.isUpdate(event.sequenceNumber)) {
             currentResult = event
 
             Log.d(LOG_TAG, "Main.onDataUpdate() $event")
@@ -216,8 +192,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 setHistoricStatusString()
             }
         }
-
-        statusComponent.stopProgress()
 
         binding.legendView.invalidate()
     }
@@ -526,6 +500,25 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
+                    viewModel.isLoading.collect { isLoading ->
+                        if (isLoading) {
+                            statusComponent.startProgress()
+                        } else {
+                            statusComponent.stopProgress()
+                        }
+                    }
+                }
+                launch {
+                    viewModel.hasError.collect { hasError ->
+                        statusComponent.indicateError(hasError)
+                    }
+                }
+                launch {
+                    viewModel.currentResult.collect { result ->
+                        result?.let { handleDataReceived(it) }
+                    }
+                }
+                launch {
                     viewModel.dataEvents.collect { event ->
                         dispatchDataEvent(event)
                     }
@@ -545,7 +538,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun dispatchDataEvent(event: DataEvent) {
-        handleDataEvent(event)
+        when (event) {
+            is StatusUpdate -> setStatusString(event.status)
+            NoData -> setStatusString("?")
+            else -> {}
+        }
+
         alertHandler.dataEventConsumer(event)
         historyController.dataConsumer(event)
         binding.histogramView.dataConsumer(event)

@@ -19,7 +19,9 @@ The system SHALL provide a `MainViewModel` that derives UI state from repository
 #### Scenario: Event flows exposed
 
 - **WHEN** a collector observes `dataEvents`
-- **THEN** it SHALL emit subsequent data events without conflation, and a new subscription SHALL receive the handler's cached result when one exists
+- **THEN** it SHALL emit subsequent data events without conflation
+- **WHEN** a collector observes `currentResult`
+- **THEN** it SHALL immediately receive the retained successful result, if any
 - **WHEN** a collector observes `locationEvents` or `alertEvents`
 - **THEN** each SHALL emit the latest event and subsequent events from the corresponding repository
 
