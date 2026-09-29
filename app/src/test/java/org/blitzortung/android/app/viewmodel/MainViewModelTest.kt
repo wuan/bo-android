@@ -21,6 +21,7 @@ import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.data.provider.result.NoData
 import org.blitzortung.android.data.provider.result.RequestStarted
+import org.blitzortung.android.data.provider.result.StatusUpdate
 import org.blitzortung.android.data.repository.StrikeDataRepository
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.location.LocationRepository
@@ -125,13 +126,14 @@ class MainViewModelTest {
         }
 
     @Test
-    fun otherDataEventsStopLoading() =
+    fun otherDataEventsDoNotStopLoading() =
         runTest {
             collectDataEvents()
             dataEvents.emit(RequestStarted())
+            dataEvents.emit(StatusUpdate("0/60"))
             dataEvents.emit(NoData)
 
-            assertThat(uut.isLoading.value).isFalse()
+            assertThat(uut.isLoading.value).isTrue()
         }
 
     @Test

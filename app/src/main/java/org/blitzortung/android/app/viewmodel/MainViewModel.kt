@@ -107,9 +107,7 @@ class MainViewModel
                     }
                 }
 
-                else -> {
-                    _isLoading.value = false
-                }
+                else -> Unit
             }
         }
 
