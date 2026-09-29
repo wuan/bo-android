@@ -25,8 +25,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import org.blitzortung.android.alert.AlertRepository
 import org.blitzortung.android.alert.Warning
 import org.blitzortung.android.data.Mode
@@ -66,6 +66,7 @@ class MainViewModel
         val dataEvents: StateFlow<DataEvent?> =
             strikeDataRepository
                 .observeDataEvents()
+                .onEach(::reduceDataEvent)
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(5000),
@@ -90,30 +91,22 @@ class MainViewModel
                     initialValue = null,
                 )
 
-        init {
-            observeDataEvents()
-        }
+        private fun reduceDataEvent(event: DataEvent) {
+            when (event) {
+                is RequestStarted -> {
+                    _isLoading.value = true
+                }
 
-        private fun observeDataEvents() {
-            viewModelScope.launch {
-                dataEvents.collect { event ->
-                    when (event) {
-                        is RequestStarted -> {
-                            _isLoading.value = true
-                        }
-
-                        is DataReceived -> {
-                            _isLoading.value = false
-                            _hasError.value = event.failed
-                            if (!event.failed) {
-                                _currentResult.value = event
-                            }
-                        }
-
-                        else -> {
-                            _isLoading.value = false
-                        }
+                is DataReceived -> {
+                    _isLoading.value = false
+                    _hasError.value = event.failed
+                    if (!event.failed) {
+                        _currentResult.value = event
                     }
+                }
+
+                else -> {
+                    _isLoading.value = false
                 }
             }
         }

@@ -21,9 +21,9 @@ package org.blitzortung.android.app.viewmodel
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import org.blitzortung.android.app.view.PreferenceKey
 
 /**
@@ -35,13 +35,14 @@ class SettingsViewModel
     constructor(
         private val preferences: SharedPreferences,
     ) : ViewModel() {
-        private val _preferenceChanged = MutableStateFlow<PreferenceKey?>(null)
-        val preferenceChanged: StateFlow<PreferenceKey?> = _preferenceChanged.asStateFlow()
+        private val _preferenceChanged = MutableSharedFlow<PreferenceKey>(extraBufferCapacity = 64)
+        val preferenceChanged: SharedFlow<PreferenceKey> = _preferenceChanged.asSharedFlow()
 
         private val preferenceChangeListener =
             SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-                key?.let {
-                    _preferenceChanged.value = PreferenceKey.fromString(it)
+                val preferenceKey = key?.let { PreferenceKey.fromString(it) }
+                if (preferenceKey != null) {
+                    _preferenceChanged.tryEmit(preferenceKey)
                 }
             }
 
@@ -88,10 +89,6 @@ class SettingsViewModel
             value: Boolean,
         ) {
             preferences.edit().putBoolean(key.key, value).apply()
-        }
-
-        fun clearPreferenceChange() {
-            _preferenceChanged.value = null
         }
 
         override fun onCleared() {

@@ -524,7 +524,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     private fun observeViewModels() {
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.dataEvents.collect { event ->
                         event?.let { dispatchDataEvent(it) }

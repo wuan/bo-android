@@ -48,7 +48,7 @@ The system SHALL provide a `LocationRepository` that exposes `LocationHandler` n
 
 #### Scenario: Background location control
 
-- **WHEN** `enableBackgroundLocation()` or `disableBackgroundLocation()` is invoked
+- **WHEN** `enableBackgroundMode()` or `disableBackgroundMode()` is invoked
 - **THEN** the repository SHALL delegate to `LocationHandler.enableBackgroundMode()` / `disableBackgroundMode()`
 
 #### Scenario: Current location read

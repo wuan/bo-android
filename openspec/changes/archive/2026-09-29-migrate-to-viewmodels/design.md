@@ -26,7 +26,7 @@ Constraints:
 - Rewriting handler internals, `ConsumerContainer`, or the data/alert algorithms.
 - Renaming existing event types (`DataReceived`, `Warning`, etc.).
 - Replacing Dagger with Hilt or another DI framework.
-- Redesigning UI/UX or addng new user-facing features.
+- Redesigning UI/UX or adding new user-facing features.
 - Migrating `WidgetUpdateWorker` / `WidgetProvider` (handlers resolved directly) in this change.
 
 ## Decisions

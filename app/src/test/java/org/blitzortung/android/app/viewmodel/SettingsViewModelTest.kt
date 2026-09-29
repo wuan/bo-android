@@ -9,11 +9,17 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.just
 import io.mockk.slot
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.app.view.PreferenceKey
 import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SettingsViewModelTest {
     @MockK
     private lateinit var preferences: SharedPreferences
@@ -34,28 +40,45 @@ class SettingsViewModelTest {
         uut = SettingsViewModel(preferences)
     }
 
-    @Test
-    fun mapsKnownPreferenceKey() {
-        listenerSlot.captured.onSharedPreferenceChanged(preferences, PreferenceKey.USERNAME.key)
-
-        assertThat(uut.preferenceChanged.value).isEqualTo(PreferenceKey.USERNAME)
+    private fun TestScope.collectPreferenceChanges(received: MutableList<PreferenceKey>) {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            uut.preferenceChanged.collect { received.add(it) }
+        }
     }
 
     @Test
-    fun ignoresUnknownPreferenceKey() {
-        listenerSlot.captured.onSharedPreferenceChanged(preferences, "does_not_exist")
+    fun mapsKnownPreferenceKey() =
+        runTest {
+            val received = mutableListOf<PreferenceKey>()
+            collectPreferenceChanges(received)
 
-        assertThat(uut.preferenceChanged.value).isNull()
-    }
+            listenerSlot.captured.onSharedPreferenceChanged(preferences, PreferenceKey.USERNAME.key)
+
+            assertThat(received).containsExactly(PreferenceKey.USERNAME)
+        }
 
     @Test
-    fun clearsPreferenceChange() {
-        listenerSlot.captured.onSharedPreferenceChanged(preferences, PreferenceKey.USERNAME.key)
+    fun ignoresUnknownPreferenceKey() =
+        runTest {
+            val received = mutableListOf<PreferenceKey>()
+            collectPreferenceChanges(received)
 
-        uut.clearPreferenceChange()
+            listenerSlot.captured.onSharedPreferenceChanged(preferences, "does_not_exist")
 
-        assertThat(uut.preferenceChanged.value).isNull()
-    }
+            assertThat(received).isEmpty()
+        }
+
+    @Test
+    fun deliversAllPreferenceChangesWithoutConflation() =
+        runTest {
+            val received = mutableListOf<PreferenceKey>()
+            collectPreferenceChanges(received)
+
+            listenerSlot.captured.onSharedPreferenceChanged(preferences, PreferenceKey.USERNAME.key)
+            listenerSlot.captured.onSharedPreferenceChanged(preferences, PreferenceKey.PASSWORD.key)
+
+            assertThat(received).containsExactly(PreferenceKey.USERNAME, PreferenceKey.PASSWORD)
+        }
 
     @Test
     fun readsTypedPreferences() {

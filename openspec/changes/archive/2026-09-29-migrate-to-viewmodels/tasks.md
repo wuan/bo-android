@@ -17,7 +17,7 @@
 
 ## 3. Settings ViewModel & screen
 
-- [x] 3.1 Create `app/viewmodel/SettingsViewModel.kt` exposing `preferenceChanged: StateFlow<PreferenceKey?>`, typed get/set helpers, `clearPreferenceChange()`, and listener registration/release
+- [x] 3.1 Create `app/viewmodel/SettingsViewModel.kt` exposing `preferenceChanged: SharedFlow<PreferenceKey>`, typed get/set helpers, and listener registration/release
 - [x] 3.2 Add unit tests for preference mapping (known/unknown keys), typed reads/writes, and listener cleanup
 - [x] 3.3 Migrate `SettingsFragment` to obtain `SettingsViewModel` via `viewModels { factory }` and handle preference changes reactively inside `repeatOnLifecycle(STARTED)`
 - [x] 3.4 Run `./gradlew testDebugUnitTest` and manually verify settings changes still apply

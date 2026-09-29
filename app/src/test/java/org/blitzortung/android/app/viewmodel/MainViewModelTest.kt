@@ -7,6 +7,8 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -55,9 +57,25 @@ class MainViewModelTest {
         uut = MainViewModel(strikeDataRepository, locationRepository, alertRepository)
     }
 
+    private fun TestScope.collectDataEvents() {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            uut.dataEvents.collect { }
+        }
+    }
+
+    @Test
+    fun noStateUpdateWithoutCollector() =
+        runTest {
+            dataEvents.emit(RequestStarted())
+
+            assertThat(uut.isLoading.value).isFalse()
+        }
+
     @Test
     fun requestStartedSetsLoading() =
         runTest {
+            collectDataEvents()
+
             dataEvents.emit(RequestStarted())
 
             assertThat(uut.isLoading.value).isTrue()
@@ -66,6 +84,7 @@ class MainViewModelTest {
     @Test
     fun successfulDataReceivedClearsLoadingAndStoresResult() =
         runTest {
+            collectDataEvents()
             val result = DataReceived(parameters = Parameters(), flags = Flags(), failed = false)
 
             dataEvents.emit(result)
@@ -78,6 +97,7 @@ class MainViewModelTest {
     @Test
     fun failedDataReceivedSetsErrorAndKeepsCurrentResult() =
         runTest {
+            collectDataEvents()
             val success = DataReceived(parameters = Parameters(), flags = Flags(), failed = false)
             dataEvents.emit(success)
 
@@ -91,6 +111,7 @@ class MainViewModelTest {
     @Test
     fun otherDataEventsStopLoading() =
         runTest {
+            collectDataEvents()
             dataEvents.emit(RequestStarted())
             dataEvents.emit(NoData)
 

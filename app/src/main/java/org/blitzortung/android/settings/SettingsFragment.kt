@@ -187,7 +187,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.preferenceChanged.collect { key ->
-                    key?.let { handlePreferenceChange(it) }
+                    handlePreferenceChange(key)
                 }
             }
         }
@@ -222,8 +222,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 // No action needed for other keys
             }
         }
-
-        viewModel.clearPreferenceChange()
     }
 
     private fun configureAlertEnabledPreference() {

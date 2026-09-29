@@ -173,7 +173,6 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
             mapView.zoomLevelDouble,
             GeoPoint(mapView.mapCenter.latitude, mapView.mapCenter.longitude),
         )
-        mapView.removeMapListener(mapStateListener)
 
         mPrefs.edit {
             putString(PREFS_TILE_SOURCE, mapView.tileProvider.tileSource.name())
@@ -189,6 +188,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        mapView.removeMapListener(mapStateListener)
         mapView.onDetach()
     }
 
