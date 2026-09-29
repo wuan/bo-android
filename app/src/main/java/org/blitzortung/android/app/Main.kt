@@ -145,7 +145,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         inline get() = preferences.get(PreferenceKey.KEEP_ZOOM_GOTO_OWN_LOCATION, false)
 
     private fun handleDataReceived(event: DataReceived) {
-        if (sequenceValidator.isUpdate(event.sequenceNumber)) {
+        if (!event.failed && sequenceValidator.isUpdate(event.sequenceNumber)) {
             currentResult = event
 
             Log.d(LOG_TAG, "Main.onDataUpdate() $event")
@@ -539,6 +539,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     private fun dispatchDataEvent(event: DataEvent) {
         when (event) {
+            is DataReceived -> handleDataReceived(event)
             is StatusUpdate -> setStatusString(event.status)
             NoData -> setStatusString("?")
             else -> {}
