@@ -39,6 +39,18 @@ android {
             enableUnitTestCoverage = enableCoverage
             enableAndroidTestCoverage = enableCoverage
         }
+        create("perf") {
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+            isDebuggable = false
+            matchingFallbacks += listOf("release")
+            // The bundled external baseline profiles make installation fail on
+            // devices with a work profile (INSTALL_BASELINE_PROFILE_FAILED).
+            // They only cover library code, not the app's map rendering path.
+            baselineProfile {
+                ignoreFromAllExternalDependencies = true
+            }
+        }
     }
 
     compileOptions {
