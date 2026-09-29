@@ -12,6 +12,7 @@ import org.blitzortung.android.dagger.module.ActivityBindingModule
 import org.blitzortung.android.dagger.module.AppModule
 import org.blitzortung.android.dagger.module.ServiceModule
 import org.blitzortung.android.dagger.module.SettingsModule
+import org.blitzortung.android.dagger.module.ViewModelModule
 import org.blitzortung.android.data.provider.standard.JsonRpcDataProvider
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
@@ -25,6 +26,7 @@ import org.blitzortung.android.map.overlay.color.StrikeColorHandler
         ServiceModule::class,
         SettingsModule::class,
         ActivityBindingModule::class,
+        ViewModelModule::class,
     ],
 )
 interface AppComponent : AndroidInjector<BOApplication> {

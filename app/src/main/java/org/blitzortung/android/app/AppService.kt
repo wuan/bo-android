@@ -34,14 +34,19 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ServiceCompat
 import dagger.android.AndroidInjection
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.controller.NotificationHandler.Companion.CHANNEL_ID
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
-import org.blitzortung.android.data.ServiceDataHandler
-import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.repository.ServiceStrikeDataRepository
 import org.blitzortung.android.location.LocationHandler
+import org.blitzortung.android.location.LocationRepository
 import org.blitzortung.android.util.LogUtil
 import org.blitzortung.android.util.isAtLeast
 
@@ -57,7 +62,10 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     private var backgroundPeriod: Int = 0
 
     @set:Inject
-    internal lateinit var dataHandler: ServiceDataHandler
+    internal lateinit var serviceStrikeDataRepository: ServiceStrikeDataRepository
+
+    @set:Inject
+    internal lateinit var locationRepository: LocationRepository
 
     @set:Inject
     internal lateinit var locationHandler: LocationHandler
@@ -80,9 +88,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
     @Volatile
     private var lastUpdateTime: Long? = null
 
-    private val dataEventConsumer = { _: DataEvent ->
-        // releaseWakeLock()
-    }
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     override fun onCreate() {
         AndroidInjection.inject(this)
@@ -92,9 +98,16 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
         preferences.registerOnSharedPreferenceChangeListener(this)
         onSharedPreferenceChanged(preferences, PreferenceKey.ALERT_ENABLED, PreferenceKey.BACKGROUND_QUERY_PERIOD)
 
-        dataHandler.requestUpdates(dataEventConsumer)
-        dataHandler.requestUpdates(alertHandler.dataEventConsumer)
-        locationHandler.requestUpdates(dataHandler.locationEventConsumer)
+        serviceScope.launch {
+            serviceStrikeDataRepository.observeDataEvents().collect { event ->
+                alertHandler.dataEventConsumer(event)
+            }
+        }
+        serviceScope.launch {
+            locationRepository.observeLocationEvents().collect { event ->
+                serviceStrikeDataRepository.locationEventConsumer(event)
+            }
+        }
 
         isEnabled = true
 
@@ -124,7 +137,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
             if (timeDifference == null || timeDifference > 0.6 * backgroundPeriod) {
                 Log.i(Main.LOG_TAG, "AppService.onStartCommand() with time difference ${timeDifference ?: 0} s")
                 lastUpdateTime = currentTimeSeconds
-                dataHandler.updateData()
+                serviceStrikeDataRepository.updateData()
             } else {
                 Log.d(
                     Main.LOG_TAG,
@@ -178,9 +191,7 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
 
         discardAlarm()
 
-        locationHandler.removeUpdates(dataHandler.locationEventConsumer)
-        dataHandler.removeUpdates(dataEventConsumer)
-        dataHandler.removeUpdates(alertHandler.dataEventConsumer)
+        serviceScope.cancel()
 
         Log.v(Main.LOG_TAG, "AppService.onDestroy() ${LogUtil.timestamp}")
     }
