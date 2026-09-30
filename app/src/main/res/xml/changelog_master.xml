@@ -4,6 +4,8 @@
     versionCode="349"
     versionName="2.5">
     <feature>Alert view widget</feature>
+    <feature>Settings management</feature>
+    <feature>Viewmodel migration</feature>
   </release>
   <release
     versionCode="339"
