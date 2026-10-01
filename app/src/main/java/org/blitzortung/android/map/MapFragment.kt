@@ -10,15 +10,11 @@ import android.view.ViewGroup
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 import kotlin.math.min
-import kotlinx.coroutines.launch
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
@@ -135,30 +131,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         mapView.addMapListener(mapStateListener)
         mapView.invalidate()
 
-        observeMapState()
-
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_SCALE)
-    }
-
-    private fun observeMapState() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.zoomLevel.collect { zoom ->
-                        if (mapView.zoomLevelDouble != zoom) {
-                            mapView.controller.setZoom(zoom)
-                        }
-                    }
-                }
-                launch {
-                    viewModel.centerPosition.collect { position ->
-                        if (position != null && mapView.mapCenter != position) {
-                            mapView.setExpectedCenter(position)
-                        }
-                    }
-                }
-            }
-        }
     }
 
     fun updateForgroundColor(fgcolor: Int) {
