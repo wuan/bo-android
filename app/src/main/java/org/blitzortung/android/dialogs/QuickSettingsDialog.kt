@@ -27,13 +27,16 @@ import android.content.SharedPreferences
 import android.content.res.Resources
 import android.os.Bundle
 import android.view.View
+import android.widget.CheckBox
 import android.widget.Spinner
 import androidx.core.content.edit
 import androidx.fragment.app.DialogFragment
 import androidx.preference.PreferenceManager
+import java.util.Locale
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.settings.putString
 
 class QuickSettingsDialog : DialogFragment() {
@@ -61,11 +64,22 @@ class QuickSettingsDialog : DialogFragment() {
             R.id.selected_grid_size,
         )
 
-        spinnerManager.add(
-            R.array.count_threshold_values,
-            PreferenceKey.COUNT_THRESHOLD,
-            R.id.selected_count_threshold,
+        spinnerManager.addCheckBox(
+            PreferenceKey.SHOW_GRID,
+            R.id.selected_show_grid,
+            defaultValue = true,
         )
+
+        val supportsClusters =
+            preferences
+                .get(PreferenceKey.DATA_SOURCE, DataProviderType.RPC.toString())
+                .uppercase(Locale.getDefault()) == DataProviderType.RPC.toString()
+
+        spinnerManager
+            .addCheckBox(
+                PreferenceKey.SHOW_CLUSTERS,
+                R.id.selected_show_clusters,
+            ).isEnabled = supportsClusters
 
         spinnerManager.add(
             R.array.query_period_values,
@@ -107,7 +121,7 @@ class SpinnerManager(
     val view: View,
     val preferences: SharedPreferences,
 ) {
-    private val entries = mutableListOf<Pair<PreferenceKey, () -> String?>>()
+    private val entries = mutableListOf<() -> Unit>()
 
     fun add(
         valuesId: Int,
@@ -120,7 +134,22 @@ class SpinnerManager(
         val selectedIndex = getSelectedIndex(values, currentValue)
         val spinner: Spinner = view.findViewById(viewId)
         spinner.setSelection(selectedIndex)
-        entries.add(Pair(preferenceKey) { values[spinner.selectedItemPosition] })
+        entries.add {
+            preferences.edit { putString(preferenceKey, values[spinner.selectedItemPosition]) }
+        }
+    }
+
+    fun addCheckBox(
+        preferenceKey: PreferenceKey,
+        viewId: Int,
+        defaultValue: Boolean = false,
+    ): CheckBox {
+        val checkBox: CheckBox = view.findViewById(viewId)
+        checkBox.isChecked = preferences.get(preferenceKey, defaultValue)
+        entries.add {
+            preferences.edit { putBoolean(preferenceKey.key, checkBox.isChecked) }
+        }
+        return checkBox
     }
 
     private fun getSelectedIndex(
@@ -138,10 +167,6 @@ class SpinnerManager(
     }
 
     fun updateSettings() {
-        preferences.edit {
-            for (entry in entries) {
-                putString(entry.first, entry.second())
-            }
-        }
+        entries.forEach { it() }
     }
 }

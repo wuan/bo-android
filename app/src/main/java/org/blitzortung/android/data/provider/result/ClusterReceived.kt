@@ -1,6 +1,6 @@
 /*
 
-   Copyright 2015 Andreas Würl
+   Copyright 2026 Andreas Würl
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,10 +16,17 @@
 
 */
 
-package org.blitzortung.android.data
+package org.blitzortung.android.data.provider.result
 
-enum class DataChannel {
-    STRIKES,
-    CLUSTERS,
-    PARTICIPANTS,
-}
+import java.io.Serializable
+import org.blitzortung.android.data.ClusterParameters
+import org.blitzortung.android.data.beans.Cluster
+
+data class ClusterReceived(
+    val clusters: List<Cluster> = emptyList(),
+    val intervalDuration: Int = 0,
+    val failed: Boolean = false,
+    val referenceTime: Long = 0,
+    val parameters: ClusterParameters,
+    val sequenceNumber: Long? = null,
+) : ClusterEvent, Serializable

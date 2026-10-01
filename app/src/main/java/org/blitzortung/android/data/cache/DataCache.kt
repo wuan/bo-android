@@ -5,7 +5,9 @@ import java.io.Serializable
 import javax.inject.Inject
 import javax.inject.Singleton
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
+import org.blitzortung.android.data.ClusterParameters
 import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.provider.result.ClusterReceived
 import org.blitzortung.android.data.provider.result.DataReceived
 
 @Singleton
@@ -13,6 +15,7 @@ class DataCache
     @Inject
     constructor() {
         val cache = hashMapOf<Parameters, Timestamped<DataReceived>>()
+        val clusterCache = hashMapOf<ClusterParameters, Timestamped<ClusterReceived>>()
 
         fun get(
             parameters: Parameters,
@@ -33,6 +36,25 @@ class DataCache
             cache[parameters] = Timestamped(dataEvent.copy(sequenceNumber = null))
         }
 
+        fun getCluster(
+            parameters: ClusterParameters,
+            expiryTime: Long = CLUSTER_EXPIRY_TIME,
+        ): ClusterReceived? {
+            val entry = clusterCache[parameters] ?: return null
+            if (entry.timestamp < System.currentTimeMillis() - expiryTime) {
+                clusterCache.remove(parameters)
+                return null
+            }
+            return entry.value
+        }
+
+        fun putCluster(
+            parameters: ClusterParameters,
+            dataEvent: ClusterReceived,
+        ) {
+            clusterCache[parameters] = Timestamped(dataEvent.copy(sequenceNumber = null))
+        }
+
         fun calculateTotalSize(): CacheSize =
             cache.entries.fold(CacheSize(0, 0)) { acc, entry ->
                 val resultEvent = entry.value.value
@@ -43,10 +65,14 @@ class DataCache
 
         fun clear() {
             cache.clear()
+            clusterCache.clear()
         }
 
         companion object {
             const val DEFAULT_EXPIRY_TIME: Long = 5 * 60 * 1000
+
+            /** Clusters are produced every minute, so their cached responses expire faster. */
+            const val CLUSTER_EXPIRY_TIME: Long = 60 * 1000
         }
     }
 

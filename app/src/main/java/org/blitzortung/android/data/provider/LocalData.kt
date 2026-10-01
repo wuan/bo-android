@@ -8,6 +8,7 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.round
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
+import org.blitzortung.android.data.ClusterParameters
 import org.blitzortung.android.data.DataArea
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.GridParameters
@@ -70,6 +71,20 @@ constructor() {
             dataArea = null,
             gridSize = max(parameters.gridSize, LOCAL_REGION_GRID_SIZE_THRESHOLD),
         )
+
+    /**
+     * Resolve cluster query parameters from the current tile computation. When a local
+     * data area is present (map zoomed in) the local cluster endpoint is used, otherwise
+     * the global endpoint — mirroring the grid global/local split without a `grid_size`.
+     */
+    fun clusterParameters(minuteLength: Int): ClusterParameters {
+        val currentDataArea = dataArea
+        return if (currentDataArea == null) {
+            ClusterParameters(global = true, minuteLength = minuteLength)
+        } else {
+            ClusterParameters(global = false, dataArea = currentDataArea, minuteLength = minuteLength)
+        }
+    }
 
     fun update(
         boundingBox: BoundingBox,

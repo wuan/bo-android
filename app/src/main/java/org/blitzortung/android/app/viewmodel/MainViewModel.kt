@@ -33,9 +33,11 @@ import org.blitzortung.android.alert.AlertRepository
 import org.blitzortung.android.alert.Warning
 import org.blitzortung.android.data.Mode
 import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.provider.result.ClusterEvent
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.data.provider.result.RequestStarted
+import org.blitzortung.android.data.repository.ClusterRepository
 import org.blitzortung.android.data.repository.StrikeDataRepository
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.location.LocationRepository
@@ -50,6 +52,7 @@ class MainViewModel
     @Inject
     constructor(
         private val strikeDataRepository: StrikeDataRepository,
+        private val clusterRepository: ClusterRepository,
         private val locationRepository: LocationRepository,
         private val alertRepository: AlertRepository,
     ) : ViewModel() {
@@ -73,6 +76,15 @@ class MainViewModel
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(),
                     replay = 0,
+                )
+
+        val clusterEvents: StateFlow<ClusterEvent?> =
+            clusterRepository
+                .observeClusterEvents()
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5000),
+                    initialValue = null,
                 )
 
         val locationEvents: StateFlow<LocationEvent?> =
