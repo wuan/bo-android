@@ -40,6 +40,7 @@ import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.data.ClusterParameters
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
@@ -48,6 +49,7 @@ import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
 import org.blitzortung.android.data.provider.data.initializeResult
+import org.blitzortung.android.data.provider.result.ClusterReceived
 import org.blitzortung.android.data.provider.result.DataReceived
 
 @Singleton
@@ -231,6 +233,12 @@ class BlitzortungHttpDataProvider
                 flags: Flags,
             ): DataReceived {
                 return initializeResult(parameters, history, flags)
+            }
+
+            override fun getClusters(parameters: ClusterParameters): ClusterReceived {
+                // The HTTP data source does not serve clusters; callers must gate on
+                // DataProvider.supportsClusters. This is a defensive no-op.
+                return ClusterReceived(parameters = parameters)
             }
         }
 

@@ -42,10 +42,12 @@ import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.LocalData
 import org.blitzortung.android.data.provider.data.DataProvider
+import org.blitzortung.android.data.provider.result.ClusterEvent
 import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.provider.result.DataReceived
+import org.blitzortung.android.data.provider.result.NoClusterData
 import org.blitzortung.android.data.provider.result.NoData
 import org.blitzortung.android.data.provider.result.RequestStarted
-import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.data.provider.result.StatusUpdate
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.OwnMapView
@@ -88,6 +90,13 @@ constructor(
     private var period: Int = 0
     private var sequenceNumber = AtomicLong()
 
+    @Volatile
+    private var clustersEnabled = false
+    private var clustersLatestOnly = false
+    private var lastClusterParameters: ClusterParameters? = null
+    private var lastClusterRequestTime: Long = 0
+    private var clusterSequenceNumber = AtomicLong()
+
     var dataProvider: DataProvider? = null
         private set
 
@@ -110,6 +119,17 @@ constructor(
 
             override fun removedLastConsumer() {
                 Log.d(LOG_TAG, "MainDataHandler: removed last data consumer")
+            }
+        }
+
+    private val clusterConsumerContainer =
+        object : ConsumerContainer<ClusterEvent>(NoClusterData) {
+            override fun addedFirstConsumer() {
+                Log.d(LOG_TAG, "MainDataHandler: added first cluster consumer")
+            }
+
+            override fun removedLastConsumer() {
+                Log.d(LOG_TAG, "MainDataHandler: removed last cluster consumer")
             }
         }
 
@@ -146,6 +166,8 @@ constructor(
             PreferenceKey.ANIMATION_INTERVAL_DURATION,
             PreferenceKey.ANIMATION_SLEEP_DURATION,
             PreferenceKey.ANIMATION_CYCLE_SLEEP_DURATION,
+            PreferenceKey.SHOW_CLUSTERS,
+            PreferenceKey.CLUSTER_INTERVAL,
         )
         updatesEnabled = true
     }
@@ -156,6 +178,14 @@ constructor(
 
     fun removeUpdates(dataConsumer: (DataEvent) -> Unit) {
         dataConsumerContainer.removeConsumer(dataConsumer)
+    }
+
+    fun requestClusterUpdates(clusterConsumer: (ClusterEvent) -> Unit) {
+        clusterConsumerContainer.addConsumer(clusterConsumer)
+    }
+
+    fun removeClusterUpdates(clusterConsumer: (ClusterEvent) -> Unit) {
+        clusterConsumerContainer.removeConsumer(clusterConsumer)
     }
 
     val hasConsumers: Boolean
@@ -175,6 +205,55 @@ constructor(
             sendEvent(REQUEST_STARTED_EVENT)
 
             updateUsingCache(parameters)
+            updateClusterData()
+        }
+    }
+
+    private fun updateClusterData() {
+        if (!updatesEnabled) {
+            return
+        }
+
+        val currentDataProvider = dataProvider
+        if (!clustersEnabled || currentDataProvider?.supportsClusters != true) {
+            clearClusters()
+            return
+        }
+
+        val clusterParameters =
+            localData
+                .clusterParameters(ClusterParameters.DEFAULT_MINUTE_LENGTH)
+                .withMinuteOffset(parameters.intervalOffset)
+                .withLatestOnly(clustersLatestOnly)
+        val currentTime = System.currentTimeMillis()
+        if (clusterParameters == lastClusterParameters && currentTime - lastClusterRequestTime < DUPLICATE_REQUEST_INTERVAL) {
+            Log.d(LOG_TAG, "MainDataHandler.updateClusterData() skip duplicate $clusterParameters")
+            return
+        }
+
+        lastClusterParameters = clusterParameters
+        lastClusterRequestTime = currentTime
+        val sequenceNumber = clusterSequenceNumber.incrementAndGet()
+
+        val cachedResult = cache.getCluster(clusterParameters)
+        if (cachedResult != null) {
+            Log.d(LOG_TAG, "MainDataHandler.updateClusterData() cached $clusterParameters")
+            clusterConsumerContainer.broadcast(cachedResult.copy(sequenceNumber = sequenceNumber))
+        } else {
+            Log.d(LOG_TAG, "MainDataHandler.updateClusterData() fetch $clusterParameters")
+            FetchClusterDataTask(currentDataProvider) { event ->
+                if (!event.failed) {
+                    cache.putCluster(event.parameters, event)
+                }
+                clusterConsumerContainer.broadcast(event.copy(sequenceNumber = sequenceNumber))
+            }.execute(clusterParameters)
+        }
+    }
+
+    private fun clearClusters() {
+        lastClusterParameters = null
+        if (clusterConsumerContainer.currentPayload != NoClusterData) {
+            clusterConsumerContainer.storeAndBroadcast(NoClusterData)
         }
     }
 
@@ -324,6 +403,19 @@ constructor(
                 animationCycleSleepDuration = sharedPreferences.getInt(key.key, 3000).toLong()
             }
 
+            PreferenceKey.SHOW_CLUSTERS -> {
+                clustersEnabled = sharedPreferences.get(key, false)
+                lastClusterParameters = null
+                updateClusterData()
+            }
+
+            PreferenceKey.CLUSTER_INTERVAL -> {
+                clustersLatestOnly =
+                    sharedPreferences.get(key, CLUSTER_INTERVAL_LATEST) != CLUSTER_INTERVAL_HOUR
+                lastClusterParameters = null
+                updateClusterData()
+            }
+
             else -> {
             }
         }
@@ -413,6 +505,7 @@ constructor(
                     }
                 handler.postDelayed(this, delay)
                 updateUsingCache()
+                updateClusterData()
             }
         }
     }
@@ -448,6 +541,8 @@ constructor(
         val REQUEST_STARTED_EVENT = RequestStarted()
         val DEFAULT_DATA_CHANNELS = setOf(DataChannel.STRIKES)
         internal const val DUPLICATE_REQUEST_INTERVAL: Long = 1000L
+        internal const val CLUSTER_INTERVAL_HOUR = "hour"
+        internal const val CLUSTER_INTERVAL_LATEST = "latest"
     }
 
     override fun onScroll(event: ScrollEvent?): Boolean {

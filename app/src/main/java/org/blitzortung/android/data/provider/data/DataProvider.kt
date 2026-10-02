@@ -18,14 +18,23 @@
 
 package org.blitzortung.android.data.provider.data
 
+import org.blitzortung.android.data.ClusterParameters
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.provider.DataProviderType
+import org.blitzortung.android.data.provider.result.ClusterReceived
 import org.blitzortung.android.data.provider.result.DataReceived
 
 interface DataProvider {
     val type: DataProviderType
+
+    /**
+     * Whether this provider can serve cluster data. Only the RPC backend exposes
+     * `get_global_clusters` / `get_local_clusters`.
+     */
+    val supportsClusters: Boolean
+        get() = false
 
     fun reset()
 
@@ -43,6 +52,8 @@ interface DataProvider {
             history: History?,
             flags: Flags,
         ): DataReceived
+
+        fun getClusters(parameters: ClusterParameters): ClusterReceived
     }
 }
 

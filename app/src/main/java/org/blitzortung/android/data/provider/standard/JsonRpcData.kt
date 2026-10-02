@@ -2,6 +2,7 @@ package org.blitzortung.android.data.provider.standard
 
 import java.net.URL
 import kotlin.math.max
+import org.blitzortung.android.data.ClusterParameters
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LOCAL_REGION
@@ -66,6 +67,31 @@ class JsonRpcData(
                     countThreshold,
                 )
             }
+        }
+    }
+
+    fun requestClusters(parameters: ClusterParameters): JsonRpcResponse {
+        val localReference = parameters.dataArea
+
+        return if (parameters.global || localReference == null) {
+            client.call(
+                serviceUrl,
+                "get_global_clusters",
+                parameters.minuteLength,
+                parameters.minuteOffset,
+                parameters.intervalCount,
+            )
+        } else {
+            client.call(
+                serviceUrl,
+                "get_local_clusters",
+                localReference.x,
+                localReference.y,
+                parameters.minuteLength,
+                parameters.minuteOffset,
+                localReference.scale,
+                parameters.intervalCount,
+            )
         }
     }
 }

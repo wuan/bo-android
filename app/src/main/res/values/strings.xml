@@ -343,6 +343,21 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_size_summary">Set the size of the own location symbol</string>
     <string name="keep_zoom_goto_own_location_summary">Setting to keep the current zoom when centering the own location</string>
     <string name="keep_zoom_goto_own_location_title">Keep zoom</string>
+    <string name="data_view">Data view</string>
+    <string name="show_grid">Show lightning data</string>
+    <string name="show_grid_summary">Show the lightning strike/grid overlay on the map. Strike data is still fetched for alerts and the histogram when hidden.</string>
+    <string name="show_clusters">Show storm clusters</string>
+    <string name="show_clusters_summary">Show cluster outlines summarizing storm activity (requires the RPC data source)</string>
+    <string name="cluster_interval">Cluster interval</string>
+    <string name="cluster_interval_summary" translatable="false">%s</string>
+    <string-array name="cluster_intervals">
+        <item>Most recent only</item>
+        <item>Last hour</item>
+    </string-array>
+    <string-array name="cluster_interval_values">
+        <item>latest</item>
+        <item>hour</item>
+    </string-array>
     <string name="notification_channel_name" translatable="false">Storm Alarms</string>
     <string name="not_available">n/a</string>
     <string name="unit_miles">mi.</string>
