@@ -351,12 +351,12 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="cluster_interval">Cluster interval</string>
     <string name="cluster_interval_summary" translatable="false">%s</string>
     <string-array name="cluster_intervals">
-        <item>5 min</item>
-        <item>10 min</item>
+        <item>Last hour</item>
+        <item>Most recent only</item>
     </string-array>
     <string-array name="cluster_interval_values">
-        <item>5</item>
-        <item>10</item>
+        <item>hour</item>
+        <item>latest</item>
     </string-array>
     <string name="notification_channel_name" translatable="false">Storm Alarms</string>
     <string name="not_available">n/a</string>

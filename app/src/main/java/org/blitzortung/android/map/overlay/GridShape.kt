@@ -64,7 +64,7 @@ class GridShape(private val center: IGeoPoint) : LightningShape {
         val textSize = rect.height() / 2.5f
         if (textSize >= 8f) {
             paint.color = textColor
-            paint.alpha = calculateAlphaValue(textSize, 20, 80, 255, 60)
+            paint.alpha = calculateShapeAlpha(textSize, 20, 80, 255, 60)
             paint.textAlign = Align.CENTER
             paint.textSize = textSize
             canvas.drawText(
@@ -107,18 +107,7 @@ class GridShape(private val center: IGeoPoint) : LightningShape {
         this.color = color
         this.textColor = textColor
 
-        alpha = calculateAlphaValue(size.width(), 10, 40, 255, 100)
-    }
-
-    private fun calculateAlphaValue(
-        value: Float,
-        minValue: Int,
-        maxValue: Int,
-        maxAlpha: Int,
-        minAlpha: Int,
-    ): Int {
-        val targetValue = ((value - minValue) / (maxValue - minValue)).coerceIn(0.0f, 1.0f)
-        return minAlpha + ((maxAlpha - minAlpha) * (1.0 - targetValue)).toInt()
+        alpha = calculateShapeAlpha(size.width(), 10, 40, 255, 100)
     }
 
     companion object {

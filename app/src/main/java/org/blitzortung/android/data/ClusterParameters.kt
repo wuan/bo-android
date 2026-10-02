@@ -24,21 +24,25 @@ import java.io.Serializable
  * Parameters for a cluster request, independent of the strike-centric [Parameters].
  *
  * [global] selects the `get_global_clusters` endpoint; when `false` [dataArea] carries
- * the local tile coordinates used for `get_local_clusters`. [intervalCount] is derived
- * from [minuteLength] so a single request covers the last hour.
+ * the local tile coordinates used for `get_local_clusters`. By default [intervalCount]
+ * is derived from [minuteLength] so a single request covers the last hour; when
+ * [latestOnly] is set only the most recent interval is requested.
  */
 data class ClusterParameters(
     val global: Boolean = true,
     val dataArea: DataArea? = null,
     val minuteLength: Int = DEFAULT_MINUTE_LENGTH,
     val minuteOffset: Int = 0,
+    val latestOnly: Boolean = false,
 ) : Serializable {
     val intervalCount: Int
-        get() = intervalCountFor(minuteLength)
+        get() = if (latestOnly) 1 else intervalCountFor(minuteLength)
 
     fun withDataArea(dataArea: DataArea?): ClusterParameters = copy(global = false, dataArea = dataArea)
 
     fun withMinuteOffset(minuteOffset: Int): ClusterParameters = copy(minuteOffset = minuteOffset)
+
+    fun withLatestOnly(latestOnly: Boolean): ClusterParameters = copy(latestOnly = latestOnly)
 
     companion object {
         const val DEFAULT_MINUTE_LENGTH = 10

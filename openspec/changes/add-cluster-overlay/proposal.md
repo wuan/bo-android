@@ -6,7 +6,7 @@ The bo-srv-rs backend now exposes strike cluster data (`get_global_clusters` / `
 
 - Add a new **cluster data transmission** that fetches cluster outlines from the RPC backend, mirroring the existing global/local grid pattern (local clusters use the same map tile coordinates; global clusters are used at low zoom).
 - Add a **ClusterOverlay** that renders clusters as static polygon outlines, independently toggleable while the existing strike/grid view stays visible.
-- Add cluster-specific preferences: an enable/disable toggle and a cluster interval (5 or 10 minutes) covering the last hour.
+- Add cluster-specific preferences: an enable/disable toggle and a cluster interval selecting either 10-minute bins covering the last hour or the most recent interval only.
 - Introduce a **parallel data event stream** for clusters (separate from the strike `DataReceived` stream) so cluster fetching is independently configurable and can be toggled without refetching strike data.
 - Add a **grid/cluster data selection** to the quick settings dialog: the strike count threshold control is removed and replaced by two independent toggles for the grid (strike) overlay and the cluster overlay.
 - Make the **grid data deactivateable**: a `SHOW_GRID` preference hides the strike/grid overlay (rendering only) while strike data continues to be fetched, so alerts, the histogram and the time slider keep working.
@@ -16,7 +16,7 @@ The bo-srv-rs backend now exposes strike cluster data (`get_global_clusters` / `
 ## Capabilities
 
 ### New Capabilities
-- `cluster-overlay`: Fetching cluster data from the RPC backend (global/local, configurable 5/10 minute interval over the last hour), exposing it through a reactive stream, and rendering it as a static outline overlay that can be shown simultaneously with the point/grid view.
+- `cluster-overlay`: Fetching cluster data from the RPC backend (global/local, either 10-minute bins over the last hour or the most recent interval only), exposing it through a reactive stream, and rendering it as a static outline overlay that can be shown simultaneously with the point/grid view.
 
 ### Modified Capabilities
 <!-- No existing spec requirements change; cluster support is additive. -->

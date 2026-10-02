@@ -85,7 +85,7 @@
             android:summary="@string/show_clusters_summary"
             android:title="@string/show_clusters" />
         <ListPreference
-            android:defaultValue="10"
+            android:defaultValue="hour"
             android:dependency="show_clusters"
             android:entries="@array/cluster_intervals"
             android:entryValues="@array/cluster_interval_values"

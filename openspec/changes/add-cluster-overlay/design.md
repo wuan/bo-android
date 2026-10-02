@@ -26,12 +26,12 @@ Relevant existing mechanics:
 **Goals:**
 - Fetch global/local cluster outlines from the RPC backend using the existing global/local tile pattern.
 - Render clusters as static, outline-only polygons, colored by cluster age, toggleable independently of the strike/grid view.
-- Provide a configurable cluster interval (5 or 10 minutes) covering the last hour.
+- Provide a cluster display interval of either 10-minute bins covering the last hour or the most recent interval only.
 - Keep cluster fetching on a parallel, independently configurable path so it can be enabled/disabled without refetching strike data.
 
 **Non-Goals:**
 - Proximity alerts based on clusters.
-- Cluster animation / history playback and trails.
+- Cluster trails / motion.
 - Cluster support for the HTTP (`BlitzortungHttpDataProvider`) data source.
 - Filled/heatmap rendering or cluster detail popups.
 
@@ -73,10 +73,10 @@ Clusters have no `grid_size`. Add a zoom-level (or bounding-box extent) criterio
 
 ### D6: Cluster interval as new preferences
 
-Add `SHOW_CLUSTERS` (boolean, default off) and `CLUSTER_INTERVAL` (5 or 10 minutes, default 10), plus the derived `interval_count = 60 / interval`. Do not overload the existing `INTERVAL_DURATION` strike preference.
+Add `SHOW_CLUSTERS` (boolean, default off) and `CLUSTER_INTERVAL` (default "hour"), offering either 10-minute bins over the last hour (`interval_count = 6`) or the most recent interval only (`latestOnly`, `interval_count = 1`). Do not overload the existing `INTERVAL_DURATION` strike preference.
 
-- **Why**: the cluster interval ("5 or 10 min bins over 1 hour") is a distinct axis from the strike window; overloading would create confusing coupling and break strike behavior.
-- **Alternatives considered**: reuse `INTERVAL_DURATION` — rejected.
+- **Why**: the cluster interval is a distinct axis from the strike window; overloading would create confusing coupling and break strike behavior. Restricting the choice to "last hour" vs "most recent only" keeps the UI simple while `ClusterParameters.latestOnly` expresses the single-interval case.
+- **Alternatives considered**: reuse `INTERVAL_DURATION` — rejected; keeping a free 5/10-minute selection — rejected in favour of the two meaningful display modes.
 
 ### D7: Parsing isolation
 
@@ -98,7 +98,7 @@ Expose the grid/strike overlay and the cluster overlay as two independent displa
 - **Two concurrent fetches per update tick** → Added network/latency and cache pressure. Mitigation: cluster fetch is skipped when disabled; smaller/shorter-TTL cache; single-flight if needed.
 - **Cluster shape semantics** (closed ring? winding? holes?) → Could break fill/hit-test later. Mitigation: outline-only now makes these largely irrelevant; confirm contract before adding fill/popups.
 - **Cache TTL mismatch** → 5-minute strike TTL is too coarse for per-minute clusters. Mitigation: dedicated short TTL (D2).
-- **Animation coupling** → `Mode.ANIMATION` currently steps `minute_offset` for strikes. Mitigation: keep clusters out of animation in this iteration; `ClusterParameters` carries `minuteOffset` so it can be added later.
+- **Animation coupling** → `Mode.ANIMATION` steps `minute_offset` for strikes. Clusters follow the same stepped `minuteOffset` by re-issuing a cluster fetch each animation step; the short cluster cache TTL bounds repeated network cost across cycles.
 
 ## Migration Plan
 

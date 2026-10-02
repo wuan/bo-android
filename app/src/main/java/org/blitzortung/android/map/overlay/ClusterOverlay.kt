@@ -29,7 +29,8 @@ import org.osmdroid.views.overlay.Overlay
 
 /**
  * Draws all cluster polygon outlines, colored by cluster age, on top of the
- * strike/grid view. Static outlines only; no fill, popups or animation.
+ * strike/grid view. The current (newest) clusters are filled with a translucent
+ * tint and labelled with their strike count; no popups or animation.
  */
 class ClusterOverlay(private val colorHandler: StrikeColorHandler) : Overlay(), LayerOverlay {
     private val shapes = mutableListOf<ClusterShape>()
@@ -72,11 +73,17 @@ class ClusterOverlay(private val colorHandler: StrikeColorHandler) : Overlay(), 
         // A cluster response spans `intervalCount` intervals, so the age-to-color scale
         // must cover that whole range to match the legend instead of a single interval.
         val colorIntervalDuration = resultIntervalDuration * resultParameters.intervalCount
+        val newestTimestamp = clusters.maxOfOrNull { it.timestamp }
 
         clusters.forEach { cluster ->
             val section = colorHandler.getColorSection(resultReferenceTime, cluster.timestamp, colorIntervalDuration)
             val shape = ClusterShape(cluster.shape)
-            shape.update(colorHandler.getColor(section))
+            shape.update(
+                color = colorHandler.getColor(section),
+                textColor = colorHandler.textColor,
+                strikeCount = cluster.strikeCount,
+                current = cluster.timestamp == newestTimestamp,
+            )
             shapes.add(shape)
         }
     }

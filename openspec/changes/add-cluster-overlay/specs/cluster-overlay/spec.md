@@ -16,19 +16,23 @@ The app SHALL retrieve cluster data from the RPC backend using `get_global_clust
 - **THEN** each element of `clusters` is parsed into a cluster with its `timestamp`, `interval_seconds`, `strike_count`, `area`, and a `shape` polygon of `[longitude, latitude]` pairs
 
 ### Requirement: Configurable cluster interval over the last hour
-The app SHALL fetch clusters for a configurable interval of 5 or 10 minutes covering the last hour, and SHALL support history via a minute offset. A single request SHALL use `interval_count = 60 / interval` so one response covers the whole hour.
+The app SHALL let the user choose between fetching clusters at a 10-minute interval covering the last hour and fetching the most recent interval only, and SHALL support history via a minute offset. For the last-hour mode a single request SHALL use `interval_count = 60 / interval`; for the most-recent mode it SHALL use `interval_count = 1`.
 
 #### Scenario: Default interval
 - **WHEN** cluster display is enabled and no cluster interval preference has been set
-- **THEN** the app requests clusters with a 10-minute interval and an interval count of 6
+- **THEN** the app requests clusters with `minute_length = 10` and an interval count of 6
 
-#### Scenario: Five minute interval
-- **WHEN** the cluster interval preference is set to 5 minutes
-- **THEN** the app requests clusters with `minute_length = 5` and an interval count of 12
+#### Scenario: Most recent only
+- **WHEN** the cluster interval preference is set to the most recent interval only
+- **THEN** the app requests clusters with `minute_length = 10` and an interval count of 1
 
 #### Scenario: History offset applied
 - **WHEN** the user navigates to a past interval
 - **THEN** the cluster request includes the corresponding negative `minute_offset`
+
+#### Scenario: Animation playback
+- **WHEN** animation mode is running and cluster display is enabled
+- **THEN** a cluster fetch is issued for each animation step using the stepped `minute_offset`, and the rendered clusters follow the animation
 
 ### Requirement: Independent cluster event stream
 The app SHALL deliver cluster data through a cluster-specific stream that is independent of the strike data stream, so cluster fetching can be enabled, disabled, or reconfigured without refetching strike data.
@@ -68,7 +72,7 @@ The app SHALL only offer and request cluster data when the active data provider 
 - **THEN** the cluster preference is hidden or disabled and no cluster request is issued
 
 ### Requirement: Cluster preference gating
-The app SHALL provide a preference to enable or disable cluster display, defaulting to disabled, and SHALL provide a preference to select the cluster interval with allowed values of 5 or 10 minutes.
+The app SHALL provide a preference to enable or disable cluster display, defaulting to disabled, and SHALL provide a preference to select the cluster interval, allowing either the last hour in 10-minute bins or the most recent interval only.
 
 #### Scenario: Default disabled
 - **WHEN** the app runs with default preferences

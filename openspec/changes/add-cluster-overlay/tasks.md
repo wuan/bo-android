@@ -27,7 +27,7 @@
 
 ## 5. Preferences
 
-- [x] 5.1 Add `SHOW_CLUSTERS` (default off) and `CLUSTER_INTERVAL` (5 or 10, default 10) to `PreferenceKey`
+- [x] 5.1 Add `SHOW_CLUSTERS` (default off) and `CLUSTER_INTERVAL` (last hour vs most recent only, default last hour) to `PreferenceKey`
 - [x] 5.2 Add preference entries to `res/xml/preferences.xml` with defaults
 - [x] 5.3 Handle preference changes in `MainDataHandler` (enable/disable fetch, reconfigure interval)
 - [x] 5.4 Hide/disable cluster preferences and suppress cluster requests when the active provider does not support clusters
@@ -45,7 +45,7 @@
 - [x] 7.1 Unit tests for cluster parsing (`Cluster` from JSON response)
 - [x] 7.2 Unit tests for cluster parameter/interval derivation (`interval_count = 60 / interval`, history offset)
 - [x] 7.3 Test provider capability gating (HTTP issues no cluster request)
-- [ ] 7.4 Manual verification: clusters shown simultaneously with grid/point view; toggle on/off; 5 and 10 minute intervals; global and local zoom
+- [ ] 7.4 Manual verification: clusters shown simultaneously with grid/point view; toggle on/off; last hour vs most recent only; global and local zoom
 - [x] 7.5 Run `./gradlew testDebugUnitTest` and `./gradlew lint`
 
 ## 8. Data view selection and grid deactivation

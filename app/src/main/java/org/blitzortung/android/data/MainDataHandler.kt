@@ -92,7 +92,7 @@ constructor(
 
     @Volatile
     private var clustersEnabled = false
-    private var clusterInterval = ClusterParameters.DEFAULT_MINUTE_LENGTH
+    private var clustersLatestOnly = false
     private var lastClusterParameters: ClusterParameters? = null
     private var lastClusterRequestTime: Long = 0
     private var clusterSequenceNumber = AtomicLong()
@@ -221,7 +221,10 @@ constructor(
         }
 
         val clusterParameters =
-            localData.clusterParameters(clusterInterval).withMinuteOffset(parameters.intervalOffset)
+            localData
+                .clusterParameters(ClusterParameters.DEFAULT_MINUTE_LENGTH)
+                .withMinuteOffset(parameters.intervalOffset)
+                .withLatestOnly(clustersLatestOnly)
         val currentTime = System.currentTimeMillis()
         if (clusterParameters == lastClusterParameters && currentTime - lastClusterRequestTime < DUPLICATE_REQUEST_INTERVAL) {
             Log.d(LOG_TAG, "MainDataHandler.updateClusterData() skip duplicate $clusterParameters")
@@ -407,10 +410,8 @@ constructor(
             }
 
             PreferenceKey.CLUSTER_INTERVAL -> {
-                clusterInterval =
-                    Integer.parseInt(
-                        sharedPreferences.get(key, ClusterParameters.DEFAULT_MINUTE_LENGTH.toString()),
-                    )
+                clustersLatestOnly =
+                    sharedPreferences.get(key, CLUSTER_INTERVAL_HOUR) == CLUSTER_INTERVAL_LATEST
                 lastClusterParameters = null
                 updateClusterData()
             }
@@ -504,6 +505,7 @@ constructor(
                     }
                 handler.postDelayed(this, delay)
                 updateUsingCache()
+                updateClusterData()
             }
         }
     }
@@ -539,6 +541,8 @@ constructor(
         val REQUEST_STARTED_EVENT = RequestStarted()
         val DEFAULT_DATA_CHANNELS = setOf(DataChannel.STRIKES)
         internal const val DUPLICATE_REQUEST_INTERVAL: Long = 1000L
+        internal const val CLUSTER_INTERVAL_HOUR = "hour"
+        internal const val CLUSTER_INTERVAL_LATEST = "latest"
     }
 
     override fun onScroll(event: ScrollEvent?): Boolean {

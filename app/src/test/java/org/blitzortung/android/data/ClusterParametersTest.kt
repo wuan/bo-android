@@ -25,6 +25,17 @@ class ClusterParametersTest {
     }
 
     @Test
+    fun latestOnlyRequestsSingleInterval() {
+        val parameters = ClusterParameters(latestOnly = true)
+
+        assertThat(parameters.intervalCount).isEqualTo(1)
+        assertThat(parameters.minuteLength).isEqualTo(10)
+
+        assertThat(ClusterParameters().withLatestOnly(true).intervalCount).isEqualTo(1)
+        assertThat(ClusterParameters().withLatestOnly(false).intervalCount).isEqualTo(6)
+    }
+
+    @Test
     fun appliesNegativeHistoryOffset() {
         val parameters = ClusterParameters(minuteLength = 10).withMinuteOffset(-30)
 
