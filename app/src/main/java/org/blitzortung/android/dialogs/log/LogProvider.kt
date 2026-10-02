@@ -23,23 +23,31 @@ import java.io.InputStreamReader
 
 class LogProvider {
     fun getLogLines(): List<String> {
-        val process = Runtime.getRuntime().exec("logcat -d")
+        val process = Runtime.getRuntime().exec("logcat -d -t $MAX_LOG_LINES")
         val reader =
             BufferedReader(
                 InputStreamReader(process.inputStream),
             )
 
         val lines: ArrayList<String> = arrayListOf()
-        reader.use {
-            var line: String?
-            do {
-                line = reader.readLine()
-                if (line == null) {
-                    break
-                }
-                lines.add(line)
-            } while (true)
+        try {
+            reader.use {
+                var line: String?
+                do {
+                    line = reader.readLine()
+                    if (line == null) {
+                        break
+                    }
+                    lines.add(line)
+                } while (true)
+            }
+        } finally {
+            process.destroy()
         }
         return lines
+    }
+
+    companion object {
+        const val MAX_LOG_LINES = 2000
     }
 }
