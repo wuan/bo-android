@@ -27,7 +27,7 @@
 
 ## 5. Preferences
 
-- [x] 5.1 Add `SHOW_CLUSTERS` (default off) and `CLUSTER_INTERVAL` (last hour vs most recent only, default last hour) to `PreferenceKey`
+- [x] 5.1 Add `SHOW_CLUSTERS` (default off) and `CLUSTER_INTERVAL` (most recent only vs last hour, default most recent only) to `PreferenceKey`
 - [x] 5.2 Add preference entries to `res/xml/preferences.xml` with defaults
 - [x] 5.3 Handle preference changes in `MainDataHandler` (enable/disable fetch, reconfigure interval)
 - [x] 5.4 Hide/disable cluster preferences and suppress cluster requests when the active provider does not support clusters

@@ -411,7 +411,7 @@ constructor(
 
             PreferenceKey.CLUSTER_INTERVAL -> {
                 clustersLatestOnly =
-                    sharedPreferences.get(key, CLUSTER_INTERVAL_HOUR) == CLUSTER_INTERVAL_LATEST
+                    sharedPreferences.get(key, CLUSTER_INTERVAL_LATEST) != CLUSTER_INTERVAL_HOUR
                 lastClusterParameters = null
                 updateClusterData()
             }

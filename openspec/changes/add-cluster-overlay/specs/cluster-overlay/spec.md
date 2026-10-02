@@ -20,11 +20,15 @@ The app SHALL let the user choose between fetching clusters at a 10-minute inter
 
 #### Scenario: Default interval
 - **WHEN** cluster display is enabled and no cluster interval preference has been set
-- **THEN** the app requests clusters with `minute_length = 10` and an interval count of 6
+- **THEN** the app requests clusters with `minute_length = 10` and an interval count of 1
 
 #### Scenario: Most recent only
 - **WHEN** the cluster interval preference is set to the most recent interval only
 - **THEN** the app requests clusters with `minute_length = 10` and an interval count of 1
+
+#### Scenario: Last hour
+- **WHEN** the cluster interval preference is set to the last hour
+- **THEN** the app requests clusters with `minute_length = 10` and an interval count of 6
 
 #### Scenario: History offset applied
 - **WHEN** the user navigates to a past interval

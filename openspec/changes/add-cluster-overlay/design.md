@@ -73,7 +73,7 @@ Clusters have no `grid_size`. Add a zoom-level (or bounding-box extent) criterio
 
 ### D6: Cluster interval as new preferences
 
-Add `SHOW_CLUSTERS` (boolean, default off) and `CLUSTER_INTERVAL` (default "hour"), offering either 10-minute bins over the last hour (`interval_count = 6`) or the most recent interval only (`latestOnly`, `interval_count = 1`). Do not overload the existing `INTERVAL_DURATION` strike preference.
+Add `SHOW_CLUSTERS` (boolean, default off) and `CLUSTER_INTERVAL` (default "latest"), offering either the most recent interval only (`latestOnly`, `interval_count = 1`) or 10-minute bins over the last hour (`interval_count = 6`). Do not overload the existing `INTERVAL_DURATION` strike preference.
 
 - **Why**: the cluster interval is a distinct axis from the strike window; overloading would create confusing coupling and break strike behavior. Restricting the choice to "last hour" vs "most recent only" keeps the UI simple while `ClusterParameters.latestOnly` expresses the single-interval case.
 - **Alternatives considered**: reuse `INTERVAL_DURATION` — rejected; keeping a free 5/10-minute selection — rejected in favour of the two meaningful display modes.
