@@ -45,7 +45,7 @@
 - [x] 7.1 Unit tests for cluster parsing (`Cluster` from JSON response)
 - [x] 7.2 Unit tests for cluster parameter/interval derivation (`interval_count = 60 / interval`, history offset)
 - [x] 7.3 Test provider capability gating (HTTP issues no cluster request)
-- [ ] 7.4 Manual verification: clusters shown simultaneously with grid/point view; toggle on/off; last hour vs most recent only; global and local zoom
+- [x] 7.4 Manual verification: clusters shown simultaneously with grid/point view; toggle on/off; last hour vs most recent only; global and local zoom
 - [x] 7.5 Run `./gradlew testDebugUnitTest` and `./gradlew lint`
 
 ## 8. Data view selection and grid deactivation
