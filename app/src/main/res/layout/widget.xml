@@ -17,6 +17,7 @@
       android:layout_weight="1"
       android:layout_marginTop="3dp"
       android:background="@android:color/transparent"
+      android:contentDescription="@string/alarm_diagram"
       android:padding="0dp"
       android:scaleType="fitCenter" />
 

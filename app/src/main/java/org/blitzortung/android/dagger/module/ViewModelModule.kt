@@ -38,28 +38,28 @@ annotation class ViewModelKey(
 )
 
 @Module
-abstract class ViewModelModule {
+interface ViewModelModule {
     @Binds
-    abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
+    fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 
     @Binds
     @IntoMap
     @ViewModelKey(
         MainViewModel::class,
     )
-    abstract fun bindMainViewModel(viewModel: MainViewModel): ViewModel
+    fun bindMainViewModel(viewModel: MainViewModel): ViewModel
 
     @Binds
     @IntoMap
     @ViewModelKey(
         MapViewModel::class,
     )
-    abstract fun bindMapViewModel(viewModel: MapViewModel): ViewModel
+    fun bindMapViewModel(viewModel: MapViewModel): ViewModel
 
     @Binds
     @IntoMap
     @ViewModelKey(
         SettingsViewModel::class,
     )
-    abstract fun bindSettingsViewModel(viewModel: SettingsViewModel): ViewModel
+    fun bindSettingsViewModel(viewModel: SettingsViewModel): ViewModel
 }

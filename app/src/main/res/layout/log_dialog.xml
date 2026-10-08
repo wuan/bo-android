@@ -21,7 +21,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#FFF"
-                android:textSize="8sp" />
+                android:textSize="11sp" />
 
         </HorizontalScrollView>
     </ScrollView>

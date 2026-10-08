@@ -19,21 +19,16 @@
 package org.blitzortung.android.app.helper
 
 import android.content.Context
+import android.util.TypedValue
 
 object ViewHelper {
     fun pxFromSp(
         context: Context,
         sp: Float,
-    ): Float {
-        val displayMetrics = context.resources.displayMetrics
-        return sp * displayMetrics.scaledDensity
-    }
+    ): Float = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.resources.displayMetrics)
 
     fun pxFromDp(
         context: Context,
         dp: Float,
-    ): Float {
-        val displayMetrics = context.resources.displayMetrics
-        return dp * displayMetrics.density
-    }
+    ): Float = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics)
 }

@@ -240,7 +240,7 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
     ): Pair<String?, Int> {
         var statusText: String? = null
         var statusColorResource: Int = Green
-        var alertResult: Any? = null
+        var alertResult: Any?
 
         if (location != null) {
             val scale = 5
@@ -352,10 +352,8 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         for (provider in providers) {
             try {
                 val location = locationManager.getLastKnownLocation(provider)
-                if (location != null) {
-                    if (bestLocation == null || location.accuracy < bestLocation.accuracy) {
-                        bestLocation = location
-                    }
+                if (location != null && (bestLocation == null || location.accuracy < bestLocation.accuracy)) {
+                    bestLocation = location
                 }
             } catch (e: SecurityException) {
                 Log.w(Main.LOG_TAG, "No permission for location provider: $provider")

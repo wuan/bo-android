@@ -520,6 +520,7 @@ constructor(
     private val animatorListener =
         object : AnimatorListener {
             override fun onAnimationStart(animation: Animator) {
+                // no-op; nothing to do when the map animation starts
             }
 
             override fun onAnimationEnd(animation: Animator) {
@@ -531,6 +532,7 @@ constructor(
             }
 
             override fun onAnimationRepeat(animation: Animator) {
+                // no-op; repeating animations do not trigger a data update
             }
         }
 
