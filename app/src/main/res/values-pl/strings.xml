@@ -401,4 +401,7 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_legend">Legenda wyjaśnia używane kolory i symbole.</string>
     <string name="doc_overlay_time_slider">Suwak czasu pozwala przeglądać historyczne dane o wyładowaniach.</string>
     <string name="doc_overlay_got_it">Rozumiem!</string>
+    <string name="doc_overlay_hint_legend">Kliknięcie: otwiera okno szybkich ustawień</string>
+    <string name="doc_overlay_hint_alert">Kliknięcie: centruje na własnej lokalizacji</string>
+    <string name="doc_overlay_hint_histogram">Kliknięcie: oddala do granicy danych</string>
 </resources>

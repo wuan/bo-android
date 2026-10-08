@@ -372,4 +372,7 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_legend">Legenda objašnjava korištene boje i simbole.</string>
     <string name="doc_overlay_time_slider">Klizač vremena omogućuje pregled povijesnih podataka o munjama.</string>
     <string name="doc_overlay_got_it">Jasno!</string>
+    <string name="doc_overlay_hint_legend">Klik: otvara dijalog brzih postavki</string>
+    <string name="doc_overlay_hint_alert">Klik: centrira na vlastitu lokaciju</string>
+    <string name="doc_overlay_hint_histogram">Klik: smanjuje zumiranje do granice podataka</string>
 </resources>

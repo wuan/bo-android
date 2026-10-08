@@ -372,4 +372,7 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_legend">La leyenda explica los colores y símbolos utilizados.</string>
     <string name="doc_overlay_time_slider">Use el control deslizante de tiempo para ver datos históricos.</string>
     <string name="doc_overlay_got_it">¡Entendido!</string>
+    <string name="doc_overlay_hint_legend">Clic: abre el diálogo de ajustes rápidos</string>
+    <string name="doc_overlay_hint_alert">Clic: centra en tu ubicación</string>
+    <string name="doc_overlay_hint_histogram">Clic: aleja hasta el límite de los datos</string>
 </resources>

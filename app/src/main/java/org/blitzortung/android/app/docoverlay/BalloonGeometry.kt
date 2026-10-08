@@ -55,14 +55,33 @@ internal class BalloonGeometry(
     ): IntPoint = when (side) {
         BalloonTailSide.TOP -> IntPoint(clampTailX(target.x, bounds, alignment), bounds.top + tailLength)
         BalloonTailSide.BOTTOM -> IntPoint(clampTailX(target.x, bounds, alignment), bounds.bottom - tailLength)
-        BalloonTailSide.LEFT -> IntPoint(bounds.left + tailLength, target.y.coerceIn(bounds.top, bounds.bottom - 1))
-        BalloonTailSide.RIGHT -> IntPoint(bounds.right - tailLength, target.y.coerceIn(bounds.top, bounds.bottom - 1))
+        BalloonTailSide.LEFT -> IntPoint(bounds.left + tailLength, clampTailY(target.y, bounds))
+        BalloonTailSide.RIGHT -> IntPoint(bounds.right - tailLength, clampTailY(target.y, bounds))
     }
 
-    private fun clampTailX(x: Int, bounds: IntRect, alignment: BalloonHorizontalAlignment): Int = when (alignment) {
-        BalloonHorizontalAlignment.LEFT_EDGE -> bounds.left + TAIL_HALF_MARGIN
-        BalloonHorizontalAlignment.RIGHT_EDGE -> bounds.right - TAIL_HALF_MARGIN
-        BalloonHorizontalAlignment.CENTERED_ON_TARGET -> x.coerceIn(bounds.left, bounds.right - 1)
+    /**
+     * Horizontal position of the tail along a top/bottom edge. The tail is indented from the
+     * rounded corners by [EDGE_INDENT_FRACTION] of the balloon width, so edge aligned balloons
+     * keep their handle clear of the corners while centered balloons still point at the target.
+     */
+    private fun clampTailX(x: Int, bounds: IntRect, alignment: BalloonHorizontalAlignment): Int {
+        val indent = (bounds.width * EDGE_INDENT_FRACTION).toInt()
+        val minX = bounds.left + indent
+        val maxX = bounds.right - 1 - indent
+        val anchor = when (alignment) {
+            BalloonHorizontalAlignment.LEFT_EDGE -> minX
+            BalloonHorizontalAlignment.RIGHT_EDGE -> maxX
+            BalloonHorizontalAlignment.CENTERED_ON_TARGET -> x
+        }
+        return if (maxX < minX) bounds.centerX() else anchor.coerceIn(minX, maxX)
+    }
+
+    /** Vertical position of the tail along a left/right edge, indented from the rounded corners. */
+    private fun clampTailY(y: Int, bounds: IntRect): Int {
+        val indent = (bounds.height * EDGE_INDENT_FRACTION).toInt()
+        val minY = bounds.top + indent
+        val maxY = bounds.bottom - 1 - indent
+        return if (maxY < minY) bounds.centerY() else y.coerceIn(minY, maxY)
     }
 
     /**
@@ -120,7 +139,7 @@ internal class BalloonGeometry(
     private companion object {
         const val MIN_SIZE = 1
 
-        /** Keeps the tail tip at least half a tail width away from the balloon corner. */
-        const val TAIL_HALF_MARGIN = 14
+        /** Fraction of the balloon size the tail is kept away from the rounded corners. */
+        const val EDGE_INDENT_FRACTION = 0.05
     }
 }

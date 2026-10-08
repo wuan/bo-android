@@ -558,6 +558,56 @@ class DocBalloonLayoutTest {
         assertThat(placed.tailTip.y).isEqualTo(placed.bounds.bottom - 10)
     }
 
+    @Test
+    fun `left edge tail is kept at least five percent away from the left edge`() {
+        val request = stacked(
+            0,
+            order = 0,
+            y = 1900,
+            size = IntPoint(200, 100),
+            alignment = BalloonHorizontalAlignment.LEFT_EDGE,
+        )
+        val placed = layout.place(listOf(request)).single()
+
+        val fivePercent = (placed.bounds.width * 0.05).toInt()
+        assertThat(placed.tailTip.x).isGreaterThanOrEqualTo(placed.bounds.left + fivePercent)
+    }
+
+    @Test
+    fun `right edge tail is kept at most ninety five percent across`() {
+        val request = stacked(
+            0,
+            order = 0,
+            y = 1900,
+            size = IntPoint(200, 100),
+            alignment = BalloonHorizontalAlignment.RIGHT_EDGE,
+        )
+        val placed = layout.place(listOf(request)).single()
+
+        val fivePercent = (placed.bounds.width * 0.05).toInt()
+        assertThat(placed.tailTip.x).isLessThanOrEqualTo(placed.bounds.right - 1 - fivePercent)
+    }
+
+    @Test
+    fun `horizontal edge tail is indented from the balloon corners`() {
+        val placed = layout.place(
+            listOf(
+                BalloonRequest(
+                    id = 0,
+                    targetCenter = IntPoint(500, 300),
+                    preferredSize = IntPoint(200, 100),
+                    preferredTailSide = BalloonTailSide.LEFT,
+                    horizontalAlignment = BalloonHorizontalAlignment.RIGHT_EDGE,
+                ),
+            ),
+        ).single()
+
+        val fivePercent = (placed.bounds.height * 0.05).toInt()
+        assertThat(placed.tailSide).isEqualTo(BalloonTailSide.LEFT)
+        assertThat(placed.tailTip.y).isGreaterThanOrEqualTo(placed.bounds.top + fivePercent)
+        assertThat(placed.tailTip.y).isLessThanOrEqualTo(placed.bounds.bottom - 1 - fivePercent)
+    }
+
     private fun assertNoOverlaps(rects: List<IntRect>) {
         rects.forEachIndexed { i, first ->
             rects.drop(i + 1).forEach { second ->

@@ -256,6 +256,24 @@ class MainDocOverlayTest {
         assertThat(tailCenterX).isGreaterThan(bodyCenterX)
     }
 
+    @Test
+    fun `legend alert and histogram balloons contain their click hints`() {
+        val activity = Robolectric.buildActivity(Main::class.java).setup().get()
+        layoutActivity(activity)
+
+        val container = activity.findViewById<ViewGroup>(R.id.doc_balloon_container)
+        val legend = findBalloon(container, activity.getString(R.string.doc_overlay_legend))!!
+        val alert = findBalloon(container, activity.getString(R.string.doc_overlay_alert))!!
+        val histogram = findBalloon(container, activity.getString(R.string.doc_overlay_histogram))!!
+
+        assertThat(balloonText(legend)).contains(activity.getString(R.string.doc_overlay_hint_legend))
+        assertThat(balloonText(alert)).contains(activity.getString(R.string.doc_overlay_hint_alert))
+        assertThat(balloonText(histogram)).contains(activity.getString(R.string.doc_overlay_hint_histogram))
+    }
+
+    private fun balloonText(balloon: View): String =
+        balloon.findViewById<android.widget.TextView>(R.id.doc_balloon_text).text.toString()
+
     private fun assertNoOverlap(views: List<View>) {
         views.forEachIndexed { i, first ->
             views.drop(i + 1).forEach { second ->
@@ -272,7 +290,7 @@ class MainDocOverlayTest {
         for (i in 0 until container.childCount) {
             val child = container.getChildAt(i)
             val label = child.findViewById<android.widget.TextView>(R.id.doc_balloon_text)
-            if (label?.text?.toString() == text) {
+            if (label?.text?.toString()?.startsWith(text) == true) {
                 return child
             }
         }

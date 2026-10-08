@@ -346,4 +346,7 @@ Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_legend">Legenda vysvětluje použité barvy a symboly.</string>
     <string name="doc_overlay_time_slider">Časový posuvník umožňuje prohlížet historická data o blescích.</string>
     <string name="doc_overlay_got_it">Rozumím!</string>
+    <string name="doc_overlay_hint_legend">Klepnutí: otevře dialog rychlého nastavení</string>
+    <string name="doc_overlay_hint_alert">Klepnutí: vycentruje na vaši polohu</string>
+    <string name="doc_overlay_hint_histogram">Klepnutí: oddálí na hranici dat</string>
 </resources>

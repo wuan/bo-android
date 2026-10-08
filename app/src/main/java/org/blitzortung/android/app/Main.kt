@@ -768,7 +768,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             },
             DocTarget(
                 binding.legendView,
-                getString(R.string.doc_overlay_legend),
+                getString(R.string.doc_overlay_legend) + "\n" + getString(R.string.doc_overlay_hint_legend),
                 BalloonTailSide.TOP,
                 horizontalAlignment = BalloonHorizontalAlignment.LEFT_EDGE,
                 row = BalloonRow.TOP,
@@ -782,14 +782,14 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             ),
             DocTarget(
                 binding.histogramView,
-                getString(R.string.doc_overlay_histogram),
+                getString(R.string.doc_overlay_histogram) + "\n" + getString(R.string.doc_overlay_hint_histogram),
                 BalloonTailSide.BOTTOM,
                 horizontalAlignment = BalloonHorizontalAlignment.RIGHT_EDGE,
                 row = BalloonRow.BOTTOM,
             ),
             DocTarget(
                 binding.warning,
-                getString(R.string.doc_overlay_alert),
+                getString(R.string.doc_overlay_alert) + "\n" + getString(R.string.doc_overlay_hint_alert),
                 BalloonTailSide.BOTTOM,
                 horizontalAlignment = BalloonHorizontalAlignment.LEFT_EDGE,
                 row = BalloonRow.BOTTOM,

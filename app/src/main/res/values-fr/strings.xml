@@ -375,4 +375,7 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_legend">La légende explique les couleurs et symboles utilisés.</string>
     <string name="doc_overlay_time_slider">Utilisez la réglette temporelle pour consulter les données historiques.</string>
     <string name="doc_overlay_got_it">J\'ai compris !</string>
+    <string name="doc_overlay_hint_legend">Clic : ouvre la boîte de dialogue des réglages rapides</string>
+    <string name="doc_overlay_hint_alert">Clic : centre sur votre position</string>
+    <string name="doc_overlay_hint_histogram">Clic : dézoome jusqu\'à la limite des données</string>
 </resources>

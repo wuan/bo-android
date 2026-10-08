@@ -378,4 +378,7 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_legend">De legenda verklaart de gebruikte kleuren en symbolen.</string>
     <string name="doc_overlay_time_slider">Gebruik de tijdschuif om historische bliksemgegevens te bekijken.</string>
     <string name="doc_overlay_got_it">Begrepen!</string>
+    <string name="doc_overlay_hint_legend">Klik: opent het dialoogvenster met snelle instellingen</string>
+    <string name="doc_overlay_hint_alert">Klik: centreert op je eigen locatie</string>
+    <string name="doc_overlay_hint_histogram">Klik: zoomt uit tot de datagrens</string>
 </resources>

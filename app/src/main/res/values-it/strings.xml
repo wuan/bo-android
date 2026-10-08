@@ -367,4 +367,7 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_legend">La legenda spiega i colori e i simboli utilizzati.</string>
     <string name="doc_overlay_time_slider">Usa il cursore temporale per visualizzare i dati storici.</string>
     <string name="doc_overlay_got_it">Ho capito!</string>
+    <string name="doc_overlay_hint_legend">Clic: apre la finestra delle impostazioni rapide</string>
+    <string name="doc_overlay_hint_alert">Clic: centra sulla tua posizione</string>
+    <string name="doc_overlay_hint_histogram">Clic: riduce lo zoom al limite dei dati</string>
 </resources>
