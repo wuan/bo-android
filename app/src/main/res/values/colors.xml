@@ -11,4 +11,9 @@
     <color name="translucent_background">#4000</color>
     <color name="text_foreground">#eee</color>
 
+    <color name="doc_overlay_scrim">#88000000</color>
+    <color name="doc_balloon_background">#f2ffffff</color>
+    <color name="doc_balloon_stroke">#ff2196f3</color>
+    <color name="doc_balloon_text">#ff212121</color>
+
 </resources>

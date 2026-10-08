@@ -416,4 +416,16 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="backup_restart_now">Restart now</string>
     <string name="backup_restart_later">Later</string>
     <string name="backup_cancel">Cancel</string>
+
+    <string name="doc_overlay_guide">Quick guide</string>
+    <string name="doc_overlay_status">Status information is displayed here (e.g., connection, location).</string>
+    <string name="doc_overlay_alert">Alerts for nearby lightning activity will appear here.</string>
+    <string name="doc_overlay_buttons">Open settings and control the animation.</string>
+    <string name="doc_overlay_histogram">The histogram shows lightning activity over time.</string>
+    <string name="doc_overlay_legend">The map legend explains the colors and symbols used.</string>
+    <string name="doc_overlay_time_slider">Use the time slider to view historical lightning data.</string>
+    <string name="doc_overlay_got_it">Got it!</string>
+    <string name="doc_overlay_hint_legend">Click: open the quick settings dialog</string>
+    <string name="doc_overlay_hint_alert">Click: center on own location</string>
+    <string name="doc_overlay_hint_histogram">Click: zoom out to data boundary</string>
 </resources>

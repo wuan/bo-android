@@ -393,4 +393,15 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="backup_restart_now">Uruchom ponownie teraz</string>
     <string name="backup_restart_later">Później</string>
     <string name="backup_cancel">Anuluj</string>
+    <string name="doc_overlay_guide">Szybki przewodnik</string>
+    <string name="doc_overlay_status">Informacje o statusie są wyświetlane tutaj (np. połączenie, lokalizacja).</string>
+    <string name="doc_overlay_alert">Ostrzeżenia o pobliskich wyładowaniach pojawią się tutaj.</string>
+    <string name="doc_overlay_buttons">Otwórz ustawienia i steruj animacją.</string>
+    <string name="doc_overlay_histogram">Histogram pokazuje aktywność wyładowań w czasie.</string>
+    <string name="doc_overlay_legend">Legenda wyjaśnia używane kolory i symbole.</string>
+    <string name="doc_overlay_time_slider">Suwak czasu pozwala przeglądać historyczne dane o wyładowaniach.</string>
+    <string name="doc_overlay_got_it">Rozumiem!</string>
+    <string name="doc_overlay_hint_legend">Kliknięcie: otwiera okno szybkich ustawień</string>
+    <string name="doc_overlay_hint_alert">Kliknięcie: centruje na własnej lokalizacji</string>
+    <string name="doc_overlay_hint_histogram">Kliknięcie: oddala do granicy danych</string>
 </resources>

@@ -54,6 +54,9 @@ import org.blitzortung.android.app.components.ChangeLogComponent
 import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
+import org.blitzortung.android.app.docoverlay.BalloonHorizontalAlignment
+import org.blitzortung.android.app.docoverlay.BalloonTailSide
+import org.blitzortung.android.app.docoverlay.BalloonRow
 import org.blitzortung.android.app.databinding.MainBinding
 import org.blitzortung.android.app.permission.PermissionRequester
 import org.blitzortung.android.app.permission.PermissionsSupport
@@ -199,6 +202,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private lateinit var mapFragment: MapFragment
 
     private lateinit var binding: MainBinding
+    private lateinit var docOverlayController: DocOverlayController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -291,6 +295,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 BackgroundLocationPermissionRequester(this, preferences),
                 WakeupPermissionRequester(this, preferences),
             )
+
+        docOverlayController = DocOverlayController(binding.root, layoutInflater, preferences, ::createDocTargets)
+        docOverlayController.showIfNotShownBefore()
     }
 
     private fun initializeOsmDroid() {
@@ -721,7 +728,73 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private fun showPopupMenu(anchor: View) {
         val popupMenu =
             MainPopupMenu(this, anchor, preferences, dataHandler, alertHandler, buildVersion, changeLogComponent)
+        popupMenu.onShowDocOverlay = docOverlayController::show
         popupMenu.showPopupMenu()
+    }
+
+    /**
+     * Describes the main screen elements for the quick documentation overlay. Only views that
+     * are currently visible are used; [DocOverlayController] filters the rest out.
+     *
+     * The balloons are split into two groups:
+     *
+     * - top row: status (centered), controls (flush right), legend (flush left)
+     * - bottom stack, from the bottom upwards: time slider (centered), histogram (flush right),
+     *   alert indicator (flush left)
+     *
+     * Top-row balloons point their tail up (body below the target view), bottom-stack balloons
+     * point their tail down (body above the target view). The list order is also the placement
+     * order inside each group.
+     */
+    private fun createDocTargets(): List<DocTarget> {
+        val buttonColumn = listOf(binding.menu, binding.startStopAnimation, binding.goRealtime, binding.toggleExtendedMode)
+            .firstOrNull { it.isVisible }
+        return listOfNotNull(
+            DocTarget(
+                binding.status,
+                getString(R.string.doc_overlay_status),
+                BalloonTailSide.TOP,
+                horizontalAlignment = BalloonHorizontalAlignment.CENTERED_ON_TARGET,
+                row = BalloonRow.TOP,
+            ),
+            buttonColumn?.let {
+                DocTarget(
+                    it,
+                    getString(R.string.doc_overlay_buttons),
+                    BalloonTailSide.TOP,
+                    horizontalAlignment = BalloonHorizontalAlignment.RIGHT_EDGE,
+                    row = BalloonRow.TOP,
+                )
+            },
+            DocTarget(
+                binding.legendView,
+                getString(R.string.doc_overlay_legend) + "\n" + getString(R.string.doc_overlay_hint_legend),
+                BalloonTailSide.TOP,
+                horizontalAlignment = BalloonHorizontalAlignment.LEFT_EDGE,
+                row = BalloonRow.TOP,
+            ),
+            DocTarget(
+                binding.timeSlider,
+                getString(R.string.doc_overlay_time_slider),
+                BalloonTailSide.BOTTOM,
+                horizontalAlignment = BalloonHorizontalAlignment.CENTERED_ON_TARGET,
+                row = BalloonRow.BOTTOM,
+            ),
+            DocTarget(
+                binding.histogramView,
+                getString(R.string.doc_overlay_histogram) + "\n" + getString(R.string.doc_overlay_hint_histogram),
+                BalloonTailSide.BOTTOM,
+                horizontalAlignment = BalloonHorizontalAlignment.RIGHT_EDGE,
+                row = BalloonRow.BOTTOM,
+            ),
+            DocTarget(
+                binding.warning,
+                getString(R.string.doc_overlay_alert) + "\n" + getString(R.string.doc_overlay_hint_alert),
+                BalloonTailSide.BOTTOM,
+                horizontalAlignment = BalloonHorizontalAlignment.LEFT_EDGE,
+                row = BalloonRow.BOTTOM,
+            ),
+        )
     }
 
     companion object {

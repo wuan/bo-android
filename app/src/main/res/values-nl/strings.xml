@@ -370,4 +370,15 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="backup_restart_now">Nu herstarten</string>
     <string name="backup_restart_later">Later</string>
     <string name="backup_cancel">Annuleren</string>
+    <string name="doc_overlay_guide">Snelle handleiding</string>
+    <string name="doc_overlay_status">Statusinformatie wordt hier weergegeven (bijv. verbinding, locatie).</string>
+    <string name="doc_overlay_alert">Meldingen van bliksemsactiviteit in de buurt verschijnen hier.</string>
+    <string name="doc_overlay_buttons">Open instellingen en bedien de animatie.</string>
+    <string name="doc_overlay_histogram">Het histogram toont de bliksemsactiviteit in de tijd.</string>
+    <string name="doc_overlay_legend">De legenda verklaart de gebruikte kleuren en symbolen.</string>
+    <string name="doc_overlay_time_slider">Gebruik de tijdschuif om historische bliksemgegevens te bekijken.</string>
+    <string name="doc_overlay_got_it">Begrepen!</string>
+    <string name="doc_overlay_hint_legend">Klik: opent het dialoogvenster met snelle instellingen</string>
+    <string name="doc_overlay_hint_alert">Klik: centreert op je eigen locatie</string>
+    <string name="doc_overlay_hint_histogram">Klik: zoomt uit tot de datagrens</string>
 </resources>

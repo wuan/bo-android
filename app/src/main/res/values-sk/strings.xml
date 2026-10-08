@@ -364,4 +364,15 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="backup_restart_now">Reštartovať teraz</string>
     <string name="backup_restart_later">Neskôr</string>
     <string name="backup_cancel">Zrušiť</string>
+    <string name="doc_overlay_guide">Rýchla príručka</string>
+    <string name="doc_overlay_status">Stavové informácie sa zobrazujú tu (napr. pripojenie, poloha).</string>
+    <string name="doc_overlay_alert">Upozornenia na blízku bleskovú aktivitu sa zobrazia tu.</string>
+    <string name="doc_overlay_buttons">Otvorte nastavenia a ovládajte animáciu.</string>
+    <string name="doc_overlay_histogram">Histogram zobrazuje bleskovú aktivitu v čase.</string>
+    <string name="doc_overlay_legend">Legenda vysvetľuje použité farby a symboly.</string>
+    <string name="doc_overlay_time_slider">Časový posuvník umožňuje prehliadať historické dáta o bleskoch.</string>
+    <string name="doc_overlay_got_it">Rozumiem!</string>
+    <string name="doc_overlay_hint_legend">Kliknutie: otvorí dialóg rýchleho nastavenia</string>
+    <string name="doc_overlay_hint_alert">Kliknutie: vycentruje na vašu polohu</string>
+    <string name="doc_overlay_hint_histogram">Kliknutie: oddiali na hranicu údajov</string>
 </resources>

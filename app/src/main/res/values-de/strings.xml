@@ -383,4 +383,15 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="backup_restart_now">Jetzt neu starten</string>
     <string name="backup_restart_later">Später</string>
     <string name="backup_cancel">Abbrechen</string>
+    <string name="doc_overlay_guide">Kurzanleitung</string>
+    <string name="doc_overlay_status">Statusinformationen werden hier angezeigt (z. B. Verbindung, Standort).</string>
+    <string name="doc_overlay_alert">Hinweise auf Blitzaktivität in der Nähe erscheinen hier.</string>
+    <string name="doc_overlay_buttons">Einstellungen öffnen und die Animation steuern.</string>
+    <string name="doc_overlay_histogram">Das Histogramm zeigt die Blitzaktivität im Zeitverlauf.</string>
+    <string name="doc_overlay_legend">Die Legende erklärt die verwendeten Farben und Symbole.</string>
+    <string name="doc_overlay_time_slider">Mit dem Zeitschieberegler lassen sich historische Blitzdaten anzeigen.</string>
+    <string name="doc_overlay_got_it">Verstanden!</string>
+    <string name="doc_overlay_hint_legend">Klick: öffnet den Schnelleinstellungsdialog</string>
+    <string name="doc_overlay_hint_alert">Klick: zentriert auf den eigenen Standort</string>
+    <string name="doc_overlay_hint_histogram">Klick: zoomt auf die Datengrenze heraus</string>
 </resources>

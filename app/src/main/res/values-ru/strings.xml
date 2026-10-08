@@ -396,4 +396,15 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="backup_restart_now">Перезапустить сейчас</string>
     <string name="backup_restart_later">Позже</string>
     <string name="backup_cancel">Отмена</string>
+    <string name="doc_overlay_guide">Краткое руководство</string>
+    <string name="doc_overlay_status">Здесь отображается информация о состоянии (например, соединение, местоположение).</string>
+    <string name="doc_overlay_alert">Здесь появятся уведомления о близких ударах молний.</string>
+    <string name="doc_overlay_buttons">Откройте настройки и управляйте анимацией.</string>
+    <string name="doc_overlay_histogram">Гистограмма показывает активность ударов молний во времени.</string>
+    <string name="doc_overlay_legend">Легенда объясняет используемые цвета и символы.</string>
+    <string name="doc_overlay_time_slider">Ползунок времени позволяет просматривать исторические данные.</string>
+    <string name="doc_overlay_got_it">Понятно!</string>
+    <string name="doc_overlay_hint_legend">Нажатие: открывает диалог быстрых настроек</string>
+    <string name="doc_overlay_hint_alert">Нажатие: центрирует на вашем местоположении</string>
+    <string name="doc_overlay_hint_histogram">Нажатие: уменьшает масштаб до границы данных</string>
 </resources>
