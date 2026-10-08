@@ -33,15 +33,22 @@ import android.widget.ImageButton
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.core.content.edit
 import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
 import dagger.android.AndroidInjection
 import javax.inject.Inject
 import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 import org.blitzortung.android.alert.LocalActivity
+import org.blitzortung.android.alert.Warning
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.BuildVersion
 import org.blitzortung.android.app.components.ChangeLogComponent
@@ -51,6 +58,7 @@ import org.blitzortung.android.app.controller.HistoryController
 import org.blitzortung.android.app.databinding.MainBinding
 import org.blitzortung.android.app.permission.PermissionRequester
 import org.blitzortung.android.app.permission.PermissionsSupport
+import org.blitzortung.android.app.permission.requester.BackgroundLocationDisclosureRequester
 import org.blitzortung.android.app.permission.requester.BackgroundLocationPermissionRequester
 import org.blitzortung.android.app.permission.requester.LocationPermissionRequester
 import org.blitzortung.android.app.permission.requester.NotificationPermissionRequester
@@ -59,6 +67,7 @@ import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.app.viewmodel.MainViewModel
 import org.blitzortung.android.data.AUTO_GRID_SIZE_VALUE
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.Mode
@@ -67,9 +76,9 @@ import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.data.provider.result.NoData
-import org.blitzortung.android.data.provider.result.RequestStarted
 import org.blitzortung.android.data.provider.result.StatusUpdate
 import org.blitzortung.android.dialogs.QuickSettingsDialog
+import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.OwnMapView
@@ -99,8 +108,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private lateinit var ownLocationOverlay: OwnLocationOverlay
     private lateinit var fadeOverlay: FadeOverlay
 
-    private var clearData: Boolean = false
-
     private lateinit var buttonColumnHandler: ButtonColumnHandler<ImageButton, ButtonGroup>
 
     private lateinit var historyController: HistoryController
@@ -129,6 +136,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     @set:Inject
     internal lateinit var changeLogComponent: ChangeLogComponent
 
+    @set:Inject
+    internal lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val viewModel: MainViewModel by viewModels { viewModelFactory }
+
     private lateinit var permissionRequesters: Array<PermissionRequester>
 
     private var currentResult: DataReceived? = null
@@ -136,78 +148,56 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private val keepZoomOnGotoOwnLocation: Boolean
         inline get() = preferences.get(PreferenceKey.KEEP_ZOOM_GOTO_OWN_LOCATION, false)
 
-    private val dataEventConsumer: (DataEvent) -> Unit = { event ->
-        when (event) {
-            is RequestStarted -> {
-                Log.d(LOG_TAG, "Main.onDataUpdate() received request started event")
-                statusComponent.startProgress()
+    private fun handleDataReceived(event: DataReceived) {
+        if (!event.failed && sequenceValidator.isUpdate(event.sequenceNumber)) {
+            currentResult = event
+
+            Log.d(LOG_TAG, "Main.onDataUpdate() $event")
+
+            val resultParameters = event.parameters
+
+            clearDataIfRequested()
+
+            val initializeOverlay = strikeListOverlay.parameters != resultParameters
+            with(strikeListOverlay) {
+                parameters = resultParameters
+                gridParameters = event.gridParameters
+                referenceTime = event.referenceTime
             }
 
-            is DataReceived -> {
+            if (event.updated >= 0 && !initializeOverlay) {
+                strikeListOverlay.expireStrikes()
+            } else {
+                strikeListOverlay.clear()
+            }
 
-                statusComponent.indicateError(event.failed)
-                if (!event.failed && sequenceValidator.isUpdate(event.sequenceNumber)) {
-                    currentResult = event
-
-                    Log.d(LOG_TAG, "Main.onDataUpdate() $event")
-
-                    val resultParameters = event.parameters
-
-                    clearDataIfRequested()
-
-                    val initializeOverlay = strikeListOverlay.parameters != resultParameters
-                    with(strikeListOverlay) {
-                        parameters = resultParameters
-                        gridParameters = event.gridParameters
-                        referenceTime = event.referenceTime
-                    }
-
-                    if (event.updated >= 0 && !initializeOverlay) {
-                        strikeListOverlay.expireStrikes()
+            event.strikes?.let { strikes ->
+                val strikesToAdd =
+                    if (event.updated > 0 && !initializeOverlay) {
+                        strikes.subList(strikes.size - event.updated, strikes.size)
                     } else {
-                        strikeListOverlay.clear()
+                        strikes
                     }
-
-                    if (event.strikes != null) {
-                        val strikes =
-                            if (event.updated > 0 && !initializeOverlay) {
-                                val size = event.strikes.size
-                                event.strikes.subList(size - event.updated, size)
-                            } else {
-                                event.strikes
-                            }
-                        strikeListOverlay.addStrikes(strikes)
-                    }
-
-                    binding.alertView.setColorHandler(
-                        strikeColorHandler,
-                        strikeListOverlay.parameters.intervalDuration,
-                    )
-
-                    strikeListOverlay.refresh()
-                    mapFragment.mapView.invalidate()
-
-                    binding.legendView.requestLayout()
-                    binding.timeSlider.update(event.parameters, event.history!!)
-
-                    if (event.flags.mode == Mode.ANIMATION || !event.containsRealtimeData()) {
-                        setHistoricStatusString()
-                    }
-                }
-
-                statusComponent.stopProgress()
-
-                binding.legendView.invalidate()
+                strikeListOverlay.addStrikes(strikesToAdd)
             }
 
-            is StatusUpdate -> {
-                setStatusString(event.status)
-            }
+            binding.alertView.setColorHandler(
+                strikeColorHandler,
+                strikeListOverlay.parameters.intervalDuration,
+            )
 
-            NoData -> {
-                setStatusString("?")
+            strikeListOverlay.refresh()
+            mapFragment.mapView.invalidate()
+
+            binding.legendView.requestLayout()
+            binding.timeSlider.update(event.parameters, event.history!!)
+
+            if (event.flags.mode == Mode.ANIMATION || !event.containsRealtimeData()) {
+                setHistoricStatusString()
             }
         }
+
+        binding.legendView.invalidate()
     }
 
     private lateinit var mapFragment: MapFragment
@@ -253,9 +243,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         buttonColumnHandler = ButtonColumnHandler(if (TabletAwareView.isTablet(this)) 75f else 55f)
         configureMenuAccess()
-        historyController = HistoryController(binding, buttonColumnHandler, dataHandler)
+        historyController = HistoryController(binding, buttonColumnHandler, viewModel)
         val historyButtons = historyController.getButtons()
         buttonColumnHandler.addAllElements(historyButtons, ButtonGroup.DATA_UPDATING)
+
+        observeViewModels()
 
         // setupDetailModeButton()
 
@@ -276,13 +268,13 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     p2: Boolean,
                 ) {
                     if (p2) {
-                        val changed = dataHandler.setPosition(p1)
+                        val changed = viewModel.setPosition(p1)
                         if (changed) {
-                            if (dataHandler.isRealtime) {
-                                dataHandler.restart()
+                            if (viewModel.isRealtime()) {
+                                viewModel.restart()
                             } else {
                                 Log.v(LOG_TAG, "TimeSlider call updateData()")
-                                dataHandler.updateData()
+                                viewModel.updateData()
                             }
                         }
                     }
@@ -298,6 +290,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         permissionRequesters =
             arrayOf(
+                BackgroundLocationDisclosureRequester(this, preferences, ::ensurePermissions),
                 LocationPermissionRequester(this, preferences),
                 NotificationPermissionRequester(this, preferences),
                 BackgroundLocationPermissionRequester(this, preferences),
@@ -332,8 +325,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             visibility = View.VISIBLE
 
             setOnClickListener {
-                dataHandler.toggleExtendedMode()
-                dataHandler.updateData()
+                viewModel.toggleExtendedMode()
+                viewModel.updateData()
             }
 
             buttonColumnHandler.addElement(this, ButtonGroup.DATA_UPDATING)
@@ -471,6 +464,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         setupCustomViews()
     }
 
+    private fun ensurePermissions() {
+        PermissionsSupport.ensure(this, *permissionRequesters)
+    }
+
     override fun onRestart() {
         super.onRestart()
 
@@ -484,14 +481,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         Log.v(LOG_TAG, "Main.onResume()")
 
-        PermissionsSupport.ensure(
-            this,
-            *permissionRequesters,
-        )
+        ensurePermissions()
 
         mapFragment.updateForgroundColor(strikeColorHandler.lineColor)
 
-        enableDataUpdates()
+        dataHandler.setLocationUpdatesEnabled(true)
 
         if (locationHandler.backgroundMode) {
             locationHandler.shutdown()
@@ -515,35 +509,76 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         dataHandler.updateGrid(mapView, dataHandler.autoGridSize)
         strikeListOverlay.onZoom(ZoomEvent(mapView, mapView.zoomLevelDouble))
 
-        dataHandler.start()
+        viewModel.start()
     }
 
-    private fun enableDataUpdates() {
-        with(locationHandler) {
-            requestUpdates(ownLocationOverlay.locationEventConsumer)
-            requestUpdates(binding.alertView.locationEventConsumer)
-            requestUpdates(dataHandler.locationEventConsumer)
+    private fun observeViewModels() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.isLoading.collect { isLoading ->
+                        if (isLoading) {
+                            statusComponent.startProgress()
+                        } else {
+                            statusComponent.stopProgress()
+                        }
+                    }
+                }
+                launch {
+                    viewModel.hasError.collect { hasError ->
+                        statusComponent.indicateError(hasError)
+                    }
+                }
+                viewModel.currentResult.value?.let { handleDataReceived(it) }
+                launch {
+                    viewModel.dataEvents.collect { event ->
+                        dispatchDataEvent(event)
+                    }
+                }
+                launch {
+                    viewModel.locationEvents.collect { event ->
+                        event?.let { dispatchLocationEvent(it) }
+                    }
+                }
+                launch {
+                    viewModel.alertEvents.collect { warning ->
+                        warning?.let { dispatchAlertEvent(it) }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun dispatchDataEvent(event: DataEvent) {
+        when (event) {
+            is DataReceived -> handleDataReceived(event)
+            is StatusUpdate -> setStatusString(event.status)
+            NoData -> setStatusString("?")
+            else -> {}
         }
 
-        with(alertHandler) {
-            requestUpdates(binding.alertView.alertEventConsumer)
-            requestUpdates(statusComponent.alertEventConsumer)
-        }
+        alertHandler.dataEventConsumer(event)
+        historyController.dataConsumer(event)
+        binding.histogramView.dataConsumer(event)
+        binding.regionView.dataConsumer(event)
+    }
 
-        with(dataHandler) {
-            requestUpdates(dataEventConsumer)
-            requestUpdates(alertHandler.dataEventConsumer)
-            requestUpdates(historyController.dataConsumer)
-            requestUpdates(binding.histogramView.dataConsumer)
-            requestUpdates(binding.regionView.dataConsumer)
-        }
+    private fun dispatchLocationEvent(event: LocationEvent) {
+        ownLocationOverlay.locationEventConsumer(event)
+        binding.alertView.locationEventConsumer(event)
+        dataHandler.locationEventConsumer(event)
+    }
+
+    private fun dispatchAlertEvent(warning: Warning) {
+        binding.alertView.alertEventConsumer(warning)
+        statusComponent.alertEventConsumer(warning)
     }
 
     override fun onPause() {
         super.onPause()
         Log.v(LOG_TAG, "Main.onPause()")
 
-        disableDataUpdates()
+        dataHandler.setLocationUpdatesEnabled(false)
 
         if (backgroundAlertEnabled) {
             startService()
@@ -558,29 +593,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         Log.v(LOG_TAG, "Main.onPause() ${LogUtil.timestamp}")
 
-        dataHandler.stop()
+        viewModel.stop()
 
         Configuration.getInstance().save(this, preferences)
-    }
-
-    private fun disableDataUpdates() {
-        with(locationHandler) {
-            removeUpdates(ownLocationOverlay.locationEventConsumer)
-            removeUpdates(binding.alertView.locationEventConsumer)
-            removeUpdates(dataHandler.locationEventConsumer)
-        }
-
-        with(alertHandler) {
-            removeUpdates(binding.alertView.alertEventConsumer)
-            removeUpdates(statusComponent.alertEventConsumer)
-        }
-
-        with(dataHandler) {
-            removeUpdates(dataEventConsumer)
-            requestUpdates(alertHandler.dataEventConsumer)
-            removeUpdates(historyController.dataConsumer)
-            removeUpdates(binding.histogramView.dataConsumer)
-        }
     }
 
     override fun onStop() {
@@ -600,14 +615,14 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun clearDataIfRequested() {
-        if (clearData) {
+        if (viewModel.clearDataRequested.value) {
             clearData()
         }
     }
 
     private fun clearData() {
         Log.v(LOG_TAG, "Main.clearData()")
-        clearData = false
+        viewModel.clearDataCompleted()
 
         strikeListOverlay.clear()
     }

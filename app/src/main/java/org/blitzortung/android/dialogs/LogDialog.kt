@@ -27,6 +27,12 @@ import android.view.KeyEvent
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.net.toUri
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.components.BuildVersion
 import org.blitzortung.android.data.cache.CacheSize
@@ -40,6 +46,10 @@ class LogDialog(
 ) : AlertDialog(context) {
 
     private lateinit var logText: String
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    private var loadJob: Job? = null
 
     init {
         setTitle(
@@ -59,22 +69,34 @@ class LogDialog(
     override fun onStart() {
         super.onStart()
 
-        logText = composeBodyText()
+        val logView =
+            findViewById<TextView>(R.id.log_text).apply {
+                setHorizontallyScrolling(true)
+                text = ""
+            }
 
-        with(findViewById<TextView>(R.id.log_text)) {
-            setHorizontallyScrolling(true)
-            text = logText
-        }
+        loadJob?.cancel()
+        loadJob =
+            scope.launch {
+                val logLines = withContext(Dispatchers.IO) { logProvider.getLogLines() }
+                logText = composeBodyText(logLines)
+                logView.text = logText
+            }
     }
 
-    private fun composeBodyText(): String {
+    override fun onStop() {
+        loadJob?.cancel()
+        loadJob = null
+
+        super.onStop()
+    }
+
+    private fun composeBodyText(logLines: List<String>): String {
         val versionText = getVersionString()
         val deviceText = getDeviceString()
         val cacheText = getCacheString()
-        val logLines = logProvider.getLogLines()
 
-        val logText = versionText + "\n\n" + deviceText + "\n\n" + cacheText + "\n\n" + logLines.joinToString("\n")
-        return logText
+        return versionText + "\n\n" + deviceText + "\n\n" + cacheText + "\n\n" + logLines.joinToString("\n")
     }
 
     private fun getCacheString(): String {

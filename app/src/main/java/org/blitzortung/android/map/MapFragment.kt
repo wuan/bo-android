@@ -9,13 +9,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
+import dagger.android.support.AndroidSupportInjection
+import javax.inject.Inject
 import kotlin.math.min
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.get
+import org.blitzortung.android.app.viewmodel.MapViewModel
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
@@ -23,11 +31,34 @@ import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.ScaleBarOverlay
 
 class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
+    @set:Inject
+    internal lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val viewModel: MapViewModel by viewModels { viewModelFactory }
+
+    private val mapStateListener =
+        object : MapListener {
+            override fun onZoom(event: ZoomEvent?): Boolean {
+                event?.let { viewModel.updateZoomLevel(it.zoomLevel) }
+                return false
+            }
+
+            override fun onScroll(event: ScrollEvent?): Boolean {
+                (mapView.mapCenter as? GeoPoint)?.let { viewModel.updateCenterPosition(it) }
+                return false
+            }
+        }
+
     private lateinit var mPrefs: SharedPreferences
     lateinit var mapView: OwnMapView
         private set
     private lateinit var mCopyrightOverlay: CopyrightOverlay
     private lateinit var mScaleBarOverlay: ScaleBarOverlay
+
+    override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -82,17 +113,22 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         // scales tiles to the current screen's DPI, helps with readability of labels
         mapView.isTilesScaledToDpi = true
 
-        // the rest of this is restoring the last map location the user looked at
-        val zoomLevel = mPrefs.getFloat(PREFS_ZOOM_LEVEL_DOUBLE, 3.0f)
-        mapView.controller.setZoom(zoomLevel.toDouble())
-        mapView.setMapOrientation(0f, false)
-        val latitudeString = mPrefs.getString(PREFS_LATITUDE_STRING, null)
-        val longitudeString = mPrefs.getString(PREFS_LONGITUDE_STRING, null)
-        if (latitudeString != null && longitudeString != null) { // case handled for historical reasons only
-            val latitude = latitudeString.toDouble()
-            val longitude = longitudeString.toDouble()
-            mapView.setExpectedCenter(GeoPoint(latitude, longitude))
+        // Restore the last map location: prefer retained ViewModel state, fall back to prefs
+        if (viewModel.centerPosition.value == null) {
+            viewModel.updateZoomLevel(
+                mPrefs.getFloat(PREFS_ZOOM_LEVEL_DOUBLE, MapViewModel.DEFAULT_ZOOM_LEVEL.toFloat()).toDouble(),
+            )
+            val latitudeString = mPrefs.getString(PREFS_LATITUDE_STRING, null)
+            val longitudeString = mPrefs.getString(PREFS_LONGITUDE_STRING, null)
+            if (latitudeString != null && longitudeString != null) { // case handled for historical reasons only
+                viewModel.updateCenterPosition(GeoPoint(latitudeString.toDouble(), longitudeString.toDouble()))
+            }
         }
+
+        mapView.controller.setZoom(viewModel.zoomLevel.value)
+        mapView.setMapOrientation(0f, false)
+        viewModel.centerPosition.value?.let { mapView.setExpectedCenter(it) }
+        mapView.addMapListener(mapStateListener)
         mapView.invalidate()
 
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_SCALE)
@@ -106,6 +142,11 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
     override fun onPause() {
         // save the current location
+        viewModel.saveMapState(
+            mapView.zoomLevelDouble,
+            GeoPoint(mapView.mapCenter.latitude, mapView.mapCenter.longitude),
+        )
+
         mPrefs.edit {
             putString(PREFS_TILE_SOURCE, mapView.tileProvider.tileSource.name())
             putString(PREFS_LATITUDE_STRING, mapView.mapCenter.latitude.toString())
@@ -120,6 +161,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        mapView.removeMapListener(mapStateListener)
         mapView.onDetach()
     }
 

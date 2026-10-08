@@ -23,8 +23,8 @@ Project documentation: https://blitzortung.tryb.de
 # Run specific test class
 ./gradlew testDebugUnitTest --tests "org.blitzortung.android.alert.AlertResultTest"
 
-# Run tests with coverage report
-./gradlew testDebugUnitTest jacocoTestReport
+# Run tests with coverage report (JaCoCo instrumentation is opt-in to keep debug builds fast)
+./gradlew testDebugUnitTest jacocoTestReport -PenableCoverage=true
 # Coverage report: app/build/reports/jacoco/jacocoTestReport/html/index.html
 ```
 
@@ -141,6 +141,28 @@ Factory: `DataProviderFactory` selects provider based on user preference
 
 **Typical flow**: Timer triggers → updateData() → check cache → FetchDataTask (background) → API call → cache result → broadcast ResultEvent → consumers update UI/alerts
 
+### Presentation Layer (ViewModels & Repositories)
+
+The foreground UI and background service consume handler events through a reactive repository/ViewModel layer instead of registering `ConsumerContainer` callbacks directly.
+
+**Repositories** (`data/repository`, `location`, `alert`) adapt the callback-based handlers to cold `Flow`s using `callbackFlow`/`awaitClose`:
+
+- `StrikeDataRepository` wraps `MainDataHandler`
+- `ServiceStrikeDataRepository` wraps `ServiceDataHandler` (background path)
+- `LocationRepository` wraps `LocationHandler`
+- `AlertRepository` wraps `AlertHandler` (emits `Warning`)
+
+**ViewModels** (`app/viewmodel`) expose UI state as `StateFlow` and delegate commands to the repositories:
+
+- `MainViewModel`: `isLoading`, `hasError`, `currentResult`, `clearDataRequested`, and `dataEvents`/`locationEvents`/`alertEvents`
+- `MapViewModel`: map zoom/center/type state
+- `SettingsViewModel`: `preferenceChanged` plus typed preference access
+- `ViewModelFactory` + `ViewModelModule` provide Dagger multibinding for the ViewModels
+
+**Screens** collect ViewModel flows inside `lifecycleScope` with `repeatOnLifecycle`, so handler consumers are registered and released with the lifecycle automatically. `Main` fans events out to view-owned consumers, and `HistoryController` depends on `MainViewModel`.
+
+Note: the current event types are `DataReceived`/`RequestStarted`/`StatusUpdate`/`NoData` (data) and `Warning` (alerts).
+
 ### Alert System Architecture
 
 **AlertHandler**: Coordinates alert monitoring
@@ -178,10 +200,12 @@ Overlays subscribe to events for automatic updates:
 ### Component Lifecycle
 
 **Main Activity (foreground)**:
-- `onResume()`: Registers all consumers, starts location updates, enables automatic data refresh
-- `onPause()`: Unregisters consumers, stops location updates, optionally starts AppService for background alerts
+- Collects `MainViewModel` flows inside `repeatOnLifecycle(STARTED)` and fans transient events out to overlay/view consumers; the retained `isLoading`/`hasError`/`currentResult` state flows drive progress, error, and strike rendering; no manual `requestUpdates`/`removeUpdates`
+- `onResume()`: starts location updates, enables automatic data refresh
+- `onPause()`: stops data updates via the ViewModel, stops location updates, optionally starts AppService for background alerts
 
 **AppService (background)**:
+- Collects `ServiceStrikeDataRepository`/`LocationRepository` flows on an internal `CoroutineScope` (cancelled in `onDestroy`)
 - Runs as foreground service with notification
 - Minimal UI updates (no map rendering)
 - Scheduled via AlarmManager for periodic data fetches
@@ -191,20 +215,22 @@ Overlays subscribe to events for automatic updates:
 
 ```
 org.blitzortung.android/
-├── alert/              Alert computation, sector handling, alert events
+├── alert/              Alert computation, sector handling, alert events, AlertRepository
 ├── app/                Main activity, AppService, boot receiver, UI controllers
 │   ├── components/     Version checking, changelog
 │   ├── controller/     History, notifications, button column
 │   ├── permission/     Runtime permission requesters
-│   └── view/           Custom views (AlertView, HistogramView, LegendView, etc.)
+│   ├── view/           Custom views (AlertView, HistogramView, LegendView, etc.)
+│   └── viewmodel/      Main/Map/Settings ViewModels, ViewModelFactory
 ├── dagger/             DI component and modules
 ├── data/               Data models, caching, data handlers, fetch tasks
 │   ├── beans/          Strike, Station, GridElement, Location
 │   ├── cache/          DataCache implementation
-│   └── provider/       DataProvider interface, factory, implementations
+│   ├── provider/       DataProvider interface, factory, implementations
+│   └── repository/     StrikeDataRepository, ServiceStrikeDataRepository
 ├── dialogs/            Info, log, alert, quick settings dialogs
 ├── jsonrpc/            JSON-RPC client for API communication
-├── location/           LocationHandler, location providers
+├── location/           LocationHandler, LocationRepository, location providers
 ├── map/                MapFragment, overlays, color handlers
 ├── protocol/           Event interfaces, ConsumerContainer
 ├── settings/           SettingsFragment, preference handling

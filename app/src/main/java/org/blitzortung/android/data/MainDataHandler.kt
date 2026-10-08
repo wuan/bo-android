@@ -73,6 +73,12 @@ constructor(
     @Volatile
     private var updatesEnabled = false
 
+    @Volatile
+    private var locationUpdatesEnabled = false
+
+    private var lastRequestParameters: Parameters? = null
+    private var lastRequestTime: Long = 0
+
     private var animationSleepDuration by Delegates.notNull<Long>()
     private var animationCycleSleepDuration by Delegates.notNull<Long>()
 
@@ -108,11 +114,16 @@ constructor(
         }
 
     val locationEventConsumer: (LocationEvent) -> Unit = { locationEvent ->
-        Log.v(LOG_TAG, "AlertView received location ${locationEvent}")
+        Log.v(LOG_TAG, "MainDataHandler received location ${locationEvent}")
         location = locationEvent.location()
-        if (location != null) {
+        if (location != null && locationUpdatesEnabled) {
             updateData()
         }
+    }
+
+    fun setLocationUpdatesEnabled(enabled: Boolean) {
+        Log.v(LOG_TAG, "MainDataHandler.setLocationUpdatesEnabled($enabled)")
+        locationUpdatesEnabled = enabled
     }
 
     private var dataMode = DataMode()
@@ -152,17 +163,25 @@ constructor(
 
     fun updateData() {
         if (updatesEnabled) {
+            val parameters = activeParameters
+            val currentTime = System.currentTimeMillis()
+            if (parameters == lastRequestParameters && currentTime - lastRequestTime < DUPLICATE_REQUEST_INTERVAL) {
+                Log.d(LOG_TAG, "MainDataHandler.updateData() skip duplicate $parameters")
+                return
+            }
+
+            lastRequestParameters = parameters
+            lastRequestTime = currentTime
             sendEvent(REQUEST_STARTED_EVENT)
 
-            updateUsingCache()
+            updateUsingCache(parameters)
         }
     }
 
-    private fun updateUsingCache() {
+    private fun updateUsingCache(parameters: Parameters = activeParameters) {
         var flags = Flags(mode = mode)
         val sequenceNumber = sequenceNumber.incrementAndGet()
 
-        val parameters = activeParameters
         val cachedResult = cache.get(parameters)
         if (cachedResult != null) {
             Log.d(LOG_TAG, "MainDataHandler.updateData() cached $parameters")
@@ -428,6 +447,7 @@ constructor(
     companion object {
         val REQUEST_STARTED_EVENT = RequestStarted()
         val DEFAULT_DATA_CHANNELS = setOf(DataChannel.STRIKES)
+        internal const val DUPLICATE_REQUEST_INTERVAL: Long = 1000L
     }
 
     override fun onScroll(event: ScrollEvent?): Boolean {

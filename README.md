@@ -19,6 +19,33 @@ The Android App *Blitzortung Lightning Monitor* built from these sources visuali
 
 Please have a look at [the documentation](https://blitzortung.tryb.de) for more information on usage.
 
+## Development builds
+
+The app defines three build variants:
+
+| Variant | Minified (R8) | Debuggable | Signing | Use for |
+| --- | --- | --- | --- | --- |
+| `debug` | no | yes | debug key | daily development, debugging |
+| `perf` | yes | no | debug key | performance-critical testing, profiling |
+| `release` | yes | no | release key | publishing |
+
+`debug` builds run without R8 optimization and are installed without ahead-of-time compilation, so heavy map rendering (especially zooming with global data) feels noticeably slower than production.
+
+The `perf` variant exists to close that gap: it inherits the `release` build type (R8 minification, resource shrinking, optimization) but is signed with the debug key so it can be installed over the `debug` build. It is intentionally **not** debuggable, which is what allows it to match release performance.
+
+External baseline profiles from library dependencies are excluded on `perf` to avoid `INSTALL_BASELINE_PROFILE_FAILED` on devices with a work profile. They only cover library code, so they do not affect the app's map rendering performance.
+
+To use it:
+
+* In Android Studio select `perf` under **Build > Select Build Variant** and Run, or
+* From the command line:
+
+```bash
+./gradlew installPerf
+```
+
+Because `perf` and `debug` share the same application ID and signing key, they overwrite each other. The `release` variant uses a separate key and must be uninstalled first.
+
 ## Available translations
 
  * Czech

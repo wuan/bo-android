@@ -2,20 +2,21 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
     id("jacoco")
 }
 
+val enableCoverage = providers.gradleProperty("enableCoverage").getOrElse("false").toBoolean()
+
 android {
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "org.blitzortung.android.app"
         minSdk = 23
-        targetSdk = 35
-        versionCode = 350
-        versionName = "2.5.1"
+        targetSdk = 37
+        versionCode = 358
+        versionName = "2.5.4"
         multiDexEnabled = false
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -35,21 +36,26 @@ android {
             )
         }
         debug {
-            enableUnitTestCoverage = true
-            enableAndroidTestCoverage = true
+            enableUnitTestCoverage = enableCoverage
+            enableAndroidTestCoverage = enableCoverage
+        }
+        create("perf") {
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+            isDebuggable = false
+            matchingFallbacks += listOf("release")
+            // The bundled external baseline profiles make installation fail on
+            // devices with a work profile (INSTALL_BASELINE_PROFILE_FAILED).
+            // They only cover library code, not the app's map rendering path.
+            baselineProfile {
+                ignoreFromAllExternalDependencies = true
+            }
         }
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    kotlin {
-        jvmToolchain(21)
-        compilerOptions {
-            apiVersion.set(KotlinVersion.KOTLIN_2_2)
-        }
     }
 
     testOptions {
@@ -74,39 +80,50 @@ android {
     namespace = "org.blitzortung.android.app"
 }
 
-val daggerVersion = "2.59.2"
+kotlin {
+    jvmToolchain(21)
+    compilerOptions {
+        apiVersion.set(KotlinVersion.KOTLIN_2_2)
+    }
+}
+
+val daggerVersion = "2.60.1"
 
 dependencies {
-    implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("androidx.media:media:1.7.1")
-    implementation("androidx.core:core-ktx:1.16.0")
+    implementation("androidx.appcompat:appcompat:1.8.0")
+    implementation("androidx.media:media:1.8.0")
+    implementation("androidx.core:core-ktx:1.19.0")
     implementation("androidx.recyclerview:recyclerview:1.4.0")
-    implementation("androidx.work:work-runtime-ktx:2.11.0")
+    implementation("androidx.work:work-runtime-ktx:2.11.2")
+    implementation("androidx.activity:activity-ktx:1.13.0")
+    implementation("androidx.fragment:fragment-ktx:1.9.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.11.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
     implementation("org.osmdroid:osmdroid-android:6.1.20")
     implementation("androidx.preference:preference-ktx:1.2.1")
-    implementation("com.google.android.material:material:1.13.0")
+    implementation("com.google.android.material:material:1.14.0")
 
     // Dagger2
     implementation("com.google.dagger:dagger:$daggerVersion")
     implementation("com.google.dagger:dagger-android:$daggerVersion")
     implementation("com.google.dagger:dagger-android-support:$daggerVersion")
     implementation("androidx.test.ext:junit-ktx:1.3.0")
-    kapt("com.google.dagger:dagger-android-processor:$daggerVersion")
-    kapt("com.google.dagger:dagger-compiler:$daggerVersion")
-    compileOnly("javax.annotation:jsr250-api:1.0")
+    ksp("com.google.dagger:dagger-android-processor:$daggerVersion")
+    ksp("com.google.dagger:dagger-compiler:$daggerVersion")
 
     // Unit Testing
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.assertj:assertj-core:3.27.7")
-    testImplementation("io.mockk:mockk:1.14.9")
-    testImplementation("org.robolectric:robolectric:4.16.1")
+    testImplementation("io.mockk:mockk:1.14.11")
+    testImplementation("org.robolectric:robolectric:4.17")
     testImplementation("androidx.test:core:1.7.0")
     testImplementation("androidx.test:core-ktx:1.7.0")
     testImplementation("androidx.test.ext:junit:1.3.0")
     testImplementation("androidx.test.ext:junit-ktx:1.3.0")
 
     // Kotlin Coroutines Testing
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
 
     // Turbine - Flow Testing
     testImplementation("app.cash.turbine:turbine:1.2.1")
@@ -118,7 +135,7 @@ dependencies {
     testImplementation("androidx.test:rules:1.7.0")
 
     // Fragment Testing
-    debugImplementation("androidx.fragment:fragment-testing:1.8.9")
+    debugImplementation("androidx.fragment:fragment-testing:1.9.0")
 
     // Instrumented Testing
     androidTestImplementation("androidx.test:runner:1.7.0")
@@ -126,23 +143,20 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.7.0")
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.7.0")
-    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.4.0")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.ext:junit-ktx:1.3.0")
-    androidTestImplementation("io.mockk:mockk-android:1.14.9")
-    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+    androidTestImplementation("io.mockk:mockk-android:1.14.11")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
 
     // Compose Testing (if needed in future)
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.10.2")
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.10.2")
 }
 
-kapt {
-    includeCompileClasspath = false
-}
-
 tasks.withType<Test> {
     jvmArgs("-Xmx4g", "-XX:MaxMetaspaceSize=1g")
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceIn(1, 2)
     configure<JacocoTaskExtension> {
         isIncludeNoLocationClasses = true
         excludes = listOf("jdk.internal.*")
@@ -161,13 +175,18 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     val fileFilter = listOf("**/*Dagger.*")
 
     val kotlinDebugTree =
-        fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug") {
+        fileTree("${layout.buildDirectory.get()}/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes") {
+            exclude(fileFilter)
+        }
+
+    val javaDebugTree =
+        fileTree("${layout.buildDirectory.get()}/intermediates/javac/debug/compileDebugJavaWithJavac/classes") {
             exclude(fileFilter)
         }
 
     val mainSrc = "$projectDir/src/main/java"
     sourceDirectories.setFrom(files(mainSrc))
-    classDirectories.setFrom(files(kotlinDebugTree))
+    classDirectories.setFrom(files(kotlinDebugTree, javaDebugTree))
 
     // Make sure the path is correct (if not run the unit tests and try find the .exec file that is generated after the unit tests are finished should be similar to that one)
     executionData.setFrom(

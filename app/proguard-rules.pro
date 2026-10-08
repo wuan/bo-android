@@ -151,13 +151,10 @@
     volatile <fields>;
 }
 
-# ===== Remove Logging in Release =====
-# Strip out logging calls for smaller APK (optional - comment out if you want logs)
--assumenosideeffects class android.util.Log {
-    public static *** d(...);
-    public static *** v(...);
-    public static *** i(...);
-}
+# ===== Keep Logging in Release =====
+# Logging is intentionally retained in release builds so that user-submitted
+# log reports (LogDialog) and on-device diagnosis contain app information.
+# Do not re-add an `-assumenosideeffects class android.util.Log` block here.
 
 # ===== General Android Rules =====
 # Keep Activity onCreate methods
