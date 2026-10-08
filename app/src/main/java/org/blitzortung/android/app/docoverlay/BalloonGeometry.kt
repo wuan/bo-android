@@ -79,4 +79,30 @@ internal class BalloonGeometry(
 
     private fun fallbackSide(center: IntPoint, size: IntPoint): BalloonTailSide =
         if (center.y + size.y <= containerHeight - center.y) BalloonTailSide.TOP else BalloonTailSide.BOTTOM
+
+    /** Horizontal anchor for a balloon inside its row, honouring its [BalloonHorizontalAlignment]. */
+    fun alignedLeft(request: BalloonRequest, boxWidth: Int): Int = when (request.horizontalAlignment) {
+        BalloonHorizontalAlignment.LEFT_EDGE -> edgeMargin
+        BalloonHorizontalAlignment.RIGHT_EDGE -> containerWidth - edgeMargin - boxWidth
+        BalloonHorizontalAlignment.CENTERED_ON_TARGET -> request.targetCenter.x - boxWidth / 2
+    }
+
+    /** Clamps the body size so that the complete box (body plus tail) still fits the container. */
+    fun clampSize(size: IntPoint): IntPoint = IntPoint(
+        size.x.coerceIn(MIN_SIZE, (containerWidth - 2 * edgeMargin - tailLength).coerceAtLeast(MIN_SIZE)),
+        size.y.coerceIn(MIN_SIZE, (containerHeight - 2 * edgeMargin - tailLength).coerceAtLeast(MIN_SIZE)),
+    )
+
+    /** Keeps a rectangle inside the container margins. */
+    fun clampToContainer(rect: IntRect): IntRect {
+        val maxLeft = (containerWidth - edgeMargin - rect.width).coerceAtLeast(edgeMargin)
+        val maxTop = (containerHeight - edgeMargin - rect.height).coerceAtLeast(edgeMargin)
+        val left = rect.left.coerceIn(edgeMargin, maxLeft)
+        val top = rect.top.coerceIn(edgeMargin, maxTop)
+        return IntRect(left, top, left + rect.width, top + rect.height)
+    }
+
+    private companion object {
+        const val MIN_SIZE = 1
+    }
 }

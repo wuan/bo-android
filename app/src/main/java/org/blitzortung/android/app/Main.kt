@@ -56,7 +56,7 @@ import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
 import org.blitzortung.android.app.docoverlay.BalloonHorizontalAlignment
 import org.blitzortung.android.app.docoverlay.BalloonTailSide
-import org.blitzortung.android.app.docoverlay.BalloonVerticalSlot
+import org.blitzortung.android.app.docoverlay.BalloonRow
 import org.blitzortung.android.app.databinding.MainBinding
 import org.blitzortung.android.app.permission.PermissionRequester
 import org.blitzortung.android.app.permission.PermissionsSupport
@@ -736,41 +736,61 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
      * Describes the main screen elements for the quick documentation overlay. Only views that
      * are currently visible are used; [DocOverlayController] filters the rest out.
      *
-     * The bottom area is laid out as a fixed stack, ordered from the bottom of the screen
-     * upwards: time slider, then histogram, then the alert indicator. The button column
-     * explanation is pinned to the right edge and points left at the controls.
+     * The balloons are split into two groups:
+     *
+     * - top row: status (centered), controls (flush right), legend (flush left)
+     * - bottom stack, from the bottom upwards: time slider (centered), histogram (flush right),
+     *   alert indicator (flush left)
+     *
+     * The list order is also the placement order inside each group.
      */
     private fun createDocTargets(): List<DocTarget> {
         val buttonColumn = listOf(binding.menu, binding.startStopAnimation, binding.goRealtime, binding.toggleExtendedMode)
             .firstOrNull { it.isVisible }
         return listOfNotNull(
-            DocTarget(binding.status, getString(R.string.doc_overlay_status), BalloonTailSide.TOP),
+            DocTarget(
+                binding.status,
+                getString(R.string.doc_overlay_status),
+                BalloonTailSide.TOP,
+                horizontalAlignment = BalloonHorizontalAlignment.CENTERED_ON_TARGET,
+                row = BalloonRow.TOP,
+            ),
             buttonColumn?.let {
                 DocTarget(
                     it,
                     getString(R.string.doc_overlay_buttons),
-                    BalloonTailSide.LEFT,
+                    BalloonTailSide.TOP,
                     horizontalAlignment = BalloonHorizontalAlignment.RIGHT_EDGE,
+                    row = BalloonRow.TOP,
                 )
             },
-            DocTarget(binding.legendView, getString(R.string.doc_overlay_legend), BalloonTailSide.TOP),
             DocTarget(
-                binding.warning,
-                getString(R.string.doc_overlay_alert),
+                binding.legendView,
+                getString(R.string.doc_overlay_legend),
                 BalloonTailSide.TOP,
-                verticalSlot = BalloonVerticalSlot.TOP,
-            ),
-            DocTarget(
-                binding.histogramView,
-                getString(R.string.doc_overlay_histogram),
-                BalloonTailSide.TOP,
-                verticalSlot = BalloonVerticalSlot.MIDDLE,
+                horizontalAlignment = BalloonHorizontalAlignment.LEFT_EDGE,
+                row = BalloonRow.TOP,
             ),
             DocTarget(
                 binding.timeSlider,
                 getString(R.string.doc_overlay_time_slider),
                 BalloonTailSide.TOP,
-                verticalSlot = BalloonVerticalSlot.BOTTOM,
+                horizontalAlignment = BalloonHorizontalAlignment.CENTERED_ON_TARGET,
+                row = BalloonRow.BOTTOM,
+            ),
+            DocTarget(
+                binding.histogramView,
+                getString(R.string.doc_overlay_histogram),
+                BalloonTailSide.TOP,
+                horizontalAlignment = BalloonHorizontalAlignment.RIGHT_EDGE,
+                row = BalloonRow.BOTTOM,
+            ),
+            DocTarget(
+                binding.warning,
+                getString(R.string.doc_overlay_alert),
+                BalloonTailSide.TOP,
+                horizontalAlignment = BalloonHorizontalAlignment.LEFT_EDGE,
+                row = BalloonRow.BOTTOM,
             ),
         )
     }

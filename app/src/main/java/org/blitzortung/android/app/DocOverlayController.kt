@@ -28,8 +28,8 @@ import org.blitzortung.android.app.databinding.DocBalloonBinding
 import org.blitzortung.android.app.databinding.DocOverlayBinding
 import org.blitzortung.android.app.docoverlay.BalloonHorizontalAlignment
 import org.blitzortung.android.app.docoverlay.BalloonRequest
+import org.blitzortung.android.app.docoverlay.BalloonRow
 import org.blitzortung.android.app.docoverlay.BalloonTailSide
-import org.blitzortung.android.app.docoverlay.BalloonVerticalSlot
 import org.blitzortung.android.app.docoverlay.DocBalloonLayout
 import org.blitzortung.android.app.docoverlay.DocBalloonViewBinder
 import org.blitzortung.android.app.docoverlay.IntPoint
@@ -42,15 +42,15 @@ import org.blitzortung.android.app.view.get
  *
  * [preferredTailSide] only expresses a preference; [DocBalloonLayout] picks the final side so
  * the tail still points at [view] even when the balloon has to move to avoid an overlap.
- * [horizontalAlignment] pins the balloon to an edge when needed (for right aligned controls),
- * and [verticalSlot] puts the balloon into the bottom stack so the bottom-to-top order is kept.
+ * [horizontalAlignment] pins the balloon to an edge when needed, and [row] puts it into the
+ * top or bottom group so the requested row structure is kept.
  */
 data class DocTarget(
     val view: View,
     val text: CharSequence,
     val preferredTailSide: BalloonTailSide,
     val horizontalAlignment: BalloonHorizontalAlignment = BalloonHorizontalAlignment.CENTERED_ON_TARGET,
-    val verticalSlot: BalloonVerticalSlot = BalloonVerticalSlot.NONE,
+    val row: BalloonRow = BalloonRow.FLOATING,
 )
 
 /**
@@ -138,7 +138,7 @@ class DocOverlayController(
                 preferredSize = IntPoint(balloon.root.measuredWidth, balloon.root.measuredHeight),
                 preferredTailSide = target.preferredTailSide,
                 horizontalAlignment = target.horizontalAlignment,
-                verticalSlot = target.verticalSlot,
+                row = target.row,
                 order = index,
             )
         }

@@ -134,7 +134,7 @@ class DocBalloonViewBinder(private val layoutInflater: LayoutInflater) {
     }
 
     companion object {
-        const val TAIL_LENGTH_PX = 18
-        const val TAIL_WIDTH_PX = 20
+        const val TAIL_LENGTH_PX = 26
+        const val TAIL_WIDTH_PX = 22
     }
 }

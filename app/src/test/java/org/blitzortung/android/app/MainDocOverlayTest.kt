@@ -1,6 +1,7 @@
 package org.blitzortung.android.app
 
 import android.content.SharedPreferences
+import android.graphics.Rect
 import android.os.Looper
 import android.view.KeyEvent
 import android.view.View
@@ -92,6 +93,81 @@ class MainDocOverlayTest {
         assertThat(alert).isNotNull
         assertThat(histogram!!.top + histogram.height).isLessThanOrEqualTo(timeSlider!!.top)
         assertThat(alert!!.top + alert.height).isLessThanOrEqualTo(histogram.top)
+    }
+
+    @Test
+    fun `top row balloons keep their horizontal alignments`() {
+        val activity = Robolectric.buildActivity(Main::class.java).setup().get()
+        layoutActivity(activity)
+
+        val container = activity.findViewById<ViewGroup>(R.id.doc_balloon_container)
+        val status = findBalloon(container, activity.getString(R.string.doc_overlay_status))!!
+        val menu = findBalloon(container, activity.getString(R.string.doc_overlay_buttons))!!
+        val legend = findBalloon(container, activity.getString(R.string.doc_overlay_legend))!!
+
+        // legend flush left, menu flush right, status centered between them
+        assertThat(legend.left).isEqualTo(8)
+        assertThat(menu.left + menu.width).isEqualTo(container.width - 8)
+        assertThat(status.left).isGreaterThan(legend.left)
+        assertThat(status.left + status.width).isLessThan(menu.left)
+    }
+
+    @Test
+    fun `bottom balloons keep their horizontal alignments`() {
+        val activity = Robolectric.buildActivity(Main::class.java).setup().get()
+        layoutActivity(activity)
+
+        val container = activity.findViewById<ViewGroup>(R.id.doc_balloon_container)
+        val alert = findBalloon(container, activity.getString(R.string.doc_overlay_alert))!!
+        val histogram = findBalloon(container, activity.getString(R.string.doc_overlay_histogram))!!
+        val timeSlider = findBalloon(container, activity.getString(R.string.doc_overlay_time_slider))!!
+
+        // alert flush left, histogram flush right, time slider centered
+        assertThat(alert.left).isEqualTo(8)
+        assertThat(histogram.left + histogram.width).isEqualTo(container.width - 8)
+        assertThat(timeSlider.left).isGreaterThan(alert.left)
+        assertThat(timeSlider.left + timeSlider.width).isLessThan(container.width - 8)
+    }
+
+    @Test
+    fun `got it button sits between the top and bottom balloon groups`() {
+        val activity = Robolectric.buildActivity(Main::class.java).setup().get()
+        layoutActivity(activity)
+
+        val container = activity.findViewById<ViewGroup>(R.id.doc_balloon_container)
+        val button = activity.findViewById<View>(R.id.doc_button_got_it)
+        val topBalloons = listOf(
+            findBalloon(container, activity.getString(R.string.doc_overlay_status))!!,
+            findBalloon(container, activity.getString(R.string.doc_overlay_buttons))!!,
+            findBalloon(container, activity.getString(R.string.doc_overlay_legend))!!,
+        )
+        val bottomBalloons = listOf(
+            findBalloon(container, activity.getString(R.string.doc_overlay_alert))!!,
+            findBalloon(container, activity.getString(R.string.doc_overlay_histogram))!!,
+            findBalloon(container, activity.getString(R.string.doc_overlay_time_slider))!!,
+        )
+
+        val topGroupBottom = topBalloons.maxOf { it.top + it.height }
+        val bottomGroupTop = bottomBalloons.minOf { it.top }
+
+        assertThat(button.top).isGreaterThanOrEqualTo(topGroupBottom)
+        assertThat(button.top + button.height).isLessThanOrEqualTo(bottomGroupTop)
+    }
+
+    @Test
+    fun `got it button does not overlap any balloon`() {
+        val activity = Robolectric.buildActivity(Main::class.java).setup().get()
+        layoutActivity(activity)
+
+        val container = activity.findViewById<ViewGroup>(R.id.doc_balloon_container)
+        val button = activity.findViewById<View>(R.id.doc_button_got_it)
+        val buttonRect = Rect(button.left, button.top, button.right, button.bottom)
+
+        for (i in 0 until container.childCount) {
+            val child = container.getChildAt(i)
+            val balloonRect = Rect(child.left, child.top, child.left + child.width, child.top + child.height)
+            assertThat(Rect.intersects(balloonRect, buttonRect)).isFalse()
+        }
     }
 
     private fun findBalloon(container: ViewGroup, text: String): View? {

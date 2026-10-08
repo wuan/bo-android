@@ -275,9 +275,9 @@ class DocBalloonLayoutTest {
 
     @Test
     fun `bottom stack keeps the time slider below histogram below alert order`() {
-        val timeSlider = stacked(0, BalloonVerticalSlot.BOTTOM, y = 1900)
-        val histogram = stacked(1, BalloonVerticalSlot.MIDDLE, y = 1600)
-        val alert = stacked(2, BalloonVerticalSlot.TOP, y = 1400)
+        val timeSlider = stacked(0, order = 0, y = 1900)
+        val histogram = stacked(1, order = 1, y = 1600)
+        val alert = stacked(2, order = 2, y = 1400)
 
         val placed = layout.place(listOf(alert, histogram, timeSlider))
         val byId = placed.associateBy { it.id }
@@ -294,9 +294,9 @@ class DocBalloonLayoutTest {
 
     @Test
     fun `bottom stack order is independent of the request order`() {
-        val timeSlider = stacked(0, BalloonVerticalSlot.BOTTOM, y = 1900)
-        val histogram = stacked(1, BalloonVerticalSlot.MIDDLE, y = 1600)
-        val alert = stacked(2, BalloonVerticalSlot.TOP, y = 1400)
+        val timeSlider = stacked(0, order = 0, y = 1900)
+        val histogram = stacked(1, order = 1, y = 1600)
+        val alert = stacked(2, order = 2, y = 1400)
 
         val placed = layout.place(listOf(timeSlider, alert, histogram))
         val byId = placed.associateBy { it.id }
@@ -310,9 +310,9 @@ class DocBalloonLayoutTest {
     fun `stacked balloons always point their tail downwards`() {
         val placed = layout.place(
             listOf(
-                stacked(0, BalloonVerticalSlot.BOTTOM, y = 1900),
-                stacked(1, BalloonVerticalSlot.MIDDLE, y = 1600),
-                stacked(2, BalloonVerticalSlot.TOP, y = 1400),
+                stacked(0, order = 0, y = 1900),
+                stacked(1, order = 1, y = 1600),
+                stacked(2, order = 2, y = 1400),
             ),
         )
 
@@ -324,22 +324,150 @@ class DocBalloonLayoutTest {
         val obstacle = IntRect(600, 1800, 980, 1950)
 
         val placed = layout.place(
-            listOf(stacked(0, BalloonVerticalSlot.BOTTOM, y = 1900, size = IntPoint(300, 120))),
+            listOf(stacked(0, order = 0, y = 1900, size = IntPoint(300, 120))),
             listOf(obstacle),
         ).single()
 
         assertThat(placed.bounds.intersects(obstacle)).isFalse()
     }
 
-    private fun stacked(id: Int, slot: BalloonVerticalSlot, y: Int, size: IntPoint = IntPoint(200, 100)) =
-        BalloonRequest(
-            id = id,
-            targetCenter = IntPoint(500, y),
-            preferredSize = size,
-            preferredTailSide = BalloonTailSide.TOP,
-            verticalSlot = slot,
-            order = id,
+    private fun stacked(
+        id: Int,
+        order: Int,
+        y: Int,
+        size: IntPoint = IntPoint(200, 100),
+        alignment: BalloonHorizontalAlignment = BalloonHorizontalAlignment.CENTERED_ON_TARGET,
+    ) = BalloonRequest(
+        id = id,
+        targetCenter = IntPoint(500, y),
+        preferredSize = size,
+        preferredTailSide = BalloonTailSide.TOP,
+        horizontalAlignment = alignment,
+        row = BalloonRow.BOTTOM,
+        order = order,
+    )
+
+    @Test
+    fun `top row balloons share the top offset`() {
+        val placed = layout.place(
+            listOf(
+                topRow(0, BalloonHorizontalAlignment.CENTERED_ON_TARGET),
+                topRow(1, BalloonHorizontalAlignment.RIGHT_EDGE),
+                topRow(2, BalloonHorizontalAlignment.LEFT_EDGE),
+            ),
         )
+
+        assertThat(placed.map { it.bounds.top }).containsOnly(8)
+        assertNoOverlaps(placed.map { it.bounds })
+    }
+
+    @Test
+    fun `top row honors left center and right horizontal alignments`() {
+        val placed = layout.place(
+            listOf(
+                topRow(0, BalloonHorizontalAlignment.CENTERED_ON_TARGET, size = IntPoint(200, 100)),
+                topRow(1, BalloonHorizontalAlignment.RIGHT_EDGE, size = IntPoint(200, 100)),
+                topRow(2, BalloonHorizontalAlignment.LEFT_EDGE, size = IntPoint(200, 100)),
+            ),
+        )
+        val byId = placed.associateBy { it.id }
+
+        // left aligned hugs the left margin
+        assertThat(byId.getValue(2).bounds.left).isEqualTo(8)
+        // right aligned hugs the right margin
+        assertThat(byId.getValue(1).bounds.right).isEqualTo(1000 - 8)
+        // centered stays between them
+        assertThat(byId.getValue(0).bounds.left).isGreaterThan(byId.getValue(2).bounds.left)
+        assertThat(byId.getValue(0).bounds.right).isLessThan(byId.getValue(1).bounds.right)
+    }
+
+    @Test
+    fun `bottom stack honors the per-balloon horizontal alignments`() {
+        val placed = layout.place(
+            listOf(
+                stacked(0, order = 0, y = 1900, alignment = BalloonHorizontalAlignment.CENTERED_ON_TARGET),
+                stacked(1, order = 1, y = 1600, alignment = BalloonHorizontalAlignment.RIGHT_EDGE),
+                stacked(2, order = 2, y = 1400, alignment = BalloonHorizontalAlignment.LEFT_EDGE),
+            ),
+        )
+        val byId = placed.associateBy { it.id }
+
+        assertThat(byId.getValue(2).bounds.left).isEqualTo(8)
+        assertThat(byId.getValue(1).bounds.right).isEqualTo(1000 - 8)
+        assertThat(byId.getValue(0).bounds.left).isGreaterThan(byId.getValue(2).bounds.left)
+    }
+
+    @Test
+    fun `edge aligned rows keep their anchor even when they must avoid an obstacle`() {
+        val obstacle = IntRect(0, 8, 1000, 120)
+        val placed = layout.place(
+            listOf(
+                stacked(0, order = 0, y = 1900, alignment = BalloonHorizontalAlignment.RIGHT_EDGE),
+            ),
+            listOf(obstacle),
+        ).single()
+
+        assertThat(placed.bounds.right).isEqualTo(1000 - 8)
+        assertThat(placed.bounds.intersects(obstacle)).isFalse()
+    }
+
+    @Test
+    fun `got it button centered between the groups is avoided by every balloon`() {
+        val button = IntRect(400, 900, 600, 1000)
+        val placed = layout.place(
+            listOf(
+                topRow(0, BalloonHorizontalAlignment.CENTERED_ON_TARGET),
+                topRow(1, BalloonHorizontalAlignment.RIGHT_EDGE),
+                topRow(2, BalloonHorizontalAlignment.LEFT_EDGE),
+                stacked(3, order = 0, y = 1900),
+                stacked(4, order = 1, y = 1600),
+                stacked(5, order = 2, y = 1400),
+            ),
+            listOf(button),
+        )
+
+        assertThat(placed).hasSize(6)
+        placed.forEach {
+            assertThat(it.bounds.intersects(button))
+                .describedAs("balloon %s must not overlap the button %s", it.bounds, button)
+                .isFalse()
+        }
+        assertNoOverlaps(placed.map { it.bounds })
+    }
+
+    @Test
+    fun `edge aligned floating balloons stay flush when an obstacle blocks them`() {
+        val obstacle = IntRect(600, 400, 1000, 600)
+        val placed = layout.place(
+            listOf(
+                BalloonRequest(
+                    id = 0,
+                    targetCenter = IntPoint(500, 500),
+                    preferredSize = IntPoint(200, 100),
+                    preferredTailSide = BalloonTailSide.LEFT,
+                    horizontalAlignment = BalloonHorizontalAlignment.RIGHT_EDGE,
+                ),
+            ),
+            listOf(obstacle),
+        ).single()
+
+        assertThat(placed.bounds.right).isEqualTo(1000 - 8)
+        assertThat(placed.bounds.intersects(obstacle)).isFalse()
+    }
+
+    private fun topRow(
+        id: Int,
+        alignment: BalloonHorizontalAlignment,
+        size: IntPoint = IntPoint(200, 100),
+    ) = BalloonRequest(
+        id = id,
+        targetCenter = IntPoint(500, 100),
+        preferredSize = size,
+        preferredTailSide = BalloonTailSide.TOP,
+        horizontalAlignment = alignment,
+        row = BalloonRow.TOP,
+        order = id,
+    )
 
     private fun assertNoOverlaps(rects: List<IntRect>) {
         rects.forEachIndexed { i, first ->

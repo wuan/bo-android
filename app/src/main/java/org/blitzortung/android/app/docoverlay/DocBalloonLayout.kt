@@ -32,28 +32,29 @@ enum class BalloonTailSide {
 }
 
 /**
- * How a balloon wants to be positioned horizontally.
+ * Horizontal anchoring of a balloon inside the container.
  *
  * [CENTERED_ON_TARGET] keeps the balloon centered over the center of the view it describes.
- * [RIGHT_EDGE] pins the balloon to the right edge of the container, so that explanations for
- * right-aligned controls (for example the button column) sit flush against the border.
+ * [LEFT_EDGE] and [RIGHT_EDGE] pin the balloon to the corresponding border, so explanations
+ * for edge aligned controls sit flush against it.
  */
 enum class BalloonHorizontalAlignment {
+    LEFT_EDGE,
     CENTERED_ON_TARGET,
     RIGHT_EDGE,
 }
 
 /**
- * Vertical stacking slot for balloons that share the bottom area of the screen.
+ * Which fixed band of the overlay a balloon belongs to.
  *
- * The bottom group is laid out from the container bottom upwards: the balloon with the
- * lowest [BalloonVerticalSlot] is placed first, the next one above it and so on.
+ * [TOP] balloons form the upper row (status / controls / legend) and are aligned to the same
+ * top offset. [BOTTOM] balloons form the lower stack and are laid out from the container
+ * bottom upwards. [FLOATING] balloons are placed next to their target.
  */
-enum class BalloonVerticalSlot {
-    NONE,
-    BOTTOM,
-    MIDDLE,
+enum class BalloonRow {
+    FLOATING,
     TOP,
+    BOTTOM,
 }
 
 /** Immutable integer point, in the same coordinate space as the container. */
@@ -85,9 +86,9 @@ data class IntRect(val left: Int, val top: Int, val right: Int, val bottom: Int)
  * @param preferredSize size the balloon wants to occupy.
  * @param preferredTailSide preferred tail direction; the layout may flip it if there is no room.
  * @param horizontalAlignment see [BalloonHorizontalAlignment].
- * @param verticalSlot when not [BalloonVerticalSlot.NONE] the balloon joins the bottom stack and
- *   is placed in the corresponding band, ordered from the bottom of the screen upwards.
- * @param order tie breaker inside the bottom stack; lower values are placed closer to the bottom.
+ * @param row fixed band the balloon belongs to, see [BalloonRow].
+ * @param order tie breaker inside a row; for [BalloonRow.BOTTOM] lower values sit closer to the
+ *   bottom edge, for [BalloonRow.TOP] lower values are placed first from the left.
  */
 data class BalloonRequest(
     val id: Int,
@@ -95,7 +96,7 @@ data class BalloonRequest(
     val preferredSize: IntPoint,
     val preferredTailSide: BalloonTailSide,
     val horizontalAlignment: BalloonHorizontalAlignment = BalloonHorizontalAlignment.CENTERED_ON_TARGET,
-    val verticalSlot: BalloonVerticalSlot = BalloonVerticalSlot.NONE,
+    val row: BalloonRow = BalloonRow.FLOATING,
     val order: Int = id,
 )
 
@@ -110,17 +111,17 @@ data class PlacedBalloon(
 /**
  * Deterministic placement of documentation balloons.
  *
- * Balloons are placed in two groups:
+ * Balloons are placed in three passes so the requested structure survives overlap resolution:
  *
- * 1. Balloons with a [BalloonVerticalSlot] form the bottom stack and are laid out first, from
- *    the bottom of the container upwards, so that the requested vertical order is preserved.
- * 2. All remaining balloons are placed one by one, either centered on their target or pinned
- *    to the right edge.
+ * 1. [BalloonRow.TOP] balloons share the upper row and are anchored to the top edge in [order].
+ * 2. [BalloonRow.BOTTOM] balloons are laid out from the container bottom upwards in [order], so
+ *    the requested bottom-to-top order is preserved.
+ * 3. [BalloonRow.FLOATING] balloons are placed next to their target.
  *
- * In both groups a balloon is clamped into the container and, if it would overlap an already
- * placed balloon or an obstacle, a bounded deterministic search finds the next free slot. The
- * result is stable across invocations, which keeps the overlay from jumping around when it is
- * reopened.
+ * Inside a row the [BalloonHorizontalAlignment] decides the x position; the alignment is a fixed
+ * anchor, so a balloon does not drift away from its edge when it has to avoid an overlap - it
+ * only moves along the row (vertically for the top row, upwards for the bottom stack and for
+ * edge-aligned floating balloons).
  *
  * The class has no Android dependencies on purpose so the packing rules can be unit tested.
  */
@@ -143,74 +144,136 @@ class DocBalloonLayout(
         val reserved = obstacles.map { it.inset(-gap, -gap) }.toMutableList()
         val placed = LinkedHashMap<Int, PlacedBalloon>()
 
-        val bottomStack = requests.filter { it.verticalSlot != BalloonVerticalSlot.NONE }
-            .sortedWith(compareBy({ slotRank(it.verticalSlot) }, { it.order }))
-        for (request in bottomStack) {
-            val bounds = placeBottomStackBalloon(request, reserved)
-            placed[request.id] = toPlaced(request, bounds)
-            reserved += bounds.inset(-gap, -gap)
-        }
-
-        for (request in requests.filter { it.verticalSlot == BalloonVerticalSlot.NONE }) {
-            val bounds = placeFloatingBalloon(request, reserved)
-            placed[request.id] = toPlaced(request, bounds)
-            reserved += bounds.inset(-gap, -gap)
-        }
+        placeRow(requests, BalloonRow.TOP, reserved, placed)
+        placeRow(requests, BalloonRow.BOTTOM, reserved, placed)
+        placeRow(requests, BalloonRow.FLOATING, reserved, placed)
 
         return requests.mapNotNull { placed[it.id] }
     }
 
-    /** Bottom-stack balloons are anchored to the requested band and may not overlap the stack. */
-    private fun placeBottomStackBalloon(request: BalloonRequest, reserved: List<IntRect>): IntRect {
-        val size = clampSize(request.preferredSize)
-        val box = boxSize(size, BalloonTailSide.TOP)
-        val preferred = clampToContainer(bottomStackBounds(request, box))
-        return findFreeSlot(preferred, box, reserved, allowTopScan = false)
+    private fun placeRow(
+        requests: List<BalloonRequest>,
+        row: BalloonRow,
+        reserved: MutableList<IntRect>,
+        placed: MutableMap<Int, PlacedBalloon>,
+    ) {
+        val ordered = requests.filter { it.row == row }.sortedBy { it.order }
+        var previousTop: Int? = null
+        for (request in ordered) {
+            val bounds = when (row) {
+                BalloonRow.TOP -> placeTopRowBalloon(request, reserved)
+                BalloonRow.BOTTOM -> placeBottomStackBalloon(request, previousTop, reserved)
+                BalloonRow.FLOATING -> placeFloatingBalloon(request, reserved)
+            }
+            placed[request.id] = toPlaced(request, bounds)
+            reserved += bounds.inset(-gap, -gap)
+            if (row == BalloonRow.BOTTOM) {
+                previousTop = bounds.top
+            }
+        }
+    }
+
+    /** Top-row balloons all share the same top offset and only slide horizontally. */
+    private fun placeTopRowBalloon(request: BalloonRequest, reserved: List<IntRect>): IntRect {
+        val size = geometry.clampSize(request.preferredSize)
+        val box = geometry.boxSize(size, BalloonTailSide.TOP)
+        val top = edgeMargin
+        val left = geometry.alignedLeft(request, box.x)
+        val preferred = geometry.clampToContainer(IntRect(left, top, left + box.x, top + box.y))
+        val step = (box.x / 2).coerceAtLeast(gap)
+        val orderedLeft = buildList {
+            add(preferred.left)
+            for (i in 1..containerWidth / step) {
+                add(preferred.left + i * step)
+                add(preferred.left - i * step)
+            }
+        }
+        for (candidateLeft in orderedLeft) {
+            val candidate = geometry.clampToContainer(IntRect(candidateLeft, top, candidateLeft + box.x, top + box.y))
+            if (reserved.none { it.intersects(candidate) }) {
+                return candidate
+            }
+        }
+        return preferred
     }
 
     /**
-     * Computes the anchor rectangle of a bottom-stack balloon. The three bands tile the lower
-     * part of the container from the bottom upwards; each band is only as tall as needed, so
-     * the balloons end up stacked directly on top of one another.
+     * Bottom-stack balloons ascend from the bottom edge in order, keeping their x anchor.
+     * Each balloon is anchored directly above the previously placed one so that differing
+     * balloon heights cannot make them overlap.
      */
-    private fun bottomStackBounds(request: BalloonRequest, box: IntPoint): IntRect {
-        val bandBottom = when (request.verticalSlot) {
-            BalloonVerticalSlot.BOTTOM -> containerHeight - edgeMargin
-            BalloonVerticalSlot.MIDDLE -> containerHeight - edgeMargin - box.y - gap
-            else -> containerHeight - edgeMargin - 2 * (box.y + gap)
+    private fun placeBottomStackBalloon(
+        request: BalloonRequest,
+        previousTop: Int?,
+        reserved: List<IntRect>,
+    ): IntRect {
+        val size = geometry.clampSize(request.preferredSize)
+        val box = geometry.boxSize(size, BalloonTailSide.TOP)
+        val preferred = geometry.clampToContainer(bottomStackBounds(request, box, previousTop))
+        val step = (box.y / 2).coerceAtLeast(gap)
+        val orderedTop = buildList {
+            add(preferred.top)
+            for (i in 1..containerHeight / step) {
+                add(preferred.top - i * step)
+            }
         }
-        val left = (containerWidth - box.x) / 2
+        for (top in orderedTop) {
+            val candidate = geometry.clampToContainer(IntRect(preferred.left, top, preferred.left + box.x, top + box.y))
+            if (reserved.none { it.intersects(candidate) }) {
+                return candidate
+            }
+        }
+        return preferred
+    }
+
+    /**
+     * Computes the anchor rectangle of a bottom-stack balloon. Without [previousTop] the balloon
+     * sits on the bottom edge, otherwise directly above the balloon placed before it.
+     */
+    private fun bottomStackBounds(request: BalloonRequest, box: IntPoint, previousTop: Int?): IntRect {
+        val bandBottom = if (previousTop == null) containerHeight - edgeMargin else previousTop - gap
+        val left = geometry.alignedLeft(request, box.x)
         val top = bandBottom - box.y
         return IntRect(left, top, left + box.x, top + box.y)
     }
 
     private fun placeFloatingBalloon(request: BalloonRequest, reserved: List<IntRect>): IntRect {
-        val size = clampSize(request.preferredSize)
-        if (request.horizontalAlignment == BalloonHorizontalAlignment.RIGHT_EDGE) {
-            return placeRightAlignedBalloon(request, size, reserved)
+        val size = geometry.clampSize(request.preferredSize)
+        return when (request.horizontalAlignment) {
+            BalloonHorizontalAlignment.RIGHT_EDGE -> placeEdgeAlignedBalloon(request, size, rightEdge = true, reserved)
+            BalloonHorizontalAlignment.LEFT_EDGE -> placeEdgeAlignedBalloon(request, size, rightEdge = false, reserved)
+            BalloonHorizontalAlignment.CENTERED_ON_TARGET -> placeCenteredBalloon(request, size, reserved)
         }
+    }
+
+    private fun placeCenteredBalloon(request: BalloonRequest, size: IntPoint, reserved: List<IntRect>): IntRect {
         val side = geometry.chooseTailSide(request, size)
         val candidates = listOf(side) + BalloonTailSide.entries.filter { it != side }
         return candidates.firstNotNullOfOrNull { candidate ->
-            clampToContainer(floatingBounds(request, size, candidate))
+            geometry.clampToContainer(floatingBounds(request, size, candidate))
                 .takeIf { reserved.none { rect -> rect.intersects(it) } }
         } ?: findFreeSlot(
-            clampToContainer(floatingBounds(request, size, side)),
-            boxSize(size, side),
+            geometry.clampToContainer(floatingBounds(request, size, side)),
+            geometry.boxSize(size, side),
             reserved,
-            allowTopScan = true,
         )
     }
 
     /**
-     * Right-aligned balloons keep their right edge fixed and only slide vertically, so the
-     * menu hint always hugs the right border even when it has to dodge the "Got it!" button.
+     * Edge aligned balloons keep their horizontal anchor fixed and only slide vertically, so the
+     * explanation stays flush against the border even when it has to dodge an obstacle.
      */
-    private fun placeRightAlignedBalloon(request: BalloonRequest, size: IntPoint, reserved: List<IntRect>): IntRect {
-        val box = boxSize(size, BalloonTailSide.LEFT)
-        val left = containerWidth - edgeMargin - box.x
-        val preferred = clampToContainer(floatingBounds(request, size, BalloonTailSide.LEFT))
-        val step = (size.y / 2).coerceAtLeast(gap)
+    private fun placeEdgeAlignedBalloon(
+        request: BalloonRequest,
+        size: IntPoint,
+        rightEdge: Boolean,
+        reserved: List<IntRect>,
+    ): IntRect {
+        val tailSide = if (rightEdge) BalloonTailSide.LEFT else BalloonTailSide.RIGHT
+        val box = geometry.boxSize(size, tailSide)
+        val left = if (rightEdge) containerWidth - edgeMargin - box.x else edgeMargin
+        val preferred = geometry.clampToContainer(floatingBounds(request, size, tailSide))
+        val step = (box.y / 2).coerceAtLeast(gap)
         val orderedTop = buildList {
             add(preferred.top)
             for (i in 1..containerHeight / step) {
@@ -219,7 +282,7 @@ class DocBalloonLayout(
             }
         }
         for (top in orderedTop) {
-            val candidate = clampToContainer(IntRect(left, top, left + box.x, top + box.y))
+            val candidate = geometry.clampToContainer(IntRect(left, top, left + box.x, top + box.y))
             if (reserved.none { it.intersects(candidate) }) {
                 return candidate
             }
@@ -229,14 +292,7 @@ class DocBalloonLayout(
 
     private fun floatingBounds(request: BalloonRequest, size: IntPoint, side: BalloonTailSide): IntRect {
         val center = request.targetCenter
-        if (request.horizontalAlignment == BalloonHorizontalAlignment.RIGHT_EDGE) {
-            // Pin to the right edge; the tail always points left at the target.
-            val box = boxSize(size, BalloonTailSide.LEFT)
-            val left = containerWidth - edgeMargin - box.x
-            val top = center.y - box.y / 2
-            return IntRect(left, top, left + box.x, top + box.y)
-        }
-        val box = boxSize(size, side)
+        val box = geometry.boxSize(size, side)
         val left: Int
         val top: Int
         when (side) {
@@ -268,7 +324,6 @@ class DocBalloonLayout(
         preferred: IntRect,
         size: IntPoint,
         reserved: List<IntRect>,
-        allowTopScan: Boolean,
     ): IntRect {
         val stepX = (size.x / 2).coerceAtLeast(gap)
         val stepY = (size.y / 2).coerceAtLeast(gap)
@@ -284,21 +339,14 @@ class DocBalloonLayout(
         }
         val orderedY = buildList {
             add(preferred.top)
-            if (allowTopScan) {
-                for (i in 1..containerHeight / stepY) {
-                    add(preferred.top + i * stepY)
-                    add(preferred.top - i * stepY)
-                }
-            } else {
-                // Bottom stack stays anchored: only move upwards, keeping the requested order.
-                for (i in 1..containerHeight / stepY) {
-                    add(preferred.top - i * stepY)
-                }
+            for (i in 1..containerHeight / stepY) {
+                add(preferred.top + i * stepY)
+                add(preferred.top - i * stepY)
             }
         }
         for (y in orderedY) {
             for (x in orderedX) {
-                val candidate = clampToContainer(IntRect(x, y, x + size.x, y + size.y))
+                val candidate = geometry.clampToContainer(IntRect(x, y, x + size.x, y + size.y))
                 if (reserved.none { it.intersects(candidate) }) {
                     return candidate
                 }
@@ -313,36 +361,13 @@ class DocBalloonLayout(
     }
 
     private fun tailSideFor(request: BalloonRequest): BalloonTailSide = when {
-        // Pinned to the right border, so the tail always points left at the controls.
-        request.horizontalAlignment == BalloonHorizontalAlignment.RIGHT_EDGE -> BalloonTailSide.LEFT
-        // Stacked balloons point down at the controls below them.
-        request.verticalSlot != BalloonVerticalSlot.NONE -> BalloonTailSide.TOP
-        else -> geometry.chooseTailSide(request, clampSize(request.preferredSize))
-    }
-
-    private fun boxSize(size: IntPoint, side: BalloonTailSide): IntPoint = geometry.boxSize(size, side)
-
-    private fun clampSize(size: IntPoint): IntPoint = IntPoint(
-        size.x.coerceIn(MIN_SIZE, (containerWidth - 2 * edgeMargin - tailLength).coerceAtLeast(MIN_SIZE)),
-        size.y.coerceIn(MIN_SIZE, (containerHeight - 2 * edgeMargin - tailLength).coerceAtLeast(MIN_SIZE)),
-    )
-
-    private fun clampToContainer(rect: IntRect): IntRect {
-        val maxLeft = (containerWidth - edgeMargin - rect.width).coerceAtLeast(edgeMargin)
-        val maxTop = (containerHeight - edgeMargin - rect.height).coerceAtLeast(edgeMargin)
-        val left = rect.left.coerceIn(edgeMargin, maxLeft)
-        val top = rect.top.coerceIn(edgeMargin, maxTop)
-        return IntRect(left, top, left + rect.width, top + rect.height)
-    }
-
-    private fun slotRank(slot: BalloonVerticalSlot): Int = when (slot) {
-        BalloonVerticalSlot.BOTTOM -> 0
-        BalloonVerticalSlot.MIDDLE -> 1
-        BalloonVerticalSlot.TOP -> 2
-        BalloonVerticalSlot.NONE -> 3
-    }
-
-    private companion object {
-        const val MIN_SIZE = 1
+        // Edge aligned balloons point at the target from the opposite border.
+        request.row == BalloonRow.FLOATING && request.horizontalAlignment == BalloonHorizontalAlignment.RIGHT_EDGE ->
+            BalloonTailSide.LEFT
+        request.row == BalloonRow.FLOATING && request.horizontalAlignment == BalloonHorizontalAlignment.LEFT_EDGE ->
+            BalloonTailSide.RIGHT
+        // Row balloons point at their controls from above.
+        request.row == BalloonRow.TOP || request.row == BalloonRow.BOTTOM -> BalloonTailSide.TOP
+        else -> geometry.chooseTailSide(request, geometry.clampSize(request.preferredSize))
     }
 }
