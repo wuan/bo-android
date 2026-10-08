@@ -115,6 +115,28 @@ class DocBalloonViewBinderTest {
     }
 
     @Test
+    fun `tail dimensions are pronounced compared to the balloon body`() {
+        // The pointer must be long enough to read clearly while staying narrower than the body.
+        assertThat(DocBalloonViewBinder.TAIL_LENGTH_PX).isGreaterThanOrEqualTo(16)
+        assertThat(DocBalloonViewBinder.TAIL_WIDTH_PX).isGreaterThanOrEqualTo(18)
+    }
+
+    @Test
+    fun `tail length is symmetric for vertical and horizontal tails`() {
+        val binding = binder.create(container, "text")
+
+        binder.apply(binding, PlacedBalloon(0, IntRect(0, 0, 200, 40), BalloonTailSide.TOP, IntPoint(100, 0)))
+        val verticalHeight = (binding.root.layoutParams as FrameLayout.LayoutParams).height
+
+        binder.apply(binding, PlacedBalloon(0, IntRect(0, 0, 220, 40), BalloonTailSide.LEFT, IntPoint(0, 20)))
+        val horizontalWidth = (binding.root.layoutParams as FrameLayout.LayoutParams).width
+
+        // In both orientations the body is inset by exactly one tail length on the tail side.
+        assertThat(verticalHeight).isEqualTo(40 - DocBalloonViewBinder.TAIL_LENGTH_PX)
+        assertThat(horizontalWidth).isEqualTo(220 - DocBalloonViewBinder.TAIL_LENGTH_PX)
+    }
+
+    @Test
     fun `tail is an image view with a drawable after apply`() {
         val binding = binder.create(container, "text")
 

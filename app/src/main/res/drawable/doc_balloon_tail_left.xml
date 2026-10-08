@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="10dp"
-    android:height="16dp"
-    android:viewportWidth="10"
-    android:viewportHeight="16">
+    android:width="18dp"
+    android:height="20dp"
+    android:viewportWidth="18"
+    android:viewportHeight="20">
     <path
         android:fillColor="@color/doc_balloon_background"
-        android:pathData="M0,0 L10,8 L0,16 Z" />
+        android:strokeColor="@color/doc_balloon_stroke"
+        android:strokeWidth="1"
+        android:pathData="M0,1 L17,10 L0,19 Z" />
 </vector>
