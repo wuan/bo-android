@@ -42,24 +42,27 @@ internal class BalloonGeometry(
      * The point on the balloon box that faces the target: the tip of the tail. The coordinate
      * along the tail axis is taken from the tail strip (so it is always inside the box), while
      * the perpendicular coordinate follows the target center and is clamped to the tail width.
+     *
+     * For edge aligned balloons the perpendicular coordinate is biased towards the matching
+     * side (left aligned balloons get their tail near the left end, right aligned ones near the
+     * right end), so the handle sits on the same side as the balloon.
      */
-    fun tailTipFor(target: IntPoint, bounds: IntRect, side: BalloonTailSide): IntPoint = when (side) {
-        BalloonTailSide.TOP -> IntPoint(
-            target.x.coerceIn(bounds.left, bounds.right - 1),
-            bounds.top + tailLength,
-        )
-        BalloonTailSide.BOTTOM -> IntPoint(
-            target.x.coerceIn(bounds.left, bounds.right - 1),
-            bounds.bottom - tailLength,
-        )
-        BalloonTailSide.LEFT -> IntPoint(
-            bounds.left + tailLength,
-            target.y.coerceIn(bounds.top, bounds.bottom - 1),
-        )
-        BalloonTailSide.RIGHT -> IntPoint(
-            bounds.right - tailLength,
-            target.y.coerceIn(bounds.top, bounds.bottom - 1),
-        )
+    fun tailTipFor(
+        target: IntPoint,
+        bounds: IntRect,
+        side: BalloonTailSide,
+        alignment: BalloonHorizontalAlignment = BalloonHorizontalAlignment.CENTERED_ON_TARGET,
+    ): IntPoint = when (side) {
+        BalloonTailSide.TOP -> IntPoint(clampTailX(target.x, bounds, alignment), bounds.top + tailLength)
+        BalloonTailSide.BOTTOM -> IntPoint(clampTailX(target.x, bounds, alignment), bounds.bottom - tailLength)
+        BalloonTailSide.LEFT -> IntPoint(bounds.left + tailLength, target.y.coerceIn(bounds.top, bounds.bottom - 1))
+        BalloonTailSide.RIGHT -> IntPoint(bounds.right - tailLength, target.y.coerceIn(bounds.top, bounds.bottom - 1))
+    }
+
+    private fun clampTailX(x: Int, bounds: IntRect, alignment: BalloonHorizontalAlignment): Int = when (alignment) {
+        BalloonHorizontalAlignment.LEFT_EDGE -> bounds.left + TAIL_HALF_MARGIN
+        BalloonHorizontalAlignment.RIGHT_EDGE -> bounds.right - TAIL_HALF_MARGIN
+        BalloonHorizontalAlignment.CENTERED_ON_TARGET -> x.coerceIn(bounds.left, bounds.right - 1)
     }
 
     /**
@@ -116,5 +119,8 @@ internal class BalloonGeometry(
 
     private companion object {
         const val MIN_SIZE = 1
+
+        /** Keeps the tail tip at least half a tail width away from the balloon corner. */
+        const val TAIL_HALF_MARGIN = 14
     }
 }

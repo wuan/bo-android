@@ -368,7 +368,12 @@ class DocBalloonLayout(
 
     private fun toPlaced(request: BalloonRequest, bounds: IntRect): PlacedBalloon {
         val side = tailSideFor(request)
-        return PlacedBalloon(request.id, bounds, side, geometry.tailTipFor(request.targetCenter, bounds, side))
+        return PlacedBalloon(
+            request.id,
+            bounds,
+            side,
+            geometry.tailTipFor(request.targetCenter, bounds, side, request.horizontalAlignment),
+        )
     }
 
     private fun tailSideFor(request: BalloonRequest): BalloonTailSide = when {

@@ -117,8 +117,8 @@ class DocBalloonViewBinderTest {
     @Test
     fun `tail dimensions are pronounced compared to the balloon body`() {
         // The pointer must be long enough to read clearly while staying narrower than the body.
-        assertThat(DocBalloonViewBinder.TAIL_LENGTH_PX).isGreaterThanOrEqualTo(24)
-        assertThat(DocBalloonViewBinder.TAIL_WIDTH_PX).isGreaterThanOrEqualTo(20)
+        assertThat(DocBalloonViewBinder.TAIL_LENGTH_PX).isGreaterThanOrEqualTo(32)
+        assertThat(DocBalloonViewBinder.TAIL_WIDTH_PX).isGreaterThanOrEqualTo(26)
         // A pronounced pointer is longer than it is wide.
         assertThat(DocBalloonViewBinder.TAIL_LENGTH_PX)
             .isGreaterThan(DocBalloonViewBinder.TAIL_WIDTH_PX)

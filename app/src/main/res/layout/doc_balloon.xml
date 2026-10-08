@@ -23,8 +23,8 @@
 
     <ImageView
         android:id="@+id/doc_balloon_tail"
-        android:layout_width="22dp"
-        android:layout_height="26dp"
+        android:layout_width="28dp"
+        android:layout_height="34dp"
         android:contentDescription="@null"
         android:src="@drawable/doc_balloon_tail_top" />
 

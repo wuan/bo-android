@@ -226,6 +226,36 @@ class MainDocOverlayTest {
         assertNoOverlap(balloons)
     }
 
+    @Test
+    fun `alert balloon tail sits on the left portion of its edge`() {
+        val activity = Robolectric.buildActivity(Main::class.java).setup().get()
+        layoutActivity(activity)
+
+        val container = activity.findViewById<ViewGroup>(R.id.doc_balloon_container)
+        val alert = findBalloon(container, activity.getString(R.string.doc_overlay_alert))!!
+        val tail = alert.findViewById<View>(R.id.doc_balloon_tail)
+        val body = alert.findViewById<View>(R.id.doc_balloon_body)
+
+        val tailCenterX = tail.left + tail.width / 2
+        val bodyCenterX = body.left + body.width / 2
+        assertThat(tailCenterX).isLessThan(bodyCenterX)
+    }
+
+    @Test
+    fun `histogram balloon tail sits on the right portion of its edge`() {
+        val activity = Robolectric.buildActivity(Main::class.java).setup().get()
+        layoutActivity(activity)
+
+        val container = activity.findViewById<ViewGroup>(R.id.doc_balloon_container)
+        val histogram = findBalloon(container, activity.getString(R.string.doc_overlay_histogram))!!
+        val tail = histogram.findViewById<View>(R.id.doc_balloon_tail)
+        val body = histogram.findViewById<View>(R.id.doc_balloon_body)
+
+        val tailCenterX = tail.left + tail.width / 2
+        val bodyCenterX = body.left + body.width / 2
+        assertThat(tailCenterX).isGreaterThan(bodyCenterX)
+    }
+
     private fun assertNoOverlap(views: List<View>) {
         views.forEachIndexed { i, first ->
             views.drop(i + 1).forEach { second ->

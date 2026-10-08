@@ -516,6 +516,48 @@ class DocBalloonLayoutTest {
         }
     }
 
+    @Test
+    fun `left aligned row balloon puts its tail on the left portion`() {
+        val placed = layout.place(
+            listOf(stacked(0, order = 0, y = 1900, alignment = BalloonHorizontalAlignment.LEFT_EDGE)),
+        ).single()
+
+        assertThat(placed.tailSide).isEqualTo(BalloonTailSide.BOTTOM)
+        assertThat(placed.tailTip.x).isLessThan(placed.bounds.left + placed.bounds.width / 2)
+        assertThat(placed.tailTip.x).isBetween(placed.bounds.left, placed.bounds.right - 1)
+    }
+
+    @Test
+    fun `right aligned row balloon puts its tail on the right portion`() {
+        val placed = layout.place(
+            listOf(stacked(0, order = 0, y = 1900, alignment = BalloonHorizontalAlignment.RIGHT_EDGE)),
+        ).single()
+
+        assertThat(placed.tailTip.x).isGreaterThan(placed.bounds.left + placed.bounds.width / 2)
+        assertThat(placed.tailTip.x).isBetween(placed.bounds.left, placed.bounds.right - 1)
+    }
+
+    @Test
+    fun `centered row balloon points its tail at the target center`() {
+        val target = IntPoint(500, 1900)
+        val placed = layout.place(
+            listOf(
+                BalloonRequest(
+                    id = 0,
+                    targetCenter = target,
+                    preferredSize = IntPoint(200, 100),
+                    preferredTailSide = BalloonTailSide.BOTTOM,
+                    horizontalAlignment = BalloonHorizontalAlignment.CENTERED_ON_TARGET,
+                    row = BalloonRow.BOTTOM,
+                    order = 0,
+                ),
+            ),
+        ).single()
+
+        assertThat(placed.tailTip.x).isEqualTo(target.x)
+        assertThat(placed.tailTip.y).isEqualTo(placed.bounds.bottom - 10)
+    }
+
     private fun assertNoOverlaps(rects: List<IntRect>) {
         rects.forEachIndexed { i, first ->
             rects.drop(i + 1).forEach { second ->
