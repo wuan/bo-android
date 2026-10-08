@@ -404,4 +404,8 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_hint_legend">Kliknięcie: otwiera okno szybkich ustawień</string>
     <string name="doc_overlay_hint_alert">Kliknięcie: centruje na własnej lokalizacji</string>
     <string name="doc_overlay_hint_histogram">Kliknięcie: oddala do granicy danych</string>
+    <string name="start_stop_animation">Uruchom lub zatrzymaj animację</string>
+    <string name="go_realtime">Pokaż dane w czasie rzeczywistym</string>
+    <string name="toggle_extended_mode">Przełącz tryb rozszerzony</string>
+    <string name="alarm_diagram">Diagram ostrzeżenia o piorunach</string>
 </resources>

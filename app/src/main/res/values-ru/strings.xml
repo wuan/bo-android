@@ -407,4 +407,8 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_hint_legend">Нажатие: открывает диалог быстрых настроек</string>
     <string name="doc_overlay_hint_alert">Нажатие: центрирует на вашем местоположении</string>
     <string name="doc_overlay_hint_histogram">Нажатие: уменьшает масштаб до границы данных</string>
+    <string name="start_stop_animation">Запустить или остановить анимацию</string>
+    <string name="go_realtime">Показать данные в реальном времени</string>
+    <string name="toggle_extended_mode">Переключить расширенный режим</string>
+    <string name="alarm_diagram">Диаграмма предупреждения о молниях</string>
 </resources>

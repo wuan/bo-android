@@ -375,4 +375,8 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_hint_legend">Kliknutie: otvorí dialóg rýchleho nastavenia</string>
     <string name="doc_overlay_hint_alert">Kliknutie: vycentruje na vašu polohu</string>
     <string name="doc_overlay_hint_histogram">Kliknutie: oddiali na hranicu údajov</string>
+    <string name="start_stop_animation">Spustiť alebo zastaviť animáciu</string>
+    <string name="go_realtime">Zobraziť údaje v reálnom čase</string>
+    <string name="toggle_extended_mode">Prepnúť rozšírený režim</string>
+    <string name="alarm_diagram">Diagram výstrahy bleskov</string>
 </resources>

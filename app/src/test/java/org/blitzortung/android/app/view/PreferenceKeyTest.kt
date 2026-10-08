@@ -39,4 +39,16 @@ class PreferenceKeyTest {
 
         assertThat(preferences.wasBackgroundLocationDisclosureShown()).isTrue()
     }
+
+    @Test
+    fun `fromString resolves every key registered in the lookup map`() {
+        for (key in PreferenceKey.entries) {
+            assertThat(PreferenceKey.fromString(key.toString())).isEqualTo(key)
+        }
+    }
+
+    @Test
+    fun `fromString returns null for an unknown key`() {
+        assertThat(PreferenceKey.fromString("not_a_known_preference_key")).isNull()
+    }
 }
