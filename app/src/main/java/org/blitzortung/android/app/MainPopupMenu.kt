@@ -27,6 +27,11 @@ class MainPopupMenu(
     private val buildVersion: BuildVersion,
     private val changeLogComponent: ChangeLogComponent,
 ) : PopupMenu(context, anchor) {
+    /**
+     * Invoked when the "Quick guide" menu entry is selected.
+     */
+    var onShowDocOverlay: () -> Unit = {}
+
     init {
         setOnMenuItemClickListener(ClickListener(context, preferences, dataHandler, alertHandler))
     }
@@ -40,6 +45,8 @@ class MainPopupMenu(
         override fun onMenuItemClick(item: MenuItem?): Boolean {
             if (item?.itemId == R.id.menu_preferences) {
                 context.startActivity(Intent(context, SettingsActivity::class.java))
+            } else if (item?.itemId == R.id.menu_doc_overlay) {
+                onShowDocOverlay()
             } else {
                 val dialog =
                     when (item?.itemId) {

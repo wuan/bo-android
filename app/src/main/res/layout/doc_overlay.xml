@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/doc_overlay_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,104 +7,94 @@
     android:clickable="true"
     android:focusable="true">
 
-    <!-- Status Bar (upper_row) -->
     <TextView
         android:id="@+id/doc_text_status_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
         android:padding="8dp"
-        android:text="Status information is displayed here (e.g., connection, location)."
+        android:text="@string/doc_overlay_status"
         android:textColor="@android:color/white"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textSize="14sp" />
 
-    <!-- Alert Indicator (alert_view) -->
     <TextView
         android:id="@+id/doc_text_alert_indicator"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
-        android:padding="8dp"
-        android:text="Alerts for nearby lightning activity will appear here."
-        android:textColor="@android:color/white"
-        android:textSize="14sp"
         android:gravity="end"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/doc_text_status_bar"
-        app:layout_constraintHorizontal_bias="1.0"/>
+        android:padding="8dp"
+        android:text="@string/doc_overlay_alert"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
 
-    <!-- Buttons (general area, e.g., toggle buttons) -->
     <TextView
         android:id="@+id/doc_text_buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/doc_text_alert_indicator"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:padding="8dp"
-        android:text="Use these buttons to toggle map layers or access settings."
-        android:textColor="@android:color/white"
-        android:textSize="14sp"
         android:gravity="end"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/doc_text_alert_indicator" />
+        android:padding="8dp"
+        android:text="@string/doc_overlay_buttons"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
 
-    <!-- Histogram (histogram_view) -->
     <TextView
         android:id="@+id/doc_text_histogram"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_alignParentStart="true"
+        android:layout_above="@id/doc_text_legend"
         android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
         android:padding="8dp"
-        android:text="The histogram shows lightning activity over time."
+        android:text="@string/doc_overlay_histogram"
         android:textColor="@android:color/white"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/doc_text_legend"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textSize="14sp" />
 
-    <!-- Legend (legend_view) -->
     <TextView
         android:id="@+id/doc_text_legend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_alignParentStart="true"
+        android:layout_above="@id/doc_text_time_slider"
         android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
         android:padding="8dp"
-        android:text="The map legend explains the colors and symbols used."
+        android:text="@string/doc_overlay_legend"
         android:textColor="@android:color/white"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/doc_text_time_slider"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textSize="14sp" />
 
-    <!-- Time Slider (time_slider) -->
     <TextView
         android:id="@+id/doc_text_time_slider"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_above="@id/doc_button_got_it"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:padding="8dp"
-        android:text="Use the time slider to view historical lightning data."
-        android:textColor="@android:color/white"
-        android:textSize="14sp"
         android:gravity="center_horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/doc_button_got_it"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:padding="8dp"
+        android:text="@string/doc_overlay_time_slider"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
 
     <Button
         android:id="@+id/doc_button_got_it"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
         android:layout_margin="24dp"
-        android:text="Got it!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:text="@string/doc_overlay_got_it" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>
