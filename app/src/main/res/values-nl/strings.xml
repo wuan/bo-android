@@ -373,7 +373,7 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_guide">Snelle handleiding</string>
     <string name="doc_overlay_status">Statusinformatie wordt hier weergegeven (bijv. verbinding, locatie).</string>
     <string name="doc_overlay_alert">Meldingen van bliksemsactiviteit in de buurt verschijnen hier.</string>
-    <string name="doc_overlay_buttons">Gebruik deze knoppen om kaartlagen te wisselen of instellingen te openen.</string>
+    <string name="doc_overlay_buttons">Open instellingen en bedien de animatie.</string>
     <string name="doc_overlay_histogram">Het histogram toont de bliksemsactiviteit in de tijd.</string>
     <string name="doc_overlay_legend">De legenda verklaart de gebruikte kleuren en symbolen.</string>
     <string name="doc_overlay_time_slider">Gebruik de tijdschuif om historische bliksemgegevens te bekijken.</string>

@@ -367,7 +367,7 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_guide">Brzi vodič</string>
     <string name="doc_overlay_status">Informacije o statusu prikazuju se ovdje (npr. veza, lokacija).</string>
     <string name="doc_overlay_alert">Upozorenja o bliskoj aktivnosti munja pojavit će se ovdje.</string>
-    <string name="doc_overlay_buttons">Koristite ove gumbe za prebacivanje slojeva karte ili pristup postavkama.</string>
+    <string name="doc_overlay_buttons">Otvorite postavke i upravljajte animacijom.</string>
     <string name="doc_overlay_histogram">Histogram prikazuje aktivnost munja tijekom vremena.</string>
     <string name="doc_overlay_legend">Legenda objašnjava korištene boje i simbole.</string>
     <string name="doc_overlay_time_slider">Klizač vremena omogućuje pregled povijesnih podataka o munjama.</string>

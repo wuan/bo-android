@@ -367,7 +367,7 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_guide">Guía rápida</string>
     <string name="doc_overlay_status">La información de estado se muestra aquí (p. ej., conexión, ubicación).</string>
     <string name="doc_overlay_alert">Las alertas de actividad de rayos cercana aparecerán aquí.</string>
-    <string name="doc_overlay_buttons">Use estos botones para cambiar de capa o acceder a la configuración.</string>
+    <string name="doc_overlay_buttons">Abre los ajustes y controla la animación.</string>
     <string name="doc_overlay_histogram">El histograma muestra la actividad de rayos a lo largo del tiempo.</string>
     <string name="doc_overlay_legend">La leyenda explica los colores y símbolos utilizados.</string>
     <string name="doc_overlay_time_slider">Use el control deslizante de tiempo para ver datos históricos.</string>

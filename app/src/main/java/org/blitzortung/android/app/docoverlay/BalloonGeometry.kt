@@ -140,6 +140,6 @@ internal class BalloonGeometry(
         const val MIN_SIZE = 1
 
         /** Fraction of the balloon size the tail is kept away from the rounded corners. */
-        const val EDGE_INDENT_FRACTION = 0.05
+        const val EDGE_INDENT_FRACTION = 0.08
     }
 }

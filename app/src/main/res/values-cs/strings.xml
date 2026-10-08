@@ -341,7 +341,7 @@ Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_guide">Rychlá příručka</string>
     <string name="doc_overlay_status">Stavové informace se zobrazují zde (např. připojení, poloha).</string>
     <string name="doc_overlay_alert">Upozornění na blízkou bleskovou aktivitu se zobrazí zde.</string>
-    <string name="doc_overlay_buttons">Pomocí těchto tlačítek přepínáte vrstvy mapy nebo otevíráte nastavení.</string>
+    <string name="doc_overlay_buttons">Otevřete nastavení a ovládejte animaci.</string>
     <string name="doc_overlay_histogram">Histogram zobrazuje bleskovou aktivitu v čase.</string>
     <string name="doc_overlay_legend">Legenda vysvětluje použité barvy a symboly.</string>
     <string name="doc_overlay_time_slider">Časový posuvník umožňuje prohlížet historická data o blescích.</string>

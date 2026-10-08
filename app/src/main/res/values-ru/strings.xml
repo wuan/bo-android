@@ -399,7 +399,7 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_guide">Краткое руководство</string>
     <string name="doc_overlay_status">Здесь отображается информация о состоянии (например, соединение, местоположение).</string>
     <string name="doc_overlay_alert">Здесь появятся уведомления о близких ударах молний.</string>
-    <string name="doc_overlay_buttons">Используйте эти кнопки для переключения слоёв карты и открытия настроек.</string>
+    <string name="doc_overlay_buttons">Откройте настройки и управляйте анимацией.</string>
     <string name="doc_overlay_histogram">Гистограмма показывает активность ударов молний во времени.</string>
     <string name="doc_overlay_legend">Легенда объясняет используемые цвета и символы.</string>
     <string name="doc_overlay_time_slider">Ползунок времени позволяет просматривать исторические данные.</string>

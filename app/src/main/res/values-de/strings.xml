@@ -386,7 +386,7 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="doc_overlay_guide">Kurzanleitung</string>
     <string name="doc_overlay_status">Statusinformationen werden hier angezeigt (z. B. Verbindung, Standort).</string>
     <string name="doc_overlay_alert">Hinweise auf Blitzaktivität in der Nähe erscheinen hier.</string>
-    <string name="doc_overlay_buttons">Mit diesen Schaltflächen lassen sich Kartenebenen umschalten oder die Einstellungen öffnen.</string>
+    <string name="doc_overlay_buttons">Einstellungen öffnen und die Animation steuern.</string>
     <string name="doc_overlay_histogram">Das Histogramm zeigt die Blitzaktivität im Zeitverlauf.</string>
     <string name="doc_overlay_legend">Die Legende erklärt die verwendeten Farben und Symbole.</string>
     <string name="doc_overlay_time_slider">Mit dem Zeitschieberegler lassen sich historische Blitzdaten anzeigen.</string>

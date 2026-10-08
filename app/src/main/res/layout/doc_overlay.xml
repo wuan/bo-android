@@ -22,6 +22,14 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:text="@string/doc_overlay_got_it" />
+        android:minWidth="160dp"
+        android:minHeight="64dp"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:text="@string/doc_overlay_got_it"
+        android:textSize="22sp"
+        android:textStyle="bold" />
 
 </RelativeLayout>

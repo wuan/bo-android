@@ -271,6 +271,18 @@ class MainDocOverlayTest {
         assertThat(balloonText(histogram)).contains(activity.getString(R.string.doc_overlay_hint_histogram))
     }
 
+    @Test
+    fun `controls balloon mentions settings and the animation`() {
+        val activity = Robolectric.buildActivity(Main::class.java).setup().get()
+        layoutActivity(activity)
+
+        val container = activity.findViewById<ViewGroup>(R.id.doc_balloon_container)
+        val controls = findBalloon(container, activity.getString(R.string.doc_overlay_buttons))!!
+
+        assertThat(balloonText(controls)).contains("settings")
+        assertThat(balloonText(controls)).contains("animation")
+    }
+
     private fun balloonText(balloon: View): String =
         balloon.findViewById<android.widget.TextView>(R.id.doc_balloon_text).text.toString()
 

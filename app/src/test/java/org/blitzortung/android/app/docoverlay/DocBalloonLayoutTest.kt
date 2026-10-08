@@ -559,7 +559,7 @@ class DocBalloonLayoutTest {
     }
 
     @Test
-    fun `left edge tail is kept at least five percent away from the left edge`() {
+    fun `left edge tail is kept at least eight percent away from the left edge`() {
         val request = stacked(
             0,
             order = 0,
@@ -569,12 +569,12 @@ class DocBalloonLayoutTest {
         )
         val placed = layout.place(listOf(request)).single()
 
-        val fivePercent = (placed.bounds.width * 0.05).toInt()
-        assertThat(placed.tailTip.x).isGreaterThanOrEqualTo(placed.bounds.left + fivePercent)
+        val indent = (placed.bounds.width * 0.08).toInt()
+        assertThat(placed.tailTip.x).isGreaterThanOrEqualTo(placed.bounds.left + indent)
     }
 
     @Test
-    fun `right edge tail is kept at most ninety five percent across`() {
+    fun `right edge tail is kept at most ninety two percent across`() {
         val request = stacked(
             0,
             order = 0,
@@ -584,8 +584,8 @@ class DocBalloonLayoutTest {
         )
         val placed = layout.place(listOf(request)).single()
 
-        val fivePercent = (placed.bounds.width * 0.05).toInt()
-        assertThat(placed.tailTip.x).isLessThanOrEqualTo(placed.bounds.right - 1 - fivePercent)
+        val indent = (placed.bounds.width * 0.08).toInt()
+        assertThat(placed.tailTip.x).isLessThanOrEqualTo(placed.bounds.right - 1 - indent)
     }
 
     @Test
@@ -602,10 +602,10 @@ class DocBalloonLayoutTest {
             ),
         ).single()
 
-        val fivePercent = (placed.bounds.height * 0.05).toInt()
+        val indent = (placed.bounds.height * 0.08).toInt()
         assertThat(placed.tailSide).isEqualTo(BalloonTailSide.LEFT)
-        assertThat(placed.tailTip.y).isGreaterThanOrEqualTo(placed.bounds.top + fivePercent)
-        assertThat(placed.tailTip.y).isLessThanOrEqualTo(placed.bounds.bottom - 1 - fivePercent)
+        assertThat(placed.tailTip.y).isGreaterThanOrEqualTo(placed.bounds.top + indent)
+        assertThat(placed.tailTip.y).isLessThanOrEqualTo(placed.bounds.bottom - 1 - indent)
     }
 
     private fun assertNoOverlaps(rects: List<IntRect>) {
