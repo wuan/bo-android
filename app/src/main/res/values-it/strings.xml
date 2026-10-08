@@ -359,4 +359,15 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="backup_restart_now">Riavvia ora</string>
     <string name="backup_restart_later">Più tardi</string>
     <string name="backup_cancel">Annulla</string>
+    <string name="doc_overlay_guide">Guida rapida</string>
+    <string name="doc_overlay_status">Le informazioni di stato vengono mostrate qui (es. connessione, posizione).</string>
+    <string name="doc_overlay_alert">Gli avvisi di attività fulmini nelle vicinanze appariranno qui.</string>
+    <string name="doc_overlay_buttons">Apri le impostazioni e controlla l\'animazione.</string>
+    <string name="doc_overlay_histogram">L\'istogrammo mostra l\'attività dei fulmini nel tempo.</string>
+    <string name="doc_overlay_legend">La legenda spiega i colori e i simboli utilizzati.</string>
+    <string name="doc_overlay_time_slider">Usa il cursore temporale per visualizzare i dati storici.</string>
+    <string name="doc_overlay_got_it">Ho capito!</string>
+    <string name="doc_overlay_hint_legend">Clic: apre la finestra delle impostazioni rapide</string>
+    <string name="doc_overlay_hint_alert">Clic: centra sulla tua posizione</string>
+    <string name="doc_overlay_hint_histogram">Clic: riduce lo zoom al limite dei dati</string>
 </resources>

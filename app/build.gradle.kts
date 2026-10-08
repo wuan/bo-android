@@ -15,7 +15,7 @@ android {
         applicationId = "org.blitzortung.android.app"
         minSdk = 23
         targetSdk = 37
-        versionCode = 359
+        versionCode = 361
         versionName = "2.6-beta0"
         multiDexEnabled = false
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

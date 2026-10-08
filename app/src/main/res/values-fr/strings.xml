@@ -367,4 +367,15 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="backup_restart_now">Redémarrer maintenant</string>
     <string name="backup_restart_later">Plus tard</string>
     <string name="backup_cancel">Annuler</string>
+    <string name="doc_overlay_guide">Guide rapide</string>
+    <string name="doc_overlay_status">Les informations d\'état s\'affichent ici (ex. connexion, position).</string>
+    <string name="doc_overlay_alert">Les alertes d\'activité orageuse à proximité apparaissent ici.</string>
+    <string name="doc_overlay_buttons">Ouvrez les paramètres et contrôlez l\'animation.</string>
+    <string name="doc_overlay_histogram">L\'histogramme montre l\'activité orageuse au fil du temps.</string>
+    <string name="doc_overlay_legend">La légende explique les couleurs et symboles utilisés.</string>
+    <string name="doc_overlay_time_slider">Utilisez la réglette temporelle pour consulter les données historiques.</string>
+    <string name="doc_overlay_got_it">J\'ai compris !</string>
+    <string name="doc_overlay_hint_legend">Clic : ouvre la boîte de dialogue des réglages rapides</string>
+    <string name="doc_overlay_hint_alert">Clic : centre sur votre position</string>
+    <string name="doc_overlay_hint_histogram">Clic : dézoome jusqu\'à la limite des données</string>
 </resources>

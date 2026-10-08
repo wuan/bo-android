@@ -364,4 +364,15 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="backup_restart_now">Ponovno pokreni sada</string>
     <string name="backup_restart_later">Kasnije</string>
     <string name="backup_cancel">Odustani</string>
+    <string name="doc_overlay_guide">Brzi vodič</string>
+    <string name="doc_overlay_status">Informacije o statusu prikazuju se ovdje (npr. veza, lokacija).</string>
+    <string name="doc_overlay_alert">Upozorenja o bliskoj aktivnosti munja pojavit će se ovdje.</string>
+    <string name="doc_overlay_buttons">Otvorite postavke i upravljajte animacijom.</string>
+    <string name="doc_overlay_histogram">Histogram prikazuje aktivnost munja tijekom vremena.</string>
+    <string name="doc_overlay_legend">Legenda objašnjava korištene boje i simbole.</string>
+    <string name="doc_overlay_time_slider">Klizač vremena omogućuje pregled povijesnih podataka o munjama.</string>
+    <string name="doc_overlay_got_it">Jasno!</string>
+    <string name="doc_overlay_hint_legend">Klik: otvara dijalog brzih postavki</string>
+    <string name="doc_overlay_hint_alert">Klik: centrira na vlastitu lokaciju</string>
+    <string name="doc_overlay_hint_histogram">Klik: smanjuje zumiranje do granice podataka</string>
 </resources>

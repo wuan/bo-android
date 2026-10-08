@@ -35,6 +35,7 @@ enum class PreferenceKey(val key: String) {
     QUERY_PERIOD("query_period"),
     BACKGROUND_QUERY_PERIOD("background_query_period"),
     BACKGROUND_LOCATION_DISCLOSURE_SHOWN("background_location_disclosure_shown"),
+    DOC_OVERLAY_SHOWN("doc_overlay_shown"),
     SHOW_LOCATION("location"),
     OWN_LOCATION_SIZE("own_location_size"),
     ALERT_ENABLED("alarm_enabled"),

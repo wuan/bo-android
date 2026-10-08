@@ -7,6 +7,11 @@
         android:title="@string/preferences" />
 
     <item
+        android:id="@+id/menu_doc_overlay"
+        android:icon="@android:drawable/ic_menu_help"
+        android:title="@string/doc_overlay_guide" />
+
+    <item
         android:id="@+id/menu_alarms"
         android:icon="@android:drawable/ic_menu_view"
         android:title="@string/alarms" />
