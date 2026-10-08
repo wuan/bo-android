@@ -49,24 +49,32 @@ class DocBalloonViewBinder(private val layoutInflater: LayoutInflater) {
         binding.root.measure(widthSpec, heightSpec)
     }
 
-    /** Applies a placement result to the balloon body and its tail. */
+    /**
+     * Applies a placement result to the balloon.
+     *
+     * [placed] bounds describe the whole balloon including the tail strip; the body is inset on
+     * the tail side by the tail length so that the outer edge stays exactly where the layout
+     * put it.
+     */
     fun apply(binding: DocBalloonBinding, placed: PlacedBalloon) {
         val body = binding.root
         val params = body.layoutParams as FrameLayout.LayoutParams
-        val tailLength = tailLengthFor(placed.tailSide)
-        val offsetX = if (placed.tailSide == BalloonTailSide.LEFT) -tailLength.x else 0
-        val offsetY = if (placed.tailSide == BalloonTailSide.TOP) -tailLength.y else 0
-        params.leftMargin = placed.bounds.left + offsetX
-        params.topMargin = placed.bounds.top + offsetY
-        params.width = placed.bounds.width
-        params.height = placed.bounds.height
+        val tail = tailLengthFor(placed.tailSide)
+        val insetLeft = if (placed.tailSide == BalloonTailSide.LEFT) tail.x else 0
+        val insetTop = if (placed.tailSide == BalloonTailSide.TOP) tail.y else 0
+        val insetRight = if (placed.tailSide == BalloonTailSide.RIGHT) tail.x else 0
+        val insetBottom = if (placed.tailSide == BalloonTailSide.BOTTOM) tail.y else 0
+        params.leftMargin = placed.bounds.left + insetLeft
+        params.topMargin = placed.bounds.top + insetTop
+        params.width = (placed.bounds.width - insetLeft - insetRight).coerceAtLeast(1)
+        params.height = (placed.bounds.height - insetTop - insetBottom).coerceAtLeast(1)
         body.layoutParams = params
 
         configureTail(
             binding.docBalloonTail,
             placed.tailSide,
-            placed.tailTip.x - placed.bounds.left,
-            placed.tailTip.y - placed.bounds.top,
+            placed.tailTip.x - (placed.bounds.left + insetLeft),
+            placed.tailTip.y - (placed.bounds.top + insetTop),
         )
     }
 

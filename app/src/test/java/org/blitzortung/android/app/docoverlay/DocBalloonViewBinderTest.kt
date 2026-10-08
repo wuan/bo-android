@@ -45,17 +45,18 @@ class DocBalloonViewBinderTest {
     }
 
     @Test
-    fun `apply positions the balloon body at the requested bounds`() {
+    fun `apply insets the balloon body into the bounds on the tail side`() {
         val binding = binder.create(container, "text")
-        val bounds = IntRect(20, 30, 220, 130)
+        val bounds = IntRect(20, 30, 220, 140)
 
         binder.apply(binding, PlacedBalloon(0, bounds, BalloonTailSide.TOP, IntPoint(120, 30)))
 
         val params = binding.root.layoutParams as FrameLayout.LayoutParams
-        assertThat(params.width).isEqualTo(bounds.width)
-        assertThat(params.height).isEqualTo(bounds.height)
-        assertThat(params.topMargin).isEqualTo(bounds.top - DocBalloonViewBinder.TAIL_LENGTH_PX)
         assertThat(params.leftMargin).isEqualTo(bounds.left)
+        assertThat(params.width).isEqualTo(bounds.width)
+        // Top tail: the body starts below the tail strip but never leaves the placed box.
+        assertThat(params.topMargin).isEqualTo(bounds.top + DocBalloonViewBinder.TAIL_LENGTH_PX)
+        assertThat(params.topMargin + params.height).isEqualTo(bounds.bottom)
     }
 
     @Test
@@ -103,7 +104,9 @@ class DocBalloonViewBinderTest {
         val leftParams = binding.docBalloonTail.layoutParams as RelativeLayout.LayoutParams
         assertThat(leftParams.leftMargin).isEqualTo(-DocBalloonViewBinder.TAIL_LENGTH_PX)
         val bodyParams = binding.root.layoutParams as FrameLayout.LayoutParams
-        assertThat(bodyParams.leftMargin).isEqualTo(100 - DocBalloonViewBinder.TAIL_LENGTH_PX)
+        // Left tail: the body is inset from the left edge of the placed box.
+        assertThat(bodyParams.leftMargin).isEqualTo(100 + DocBalloonViewBinder.TAIL_LENGTH_PX)
+        assertThat(bodyParams.leftMargin + bodyParams.width).isEqualTo(300)
 
         binder.apply(binding, PlacedBalloon(0, IntRect(100, 100, 300, 200), BalloonTailSide.RIGHT, IntPoint(300, 150)))
 

@@ -1,0 +1,82 @@
+/*
+
+   Copyright 2026 Andreas Würl
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+*/
+
+package org.blitzortung.android.app.docoverlay
+
+/**
+ * Pure geometry helpers shared by the balloon layout: tail side selection, tail tip computation
+ * and the box size that includes the pointer. Kept free of Android dependencies so it can be
+ * unit tested directly through [DocBalloonLayout].
+ */
+internal class BalloonGeometry(
+    private val containerWidth: Int,
+    private val containerHeight: Int,
+    private val tailLength: Int,
+    private val edgeMargin: Int,
+) {
+    /**
+     * Grows the body size by the tail length on the tail side, so the placed rectangle always
+     * covers the complete balloon including the pointer.
+     */
+    fun boxSize(size: IntPoint, side: BalloonTailSide): IntPoint = when (side) {
+        BalloonTailSide.TOP, BalloonTailSide.BOTTOM -> IntPoint(size.x, size.y + tailLength)
+        BalloonTailSide.LEFT, BalloonTailSide.RIGHT -> IntPoint(size.x + tailLength, size.y)
+    }
+
+    /** The tail tip: the point on the balloon outline that faces the target center. */
+    fun tailTipFor(target: IntPoint, bounds: IntRect, side: BalloonTailSide): IntPoint = when (side) {
+        BalloonTailSide.TOP, BalloonTailSide.BOTTOM -> IntPoint(
+            target.x.coerceIn(bounds.left, bounds.right - 1),
+            target.y,
+        )
+        BalloonTailSide.LEFT, BalloonTailSide.RIGHT -> IntPoint(
+            target.x,
+            target.y.coerceIn(bounds.top, bounds.bottom - 1),
+        )
+    }
+
+    /**
+     * Picks the tail side with room around the target, preferring the requested side when it
+     * is still plausible for the target's position inside the container.
+     */
+    fun chooseTailSide(request: BalloonRequest, size: IntPoint): BalloonTailSide {
+        val center = request.targetCenter
+        val fitsBelow = center.y + tailLength + size.y + edgeMargin <= containerHeight
+        val fitsAbove = center.y - tailLength - size.y - edgeMargin >= 0
+        val fitsRight = center.x + tailLength + size.x + edgeMargin <= containerWidth
+        val fitsLeft = center.x - tailLength - size.x - edgeMargin >= 0
+
+        val candidate = when (request.preferredTailSide) {
+            BalloonTailSide.TOP -> if (fitsBelow) BalloonTailSide.TOP else BalloonTailSide.BOTTOM
+            BalloonTailSide.BOTTOM -> if (fitsAbove) BalloonTailSide.BOTTOM else BalloonTailSide.TOP
+            BalloonTailSide.RIGHT -> if (fitsLeft) BalloonTailSide.RIGHT else BalloonTailSide.LEFT
+            BalloonTailSide.LEFT -> if (fitsRight) BalloonTailSide.LEFT else BalloonTailSide.RIGHT
+        }
+        return if (canPlace(candidate, center, size)) candidate else fallbackSide(center, size)
+    }
+
+    private fun canPlace(side: BalloonTailSide, center: IntPoint, size: IntPoint): Boolean = when (side) {
+        BalloonTailSide.TOP -> center.y + tailLength + size.y + edgeMargin <= containerHeight
+        BalloonTailSide.BOTTOM -> center.y - tailLength - size.y - edgeMargin >= 0
+        BalloonTailSide.RIGHT -> center.x - tailLength - size.x - edgeMargin >= 0
+        BalloonTailSide.LEFT -> center.x + tailLength + size.x + edgeMargin <= containerWidth
+    }
+
+    private fun fallbackSide(center: IntPoint, size: IntPoint): BalloonTailSide =
+        if (center.y + size.y <= containerHeight - center.y) BalloonTailSide.TOP else BalloonTailSide.BOTTOM
+}

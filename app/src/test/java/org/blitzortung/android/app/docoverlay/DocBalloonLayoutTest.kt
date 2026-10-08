@@ -43,7 +43,9 @@ class DocBalloonLayoutTest {
         val placed = layout.place(listOf(request(0, 500, 400, side = BalloonTailSide.TOP))).single()
 
         assertThat(placed.tailSide).isEqualTo(BalloonTailSide.TOP)
-        assertThat(placed.bounds.top).isGreaterThanOrEqualTo(400 + 10)
+        // The box includes the tail strip, which starts at the target center.
+        assertThat(placed.bounds.top).isEqualTo(400)
+        assertThat(placed.bounds.bottom).isEqualTo(400 + 10 + 100)
     }
 
     @Test
@@ -51,7 +53,8 @@ class DocBalloonLayoutTest {
         val placed = layout.place(listOf(request(0, 500, 1600, side = BalloonTailSide.BOTTOM))).single()
 
         assertThat(placed.tailSide).isEqualTo(BalloonTailSide.BOTTOM)
-        assertThat(placed.bounds.bottom).isLessThanOrEqualTo(1600 - 10)
+        // The box ends at the target center, the tail strip occupying its lower edge.
+        assertThat(placed.bounds.bottom).isEqualTo(1600)
     }
 
     @Test
@@ -230,6 +233,113 @@ class DocBalloonLayoutTest {
         assertThat(placed).hasSize(2)
         assertNoOverlaps(placed.map { it.bounds })
     }
+
+    @Test
+    fun `right edge aligned balloon sits flush against the right container edge`() {
+        val placed = layout.place(
+            listOf(
+                BalloonRequest(
+                    id = 0,
+                    targetCenter = IntPoint(100, 500),
+                    preferredSize = IntPoint(200, 100),
+                    preferredTailSide = BalloonTailSide.LEFT,
+                    horizontalAlignment = BalloonHorizontalAlignment.RIGHT_EDGE,
+                ),
+            ),
+        ).single()
+
+        assertThat(placed.bounds.right).isEqualTo(1000 - 8)
+        assertThat(placed.tailSide).isEqualTo(BalloonTailSide.LEFT)
+        assertThat(placed.bounds.left).isGreaterThan(100)
+    }
+
+    @Test
+    fun `right edge aligned balloon keeps pointing left at its target`() {
+        val target = IntPoint(120, 400)
+        val placed = layout.place(
+            listOf(
+                BalloonRequest(
+                    id = 0,
+                    targetCenter = target,
+                    preferredSize = IntPoint(300, 120),
+                    preferredTailSide = BalloonTailSide.LEFT,
+                    horizontalAlignment = BalloonHorizontalAlignment.RIGHT_EDGE,
+                ),
+            ),
+        ).single()
+
+        assertThat(placed.tailSide).isEqualTo(BalloonTailSide.LEFT)
+        assertThat(placed.tailTip.x).isEqualTo(target.x)
+        assertThat(placed.tailTip.y).isBetween(placed.bounds.top, placed.bounds.bottom - 1)
+    }
+
+    @Test
+    fun `bottom stack keeps the time slider below histogram below alert order`() {
+        val timeSlider = stacked(0, BalloonVerticalSlot.BOTTOM, y = 1900)
+        val histogram = stacked(1, BalloonVerticalSlot.MIDDLE, y = 1600)
+        val alert = stacked(2, BalloonVerticalSlot.TOP, y = 1400)
+
+        val placed = layout.place(listOf(alert, histogram, timeSlider))
+        val byId = placed.associateBy { it.id }
+
+        val timeBounds = byId.getValue(0).bounds
+        val histogramBounds = byId.getValue(1).bounds
+        val alertBounds = byId.getValue(2).bounds
+
+        assertThat(timeBounds.bottom).isEqualTo(2000 - 8)
+        assertThat(histogramBounds.bottom).isLessThanOrEqualTo(timeBounds.top)
+        assertThat(alertBounds.bottom).isLessThanOrEqualTo(histogramBounds.top)
+        assertNoOverlaps(listOf(timeBounds, histogramBounds, alertBounds))
+    }
+
+    @Test
+    fun `bottom stack order is independent of the request order`() {
+        val timeSlider = stacked(0, BalloonVerticalSlot.BOTTOM, y = 1900)
+        val histogram = stacked(1, BalloonVerticalSlot.MIDDLE, y = 1600)
+        val alert = stacked(2, BalloonVerticalSlot.TOP, y = 1400)
+
+        val placed = layout.place(listOf(timeSlider, alert, histogram))
+        val byId = placed.associateBy { it.id }
+
+        assertThat(byId.getValue(1).bounds.bottom).isLessThanOrEqualTo(byId.getValue(0).bounds.top)
+        assertThat(byId.getValue(2).bounds.bottom).isLessThanOrEqualTo(byId.getValue(1).bounds.top)
+        assertNoOverlaps(placed.map { it.bounds })
+    }
+
+    @Test
+    fun `stacked balloons always point their tail downwards`() {
+        val placed = layout.place(
+            listOf(
+                stacked(0, BalloonVerticalSlot.BOTTOM, y = 1900),
+                stacked(1, BalloonVerticalSlot.MIDDLE, y = 1600),
+                stacked(2, BalloonVerticalSlot.TOP, y = 1400),
+            ),
+        )
+
+        assertThat(placed).allMatch { it.tailSide == BalloonTailSide.TOP }
+    }
+
+    @Test
+    fun `bottom stack avoids the got it button obstacle`() {
+        val obstacle = IntRect(600, 1800, 980, 1950)
+
+        val placed = layout.place(
+            listOf(stacked(0, BalloonVerticalSlot.BOTTOM, y = 1900, size = IntPoint(300, 120))),
+            listOf(obstacle),
+        ).single()
+
+        assertThat(placed.bounds.intersects(obstacle)).isFalse()
+    }
+
+    private fun stacked(id: Int, slot: BalloonVerticalSlot, y: Int, size: IntPoint = IntPoint(200, 100)) =
+        BalloonRequest(
+            id = id,
+            targetCenter = IntPoint(500, y),
+            preferredSize = size,
+            preferredTailSide = BalloonTailSide.TOP,
+            verticalSlot = slot,
+            order = id,
+        )
 
     private fun assertNoOverlaps(rects: List<IntRect>) {
         rects.forEachIndexed { i, first ->
