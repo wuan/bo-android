@@ -86,6 +86,9 @@ class DocBalloonViewBinder(private val layoutInflater: LayoutInflater) {
         params.topMargin = 0
         params.rightMargin = 0
         params.bottomMargin = 0
+        val tailSize = tailLengthFor(side)
+        params.width = tailSize.x
+        params.height = tailSize.y
         tail.setImageResource(tailDrawable(side))
 
         when (side) {
@@ -93,6 +96,8 @@ class DocBalloonViewBinder(private val layoutInflater: LayoutInflater) {
             BalloonTailSide.LEFT, BalloonTailSide.RIGHT -> configureHorizontalTail(params, side, localTipY)
         }
         tail.layoutParams = params
+        // Tails sit just outside the body, so keep them on top of the body and never clipped.
+        tail.bringToFront()
     }
 
     private fun configureVerticalTail(params: RelativeLayout.LayoutParams, side: BalloonTailSide, localTipX: Int) {

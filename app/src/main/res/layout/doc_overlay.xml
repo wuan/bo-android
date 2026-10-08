@@ -5,12 +5,16 @@
     android:layout_height="match_parent"
     android:background="@color/doc_overlay_scrim"
     android:clickable="true"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     android:focusable="true">
 
     <FrameLayout
         android:id="@+id/doc_balloon_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false" />
 
     <Button
         android:id="@+id/doc_button_got_it"

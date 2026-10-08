@@ -742,7 +742,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
      * - bottom stack, from the bottom upwards: time slider (centered), histogram (flush right),
      *   alert indicator (flush left)
      *
-     * The list order is also the placement order inside each group.
+     * Top-row balloons point their tail up (body below the target view), bottom-stack balloons
+     * point their tail down (body above the target view). The list order is also the placement
+     * order inside each group.
      */
     private fun createDocTargets(): List<DocTarget> {
         val buttonColumn = listOf(binding.menu, binding.startStopAnimation, binding.goRealtime, binding.toggleExtendedMode)
@@ -774,21 +776,21 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             DocTarget(
                 binding.timeSlider,
                 getString(R.string.doc_overlay_time_slider),
-                BalloonTailSide.TOP,
+                BalloonTailSide.BOTTOM,
                 horizontalAlignment = BalloonHorizontalAlignment.CENTERED_ON_TARGET,
                 row = BalloonRow.BOTTOM,
             ),
             DocTarget(
                 binding.histogramView,
                 getString(R.string.doc_overlay_histogram),
-                BalloonTailSide.TOP,
+                BalloonTailSide.BOTTOM,
                 horizontalAlignment = BalloonHorizontalAlignment.RIGHT_EDGE,
                 row = BalloonRow.BOTTOM,
             ),
             DocTarget(
                 binding.warning,
                 getString(R.string.doc_overlay_alert),
-                BalloonTailSide.TOP,
+                BalloonTailSide.BOTTOM,
                 horizontalAlignment = BalloonHorizontalAlignment.LEFT_EDGE,
                 row = BalloonRow.BOTTOM,
             ),

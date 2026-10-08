@@ -170,6 +170,74 @@ class MainDocOverlayTest {
         }
     }
 
+    @Test
+    fun `top row balloons point their tail up and are stacked without overlap`() {
+        val activity = Robolectric.buildActivity(Main::class.java).setup().get()
+        layoutActivity(activity)
+
+        val container = activity.findViewById<ViewGroup>(R.id.doc_balloon_container)
+        val topBalloons = listOf(
+            findBalloon(container, activity.getString(R.string.doc_overlay_status))!!,
+            findBalloon(container, activity.getString(R.string.doc_overlay_buttons))!!,
+            findBalloon(container, activity.getString(R.string.doc_overlay_legend))!!,
+        )
+
+        // Tails point up: the tail sits above the body of its balloon.
+        topBalloons.forEach { balloon ->
+            val tail = balloon.findViewById<View>(R.id.doc_balloon_tail)
+            assertThat(tail.width).isGreaterThan(0)
+            assertThat(tail.height).isGreaterThan(0)
+            assertThat(tail.top).isLessThan(balloon.findViewById<View>(R.id.doc_balloon_body).top)
+        }
+        assertNoOverlap(topBalloons)
+    }
+
+    @Test
+    fun `bottom balloons point their tail down and are stacked without overlap`() {
+        val activity = Robolectric.buildActivity(Main::class.java).setup().get()
+        layoutActivity(activity)
+
+        val container = activity.findViewById<ViewGroup>(R.id.doc_balloon_container)
+        val bottomBalloons = listOf(
+            findBalloon(container, activity.getString(R.string.doc_overlay_time_slider))!!,
+            findBalloon(container, activity.getString(R.string.doc_overlay_histogram))!!,
+            findBalloon(container, activity.getString(R.string.doc_overlay_alert))!!,
+        )
+
+        // Tails point down: the tail sits below the body of its balloon.
+        bottomBalloons.forEach { balloon ->
+            val tail = balloon.findViewById<View>(R.id.doc_balloon_tail)
+            assertThat(tail.width).isGreaterThan(0)
+            assertThat(tail.height).isGreaterThan(0)
+            assertThat(tail.top).isGreaterThanOrEqualTo(balloon.findViewById<View>(R.id.doc_balloon_body).bottom)
+        }
+        assertNoOverlap(bottomBalloons)
+    }
+
+    @Test
+    fun `all balloons are pairwise non-overlapping`() {
+        val activity = Robolectric.buildActivity(Main::class.java).setup().get()
+        layoutActivity(activity)
+
+        val container = activity.findViewById<ViewGroup>(R.id.doc_balloon_container)
+        val balloons = (0 until container.childCount).map { container.getChildAt(it) }
+
+        assertThat(balloons).hasSizeGreaterThanOrEqualTo(6)
+        assertNoOverlap(balloons)
+    }
+
+    private fun assertNoOverlap(views: List<View>) {
+        views.forEachIndexed { i, first ->
+            views.drop(i + 1).forEach { second ->
+                val a = Rect(first.left, first.top, first.left + first.width, first.top + first.height)
+                val b = Rect(second.left, second.top, second.left + second.width, second.top + second.height)
+                assertThat(Rect.intersects(a, b))
+                    .describedAs("%s must not overlap %s", a, b)
+                    .isFalse()
+            }
+        }
+    }
+
     private fun findBalloon(container: ViewGroup, text: String): View? {
         for (i in 0 until container.childCount) {
             val child = container.getChildAt(i)

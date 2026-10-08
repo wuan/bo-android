@@ -38,14 +38,26 @@ internal class BalloonGeometry(
         BalloonTailSide.LEFT, BalloonTailSide.RIGHT -> IntPoint(size.x + tailLength, size.y)
     }
 
-    /** The tail tip: the point on the balloon outline that faces the target center. */
+    /**
+     * The point on the balloon box that faces the target: the tip of the tail. The coordinate
+     * along the tail axis is taken from the tail strip (so it is always inside the box), while
+     * the perpendicular coordinate follows the target center and is clamped to the tail width.
+     */
     fun tailTipFor(target: IntPoint, bounds: IntRect, side: BalloonTailSide): IntPoint = when (side) {
-        BalloonTailSide.TOP, BalloonTailSide.BOTTOM -> IntPoint(
+        BalloonTailSide.TOP -> IntPoint(
             target.x.coerceIn(bounds.left, bounds.right - 1),
-            target.y,
+            bounds.top + tailLength,
         )
-        BalloonTailSide.LEFT, BalloonTailSide.RIGHT -> IntPoint(
-            target.x,
+        BalloonTailSide.BOTTOM -> IntPoint(
+            target.x.coerceIn(bounds.left, bounds.right - 1),
+            bounds.bottom - tailLength,
+        )
+        BalloonTailSide.LEFT -> IntPoint(
+            bounds.left + tailLength,
+            target.y.coerceIn(bounds.top, bounds.bottom - 1),
+        )
+        BalloonTailSide.RIGHT -> IntPoint(
+            bounds.right - tailLength,
             target.y.coerceIn(bounds.top, bounds.bottom - 1),
         )
     }

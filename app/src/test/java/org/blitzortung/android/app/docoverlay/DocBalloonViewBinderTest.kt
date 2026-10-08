@@ -148,4 +148,33 @@ class DocBalloonViewBinderTest {
         assertThat(binding.docBalloonTail).isInstanceOf(ImageView::class.java)
         assertThat(binding.root.visibility).isEqualTo(View.VISIBLE)
     }
+
+    @Test
+    fun `tail view gets a non zero size matching the tail dimensions`() {
+        val binding = binder.create(container, "text")
+
+        binder.apply(binding, PlacedBalloon(0, IntRect(0, 0, 200, 100), BalloonTailSide.TOP, IntPoint(100, 0)))
+
+        val params = binding.docBalloonTail.layoutParams as RelativeLayout.LayoutParams
+        assertThat(params.width).isEqualTo(DocBalloonViewBinder.TAIL_WIDTH_PX)
+        assertThat(params.height).isEqualTo(DocBalloonViewBinder.TAIL_LENGTH_PX)
+    }
+
+    @Test
+    fun `tail view is sized correctly for horizontal tails too`() {
+        val binding = binder.create(container, "text")
+
+        binder.apply(binding, PlacedBalloon(0, IntRect(0, 0, 200, 100), BalloonTailSide.LEFT, IntPoint(0, 50)))
+
+        val params = binding.docBalloonTail.layoutParams as RelativeLayout.LayoutParams
+        assertThat(params.width).isEqualTo(DocBalloonViewBinder.TAIL_LENGTH_PX)
+        assertThat(params.height).isEqualTo(DocBalloonViewBinder.TAIL_WIDTH_PX)
+    }
+
+    @Test
+    fun `balloon root does not clip the tail`() {
+        val binding = binder.create(container, "text")
+
+        assertThat(binding.root.clipChildren).isFalse()
+    }
 }

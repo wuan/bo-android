@@ -158,26 +158,37 @@ class DocBalloonLayout(
         placed: MutableMap<Int, PlacedBalloon>,
     ) {
         val ordered = requests.filter { it.row == row }.sortedBy { it.order }
+        var previousBottom: Int? = null
         var previousTop: Int? = null
         for (request in ordered) {
             val bounds = when (row) {
-                BalloonRow.TOP -> placeTopRowBalloon(request, reserved)
+                BalloonRow.TOP -> placeTopRowBalloon(request, previousBottom, reserved)
                 BalloonRow.BOTTOM -> placeBottomStackBalloon(request, previousTop, reserved)
                 BalloonRow.FLOATING -> placeFloatingBalloon(request, reserved)
             }
             placed[request.id] = toPlaced(request, bounds)
             reserved += bounds.inset(-gap, -gap)
-            if (row == BalloonRow.BOTTOM) {
-                previousTop = bounds.top
+            when (row) {
+                BalloonRow.TOP -> previousBottom = bounds.bottom
+                BalloonRow.BOTTOM -> previousTop = bounds.top
+                BalloonRow.FLOATING -> Unit
             }
         }
     }
 
-    /** Top-row balloons all share the same top offset and only slide horizontally. */
-    private fun placeTopRowBalloon(request: BalloonRequest, reserved: List<IntRect>): IntRect {
+    /**
+     * Top-row balloons are stacked downwards from the top edge in order; each one is anchored
+     * directly below the previously placed balloon so they cannot overlap. The horizontal
+     * alignment is kept fixed and the balloon only slides horizontally when it has to.
+     */
+    private fun placeTopRowBalloon(
+        request: BalloonRequest,
+        previousBottom: Int?,
+        reserved: List<IntRect>,
+    ): IntRect {
         val size = geometry.clampSize(request.preferredSize)
-        val box = geometry.boxSize(size, BalloonTailSide.TOP)
-        val top = edgeMargin
+        val box = geometry.boxSize(size, request.preferredTailSide)
+        val top = if (previousBottom == null) edgeMargin else previousBottom + gap
         val left = geometry.alignedLeft(request, box.x)
         val preferred = geometry.clampToContainer(IntRect(left, top, left + box.x, top + box.y))
         val step = (box.x / 2).coerceAtLeast(gap)
@@ -208,7 +219,7 @@ class DocBalloonLayout(
         reserved: List<IntRect>,
     ): IntRect {
         val size = geometry.clampSize(request.preferredSize)
-        val box = geometry.boxSize(size, BalloonTailSide.TOP)
+        val box = geometry.boxSize(size, request.preferredTailSide)
         val preferred = geometry.clampToContainer(bottomStackBounds(request, box, previousTop))
         val step = (box.y / 2).coerceAtLeast(gap)
         val orderedTop = buildList {
@@ -361,13 +372,13 @@ class DocBalloonLayout(
     }
 
     private fun tailSideFor(request: BalloonRequest): BalloonTailSide = when {
-        // Edge aligned balloons point at the target from the opposite border.
+        // Edge aligned floating balloons point at the target from the opposite border.
         request.row == BalloonRow.FLOATING && request.horizontalAlignment == BalloonHorizontalAlignment.RIGHT_EDGE ->
             BalloonTailSide.LEFT
         request.row == BalloonRow.FLOATING && request.horizontalAlignment == BalloonHorizontalAlignment.LEFT_EDGE ->
             BalloonTailSide.RIGHT
-        // Row balloons point at their controls from above.
-        request.row == BalloonRow.TOP || request.row == BalloonRow.BOTTOM -> BalloonTailSide.TOP
+        // Row balloons keep the requested side: top row points up, bottom stack points down.
+        request.row == BalloonRow.TOP || request.row == BalloonRow.BOTTOM -> request.preferredTailSide
         else -> geometry.chooseTailSide(request, geometry.clampSize(request.preferredSize))
     }
 }
