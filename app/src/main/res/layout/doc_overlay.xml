@@ -3,90 +3,14 @@
     android:id="@+id/doc_overlay_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#33000000"
+    android:background="@color/doc_overlay_scrim"
     android:clickable="true"
     android:focusable="true">
 
-    <TextView
-        android:id="@+id/doc_text_status_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:padding="8dp"
-        android:text="@string/doc_overlay_status"
-        android:textColor="@android:color/white"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/doc_text_alert_indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="end"
-        android:padding="8dp"
-        android:text="@string/doc_overlay_alert"
-        android:textColor="@android:color/white"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/doc_text_buttons"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@id/doc_text_alert_indicator"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="end"
-        android:padding="8dp"
-        android:text="@string/doc_overlay_buttons"
-        android:textColor="@android:color/white"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/doc_text_histogram"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_above="@id/doc_text_legend"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
-        android:padding="8dp"
-        android:text="@string/doc_overlay_histogram"
-        android:textColor="@android:color/white"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/doc_text_legend"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_above="@id/doc_text_time_slider"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
-        android:padding="8dp"
-        android:text="@string/doc_overlay_legend"
-        android:textColor="@android:color/white"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/doc_text_time_slider"
+    <FrameLayout
+        android:id="@+id/doc_balloon_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/doc_button_got_it"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center_horizontal"
-        android:padding="8dp"
-        android:text="@string/doc_overlay_time_slider"
-        android:textColor="@android:color/white"
-        android:textSize="14sp" />
+        android:layout_height="match_parent" />
 
     <Button
         android:id="@+id/doc_button_got_it"

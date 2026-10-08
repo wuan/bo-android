@@ -54,6 +54,7 @@ import org.blitzortung.android.app.components.ChangeLogComponent
 import org.blitzortung.android.app.components.VersionComponent
 import org.blitzortung.android.app.controller.ButtonColumnHandler
 import org.blitzortung.android.app.controller.HistoryController
+import org.blitzortung.android.app.docoverlay.BalloonTailSide
 import org.blitzortung.android.app.databinding.MainBinding
 import org.blitzortung.android.app.permission.PermissionRequester
 import org.blitzortung.android.app.permission.PermissionsSupport
@@ -293,7 +294,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 WakeupPermissionRequester(this, preferences),
             )
 
-        docOverlayController = DocOverlayController(binding.root, layoutInflater, preferences)
+        docOverlayController = DocOverlayController(binding.root, layoutInflater, preferences, ::createDocTargets)
         docOverlayController.showIfNotShownBefore()
     }
 
@@ -727,6 +728,23 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             MainPopupMenu(this, anchor, preferences, dataHandler, alertHandler, buildVersion, changeLogComponent)
         popupMenu.onShowDocOverlay = docOverlayController::show
         popupMenu.showPopupMenu()
+    }
+
+    /**
+     * Describes the main screen elements for the quick documentation overlay. Only views that
+     * are currently visible are used; [DocOverlayController] filters the rest out.
+     */
+    private fun createDocTargets(): List<DocTarget> {
+        val buttonColumn = listOf(binding.menu, binding.startStopAnimation, binding.goRealtime, binding.toggleExtendedMode)
+            .firstOrNull { it.isVisible }
+        return listOfNotNull(
+            DocTarget(binding.status, getString(R.string.doc_overlay_status), BalloonTailSide.TOP),
+            DocTarget(binding.warning, getString(R.string.doc_overlay_alert), BalloonTailSide.BOTTOM),
+            buttonColumn?.let { DocTarget(it, getString(R.string.doc_overlay_buttons), BalloonTailSide.RIGHT) },
+            DocTarget(binding.histogramView, getString(R.string.doc_overlay_histogram), BalloonTailSide.BOTTOM),
+            DocTarget(binding.legendView, getString(R.string.doc_overlay_legend), BalloonTailSide.TOP),
+            DocTarget(binding.timeSlider, getString(R.string.doc_overlay_time_slider), BalloonTailSide.BOTTOM),
+        )
     }
 
     companion object {
