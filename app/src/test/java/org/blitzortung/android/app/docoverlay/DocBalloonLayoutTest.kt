@@ -608,6 +608,55 @@ class DocBalloonLayoutTest {
         assertThat(placed.tailTip.y).isLessThanOrEqualTo(placed.bounds.bottom - 1 - indent)
     }
 
+    @Test
+    fun `short container keeps top and bottom groups from overlapping`() {
+        val shortLayout = DocBalloonLayout(
+            containerWidth = 1200,
+            containerHeight = 500,
+            gap = 8,
+            tailLength = 10,
+            edgeMargin = 8,
+        )
+        val requests = shortContainerRequests()
+
+        val placed = shortLayout.place(requests)
+
+        assertThat(placed).hasSize(6)
+        assertNoOverlaps(placed.map { it.bounds })
+    }
+
+    @Test
+    fun `short container keeps the legend balloon above the alert balloon`() {
+        val shortLayout = DocBalloonLayout(
+            containerWidth = 1200,
+            containerHeight = 500,
+            gap = 8,
+            tailLength = 10,
+            edgeMargin = 8,
+        )
+        val requests = shortContainerRequests()
+
+        val byId = shortLayout.place(requests).associateBy { it.id }
+
+        // id 2 is the legend (top group), id 5 is the alert (bottom group).
+        val legend = byId.getValue(2).bounds
+        val alert = byId.getValue(5).bounds
+        assertThat(legend.top).isLessThan(alert.top)
+        assertThat(legend.bottom).isLessThanOrEqualTo(alert.top)
+    }
+
+    private fun shortContainerRequests(): List<BalloonRequest> {
+        val topSize = IntPoint(250, 120)
+        return listOf(
+            topRow(0, BalloonHorizontalAlignment.CENTERED_ON_TARGET, size = topSize),
+            topRow(1, BalloonHorizontalAlignment.RIGHT_EDGE, size = topSize),
+            topRow(2, BalloonHorizontalAlignment.LEFT_EDGE, size = topSize),
+            stacked(3, order = 0, y = 460, size = topSize, alignment = BalloonHorizontalAlignment.CENTERED_ON_TARGET),
+            stacked(4, order = 1, y = 320, size = topSize, alignment = BalloonHorizontalAlignment.RIGHT_EDGE),
+            stacked(5, order = 2, y = 180, size = topSize, alignment = BalloonHorizontalAlignment.LEFT_EDGE),
+        )
+    }
+
     private fun assertNoOverlaps(rects: List<IntRect>) {
         rects.forEachIndexed { i, first ->
             rects.drop(i + 1).forEach { second ->

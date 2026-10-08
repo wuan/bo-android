@@ -177,9 +177,10 @@ class DocBalloonLayout(
     }
 
     /**
-     * Top-row balloons are stacked downwards from the top edge in order; each one is anchored
-     * directly below the previously placed balloon so they cannot overlap. The horizontal
-     * alignment is kept fixed and the balloon only slides horizontally when it has to.
+     * Top-row balloons start at the top edge and are stacked downwards in order. To keep a
+     * balloon clear of the bottom group in short (landscape) containers it may also slide back
+     * up towards the top edge; if every vertical slot is taken a full two dimensional search is
+     * used, so the top and bottom groups are always collision checked against each other.
      */
     private fun placeTopRowBalloon(
         request: BalloonRequest,
@@ -188,30 +189,26 @@ class DocBalloonLayout(
     ): IntRect {
         val size = geometry.clampSize(request.preferredSize)
         val box = geometry.boxSize(size, request.preferredTailSide)
-        val top = if (previousBottom == null) edgeMargin else previousBottom + gap
+        val anchorTop = if (previousBottom == null) edgeMargin else previousBottom + gap
         val left = geometry.alignedLeft(request, box.x)
-        val preferred = geometry.clampToContainer(IntRect(left, top, left + box.x, top + box.y))
-        val step = (box.x / 2).coerceAtLeast(gap)
-        val orderedLeft = buildList {
-            add(preferred.left)
-            for (i in 1..containerWidth / step) {
-                add(preferred.left + i * step)
-                add(preferred.left - i * step)
+        val step = (box.y / 2).coerceAtLeast(gap)
+        val orderedY = buildList {
+            add(anchorTop)
+            // Prefer moving back up (over a tall view) before sliding further down.
+            for (i in 1..containerHeight / step) {
+                add(anchorTop - i * step)
+                add(anchorTop + i * step)
             }
         }
-        for (candidateLeft in orderedLeft) {
-            val candidate = geometry.clampToContainer(IntRect(candidateLeft, top, candidateLeft + box.x, top + box.y))
-            if (reserved.none { it.intersects(candidate) }) {
-                return candidate
-            }
-        }
-        return preferred
+        // Top groups stay in the upper half where possible so the legend ends up above the alert.
+        val upperHalf = orderedY.filter { it + box.y <= containerHeight / 2 + edgeMargin }
+        return resolveWithVerticalScan(left, box, upperHalf + orderedY, reserved)
     }
 
     /**
-     * Bottom-stack balloons ascend from the bottom edge in order, keeping their x anchor.
-     * Each balloon is anchored directly above the previously placed one so that differing
-     * balloon heights cannot make them overlap.
+     * Bottom-stack balloons rise from the bottom edge in order, keeping their x anchor. In short
+     * containers they may also slide back down towards the bottom edge to stay clear of the top
+     * group, with a full two dimensional fallback.
      */
     private fun placeBottomStackBalloon(
         request: BalloonRequest,
@@ -224,17 +221,36 @@ class DocBalloonLayout(
         val step = (box.y / 2).coerceAtLeast(gap)
         val orderedTop = buildList {
             add(preferred.top)
+            // Prefer moving back down towards the bottom edge before rising into the top group.
             for (i in 1..containerHeight / step) {
+                add(preferred.top + i * step)
                 add(preferred.top - i * step)
             }
         }
+        // Bottom groups stay in the lower half where possible so the alert sits below the legend.
+        val lowerHalf = orderedTop.filter { it >= containerHeight / 2 - edgeMargin }
+        return resolveWithVerticalScan(preferred.left, box, lowerHalf + orderedTop, reserved)
+    }
+
+    /**
+     * Tries the given vertical positions keeping the x anchor fixed, then falls back to a full
+     * two dimensional search so a balloon never ends up on top of an already placed one.
+     */
+    private fun resolveWithVerticalScan(
+        left: Int,
+        box: IntPoint,
+        orderedTop: List<Int>,
+        reserved: List<IntRect>,
+    ): IntRect {
         for (top in orderedTop) {
-            val candidate = geometry.clampToContainer(IntRect(preferred.left, top, preferred.left + box.x, top + box.y))
+            val candidate = geometry.clampToContainer(IntRect(left, top, left + box.x, top + box.y))
             if (reserved.none { it.intersects(candidate) }) {
                 return candidate
             }
         }
-        return preferred
+        val anchorTop = orderedTop.first()
+        val anchor = geometry.clampToContainer(IntRect(left, anchorTop, left + box.x, anchorTop + box.y))
+        return findFreeSlot(anchor, box, reserved)
     }
 
     /**
@@ -340,9 +356,9 @@ class DocBalloonLayout(
         val stepY = (size.y / 2).coerceAtLeast(gap)
         val startX = preferred.left - preferred.left % stepX
         val orderedX = buildList {
+            add(startX)
             add(containerWidth - edgeMargin - size.x)
             add(edgeMargin)
-            add(startX)
             for (i in 1..containerWidth / stepX) {
                 add(startX + i * stepX)
                 add(startX - i * stepX)
