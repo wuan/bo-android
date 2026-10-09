@@ -78,7 +78,7 @@ constructor() {
         val dataArea = calculateDataArea(boundingBox)
 
         val gridParameters = gridParameters
-        val isOutside = if (gridParameters == null) false else this@LocalData.isOutside(boundingBox, gridParameters)
+        val isOutside = gridParameters != null && this@LocalData.isOutside(boundingBox, gridParameters)
         val isChanged = this.dataArea != dataArea
         return if (
             gridParameters != null && isOutside && isChanged ||

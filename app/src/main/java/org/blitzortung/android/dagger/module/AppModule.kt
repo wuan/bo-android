@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageInfo
 import android.os.PowerManager
 import android.os.Vibrator
+import androidx.core.content.pm.PackageInfoCompat
 import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
@@ -41,7 +42,7 @@ class AppModule
         @Provides
         @Named("agentSuffix")
         @Singleton
-        fun agentSuffix(packageInfo: PackageInfo): String = "-${packageInfo.versionCode}"
+        fun agentSuffix(packageInfo: PackageInfo): String = "-${PackageInfoCompat.getLongVersionCode(packageInfo)}"
 
         @Provides
         fun notificationManager(): NotificationManager =

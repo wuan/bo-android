@@ -70,8 +70,8 @@ enum class PreferenceKey(val key: String) {
         init {
             for (key in entries) {
                 val keyString = key.toString()
-                if (keyString in stringToValueMap) {
-                    throw IllegalStateException("key value '%s' already defined".format(keyString))
+                check(keyString !in stringToValueMap) {
+                    "key value '%s' already defined".format(keyString)
                 }
                 stringToValueMap[keyString] = key
             }

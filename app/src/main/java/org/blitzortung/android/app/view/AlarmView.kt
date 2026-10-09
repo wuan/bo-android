@@ -168,37 +168,40 @@ constructor(
 
         drawCanvas?.also { drawCanvas ->
             drawCanvas.clear()
-            val warning = this@AlarmView.warning
-            when (warning) {
-                is LocalActivity if intervalDuration != 0 -> {
-                    localActivityRenderer.renderLocalActivity(warning, alarmViewData, drawCanvas)
-                }
+            drawWarning(drawCanvas)
+            drawCanvas.update(canvas)
+        }
+    }
 
-                Outlying -> {
-                    symbolRenderer.drawOutOfRangeSymbol(alarmViewData, drawCanvas.canvas)
-                }
+    private fun drawWarning(drawCanvas: CanvasWrapper) {
+        val targetCanvas = drawCanvas.canvas
+        val canDrawDescription = enableDescriptionText && min(width, height) > TEXT_MINIMUM_SIZE
+        when (val warning = this.warning) {
+            is LocalActivity if intervalDuration != 0 -> {
+                localActivityRenderer.renderLocalActivity(warning, alarmViewData, drawCanvas)
+            }
 
-                NoLocation -> {
-                    if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
-                        symbolRenderer.drawAlertOrLocationMissingMessage(center, width, drawCanvas.canvas)
-                    } else {
-                        symbolRenderer.drawNoLocationSymbol(alarmViewData, drawCanvas.canvas)
-                    }
-                }
+            Outlying -> {
+                symbolRenderer.drawOutOfRangeSymbol(alarmViewData, targetCanvas)
+            }
 
-                else -> {
-                    if (enableDescriptionText && size > TEXT_MINIMUM_SIZE) {
-                        symbolRenderer.drawAlertOrLocationMissingMessage(center, width, drawCanvas.canvas)
-                    } else {
-                        if (location != null) {
-                            symbolRenderer.drawOwnLocationSymbol(alarmViewData, drawCanvas.canvas)
-                        } else {
-                            symbolRenderer.drawNoLocationSymbol(alarmViewData, drawCanvas.canvas)
-                        }
-                    }
+            NoLocation -> {
+                if (canDrawDescription) {
+                    symbolRenderer.drawAlertOrLocationMissingMessage(alarmViewData.center, width, targetCanvas)
+                } else {
+                    symbolRenderer.drawNoLocationSymbol(alarmViewData, targetCanvas)
                 }
             }
-            drawCanvas.update(canvas)
+
+            else -> {
+                if (canDrawDescription) {
+                    symbolRenderer.drawAlertOrLocationMissingMessage(alarmViewData.center, width, targetCanvas)
+                } else if (location != null) {
+                    symbolRenderer.drawOwnLocationSymbol(alarmViewData, targetCanvas)
+                } else {
+                    symbolRenderer.drawNoLocationSymbol(alarmViewData, targetCanvas)
+                }
+            }
         }
     }
 

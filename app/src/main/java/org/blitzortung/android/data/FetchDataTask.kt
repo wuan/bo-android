@@ -2,6 +2,7 @@ package org.blitzortung.android.data
 
 import android.util.Log
 import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -14,6 +15,7 @@ import org.blitzortung.android.data.provider.result.DataReceived
 internal open class FetchDataTask(
     private val dataMode: DataMode,
     private val dataProvider: DataProvider,
+    private val backgroundDispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val resultConsumer: (DataReceived) -> Unit,
 ) : CoroutineScope {
     private var job: Job = Job()
@@ -38,7 +40,7 @@ internal open class FetchDataTask(
         history: History?,
         flags: Flags,
     ): DataReceived? =
-        withContext(Dispatchers.IO) {
+        withContext(backgroundDispatcher) {
             try {
                 dataProvider.retrieveData {
                     if (dataMode.grid) {

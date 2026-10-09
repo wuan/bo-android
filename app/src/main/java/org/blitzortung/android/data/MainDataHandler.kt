@@ -182,7 +182,7 @@ constructor(
         var flags = Flags(mode = mode)
         val sequenceNumber = sequenceNumber.incrementAndGet()
 
-        val cachedResult = cache.get(parameters)
+        val cachedResult = cache[parameters]
         if (cachedResult != null) {
             Log.d(LOG_TAG, "MainDataHandler.updateData() cached $parameters")
             sendEvent(cachedResult.copy(sequenceNumber = sequenceNumber))
@@ -520,6 +520,7 @@ constructor(
     private val animatorListener =
         object : AnimatorListener {
             override fun onAnimationStart(animation: Animator) {
+                // no-op; nothing to do when the map animation starts
             }
 
             override fun onAnimationEnd(animation: Animator) {
@@ -531,6 +532,7 @@ constructor(
             }
 
             override fun onAnimationRepeat(animation: Animator) {
+                // no-op; repeating animations do not trigger a data update
             }
         }
 

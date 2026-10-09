@@ -133,7 +133,6 @@ class RegionView
                         foregroundPaint.strokeWidth = 1f
                         drawBox(canvas, x1, y1, x2, y2, foregroundPaint)
                     }
-                    topCoordinate += textSize
 
                     foregroundPaint.strokeWidth = 3f
                     foregroundPaint.color = defaultForegroundColor
@@ -176,8 +175,6 @@ class RegionView
                 invalidate()
             }
         }
-
-        private fun isVisible(gridParameters: GridParameters?) = gridParameters != null && !gridParameters.isGlobal
 
         override fun onScroll(event: ScrollEvent?): Boolean {
             return if (event != null) {

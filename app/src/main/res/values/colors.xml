@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="Red">#f00</color>
     <color name="RedWarn">#f64</color>
-    <color name="Orange">#f80</color>
     <color name="Yellow">#ff0</color>
     <color name="Green">#0f0</color>
     <color name="White">#fff</color>

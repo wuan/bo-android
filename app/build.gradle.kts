@@ -87,71 +87,69 @@ kotlin {
     }
 }
 
-val daggerVersion = "2.60.1"
-
 dependencies {
-    implementation("androidx.appcompat:appcompat:1.8.0")
-    implementation("androidx.media:media:1.8.0")
-    implementation("androidx.core:core-ktx:1.19.0")
-    implementation("androidx.recyclerview:recyclerview:1.4.0")
-    implementation("androidx.work:work-runtime-ktx:2.11.2")
-    implementation("androidx.activity:activity-ktx:1.13.0")
-    implementation("androidx.fragment:fragment-ktx:1.9.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.11.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
-    implementation("org.osmdroid:osmdroid-android:6.1.20")
-    implementation("androidx.preference:preference-ktx:1.2.1")
-    implementation("com.google.android.material:material:1.14.0")
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.media)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.osmdroid.android)
+    implementation(libs.androidx.preference.ktx)
+    implementation(libs.material)
 
     // Dagger2
-    implementation("com.google.dagger:dagger:$daggerVersion")
-    implementation("com.google.dagger:dagger-android:$daggerVersion")
-    implementation("com.google.dagger:dagger-android-support:$daggerVersion")
-    implementation("androidx.test.ext:junit-ktx:1.3.0")
-    ksp("com.google.dagger:dagger-android-processor:$daggerVersion")
-    ksp("com.google.dagger:dagger-compiler:$daggerVersion")
+    implementation(libs.dagger)
+    implementation(libs.dagger.android)
+    implementation(libs.dagger.android.support)
+    implementation(libs.androidx.test.ext.junit.ktx)
+    ksp(libs.dagger.android.processor)
+    ksp(libs.dagger.compiler)
 
     // Unit Testing
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.assertj:assertj-core:3.27.7")
-    testImplementation("io.mockk:mockk:1.14.11")
-    testImplementation("org.robolectric:robolectric:4.17")
-    testImplementation("androidx.test:core:1.7.0")
-    testImplementation("androidx.test:core-ktx:1.7.0")
-    testImplementation("androidx.test.ext:junit:1.3.0")
-    testImplementation("androidx.test.ext:junit-ktx:1.3.0")
+    testImplementation(libs.junit)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.mockk)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.core.ktx)
+    testImplementation(libs.androidx.test.ext.junit)
+    testImplementation(libs.androidx.test.ext.junit.ktx)
 
     // Kotlin Coroutines Testing
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
+    testImplementation(libs.kotlinx.coroutines.test)
 
     // Turbine - Flow Testing
-    testImplementation("app.cash.turbine:turbine:1.2.1")
+    testImplementation(libs.turbine)
 
     // AndroidX Arch Core Testing (LiveData/ViewModel testing)
-    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation(libs.androidx.arch.core.testing)
 
     // AndroidX Test Rules
-    testImplementation("androidx.test:rules:1.7.0")
+    testImplementation(libs.androidx.test.rules)
 
     // Fragment Testing
-    debugImplementation("androidx.fragment:fragment-testing:1.9.0")
+    debugImplementation(libs.androidx.fragment.testing)
 
     // Instrumented Testing
-    androidTestImplementation("androidx.test:runner:1.7.0")
-    androidTestImplementation("androidx.test:rules:1.7.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
-    androidTestImplementation("androidx.test.espresso:espresso-intents:3.7.0")
-    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.7.0")
-    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.4.0")
-    androidTestImplementation("androidx.test.ext:junit:1.3.0")
-    androidTestImplementation("androidx.test.ext:junit-ktx:1.3.0")
-    androidTestImplementation("io.mockk:mockk-android:1.14.11")
-    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.espresso.intents)
+    androidTestImplementation(libs.androidx.espresso.contrib)
+    androidTestImplementation(libs.androidx.test.uiautomator)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.ext.junit.ktx)
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 
     // Compose Testing (if needed in future)
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.10.2")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.10.2")
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
 
 tasks.withType<Test> {
@@ -164,6 +162,8 @@ tasks.withType<Test> {
 }
 
 tasks.register<JacocoReport>("jacocoTestReport") {
+    group = "verification"
+    description = "Generates the JaCoCo coverage report from the debug unit test run."
     dependsOn("testDebugUnitTest")
 
     reports {

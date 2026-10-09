@@ -37,9 +37,7 @@ class StrikeOverlay(strike: Strike) {
     ) {
         var shape: LightningShape? = shape
         if (gridParameters != null) {
-            if (shape !is GridShape) {
-                shape = GridShape(center)
-            }
+            val gridShape = if (shape !is GridShape) GridShape(center) else shape
 
             val lonDelta = gridParameters.longitudeDelta / 2.0f
             val latDelta = gridParameters.latitudeDelta / 2.0f
@@ -61,9 +59,8 @@ class StrikeOverlay(strike: Strike) {
             )
             topLeft.offset(-centerPoint.x, -centerPoint.y)
             bottomRight.offset(-centerPoint.x, -centerPoint.y)
-            if (shape is GridShape) {
-                shape.update(topLeft, bottomRight, color, multiplicity, textColor)
-            }
+            gridShape.update(topLeft, bottomRight, color, multiplicity, textColor)
+            shape = gridShape
         } else {
             if (shape == null) {
                 shape = StrikeShape(center)

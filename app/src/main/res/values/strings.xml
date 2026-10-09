@@ -355,6 +355,10 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="osmdroid_storage_warning">Cannot find writable storage for map. Please report.</string>
     <string name="changelog">Change log</string>
     <string name="menu">Open menu</string>
+    <string name="start_stop_animation">Start or stop animation</string>
+    <string name="go_realtime">Show realtime data</string>
+    <string name="toggle_extended_mode">Toggle extended mode</string>
+    <string name="alarm_diagram">Lightning alert diagram</string>
     <string name="slider_current">now</string>
     <string name="slider_past">past</string>
     <string name="slider_legend">[hours]</string>
