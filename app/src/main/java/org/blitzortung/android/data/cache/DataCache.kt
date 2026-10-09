@@ -14,7 +14,7 @@ class DataCache
     constructor() {
         val cache = hashMapOf<Parameters, Timestamped<DataReceived>>()
 
-        fun get(
+        operator fun get(
             parameters: Parameters,
             expiryTime: Long = DEFAULT_EXPIRY_TIME,
         ): DataReceived? {

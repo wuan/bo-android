@@ -182,7 +182,7 @@ constructor(
         var flags = Flags(mode = mode)
         val sequenceNumber = sequenceNumber.incrementAndGet()
 
-        val cachedResult = cache.get(parameters)
+        val cachedResult = cache[parameters]
         if (cachedResult != null) {
             Log.d(LOG_TAG, "MainDataHandler.updateData() cached $parameters")
             sendEvent(cachedResult.copy(sequenceNumber = sequenceNumber))
