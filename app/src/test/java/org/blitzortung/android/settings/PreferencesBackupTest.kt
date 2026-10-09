@@ -201,6 +201,45 @@ class PreferencesBackupTest {
     }
 
     @Test
+    fun planImportCoercesAllSupportedNumericTypes() {
+        val file: Map<String, Any> =
+            mapOf(
+                "long_from_int" to 7L,
+                "float_from_int" to 7,
+                "float_from_long" to 7L,
+                "float_from_double" to 7.5,
+                "double_from_int" to 7,
+                "double_from_long" to 7L,
+                "double_from_float" to 7.5f,
+                "string_value" to "hello",
+                "boolean_value" to true,
+            )
+        val device: Map<String, Any> =
+            mapOf(
+                "long_from_int" to 0L,
+                "float_from_int" to 0f,
+                "float_from_long" to 0f,
+                "float_from_double" to 0f,
+                "double_from_int" to 0.0,
+                "double_from_long" to 0.0,
+                "double_from_float" to 0.0,
+                "string_value" to "",
+                "boolean_value" to false,
+            )
+
+        val plan = planSuccess(file, device)
+
+        assertThat(plan.toApply["float_from_int"]).isEqualTo(7f)
+        assertThat(plan.toApply["float_from_long"]).isEqualTo(7f)
+        assertThat(plan.toApply["float_from_double"]).isEqualTo(7.5f)
+        assertThat(plan.toApply["double_from_int"]).isEqualTo(7.0)
+        assertThat(plan.toApply["double_from_long"]).isEqualTo(7.0)
+        assertThat(plan.toApply["double_from_float"]).isEqualTo(7.5)
+        assertThat(plan.toApply["string_value"]).isEqualTo("hello")
+        assertThat(plan.toApply["boolean_value"]).isEqualTo(true)
+    }
+
+    @Test
     fun planImportRejectsKnownKeyWithUnexpectedType() {
         val file: Map<String, Any> = mapOf("alarm_enabled" to "not-a-boolean")
         val device: Map<String, Any> = mapOf("alarm_enabled" to false)
@@ -211,6 +250,44 @@ class PreferencesBackupTest {
         assertThat((result as ImportPlanResult.Failure).key).isEqualTo("alarm_enabled")
     }
 
+    @Test
+    fun planImportRejectsLongExpectedButStringProvided() {
+        val result = PreferencesBackup.planImport(mapOf("map_scale" to "1"), mapOf("map_scale" to 1L))
+
+        assertThat(result).isInstanceOf(ImportPlanResult.Failure::class.java)
+        assertThat((result as ImportPlanResult.Failure).key).isEqualTo("map_scale")
+    }
+
+    @Test
+    fun planImportRejectsFloatExpectedButBooleanProvided() {
+        val result = PreferencesBackup.planImport(mapOf("map_scale" to true), mapOf("map_scale" to 1f))
+
+        assertThat(result).isInstanceOf(ImportPlanResult.Failure::class.java)
+        assertThat((result as ImportPlanResult.Failure).key).isEqualTo("map_scale")
+    }
+
+    @Test
+    fun planImportRejectsDoubleExpectedButBooleanProvided() {
+        val result = PreferencesBackup.planImport(mapOf("map_scale" to true), mapOf("map_scale" to 1.0))
+
+        assertThat(result).isInstanceOf(ImportPlanResult.Failure::class.java)
+        assertThat((result as ImportPlanResult.Failure).key).isEqualTo("map_scale")
+    }
+
+    @Test
+    fun planImportRejectsStringExpectedButLongProvided() {
+        val result = PreferencesBackup.planImport(mapOf("map_scale" to 1L), mapOf("map_scale" to "1"))
+
+        assertThat(result).isInstanceOf(ImportPlanResult.Failure::class.java)
+        assertThat((result as ImportPlanResult.Failure).key).isEqualTo("map_scale")
+    }
+
+    @Test
+    fun planImportRejectsUnknownDeviceTypeWithNull() {
+        val result = PreferencesBackup.planImport(mapOf("map_scale" to 1), mapOf("map_scale" to Any()))
+
+        assertThat(result).isInstanceOf(ImportPlanResult.Failure::class.java)
+    }
     @Test
     fun planImportRejectsIntExpectedButFloatProvided() {
         val result = PreferencesBackup.planImport(mapOf("map_scale" to 75.5), mapOf("map_scale" to 75))

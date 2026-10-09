@@ -197,6 +197,169 @@ class JsonRpcDataProviderTest {
         )
     }
 
+    @Test
+    fun getsStrikes() {
+        val parameters =
+            Parameters(
+                region = LOCAL_REGION,
+                interval =
+                    TimeInterval(
+                        offset = -1,
+                        duration = 60,
+                    ),
+                countThreshold = 5,
+                gridSize = 5000,
+                dataArea = DataArea(5, 6, 5),
+            )
+        val history = History()
+        val flags = Flags()
+
+        val response = JSONObject()
+        response.put("t", "20230326T18:49:34")
+        response.put("s", JSONArray())
+        response.put("h", JSONArray(listOf(1, 2, 3)))
+
+        every {
+            client.call(
+                URL(SERVICE_URL),
+                "get_strikes",
+                parameters.intervalDuration,
+                parameters.intervalOffset,
+            )
+        } returns JsonRpcResponse(response)
+
+        val result: DataReceived = uut.retrieveData { getStrikes(parameters, history, flags) }
+
+        assertThat(result.strikes).isEmpty()
+    }
+
+    @Test
+    fun getStrikesGridWrapsIOException() {
+        val parameters = Parameters(region = GLOBAL_REGION, gridSize = 25000)
+
+        every {
+            client.call(
+                URL(SERVICE_URL),
+                "get_global_strikes_grid",
+                parameters.intervalDuration,
+                parameters.gridSize,
+                parameters.intervalOffset,
+                parameters.countThreshold,
+            )
+        } throws java.io.IOException("boom")
+
+        val failure =
+            runCatching {
+                uut.retrieveData { getStrikesGrid(parameters, History(), Flags()) }
+            }
+
+        assertThat(failure.exceptionOrNull())
+            .isInstanceOf(org.blitzortung.android.data.provider.DataProviderException::class.java)
+    }
+
+    @Test
+    fun getStrikesGridWrapsJSONException() {
+        val parameters = Parameters(region = GLOBAL_REGION, gridSize = 25000)
+
+        val response = JSONObject()
+        response.put("t", "20230326T18:49:34")
+        // "r" missing -> JSONException while parsing the grid data
+
+        every {
+            client.call(
+                URL(SERVICE_URL),
+                "get_global_strikes_grid",
+                parameters.intervalDuration,
+                parameters.gridSize,
+                parameters.intervalOffset,
+                parameters.countThreshold,
+            )
+        } returns JsonRpcResponse(response)
+
+        val failure =
+            runCatching {
+                uut.retrieveData { getStrikesGrid(parameters, History(), Flags()) }
+            }
+
+        assertThat(failure.exceptionOrNull())
+            .isInstanceOf(org.blitzortung.android.data.provider.DataProviderException::class.java)
+    }
+
+    @Test
+    fun getStrikesWrapsIOException() {
+        val parameters = Parameters(region = LOCAL_REGION, dataArea = DataArea(5, 6, 5), gridSize = 5000)
+
+        every {
+            client.call(
+                URL(SERVICE_URL),
+                "get_strikes",
+                parameters.intervalDuration,
+                parameters.intervalOffset,
+            )
+        } throws java.io.IOException("boom")
+
+        val failure =
+            runCatching {
+                uut.retrieveData { getStrikes(parameters, History(), Flags()) }
+            }
+
+        assertThat(failure.exceptionOrNull())
+            .isInstanceOf(org.blitzortung.android.data.provider.DataProviderException::class.java)
+    }
+
+    @Test
+    fun getStrikesWrapsJSONException() {
+        val parameters = Parameters(region = LOCAL_REGION, dataArea = DataArea(5, 6, 5), gridSize = 5000)
+
+        val response = JSONObject()
+        response.put("t", "20230326T18:49:34")
+        // "s" missing -> JSONException while parsing the strikes
+
+        every {
+            client.call(
+                URL(SERVICE_URL),
+                "get_strikes",
+                parameters.intervalDuration,
+                parameters.intervalOffset,
+            )
+        } returns JsonRpcResponse(response)
+
+        val failure =
+            runCatching {
+                uut.retrieveData { getStrikes(parameters, History(), Flags()) }
+            }
+
+        assertThat(failure.exceptionOrNull())
+            .isInstanceOf(org.blitzortung.android.data.provider.DataProviderException::class.java)
+    }
+
+    @Test
+    fun invalidServiceUrlFallsBackToDefault() {
+        val context = RuntimeEnvironment.getApplication()
+        val preferences = context.getSharedPreferences("invalid-url-prefs", Context.MODE_PRIVATE)
+        val edit = preferences.edit()
+        edit.put(PreferenceKey.SERVICE_URL, "not a url")
+        edit.apply()
+
+        val provider = JsonRpcDataProvider(preferences, client)
+
+        val parameters = Parameters(region = GLOBAL_REGION, gridSize = 25000)
+        every {
+            client.call(
+                any<URL>(),
+                "get_global_strikes_grid",
+                parameters.intervalDuration,
+                parameters.gridSize,
+                parameters.intervalOffset,
+                parameters.countThreshold,
+            )
+        } returns JsonRpcResponse(createResponse())
+
+        val result: DataReceived = provider.retrieveData { getStrikesGrid(parameters, History(), Flags()) }
+
+        assertThat(result).isNotNull
+    }
+
     private fun createResponse(): JSONObject {
         val response = JSONObject()
         response.put("t", "20230326T18:49:34")
