@@ -46,10 +46,14 @@ class NotificationPermissionRequester(
         val backgroundAlertEnabled = isBackgroundAlertEnabled(preferences)
 
         return if (requestCode == REQUEST_CODE_POST_NOTIFICATIONS && grantResults.isNotEmpty()) {
-            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED && (alertEnabled || backgroundAlertEnabled)) {
+            val notificationDenied =
+                grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_DENIED
+            val alertsRequired = alertEnabled || backgroundAlertEnabled
+            if (notificationDenied && alertsRequired) {
                 Log.i(
                     LOG_TAG,
-                    "Main.onRequestPermissionResult() POST_NOTIFICATIONS permission was NOT granted but is required for alerts. Disabling alerts and background queries",
+                    "Main.onRequestPermissionResult() POST_NOTIFICATIONS permission was NOT granted " +
+                        "but is required for alerts. Disabling alerts and background queries",
                 )
                 Toast.makeText(activity, R.string.post_notifications_required_for_alerts, Toast.LENGTH_LONG).show()
                 preferences.edit {

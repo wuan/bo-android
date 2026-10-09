@@ -80,11 +80,9 @@ constructor() {
         val gridParameters = gridParameters
         val isOutside = gridParameters != null && this@LocalData.isOutside(boundingBox, gridParameters)
         val isChanged = this.dataArea != dataArea
-        return if (
-            gridParameters != null && isOutside && isChanged ||
-            (gridParameters == null || gridParameters.isGlobal ) && isChanged ||
-            force
-        ) {
+        val outsideAndChanged = gridParameters != null && isOutside && isChanged
+        val globalOrUnsetAndChanged = (gridParameters == null || gridParameters.isGlobal) && isChanged
+        return if (outsideAndChanged || globalOrUnsetAndChanged || force) {
             if (dataArea != null) {
                 Log.d(
                     LOG_TAG,

@@ -60,10 +60,13 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
             if (isAtLeast(Build.VERSION_CODES.N)) {
                 Html.fromHtml(htmlString, FROM_HTML_MODE_COMPACT).toString()
             } else {
+                @Suppress("TooGenericExceptionCaught")
                 try {
                     Html.fromHtml(htmlString).toString()
-                } catch (throwable: Throwable) {
-                    Log.w(Main.LOG_TAG, throwable)
+                } catch (e: RuntimeException) {
+                    // detekt: Html.fromHtml on API < 24 has no specific exception type; a malformed
+                    // tag can throw any RuntimeException, so keep the broad catch.
+                    Log.w(Main.LOG_TAG, e)
                     return null
                 }
             }

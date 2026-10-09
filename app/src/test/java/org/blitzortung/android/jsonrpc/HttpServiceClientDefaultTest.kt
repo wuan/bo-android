@@ -109,11 +109,12 @@ class MockHttpURLConnection(
     @Throws(IOException::class)
     override fun getInputStream(): InputStream = responseSupplier().inputStream()
 
+    // No-op: the mocked connection is already "connected" and has no socket to open.
     @Throws(IOException::class)
-    override fun connect() {
-    }
+    override fun connect(): Unit = Unit
 
-    override fun disconnect() {}
+    // No-op: there is no underlying socket to close.
+    override fun disconnect(): Unit = Unit
 
     override fun usingProxy(): Boolean = false
 

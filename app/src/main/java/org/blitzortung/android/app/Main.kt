@@ -96,6 +96,9 @@ import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
 
+// detekt: Main is the foreground Activity that wires many UI components together. Splitting it
+// requires a larger architectural refactor; tracked as a follow-up instead of forcing it here.
+@Suppress("TooManyFunctions")
 class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private var backgroundAlertEnabled: Boolean = false
     private lateinit var statusComponent: StatusComponent
@@ -705,7 +708,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private fun configureMenuAccess() {
         val config = ViewConfiguration.get(this)
 
-        if (isAtLeast(Build.VERSION_CODES.LOLLIPOP) || isAtLeast(Build.VERSION_CODES.ICE_CREAM_SANDWICH) && !config.hasPermanentMenuKey()) {
+        val showMenu = isAtLeast(Build.VERSION_CODES.LOLLIPOP) ||
+            isAtLeast(Build.VERSION_CODES.ICE_CREAM_SANDWICH) && !config.hasPermanentMenuKey()
+        if (showMenu) {
             binding.menu.visibility = View.VISIBLE
             binding.menu.setOnClickListener {
                 showPopupMenu(binding.menu)
@@ -717,7 +722,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     private fun showPopupMenu(anchor: View) {
         val popupMenu =
-            MainPopupMenu(this, anchor, preferences, dataHandler, alertHandler, buildVersion, changeLogComponent)
+            MainPopupMenu(
+                this,
+                anchor,
+                MainPopupMenuDependencies(preferences, dataHandler, alertHandler, buildVersion, changeLogComponent),
+            )
         popupMenu.onShowDocOverlay = docOverlayController::show
         popupMenu.showPopupMenu()
     }
@@ -737,8 +746,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
      * order inside each group.
      */
     private fun createDocTargets(): List<DocTarget> {
-        val buttonColumn = listOf(binding.menu, binding.startStopAnimation, binding.goRealtime, binding.toggleExtendedMode)
-            .firstOrNull { it.isVisible }
+        val buttonColumn = listOf(
+            binding.menu,
+            binding.startStopAnimation,
+            binding.goRealtime,
+            binding.toggleExtendedMode,
+        ).firstOrNull { it.isVisible }
         return listOfNotNull(
             DocTarget(
                 binding.status,

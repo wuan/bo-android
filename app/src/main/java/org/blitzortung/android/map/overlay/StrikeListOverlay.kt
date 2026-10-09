@@ -148,7 +148,8 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
         strikeList.removeAll { it.timestamp < expireTime }
         Log.v(
             Main.LOG_TAG,
-            "StrikesListOverlay.expireStrikes() expired ${sizeBefore - strikeList.size} from $sizeBefore (first: $firstTime, difference: $difference, ref: $referenceTime",
+            "StrikesListOverlay.expireStrikes() expired ${sizeBefore - strikeList.size} from $sizeBefore " +
+                "(first: $firstTime, difference: $difference, ref: $referenceTime",
         )
 
         updateTotalNumberOfStrikes()

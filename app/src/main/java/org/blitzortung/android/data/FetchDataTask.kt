@@ -41,6 +41,9 @@ internal open class FetchDataTask(
         flags: Flags,
     ): DataReceived? =
         withContext(backgroundDispatcher) {
+            // detekt: this is the task-level safety net; any provider failure must be converted into a
+            // failed result rather than crashing the coroutine, so the broad catch is intentional.
+            @Suppress("TooGenericExceptionCaught")
             try {
                 dataProvider.retrieveData {
                     if (dataMode.grid) {

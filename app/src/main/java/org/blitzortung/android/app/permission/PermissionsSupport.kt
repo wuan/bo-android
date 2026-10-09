@@ -18,7 +18,8 @@ class PermissionsSupport(
         val isGranted = activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
         Log.v(
             LOG_TAG,
-            "PermissionsSupport.request() permission: $permission, requestCode: $requestCode, isGranted: $isGranted, showRationale: $showRationale",
+            "PermissionsSupport.request() permission: $permission, requestCode: $requestCode, " +
+                "isGranted: $isGranted, showRationale: $showRationale",
         )
 
         return if (!isGranted) {
@@ -40,7 +41,8 @@ class PermissionsSupport(
     ) {
         Log.v(
             LOG_TAG,
-            "PermissionsSupport.requestPermissionsAfterDialog() permission: $permission, dialogResource: $dialogTextResource, requestCode: $requestCode",
+            "PermissionsSupport.requestPermissionsAfterDialog() permission: $permission, " +
+                "dialogResource: $dialogTextResource, requestCode: $requestCode",
         )
 
         val message = activity.resources.getString(dialogTextResource)

@@ -58,7 +58,8 @@ open class AlertDataHandler
             ) {
                 Log.v(
                     LOG_TAG,
-                    "Location $location is not in grid ${gridParameters.longitudeInterval} + ${gridParameters.latitudeInterval}",
+                    "Location $location is not in grid " +
+                        "${gridParameters.longitudeInterval} + ${gridParameters.latitudeInterval}",
                 )
                 return Outlying
             }
@@ -69,38 +70,39 @@ open class AlertDataHandler
 
             val strikeLocation = Location("")
 
+            val checkContext =
+                StrikeCheckContext(gridParameters, parameters.measurementSystem, location, thresholdTime)
+
             strikes.strikes.forEach { strike ->
                 val bearingToStrike = calculateBearingToStrike(location, strikeLocation, strike)
 
                 val alertSector = getRelevantSector(bearingToStrike.toDouble(), sectors)
                 alertSector?.let {
-                    checkStrike(
-                        alertSector,
-                        strike,
-                        gridParameters,
-                        parameters.measurementSystem,
-                        location,
-                        thresholdTime,
-                    )
+                    checkStrike(alertSector, strike, checkContext)
                 }
             }
 
             return LocalActivity(sectors.map { aggregatingAlertDataMapper.mapSector(it) }, parameters, referenceTime)
         }
 
+        private data class StrikeCheckContext(
+            val gridParameters: GridParameters?,
+            val measurementSystem: MeasurementSystem,
+            val location: Location,
+            val thresholdTime: Long,
+        )
+
         private fun checkStrike(
             sector: AggregatingAlertSector,
             strike: Strike,
-            gridParameters: GridParameters?,
-            measurementSystem: MeasurementSystem,
-            location: Location,
-            thresholdTime: Long,
+            context: StrikeCheckContext,
         ) {
-            val distance = calculateDistanceTo(location, strike, gridParameters, measurementSystem)
+            val distance =
+                calculateDistanceTo(context.location, strike, context.gridParameters, context.measurementSystem)
 
             sector.ranges.find { distance <= it.rangeMaximum }?.let {
                 it.addStrike(strike)
-                if (strike.timestamp >= thresholdTime) {
+                if (strike.timestamp >= context.thresholdTime) {
                     sector.updateClosestStrikeDistance(distance)
                 }
             }

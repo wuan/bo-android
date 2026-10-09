@@ -163,7 +163,8 @@ class PreferencesBackupTest {
     fun parseReturnsPreferencesAndAppVersionCode() {
         val result =
             PreferencesBackup.parse(
-                """{"format":"${PreferencesBackup.FORMAT_ID}","version":1,"appVersionCode":352,"preferences":{"map_scale":75}}""",
+                """{"format":"${PreferencesBackup.FORMAT_ID}","version":1,""" +
+                    """"appVersionCode":352,"preferences":{"map_scale":75}}""",
             )
 
         assertThat(result).isInstanceOf(BackupParseResult.Success::class.java)

@@ -65,7 +65,10 @@ class VersionComponent
 
             Log.d(
                 Main.LOG_TAG,
-                "updateVersionStatus() name=$packageName, state=$state, versionCode=$configuredVersionCode/${buildVersion.versionCode}, major=$configuredMajorVersion/${buildVersion.majorVersion} minor=$configuredMinorVersion/${buildVersion.minorVersion}",
+                "updateVersionStatus() name=$packageName, state=$state, " +
+                    "versionCode=$configuredVersionCode/${buildVersion.versionCode}, " +
+                    "major=$configuredMajorVersion/${buildVersion.majorVersion} " +
+                    "minor=$configuredMinorVersion/${buildVersion.minorVersion}",
             )
         }
 

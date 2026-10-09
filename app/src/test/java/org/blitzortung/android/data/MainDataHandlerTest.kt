@@ -63,7 +63,14 @@ class MainDataHandlerTest {
         val preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 
         this.preferences = preferences
-        uut = MainDataHandler(context, dataProviderFactory, preferences, handler, DataCache(), localData, period)
+        uut = MainDataHandler(
+            context,
+            dataProviderFactory,
+            preferences,
+            DataCache(),
+            localData,
+            MainDataScheduler(handler, period),
+        )
 
         receivedEvents = mutableListOf<DataEvent>()
         val eventConsumer: (DataEvent) -> Unit = { event -> receivedEvents.add(event) }

@@ -22,6 +22,9 @@ internal class FetchBackgroundDataTask(
     override fun onPostExecute(result: DataReceived?) {
         super.onPostExecute(result)
         if (wakeLock.isHeld) {
+            // detekt: releasing a WakeLock can fail with an unspecified RuntimeException; failing to
+            // release must be logged but never crash the background task, so keep the broad catch.
+            @Suppress("TooGenericExceptionCaught")
             try {
                 wakeLock.release()
                 if (wakeLock.isHeld) {

@@ -81,10 +81,12 @@ class AlarmViewTest {
 
         alarmView = AlarmView(
             context = context,
-            canvasProvider = canvasProvider,
-            primitiveRenderer = primitiveRenderer,
-            symbolRenderer = symbolRenderer,
-            localActivityRenderer = localActivityRenderer
+            renderers = AlarmViewRenderers(
+                canvasProvider = canvasProvider,
+                primitiveRenderer = primitiveRenderer,
+                symbolRenderer = symbolRenderer,
+                localActivityRenderer = localActivityRenderer,
+            ),
         )
 
         alarmView.setColorHandler(colorHandler, 600000)
@@ -103,7 +105,12 @@ class AlarmViewTest {
         referenceTime: Long = System.currentTimeMillis()
     ): LocalActivity {
         val ranges = listOf(
-            AlertSectorRange(rangeMinimum = 0.0f, rangeMaximum = 50.0f, strikeCount = 5, latestStrikeTimestamp = referenceTime)
+            AlertSectorRange(
+                rangeMinimum = 0.0f,
+                rangeMaximum = 50.0f,
+                strikeCount = 5,
+                latestStrikeTimestamp = referenceTime,
+            )
         )
         val sector = AlertSector(
             label = label,

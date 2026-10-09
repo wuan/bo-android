@@ -23,12 +23,16 @@ class BackgroundLocationPermissionRequester(
     override val name: String = "background location"
 
     override fun request(permissionsSupport: PermissionsSupport): Boolean {
-        return if (isAtLeast(Build.VERSION_CODES.Q) &&
-            isBackgroundAlertEnabled(preferences) &&
-            preferences.wasBackgroundLocationDisclosureShown() &&
-            activity.checkSelfPermission(ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            getLocationPermission(preferences).first != null
-        ) {
+        val apiAndAlertingReady =
+            isAtLeast(Build.VERSION_CODES.Q) &&
+                isBackgroundAlertEnabled(preferences) &&
+                preferences.wasBackgroundLocationDisclosureShown()
+        val backgroundPermissionMissing =
+            isAtLeast(Build.VERSION_CODES.Q) &&
+                activity.checkSelfPermission(ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED
+        val hasLocationPermission = getLocationPermission(preferences).first != null
+
+        return if (apiAndAlertingReady && backgroundPermissionMissing && hasLocationPermission) {
             Log.v(LOG_TAG, "Main.requestBackgroundLocationPermissions() request background permission")
             permissionsSupport.request(
                 ACCESS_BACKGROUND_LOCATION,

@@ -92,6 +92,13 @@ class JsonRpcClient
                     else -> throw JsonRpcException("invalid JSON-RPC response")
                 }
 
+            return parseResponseObject(responseObject, requestId)
+        }
+
+        private fun parseResponseObject(
+            responseObject: JSONObject,
+            requestId: Int,
+        ): JsonRpcResponse {
             if (responseObject.optString("jsonrpc") != JSON_RPC_VERSION) {
                 throw JsonRpcException("unsupported JSON-RPC response version")
             }
@@ -101,6 +108,13 @@ class JsonRpcClient
                 throw createException(error)
             }
 
+            return extractResult(responseObject, requestId)
+        }
+
+        private fun extractResult(
+            responseObject: JSONObject,
+            requestId: Int,
+        ): JsonRpcResponse {
             if (!responseObject.has("result")) {
                 throw JsonRpcException("invalid JSON-RPC response: missing result")
             }

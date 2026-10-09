@@ -141,7 +141,8 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
             } else {
                 Log.d(
                     Main.LOG_TAG,
-                    "AppService.onStartCommand() skip with insufficient time passed: ${currentTimeSeconds - lastUpdateTime!!} s < $backgroundPeriod s",
+                    "AppService.onStartCommand() skip with insufficient time passed: " +
+                        "${currentTimeSeconds - lastUpdateTime!!} s < $backgroundPeriod s",
                 )
             }
         } else {
@@ -201,7 +202,11 @@ class AppService : Service(), OnSharedPreferenceChangeListener {
 
         packageManager.setComponentEnabledSetting(
             receiver,
-            if (enable) PackageManager.COMPONENT_ENABLED_STATE_ENABLED else PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+            if (enable) {
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+            } else {
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+            },
             PackageManager.DONT_KILL_APP,
         )
     }

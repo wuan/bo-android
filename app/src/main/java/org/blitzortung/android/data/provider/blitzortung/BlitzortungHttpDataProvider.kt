@@ -23,6 +23,7 @@ import android.util.Log
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.FileNotFoundException
+import java.io.IOException
 import java.io.InputStreamReader
 import java.net.Authenticator
 import java.net.PasswordAuthentication
@@ -44,6 +45,7 @@ import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Strike
+import org.blitzortung.android.data.provider.DataProviderException
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
@@ -94,7 +96,7 @@ class BlitzortungHttpDataProvider
                 }
 
                 reader = inputStream.bufferedReader()
-            } catch (e: Exception) {
+            } catch (e: IOException) {
                 when (e) {
                     is FileNotFoundException -> {
                         Log.w(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() $urlString not found")
@@ -103,7 +105,7 @@ class BlitzortungHttpDataProvider
 
                     else -> {
                         Log.w(Main.LOG_TAG, "BlitzortungHttpDataProvider.readFromUrl() $urlString failed")
-                        throw RuntimeException(e)
+                        throw DataProviderException("failed to read data from $urlString", e)
                     }
                 }
             }
@@ -116,7 +118,8 @@ class BlitzortungHttpDataProvider
         /**
          * Used to retrieve Data from Blitzortung
          * @param readerSeq A sequence of nullable BufferedReader, which the data is read from
-         * @param parse A Lambda which receives a sequence of lines from a buffered reader and transforms them into a sequence of T
+         * @param parse A Lambda which receives a sequence of lines from a buffered reader and transforms
+         * them into a sequence of T
          * @return Returns a list of parsed T's
          */
         private fun <T : Any> retrieveData(

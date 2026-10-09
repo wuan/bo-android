@@ -18,14 +18,18 @@ import org.blitzortung.android.dialogs.InfoDialog
 import org.blitzortung.android.dialogs.LogDialog
 import org.blitzortung.android.settings.SettingsActivity
 
+data class MainPopupMenuDependencies(
+    val preferences: SharedPreferences,
+    val dataHandler: MainDataHandler,
+    val alertHandler: AlertHandler,
+    val buildVersion: BuildVersion,
+    val changeLogComponent: ChangeLogComponent,
+)
+
 class MainPopupMenu(
     context: Context,
     anchor: View,
-    preferences: SharedPreferences,
-    dataHandler: MainDataHandler,
-    alertHandler: AlertHandler,
-    private val buildVersion: BuildVersion,
-    private val changeLogComponent: ChangeLogComponent,
+    private val dependencies: MainPopupMenuDependencies,
 ) : PopupMenu(context, anchor) {
     /**
      * Invoked when the "Quick guide" menu entry is selected.
@@ -33,7 +37,9 @@ class MainPopupMenu(
     var onShowDocOverlay: () -> Unit = {}
 
     init {
-        setOnMenuItemClickListener(ClickListener(context, preferences, dataHandler, alertHandler))
+        setOnMenuItemClickListener(
+            ClickListener(context, dependencies.preferences, dependencies.dataHandler, dependencies.alertHandler),
+        )
     }
 
     inner class ClickListener(
@@ -50,7 +56,7 @@ class MainPopupMenu(
             } else {
                 val dialog =
                     when (item?.itemId) {
-                        R.id.menu_info -> InfoDialog(context, buildVersion)
+                        R.id.menu_info -> InfoDialog(context, dependencies.buildVersion)
 
                         R.id.menu_alarms ->
                             AlarmDialog(
@@ -60,9 +66,10 @@ class MainPopupMenu(
                                 alertHandler,
                             )
 
-                        R.id.menu_log -> LogDialog(context, dataHandler.calculateTotalCacheSize(), buildVersion)
+                        R.id.menu_log ->
+                            LogDialog(context, dataHandler.calculateTotalCacheSize(), dependencies.buildVersion)
 
-                        R.id.menu_changelog -> changeLogComponent.getChangeLogDialog(context)
+                        R.id.menu_changelog -> dependencies.changeLogComponent.getChangeLogDialog(context)
 
                         else -> null
                     }

@@ -53,16 +53,24 @@ data class AlarmViewData(
     var radius: Float = 0f,
 )
 
+/**
+ * Optional collaborators of [AlarmView]. Production code relies on the default instances; tests inject
+ * mocks here.
+ */
+data class AlarmViewRenderers(
+    val canvasProvider: CanvasProvider? = null,
+    val primitiveRenderer: PrimitiveRenderer? = null,
+    val symbolRenderer: SymbolRenderer? = null,
+    val localActivityRenderer: LocalActivityRenderer? = null,
+)
+
 class AlarmView
 @JvmOverloads
 constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0,
-    canvasProvider: CanvasProvider? = null,
-    primitiveRenderer: PrimitiveRenderer? = null,
-    symbolRenderer: SymbolRenderer? = null,
-    localActivityRenderer: LocalActivityRenderer? = null
+    renderers: AlarmViewRenderers = AlarmViewRenderers(),
 ) : TabletAwareView(context, attrs, defStyle) {
 
     private lateinit var colorHandler: ColorHandler
@@ -75,12 +83,12 @@ constructor(
 
     private val alarmViewData = AlarmViewData()
 
-    private var canvasProvider: CanvasProvider? = canvasProvider
+    private var canvasProvider: CanvasProvider? = renderers.canvasProvider
 
-    private val primitiveRenderer: PrimitiveRenderer = primitiveRenderer ?: PrimitiveRenderer()
+    private val primitiveRenderer: PrimitiveRenderer = renderers.primitiveRenderer ?: PrimitiveRenderer()
     private var symbolRenderer: SymbolRenderer =
-        symbolRenderer ?: SymbolRenderer(context, this.primitiveRenderer, textSize)
-    private val localActivityRenderer: LocalActivityRenderer = localActivityRenderer ?: LocalActivityRenderer(
+        renderers.symbolRenderer ?: SymbolRenderer(context, this.primitiveRenderer, textSize)
+    private val localActivityRenderer: LocalActivityRenderer = renderers.localActivityRenderer ?: LocalActivityRenderer(
         context,
         this.primitiveRenderer, textSize * textSizeFactor(context)
     )
