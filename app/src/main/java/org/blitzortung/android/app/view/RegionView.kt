@@ -88,81 +88,94 @@ class RegionView
 
             gridParameters?.let {
                 if (!it.isGlobal) {
-                    val text =
-                        "%.1f..%.1f  %.1f..%.1f".format(
-                            it.longitudeStart,
-                            it.longitudeEnd,
-                            it.latitudeEnd,
-                            it.latitudeStart,
-                        )
-                    canvas.drawText(
-                        text,
-                        width - 2 * padding,
-                        topCoordinate + textSize / 1.2f * SMALL_TEXT_SCALE,
-                        textPaint,
-                    )
-                    topCoordinate += (textSize + padding) * SMALL_TEXT_SCALE
-
-                    val xdelta = it.longitudeEnd - it.longitudeStart
-                    val ydelta = it.latitudeStart - it.latitudeEnd
-                    val text2 =
-                        "%.1f  %.1f".format(
-                            xdelta,
-                            ydelta,
-                        )
-                    canvas.drawText(
-                        text2,
-                        width - 2 * padding,
-                        topCoordinate + textSize / 1.2f * SMALL_TEXT_SCALE,
-                        textPaint,
-                    )
-                    topCoordinate += (textSize + padding) * SMALL_TEXT_SCALE
-
-                    val x0 = it.longitudeStart
-                    val y0 = it.latitudeStart
-
-                    val xs = xdelta / (width - 2 * padding)
-                    val ys = ydelta / (height - 2 * padding)
-
-                    mapArea?.let {
-                        val x1 = padding + ((it.lonEast - x0) / xs).toFloat()
-                        val x2 = padding + ((it.lonWest - x0) / xs).toFloat()
-                        val y1 = padding + ((y0 - it.latNorth) / ys).toFloat()
-                        val y2 = padding + ((y0 - it.latSouth) / ys).toFloat()
-
-                        foregroundPaint.strokeWidth = 1f
-                        drawBox(canvas, x1, y1, x2, y2, foregroundPaint)
-                    }
-
-                    foregroundPaint.strokeWidth = 3f
-                    foregroundPaint.color = defaultForegroundColor
-                    drawBox(canvas, padding, padding, width - padding, height - padding, foregroundPaint)
+                    topCoordinate = drawGridInfo(canvas, it, topCoordinate)
                 }
 
-                zoomLevel?.let {
-                    val text = "Zoom %.1f".format(it)
-                    canvas.drawText(
-                        text,
-                        width - 2 * padding,
-                        height - 2 * padding,
-                        textPaint,
-                    )
-                }
+                drawZoomLevel(canvas)
+            }
+        }
+
+        private fun drawGridInfo(
+            canvas: Canvas,
+            gridParameters: GridParameters,
+            topCoordinate: Float,
+        ): Float {
+            var currentTop = topCoordinate
+
+            val text =
+                "%.1f..%.1f  %.1f..%.1f".format(
+                    gridParameters.longitudeStart,
+                    gridParameters.longitudeEnd,
+                    gridParameters.latitudeEnd,
+                    gridParameters.latitudeStart,
+                )
+            canvas.drawText(
+                text,
+                width - 2 * padding,
+                currentTop + textSize / 1.2f * SMALL_TEXT_SCALE,
+                textPaint,
+            )
+            currentTop += (textSize + padding) * SMALL_TEXT_SCALE
+
+            val xdelta = gridParameters.longitudeEnd - gridParameters.longitudeStart
+            val ydelta = gridParameters.latitudeStart - gridParameters.latitudeEnd
+            val text2 =
+                "%.1f  %.1f".format(
+                    xdelta,
+                    ydelta,
+                )
+            canvas.drawText(
+                text2,
+                width - 2 * padding,
+                currentTop + textSize / 1.2f * SMALL_TEXT_SCALE,
+                textPaint,
+            )
+            currentTop += (textSize + padding) * SMALL_TEXT_SCALE
+
+            val x0 = gridParameters.longitudeStart
+            val y0 = gridParameters.latitudeStart
+
+            val xs = xdelta / (width - 2 * padding)
+            val ys = ydelta / (height - 2 * padding)
+
+            mapArea?.let { area ->
+                val x1 = padding + ((area.lonEast - x0) / xs).toFloat()
+                val x2 = padding + ((area.lonWest - x0) / xs).toFloat()
+                val y1 = padding + ((y0 - area.latNorth) / ys).toFloat()
+                val y2 = padding + ((y0 - area.latSouth) / ys).toFloat()
+
+                foregroundPaint.strokeWidth = 1f
+                drawBox(canvas, RectF(x1, y1, x2, y2), foregroundPaint)
+            }
+
+            foregroundPaint.strokeWidth = 3f
+            foregroundPaint.color = defaultForegroundColor
+            drawBox(canvas, RectF(padding, padding, width - padding, height - padding), foregroundPaint)
+
+            return currentTop
+        }
+
+        private fun drawZoomLevel(canvas: Canvas) {
+            zoomLevel?.let {
+                val text = "Zoom %.1f".format(it)
+                canvas.drawText(
+                    text,
+                    width - 2 * padding,
+                    height - 2 * padding,
+                    textPaint,
+                )
             }
         }
 
         private fun drawBox(
             canvas: Canvas,
-            x1: Float,
-            y1: Float,
-            x2: Float,
-            y2: Float,
+            box: RectF,
             paint: Paint,
         ) {
-            canvas.drawLine(x1, y2, x2, y2, paint)
-            canvas.drawLine(x1, y1, x2, y1, paint)
-            canvas.drawLine(x2, y1, x2, y2, paint)
-            canvas.drawLine(x1, y1, x1, y2, paint)
+            canvas.drawLine(box.left, box.bottom, box.right, box.bottom, paint)
+            canvas.drawLine(box.left, box.top, box.right, box.top, paint)
+            canvas.drawLine(box.right, box.top, box.right, box.bottom, paint)
+            canvas.drawLine(box.left, box.top, box.left, box.bottom, paint)
         }
 
         private fun updateHistogram(dataEvent: DataReceived) {

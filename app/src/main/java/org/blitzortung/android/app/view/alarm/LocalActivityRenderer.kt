@@ -54,6 +54,7 @@ class LocalActivityRenderer(
         val rangeSteps = alertParameters.rangeSteps
         val radiusIncrement = data.radius / rangeSteps.size
         val sectorWidth = alertParameters.sectorWidth
+        val renderContext = RenderContext(data, radiusIncrement, rangeSteps, sectorWidth)
 
         with(lines) {
             colorHandler?.also { color = it.lineColor }
@@ -69,11 +70,11 @@ class LocalActivityRenderer(
         val actualTime = System.currentTimeMillis()
 
         for (alertSector in alertResult.sectors) {
-            renderSectorBackground(alertSector, radiusIncrement, data, actualTime, sectorWidth, canvasWrapper)
+            renderSectorBackground(alertSector, actualTime, renderContext, canvasWrapper)
         }
 
         for (alertSector in alertResult.sectors) {
-            renderSectorSideLines(alertSector, data, radiusIncrement, sectorWidth, canvasWrapper.canvas)
+            renderSectorSideLines(alertSector, renderContext, canvasWrapper.canvas)
         }
 
         textStyle.textAlign = Align.RIGHT
@@ -81,9 +82,7 @@ class LocalActivityRenderer(
         for (radiusIndex in 0 until rangeSteps.size) {
             renderRangeCircle(
                 radiusIndex,
-                data,
-                radiusIncrement,
-                rangeSteps,
+                renderContext,
                 textHeight,
                 alertParameters,
                 canvasWrapper.canvas
@@ -91,15 +90,23 @@ class LocalActivityRenderer(
         }
     }
 
+    private data class RenderContext(
+        val data: AlarmViewData,
+        val radiusIncrement: Float,
+        val rangeSteps: List<Float>,
+        val sectorWidth: Float,
+    )
+
     private fun renderRangeCircle(
         radiusIndex: Int,
-        data: AlarmViewData,
-        radiusIncrement: Float,
-        rangeSteps: List<Float>,
+        context: RenderContext,
         textHeight: Float,
         alertParameters: AlertParameters,
         canvas: Canvas
     ) {
+        val data = context.data
+        val radiusIncrement = context.radiusIncrement
+        val rangeSteps = context.rangeSteps
         val isOuterCircle = radiusIndex == rangeSteps.size - 1
 
         if (isOuterCircle) {
@@ -121,7 +128,7 @@ class LocalActivityRenderer(
                 textStyle,
             )
             if (isOuterCircle) {
-                val distanceUnit = context.getString(alertParameters.measurementSystem.unitNameString)
+                val distanceUnit = getDistanceUnit(alertParameters)
                 canvas.drawText(
                     distanceUnit,
                     data.center + (radiusIndex + 0.85f) * radiusIncrement,
@@ -132,13 +139,15 @@ class LocalActivityRenderer(
         }
     }
 
+    private fun getDistanceUnit(alertParameters: AlertParameters): String =
+        context.getString(alertParameters.measurementSystem.unitNameString)
+
     private fun renderSectorSideLines(
         alertSector: AlertSector,
-        data: AlarmViewData,
-        radiusIncrement: Float,
-        sectorWidth: Float,
+        context: RenderContext,
         canvas: Canvas
     ) {
+        val data = context.data
         val bearing = alertSector.minimumSectorBearing.toDouble()
         canvas.drawLine(
             data.center,
@@ -149,18 +158,19 @@ class LocalActivityRenderer(
         )
 
         if (enableDescriptionText && data.size > TEXT_MINIMUM_SIZE) {
-            drawSectorLabel(data.center, radiusIncrement, alertSector, bearing + sectorWidth / 2.0, canvas)
+            val labelBearing = bearing + context.sectorWidth / 2.0
+            drawSectorLabel(data.center, context.radiusIncrement, alertSector, labelBearing, canvas)
         }
     }
 
     private fun renderSectorBackground(
         alertSector: AlertSector,
-        radiusIncrement: Float,
-        data: AlarmViewData,
         actualTime: Long,
-        sectorWidth: Float,
+        context: RenderContext,
         canvas: CanvasWrapper
     ) {
+        val data = context.data
+        val radiusIncrement = context.radiusIncrement
         val startAngle = alertSector.minimumSectorBearing + 90f + 180f
 
         val ranges = alertSector.ranges
@@ -185,7 +195,7 @@ class LocalActivityRenderer(
             canvas.canvas.drawArc(
                 arcArea,
                 startAngle,
-                sectorWidth,
+                context.sectorWidth,
                 true,
                 if (drawColor) sectorPaint else canvas.background,
             )

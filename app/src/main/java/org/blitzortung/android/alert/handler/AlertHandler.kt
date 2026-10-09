@@ -192,7 +192,8 @@ constructor(
             } else {
                 Log.v(
                     Main.LOG_TAG,
-                    "AlertHandler.checkStrikes() strikes: ${strikes != null}, location: ${locationHandler.location != null}",
+                    "AlertHandler.checkStrikes() strikes: ${strikes != null}, " +
+                        "location: ${locationHandler.location != null}",
                 )
                 if (location == null) {
                     NoLocation
@@ -233,7 +234,8 @@ constructor(
         } else {
             Log.d(
                 Main.LOG_TAG,
-                "AlertHandler.alertSignal() skipped - ${(signalingLatestTimestamp - signalingLastTimestamp) / 1000}, threshold: ${signalingThresholdTime / 1000}",
+                "AlertHandler.alertSignal() skipped - ${(signalingLatestTimestamp - signalingLastTimestamp) / 1000}, " +
+                    "threshold: ${signalingThresholdTime / 1000}",
             )
         }
     }

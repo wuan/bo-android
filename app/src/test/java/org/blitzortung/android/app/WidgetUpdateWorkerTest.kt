@@ -14,15 +14,24 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.blitzortung.android.alert.AlertParameters
+import org.blitzortung.android.alert.LocalActivity
+import org.blitzortung.android.alert.NoData
+import org.blitzortung.android.alert.data.AlertSector
+import org.blitzortung.android.alert.data.AlertSectorRange
 import org.blitzortung.android.alert.handler.AlertDataHandler
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.DataReceived
+import org.blitzortung.android.data.provider.standard.JsonRpcDataProvider
 import org.blitzortung.android.app.view.AlarmView
 import org.blitzortung.android.app.view.PreferenceKey
 import org.blitzortung.android.app.view.put
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
+import org.blitzortung.android.util.MeasurementSystem
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -213,8 +222,10 @@ class WidgetUpdateWorkerTest {
         val location = createLocation(51.0, 7.0, 10f)
         val mockAlarmView: AlarmView = mockk(relaxed = true)
 
-        val mockDataProvider = mockk<org.blitzortung.android.data.provider.standard.JsonRpcDataProvider>()
-        every { mockDataProvider.retrieveData(any<org.blitzortung.android.data.provider.data.DataProvider.DataRetriever.() -> org.blitzortung.android.data.provider.result.DataReceived>()) } returns DataReceived(
+        val mockDataProvider = mockk<JsonRpcDataProvider>()
+        every {
+            mockDataProvider.retrieveData(any<DataProvider.DataRetriever.() -> DataReceived>())
+        } returns DataReceived(
             strikes = null,
             gridParameters = null,
             referenceTime = System.currentTimeMillis(),
@@ -236,8 +247,115 @@ class WidgetUpdateWorkerTest {
     }
 
     @Test
+    fun fetchStrikeData_returnsLocalActivityStatusForLocalWarning() {
+        val mockAlertHandler = mockk<AlertHandler>()
+        every { mockAlertHandler.alertParameters } returns createAlertParameters()
+        val mockAlertDataHandler = mockk<AlertDataHandler>()
+        val mockColorHandler = mockk<StrikeColorHandler>()
+        val location = createLocation(51.0, 7.0, 10f)
+        val mockAlarmView: AlarmView = mockk(relaxed = true)
+
+        val localActivity = createLocalActivity()
+        every { mockAlertDataHandler.checkStrikes(any(), any(), any(), any()) } returns localActivity
+
+        val strike = mockk<org.blitzortung.android.data.beans.Strike>()
+        val mockDataProvider = mockk<JsonRpcDataProvider>()
+        every {
+            mockDataProvider.retrieveData(any<DataProvider.DataRetriever.() -> DataReceived>())
+        } returns DataReceived(
+            strikes = listOf(strike),
+            gridParameters = null,
+            referenceTime = System.currentTimeMillis(),
+            parameters = mockk(relaxed = true),
+            flags = mockk(relaxed = true)
+        )
+
+        val appComponents = createAppComponents(
+            mockColorHandler,
+            mockAlertHandler,
+            mockAlertDataHandler,
+            mockDataProvider
+        )
+
+        val worker = TestableWidgetUpdateWorker(context, workerParams)
+        worker.testFetchStrikeData(appComponents, location, mockAlarmView)
+
+        verify { mockAlarmView.alertEventConsumer.invoke(localActivity) }
+    }
+
+    @Test
+    fun fetchStrikeData_usesGreenWhenWarningIsNotLocal() {
+        val mockAlertHandler = mockk<AlertHandler>()
+        every { mockAlertHandler.alertParameters } returns createAlertParameters()
+        val mockAlertDataHandler = mockk<AlertDataHandler>()
+        val mockColorHandler = mockk<StrikeColorHandler>()
+        val location = createLocation(51.0, 7.0, 10f)
+        val mockAlarmView: AlarmView = mockk(relaxed = true)
+
+        every { mockAlertDataHandler.checkStrikes(any(), any(), any(), any()) } returns NoData
+
+        val strike = mockk<org.blitzortung.android.data.beans.Strike>()
+        val mockDataProvider = mockk<JsonRpcDataProvider>()
+        every {
+            mockDataProvider.retrieveData(any<DataProvider.DataRetriever.() -> DataReceived>())
+        } returns DataReceived(
+            strikes = listOf(strike),
+            gridParameters = null,
+            referenceTime = System.currentTimeMillis(),
+            parameters = mockk(relaxed = true),
+            flags = mockk(relaxed = true)
+        )
+
+        val appComponents = createAppComponents(
+            mockColorHandler,
+            mockAlertHandler,
+            mockAlertDataHandler,
+            mockDataProvider
+        )
+
+        val worker = TestableWidgetUpdateWorker(context, workerParams)
+        val (statusText, statusColor) = worker.testFetchStrikeData(appComponents, location, mockAlarmView)
+
+        assertThat(statusText).isNull()
+        assertThat(statusColor).isEqualTo(context.getColor(org.blitzortung.android.app.R.color.Green))
+    }
+
+    private fun createAlertParameters(): AlertParameters =
+        AlertParameters(
+            alarmInterval = 600000L,
+            rangeSteps = listOf(10f, 25f, 50f),
+            sectorLabels = listOf("N", "NE", "E", "SE", "S", "SW", "W", "NW"),
+            measurementSystem = MeasurementSystem.METRIC
+        )
+
+    private fun createLocalActivity(): LocalActivity {
+        val ranges =
+            listOf(
+                AlertSectorRange(
+                    rangeMinimum = 0.0f,
+                    rangeMaximum = 50.0f,
+                    strikeCount = 5,
+                    latestStrikeTimestamp = System.currentTimeMillis(),
+                ),
+            )
+        val sector =
+            AlertSector(
+                label = "N",
+                minimumSectorBearing = 0f,
+                maximumSectorBearing = 45f,
+                ranges = ranges,
+                closestStrikeDistance = 10.0f,
+            )
+        return LocalActivity(
+            sectors = listOf(sector),
+            parameters = createAlertParameters(),
+            referenceTime = System.currentTimeMillis(),
+        )
+    }
+
+    @Test
     fun fetchStrikeData_returnsLocationNotAvailableWhenLocationIsNull() {
-        val mockDataProvider = mockk<org.blitzortung.android.data.provider.standard.JsonRpcDataProvider>()
+        val mockDataProvider = mockk<JsonRpcDataProvider>()
         val mockAlertHandler = mockk<AlertHandler>()
         val mockAlertDataHandler = mockk<AlertDataHandler>()
         val mockColorHandler = mockk<StrikeColorHandler>()
@@ -263,8 +381,8 @@ class WidgetUpdateWorkerTest {
         val mockColorHandler = mockk<StrikeColorHandler>()
         val mockAlarmView: AlarmView = mockk(relaxed = true)
 
-        val mockDataProvider = mockk<org.blitzortung.android.data.provider.standard.JsonRpcDataProvider>()
-        val dataRetrieverSlot = slot<org.blitzortung.android.data.provider.data.DataProvider.DataRetriever.() -> org.blitzortung.android.data.provider.result.DataReceived>()
+        val mockDataProvider = mockk<JsonRpcDataProvider>()
+        val dataRetrieverSlot = slot<DataProvider.DataRetriever.() -> DataReceived>()
 
         every { mockDataProvider.retrieveData(capture(dataRetrieverSlot)) } returns DataReceived(
             strikes = null,
@@ -286,7 +404,7 @@ class WidgetUpdateWorkerTest {
         worker.testFetchStrikeData(appComponents, location, mockAlarmView)
 
         // Execute the captured lambda to verify parameters are correct
-        val mockDataRetriever = mockk<org.blitzortung.android.data.provider.data.DataProvider.DataRetriever>()
+        val mockDataRetriever = mockk<DataProvider.DataRetriever>()
         val capturedParamsSlot = slot<org.blitzortung.android.data.Parameters>()
 
         every { mockDataRetriever.getStrikesGrid(capture(capturedParamsSlot), any(), any()) } returns mockk()
@@ -345,7 +463,7 @@ class WidgetUpdateWorkerTest {
         colorHandler: StrikeColorHandler,
         alertHandler: AlertHandler,
         alertDataHandler: AlertDataHandler,
-        dataProvider: org.blitzortung.android.data.provider.standard.JsonRpcDataProvider
+        dataProvider: JsonRpcDataProvider
     ): WidgetUpdateWorkerTest.TestAppComponents {
         return TestAppComponents(
             colorHandler = colorHandler,
@@ -418,7 +536,7 @@ class WidgetUpdateWorkerTest {
         val alertHandler: AlertHandler,
         val alertDataHandler: AlertDataHandler,
         val locationManager: LocationManager,
-        val dataProvider: org.blitzortung.android.data.provider.standard.JsonRpcDataProvider,
+        val dataProvider: JsonRpcDataProvider,
         val preferences: SharedPreferences
     )
 }

@@ -42,6 +42,9 @@ import org.blitzortung.android.data.provider.calculateLocalCoordinate
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.util.isAtLeast
 
+// detekt: WidgetUpdateWorker groups the whole widget update pipeline (location, fetch, render) and
+// its protected hooks are depended on by tests; splitting it is tracked as a follow-up.
+@Suppress("TooManyFunctions")
 open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
 
@@ -64,19 +67,25 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
             return Result.success()
         }
 
+        return runWidgetUpdate(appWidgetIds, appWidgetManager)
+    }
+
+    private fun runWidgetUpdate(appWidgetIds: IntArray, appWidgetManager: AppWidgetManager): Result {
         val appComponents = getAppComponents()
-        if (appComponents == null) {
-            Log.e(Main.LOG_TAG, "WidgetUpdateWorker.doWork() failed: BOApplication not available")
-            return Result.failure()
+        return when {
+            appComponents == null -> {
+                Log.e(Main.LOG_TAG, "WidgetUpdateWorker.doWork() failed: BOApplication not available")
+                Result.failure()
+            }
+
+            isDisclosureNeeded(appComponents.preferences) ->
+                showDisclosurePrompt(appWidgetIds, appWidgetManager)
+
+            else -> {
+                val location = resolveLocation(appComponents.locationManager, appComponents.preferences)
+                updateWidgets(appWidgetIds, appWidgetManager, appComponents, location)
+            }
         }
-
-        if (isDisclosureNeeded(appComponents.preferences)) {
-            return showDisclosurePrompt(appWidgetIds, appWidgetManager)
-        }
-
-        val location = resolveLocation(appComponents.locationManager, appComponents.preferences)
-
-        return updateWidgets(appWidgetIds, appWidgetManager, appComponents, location)
     }
 
     internal fun isDisclosureNeeded(preferences: SharedPreferences): Boolean {
@@ -162,6 +171,9 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
     ): Result {
         var anyWidgetUpdated = false
 
+        // detekt: a single widget failing must not abort the update of the other widgets, and the
+        // failure can surface as any Throwable from remote view rendering, so the broad catch is intentional.
+        @Suppress("TooGenericExceptionCaught")
         try {
             for (appWidgetId in appWidgetIds) {
                 try {
@@ -238,54 +250,60 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
         location: Location?,
         alarmView: AlarmView
     ): Pair<String?, Int> {
-        var statusText: String? = null
-        var statusColorResource: Int = Green
-        var alertResult: Any?
+        val (statusText, statusColorResource) = determineWidgetStatus(appComponents, location, alarmView)
+        return Pair(statusText, applicationContext.getColor(statusColorResource))
+    }
 
-        if (location != null) {
-            val scale = 5
-            val x = calculateLocalCoordinate(location.longitude, scale)
-            val y = calculateLocalCoordinate(location.latitude, scale)
-            val dataArea = DataArea(x, y, scale)
-
-            val parameters = Parameters(
-                region = LOCAL_REGION,
-                gridSize = 5000,
-                interval = TimeInterval(duration = 60),
-                dataArea = dataArea
-            )
-
-            Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() fetching strike data")
-            val result = appComponents.dataProvider.retrieveData {
-                getStrikesGrid(parameters, null, Flags())
-            }
-            Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() fetched strike data")
-
-            val strikes = result.strikes?.let { Strikes(it, result.gridParameters) }
-
-            if (strikes != null) {
-                alertResult = appComponents.alertDataHandler.checkStrikes(
-                    strikes, location, appComponents.alertHandler.alertParameters, result.referenceTime
-                )
-
-                if (alertResult is LocalActivity) {
-                    AlertLabelHandler.extractStatus(alertResult, this.applicationContext).let { (text, colorResource) ->
-                        statusText = text
-                        statusColorResource = colorResource
-                    }
-                }
-
-                alarmView.alertEventConsumer.invoke(alertResult)
-            } else {
-                statusText = applicationContext.getString(R.string.widget_no_strike_data)
-                statusColorResource = Yellow
-            }
-        } else {
-            statusText = applicationContext.getString(R.string.widget_location_not_available)
-            statusColorResource = Yellow
+    private fun determineWidgetStatus(
+        appComponents: AppComponents,
+        location: Location?,
+        alarmView: AlarmView
+    ): Pair<String?, Int> {
+        if (location == null) {
+            return applicationContext.getString(R.string.widget_location_not_available) to Yellow
         }
 
-        return Pair(statusText, applicationContext.getColor(statusColorResource))
+        val parameters = createWidgetParameters(location)
+
+        Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() fetching strike data")
+        val result = appComponents.dataProvider.retrieveData {
+            getStrikesGrid(parameters, null, Flags())
+        }
+        Log.v(Main.LOG_TAG, "WidgetUpdateWorker.doWork() fetched strike data")
+
+        val strikes = result.strikes?.let { Strikes(it, result.gridParameters) }
+
+        return if (strikes == null) {
+            applicationContext.getString(R.string.widget_no_strike_data) to Yellow
+        } else {
+            val alertResult = appComponents.alertDataHandler.checkStrikes(
+                strikes, location, appComponents.alertHandler.alertParameters, result.referenceTime
+            )
+
+            alarmView.alertEventConsumer.invoke(alertResult)
+
+            if (alertResult is LocalActivity) {
+                AlertLabelHandler.extractStatus(alertResult, applicationContext).let { (text, colorResource) ->
+                    text to colorResource
+                }
+            } else {
+                null to Green
+            }
+        }
+    }
+
+    private fun createWidgetParameters(location: Location): Parameters {
+        val scale = 5
+        val x = calculateLocalCoordinate(location.longitude, scale)
+        val y = calculateLocalCoordinate(location.latitude, scale)
+        val dataArea = DataArea(x, y, scale)
+
+        return Parameters(
+            region = LOCAL_REGION,
+            gridSize = 5000,
+            interval = TimeInterval(duration = 60),
+            dataArea = dataArea
+        )
     }
 
     private fun renderWidgetBitmap(alarmView: AlarmView, widthPx: Int, heightPx: Int): Bitmap {
@@ -350,6 +368,7 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
 
         var bestLocation: Location? = null
         for (provider in providers) {
+            @Suppress("TooGenericExceptionCaught")
             try {
                 val location = locationManager.getLastKnownLocation(provider)
                 if (location != null && (bestLocation == null || location.accuracy < bestLocation.accuracy)) {
@@ -358,6 +377,8 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
             } catch (e: SecurityException) {
                 Log.w(Main.LOG_TAG, "No permission for location provider: $provider")
             } catch (e: Exception) {
+                // detekt: after the expected SecurityException, a provider can fail for many reasons;
+                // keep the fallback broad so one bad provider does not abort the widget update.
                 Log.w(Main.LOG_TAG, "Failed to get location from provider: $provider", e)
             }
         }
@@ -366,12 +387,15 @@ open class WidgetUpdateWorker(appContext: Context, workerParams: WorkerParameter
     }
 
     protected fun getLastKnownLocationFromProvider(locationManager: LocationManager, provider: String): Location? {
+        @Suppress("TooGenericExceptionCaught")
         return try {
             locationManager.getLastKnownLocation(provider)
         } catch (e: SecurityException) {
             Log.w(Main.LOG_TAG, "No permission for location provider: $provider")
             null
         } catch (e: Exception) {
+            // detekt: after the expected SecurityException, a provider can fail for many reasons;
+            // keep the fallback broad so a single provider failure yields null instead of crashing.
             Log.w(Main.LOG_TAG, "Failed to get location from provider: $provider", e)
             null
         }

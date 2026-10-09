@@ -180,7 +180,6 @@ class PrimitiveRendererTest {
     fun shouldDrawCenteredTextAtCorrectPosition() {
         val text = "Test"
         val center = 200f
-        val textBounds = mockk<android.graphics.Rect>()
 
         // Mock the paint to return text bounds
         every { paint.getTextBounds(text, 0, text.length, any()) } answers {

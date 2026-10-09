@@ -46,6 +46,9 @@ import org.blitzortung.android.app.viewmodel.SettingsViewModel
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.location.LocationHandler
 
+// detekt: SettingsFragment hosts the many preference screens and their handlers. Splitting it
+// requires a larger UI refactor; tracked as a follow-up instead of forcing it here.
+@Suppress("TooManyFunctions")
 class SettingsFragment : PreferenceFragmentCompat() {
     @set:Inject
     internal lateinit var preferences: SharedPreferences
@@ -344,7 +347,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
 
             is BackupParseResult.Success -> {
-                when (val planResult = PreferencesBackup.planImport(parsed.preferences, PreferencesBackup.snapshot(preferences))) {
+                val snapshot = PreferencesBackup.snapshot(preferences)
+                when (val planResult = PreferencesBackup.planImport(parsed.preferences, snapshot)) {
                     is ImportPlanResult.Failure ->
                         showMessage(getString(R.string.backup_import_invalid_value, planResult.key), asError = true)
 

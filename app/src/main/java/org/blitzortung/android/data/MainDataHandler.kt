@@ -23,7 +23,6 @@ import android.animation.Animator.AnimatorListener
 import android.content.Context
 import android.content.SharedPreferences
 import android.location.Location
-import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import java.util.Locale
@@ -56,6 +55,9 @@ import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
 import org.osmdroid.util.BoundingBox
 
+// detekt: MainDataHandler is a central singleton orchestrating data, caching and scheduling.
+// Splitting it requires a larger architectural refactor; tracked as a follow-up instead of forcing it here.
+@Suppress("TooManyFunctions")
 @Singleton
 class MainDataHandler
 @Inject
@@ -63,10 +65,9 @@ constructor(
     private val context: Context,
     private val dataProviderFactory: DataProviderFactory,
     private val preferences: SharedPreferences,
-    private val handler: Handler,
     private val cache: DataCache,
     private val localData: LocalData,
-    private val updatePeriod: Period,
+    private val scheduler: MainDataScheduler,
 ) : OnSharedPreferenceChangeListener, Runnable, MapListener {
     private var location: Location? = null
 
@@ -233,88 +234,35 @@ constructor(
         key: PreferenceKey,
     ) {
         when (key) {
-            PreferenceKey.DATA_SOURCE, PreferenceKey.SERVICE_URL -> {
-                val providerTypeString =
-                    sharedPreferences.get(
-                        PreferenceKey.DATA_SOURCE,
-                        DataProviderType.RPC.toString(),
-                    )
-                val providerType =
-                    DataProviderType.valueOf(providerTypeString.uppercase(Locale.getDefault()))
-                val dataProvider = dataProviderFactory.getDataProviderForType(providerType)
-                this.dataProvider = dataProvider
+            PreferenceKey.DATA_SOURCE, PreferenceKey.SERVICE_URL -> applyDataSourceChange(sharedPreferences)
 
-                updateProviderSpecifics()
-
-                if (providerTypeString == DataProviderType.HTTP.toString()) {
-                    showBlitzortungProviderWarning()
-                }
-
-                Log.v(LOG_TAG, "MainDataHandler update data source: $providerType")
-
-                updateData()
-            }
-
-            PreferenceKey.GRID_SIZE -> {
-                val gridSizeString = sharedPreferences.get(key, AUTO_GRID_SIZE_VALUE)
-                if (gridSizeString == AUTO_GRID_SIZE_VALUE) {
-                    autoGridSize = true
-                    parameters = parameters.copy(gridSize = DEFAULT_GRID_SIZE)
-                } else {
-                    val gridSize = Integer.parseInt(gridSizeString)
-                    autoGridSize = false
-                    parameters = parameters.copy(gridSize = gridSize)
-                }
-                updateData()
-            }
+            PreferenceKey.GRID_SIZE -> applyGridSizeChange(sharedPreferences, key)
 
             PreferenceKey.COUNT_THRESHOLD -> {
-                val countThreshold = Integer.parseInt(sharedPreferences.get(key, "0"))
-                parameters = parameters.copy(countThreshold = countThreshold)
+                parameters = parameters.copy(countThreshold = sharedPreferences.get(key, "0").toInt())
                 updateData()
             }
 
             PreferenceKey.INTERVAL_DURATION -> {
-                val intervalDuration = Integer.parseInt(sharedPreferences.get(key, "60"))
-                parameters = parameters.withIntervalDuration(intervalDuration)
+                parameters = parameters.withIntervalDuration(sharedPreferences.get(key, "60").toInt())
                 updateData()
             }
 
             PreferenceKey.HISTORIC_TIMESTEP -> {
-                history =
-                    history.copy(
-                        timeIncrement =
-                            sharedPreferences.get(key, "30").toInt(),
-                    )
+                history = history.copy(timeIncrement = sharedPreferences.get(key, "30").toInt())
             }
 
             PreferenceKey.REGION -> {
-                val region = Integer.parseInt(sharedPreferences.get(key, "0"))
-                parameters = parameters.copy(region = region)
+                parameters = parameters.copy(region = sharedPreferences.get(key, "0").toInt())
                 updateData()
             }
 
             PreferenceKey.QUERY_PERIOD -> {
-                period = Integer.parseInt(sharedPreferences.get(key, "60"))
+                period = sharedPreferences.get(key, "60").toInt()
                 Log.v(LOG_TAG, "MainDataHandler query $period")
             }
 
-            PreferenceKey.ANIMATION_INTERVAL_DURATION -> {
-                val value = Integer.parseInt(sharedPreferences.get(key, "4"))
-                animationHistory =
-                    when (value) {
-                        2 -> History(5, 120, false)
-                        4 -> History(10, 240, false)
-                        6 -> History(10, 360, false)
-                        12 -> History(20, 720, false)
-                        24 -> History(30, 1440, true)
-                        else -> History(10, 240, false)
-                    }
-                if (mode == Mode.ANIMATION) {
-                    history = animationHistory!!
-                    cache.clear()
-                }
-            }
+            PreferenceKey.ANIMATION_INTERVAL_DURATION -> applyAnimationIntervalChange(sharedPreferences, key)
 
             PreferenceKey.ANIMATION_SLEEP_DURATION -> {
                 animationSleepDuration = sharedPreferences.getInt(key.key, 200).toLong()
@@ -326,6 +274,64 @@ constructor(
 
             else -> {
             }
+        }
+    }
+
+    private fun applyDataSourceChange(sharedPreferences: SharedPreferences) {
+        val providerTypeString =
+            sharedPreferences.get(
+                PreferenceKey.DATA_SOURCE,
+                DataProviderType.RPC.toString(),
+            )
+        val providerType =
+            DataProviderType.valueOf(providerTypeString.uppercase(Locale.getDefault()))
+        val dataProvider = dataProviderFactory.getDataProviderForType(providerType)
+        this.dataProvider = dataProvider
+
+        updateProviderSpecifics()
+
+        if (providerTypeString == DataProviderType.HTTP.toString()) {
+            showBlitzortungProviderWarning()
+        }
+
+        Log.v(LOG_TAG, "MainDataHandler update data source: $providerType")
+
+        updateData()
+    }
+
+    private fun applyGridSizeChange(
+        sharedPreferences: SharedPreferences,
+        key: PreferenceKey,
+    ) {
+        val gridSizeString = sharedPreferences.get(key, AUTO_GRID_SIZE_VALUE)
+        if (gridSizeString == AUTO_GRID_SIZE_VALUE) {
+            autoGridSize = true
+            parameters = parameters.copy(gridSize = DEFAULT_GRID_SIZE)
+        } else {
+            val gridSize = gridSizeString.toInt()
+            autoGridSize = false
+            parameters = parameters.copy(gridSize = gridSize)
+        }
+        updateData()
+    }
+
+    private fun applyAnimationIntervalChange(
+        sharedPreferences: SharedPreferences,
+        key: PreferenceKey,
+    ) {
+        val value = sharedPreferences.get(key, "4").toInt()
+        animationHistory =
+            when (value) {
+                2 -> History(5, 120, false)
+                4 -> History(10, 240, false)
+                6 -> History(10, 360, false)
+                12 -> History(20, 720, false)
+                24 -> History(30, 1440, true)
+                else -> History(10, 240, false)
+            }
+        if (mode == Mode.ANIMATION) {
+            history = animationHistory!!
+            cache.clear()
         }
     }
 
@@ -386,7 +392,7 @@ constructor(
                 val currentTime = Period.currentTime
                 val updateTargets = HashSet<DataChannel>()
 
-                if (updatePeriod.shouldUpdate(currentTime, period)) {
+                if (scheduler.period.shouldUpdate(currentTime, period)) {
                     updateTargets.add(DataChannel.STRIKES)
                 }
 
@@ -396,10 +402,10 @@ constructor(
 
                 if (parameters.isRealtime()) {
                     val statusString =
-                        "" + updatePeriod.getCurrentUpdatePeriod(currentTime, period) + "/" + period
+                        "" + scheduler.period.getCurrentUpdatePeriod(currentTime, period) + "/" + period
                     broadcastEvent(StatusUpdate(statusString))
                     // Schedule the next update
-                    handler.postDelayed(this, 1000)
+                    scheduler.handler.postDelayed(this, 1000)
                 }
             }
 
@@ -411,7 +417,7 @@ constructor(
                     } else {
                         animationSleepDuration
                     }
-                handler.postDelayed(this, delay)
+                scheduler.handler.postDelayed(this, delay)
                 updateUsingCache()
             }
         }
@@ -419,7 +425,7 @@ constructor(
 
     fun start() {
         if (isRealtime || mode == Mode.ANIMATION) {
-            handler.post(this)
+            scheduler.handler.post(this)
         }
     }
 
@@ -427,11 +433,11 @@ constructor(
         cache.clear()
         this.history = animationHistory!!
         mode = Mode.ANIMATION
-        handler.post(this)
+        scheduler.handler.post(this)
     }
 
     fun restart() {
-        updatePeriod.restart()
+        scheduler.period.restart()
         if (mode == Mode.ANIMATION) {
             cache.clear()
         }
@@ -441,7 +447,7 @@ constructor(
     }
 
     fun stop() {
-        handler.removeCallbacks(this)
+        scheduler.handler.removeCallbacks(this)
     }
 
     companion object {
