@@ -2,6 +2,9 @@
 <resources>
 
     <string name="app_name">Blitzortung - wykrywanie piorunów</string>
+    <string name="widget_location_not_available">lokalizacja niedostępna</string>
+    <string name="widget_no_strike_data">brak danych o wyładowaniach</string>
+    <string name="widget_tap_to_grant_location">Naciśnij, aby przyznać dostęp do lokalizacji</string>
 
     <plurals name="strike">
         <item quantity="zero">brak wyładowań</item>
@@ -332,12 +335,14 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="location_permission_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest uprawnienie do lokalizacji.</string>
     <string name="location_permission_background_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest uprawnienie do lokalizacji w tle.</string>
     <string name="location_permission_background_disclosure">W przypadku korzystania ze źródła lokalizacji urządzenia ta aplikacja uzyskuje dostęp do danych o lokalizacji w tle, gdy alarmy w tle są włączone lub widżet na ekranie głównym jest aktywny.</string>
-    <string name="widget_location_not_available">lokalizacja niedostępna</string>
-    <string name="widget_no_strike_data">brak danych o wyładowaniach</string>
-    <string name="widget_tap_to_grant_location">Naciśnij, aby przyznać dostęp do lokalizacji</string>
+
     <string name="osmdroid_storage_warning">Nie można znaleźć miejsca do zapisu mapy. Zgłoś to.</string>
     <string name="changelog">Dziennik zmian</string>
     <string name="menu">Otwórz menu</string>
+    <string name="start_stop_animation">Uruchom lub zatrzymaj animację</string>
+    <string name="go_realtime">Pokaż dane w czasie rzeczywistym</string>
+    <string name="toggle_extended_mode">Przełącz tryb rozszerzony</string>
+    <string name="alarm_diagram">Diagram alarmów o wyładowaniach</string>
     <string name="slider_current">teraz</string>
     <string name="slider_past">przeszłość</string>
     <string name="slider_legend">[godziny]</string>
@@ -371,41 +376,38 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="post_notifications_required_for_alerts">Uprawnienie do powiadomień jest wymagane dla alarmów i zapytań w tle</string>
     <string name="backup_settings">Kopia zapasowa</string>
     <string name="backup_export">Eksportuj preferencje</string>
-    <string name="backup_export_summary">Zapisz bieżące ustawienia w pliku JSON</string>
+    <string name="backup_export_summary">Zapisz bieżące ustawienia do pliku JSON</string>
     <string name="backup_import">Importuj preferencje</string>
     <string name="backup_import_summary">Zastąp bieżące ustawienia z pliku kopii zapasowej</string>
     <string name="backup_reset">Przywróć ustawienia domyślne</string>
-    <string name="backup_reset_summary">Przywróć wszystkie ustawienia do wartości domyślnych</string>
+    <string name="backup_reset_summary">Przywróć wszystkie ustawienia do ich wartości domyślnych</string>
     <string name="backup_export_success">Wyeksportowano preferencje</string>
     <string name="backup_export_failed">Nie udało się zapisać pliku kopii zapasowej</string>
-    <string name="backup_import_read_failed">Nie można odczytać wybranego pliku jako kopii zapasowej.</string>
+    <string name="backup_import_read_failed">Wybranego pliku nie udało się odczytać jako kopię zapasową.</string>
     <string name="backup_import_unsupported">Wybrany plik nie jest obsługiwaną kopią zapasową.</string>
-    <string name="backup_import_invalid_value">Kopia zapasowa zawiera nieprawidłową wartość dla \"%s\".</string>
+    <string name="backup_import_invalid_value">Kopia zapasowa zawiera nieprawidłową wartość dla „%s”.</string>
     <string name="backup_import_warning_title">Ostrzeżenie</string>
     <string name="backup_import_unknown_keys">Ta kopia zapasowa zawiera ustawienia, których ta aplikacja nie rozpoznaje: %s. Zostaną zignorowane.</string>
     <string name="backup_import_confirm_title">Importuj preferencje</string>
-    <string name="backup_import_confirm_message">Spowoduje to zastąpienie wszystkich bieżących ustawień. Zapisane dane logowania konta zostaną usunięte i trzeba będzie je wprowadzić ponownie.</string>
-    <string name="backup_import_missing_keys">Ustawienia nieobecne w kopii zapasowej zostaną przywrócone do wartości domyślnych: %s.</string>
+    <string name="backup_import_confirm_message">Zastępuje to wszystkie bieżące ustawienia. Twoje zapisane dane logowania do konta zostaną wyczyszczone i trzeba będzie wprowadzić je ponownie.</string>
+    <string name="backup_import_missing_keys">Ustawienia nieobecne w kopii zapasowej zostaną przywrócone do ich wartości domyślnych: %s.</string>
     <string name="backup_reset_confirm_title">Przywróć ustawienia domyślne</string>
-    <string name="backup_reset_confirm_message">Spowoduje to przywrócenie wszystkich ustawień do wartości domyślnych i usunięcie zapisanych danych logowania konta. Kontynuować?</string>
+    <string name="backup_reset_confirm_message">Przywraca to wszystkie ustawienia do ich wartości domyślnych i czyści Twoje zapisane dane logowania do konta. Czy kontynuować?</string>
     <string name="backup_restart_title">Wymagane ponowne uruchomienie</string>
     <string name="backup_restart_message">Aplikacja musi zostać ponownie uruchomiona, aby zmiany zostały zastosowane.</string>
     <string name="backup_restart_now">Uruchom ponownie teraz</string>
     <string name="backup_restart_later">Później</string>
     <string name="backup_cancel">Anuluj</string>
+
     <string name="doc_overlay_guide">Szybki przewodnik</string>
     <string name="doc_overlay_status">Informacje o statusie są wyświetlane tutaj (np. połączenie, lokalizacja).</string>
-    <string name="doc_overlay_alert">Ostrzeżenia o pobliskich wyładowaniach pojawią się tutaj.</string>
+    <string name="doc_overlay_alert">Alarmy dla pobliskiej aktywności wyładowań pojawiają się tutaj.</string>
     <string name="doc_overlay_buttons">Otwórz ustawienia i steruj animacją.</string>
     <string name="doc_overlay_histogram">Histogram pokazuje aktywność wyładowań w czasie.</string>
-    <string name="doc_overlay_legend">Legenda wyjaśnia używane kolory i symbole.</string>
-    <string name="doc_overlay_time_slider">Suwak czasu pozwala przeglądać historyczne dane o wyładowaniach.</string>
+    <string name="doc_overlay_legend">Legenda mapy objaśnia używane kolory i symbole.</string>
+    <string name="doc_overlay_time_slider">Użyj suwaka czasu, aby wyświetlić historyczne dane dotyczące wyładowań.</string>
     <string name="doc_overlay_got_it">Rozumiem!</string>
-    <string name="doc_overlay_hint_legend">Kliknięcie: otwiera okno szybkich ustawień</string>
-    <string name="doc_overlay_hint_alert">Kliknięcie: centruje na własnej lokalizacji</string>
-    <string name="doc_overlay_hint_histogram">Kliknięcie: oddala do granicy danych</string>
-    <string name="start_stop_animation">Uruchom lub zatrzymaj animację</string>
-    <string name="go_realtime">Pokaż dane w czasie rzeczywistym</string>
-    <string name="toggle_extended_mode">Przełącz tryb rozszerzony</string>
-    <string name="alarm_diagram">Diagram ostrzeżenia o piorunach</string>
+    <string name="doc_overlay_hint_legend">Naciśnięcie: otwiera okno szybkich ustawień.</string>
+    <string name="doc_overlay_hint_alert">Naciśnięcie: centruje na własnej lokalizacji.</string>
+    <string name="doc_overlay_hint_histogram">Naciśnięcie: oddala do granicy danych.</string>
 </resources>
