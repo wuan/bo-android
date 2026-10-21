@@ -14,13 +14,13 @@ by `DataProviderFactory`:
   `SocketException` and `SocketTimeoutException` while reading into an empty strike
   list.
 
-The default service URL is `http://bo-service.tryb.de/`. The host resolves to
-multiple addresses (two IPv4 and two IPv6 addresses as observed in DNS), so the
-platform HTTP stack can try an alternative address when a connection attempt to
-the first one fails. Each attempt is bounded by the connect timeout; a read
-timeout bounds a connection that is accepted but never responds. The periodic
-update loop (`MainDataScheduler` / `Period`, default 60 s) re-issues requests, so
-the next cycle is the fallback for a request that fails entirely.
+The default service URL is `http://bo-service.tryb.de/`. The host is published
+through DNS-based multi-record round-robin (two IPv4 and two IPv6 records observed),
+so when a connection attempt fails the client takes the next resolved record within
+the same request. The periodic update loop (`MainDataScheduler` / `Period`, default
+60 s) re-issues requests, so the next cycle is the fallback for a request that fails
+entirely. Each attempt is bounded by the connect timeout; a read timeout bounds a
+connection that is accepted but never responds.
 
 Two existing bounds interact with these timeouts:
 
@@ -51,24 +51,23 @@ Two existing bounds interact with these timeouts:
 
 ### Decision: Second-range values — 5 s connect, 10 s read
 
-Use a connect timeout of `5_000` ms and a read timeout of `10_000` ms.
+Use a connect timeout of `5_000` ms and a read timeout of `10_000` ms. This is the
+maintainer-confirmed choice from review.
 
 - **Why**: A TCP connect on mobile networks normally completes well under a
   second; 5 s tolerates slow networks while failing an unresponsive server quickly
-  enough to fall back to the next resolved address or the next 60-second update.
-  The read timeout is larger because a grid response can be sizeable on a slow
-  link, but it still caps a server that accepts the connection and then hangs.
-  Both are far below the previous 40 s and below any value that would outlive the
-  5-second background wake lock.
+  enough to take the next resolved DNS record or the next 60-second update. The read
+  timeout is larger because a grid response can be sizeable on a slow link, but it
+  still caps a server that accepts the connection and then hangs. Both are far below
+  the previous 40 s and below any value that would outlive the 5-second background
+  wake lock.
 - **Alternative considered**: Keep the 40 s values. Rejected: that is the problem
   the issue reports. Use a single combined timeout for both phases. Rejected:
   connect and read bound different failure modes and deserve different values.
 - **Alternative considered**: Use very aggressive values (1–2 s). Rejected as
-  likely to abort legitimate slow mobile connections; can be revisited after
-  observing real latency.
-- **Note**: These are the intended defaults, not hard guarantees. The spec bounds
-  the values (connect ≤ 5 s, read ≤ 10 s) so they can be tuned during
-  implementation without changing the requirement.
+  likely to abort legitimate slow mobile connections.
+- **Note**: The spec bounds the values (connect ≤ 5 s, read ≤ 10 s) so they can be
+  tuned during implementation without changing the requirement.
 
 ### Decision: One shared declaration instead of two literals
 
@@ -103,23 +102,34 @@ values through the helper.
   constants. Rejected: larger, unnecessary API churn, and it would lose the
   ability for a focused test to configure a connection differently.
 
-### Decision: Rely on multi-address fallback and the update cycle; do not add a server list
+### Decision: Keep the timeouts as compile-time constants
 
-The change reduces the timeout; it does not add server discovery. The host already
-resolves to multiple addresses, so the platform HTTP stack advances to the next
-address when a connect attempt fails (`ConnectException`, and a connect
-`SocketTimeoutException` are treated as an attempt failure by the route selector),
-and it retries on the next scheduled update after a total failure.
+Do not add a preference key or any runtime configuration for the timeout values;
+keep them as compile-time constants. Confirmed by the maintainer in review.
+
+- **Why**: A shorter timeout is a defensive default, not a user-facing tuning knob.
+  No new preference keeps the settings surface, translations, and backup/restore
+  behavior unchanged, and avoids exposing a value most users cannot reason about.
+- **Alternative considered**: Expose the timeouts as a (debug) preference.
+  Rejected: it adds settings and localization surface, plus backup/restore
+  interaction, for a value that only helps unusual networks.
+
+### Decision: Rely on DNS multi-record round-robin and the update cycle; do not add a server list
+
+The host is published through DNS-based multi-record round-robin. When a connection
+attempt to one resolved record fails, the client takes the next resolved record
+within the same request, and it retries on the next scheduled update after a total
+failure. The change reduces the timeout; it does not add a server list or health
+checks. Confirmed by the maintainer in review.
 
 - **Why**: The issue asks to reduce the timeout "for faster fallback to
-  alternative servers". The alternative servers are already reachable through the
-  host's address set; a shorter connect timeout is what makes the fallback fast.
-  Adding a managed server list, health checks, or a status endpoint is a distinct,
-  larger feature with its own failure modes.
+  alternative servers". The alternative servers are already exposed through the
+  host's DNS records; a shorter connect timeout is what makes taking the next record
+  fast. Adding a managed server list, health checks, or a status endpoint is a
+  distinct, larger feature with its own failure modes.
 - **Alternative considered**: Hardcode a primary/secondary server list and retry
-  across it. Rejected for this change: it duplicates DNS, needs health policy, and
-  would silently ignore the user-configured `service_url` preference. It is
-  captured as a follow-up question below.
+  across it. Rejected: it duplicates DNS, needs a health policy, and would silently
+  ignore the user-configured `service_url` preference.
 
 ### Decision: Preserve existing failure semantics
 
@@ -137,10 +147,10 @@ result. No new crash paths, no user-facing error beyond the existing failed stat
 - **Too-short read timeout on slow links** → Aborts a large grid response and
   reports a failed update. Mitigation: read timeout stays at 10 s, larger than the
   5 s connect timeout; the next cycle retries.
-- **Fallback depends on platform route selection** → On a hang after connect
-  (rather than a refused connect) the platform may not retry the same request on
-  another address. Mitigation: the read timeout bounds the hang and the periodic
-  update performs the retry; known limitation.
+- **Fallback depends on DNS record selection** → On a hang after connect (rather
+  than a refused connect) the client may not take another record within the same
+  request. Mitigation: the read timeout bounds the hang and the periodic update
+  performs the retry; known limitation.
 - **Background wake lock interaction** → A request that now fails in seconds may
   finish after the wake lock is released on slow devices. This only changes timing,
   not correctness; `FetchBackgroundDataTask` already releases the lock on
@@ -165,14 +175,3 @@ result. No new crash paths, no user-facing error beyond the existing failed stat
 **Rollback**: revert the single change; the two call sites return to the shared
 constants, and restoring 40 s (or the previous literals) fully reverts the
 behavior. There is no stored state, migration, or configuration to undo.
-
-## Open Questions
-
-- Is 5 s connect / 10 s read the right balance, or should the connect timeout be
-  more aggressive (for example 2–3 s) given the two IPv4 / two IPv6 addresses?
-  This can be tuned during implementation without changing the spec bound.
-- Should an explicit multi-server fallback (a maintained server list or a status
-  endpoint) be a separate follow-up change? This change deliberately keeps DNS as
-  the source of alternative addresses.
-- Should the timeout values ever be exposed as a preference (for example for
-  debugging on unusual networks), or stay compile-time constants?

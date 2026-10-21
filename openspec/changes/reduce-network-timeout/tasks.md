@@ -19,3 +19,4 @@
 - [ ] 4.1 Run `./gradlew testDebugUnitTest` and verify all new and existing unit tests pass
 - [ ] 4.2 Run `./gradlew lint` and verify no new lint errors are introduced
 - [ ] 4.3 Verify behavior manually (or with an instrumented/integration check): point `service_url` at a non-routable or black-holed host and confirm the request fails within seconds, reports a failed result, and the app keeps cycling updates without crashing
+- [ ] 4.4 Confirm the timeouts remain compile-time constants — no new preference key or runtime configuration is introduced, and no settings/translation/backup surface changes (reviewer decision)

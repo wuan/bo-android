@@ -31,6 +31,15 @@ rather than repeating numeric literals.
 - **WHEN** the JSON-RPC path and the Blitzortung HTTP path configure their connections
 - **THEN** both read the same shared timeout declarations
 
+### Requirement: Timeouts are fixed compile-time constants
+
+The connect and read timeout values SHALL be compile-time constants. They MUST NOT
+be exposed as user-configurable preferences.
+
+#### Scenario: Settings cannot change the request timeouts
+- **WHEN** the user changes application settings
+- **THEN** the outbound request timeouts remain at their compile-time values
+
 ### Requirement: A timed-out request fails without crashing
 
 When a connection attempt or a read exceeds its timeout, the system MUST treat the
@@ -48,14 +57,15 @@ indefinitely.
 
 ### Requirement: Failed requests give way to alternative servers
 
-The system SHALL attempt the next resolved address of the service host within the
-same request when a connection attempt does not succeed within the connect timeout,
-and SHALL retry on the next scheduled update when the request ultimately fails, so
-that a short connect timeout yields faster fallback to an alternative server.
+The system SHALL rely on DNS-based multi-record round-robin for the service host.
+When a connection attempt to one resolved record does not succeed within the connect
+timeout, the system SHALL take the next resolved record within the same request, and
+SHALL retry on the next scheduled update when the request ultimately fails, so that
+a short connect timeout yields faster fallback to an alternative server.
 
-#### Scenario: Host resolves to multiple addresses
-- **WHEN** the service host resolves to more than one address and the first address does not accept a connection within the connect timeout
-- **THEN** the client attempts the next resolved address within the same request
+#### Scenario: DNS round-robin records
+- **WHEN** the service host resolves to multiple DNS records and a connection attempt to one record does not succeed within the connect timeout
+- **THEN** the client takes the next resolved record within the same request
 
 #### Scenario: Next update retries after a total failure
 - **WHEN** all connection attempts for a request fail or time out

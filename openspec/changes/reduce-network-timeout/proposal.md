@@ -3,16 +3,16 @@
 Every outbound lightning-data request currently allows up to 40 seconds before it
 fails: `JsonRpcClient` sets a 40 s connect and read timeout, and
 `BlitzortungHttpDataProvider.readFromUrl()` configures 40 s directly on its
-connections. The app backend `bo-service.tryb.de` resolves to more than one
-address (two IPv4 and two IPv6 addresses are published for the host), so a client
-can reach an alternative backend server when one is unavailable — but only after
-the first connection attempt gives up. Waiting 40 seconds for an unresponsive
+connections. The app backend `bo-service.tryb.de` is published through DNS-based
+multi-record round-robin (two IPv4 and two IPv6 records), so a client can reach an
+alternative backend server when one is unavailable — it takes the next resolved
+record once a connection attempt fails. Waiting 40 seconds for an unresponsive
 server delays that fallback, stalls the update cycle so the map stays stale, and
 lets a foreground or background fetch outlive the 5-second background wake lock
 (`ServiceDataHandler.WAKELOCK_TIMEOUT`) that is meant to cover it.
 
 Reducing the connect and read timeouts to the seconds range makes an unresponsive
-backend fail fast, so the client reaches the next resolved address within the same
+backend fail fast, so the client takes the next resolved DNS record within the same
 request, or retries on the next scheduled update, instead of blocking for tens of
 seconds during a backend outage (issue #487).
 
@@ -27,6 +27,8 @@ seconds during a backend outage (issue #487).
 - Apply the shared timeouts to the Blitzortung HTTP path
   (`BlitzortungHttpDataProvider.readFromUrl()`), keeping its existing behavior of
   treating `SocketException` / `SocketTimeoutException` as an empty result.
+- Keep the timeout values as compile-time constants: no new preference key and no
+  runtime configuration.
 - Add unit tests that pin the shared values to the bounded range, verify the
   JSON-RPC client applies them, and verify the shared helper applies them to a
   connection.
