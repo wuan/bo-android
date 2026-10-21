@@ -12,6 +12,7 @@ import java.net.URLStreamHandler
 import java.net.URLStreamHandlerFactory
 import java.util.zip.GZIPOutputStream
 import org.assertj.core.api.Assertions.assertThat
+import org.blitzortung.android.util.NetworkTimeouts
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
@@ -56,6 +57,16 @@ class HttpServiceClientDefaultTest {
 
         assertThat(handler.connection.outputStream.toString("UTF-8")).isEqualTo(data)
         assertThat(response.body).isEqualTo(responseValue)
+    }
+
+    @Test
+    fun appliesSharedTimeoutsToConnection() {
+        handler.response = "input".toByteArray()
+
+        uut.doRequest(URL("http://base.url"), "output")
+
+        assertThat(handler.connection.connectTimeout).isEqualTo(NetworkTimeouts.CONNECT_TIMEOUT_MS)
+        assertThat(handler.connection.readTimeout).isEqualTo(NetworkTimeouts.READ_TIMEOUT_MS)
     }
 
     @Test

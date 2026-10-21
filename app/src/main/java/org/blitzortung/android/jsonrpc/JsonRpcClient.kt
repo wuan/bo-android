@@ -22,6 +22,7 @@ import java.net.URL
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
+import org.blitzortung.android.util.NetworkTimeouts
 import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
@@ -36,8 +37,8 @@ class JsonRpcClient
     @Inject
     constructor(client: HttpServiceClientDefault) : HttpServiceClient by client {
         init {
-            connectionTimeout = 40000
-            socketTimeout = 40000
+            connectionTimeout = NetworkTimeouts.CONNECT_TIMEOUT_MS
+            socketTimeout = NetworkTimeouts.READ_TIMEOUT_MS
         }
 
         private val nextRequestId = AtomicInteger(1)

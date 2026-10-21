@@ -25,6 +25,7 @@ import java.nio.charset.Charset
 import java.util.zip.GZIPInputStream
 import javax.inject.Inject
 import javax.inject.Named
+import org.blitzortung.android.util.NetworkTimeouts
 
 class HttpServiceClientDefault
     @Inject
@@ -32,8 +33,8 @@ class HttpServiceClientDefault
         @Named("agentSuffix") agentSuffix: String,
     ) : HttpServiceClient {
         private val userAgentString: String = "bo-android$agentSuffix"
-        override var socketTimeout = 0
-        override var connectionTimeout = 0
+        override var socketTimeout = NetworkTimeouts.READ_TIMEOUT_MS
+        override var connectionTimeout = NetworkTimeouts.CONNECT_TIMEOUT_MS
 
         override fun doRequest(
             baseUrl: URL,
