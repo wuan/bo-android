@@ -7,6 +7,7 @@ import io.mockk.verify
 import java.net.URL
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.blitzortung.android.util.NetworkTimeouts
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Before
@@ -26,6 +27,12 @@ class JsonRpcClientTest {
         MockKAnnotations.init(this, relaxed = true)
 
         uut = JsonRpcClient(httpClient)
+    }
+
+    @Test
+    fun appliesBoundedTimeoutsFromSharedConstants() {
+        verify { httpClient.connectionTimeout = NetworkTimeouts.CONNECT_TIMEOUT_MS }
+        verify { httpClient.socketTimeout = NetworkTimeouts.READ_TIMEOUT_MS }
     }
 
     @Test

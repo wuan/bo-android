@@ -51,6 +51,7 @@ import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
 import org.blitzortung.android.data.provider.data.initializeResult
 import org.blitzortung.android.data.provider.result.DataReceived
+import org.blitzortung.android.util.NetworkTimeouts
 
 @Singleton
 class BlitzortungHttpDataProvider
@@ -87,8 +88,7 @@ class BlitzortungHttpDataProvider
             try {
                 val url = URL(urlString)
                 val connection = url.openConnection()
-                connection.connectTimeout = 40000
-                connection.readTimeout = 40000
+                NetworkTimeouts.applyTo(connection)
                 connection.allowUserInteraction = false
                 var inputStream = connection.inputStream
                 if (useGzipCompression) {
