@@ -1,3 +1,12 @@
+## Purpose
+
+Expose the application's data, location, map, and settings state to screens
+through lifecycle-aware ViewModels that derive `StateFlow` state from
+repository event flows, so that UI components no longer register handler
+consumers directly.
+
+## Requirements
+
 ### Requirement: Main ViewModel exposes UI state
 
 The system SHALL provide a `MainViewModel` that derives UI state from repository event flows, exposing persisted state as `StateFlow` and transient data events as a non-conflating `SharedFlow`.

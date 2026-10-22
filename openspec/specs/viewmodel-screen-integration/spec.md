@@ -1,3 +1,12 @@
+## Purpose
+
+Wire the foreground screens and background service to the ViewModel and
+repository layer so that state is collected lifecycle-aware and handler
+consumers are registered and released automatically, without changing the
+observable behavior of the application.
+
+## Requirements
+
 ### Requirement: Main screen collects ViewModel state lifecycle-aware
 
 `Main` SHALL obtain its data, location, and alert state from `MainViewModel` and SHALL NOT register handler consumers directly.
