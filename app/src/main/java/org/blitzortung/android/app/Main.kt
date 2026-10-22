@@ -100,6 +100,9 @@ import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.util.StorageUtils
 import org.osmdroid.util.GeoPoint
 
+// detekt: Main is the foreground Activity that wires many UI components together. Splitting it
+// requires a larger architectural refactor; tracked as a follow-up instead of forcing it here.
+@Suppress("TooManyFunctions")
 class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private var backgroundAlertEnabled: Boolean = false
     private lateinit var statusComponent: StatusComponent
@@ -294,9 +297,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 }
 
                 override fun onStartTrackingTouch(p0: SeekBar?) {
+                    // no-op; position changes are handled in onProgressChanged/onStopTrackingTouch
                 }
 
                 override fun onStopTrackingTouch(p0: SeekBar?) {
+                    // no-op; position changes are handled in onProgressChanged
                 }
             },
         )
@@ -326,20 +331,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         }
     }
 
-    private fun setupDetailModeButton() {
-        with(binding.toggleExtendedMode) {
-            isEnabled = true
-            visibility = View.VISIBLE
-
-            setOnClickListener {
-                viewModel.toggleExtendedMode()
-                viewModel.updateData()
-            }
-
-            buttonColumnHandler.addElement(this, ButtonGroup.DATA_UPDATING)
-        }
-    }
-
     private val serviceIntent: Intent
         get() = Intent(this, AppService::class.java)
 
@@ -360,41 +351,43 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         with(binding.alertView) {
             setColorHandler(strikeColorHandler, strikeListOverlay.parameters.intervalDuration)
-            setOnClickListener {
-                val currentLocation = locationHandler.location
-                if (currentLocation != null) {
-                    val diameter =
-                        if (!keepZoomOnGotoOwnLocation) {
-                            determineTargetZoomRadius(alertHandler)
-                        } else {
-                            null
-                        }
-
-                    animateToLocationAndVisibleSize(currentLocation.longitude, currentLocation.latitude, diameter)
-                }
-            }
+            setOnClickListener { onAlertViewClicked() }
             enableLongClickListener(dataHandler, alertHandler)
         }
 
         with(binding.histogramView) {
             mapFragment = this@Main.mapFragment
             setStrikesOverlay(strikeListOverlay)
-            setOnClickListener {
-                val currentResult = currentResult
-                if (currentResult != null) {
-                    val parameters = currentResult.parameters
-                    val gridParameters = currentResult.gridParameters
-                    if (!parameters.isGlobal && gridParameters != null) {
-                        animateToLocationAndVisibleSize(
-                            gridParameters.rectCenterLongitude,
-                            gridParameters.rectCenterLatitude,
-                            if (parameters.region == LOCAL_REGION) 1800f else 5000f,
-                        )
-                    } else {
-                        animateToLocationAndVisibleSize(-30.0, 0.0, 40000f)
-                    }
-                }
+            setOnClickListener { onHistogramViewClicked() }
+        }
+    }
+
+    private fun onAlertViewClicked() {
+        val currentLocation = locationHandler.location ?: return
+
+        val diameter =
+            if (!keepZoomOnGotoOwnLocation) {
+                determineTargetZoomRadius(alertHandler)
+            } else {
+                null
             }
+
+        animateToLocationAndVisibleSize(currentLocation.longitude, currentLocation.latitude, diameter)
+    }
+
+    private fun onHistogramViewClicked() {
+        val currentResult = currentResult ?: return
+
+        val parameters = currentResult.parameters
+        val gridParameters = currentResult.gridParameters
+        if (!parameters.isGlobal && gridParameters != null) {
+            animateToLocationAndVisibleSize(
+                gridParameters.rectCenterLongitude,
+                gridParameters.rectCenterLatitude,
+                if (parameters.region == LOCAL_REGION) 1800f else 5000f,
+            )
+        } else {
+            animateToLocationAndVisibleSize(-30.0, 0.0, 40000f)
         }
     }
 
@@ -771,7 +764,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private fun configureMenuAccess() {
         val config = ViewConfiguration.get(this)
 
-        if (isAtLeast(Build.VERSION_CODES.LOLLIPOP) || isAtLeast(Build.VERSION_CODES.ICE_CREAM_SANDWICH) && !config.hasPermanentMenuKey()) {
+        val showMenu = isAtLeast(Build.VERSION_CODES.LOLLIPOP) ||
+            isAtLeast(Build.VERSION_CODES.ICE_CREAM_SANDWICH) && !config.hasPermanentMenuKey()
+        if (showMenu) {
             binding.menu.visibility = View.VISIBLE
             binding.menu.setOnClickListener {
                 showPopupMenu(binding.menu)
@@ -783,7 +778,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
     private fun showPopupMenu(anchor: View) {
         val popupMenu =
-            MainPopupMenu(this, anchor, preferences, dataHandler, alertHandler, buildVersion, changeLogComponent)
+            MainPopupMenu(
+                this,
+                anchor,
+                MainPopupMenuDependencies(preferences, dataHandler, alertHandler, buildVersion, changeLogComponent),
+            )
         popupMenu.onShowDocOverlay = docOverlayController::show
         popupMenu.showPopupMenu()
     }
@@ -803,8 +802,12 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
      * order inside each group.
      */
     private fun createDocTargets(): List<DocTarget> {
-        val buttonColumn = listOf(binding.menu, binding.startStopAnimation, binding.goRealtime, binding.toggleExtendedMode)
-            .firstOrNull { it.isVisible }
+        val buttonColumn = listOf(
+            binding.menu,
+            binding.startStopAnimation,
+            binding.goRealtime,
+            binding.toggleExtendedMode,
+        ).firstOrNull { it.isVisible }
         return listOfNotNull(
             DocTarget(
                 binding.status,

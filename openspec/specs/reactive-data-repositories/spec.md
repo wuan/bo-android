@@ -1,3 +1,11 @@
+## Purpose
+
+Adapt the callback-based data, location, and alert handlers into cold Kotlin
+`Flow`s so that foreground and background components can consume handler
+events reactively and release subscriptions automatically.
+
+## Requirements
+
 ### Requirement: Data events exposed as a Flow
 
 The system SHALL provide a `StrikeDataRepository` that exposes `MainDataHandler` notifications as a cold Kotlin `Flow<DataEvent>`.

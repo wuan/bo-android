@@ -73,7 +73,6 @@ data class GridParameters(
                 bottomRight,
             )
 
-        // Log.d(Main.LOG_TAG, "GridParameters.getRect() $longitudeStart - $longitudeEnd ($longitudeDelta, #$longitudeBins) $latitudeEnd - $latitudeStart ($latitudeDelta, #$latitudeBins)")
         return RectF(leftTop.x.toFloat(), leftTop.y.toFloat(), bottomRight.x.toFloat(), bottomRight.y.toFloat())
     }
 

@@ -32,8 +32,6 @@ import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.overlay.StrikeListOverlay
 import org.blitzortung.android.util.TabletAwareView
 
-private const val SMALL_TEXT_SCALE = 0.7f
-
 class HistogramView
     @JvmOverloads
     constructor(
@@ -189,7 +187,8 @@ class HistogramView
                 val histogram = IntArray(binCount)
 
                 result.strikes.forEach { strike ->
-                    val binIndex = (binCount - 1) - ((referenceTime - strike.timestamp) / 1000 / 60 / binInterval).toInt()
+                    val minutes = (referenceTime - strike.timestamp) / 1000 / 60
+                    val binIndex = (binCount - 1) - (minutes / binInterval).toInt()
                     if (binIndex in 0 until binCount) {
                         histogram[binIndex]++
                     }

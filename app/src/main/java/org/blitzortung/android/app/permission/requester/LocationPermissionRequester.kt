@@ -55,7 +55,8 @@ class LocationPermissionRequester(
                 val previousValue = preferences.get(PreferenceKey.LOCATION_MODE, "n/a")
                 Log.i(
                     LOG_TAG,
-                    "Main.onRequestPermissionResult() $providerName permission has been granted. (code $requestCode, previous: $previousValue)",
+                    "Main.onRequestPermissionResult() $providerName permission has been granted. " +
+                        "(code $requestCode, previous: $previousValue)",
                 )
                 preferences.edit {
                     put(PreferenceKey.LOCATION_MODE, providerName)

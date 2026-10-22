@@ -19,6 +19,7 @@
 package org.blitzortung.android.app.viewmodel
 
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -74,25 +75,24 @@ class SettingsViewModel
             key: PreferenceKey,
             value: String,
         ) {
-            preferences.edit().putString(key.key, value).apply()
+            preferences.edit { putString(key.key, value) }
         }
 
         fun setIntPreference(
             key: PreferenceKey,
             value: Int,
         ) {
-            preferences.edit().putInt(key.key, value).apply()
+            preferences.edit { putInt(key.key, value) }
         }
 
         fun setBooleanPreference(
             key: PreferenceKey,
             value: Boolean,
         ) {
-            preferences.edit().putBoolean(key.key, value).apply()
+            preferences.edit { putBoolean(key.key, value) }
         }
 
         override fun onCleared() {
-            super.onCleared()
             preferences.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener)
         }
     }

@@ -20,6 +20,8 @@ package org.blitzortung.android.data.provider.standard
 
 import android.content.SharedPreferences
 import android.util.Log
+import java.io.IOException
+import java.net.MalformedURLException
 import java.net.URI
 import java.net.URL
 import java.text.SimpleDateFormat
@@ -37,6 +39,7 @@ import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.Cluster
 import org.blitzortung.android.data.beans.Strike
+import org.blitzortung.android.data.provider.DataProviderException
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
@@ -179,8 +182,10 @@ class JsonRpcDataProvider
                     val response = JsonRpcData(client, serviceUrl).requestData(parameters)
                     result = addGridData(response, result, parameters.gridSize)
                     result = addStrikesHistogram(response.data, result)
-                } catch (e: Exception) {
-                    throw RuntimeException(e)
+                } catch (e: IOException) {
+                    throw DataProviderException("failed to retrieve grid strikes", e)
+                } catch (e: JSONException) {
+                    throw DataProviderException("failed to parse grid strikes", e)
                 }
 
                 Log.v(
@@ -239,8 +244,10 @@ class JsonRpcDataProvider
 
                     result = addStrikes(response, result)
                     result = addStrikesHistogram(response.data, result)
-                } catch (e: Exception) {
-                    throw RuntimeException(e)
+                } catch (e: IOException) {
+                    throw DataProviderException("failed to retrieve strikes", e)
+                } catch (e: JSONException) {
+                    throw DataProviderException("failed to parse strikes", e)
                 }
 
                 Log.v(
@@ -273,7 +280,7 @@ class JsonRpcDataProvider
         private fun toCheckedUrl(serviceUrl: String): URL {
             return try {
                 URL(serviceUrl)
-            } catch (e: Exception) {
+            } catch (e: MalformedURLException) {
                 Log.e(Main.LOG_TAG, "JsonRpcDataProvider.tocheckedUrl($serviceUrl) invalid")
                 DEFAULT_SERVICE_URL
             }

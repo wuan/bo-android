@@ -16,6 +16,7 @@ class ScaledTextView(context: Context, attrs: AttributeSet?) :
 
             if (scaleForTablet) {
                 val displayMetrics = context.resources.displayMetrics
+                @Suppress("DEPRECATION")
                 textSize *= TabletAwareView.textSizeFactor(scaleForTablet) / displayMetrics.scaledDensity
             }
         }

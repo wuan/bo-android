@@ -34,9 +34,12 @@ class BootReceiver : BroadcastReceiver() {
 
             val bootIntent = Intent(context, AppService::class.java)
             bootIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            @Suppress("TooGenericExceptionCaught")
             try {
                 context.startService(bootIntent)
             } catch (e: Exception) {
+                // detekt: startup is best-effort; any failure (SecurityException, IllegalStateException,
+                // provider errors) must not crash the app during boot, so keep the broad catch.
                 Log.e(LOG_TAG, "BootReceiver.onReceive() start service failed after boot completed", e)
             }
         } else {

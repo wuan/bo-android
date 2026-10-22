@@ -28,6 +28,7 @@ import kotlin.math.max
 import kotlin.math.min
 import org.blitzortung.android.app.R
 import org.blitzortung.android.map.overlay.StrikeListOverlay
+import org.blitzortung.android.map.overlay.color.ColorHandler
 import org.blitzortung.android.util.TabletAwareView
 
 class LegendView
@@ -137,76 +138,92 @@ class LegendView
         }
 
         override fun onDraw(canvas: Canvas) {
-            strikesOverlay?.let { strikesOverlay ->
-                val colorHandler = strikesOverlay.colorHandler
-                val minutesPerColor = strikesOverlay.parameters.intervalDuration / colorHandler.numberOfColors
+            strikesOverlay?.let { overlay ->
+                val colorHandler = overlay.colorHandler
+                val minutesPerColor = overlay.parameters.intervalDuration / colorHandler.numberOfColors
 
                 backgroundRect.set(0f, 0f, width.toFloat(), height.toFloat())
                 canvas.drawRect(backgroundRect, backgroundPaint)
 
-                val numberOfColors = colorHandler.numberOfColors
-
-                var topCoordinate = padding
-
-                for (index in 0 until numberOfColors) {
-                    foregroundPaint.color = colorHandler.getColor(index)
-                    legendColorRect.set(
-                        padding,
-                        topCoordinate,
-                        padding + colorFieldSize,
-                        topCoordinate + colorFieldSize,
-                    )
-                    canvas.drawRect(legendColorRect, foregroundPaint)
-
-                    val isLastValue = index == numberOfColors - 1
-                    val minuteUnit = context.getString(R.string.unit_minute)
-                    val text =
-                        LEGEND_FORMAT.format(
-                            if (isLastValue) '>' else '<',
-                            (index + (if (isLastValue) 0 else 1)) * minutesPerColor,
-                            minuteUnit,
-                        )
-
-                    canvas.drawText(
-                        text,
-                        2 * padding + colorFieldSize,
-                        topCoordinate + colorFieldSize / 1.1f,
-                        textPaint,
-                    )
-
-                    topCoordinate += colorFieldSize + padding
-                }
+                var topCoordinate = drawColorLegend(canvas, colorHandler, minutesPerColor)
 
                 if (hasRegion()) {
-                    canvas.drawText(
-                        regionName,
-                        width / 2.0f,
-                        topCoordinate + colorFieldSize * REGION_HEIGHT / 1.1f,
-                        regionTextPaint,
-                    )
-                    topCoordinate += colorFieldSize * REGION_HEIGHT + padding
+                    topCoordinate = drawRegionName(canvas, topCoordinate)
                 }
 
                 if (usesGrid()) {
-                    canvas.drawText(
-                        context.getString(R.string.legend_grid) + ": " + gridInfo,
-                        width / 2.0f,
-                        topCoordinate + colorFieldSize * GRID_HEIGHT / 1.1f,
-                        gridTextPaint,
-                    )
-                    topCoordinate += colorFieldSize * GRID_HEIGHT + padding
-
-                    if (hasCountThreshold()) {
-                        val countThreshold = strikesOverlay.parameters.countThreshold
-                        canvas.drawText(
-                            "# > $countThreshold",
-                            width / 2.0f,
-                            topCoordinate + colorFieldSize * COUNT_THRESHOLD_HEIGHT / 1.1f,
-                            countThresholdTextPaint,
-                        )
-                        topCoordinate += colorFieldSize * COUNT_THRESHOLD_HEIGHT + padding
-                    }
+                    drawGridInfo(canvas, topCoordinate)
                 }
+            }
+        }
+
+        private fun drawColorLegend(
+            canvas: Canvas,
+            colorHandler: ColorHandler,
+            minutesPerColor: Int,
+        ): Float {
+            val numberOfColors = colorHandler.numberOfColors
+            var topCoordinate = padding
+
+            for (index in 0 until numberOfColors) {
+                foregroundPaint.color = colorHandler.getColor(index)
+                legendColorRect.set(
+                    padding,
+                    topCoordinate,
+                    padding + colorFieldSize,
+                    topCoordinate + colorFieldSize,
+                )
+                canvas.drawRect(legendColorRect, foregroundPaint)
+
+                val isLastValue = index == numberOfColors - 1
+                val minuteUnit = context.getString(R.string.unit_minute)
+                val text =
+                    LEGEND_FORMAT.format(
+                        if (isLastValue) '>' else '<',
+                        (index + (if (isLastValue) 0 else 1)) * minutesPerColor,
+                        minuteUnit,
+                    )
+
+                canvas.drawText(
+                    text,
+                    2 * padding + colorFieldSize,
+                    topCoordinate + colorFieldSize / 1.1f,
+                    textPaint,
+                )
+
+                topCoordinate += colorFieldSize + padding
+            }
+
+            return topCoordinate
+        }
+
+        private fun drawRegionName(canvas: Canvas, topCoordinate: Float): Float {
+            canvas.drawText(
+                regionName,
+                width / 2.0f,
+                topCoordinate + colorFieldSize * REGION_HEIGHT / 1.1f,
+                regionTextPaint,
+            )
+            return topCoordinate + colorFieldSize * REGION_HEIGHT + padding
+        }
+
+        private fun drawGridInfo(canvas: Canvas, topCoordinate: Float) {
+            canvas.drawText(
+                context.getString(R.string.legend_grid) + ": " + gridInfo,
+                width / 2.0f,
+                topCoordinate + colorFieldSize * GRID_HEIGHT / 1.1f,
+                gridTextPaint,
+            )
+            val updatedTop = topCoordinate + colorFieldSize * GRID_HEIGHT + padding
+
+            if (hasCountThreshold()) {
+                val countThreshold = strikesOverlay?.parameters?.countThreshold ?: 0
+                canvas.drawText(
+                    "# > $countThreshold",
+                    width / 2.0f,
+                    updatedTop + colorFieldSize * COUNT_THRESHOLD_HEIGHT / 1.1f,
+                    countThresholdTextPaint,
+                )
             }
         }
 

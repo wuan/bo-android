@@ -35,7 +35,8 @@ abstract class ManagerLocationProvider(
 
         Log.v(
             LOG_TAG,
-            "ManagerLocationProvider.start() background: $isInBackground, type: $type, minTime: $minTime, minDistance: $minDistance",
+            "ManagerLocationProvider.start() background: $isInBackground, type: $type, " +
+                "minTime: $minTime, minDistance: $minDistance",
         )
         if (locationManager.allProviders.contains(type)) {
             try {
@@ -103,6 +104,7 @@ abstract class ManagerLocationProvider(
         Log.d(LOG_TAG, "ManagerLocationProvider: Reconfigure provider, background: ${this.isInBackground}")
 
         locationManager.removeUpdates(this)
+        @Suppress("TooGenericExceptionCaught")
         try {
             updateToLastKnown()
             locationManager.requestLocationUpdates(type, minTime, minDistance, this)
@@ -110,6 +112,8 @@ abstract class ManagerLocationProvider(
             Toast.makeText(context, failedToEnableMessage, Toast.LENGTH_LONG).show()
             Log.e(LOG_TAG, failedToEnableMessage, securityException)
         } catch (runtimeException: RuntimeException) {
+            // detekt: the framework can reject a reconfigure with an unspecified RuntimeException;
+            // keep the broad catch so a failed reconfigure shows a toast instead of crashing.
             Toast.makeText(context, failedToReconfigureMessage, Toast.LENGTH_LONG).show()
             Log.e(LOG_TAG, failedToReconfigureMessage, runtimeException)
         }

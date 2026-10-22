@@ -22,6 +22,7 @@ import java.net.URL
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
+import org.blitzortung.android.util.NetworkTimeouts
 import org.json.JSONArray
 import org.json.JSONObject
 import org.json.JSONTokener
@@ -36,8 +37,8 @@ class JsonRpcClient
     @Inject
     constructor(client: HttpServiceClientDefault) : HttpServiceClient by client {
         init {
-            connectionTimeout = 40000
-            socketTimeout = 40000
+            connectionTimeout = NetworkTimeouts.CONNECT_TIMEOUT_MS
+            socketTimeout = NetworkTimeouts.READ_TIMEOUT_MS
         }
 
         private val nextRequestId = AtomicInteger(1)
@@ -92,6 +93,13 @@ class JsonRpcClient
                     else -> throw JsonRpcException("invalid JSON-RPC response")
                 }
 
+            return parseResponseObject(responseObject, requestId)
+        }
+
+        private fun parseResponseObject(
+            responseObject: JSONObject,
+            requestId: Int,
+        ): JsonRpcResponse {
             if (responseObject.optString("jsonrpc") != JSON_RPC_VERSION) {
                 throw JsonRpcException("unsupported JSON-RPC response version")
             }
@@ -101,6 +109,13 @@ class JsonRpcClient
                 throw createException(error)
             }
 
+            return extractResult(responseObject, requestId)
+        }
+
+        private fun extractResult(
+            responseObject: JSONObject,
+            requestId: Int,
+        ): JsonRpcResponse {
             if (!responseObject.has("result")) {
                 throw JsonRpcException("invalid JSON-RPC response: missing result")
             }

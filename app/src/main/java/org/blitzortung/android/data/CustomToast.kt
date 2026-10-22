@@ -1,5 +1,6 @@
 package org.blitzortung.android.data
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import org.blitzortung.android.app.R
 class CustomToast
 (context: Context?) : Toast(context) {
     companion object {
+        @SuppressLint("InflateParams")
         fun makeText(
             context: Context,
             text: Int,

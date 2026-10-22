@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.os.PowerManager
 import android.util.Log
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.blitzortung.android.app.Main
@@ -16,10 +17,14 @@ internal class FetchBackgroundDataTask(
     dataProvider: DataProvider,
     resultConsumer: (DataReceived) -> Unit,
     private val wakeLock: PowerManager.WakeLock,
-) : FetchDataTask(dataMode, dataProvider, resultConsumer) {
+    private val backgroundDispatcher: CoroutineDispatcher = Dispatchers.IO,
+) : FetchDataTask(dataMode, dataProvider, backgroundDispatcher, resultConsumer) {
     override fun onPostExecute(result: DataReceived?) {
         super.onPostExecute(result)
         if (wakeLock.isHeld) {
+            // detekt: releasing a WakeLock can fail with an unspecified RuntimeException; failing to
+            // release must be logged but never crash the background task, so keep the broad catch.
+            @Suppress("TooGenericExceptionCaught")
             try {
                 wakeLock.release()
                 if (wakeLock.isHeld) {
@@ -39,15 +44,13 @@ internal class FetchBackgroundDataTask(
         history: History?,
         flags: Flags,
     ): DataReceived? =
-        withContext(Dispatchers.IO) {
+        withContext(backgroundDispatcher) {
             if (isAtLeast(Build.VERSION_CODES.N)) {
                 wakeLock.acquire(ServiceDataHandler.WAKELOCK_TIMEOUT)
             } else {
                 wakeLock.acquire()
             }
             if (wakeLock.isHeld) {
-                // Log.v(Main.LOG_TAG, "FetchBackgroundDataTask aquired wakelock $wakeLock")
-
                 val updatedParameters =
                     parameters.copy(
                         interval = TimeInterval.BACKGROUND,

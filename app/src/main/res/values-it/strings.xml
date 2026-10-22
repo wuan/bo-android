@@ -370,4 +370,8 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_hint_legend">Clic: apre la finestra delle impostazioni rapide</string>
     <string name="doc_overlay_hint_alert">Clic: centra sulla tua posizione</string>
     <string name="doc_overlay_hint_histogram">Clic: riduce lo zoom al limite dei dati</string>
+    <string name="start_stop_animation">Avvia o interrompi l\'animazione</string>
+    <string name="go_realtime">Mostra dati in tempo reale</string>
+    <string name="toggle_extended_mode">Attiva modalità estesa</string>
+    <string name="alarm_diagram">Diagramma avviso fulmini</string>
 </resources>

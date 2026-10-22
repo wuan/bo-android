@@ -44,11 +44,13 @@ class MainPopupMenuTest {
         MainPopupMenu(
             activity,
             View(activity),
-            preferences,
-            dataHandler,
-            alertHandler,
-            buildVersion,
-            changeLogComponent,
+            MainPopupMenuDependencies(
+                preferences,
+                dataHandler,
+                alertHandler,
+                buildVersion,
+                changeLogComponent,
+            ),
         )
 
     private fun menuItem(itemId: Int): MenuItem {

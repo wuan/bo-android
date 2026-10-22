@@ -17,16 +17,17 @@ class DataCache
         val cache = hashMapOf<Parameters, Timestamped<DataReceived>>()
         val clusterCache = hashMapOf<ClusterParameters, Timestamped<ClusterReceived>>()
 
-        fun get(
+        operator fun get(
             parameters: Parameters,
             expiryTime: Long = DEFAULT_EXPIRY_TIME,
         ): DataReceived? {
-            val entry = cache[parameters] ?: return null
-            if (entry.timestamp < System.currentTimeMillis() - expiryTime) {
+            val entry = cache[parameters]
+            return if (entry != null && entry.timestamp < System.currentTimeMillis() - expiryTime) {
                 cache.remove(parameters)
-                return null
+                null
+            } else {
+                entry?.value
             }
-            return entry.value
         }
 
         fun put(

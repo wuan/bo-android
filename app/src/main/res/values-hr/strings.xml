@@ -375,4 +375,8 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="doc_overlay_hint_legend">Klik: otvara dijalog brzih postavki</string>
     <string name="doc_overlay_hint_alert">Klik: centrira na vlastitu lokaciju</string>
     <string name="doc_overlay_hint_histogram">Klik: smanjuje zumiranje do granice podataka</string>
+    <string name="start_stop_animation">Pokreni ili zaustavi animaciju</string>
+    <string name="go_realtime">Prikaži podatke u stvarnom vremenu</string>
+    <string name="toggle_extended_mode">Prebaci prošireni način</string>
+    <string name="alarm_diagram">Dijagram upozorenja na munje</string>
 </resources>

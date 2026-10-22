@@ -27,6 +27,7 @@ import android.view.KeyEvent
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.net.toUri
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -43,6 +44,7 @@ class LogDialog(
     private val cacheSize: CacheSize,
     private val buildVersion: BuildVersion,
     private val logProvider: LogProvider = LogProvider(),
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : AlertDialog(context) {
 
     private lateinit var logText: String
@@ -60,10 +62,10 @@ class LogDialog(
         val view = layoutInflater.inflate(R.layout.log_dialog, null)
         setView(view)
 
-        setButton(BUTTON_NEGATIVE, context.getText(R.string.cancel), { dialog, which -> dismiss() })
-        setButton(BUTTON_POSITIVE, context.getText(R.string.share_log), { dialog, which ->
+        setButton(BUTTON_NEGATIVE, context.getText(R.string.cancel)) { _, _ -> dismiss() }
+        setButton(BUTTON_POSITIVE, context.getText(R.string.share_log)) { _, _ ->
             sendEmail(logText)
-        })
+        }
     }
 
     override fun onStart() {
@@ -78,7 +80,7 @@ class LogDialog(
         loadJob?.cancel()
         loadJob =
             scope.launch {
-                val logLines = withContext(Dispatchers.IO) { logProvider.getLogLines() }
+                val logLines = withContext(ioDispatcher) { logProvider.getLogLines() }
                 logText = composeBodyText(logLines)
                 logView.text = logText
             }

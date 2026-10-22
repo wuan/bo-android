@@ -28,7 +28,8 @@ class InfoDialog(context: Context, private val buildVersion: BuildVersion) : Ale
 
     init {
         setTitle(
-            "" + context.resources.getText(R.string.app_name) + " V" + buildVersion.versionName + " (" + buildVersion.versionCode + ")",
+            "" + context.resources.getText(R.string.app_name) + " V" + buildVersion.versionName +
+                " (" + buildVersion.versionCode + ")",
         )
 
         @SuppressLint("InflateParams")

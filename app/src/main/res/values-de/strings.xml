@@ -394,4 +394,8 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="doc_overlay_hint_legend">Klick: öffnet den Schnelleinstellungsdialog</string>
     <string name="doc_overlay_hint_alert">Klick: zentriert auf den eigenen Standort</string>
     <string name="doc_overlay_hint_histogram">Klick: zoomt auf die Datengrenze heraus</string>
+    <string name="start_stop_animation">Animation starten oder stoppen</string>
+    <string name="go_realtime">Echtzeitdaten anzeigen</string>
+    <string name="toggle_extended_mode">Erweiterten Modus umschalten</string>
+    <string name="alarm_diagram">Blitzwarnungsdiagramm</string>
 </resources>

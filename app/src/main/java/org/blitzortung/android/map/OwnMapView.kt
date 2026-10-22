@@ -80,6 +80,7 @@ class OwnMapView(context: Context) : MapView(context) {
                         }
 
                         DialogInterface.BUTTON_NEGATIVE -> {
+                            // dialog dismissed without changing the location
                         }
                     }
                 }
@@ -95,12 +96,25 @@ class OwnMapView(context: Context) : MapView(context) {
         private fun roundCoordinate(value: Double): String = String.format(Locale.ROOT, COORDINATE_FORMAT, value)
     }
 
-    override fun onTouchEvent(event: MotionEvent): Boolean =
-        if (gestureDetector.onTouchEvent(event)) {
-            true
-        } else {
-            super.onTouchEvent(event)
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        val handled =
+            if (gestureDetector.onTouchEvent(event)) {
+                true
+            } else {
+                super.onTouchEvent(event)
+            }
+
+        if (event.action == MotionEvent.ACTION_UP) {
+            performClick()
         }
+
+        return handled
+    }
+
+    override fun performClick(): Boolean {
+        super.performClick()
+        return true
+    }
 
     val popup: View by lazy { LayoutInflater.from(context).inflate(R.layout.popup, this, false) }
 

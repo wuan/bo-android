@@ -68,7 +68,7 @@ class ServiceDataHandlerTest {
         )
 
         this.preferences = preferences
-        uut = ServiceDataHandler(activity, wakeLock, dataProviderFactory, localData)
+        uut = ServiceDataHandler(wakeLock, dataProviderFactory, localData)
 
         receivedEvents = mutableListOf<DataEvent>()
         val eventConsumer: (DataEvent) -> Unit = { event -> receivedEvents.add(event) }

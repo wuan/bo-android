@@ -18,7 +18,6 @@
 
 package org.blitzortung.android.data
 
-import android.content.Context
 import android.location.Location
 import android.os.PowerManager
 import android.util.Log
@@ -39,7 +38,6 @@ import org.blitzortung.android.protocol.ConsumerContainer
 class ServiceDataHandler
 @Inject
 constructor(
-    private val context: Context,
     private val wakeLock: PowerManager.WakeLock,
     dataProviderFactory: DataProviderFactory,
     private val localData: LocalData,

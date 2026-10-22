@@ -63,7 +63,14 @@ class MainDataHandlerTest {
         val preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 
         this.preferences = preferences
-        uut = MainDataHandler(context, dataProviderFactory, preferences, handler, DataCache(), localData, period)
+        uut = MainDataHandler(
+            context,
+            dataProviderFactory,
+            preferences,
+            DataCache(),
+            localData,
+            MainDataScheduler(handler, period),
+        )
 
         receivedEvents = mutableListOf<DataEvent>()
         val eventConsumer: (DataEvent) -> Unit = { event -> receivedEvents.add(event) }
@@ -131,6 +138,114 @@ class MainDataHandlerTest {
 
         assertThat(uut.parameters.gridSize).isEqualTo(5000)
         assertThat(receivedEvents).contains(REQUEST_STARTED_EVENT)
+    }
+
+    @Test
+    fun sharedPreferencesChangedForGridSizeWithAutoValue() {
+        preferences
+            .edit()
+            .putString(PreferenceKey.GRID_SIZE.toString(), AUTO_GRID_SIZE_VALUE)
+            .commit()
+
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.GRID_SIZE)
+
+        assertThat(uut.autoGridSize).isTrue
+    }
+
+    @Test
+    fun sharedPreferencesChangedForCountThreshold() {
+        preferences
+            .edit()
+            .putString(PreferenceKey.COUNT_THRESHOLD.toString(), "5")
+            .commit()
+
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.COUNT_THRESHOLD)
+
+        assertThat(uut.parameters.countThreshold).isEqualTo(5)
+    }
+
+    @Test
+    fun sharedPreferencesChangedForIntervalDuration() {
+        preferences
+            .edit()
+            .putString(PreferenceKey.INTERVAL_DURATION.toString(), "120")
+            .commit()
+
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.INTERVAL_DURATION)
+
+        assertThat(uut.parameters.intervalDuration).isEqualTo(120)
+    }
+
+    @Test
+    fun sharedPreferencesChangedForHistoricTimestep() {
+        preferences
+            .edit()
+            .putString(PreferenceKey.HISTORIC_TIMESTEP.toString(), "45")
+            .commit()
+
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.HISTORIC_TIMESTEP)
+
+        assertThat(uut.history.timeIncrement).isEqualTo(45)
+    }
+
+    @Test
+    fun sharedPreferencesChangedForRegion() {
+        preferences
+            .edit()
+            .putString(PreferenceKey.REGION.toString(), "7")
+            .commit()
+
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.REGION)
+
+        assertThat(uut.parameters.region).isEqualTo(7)
+    }
+
+    @Test
+    fun sharedPreferencesChangedForQueryPeriod() {
+        preferences
+            .edit()
+            .putString(PreferenceKey.QUERY_PERIOD.toString(), "90")
+            .commit()
+
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.QUERY_PERIOD)
+
+        assertThat(receivedEvents).isNotEmpty
+    }
+
+    @Test
+    fun sharedPreferencesChangedForAnimationIntervalDuration() {
+        for (value in listOf("2", "4", "6", "12", "24")) {
+            preferences
+                .edit()
+                .putString(PreferenceKey.ANIMATION_INTERVAL_DURATION.toString(), value)
+                .commit()
+
+            uut.onSharedPreferenceChanged(preferences, PreferenceKey.ANIMATION_INTERVAL_DURATION)
+        }
+
+        assertThat(receivedEvents).isNotNull
+    }
+
+    @Test
+    fun sharedPreferencesChangedForSleepDurations() {
+        preferences
+            .edit()
+            .putInt(PreferenceKey.ANIMATION_SLEEP_DURATION.key, 100)
+            .putInt(PreferenceKey.ANIMATION_CYCLE_SLEEP_DURATION.key, 200)
+            .commit()
+
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.ANIMATION_SLEEP_DURATION)
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.ANIMATION_CYCLE_SLEEP_DURATION)
+
+        assertThat(receivedEvents).isNotNull
+    }
+
+    @Test
+    fun restartAndStopDelegateToScheduler() {
+        uut.restart()
+        uut.stop()
+
+        verify { handler.removeCallbacks(uut) }
     }
 
     @Test

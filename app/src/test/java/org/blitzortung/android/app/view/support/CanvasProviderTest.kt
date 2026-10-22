@@ -189,7 +189,6 @@ class CanvasWrapperTest {
     fun shouldCallDrawPaintDuringClear() {
         // Create a wrapper with a mocked canvas to verify drawPaint is called
         val mockCanvas = mockk<Canvas>(relaxed = true)
-        val bitmap = mockk<Bitmap>(relaxed = true)
 
         every { mockCanvas.drawPaint(any()) } returns Unit
 
@@ -293,8 +292,6 @@ class CanvasWrapperTest {
 
     @Test
     fun shouldUseXfermodeClearForClearing() {
-        val xfermodeBefore = canvasWrapper.background.xfermode
-
         canvasWrapper.clear()
 
         val xfermodeAfter = canvasWrapper.background.xfermode

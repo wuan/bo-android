@@ -69,37 +69,47 @@ object PreferencesBackup {
      * Parses and structurally validates a backup document without touching any
      * preference. On success the raw preference values are returned.
      */
-    fun parse(json: String): BackupParseResult {
-        val root =
-            try {
-                JSONObject(json)
-            } catch (e: JSONException) {
-                return BackupParseResult.Failure(BackupFailureReason.MALFORMED_JSON, e.message)
-            }
+    fun parse(json: String): BackupParseResult =
+        try {
+            validateRoot(JSONObject(json))
+        } catch (e: JSONException) {
+            BackupParseResult.Failure(BackupFailureReason.MALFORMED_JSON, e.message)
+        }
 
+    private fun validateRoot(root: JSONObject): BackupParseResult {
         val format = if (root.has(FIELD_FORMAT)) root.optString(FIELD_FORMAT) else null
-        if (format != FORMAT_ID) {
-            return BackupParseResult.Failure(
-                BackupFailureReason.NOT_A_BACKUP,
-                "expected format '$FORMAT_ID' but found '${format ?: "<missing>"}'",
-            )
-        }
-
         val version = root.optInt(FIELD_VERSION, -1)
-        if (version != FORMAT_VERSION) {
-            return BackupParseResult.Failure(
-                BackupFailureReason.UNSUPPORTED_VERSION,
-                "expected version $FORMAT_VERSION but found ${root.opt(FIELD_VERSION)?.toString() ?: "<missing>"}",
-            )
-        }
+        val preferencesJson = root.optJSONObject(FIELD_PREFERENCES)
 
-        val preferencesJson =
-            root.optJSONObject(FIELD_PREFERENCES)
-                ?: return BackupParseResult.Failure(
+        return when {
+            format != FORMAT_ID ->
+                BackupParseResult.Failure(
+                    BackupFailureReason.NOT_A_BACKUP,
+                    "expected format '$FORMAT_ID' but found '${format ?: "<missing>"}'",
+                )
+
+            version != FORMAT_VERSION ->
+                BackupParseResult.Failure(
+                    BackupFailureReason.UNSUPPORTED_VERSION,
+                    "expected version $FORMAT_VERSION but found " +
+                        "${root.opt(FIELD_VERSION)?.toString() ?: "<missing>"}",
+                )
+
+            preferencesJson == null ->
+                BackupParseResult.Failure(
                     BackupFailureReason.INVALID_PREFERENCES,
                     "missing or invalid '$FIELD_PREFERENCES' object",
                 )
 
+            else ->
+                BackupParseResult.Success(
+                    appVersionCode = root.optInt(FIELD_APP_VERSION_CODE, -1),
+                    preferences = extractPreferences(preferencesJson),
+                )
+        }
+    }
+
+    private fun extractPreferences(preferencesJson: JSONObject): Map<String, Any> {
         val preferences = LinkedHashMap<String, Any>()
         val keys = preferencesJson.keys()
         while (keys.hasNext()) {
@@ -110,11 +120,7 @@ object PreferencesBackup {
             }
             preferences[key] = value
         }
-
-        return BackupParseResult.Success(
-            appVersionCode = root.optInt(FIELD_APP_VERSION_CODE, -1),
-            preferences = preferences,
-        )
+        return preferences
     }
 
     /**
@@ -142,7 +148,7 @@ object PreferencesBackup {
                 return@forEach
             }
             val coerced =
-                coerce(value, expected)
+                TypeCoercion.coerce(value, expected)
                     ?: return ImportPlanResult.Failure(key, value)
             toApply[key] = coerced
         }
@@ -198,47 +204,57 @@ object PreferencesBackup {
         }
     }
 
-    internal fun coerce(
-        value: Any,
-        expected: Any,
-    ): Any? =
-        when (expected) {
-            is Boolean -> value as? Boolean
-            is Int ->
-                when (value) {
-                    is Int -> value
-                    is Long -> value.takeIf { it in Int.MIN_VALUE..Int.MAX_VALUE }?.toInt()
-                    else -> null
-                }
+    /**
+     * Converts a parsed backup value to the type currently held by the device, or `null` when the
+     * value cannot be coerced.
+     */
+    internal object TypeCoercion {
+        fun coerce(
+            value: Any,
+            expected: Any,
+        ): Any? =
+            when (expected) {
+                is Boolean -> value as? Boolean
+                is Int -> coerceToInt(value)
+                is Long -> coerceToLong(value)
+                is Float -> coerceToFloat(value)
+                is Double -> coerceToDouble(value)
+                is String -> value as? String
+                else -> null
+            }
 
-            is Long ->
-                when (value) {
-                    is Int -> value.toLong()
-                    is Long -> value
-                    else -> null
-                }
+        private fun coerceToInt(value: Any): Int? =
+            when (value) {
+                is Int -> value
+                is Long -> value.takeIf { it in Int.MIN_VALUE..Int.MAX_VALUE }?.toInt()
+                else -> null
+            }
 
-            is Float ->
-                when (value) {
-                    is Int -> value.toFloat()
-                    is Long -> value.toFloat()
-                    is Float -> value
-                    is Double -> value.toFloat()
-                    else -> null
-                }
+        private fun coerceToLong(value: Any): Long? =
+            when (value) {
+                is Int -> value.toLong()
+                is Long -> value
+                else -> null
+            }
 
-            is Double ->
-                when (value) {
-                    is Int -> value.toDouble()
-                    is Long -> value.toDouble()
-                    is Float -> value.toDouble()
-                    is Double -> value
-                    else -> null
-                }
+        private fun coerceToFloat(value: Any): Float? =
+            when (value) {
+                is Int -> value.toFloat()
+                is Long -> value.toFloat()
+                is Float -> value
+                is Double -> value.toFloat()
+                else -> null
+            }
 
-            is String -> value as? String
-            else -> null
-        }
+        private fun coerceToDouble(value: Any): Double? =
+            when (value) {
+                is Int -> value.toDouble()
+                is Long -> value.toDouble()
+                is Float -> value.toDouble()
+                is Double -> value
+                else -> null
+            }
+    }
 }
 
 sealed interface BackupParseResult {
