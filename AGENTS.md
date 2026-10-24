@@ -36,8 +36,9 @@ Project documentation: https://blitzortung.tryb.de
 # Run SonarQube analysis (requires SONAR_TOKEN)
 ./gradlew sonar
 
-# Update the verification metadata
-./gradlew --write-verification-metadata sha256 help
+# Regenerate the dependency lock files (run after changing dependencies/versions)
+# app/gradle.lockfile and settings-gradle.lockfile must be committed.
+./gradlew :app:dependencies --write-locks
 ```
 
 ### Building release artifacts
