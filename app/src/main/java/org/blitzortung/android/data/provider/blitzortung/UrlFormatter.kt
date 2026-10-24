@@ -41,7 +41,7 @@ class UrlFormatter
                     type.name.lowercase(Locale.getDefault()) + ".txt"
                 }
 
-            val urlFormatString = "http://data.blitzortung.org/Data/Protected/%s%s"
+            val urlFormatString = "https://data.blitzortung.org/Data/Protected/%s%s"
             return urlFormatString.format(localPath, if (useGzipCompression) ".gz" else "")
         }
     }

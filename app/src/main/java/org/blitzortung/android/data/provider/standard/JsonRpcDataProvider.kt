@@ -242,6 +242,9 @@ class JsonRpcDataProvider
 
         companion object {
             private val DATE_TIME_FORMATTER = SimpleDateFormat("yyyyMMdd'T'HH:mm:ss", Locale.US)
+
+            // The default service endpoint does not serve HTTPS, so plain HTTP has to be used here.
+            @Suppress("kotlin:S5332")
             private val DEFAULT_SERVICE_URL = URI("http://bo-service.tryb.de/").toURL()
 
             init {

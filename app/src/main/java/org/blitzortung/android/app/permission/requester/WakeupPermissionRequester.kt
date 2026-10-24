@@ -1,6 +1,7 @@
 package org.blitzortung.android.app.permission.requester
 
 import android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context.POWER_SERVICE
 import android.content.DialogInterface
@@ -68,6 +69,9 @@ class WakeupPermissionRequester(
         return false
     }
 
+    // Requesting to be exempt from battery optimizations is intentional: the background alert
+    // feature relies on timely network access that the system otherwise restricts.
+    @SuppressLint("BatteryLife")
     private fun disableBatteryOptimisation(packageName: String?) {
         Log.v(LOG_TAG, "requestWakeupPermissions() request ignore battery optimizations")
         val allowIgnoreBatteryOptimization =

@@ -156,7 +156,7 @@ class HistogramView
             } else {
                 val histogram = dataEvent.histogram
 
-                val hasHistogram = histogram != null && histogram.isNotEmpty()
+                val hasHistogram = histogram?.isNotEmpty() ?: false
 
                 this.histogram =
                     if (hasHistogram) {

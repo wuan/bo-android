@@ -4,12 +4,15 @@
     <string name="app_name">Blitzortung Lightning Monitor</string>
 
     <plurals name="strike">
-        <item quantity="zero">žiadny blesk</item>
         <item quantity="one">1 blesk</item>
+        <item quantity="few">%d blesky</item>
+        <item quantity="many">%d blesku</item>
         <item quantity="other">%d bleskov</item>
     </plurals>
     <plurals name="minute">
         <item quantity="one">1 minúta</item>
+        <item quantity="few">%d minúty</item>
+        <item quantity="many">%d minúty</item>
         <item quantity="other">%d minút</item>
     </plurals>
 
@@ -28,16 +31,10 @@ Chorvátsky preklad: Igor Dobrača (idobraca@rovinj.net)\n
 Slovenský preklad: Martin Šturcel (martin@sturcel.sk)\n
 Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
-    <string name="legend">Legenda</string>
-    <string name="total_time">celkový čas</string>
     <string name="activity">aktivita</string>
-    <string name="during">za posledných</string>
-    <string name="minute">minút</string>
     <string name="alarms">Upozornenia</string>
     <string name="alarms_not_available">Upozornenia vypnuté alebo\nchýbajú informácie o polohe</string>
-    <string name="layers">Vrstvy</string>
     <string name="preferences">Nastavenia</string>
-    <string name="user_settings">Nastavenia užívateľa</string>
     <string name="bo_username">Prihlasovacie meno Blitzortung.org</string>
     <string name="bo_password">Heslo Blitzortung.org</string>
     <string name="map_settings">Nastavenie mapy</string>
@@ -111,8 +108,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
         <item>120</item>
         <item>240</item>
     </string-array>
-
-    <string name="historic_timestep_limit_reached">Bol dosiahnutý 24 hodinový limit</string>
     <string name="historic_timestep">Historický časový krok</string>
 
     <string-array name="historic_timesteps">
@@ -311,12 +306,11 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_audio_signal">Nstavenie zvuku upozornenia</string>
     <string name="alarm_vibration_signal">Trvanie vibrácii upozorenia</string>
     <string name="alarm_vibration_signal_summary">Vyberte dĺžku vibrácie pre upozornenia</string>
-    <string name="location_provider_not_available">Poskytovateľ polohy \'%s\' nie je dostupný</string>
     <string name="location_provider_disabled">Poskytovateľ polohy \'%s\' je vypnutý</string>
     <string name="service_url">URL adresa služby, ktorá nie je predvolená</string>
     <string name="set_manual_location">Nastavte polohu ručne</string>
     <string name="error_indicator">Indikátor chyby</string>
-    <string name="app_log" translatable="false">Application log</string>
+    <string name="app_log">Application log</string>
     <string name="share_log">*Odoslať email …</string>
     <string name="share_unavailable">Zdieľanie e-mailov nie je k dispozícii.</string>
     <string name="provider_warning">Please do not use the Blitzortung.org data provider during high lightning activity, as the map display performance will degrade.</string>
@@ -379,4 +373,24 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="go_realtime">Zobraziť údaje v reálnom čase</string>
     <string name="toggle_extended_mode">Prepnúť rozšírený režim</string>
     <string name="alarm_diagram">Diagram výstrahy bleskov</string>
+    <string name="legend_grid">Mriežka</string>
+    <string name="unit_minute">min</string>
+    <string name="unit_km">km</string>
+    <string name="background_query_toast">Pre plne funkčné upozornenie na pozadí vypnite optimalizáciu batérie pre túto aplikáciu.</string>
+    <string name="open_battery_optimiziation">Keď je povolené dopytovanie na pozadí, vypnite optimalizáciu batérie pre túto aplikáciu. Stlačením ZRUŠIŤ vypnete dopytovanie na pozadí a stlačením OK prejdete do nastavenia optimalizácie batérie.</string>
+    <string name="not_available">n/a</string>
+    <string name="unit_miles">mi.</string>
+    <string name="map_scale">Mierka mapy</string>
+    <string name="map_scale_summary">Vyberte mierku [%] dlaždíc mapy</string>
+    <string name="osmdroid_storage_warning">Nepodarilo sa nájsť zapisovateľné úložisko pre mapu. Nahláste to.</string>
+    <string name="menu">Otvoriť ponuku</string>
+    <string name="slider_current">teraz</string>
+    <string name="slider_past">minulosť</string>
+    <string name="slider_legend">[hodiny]</string>
+    <string name="animation_sleep_duration">Prestávka medzi krokmi</string>
+    <string name="animation_sleep_duration_summary">Čas prestávky medzi krokmi animácie v milisekundách</string>
+    <string name="animation_cycle_sleep_duration">Prestávka po cykle</string>
+    <string name="animation_cycle_sleep_duration_summary">Čas prestávky po skončení cyklu animácie (v milisekundách)</string>
+    <string name="animation_interval_duration">Interval animácie</string>
+    <string name="ms">ms</string>
 </resources>

@@ -27,6 +27,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
 import javax.inject.Inject
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
@@ -87,7 +88,7 @@ open class NotificationHandler
             notificationText: String,
         ): Notification {
             val builder =
-                Notification.Builder(context)
+                NotificationCompat.Builder(context, CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_launcher_foreground)
                     .setContentTitle(context.resources.getText(R.string.app_name))
                     .setContentText(notificationText)

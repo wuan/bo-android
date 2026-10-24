@@ -36,6 +36,9 @@ class GridShape(private val center: IGeoPoint) : LightningShape {
     private var multiplicity: Int = 0
     private var textColor: Int = 0
 
+    // The EdgeType overloads are the only quickReject variants available below API 30, which is the
+    // minimum supported API level, so the deprecation has to be accepted here.
+    @Suppress("DEPRECATION", "kotlin:S1874")
     override fun draw(
         canvas: Canvas,
         mapView: MapView,

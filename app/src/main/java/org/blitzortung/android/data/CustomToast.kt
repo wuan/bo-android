@@ -1,27 +1,18 @@
 package org.blitzortung.android.data
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
 import android.widget.Toast
-import org.blitzortung.android.app.R
 
-class CustomToast
-(context: Context?) : Toast(context) {
-    companion object {
-        @SuppressLint("InflateParams")
-        fun makeText(
-            context: Context,
-            text: Int,
-            duration: Int,
-        ): Toast {
-            val t = Toast.makeText(context, text, duration)
-            val inflater =
-                context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val layout: View? = inflater.inflate(R.layout.toast, null)
-            t.view = layout
-            return t
-        }
-    }
+/**
+ * Wrapper around [Toast.makeText].
+ *
+ * A custom toast view was previously inflated here, but `Toast.setView` has been deprecated since
+ * API 30 (and is ignored by the platform), so the default toast presentation is used instead.
+ */
+object CustomToast {
+    fun makeText(
+        context: Context,
+        text: Int,
+        duration: Int,
+    ): Toast = Toast.makeText(context, text, duration)
 }

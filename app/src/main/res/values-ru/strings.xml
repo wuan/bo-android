@@ -4,12 +4,15 @@
     <string name="app_name">Трекер молний</string>
 
     <plurals name="strike">
-        <item quantity="zero">Нет молний</item>
         <item quantity="one">%d молния</item>
+        <item quantity="few">%d молнии</item>
+        <item quantity="many">%d молний</item>
         <item quantity="other">%d молний</item>
     </plurals>
     <plurals name="minute">
         <item quantity="one">%d минута</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="many">%d минут</item>
         <item quantity="other">%d минут</item>
     </plurals>
 
@@ -24,19 +27,13 @@ Polish by Jakub Świątkiewicz (kuba.dex@gmail.com), Agnieszka Cieślak (aga_04@
 Italian by Michele Locati (michele@locati.it)\n
 Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string>
-    <string name="legend">Обозначение</string>
     <string name="legend_grid">Квадрат</string>
     <string name="unit_minute">мин.</string>
     <string name="unit_km">км</string>
-    <string name="total_time">всего времени</string>
     <string name="activity">активность</string>
-    <string name="during">в прошлом</string>
-    <string name="minute">минут</string>
     <string name="alarms">Предупреждения</string>
     <string name="alarms_not_available">Предупреждения отключены\nили отсутствует информация\nо месторасположении</string>
-    <string name="layers">Слои</string>
     <string name="preferences">Настройки</string>
-    <string name="user_settings">Параметры пользователя</string>
     <string name="bo_username">Имя пользователя Blitzortung.org</string>
     <string name="bo_password">Пароль Blitzortung.org</string>
     <string name="map_settings">Настройки карты</string>
@@ -110,8 +107,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>120</item>
         <item>240</item>
     </string-array>
-
-    <string name="historic_timestep_limit_reached">Максимум 24 часа</string>
     <string name="historic_timestep">История</string>
 
     <string-array name="historic_timesteps">
@@ -311,7 +306,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_audio_signal">Выбор сигнала предупреждений</string>
     <string name="alarm_vibration_signal">Продолжительность вибрации сигнала предупреждения</string>
     <string name="alarm_vibration_signal_summary">Выберите продолжительность вибрации в случае предупреждения, мс</string>
-    <string name="location_provider_not_available">Месторасположение \'%s\' не доступно</string>
     <string name="location_provider_disabled">Месторасположение \'%s\' отключено</string>
     <string name="service_url">URL адрес стороннего сервера</string>
     <string name="set_manual_location">Установить месторасположение вручную</string>
@@ -324,7 +318,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_size_summary">Установите размер символа Вашего месторасположения</string>
     <string name="keep_zoom_goto_own_location_summary">Установка сохранения Вашего текущего масштаба при центрировании собственного местоположения</string>
     <string name="keep_zoom_goto_own_location_title">Сохранить масштаб</string>
-    <string name="notification_channel_name">Предупреждение об урагане</string>
     <string name="not_available">н/д</string>
     <string name="unit_miles">миль</string>
     <string name="map_scale">Масштаб карты</string>
@@ -347,8 +340,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="animation_cycle_sleep_duration">Пауза в конце анимации</string>
     <string name="animation_cycle_sleep_duration_summary">Время паузы после завершения анимации, мс</string>
     <string name="animation_interval_duration">Интервал анимации</string>
-    <string name="ok">Ок</string>
-    <string name="cancel">Отмена</string>
     <string name="ms">мс</string>
     <string-array name="animation_interval_durations">
         <item>2 часа</item>

@@ -125,7 +125,7 @@ constructor(
             }
         }
 
-        // TODO we need to tell the UI if the locationProvider is stopped/started
+        // The UI is not informed when the location provider is started or stopped.
         // Now start the new provider if it is enabled
         this.provider =
             newProvider.apply {
@@ -209,7 +209,7 @@ constructor(
             context: Context?,
             intent: Intent?,
         ) {
-            // TODO we need to tell the UI if the locationProvider is stopped/started
+            // The UI is not informed when the location provider is started or stopped.
 
             provider?.run {
                 if (!this.isRunning && this.isEnabled) {

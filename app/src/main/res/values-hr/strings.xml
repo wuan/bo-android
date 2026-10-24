@@ -4,12 +4,13 @@
     <string name="app_name">Blitzortung Lightning Monitor</string>
 
     <plurals name="strike">
-        <item quantity="zero">nema munja</item>
         <item quantity="one">%d munja</item>
+        <item quantity="few">%d munje</item>
         <item quantity="other">%d munja</item>
     </plurals>
     <plurals name="minute">
         <item quantity="one">%d minuta</item>
+        <item quantity="few">%d minute</item>
         <item quantity="other">%d minuta</item>
     </plurals>
 
@@ -29,17 +30,10 @@ Talijanski: Michele Locati (michele@locati.it)\n
 Hrvatski: Igor Dobrača (idobraca@rovinj.net)\n
 Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
-
-    <string name="legend">Legenda</string>
-    <string name="total_time">ukupno vrijeme</string>
     <string name="activity">Aktivnost</string>
-    <string name="during">tijekom prošlosti</string>
-    <string name="minute">minute</string>
     <string name="alarms">Alarmi</string>
     <string name="alarms_not_available">Alarmi onemogućeni\nili\nlokacijske usluge isključene</string>
-    <string name="layers">Slojevi</string>
     <string name="preferences">Postavke</string>
-    <string name="user_settings">Korisničke postavke</string>
     <string name="bo_username">Korisničko ime Blitzortung.org</string>
     <string name="bo_password">Zaporka Blitzortung.org</string>
     <string name="map_settings">Postavke karte</string>
@@ -113,8 +107,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>120</item>
         <item>240</item>
     </string-array>
-
-    <string name="historic_timestep_limit_reached">Dosegnut 24-satni limit</string>
     <string name="historic_timestep">Povijesni podaci</string>
 
     <string-array name="historic_timesteps">
@@ -312,7 +304,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_audio_signal">Audio zvuka alarma</string>
     <string name="alarm_vibration_signal">Trajanje vibracije alarma</string>
     <string name="alarm_vibration_signal_summary">Trajanja vibriranja mobitela u slučaju alarma</string>
-    <string name="location_provider_not_available">Pružatelj lokacije \'%s\' nije dostupan.</string>
     <string name="location_provider_disabled">Pružatelj lokacije \'%s\' je isključen.</string>
     <string name="service_url">Alternativni URL servisa</string>
     <string name="set_manual_location">Ručni unos lokacije</string>
@@ -379,4 +370,25 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="go_realtime">Prikaži podatke u stvarnom vremenu</string>
     <string name="toggle_extended_mode">Prebaci prošireni način</string>
     <string name="alarm_diagram">Dijagram upozorenja na munje</string>
+    <string name="legend_grid">Mreža</string>
+    <string name="unit_minute">min</string>
+    <string name="unit_km">km</string>
+    <string name="background_query_toast">Isključite optimizaciju baterije za ovu aplikaciju kako bi pozadinsko upozorenje radilo ispravno.</string>
+    <string name="open_battery_optimiziation">Isključite optimizaciju baterije za ovu aplikaciju kada je omogućen pozadinski upit. Pritisnite ODUSTANI za isključivanje pozadinskog upita ili U REDU za odlazak na postavke optimizacije baterije.</string>
+    <string name="app_log">Zapisnik aplikacije</string>
+    <string name="not_available">n/d</string>
+    <string name="unit_miles">mi.</string>
+    <string name="map_scale">Mjerilo karte</string>
+    <string name="map_scale_summary">Odaberite mjerilo [%] pločica karte</string>
+    <string name="osmdroid_storage_warning">Nije moguće pronaći zapisivu pohranu za kartu. Molimo prijavite.</string>
+    <string name="menu">Otvori izbornik</string>
+    <string name="slider_current">sada</string>
+    <string name="slider_past">prošlost</string>
+    <string name="slider_legend">[sati]</string>
+    <string name="animation_sleep_duration">Pauza između koraka</string>
+    <string name="animation_sleep_duration_summary">Vrijeme pauze između koraka animacije u milisekundama</string>
+    <string name="animation_cycle_sleep_duration">Pauza nakon ciklusa</string>
+    <string name="animation_cycle_sleep_duration_summary">Vrijeme pauze nakon završetka ciklusa animacije (u milisekundama)</string>
+    <string name="animation_interval_duration">Interval animacije</string>
+    <string name="ms">ms</string>
 </resources>

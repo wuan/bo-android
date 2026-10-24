@@ -33,19 +33,13 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="copyright" translatable="false">© 2011–2026, Andreas Würl</string>
     <string name="project_email" translatable="false">blitzortung@tryb.de</string>
-    <string name="legend">Legend</string>
     <string name="legend_grid">Grid</string>
     <string name="unit_minute">min</string>
     <string name="unit_km">km</string>
-    <string name="total_time">total time</string>
     <string name="activity">activity</string>
-    <string name="during">during the past</string>
-    <string name="minute">minute</string>
     <string name="alarms">Alarms</string>
     <string name="alarms_not_available">Alarms disabled\nor\nLocation information missing</string>
-    <string name="layers">Layers</string>
     <string name="preferences">Preferences</string>
-    <string name="user_settings">User settings</string>
     <string name="bo_username">Username Blitzortung.org</string>
     <string name="bo_password">Password Blitzortung.org</string>
     <string name="map_settings">Map settings</string>
@@ -121,8 +115,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>120</item>
         <item>240</item>
     </string-array>
-
-    <string name="historic_timestep_limit_reached">24 hours limit reached</string>
     <string name="historic_timestep">Historic timestep</string>
 
     <string-array name="historic_timesteps">
@@ -329,7 +321,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_audio_signal">Alarm audio signal</string>
     <string name="alarm_vibration_signal">Alarm vibration duration</string>
     <string name="alarm_vibration_signal_summary">choose the duration of vibration signaling in alarm case (in milliseconds)</string>
-    <string name="location_provider_not_available">location provider \'%s\' not available</string>
     <string name="location_provider_disabled">location provider \'%s\' is disabled</string>
     <string name="service_url">Custom Service URL</string>
     <string name="set_manual_location">Set manual location</string>
@@ -368,10 +359,8 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="animation_cycle_sleep_duration">Sleep after cycle</string>
     <string name="animation_cycle_sleep_duration_summary">Sleep time after animation cycle has finished (in milliseconds)</string>
     <string name="animation_interval_duration">Animation interval</string>
-    <string name="animation_interval_duration_summary" translatable="false">%s</string>
     <string name="ms">ms</string>
     <string name="percent" translatable="false">%</string>
-    <string name="percent_format" translatable="false">%.1f%%</string>
     <string-array name="animation_interval_durations">
         <item>2 h</item>
         <item>4 h</item>

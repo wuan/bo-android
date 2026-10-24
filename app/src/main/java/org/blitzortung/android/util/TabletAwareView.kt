@@ -18,6 +18,7 @@
 
 package org.blitzortung.android.util
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
@@ -27,6 +28,9 @@ import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper.pxFromDp
 import org.blitzortung.android.app.helper.ViewHelper.pxFromSp
 
+// The tablet_scaleable styleable is intentionally shared with ScaledTextView, so it is not named
+// after a single view class.
+@SuppressLint("CustomViewStyleable")
 open class TabletAwareView(
     context: Context,
     attrs: AttributeSet?,

@@ -5,8 +5,10 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageInfo
+import android.os.Build
 import android.os.PowerManager
 import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.preference.PreferenceManager
 import dagger.Module
@@ -48,6 +50,12 @@ class AppModule
         fun notificationManager(): NotificationManager =
             application.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+        @Suppress("DEPRECATION", "kotlin:S1874")
         @Provides
-        fun provideVibrator(): Vibrator = application.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        fun provideVibrator(): Vibrator =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                (application.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
+            } else {
+                application.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            }
     }

@@ -1,29 +1,20 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/log_dialog"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="10dp">
 
-    <ScrollView
-        android:id="@+id/log_vertical_scroller"
+    <HorizontalScrollView
+        android:id="@+id/log_horizontal_scroller"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="wrap_content">
 
-        <HorizontalScrollView
-            android:id="@+id/log_horizontal_scroller"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/log_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFF"
+            android:textSize="11sp" />
 
-            <TextView
-                android:id="@+id/log_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#FFF"
-                android:textSize="11sp" />
-
-        </HorizontalScrollView>
-    </ScrollView>
-
-</LinearLayout>
+    </HorizontalScrollView>
+</ScrollView>

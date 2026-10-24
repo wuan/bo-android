@@ -5,10 +5,12 @@
 
     <plurals name="strike">
         <item quantity="one">1 rayo</item>
+        <item quantity="many">%d de rayos</item>
         <item quantity="other">%d rayos</item>
     </plurals>
     <plurals name="minute">
         <item quantity="one">1 minuto</item>
+        <item quantity="many">%d de minutos</item>
         <item quantity="other">%d minutos</item>
     </plurals>
 
@@ -30,16 +32,10 @@ Traducción Holandes: Jeroen Boersma (jeroenboersma@gmail.com)\n
 Traducción polaca por: Jakub Świątkiewicz (kuba.dex@gmail.com), Agnieszka Cieślak (aga_04@o2.pl)\n
 Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
-    <string name="legend">Leyenda</string>
-    <string name="total_time">Tiempo total</string>
     <string name="activity">Actividad</string>
-    <string name="during">durante el pasado</string>
-    <string name="minute">minuto</string>
     <string name="alarms">Alarmas</string>
     <string name="alarms_not_available">Alarmas deshabilitadas\no \ninformación de localización perdida</string>
-    <string name="layers">Capas</string>
     <string name="preferences">Preferencias</string>
-    <string name="user_settings">Ajustes de usuario</string>
     <string name="bo_username">Nombre de usuario Blitzortung.org</string>
     <string name="bo_password">Contraseña Blitzortung.org</string>
     <string name="map_settings">Ajustes del mapa</string>
@@ -113,8 +109,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
         <item>120</item>
         <item>240</item>
     </string-array>
-
-    <string name="historic_timestep_limit_reached">Alcanzado el límite de 24 horas</string>
     <string name="historic_timestep">Intervalo de tiempo histórico</string>
 
     <string-array name="historic_timesteps">
@@ -312,7 +306,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_audio_signal">sonido de alarma</string>
     <string name="alarm_vibration_signal">duración de la vibración de la alarma</string>
     <string name="alarm_vibration_signal_summary">elige la duración de la vibración en caso de alarma</string>
-    <string name="location_provider_not_available">proveedor de localización \'%s\' no disponible</string>
     <string name="location_provider_disabled">proveedor de localización \'%s\' está deshabilitado</string>
     <string name="service_url">Servidor URL alternativo</string>
     <string name="set_manual_location">Poner manually la ubicación</string>
@@ -379,4 +372,25 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="go_realtime">Mostrar datos en tiempo real</string>
     <string name="toggle_extended_mode">Alternar modo extendido</string>
     <string name="alarm_diagram">Diagrama de alerta de rayos</string>
+    <string name="legend_grid">Cuadrícula</string>
+    <string name="unit_minute">min</string>
+    <string name="unit_km">km</string>
+    <string name="background_query_toast">Desactiva la optimización de batería para esta aplicación para que la alerta en segundo plano funcione correctamente.</string>
+    <string name="open_battery_optimiziation">Desactiva la optimización de batería para esta aplicación cuando la consulta en segundo plano esté activada. Pulsa CANCELAR para desactivar la consulta en segundo plano y ACEPTAR para ir a los ajustes de optimización de batería.</string>
+    <string name="provider_warning">No uses el proveedor de datos Blitzortung.org durante una actividad de rayos intensa, ya que el rendimiento del mapa se degradará.</string>
+    <string name="own_location_size">Tamaño del símbolo de ubicación propia</string>
+    <string name="own_location_size_summary">Define el tamaño del símbolo de ubicación propia</string>
+    <string name="keep_zoom_goto_own_location_summary">Ajuste para mantener el zoom actual al centrar la ubicación propia</string>
+    <string name="keep_zoom_goto_own_location_title">Mantener zoom</string>
+    <string name="not_available">n/d</string>
+    <string name="unit_miles">mi.</string>
+    <string name="map_scale">Escala del mapa</string>
+    <string name="map_scale_summary">Selecciona la escala [%] de las teselas del mapa</string>
+    <string name="osmdroid_storage_warning">No se encuentra almacenamiento con permiso de escritura para el mapa. Infórmalo.</string>
+    <string name="animation_sleep_duration">Pausa entre pasos</string>
+    <string name="animation_sleep_duration_summary">Tiempo de pausa entre pasos de la animación en milisegundos</string>
+    <string name="animation_cycle_sleep_duration">Pausa tras el ciclo</string>
+    <string name="animation_cycle_sleep_duration_summary">Tiempo de pausa tras finalizar el ciclo de animación (en milisegundos)</string>
+    <string name="animation_interval_duration">Intervalo de animación</string>
+    <string name="ms">ms</string>
 </resources>

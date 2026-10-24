@@ -84,11 +84,9 @@ class RegionView
             backgroundRect.set(0f, 0f, width.toFloat(), height.toFloat())
             canvas.drawRect(backgroundRect, backgroundPaint)
 
-            var topCoordinate = 2 * padding
-
             gridParameters?.let {
                 if (!it.isGlobal) {
-                    topCoordinate = drawGridInfo(canvas, it, topCoordinate)
+                    drawGridInfo(canvas, it, 2 * padding)
                 }
 
                 drawZoomLevel(canvas)

@@ -18,12 +18,9 @@
 
 package org.blitzortung.android.data.provider.blitzortung
 
-import android.os.Build
-import android.text.Html
-import android.text.Html.FROM_HTML_MODE_COMPACT
 import android.util.Log
+import androidx.core.text.HtmlCompat
 import org.blitzortung.android.app.Main
-import org.blitzortung.android.util.isAtLeast
 
 abstract class MapBuilder<T> internal constructor(private val lineSplitter: (String) -> Array<String>) {
     protected val keyValueBuilderMap: HashMap<String, (Array<String>) -> Unit> = HashMap()
@@ -56,19 +53,15 @@ abstract class MapBuilder<T> internal constructor(private val lineSplitter: (Str
     }
 
     private fun extractValues(htmlString: String): Array<String>? {
+        @Suppress("TooGenericExceptionCaught")
         val valueString =
-            if (isAtLeast(Build.VERSION_CODES.N)) {
-                Html.fromHtml(htmlString, FROM_HTML_MODE_COMPACT).toString()
-            } else {
-                @Suppress("TooGenericExceptionCaught")
-                try {
-                    Html.fromHtml(htmlString).toString()
-                } catch (e: RuntimeException) {
-                    // detekt: Html.fromHtml on API < 24 has no specific exception type; a malformed
-                    // tag can throw any RuntimeException, so keep the broad catch.
-                    Log.w(Main.LOG_TAG, e)
-                    return null
-                }
+            try {
+                HtmlCompat.fromHtml(htmlString, HtmlCompat.FROM_HTML_MODE_COMPACT).toString()
+            } catch (e: RuntimeException) {
+                // detekt: on API < 24 HtmlCompat delegates to Html.fromHtml, which has no specific
+                // exception type; a malformed tag can throw any RuntimeException, so keep the broad catch.
+                Log.w(Main.LOG_TAG, e)
+                return null
             }
         return valueString.split(SPLIT_PATTERN).dropLastWhile { it.isEmpty() }.toTypedArray()
     }
