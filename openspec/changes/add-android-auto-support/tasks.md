@@ -40,8 +40,8 @@
 
 ## 6. Android Auto wiring in `:app`
 
-- [ ] 6.1 Add `implementation(project(":car"))` and `androidx.car.app:app-projected` to `:app`, add `res/xml/automotive_app_desc.xml` containing `<uses name="template"/>`, and declare the `com.google.android.gms.car.application` metadata; verify the merged `:app` manifest contains the metadata and descriptor via `./gradlew :app:processDebugMainManifest`
-- [ ] 6.2 Register the car dependency provider during `:app` startup; verify the Android Auto host discovers and launches the car app on the Desktop Head Unit (`adb install` the debug APK, then start it from the DHU car launcher)
+- [x] 6.1 Add `implementation(project(":car"))` and `androidx.car.app:app-projected` to `:app`, add `res/xml/automotive_app_desc.xml` containing `<uses name="template"/>`, and declare the `com.google.android.gms.car.application` metadata; verify the merged `:app` manifest contains the metadata and descriptor via `./gradlew :app:processDebugMainManifest`
+- [x] 6.2 Register the car dependency provider during `:app` startup; verify the Android Auto host discovers and launches the car app on the Desktop Head Unit (`adb install` the debug APK, then start it from the DHU car launcher)
 
 ## 7. Android Automotive OS module (`:automotive`)
 
