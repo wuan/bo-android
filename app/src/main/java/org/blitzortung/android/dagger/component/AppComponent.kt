@@ -7,6 +7,7 @@ import dagger.android.support.AndroidSupportInjectionModule
 import javax.inject.Singleton
 import org.blitzortung.android.alert.handler.AlertDataHandler
 import org.blitzortung.android.alert.handler.AlertHandler
+import org.blitzortung.android.app.AppCarDependencies
 import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.dagger.module.ActivityBindingModule
 import org.blitzortung.android.dagger.module.AppModule
@@ -37,4 +38,5 @@ interface AppComponent : AndroidInjector<BOApplication> {
     fun alertDataHandler(): AlertDataHandler
     fun locationHandler(): LocationHandler
     fun jsonRpcDataProvider(): JsonRpcDataProvider
+    fun carDependencies(): AppCarDependencies
 }

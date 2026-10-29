@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="car_app_name">Blitzortung</string>
+    <string name="car_status_loading">Loading lightning data</string>
+</resources>

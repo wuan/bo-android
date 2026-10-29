@@ -9,6 +9,7 @@ import org.blitzortung.android.dagger.component.AppComponent
 import org.blitzortung.android.dagger.component.DaggerAppComponent
 import org.blitzortung.android.dagger.module.AppModule
 import org.blitzortung.android.dagger.module.ServiceModule
+import org.blitzortung.android.car.CarDependenciesProvider
 
 class BOApplication : Application(), HasAndroidInjector {
     @set:Inject
@@ -29,6 +30,8 @@ class BOApplication : Application(), HasAndroidInjector {
             .build()
 
         component.inject(this)
+
+        CarDependenciesProvider.dependencies = component.carDependencies()
     }
 
     companion object {

@@ -3,6 +3,7 @@
 /build
 /app/build
 /core/build
+/car/build
 /app/release
 /app/*.apk
 /.gradle

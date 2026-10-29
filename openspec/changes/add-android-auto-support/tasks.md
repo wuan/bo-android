@@ -19,11 +19,11 @@
 
 ## 3. Car module foundation (`:car`)
 
-- [ ] 3.1 Add the Car App Library version (`1.7.0`) and the `app`, `app-projected`, `app-automotive`, and `app-testing` libraries to `gradle/libs.versions.toml`; verify dependency resolution by regenerating lock files with `--write-locks`
-- [ ] 3.2 Create the Android library module `:car` (minSdk 23) depending on `:core` and `androidx.car.app:app`, with a manifest declaring the `CarAppService`, the `androidx.car.app.category.WEATHER` category, and the `MAP_TEMPLATES` and `ACCESS_SURFACE` permissions; verify the declared entries appear in the merged manifest via `./gradlew :car:processDebugMainManifest`
-- [ ] 3.3 Define the car dependency-provider interface that exposes the strike, location, and alert repositories plus alert parameters, and implement it in `:app` from `AppComponent`; verify a unit test resolves the repositories through the provider
-- [ ] 3.4 Implement the `CarAppService` (host validator, session creation) and a `Session` whose start screen returns a `MapWithContentTemplate`; add an `app-testing` unit test asserting the service creates a session and the start screen is a map-with-content screen
-- [ ] 3.5 Verify no car-specific data fetching is introduced by asserting (in a unit test or review check) that the session only observes the injected repositories and never constructs a data provider
+- [x] 3.1 Add the Car App Library version (`1.7.0`) and the `app`, `app-projected`, `app-automotive`, and `app-testing` libraries to `gradle/libs.versions.toml`; verify dependency resolution by regenerating lock files with `--write-locks`
+- [x] 3.2 Create the Android library module `:car` (minSdk 23) depending on `:core` and `androidx.car.app:app`, with a manifest declaring the `CarAppService`, the `androidx.car.app.category.WEATHER` category, and the `MAP_TEMPLATES` and `ACCESS_SURFACE` permissions; verify the declared entries appear in the merged manifest via `./gradlew :car:processDebugMainManifest`
+- [x] 3.3 Define the car dependency-provider interface that exposes the strike, location, and alert repositories plus alert parameters, and implement it in `:app` from `AppComponent`; verify a unit test resolves the repositories through the provider
+- [x] 3.4 Implement the `CarAppService` (host validator, session creation) and a `Session` whose start screen returns a `MapWithContentTemplate`; add an `app-testing` unit test asserting the service creates a session and the start screen is a map-with-content screen
+- [x] 3.5 Verify no car-specific data fetching is introduced by asserting (in a unit test or review check) that the session only observes the injected repositories and never constructs a data provider
 
 ## 4. In-car map rendering
 
