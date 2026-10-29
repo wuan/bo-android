@@ -91,6 +91,24 @@ dependencyLocking {
     lockAllConfigurations()
 }
 
+// AGP only injects the JaCoCo coverage agent into the debug runtime/lint
+// classpaths when coverage is enabled (-PenableCoverage=true), and it also
+// switches the Gradle JaCoCo plugin configurations to AGP's own JaCoCo version.
+// Those configurations therefore resolve different dependency graphs between
+// coverage-enabled and coverage-disabled builds, which a single lock file cannot
+// represent (dependency locking fails both on "resolved but not locked" and on
+// "locked but not resolved"). Locking is disabled for exactly those
+// configurations; every other configuration remains strictly locked.
+val coverageSensitiveConfigurations = setOf("jacocoAgent", "jacocoAnt", "androidJacocoAnt")
+configurations.configureEach {
+    val isDebugCoverageClasspath =
+        name.startsWith("debug") &&
+            (name.endsWith("RuntimeClasspath") || name.endsWith("LintChecksClasspath"))
+    if (name in coverageSensitiveConfigurations || isDebugCoverageClasspath) {
+        resolutionStrategy.deactivateDependencyLocking()
+    }
+}
+
 dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.media)
