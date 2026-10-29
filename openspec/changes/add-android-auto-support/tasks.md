@@ -10,7 +10,7 @@
 
 ## 2. Extract the `:core` library module
 
-- [ ] 2.1 Create an Android library module `:core` (namespace `org.blitzortung.android`, minSdk 23, Java 21, dependency locking) and register it in `settings.gradle.kts`; verify `./gradlew :core:assembleDebug` succeeds
+- [x] 2.1 Create an Android library module `:core` (namespace `org.blitzortung.android`, minSdk 23, Java 21, dependency locking) and register it in `settings.gradle.kts`; verify `./gradlew :core:assembleDebug` succeeds
 - [x] 2.2 Move the `protocol` (including the new `MapViewport` and `AlertNotifier` ports) and `preferences` packages, plus `util` (sources and tests), into `:core`, moving the resources they use (`unit_km`, `unit_miles`) into `:core/res`, and add `implementation(project(":core"))` to `:app`; verify `./gradlew testDebugUnitTest` passes
 - [x] 2.3 Move the `jsonrpc` and `data` packages and their tests into `:core`, moving the resources they use (`provider_warning`); verify `./gradlew testDebugUnitTest --tests "org.blitzortung.android.jsonrpc.*" --tests "org.blitzortung.android.data.*"` passes
 - [x] 2.4 Move the `location` and `alert` packages and their tests into `:core`, moving the resources they use (`location_provider_disabled`, `direction_names`, `Green`, `RedWarn`, `Yellow`, the alert strings) across all locale `strings.xml` files; verify `./gradlew testDebugUnitTest` passes
@@ -61,10 +61,10 @@
 
 ## 10. Integration verification
 
-- [ ] 10.1 Run `./gradlew testDebugUnitTest` across all modules and verify every new and existing unit test passes
-- [ ] 10.2 Run `./gradlew lint` and verify no new errors are introduced by the new modules
-- [ ] 10.3 Verify the phone experience is unchanged: the phone launcher, map, alerts, settings, widget, and background monitoring behave as before and `./gradlew :app:assembleRelease` still produces a valid phone artifact
-- [ ] 10.4 Verify the car experience is consistent across platforms on the Desktop Head Unit (Android Auto) and the AAOS emulator: same start screen, map with strikes, and alert list
+- [x] 10.1 Run `./gradlew testDebugUnitTest` across all modules and verify every new and existing unit test passes
+- [x] 10.2 Run `./gradlew lint` and verify no new errors are introduced by the new modules
+- [x] 10.3 Verify the phone experience is unchanged: the phone launcher, map, alerts, settings, widget, and background monitoring behave as before and `./gradlew :app:assembleRelease` still produces a valid phone artifact
+- [x] 10.4 Verify the car experience is consistent across platforms on the Desktop Head Unit (Android Auto) and the AAOS emulator: same start screen, map with strikes, and alert list
 
 ## Workflow follow-up
 
