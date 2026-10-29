@@ -34,7 +34,9 @@ The `CarAppService` is declared once in `:car` and merged into both applications
 The shared car manifest also declares the minimum Car App API level
 (`androidx.car.app.minCarApiLevel = 7`, because `MapWithContentTemplate` was
 introduced at level 7); the car host refuses to start an app that does not
-declare it.
+declare it. `:core` declares the `INTERNET` and `ACCESS_NETWORK_STATE`
+permissions it needs for lightning data and map tiles, and because the backend is
+served over HTTP, both applications set `android:usesCleartextTraffic="true"`.
 
 ## How it works
 

@@ -29,6 +29,7 @@ NAVIGATION_TEMPLATES = "androidx.car.app.NAVIGATION_TEMPLATES"
 ACCESS_SURFACE = "androidx.car.app.ACCESS_SURFACE"
 MIN_CAR_API_LEVEL = "androidx.car.app.minCarApiLevel"
 EXPECTED_MIN_CAR_API_LEVEL = "7"
+INTERNET = "android.permission.INTERNET"
 
 MANIFESTS = {
     "app (Android Auto)": "app/build/intermediates/merged_manifest/debug/processDebugMainManifest/AndroidManifest.xml",
@@ -57,8 +58,15 @@ def check(label: str, path_pattern: str, embedded: bool) -> list[str]:
         failures.append(f"{label}: missing {MAP_TEMPLATES}")
     if ACCESS_SURFACE not in permissions:
         failures.append(f"{label}: missing {ACCESS_SURFACE}")
+    if INTERNET not in permissions:
+        failures.append(f"{label}: missing {INTERNET} (data and tiles need network access)")
     if NAVIGATION_TEMPLATES in permissions:
         failures.append(f"{label}: {NAVIGATION_TEMPLATES} must not be declared")
+
+    application = root.find("application")
+    cleartext = application.get(ANDROID + "usesCleartextTraffic") if application is not None else None
+    if cleartext != "true":
+        failures.append(f"{label}: application must set usesCleartextTraffic=true (was {cleartext})")
 
     min_api_level = None
     for metadata in root.iter("meta-data"):
