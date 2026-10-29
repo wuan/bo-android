@@ -25,8 +25,8 @@ import androidx.car.app.model.Action
 import androidx.car.app.model.ActionStrip
 import androidx.car.app.model.CarIcon
 import androidx.car.app.model.Header
-import androidx.car.app.model.Pane
-import androidx.car.app.model.PaneTemplate
+import androidx.car.app.model.ItemList
+import androidx.car.app.model.ListTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
 import androidx.car.app.navigation.model.MapWithContentTemplate
@@ -36,6 +36,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
+import org.blitzortung.android.alert.LocalActivity
 import org.blitzortung.android.data.provider.result.DataReceived
 
 /**
@@ -50,6 +51,10 @@ class BlitzortungMapScreen(
 
     internal val renderer: CarMapRenderer? =
         dependencies?.let { OsmdroidCarMapRenderer(carContext, it.strikeColorHandler) }
+
+    private val locationPermission = CarLocationPermission(carContext)
+
+    private var alertListState = CarAlertListState()
 
     init {
         val activeRenderer = renderer
@@ -66,15 +71,31 @@ class BlitzortungMapScreen(
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     carDependencies.strikeDataRepository.observeDataEvents().collect { event ->
-                        if (event is DataReceived && !event.failed) {
-                            activeRenderer.updateStrikes(event)
+                        if (event is DataReceived) {
+                            if (event.failed) {
+                                alertListState = alertListState.copy(hasError = true)
+                            } else {
+                                alertListState = alertListState.copy(hasError = false, hasData = true)
+                                activeRenderer.updateStrikes(event)
+                            }
+                            invalidate()
                         }
+                    }
+                }
+                launch {
+                    carDependencies.alertRepository.observeAlertEvents().collect { warning ->
+                        alertListState = alertListState.copy(warning = warning)
+                        invalidate()
                     }
                 }
                 launch {
                     carDependencies.locationRepository.observeLocationEvents().collect { event ->
                         activeRenderer.onLocationEvent(event)
                     }
+                }
+
+                locationPermission.request {
+                    // On denial the configured default/manual location stays the fallback.
                 }
 
                 carDependencies.strikeDataRepository.start()
@@ -92,25 +113,50 @@ class BlitzortungMapScreen(
     override fun onGetTemplate(): Template {
         renderer?.setDarkMode(carContext.isDarkMode)
 
-        val pane =
-            Pane.Builder()
-                .addRow(Row.Builder().setTitle(carContext.getString(R.string.car_status_loading)).build())
-                .build()
-
-        val content =
-            PaneTemplate.Builder(pane)
-                .setHeader(
-                    Header.Builder()
-                        .setTitle(carContext.getString(R.string.car_app_name))
-                        .build(),
-                )
-                .build()
-
         return MapWithContentTemplate.Builder()
-            .setContentTemplate(content)
+            .setContentTemplate(buildAlertListTemplate())
             .setActionStrip(buildMapActionStrip())
             .build()
     }
+
+    private fun buildAlertListTemplate(): ListTemplate {
+        val unitName =
+            (alertListState.warning as? LocalActivity)?.let {
+                carContext.getString(it.parameters.measurementSystem.unitNameString)
+            } ?: ""
+
+        val rows = CarAlertListPresenter.rows(alertListState, alertStrings(), unitName)
+
+        val itemList =
+            ItemList.Builder().apply {
+                rows.forEach { row ->
+                    val rowBuilder = Row.Builder().setTitle(row.title)
+                    if (row.subtitle.isNotBlank()) {
+                        rowBuilder.addText(row.subtitle)
+                    }
+                    addItem(rowBuilder.build())
+                }
+            }.build()
+
+        return ListTemplate.Builder()
+            .setHeader(
+                Header.Builder()
+                    .setTitle(carContext.getString(R.string.car_app_name))
+                    .build(),
+            )
+            .setSingleList(itemList)
+            .build()
+    }
+
+    private fun alertStrings(): CarAlertStrings =
+        CarAlertStrings(
+            closestStrikeLabel = carContext.getString(R.string.car_alert_closest_strike),
+            emptyStateLabel = carContext.getString(R.string.car_alert_empty_state),
+            noLocationLabel = carContext.getString(R.string.car_alert_no_location),
+            outlyingLabel = carContext.getString(R.string.car_alert_outlying),
+            errorLabel = carContext.getString(R.string.car_alert_error),
+            strikeCountFormat = carContext.getString(R.string.car_alert_strike_count),
+        )
 
     private fun buildMapActionStrip(): ActionStrip {
         val activeRenderer = renderer

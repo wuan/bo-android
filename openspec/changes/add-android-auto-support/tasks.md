@@ -34,9 +34,9 @@
 
 ## 5. Car alert list, empty and error states, and location
 
-- [ ] 5.1 Render the alert list as the `MapWithContentTemplate` content template from `AlertRepository` state: closest strike distance and bearing plus per-sector counts; verify an `app-testing` unit test asserts the rows for a sample `AlertResult`
-- [ ] 5.2 Render an empty state when no strike data exists and an error state when a fetch fails without presenting the failed result as current; verify unit tests for both states
-- [ ] 5.3 Request location via `CarContext.requestPermissions` and feed the result into the existing `LocationRepository`, falling back to the configured manual/default location on denial; verify a unit test asserts the denial path does not crash and yields the fallback location
+- [x] 5.1 Render the alert list as the `MapWithContentTemplate` content template from `AlertRepository` state: closest strike distance and bearing plus per-sector counts; verify an `app-testing` unit test asserts the rows for a sample `AlertResult`
+- [x] 5.2 Render an empty state when no strike data exists and an error state when a fetch fails without presenting the failed result as current; verify unit tests for both states
+- [x] 5.3 Request location via `CarContext.requestPermissions` and feed the result into the existing `LocationRepository`, falling back to the configured manual/default location on denial; verify a unit test asserts the denial path does not crash and yields the fallback location
 
 ## 6. Android Auto wiring in `:app`
 
