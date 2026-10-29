@@ -23,26 +23,27 @@ import android.graphics.Paint
 import android.graphics.Paint.Style
 import android.util.Log
 import android.view.MotionEvent
-import android.view.ViewGroup
 import kotlin.math.max
 import kotlin.math.min
-import org.blitzortung.android.app.Main
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.beans.Strike
-import org.blitzortung.android.map.MapFragment
-import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.components.LayerOverlayComponent
-import org.blitzortung.android.map.createStrikePopUp
 import org.blitzortung.android.map.overlay.color.ColorHandler
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
+import org.osmdroid.api.IGeoPoint
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Overlay
+import org.blitzortung.android.util.LogUtil.LOG_TAG
 
-class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: StrikeColorHandler) :
+class StrikeListOverlay(
+    private val mapView: MapView,
+    val colorHandler: StrikeColorHandler,
+    private val onStrikeTapped: ((MapView, StrikeOverlay, IGeoPoint) -> Boolean)? = null,
+) :
     Overlay(),
     LayerOverlay,
     MapListener {
@@ -56,7 +57,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
     var parameters = Parameters()
 
     init {
-        zoomLevel = mapFragment.mapView.zoomLevelDouble
+        zoomLevel = mapView.zoomLevelDouble
     }
 
     override fun draw(
@@ -147,7 +148,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
         val difference = firstTime?.let { it - expireTime }
         strikeList.removeAll { it.timestamp < expireTime }
         Log.v(
-            Main.LOG_TAG,
+            LOG_TAG,
             "StrikesListOverlay.expireStrikes() expired ${sizeBefore - strikeList.size} from $sizeBefore " +
                 "(first: $firstTime, difference: $difference, ref: $referenceTime",
         )
@@ -165,32 +166,14 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
         e: MotionEvent?,
         mapView: MapView?,
     ): Boolean {
-        if (e != null && mapView != null) {
+        val tapHandler = onStrikeTapped
+        if (e != null && mapView != null && tapHandler != null) {
             val point = mapView.projection.fromPixels(e.x.toInt(), e.y.toInt())
 
             val strikeTapped = strikeList.firstOrNull { it.pointIsInside(point, mapView.projection) }
 
-            if (mapView is OwnMapView) {
-                val popup = mapView.popup
-                mapView.removeView(popup)
-
-                if (strikeTapped != null) {
-                    val newPopup = createStrikePopUp(popup, strikeTapped)
-
-                    val mapParams =
-                        MapView.LayoutParams(
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            point,
-                            0,
-                            0,
-                            MapView.LayoutParams.BOTTOM_CENTER,
-                        )
-
-                    mapView.addView(newPopup, mapParams)
-
-                    return true
-                }
+            if (strikeTapped != null) {
+                return tapHandler.invoke(mapView, strikeTapped, point)
             }
         }
         return false
@@ -230,7 +213,7 @@ class StrikeListOverlay(private val mapFragment: MapFragment, val colorHandler: 
         section: Int,
         colorHandler: ColorHandler,
     ): LightningShape {
-        val projection = mapFragment.mapView.projection
+        val projection = mapView.projection
         val color = colorHandler.getColor(section)
         val textColor = colorHandler.textColor
 

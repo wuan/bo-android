@@ -24,6 +24,7 @@ import org.blitzortung.android.alert.AlertRepository
 import org.blitzortung.android.car.CarDependencies
 import org.blitzortung.android.data.repository.StrikeDataRepository
 import org.blitzortung.android.location.LocationRepository
+import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 
 /**
  * Phone application's implementation of the car experience's dependencies,
@@ -37,4 +38,5 @@ class AppCarDependencies
         override val strikeDataRepository: StrikeDataRepository,
         override val locationRepository: LocationRepository,
         override val alertRepository: AlertRepository,
+        override val strikeColorHandler: StrikeColorHandler,
     ) : CarDependencies

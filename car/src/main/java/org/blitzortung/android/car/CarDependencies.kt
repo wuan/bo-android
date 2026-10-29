@@ -21,6 +21,7 @@ package org.blitzortung.android.car
 import org.blitzortung.android.alert.AlertRepository
 import org.blitzortung.android.data.repository.StrikeDataRepository
 import org.blitzortung.android.location.LocationRepository
+import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 
 /**
  * The data-layer dependencies the car experience needs. Implemented by each
@@ -35,4 +36,6 @@ interface CarDependencies {
     val locationRepository: LocationRepository
 
     val alertRepository: AlertRepository
+
+    val strikeColorHandler: StrikeColorHandler
 }

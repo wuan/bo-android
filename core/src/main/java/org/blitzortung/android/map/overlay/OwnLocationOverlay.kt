@@ -24,15 +24,15 @@ import android.graphics.Canvas
 import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
+import android.util.TypedValue
 import androidx.preference.PreferenceManager
-import org.blitzortung.android.app.helper.ViewHelper
 import org.blitzortung.android.preferences.OnSharedPreferenceChangeListener
 import org.blitzortung.android.preferences.PreferenceKey
 import org.blitzortung.android.preferences.get
 import org.blitzortung.android.preferences.getAndConvert
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.components.LayerOverlayComponent
-import org.blitzortung.android.util.TabletAwareView
+import org.blitzortung.android.util.ScreenScaling
 import org.osmdroid.api.IMapView
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
@@ -78,7 +78,12 @@ class OwnLocationOverlay(
 
         populate()
 
-        sizeFactor = ViewHelper.pxFromDp(context, 1.0f) * TabletAwareView.sizeFactor(context)
+        sizeFactor =
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                1.0f,
+                context.resources.displayMetrics,
+            ) * ScreenScaling.sizeFactor(context)
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         preferences.registerOnSharedPreferenceChangeListener(this)

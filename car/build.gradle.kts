@@ -53,7 +53,11 @@ dependencyLocking {
 dependencies {
     implementation(project(":core"))
     implementation(libs.androidx.car.app)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.preference.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.osmdroid.android)
 
     testImplementation(libs.junit)
     testImplementation(libs.assertj.core)

@@ -27,10 +27,10 @@
 
 ## 4. In-car map rendering
 
-- [ ] 4.1 Define a renderer interface for the car map surface and implement the osmdroid-backed renderer that hosts a `MapView` (with strike and own-location overlays) in a `Presentation` on a `VirtualDisplay` created from the host `Surface`, per the design; verify a unit test covers the lat/lon-to-screen projection and the renderer compiles into `:car`
-- [ ] 4.2 Reuse the existing strike age coloring and overlays for the car map (strikes colored by age, own position marked, expired strikes dropped); verify a unit test asserts the strike-to-color mapping matches the phone behaviour
-- [ ] 4.3 Implement the `SurfaceCallback` (surface lifecycle plus `onScroll`, `onScale`, `onFling`, `onClick` forwarded to the `MapView` controller) and a map action strip containing `Action.PAN` and zoom actions; verify a unit test asserts the action strip contains `PAN` and a manual check on the Desktop Head Unit pans and zooms
-- [ ] 4.4 Support the host light/dark theme by redrawing with dark styling when `CarContext.isDarkMode` is true and on `Session.onCarConfigurationChanged`; verify manually on the Desktop Head Unit that toggling the car theme redraws the map
+- [x] 4.1 Define a renderer interface for the car map surface and implement the osmdroid-backed renderer that hosts a `MapView` (with strike and own-location overlays) in a `Presentation` on a `VirtualDisplay` created from the host `Surface`, per the design; verify a unit test covers the lat/lon-to-screen projection and the renderer compiles into `:car`
+- [x] 4.2 Reuse the existing strike age coloring and overlays for the car map (strikes colored by age, own position marked, expired strikes dropped); verify a unit test asserts the strike-to-color mapping matches the phone behaviour
+- [x] 4.3 Implement the `SurfaceCallback` (surface lifecycle plus `onScroll`, `onScale`, `onFling`, `onClick` forwarded to the `MapView` controller) and a map action strip containing `Action.PAN` and zoom actions; verify a unit test asserts the action strip contains `PAN` and a manual check on the Desktop Head Unit pans and zooms
+- [x] 4.4 Support the host light/dark theme by redrawing with dark styling when `CarContext.isDarkMode` is true and on `Session.onCarConfigurationChanged`; verify manually on the Desktop Head Unit that toggling the car theme redraws the map
 
 ## 5. Car alert list, empty and error states, and location
 

@@ -19,7 +19,9 @@
 package org.blitzortung.android.car
 
 import android.content.Intent
+import android.content.res.Configuration
 import androidx.car.app.Screen
+import androidx.car.app.ScreenManager
 import androidx.car.app.Session
 
 /**
@@ -27,4 +29,9 @@ import androidx.car.app.Session
  */
 class BlitzortungCarSession : Session() {
     override fun onCreateScreen(intent: Intent): Screen = BlitzortungMapScreen(carContext)
+
+    override fun onCarConfigurationChanged(newConfig: Configuration) {
+        // Redraw so the map can switch between the light and dark theme.
+        carContext.getCarService(ScreenManager::class.java).top?.invalidate()
+    }
 }

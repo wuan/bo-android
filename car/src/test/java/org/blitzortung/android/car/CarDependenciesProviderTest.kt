@@ -23,6 +23,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.alert.AlertRepository
 import org.blitzortung.android.data.repository.StrikeDataRepository
 import org.blitzortung.android.location.LocationRepository
+import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.junit.After
 import org.junit.Test
 
@@ -37,12 +38,14 @@ class CarDependenciesProviderTest {
         val strikeRepo = mockk<StrikeDataRepository>()
         val locationRepo = mockk<LocationRepository>()
         val alertRepo = mockk<AlertRepository>()
+        val colorHandler = mockk<StrikeColorHandler>()
 
         CarDependenciesProvider.dependencies =
             object : CarDependencies {
                 override val strikeDataRepository = strikeRepo
                 override val locationRepository = locationRepo
                 override val alertRepository = alertRepo
+                override val strikeColorHandler = colorHandler
             }
 
         val resolved = CarDependenciesProvider.dependencies
@@ -50,5 +53,6 @@ class CarDependenciesProviderTest {
         assertThat(resolved?.strikeDataRepository).isSameAs(strikeRepo)
         assertThat(resolved?.locationRepository).isSameAs(locationRepo)
         assertThat(resolved?.alertRepository).isSameAs(alertRepo)
+        assertThat(resolved?.strikeColorHandler).isSameAs(colorHandler)
     }
 }

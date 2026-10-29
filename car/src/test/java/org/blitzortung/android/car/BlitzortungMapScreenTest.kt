@@ -18,6 +18,7 @@
 
 package org.blitzortung.android.car
 
+import androidx.car.app.model.Action
 import androidx.car.app.navigation.model.MapWithContentTemplate
 import androidx.car.app.testing.TestCarContext
 import org.assertj.core.api.Assertions.assertThat
@@ -28,13 +29,26 @@ import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
 class BlitzortungMapScreenTest {
+    private fun createScreen(): BlitzortungMapScreen {
+        val carContext = TestCarContext.createCarContext(RuntimeEnvironment.getApplication())
+        return BlitzortungMapScreen(carContext)
+    }
+
     @Test
     fun `start screen renders a map with content`() {
-        val carContext = TestCarContext.createCarContext(RuntimeEnvironment.getApplication())
-        val screen = BlitzortungMapScreen(carContext)
-
-        val template = screen.onGetTemplate()
+        val template = createScreen().onGetTemplate()
 
         assertThat(template).isInstanceOf(MapWithContentTemplate::class.java)
+    }
+
+    @Test
+    fun `map action strip offers pan and zoom actions`() {
+        val template = createScreen().onGetTemplate() as MapWithContentTemplate
+
+        val actionTypes = template.actionStrip?.actions.orEmpty().map { it.type }
+
+        assertThat(actionTypes).contains(Action.TYPE_PAN)
+        // Two additional icon-only actions for zooming in and out.
+        assertThat(actionTypes).hasSize(3)
     }
 }

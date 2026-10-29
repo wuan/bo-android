@@ -88,6 +88,7 @@ import org.blitzortung.android.map.overlay.FadeOverlay
 import org.blitzortung.android.map.overlay.OwnLocationOverlay
 import org.blitzortung.android.map.overlay.StrikeListOverlay
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
+import org.blitzortung.android.map.showStrikePopup
 import org.blitzortung.android.util.LogUtil
 import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
@@ -418,7 +419,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         mapFragment = supportFragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG) as MapFragment
 
-        strikeListOverlay = StrikeListOverlay(mapFragment, strikeColorHandler)
+        strikeListOverlay = StrikeListOverlay(mapFragment.mapView, strikeColorHandler, ::showStrikePopup)
         strikeListOverlay.isEnabled = true
         setHistoricStatusString()
         mapFragment.mapView.addMapListener(strikeListOverlay)
