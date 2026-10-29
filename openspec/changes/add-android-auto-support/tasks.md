@@ -51,8 +51,8 @@
 
 ## 8. Car assets and metadata
 
-- [ ] 8.1 Add the car launcher icon and any car-specific strings/theme used by `:car`/`:automotive`; verify the resources resolve and `./gradlew :automotive:assembleDebug` includes them
-- [ ] 8.2 Confirm the manifests declare exactly one car category (`WEATHER`) and never both `MAP_TEMPLATES` and `NAVIGATION_TEMPLATES`, and that activities are correctly `exported`; verify with a manifest check on the built artifacts
+- [x] 8.1 Add the car launcher icon and any car-specific strings/theme used by `:car`/`:automotive`; verify the resources resolve and `./gradlew :automotive:assembleDebug` includes them
+- [x] 8.2 Confirm the manifests declare exactly one car category (`WEATHER`) and never both `MAP_TEMPLATES` and `NAVIGATION_TEMPLATES`, and that activities are correctly `exported`; verify with a manifest check on the built artifacts
 
 ## 9. Distribution and documentation
 
