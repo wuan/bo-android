@@ -31,6 +31,11 @@ permissions together are deliberately not declared.
 
 The `CarAppService` is declared once in `:car` and merged into both applications.
 
+The shared car manifest also declares the minimum Car App API level
+(`androidx.car.app.minCarApiLevel = 7`, because `MapWithContentTemplate` was
+introduced at level 7); the car host refuses to start an app that does not
+declare it.
+
 ## How it works
 
 - The hosting application registers its graph in `CarDependenciesProvider` during

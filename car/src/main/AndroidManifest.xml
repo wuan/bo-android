@@ -6,6 +6,12 @@
     <uses-permission android:name="androidx.car.app.ACCESS_SURFACE" />
 
     <application>
+
+        <!-- Minimum Car App API level: MapWithContentTemplate requires level 7. -->
+        <meta-data
+            android:name="androidx.car.app.minCarApiLevel"
+            android:value="7" />
+
         <service
             android:name=".BlitzortungCarAppService"
             android:exported="true">

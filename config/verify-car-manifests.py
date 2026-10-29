@@ -27,6 +27,8 @@ WEATHER = "androidx.car.app.category.WEATHER"
 MAP_TEMPLATES = "androidx.car.app.MAP_TEMPLATES"
 NAVIGATION_TEMPLATES = "androidx.car.app.NAVIGATION_TEMPLATES"
 ACCESS_SURFACE = "androidx.car.app.ACCESS_SURFACE"
+MIN_CAR_API_LEVEL = "androidx.car.app.minCarApiLevel"
+EXPECTED_MIN_CAR_API_LEVEL = "7"
 
 MANIFESTS = {
     "app (Android Auto)": "app/build/intermediates/merged_manifest/debug/processDebugMainManifest/AndroidManifest.xml",
@@ -57,6 +59,15 @@ def check(label: str, path_pattern: str, embedded: bool) -> list[str]:
         failures.append(f"{label}: missing {ACCESS_SURFACE}")
     if NAVIGATION_TEMPLATES in permissions:
         failures.append(f"{label}: {NAVIGATION_TEMPLATES} must not be declared")
+
+    min_api_level = None
+    for metadata in root.iter("meta-data"):
+        if metadata.get(ANDROID + "name") == MIN_CAR_API_LEVEL:
+            min_api_level = metadata.get(ANDROID + "value")
+    if min_api_level != EXPECTED_MIN_CAR_API_LEVEL:
+        failures.append(
+            f"{label}: {MIN_CAR_API_LEVEL} must be {EXPECTED_MIN_CAR_API_LEVEL} (was {min_api_level})",
+        )
 
     service_exported = None
     for service in root.iter("service"):
