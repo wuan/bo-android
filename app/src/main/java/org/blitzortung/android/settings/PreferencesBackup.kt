@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.view.put
+import org.blitzortung.android.preferences.put
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject

@@ -10,6 +10,7 @@ import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.BOApplication
 import org.blitzortung.android.dagger.module.ActivityBindingModule
 import org.blitzortung.android.dagger.module.AppModule
+import org.blitzortung.android.dagger.module.ControllerModule
 import org.blitzortung.android.dagger.module.ServiceModule
 import org.blitzortung.android.dagger.module.SettingsModule
 import org.blitzortung.android.dagger.module.ViewModelModule
@@ -25,6 +26,7 @@ import org.blitzortung.android.map.overlay.color.StrikeColorHandler
         AppModule::class,
         ServiceModule::class,
         SettingsModule::class,
+        ControllerModule::class,
         ActivityBindingModule::class,
         ViewModelModule::class,
     ],

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unit_km">km</string>
+    <string name="unit_miles">mi.</string>
+    <string name="provider_warning">Nepoužívejte prosím datový zdroj Blitzortung.org při vysoké bleskové aktivitě, výkon zobrazení mapy se sníží.</string>
+    <string name="activity">aktivita</string>
+    <string-array name="direction_names">
+        <item>J</item>
+        <item>JZ</item>
+        <item>Z</item>
+        <item>SZ</item>
+        <item>S</item>
+        <item>SV</item>
+        <item>V</item>
+        <item>JV</item>
+    </string-array>
+    <string name="location_provider_disabled">poskytovatel polohy \'%s\' je vypnutý</string>
+</resources>

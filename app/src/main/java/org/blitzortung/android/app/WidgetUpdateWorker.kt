@@ -27,12 +27,12 @@ import kotlin.math.min
 import org.blitzortung.android.alert.AlertLabelHandler
 import org.blitzortung.android.alert.LocalActivity
 import org.blitzortung.android.alert.handler.Strikes
-import org.blitzortung.android.app.R.color.Green
-import org.blitzortung.android.app.R.color.Yellow
+import org.blitzortung.android.R.color.Green
+import org.blitzortung.android.R.color.Yellow
 import org.blitzortung.android.app.view.AlarmView
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.get
-import org.blitzortung.android.app.view.wasBackgroundLocationDisclosureShown
+import org.blitzortung.android.preferences.PreferenceKey
+import org.blitzortung.android.preferences.get
+import org.blitzortung.android.preferences.wasBackgroundLocationDisclosureShown
 import org.blitzortung.android.data.DataArea
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Parameters

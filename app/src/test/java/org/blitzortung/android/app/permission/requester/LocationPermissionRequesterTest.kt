@@ -19,9 +19,9 @@ import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.permission.LocationProviderRelation
 import org.blitzortung.android.app.permission.PermissionsSupport
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.get
-import org.blitzortung.android.app.view.put
+import org.blitzortung.android.preferences.PreferenceKey
+import org.blitzortung.android.preferences.get
+import org.blitzortung.android.preferences.put
 import org.blitzortung.android.location.LocationHandler.Companion.MANUAL_PROVIDER
 import org.junit.Before
 import org.junit.Test

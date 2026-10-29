@@ -268,7 +268,7 @@ class LegendView
             get() {
                 val gridSize = strikesOverlay?.gridParameters?.size
                 return if (gridSize != null) {
-                    "%.0f %s".format(gridSize / 1000.0, context.getString(R.string.unit_km))
+                    "%.0f %s".format(gridSize / 1000.0, context.getString(org.blitzortung.android.R.string.unit_km))
                 } else {
                     context.getString(R.string.not_available)
                 }

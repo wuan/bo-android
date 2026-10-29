@@ -65,10 +65,10 @@ import org.blitzortung.android.app.permission.requester.BackgroundLocationPermis
 import org.blitzortung.android.app.permission.requester.LocationPermissionRequester
 import org.blitzortung.android.app.permission.requester.NotificationPermissionRequester
 import org.blitzortung.android.app.permission.requester.WakeupPermissionRequester
-import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
-import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.preferences.OnSharedPreferenceChangeListener
+import org.blitzortung.android.preferences.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
-import org.blitzortung.android.app.view.get
+import org.blitzortung.android.preferences.get
 import org.blitzortung.android.app.viewmodel.MainViewModel
 import org.blitzortung.android.data.AUTO_GRID_SIZE_VALUE
 import org.blitzortung.android.data.MainDataHandler
@@ -801,7 +801,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     companion object {
-        const val LOG_TAG = "BO_ANDROID"
+        const val LOG_TAG = LogUtil.LOG_TAG
         const val MAP_FRAGMENT_TAG = "org.blitzortung.MAP_FRAGMENT_TAG"
     }
 }

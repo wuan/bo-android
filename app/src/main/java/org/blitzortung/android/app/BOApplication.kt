@@ -32,6 +32,6 @@ class BOApplication : Application(), HasAndroidInjector {
     }
 
     companion object {
-        const val WAKE_LOCK_TAG = "boAndroid:WakeLock"
+        const val WAKE_LOCK_TAG = org.blitzortung.android.util.WAKE_LOCK_TAG
     }
 }

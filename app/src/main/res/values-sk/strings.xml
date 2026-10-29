@@ -31,7 +31,6 @@ Chorvátsky preklad: Igor Dobrača (idobraca@rovinj.net)\n
 Slovenský preklad: Martin Šturcel (martin@sturcel.sk)\n
 Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
-    <string name="activity">aktivita</string>
     <string name="alarms">Upozornenia</string>
     <string name="alarms_not_available">Upozornenia vypnuté alebo\nchýbajú informácie o polohe</string>
     <string name="preferences">Nastavenia</string>
@@ -238,16 +237,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="notification_distance_limit">Limit vzdialenosti pre oznámenie</string>
     <string name="signaling_distance_limit">Limit vzdialenosti pre upozornenie</string>
 
-    <string-array name="direction_names">
-        <item>J</item>
-        <item>JZ</item>
-        <item>Z</item>
-        <item>SZ</item>
-        <item>S</item>
-        <item>SV</item>
-        <item>V</item>
-        <item>JV</item>
-    </string-array>
     <string-array name="distance_limits">
         <item>Vypnuté</item>
         <item>10 km</item>
@@ -306,14 +295,12 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_audio_signal">Nstavenie zvuku upozornenia</string>
     <string name="alarm_vibration_signal">Trvanie vibrácii upozorenia</string>
     <string name="alarm_vibration_signal_summary">Vyberte dĺžku vibrácie pre upozornenia</string>
-    <string name="location_provider_disabled">Poskytovateľ polohy \'%s\' je vypnutý</string>
     <string name="service_url">URL adresa služby, ktorá nie je predvolená</string>
     <string name="set_manual_location">Nastavte polohu ručne</string>
     <string name="error_indicator">Indikátor chyby</string>
     <string name="app_log">Application log</string>
     <string name="share_log">*Odoslať email …</string>
     <string name="share_unavailable">Zdieľanie e-mailov nie je k dispozícii.</string>
-    <string name="provider_warning">Please do not use the Blitzortung.org data provider during high lightning activity, as the map display performance will degrade.</string>
     <string name="own_location_size">Veľkosť symbolu vlastnej polohy</string>
     <string name="own_location_size_summary">Nastavte veľkosť vlastného symbolu polohy</string>
     <string name="keep_zoom_goto_own_location_summary">Nastavenie pre udržanie aktuálneho priblíženia pri centrovaní na vlastnú polohu</string>
@@ -375,11 +362,9 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_diagram">Diagram výstrahy bleskov</string>
     <string name="legend_grid">Mriežka</string>
     <string name="unit_minute">min</string>
-    <string name="unit_km">km</string>
     <string name="background_query_toast">Pre plne funkčné upozornenie na pozadí vypnite optimalizáciu batérie pre túto aplikáciu.</string>
     <string name="open_battery_optimiziation">Keď je povolené dopytovanie na pozadí, vypnite optimalizáciu batérie pre túto aplikáciu. Stlačením ZRUŠIŤ vypnete dopytovanie na pozadí a stlačením OK prejdete do nastavenia optimalizácie batérie.</string>
     <string name="not_available">n/a</string>
-    <string name="unit_miles">mi.</string>
     <string name="map_scale">Mierka mapy</string>
     <string name="map_scale_summary">Vyberte mierku [%] dlaždíc mapy</string>
     <string name="osmdroid_storage_warning">Nepodarilo sa nájsť zapisovateľné úložisko pre mapu. Nahláste to.</string>

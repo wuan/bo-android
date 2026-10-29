@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unit_km">km</string>
+    <string name="unit_miles">mi</string>
+    <string name="provider_warning">N\'utilisez pas le fournisseur de données Blitzortung.org lors d\'une forte activité orageuse, les performances d\'affichage de la carte s\'en trouveraient dégradées.</string>
+    <string name="activity">Activité</string>
+    <string-array name="direction_names">
+        <item>S</item>
+        <item>SW</item>
+        <item>W</item>
+        <item>NW</item>
+        <item>N</item>
+        <item>NE</item>
+        <item>E</item>
+        <item>SE</item>
+    </string-array>
+    <string name="location_provider_disabled">Le fournisseur de localisation \'%s\' est désactivé</string>
+</resources>

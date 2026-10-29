@@ -32,12 +32,23 @@ import androidx.preference.PreferenceManager
 import java.util.Locale
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.preferences.PreferenceKey
 import org.blitzortung.android.location.LocationHandler
+import org.blitzortung.android.protocol.MapViewport
+import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.MapController
 import org.osmdroid.views.MapView
 
-class OwnMapView(context: Context) : MapView(context) {
+class OwnMapView(context: Context) : MapView(context), MapViewport {
+    override val viewportZoomLevel: Double
+        get() = zoomLevelDouble
+
+    override val viewportBoundingBox: BoundingBox?
+        get() = boundingBox
+
+    override val viewportIsAnimating: Boolean
+        get() = isAnimating
+
     private val gestureDetector: GestureDetector = GestureDetector(context, GestureListener())
 
     init {
@@ -120,9 +131,8 @@ class OwnMapView(context: Context) : MapView(context) {
 
     private val animatorField = MapController::class.java.getDeclaredField("mCurrentAnimator")
 
-    fun animator(): ValueAnimator? {
+    override fun animator(): ValueAnimator? {
         if (!isAnimating) return null
-
         animatorField.isAccessible = true
         val value = animatorField.get(controller)
         return value?.let { value as ValueAnimator }

@@ -28,3 +28,4 @@ buildCache {
 
 rootProject.name = "bo-android"
 include(":app")
+include(":core")

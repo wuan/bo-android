@@ -110,6 +110,7 @@ configurations.configureEach {
 }
 
 dependencies {
+    implementation(project(":core"))
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.media)
     implementation(libs.androidx.core.ktx)

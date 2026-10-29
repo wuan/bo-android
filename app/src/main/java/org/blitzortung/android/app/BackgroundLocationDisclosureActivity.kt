@@ -8,9 +8,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.put
-import org.blitzortung.android.app.view.wasBackgroundLocationDisclosureShown
+import org.blitzortung.android.preferences.PreferenceKey
+import org.blitzortung.android.preferences.put
+import org.blitzortung.android.preferences.wasBackgroundLocationDisclosureShown
 import org.blitzortung.android.util.isAtLeast
 
 class BackgroundLocationDisclosureActivity : AppCompatActivity() {

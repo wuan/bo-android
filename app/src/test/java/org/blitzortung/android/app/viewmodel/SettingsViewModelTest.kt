@@ -15,7 +15,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.preferences.PreferenceKey
 import org.junit.Before
 import org.junit.Test
 

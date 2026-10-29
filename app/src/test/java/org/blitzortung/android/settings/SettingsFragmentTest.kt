@@ -16,7 +16,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.app.AppService
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.preferences.PreferenceKey
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test

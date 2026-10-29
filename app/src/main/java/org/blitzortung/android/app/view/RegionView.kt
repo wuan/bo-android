@@ -13,6 +13,9 @@ import org.blitzortung.android.app.R
 import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.DataReceived
+import org.blitzortung.android.preferences.OnSharedPreferenceChangeListener
+import org.blitzortung.android.preferences.PreferenceKey
+import org.blitzortung.android.preferences.get
 import org.blitzortung.android.util.TabletAwareView
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent

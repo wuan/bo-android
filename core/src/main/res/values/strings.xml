@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unit_km">km</string>
+    <string name="unit_miles">mi.</string>
+    <string name="provider_warning">Please do not use the Blitzortung.org data provider during high lightning activity, as the map display performance will degrade.</string>
+    <string name="activity">activity</string>
+    <string-array name="direction_names">
+        <item>S</item>
+        <item>SW</item>
+        <item>W</item>
+        <item>NW</item>
+        <item>N</item>
+        <item>NE</item>
+        <item>E</item>
+        <item>SE</item>
+    </string-array>
+    <string name="location_provider_disabled">location provider \'%s\' is disabled</string>
+</resources>

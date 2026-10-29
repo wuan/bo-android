@@ -26,10 +26,10 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import androidx.preference.PreferenceManager
 import org.blitzortung.android.app.helper.ViewHelper
-import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.get
-import org.blitzortung.android.app.view.getAndConvert
+import org.blitzortung.android.preferences.OnSharedPreferenceChangeListener
+import org.blitzortung.android.preferences.PreferenceKey
+import org.blitzortung.android.preferences.get
+import org.blitzortung.android.preferences.getAndConvert
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.components.LayerOverlayComponent
 import org.blitzortung.android.util.TabletAwareView

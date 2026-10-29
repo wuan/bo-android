@@ -17,9 +17,9 @@ import javax.inject.Inject
 import kotlin.math.min
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.helper.ViewHelper
-import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.get
+import org.blitzortung.android.preferences.OnSharedPreferenceChangeListener
+import org.blitzortung.android.preferences.PreferenceKey
+import org.blitzortung.android.preferences.get
 import org.blitzortung.android.app.viewmodel.MapViewModel
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent

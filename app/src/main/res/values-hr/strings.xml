@@ -30,7 +30,6 @@ Talijanski: Michele Locati (michele@locati.it)\n
 Hrvatski: Igor Dobrača (idobraca@rovinj.net)\n
 Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
-    <string name="activity">Aktivnost</string>
     <string name="alarms">Alarmi</string>
     <string name="alarms_not_available">Alarmi onemogućeni\nili\nlokacijske usluge isključene</string>
     <string name="preferences">Postavke</string>
@@ -237,16 +236,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="notification_distance_limit">Obavješćivanje temeljem udaljenosti</string>
     <string name="signaling_distance_limit">Signaliziranje temeljem udaljenosti</string>
 
-    <string-array name="direction_names">
-        <item>J</item>
-        <item>JZ</item>
-        <item>Z</item>
-        <item>SZ</item>
-        <item>S</item>
-        <item>SI</item>
-        <item>I</item>
-        <item>JI</item>
-    </string-array>
     <string-array name="distance_limits">
         <item>isključeno</item>
         <item>10 km/milja</item>
@@ -304,13 +293,11 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_audio_signal">Audio zvuka alarma</string>
     <string name="alarm_vibration_signal">Trajanje vibracije alarma</string>
     <string name="alarm_vibration_signal_summary">Trajanja vibriranja mobitela u slučaju alarma</string>
-    <string name="location_provider_disabled">Pružatelj lokacije \'%s\' je isključen.</string>
     <string name="service_url">Alternativni URL servisa</string>
     <string name="set_manual_location">Ručni unos lokacije</string>
     <string name="error_indicator">Indikator pogreške</string>
     <string name="share_log">Pošalji email …</string>
     <string name="share_unavailable">Dijeljenje emaila nije dostupno.</string>
-    <string name="provider_warning">Molimo nemojte koristiti Blitzortung.org kao izvor podataka tijekom učestalih aktivnosti munja jer će doći do degradacije pri prikazu karte.</string>
     <string name="own_location_size">Veličina simbola vlastite lokacije</string>
     <string name="own_location_size_summary">Određivanje veličine simbola vlastite lokacije</string>
     <string name="keep_zoom_goto_own_location_summary">Zadrži trenutno zumiranje pri centriranju vlastite lokacije</string>
@@ -372,12 +359,10 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_diagram">Dijagram upozorenja na munje</string>
     <string name="legend_grid">Mreža</string>
     <string name="unit_minute">min</string>
-    <string name="unit_km">km</string>
     <string name="background_query_toast">Isključite optimizaciju baterije za ovu aplikaciju kako bi pozadinsko upozorenje radilo ispravno.</string>
     <string name="open_battery_optimiziation">Isključite optimizaciju baterije za ovu aplikaciju kada je omogućen pozadinski upit. Pritisnite ODUSTANI za isključivanje pozadinskog upita ili U REDU za odlazak na postavke optimizacije baterije.</string>
     <string name="app_log">Zapisnik aplikacije</string>
     <string name="not_available">n/d</string>
-    <string name="unit_miles">mi.</string>
     <string name="map_scale">Mjerilo karte</string>
     <string name="map_scale_summary">Odaberite mjerilo [%] pločica karte</string>
     <string name="osmdroid_storage_warning">Nije moguće pronaći zapisivu pohranu za kartu. Molimo prijavite.</string>

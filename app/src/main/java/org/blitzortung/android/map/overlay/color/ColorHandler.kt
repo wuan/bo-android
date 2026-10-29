@@ -22,8 +22,8 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import kotlin.math.max
 import kotlin.math.min
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.get
+import org.blitzortung.android.preferences.PreferenceKey
+import org.blitzortung.android.preferences.get
 
 abstract class ColorHandler(private val preferences: SharedPreferences) {
     var colorScheme: ColorScheme = ColorScheme.BLITZORTUNG

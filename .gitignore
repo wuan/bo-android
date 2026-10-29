@@ -2,6 +2,7 @@
 *.iml
 /build
 /app/build
+/core/build
 /app/release
 /app/*.apk
 /.gradle
