@@ -45,9 +45,9 @@
 
 ## 7. Android Automotive OS module (`:automotive`)
 
-- [ ] 7.1 Create the application module `:automotive` (minSdk 29, same application id as `:app`) depending on `:core` and `:car` plus `androidx.car.app:app-automotive`, with the AAOS manifest (`android.hardware.type.automotive`, `android.software.car.templates_host`, `com.android.automotive` metadata and `automotive_app_desc.xml`, and the `CarAppActivity` entry point with `distractionOptimized`); verify `./gradlew :automotive:assembleDebug` succeeds and the merged manifest declares the AAOS features
-- [ ] 7.2 Add the automotive application/Dagger component on top of the `:core` modules and register the car dependency provider; verify `./gradlew :automotive:testDebugUnitTest` passes with a test that the session resolves its repositories
-- [ ] 7.3 Install on an Android Automotive OS emulator and verify the car app launches from the launcher and shows the same map and alert-list screens as Android Auto
+- [x] 7.1 Create the application module `:automotive` (minSdk 29, same application id as `:app`) depending on `:core` and `:car` plus `androidx.car.app:app-automotive`, with the AAOS manifest (`android.hardware.type.automotive`, `android.software.car.templates_host`, `com.android.automotive` metadata and `automotive_app_desc.xml`, and the `CarAppActivity` entry point with `distractionOptimized`); verify `./gradlew :automotive:assembleDebug` succeeds and the merged manifest declares the AAOS features
+- [x] 7.2 Add the automotive application/Dagger component on top of the `:core` modules and register the car dependency provider; verify `./gradlew :automotive:testDebugUnitTest` passes with a test that the session resolves its repositories
+- [x] 7.3 Install on an Android Automotive OS emulator and verify the car app launches from the launcher and shows the same map and alert-list screens as Android Auto
 
 ## 8. Car assets and metadata
 
