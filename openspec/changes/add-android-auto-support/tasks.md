@@ -56,8 +56,8 @@
 
 ## 9. Distribution and documentation
 
-- [ ] 9.1 Document the car experience and the release process (form-factor opt-in, car screenshots, dedicated Android Automotive OS track, car app quality review) in the project docs; verify the documented steps match the Play Console screens they reference
-- [ ] 9.2 Sign a release bundle for `:automotive` and confirm it is targeted at the dedicated Android Automotive OS track (not the mobile track); verify by uploading to an internal testing track and checking the track/form-factor assignment
+- [x] 9.1 Document the car experience and the release process (form-factor opt-in, car screenshots, dedicated Android Automotive OS track, car app quality review) in the project docs; verify the documented steps match the Play Console screens they reference
+- [x] 9.2 Sign a release bundle for `:automotive` and confirm it is targeted at the dedicated Android Automotive OS track (not the mobile track); verify by uploading to an internal testing track and checking the track/form-factor assignment
 
 ## 10. Integration verification
 
