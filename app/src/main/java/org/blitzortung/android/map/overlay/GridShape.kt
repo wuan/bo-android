@@ -20,7 +20,6 @@ package org.blitzortung.android.map.overlay
 
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Paint.Align
 import android.graphics.Point
 import android.graphics.RectF
 import kotlin.math.max
@@ -64,19 +63,7 @@ class GridShape(private val center: IGeoPoint) : LightningShape {
         paint.alpha = alpha
         canvas.drawRect(rect, paint)
 
-        val textSize = rect.height() / 2.5f
-        if (textSize >= 8f) {
-            paint.color = textColor
-            paint.alpha = calculateAlphaValue(textSize, 20, 80, 255, 60)
-            paint.textAlign = Align.CENTER
-            paint.textSize = textSize
-            canvas.drawText(
-                multiplicity.toString(),
-                centerPoint.x.toFloat(),
-                centerPoint.y.toFloat() + textSize / 2,
-                paint,
-            )
-        }
+        drawShapeLabel(canvas, paint, rect, multiplicity.toString(), textColor)
     }
 
     override fun isPointInside(
@@ -110,18 +97,7 @@ class GridShape(private val center: IGeoPoint) : LightningShape {
         this.color = color
         this.textColor = textColor
 
-        alpha = calculateAlphaValue(size.width(), 10, 40, 255, 100)
-    }
-
-    private fun calculateAlphaValue(
-        value: Float,
-        minValue: Int,
-        maxValue: Int,
-        maxAlpha: Int,
-        minAlpha: Int,
-    ): Int {
-        val targetValue = ((value - minValue) / (maxValue - minValue)).coerceIn(0.0f, 1.0f)
-        return minAlpha + ((maxAlpha - minAlpha) * (1.0 - targetValue)).toInt()
+        alpha = calculateShapeAlpha(size.width(), 10, 40, 255, 100)
     }
 
     companion object {

@@ -26,6 +26,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.preference.CheckBoxPreference
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
@@ -112,6 +113,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         if (::preferences.isInitialized) {
             configureDataSourcePreferences()
+            configureClusterPreferences()
             configureLocationProviderPreferences()
             configureOwnLocationSizePreference()
             configureAlertEnabledPreference()
@@ -198,7 +200,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun handlePreferenceChange(key: PreferenceKey) {
         when (key) {
-            PreferenceKey.DATA_SOURCE -> configureDataSourcePreferences()
+            PreferenceKey.DATA_SOURCE -> {
+                configureDataSourcePreferences()
+                configureClusterPreferences()
+            }
+            PreferenceKey.SHOW_CLUSTERS -> configureClusterPreferences()
             PreferenceKey.LOCATION_MODE -> {
                 val provider = configureLocationProviderPreferences()
                 val context = this.context
@@ -229,6 +235,27 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun configureAlertEnabledPreference() {
         enableNotifications(viewModel.getBooleanPreference(PreferenceKey.ALERT_ENABLED, false))
+    }
+
+    private fun configureClusterPreferences() {
+        val supportsClusters =
+            viewModel
+                .getStringPreference(PreferenceKey.DATA_SOURCE, DataProviderType.HTTP.toString())
+                .uppercase(Locale.getDefault()) == DataProviderType.RPC.toString()
+
+        val showClusters = viewModel.getBooleanPreference(PreferenceKey.SHOW_CLUSTERS, false)
+
+        findPreference<CheckBoxPreference>(PreferenceKey.SHOW_CLUSTERS)?.isEnabled = supportsClusters
+        findPreference<ListPreference>(PreferenceKey.CLUSTER_INTERVAL)?.isEnabled = supportsClusters
+        findPreference<CheckBoxPreference>(PreferenceKey.HIDE_GRID)?.apply {
+            isEnabled = supportsClusters
+            // Hiding the grid is only meaningful while clusters are shown on a supporting
+            // provider; clearing it otherwise keeps the map from being empty and the
+            // toggle state honest.
+            if ((!supportsClusters || !showClusters) && isChecked) {
+                isChecked = false
+            }
+        }
     }
 
     private fun configureOwnLocationSizePreference() {
