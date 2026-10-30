@@ -26,6 +26,7 @@ import java.util.TimeZone
 object TimeFormat {
     private val DATE_TIME_MILLISECONDS_FORMATTER = SimpleDateFormat("yyyyMMdd'T'HH:mm:ss.SSS", Locale.US)
     private val JSON_DATE_TIME_FORMATTER = SimpleDateFormat("yyyyMMdd'T'HH:mm:ss", Locale.US)
+    private val CLUSTER_DATE_TIME_FORMATTER = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
 
     init {
         DATE_TIME_MILLISECONDS_FORMATTER.timeZone = TimeZone.getTimeZone("UTC")
@@ -33,6 +34,10 @@ object TimeFormat {
 
     init {
         JSON_DATE_TIME_FORMATTER.timeZone = TimeZone.getTimeZone("UTC")
+    }
+
+    init {
+        CLUSTER_DATE_TIME_FORMATTER.timeZone = TimeZone.getTimeZone("UTC")
     }
 
     fun parseTimeWithMilliseconds(timestampString: String): Long {
@@ -54,5 +59,28 @@ object TimeFormat {
         } catch (e: ParseException) {
             throw IllegalArgumentException("Unable to parse time string '%s'".format(timestampString), e)
         }
+    }
+
+    /**
+     * Parses a cluster timestamp as emitted by the RPC backend
+     * (`%Y-%m-%d %H:%M:%S.%f`, UTC, nanoseconds). The fractional part is truncated
+     * to milliseconds; sub-second precision is not needed for age coloring.
+     */
+    fun parseClusterTime(timestampString: String): Long {
+        try {
+            return CLUSTER_DATE_TIME_FORMATTER.parse(normalizeMilliseconds(timestampString))!!.time
+        } catch (e: ParseException) {
+            throw IllegalArgumentException("Unable to parse cluster time string '%s'".format(timestampString), e)
+        }
+    }
+
+    private fun normalizeMilliseconds(timestampString: String): String {
+        val separator = timestampString.indexOf('.')
+        if (separator < 0) {
+            return timestampString
+        }
+        val fraction = timestampString.substring(separator + 1)
+        val milliseconds = fraction.padEnd(3, '0').substring(0, 3)
+        return timestampString.substring(0, separator) + "." + milliseconds
     }
 }

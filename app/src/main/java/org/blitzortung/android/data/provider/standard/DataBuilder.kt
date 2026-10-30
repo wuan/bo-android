@@ -18,10 +18,12 @@
 
 package org.blitzortung.android.data.provider.standard
 
+import org.blitzortung.android.data.beans.Cluster
 import org.blitzortung.android.data.beans.DefaultStrike
 import org.blitzortung.android.data.beans.GridElement
 import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.beans.Strike
+import org.blitzortung.android.util.TimeFormat
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -73,5 +75,29 @@ internal class DataBuilder {
             latitude = gridParameters.getCenterLatitude(jsonArray.getInt(1)),
             multiplicity = jsonArray.getInt(2),
         )
+    }
+
+    @Throws(JSONException::class)
+    fun createCluster(jsonObject: JSONObject): Cluster {
+        return Cluster(
+            id = jsonObject.getLong("id"),
+            timestamp = TimeFormat.parseClusterTime(jsonObject.getString("timestamp")),
+            intervalSeconds = jsonObject.getInt("interval_seconds"),
+            strikeCount = jsonObject.getInt("strike_count"),
+            area = if (jsonObject.isNull("area")) null else jsonObject.getDouble("area"),
+            shape = createClusterShape(jsonObject.optJSONArray("shape")),
+        )
+    }
+
+    private fun createClusterShape(shapeArray: JSONArray?): List<Pair<Double, Double>> {
+        if (shapeArray == null) {
+            return emptyList()
+        }
+        val shape = ArrayList<Pair<Double, Double>>(shapeArray.length())
+        for (i in 0 until shapeArray.length()) {
+            val point = shapeArray.getJSONArray(i)
+            shape.add(point.getDouble(0) to point.getDouble(1))
+        }
+        return shape
     }
 }

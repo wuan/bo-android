@@ -177,6 +177,71 @@ class MainDataHandlerTest {
     }
 
     @Test
+    fun clusterIntervalMatchUsesTimeInterval() {
+        enableClusters()
+
+        preferences
+            .edit()
+            .putString(PreferenceKey.INTERVAL_DURATION.toString(), "120")
+            .putString(PreferenceKey.CLUSTER_INTERVAL.toString(), MainDataHandler.CLUSTER_INTERVAL_MATCH)
+            .commit()
+
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.INTERVAL_DURATION)
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.CLUSTER_INTERVAL)
+
+        assertThat(uut.clusterRequestParameters?.intervalCount).isEqualTo(12)
+    }
+
+    @Test
+    fun clusterIntervalLatestRequestsSingleInterval() {
+        enableClusters()
+
+        preferences
+            .edit()
+            .putString(PreferenceKey.INTERVAL_DURATION.toString(), "120")
+            .putString(PreferenceKey.CLUSTER_INTERVAL.toString(), MainDataHandler.CLUSTER_INTERVAL_LATEST)
+            .commit()
+
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.INTERVAL_DURATION)
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.CLUSTER_INTERVAL)
+
+        assertThat(uut.clusterRequestParameters?.intervalCount).isEqualTo(1)
+    }
+
+    @Test
+    fun clusterIntervalLegacyHourBehavesAsMatch() {
+        enableClusters()
+
+        preferences
+            .edit()
+            .putString(PreferenceKey.INTERVAL_DURATION.toString(), "30")
+            .putString(PreferenceKey.CLUSTER_INTERVAL.toString(), "hour")
+            .commit()
+
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.INTERVAL_DURATION)
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.CLUSTER_INTERVAL)
+
+        assertThat(uut.clusterRequestParameters?.intervalCount).isEqualTo(3)
+    }
+
+    private fun enableClusters() {
+        every { dataProviderFactory.getDataProviderForType(any()).supportsClusters } returns true
+        every { localData.clusterParameters(any()) } answers {
+            ClusterParameters(intervalCount = firstArg())
+        }
+        preferences
+            .edit()
+            .putString(PreferenceKey.DATA_SOURCE.toString(), DataProviderType.RPC.toString())
+            .commit()
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.DATA_SOURCE)
+        preferences
+            .edit()
+            .putBoolean(PreferenceKey.SHOW_CLUSTERS.toString(), true)
+            .commit()
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_CLUSTERS)
+    }
+
+    @Test
     fun sharedPreferencesChangedForHistoricTimestep() {
         preferences
             .edit()
