@@ -150,25 +150,6 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
         <item>100000</item>
     </string-array>
 
-    <string name="count_threshold">Schwellwert Blitzzahl</string>
-
-    <string-array name="count_thresholds">
-        <item>deaktiviert</item>
-        <item>1</item>
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
-        <item>50</item>
-    </string-array>
-    <string-array name="count_threshold_values">
-        <item>0</item>
-        <item>1</item>
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
-        <item>50</item>
-    </string-array>
-
     <string name="data_source">Datenquelle</string>
 
     <string-array name="data_sources">
@@ -304,6 +285,12 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="own_location_size">Größe des Standort-Symbols</string>
     <string name="own_location_size_summary">Einstellung der Größe des Standort-Symbols</string>
     <string name="keep_zoom_goto_own_location_title">Zoom beibehalten</string>
+    <string name="data_view">Datenansicht</string>
+    <string name="show_clusters">Gewittercluster anzeigen</string>
+    <string name="show_clusters_summary">Clusterumrisse anzeigen, die die Gewitteraktivität zusammenfassen (erfordert die RPC-Datenquelle)</string>
+    <string name="hide_grid">Rasterdaten ausblenden</string>
+    <string name="hide_grid_summary">Blitz-/Rasterüberlagerung ausblenden, sodass nur Cluster angezeigt werden (erfordert Cluster). Blitzdaten werden weiterhin für Warnungen und das Histogramm abgerufen.</string>
+    <string name="cluster_interval">Cluster-Intervall</string>
     <string name="keep_zoom_goto_own_location_summary">Einstellung zur Beibehaltung des aktuellen Zooms beim Zentrieren des eigenen Standorts</string>
     <string name="background_query_toast">Bitte deaktivieren Sie die Akku-Optimierung für diese App damit die Warnung im Hintergrund zuverlässig funktioniert.</string>
     <string name="open_battery_optimiziation">Bitte deaktivieren Sie die Akku-Optimierung für diese App wenn die Hintergrundabfrage aktiv ist. Drücken Sie auf Abbrechen um die Hintergrundabfrage zu deaktiveren oder auf OK um zur Einstellung der Batterieoptimierung zu gelangen.</string>

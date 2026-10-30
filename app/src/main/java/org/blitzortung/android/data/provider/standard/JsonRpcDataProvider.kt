@@ -87,12 +87,12 @@ class JsonRpcDataProvider
             val isIncremental = nextId != 0
             val strikes = ArrayList<Strike>()
             val referenceTimestamp = getReferenceTimestamp(response.data)
-            val strikesArray = response.data.get("s") as JSONArray
+            val strikesArray = response.data.getJSONArray("s")
             for (i in 0 until strikesArray.length()) {
                 strikes.add(dataBuilder.createDefaultStrike(referenceTimestamp, strikesArray.getJSONArray(i)))
             }
             if (response.data.has("next")) {
-                nextId = response.data.get("next") as Int
+                nextId = response.data.getInt("next")
             }
             return result.copy(strikes = strikes, updated = if (isIncremental) strikes.size else -1)
         }
@@ -105,7 +105,7 @@ class JsonRpcDataProvider
             val gridParameters = dataBuilder.createGridParameters(response.data, size)
             val referenceTimestamp = getReferenceTimestamp(response.data)
 
-            val strikesArray = response.data.get("r") as JSONArray
+            val strikesArray = response.data.getJSONArray("r")
             val strikes = ArrayList<Strike>()
             for (i in 0 until strikesArray.length()) {
                 strikes.add(
