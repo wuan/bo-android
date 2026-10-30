@@ -85,4 +85,32 @@ class PreferencesBackupApplyTest {
 
         assertThat(PreferencesBackup.snapshot(preferences)).isEqualTo(before)
     }
+
+    // --- 4.4 cluster interval preference ------------------------------------
+
+    @Test
+    fun clusterIntervalDefaultsToMatch() {
+        PreferencesBackup.resetToDefaults(context, preferences)
+
+        assertThat(preferences.getString("cluster_interval", null)).isEqualTo("match")
+    }
+
+    @Test
+    fun clusterIntervalValuesRoundTripThroughBackup() {
+        listOf("match", "latest", "hour").forEach { value ->
+            PreferencesBackup.resetToDefaults(context, preferences)
+
+            val parsed =
+                PreferencesBackup.parse(
+                    PreferencesBackup.serialize(mapOf("cluster_interval" to value), appVersionCode = 1),
+                ) as BackupParseResult.Success
+            val plan =
+                PreferencesBackup.planImport(parsed.preferences, PreferencesBackup.snapshot(preferences))
+                    as ImportPlanResult.Success
+
+            PreferencesBackup.applyImport(context, preferences, plan.plan)
+
+            assertThat(preferences.getString("cluster_interval", null)).isEqualTo(value)
+        }
+    }
 }

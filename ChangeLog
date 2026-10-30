@@ -2,11 +2,51 @@
 
 ## English
 
+### Version 2.6
+
+  - cluster data overlay
+  - cluster display follows the selected time interval
+  - show data area coordinates in the region view
+  - faster fallback by reduced network timeouts
+  - enable Gradle dependency locking
+
+### Version 2.5.5
+
+  - quick documentation overlay
+
+### Version 2.5.4
+
+  - migrate the app to ViewModels
+  - avoid request bursts
+  - fix double tap zoom
+  - enable logging in background mode
+
+### Version 2.5.3
+
+  - backup and restore of preferences
+  - use JSON-RPC 2.0 for data access
+  - migrate from KAPT to KSP and update Gradle and Android SDK
+  - improve build time
+  - updated translations
+
 ### Version 2.5.2
 
-  - add initial version of a alert widget
-  - alert view shows when location is ouside of the current data area
+  - reestablish prominent disclosure before requesting permissions
+  - update app icon
 
+### Version 2.5.1
+
+  - improve widget image sizing
+
+### Version 2.5.0
+
+  - add alert widget
+  - improve widget layout
+  - improve alert status text
+
+### Version 2.4.6
+
+  - alert view stays visible when the location is outside of the current data area
 
 ### Version 2.4.5
 
@@ -17,17 +57,32 @@
   - update backlog
   - fix deprecated vibration API
   - fix deprecated onActivityResult
+  - fix local data update
+  - disable long press handling for alert dialog
+  - use common dialog layout
 
-### Version 2.4.0
+### Version 2.4.4
 
   - add german F-Droid entry and update many screenshots
   - better handling of denied location permissions
+
+### Version 2.4.3
+
   - alert enabled should only control notifications
+
+### Version 2.4.2
+
   - disable alerts with missing notification permission
+
+### Version 2.4.1
+
   - add cancel button to log dialog
   - refactor permission grant to separate methods / classes
   - fix edge-to-edge display for Main activity
   - updated Polish translation
+
+### Version 2.4.0
+
   - fix handling of multiple permission dialogs
   - fix start of DataHandler when map is ready
   - further improve automatic local data mode transition
@@ -36,6 +91,10 @@
   - fix auto grid and local data
   - update intent flags to open app from notification
   - control background alert icon
+
+### Version 2.3.1
+
+  - improve dynamic view and add diagnosis mode
 
 ### Version 2.3.0
 
@@ -293,10 +352,51 @@
 
 ## German
 
+### Version 2.6
+
+  - Cluster-Datenanzeige
+  - Cluster-Anzeige folgt dem ausgewählten Zeitintervall
+  - Anzeige der Koordinaten des Datenbereichs in der Regionsansicht
+  - Schnellerer Wechsel durch reduzierte Netzwerk-Timeouts
+  - Gradle Dependency Locking aktiviert
+
+### Version 2.5.5
+
+  - Schnellhilfe-Overlay
+
+### Version 2.5.4
+
+  - Umstellung der App auf ViewModels
+  - Vermeidung von Anfrage-Spitzen
+  - Doppeltipp-Zoom korrigiert
+  - Logging im Hintergrundmodus aktiviert
+
+### Version 2.5.3
+
+  - Sichern und Wiederherstellen der Einstellungen
+  - Datenzugriff über JSON-RPC 2.0
+  - Umstellung von KAPT auf KSP sowie Aktualisierung von Gradle und Android SDK
+  - Build-Zeit verbessert
+  - Übersetzungen aktualisiert
+
 ### Version 2.5.2
 
-  - Erste Version eine Alarm-Widgets
-  - Alarm-View zeigt an, falls der aktuelle Standort außerhalb des Datenbereichs liegt
+  - Datenschutzhinweis wird wieder vor der Berechtigungsabfrage angezeigt
+  - App-Icon aktualisiert
+
+### Version 2.5.1
+
+  - Größe der Widget-Grafik verbessert
+
+### Version 2.5.0
+
+  - Alarm-Widget hinzugefügt
+  - Widget-Layout verbessert
+  - Statustext des Alarms verbessert
+
+### Version 2.4.6
+
+  - Alarm-View bleibt sichtbar, wenn der Standort außerhalb des Datenbereichs liegt
 
 ### Version 2.4.5
 
@@ -307,17 +407,32 @@
   - Backlog aktualisiert
   - Veraltete Vibrations-API ersetzt
   - Veraltetes onActivityResult ersetzt
+  - Aktualisierung lokaler Daten korrigiert
+  - Langdruck auf Alarm-Dialog deaktiviert
+  - einheitliches Dialog-Layout verwendet
 
-### Version 2.4.0
+### Version 2.4.4
 
   - Deutscher F-Droid Eintrag hinzugefügt und viele Screenshots aktualisiert
   - Besserer Umgang mit verweigerten Standortberechtigungen
+
+### Version 2.4.3
+
   - "Alarm aktiviert" steuert nur noch Benachrichtigungen
+
+### Version 2.4.2
+
   - Warnungen deaktiviert, wenn Benachrichtigungsberechtigung fehlt
+
+### Version 2.4.1
+
   - Abbrechen-Button zum Log-Dialog hinzugefügt
   - Berechtigungsanfrage in separate Klassen/Methoden ausgelagert
   - Edge-to-Edge Anzeige für Hauptaktivität korrigiert
   - Polnische Übersetzung aktualisiert
+
+### Version 2.4.0
+
   - Umgang mit mehreren Berechtigungsdialogen korrigiert
   - Start des DataHandlers korrigiert, wenn Karte bereit ist
   - Automatischen Wechsel zum lokalen Datenmodus weiter verbessert
@@ -326,6 +441,10 @@
   - Auto-Raster und lokale Daten korrigiert
   - Intent-Flags zum Öffnen der App aus Benachrichtigung aktualisiert
   - Icon für Hintergrundalarm konfigurierbar
+
+### Version 2.3.1
+
+  - dynamische Ansicht verbessert und Diagnosemodus hinzugefügt
 
 ### Version 2.3.0
 

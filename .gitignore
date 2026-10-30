@@ -7,5 +7,16 @@
 /automotive/build
 /app/release
 /app/*.apk
+/app/*.aab
 /.gradle
 /local.properties
+/.kotlin
+
+# OpenCode local config
+/.opencode
+
+# OS / editor
+.DS_Store
+
+# Local backups / scratch
+/projectFilesBackup

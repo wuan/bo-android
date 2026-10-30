@@ -157,25 +157,6 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>100000</item>
     </string-array>
 
-    <string name="count_threshold">Prag broja munja</string>
-
-    <string-array name="count_thresholds">
-        <item>isključeno</item>
-        <item>1</item>
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
-        <item>50</item>
-    </string-array>
-    <string-array name="count_threshold_values">
-        <item>0</item>
-        <item>1</item>
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
-        <item>50</item>
-    </string-array>
-
     <string name="data_source">Izvor podataka</string>
 
     <string-array name="data_sources">
@@ -302,6 +283,12 @@ Ruski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_size_summary">Određivanje veličine simbola vlastite lokacije</string>
     <string name="keep_zoom_goto_own_location_summary">Zadrži trenutno zumiranje pri centriranju vlastite lokacije</string>
     <string name="keep_zoom_goto_own_location_title">Zadrži zumiranje</string>
+    <string name="data_view">Prikaz podataka</string>
+    <string name="show_clusters">Prikaži olujne skupine</string>
+    <string name="show_clusters_summary">Prikaži obrise skupina koji sažimaju olujnu aktivnost (zahtijeva RPC izvor podataka)</string>
+    <string name="hide_grid">Sakrij mrežne podatke</string>
+    <string name="hide_grid_summary">Sakrij sloj munja/mreže kako bi se prikazale samo skupine (zahtijeva skupine). Podaci o munjama i dalje se dohvaćaju za upozorenja i histogram.</string>
+    <string name="cluster_interval">Interval skupina</string>
     <string name="changelog">Change log</string>
     <string name="location_permission_required">Dopuštenje za lokaciju potrebno je kada se koristi izvor lokacije uređaja.</string>
     <string name="location_permission_background_required">Dopuštenje za pozadinsko mjesto potrebno je kada se koristi izvor lokacije uređaja.</string>

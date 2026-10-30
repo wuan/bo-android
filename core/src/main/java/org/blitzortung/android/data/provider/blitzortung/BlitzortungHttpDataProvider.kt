@@ -37,9 +37,7 @@ import java.util.zip.GZIPInputStream
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.max
-import org.blitzortung.android.preferences.OnSharedPreferenceChangeListener
-import org.blitzortung.android.preferences.PreferenceKey
-import org.blitzortung.android.preferences.get
+import org.blitzortung.android.data.ClusterParameters
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
@@ -49,7 +47,11 @@ import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
 import org.blitzortung.android.data.provider.data.initializeResult
+import org.blitzortung.android.data.provider.result.ClusterReceived
 import org.blitzortung.android.data.provider.result.DataReceived
+import org.blitzortung.android.preferences.OnSharedPreferenceChangeListener
+import org.blitzortung.android.preferences.PreferenceKey
+import org.blitzortung.android.preferences.get
 import org.blitzortung.android.util.NetworkTimeouts
 import org.blitzortung.android.util.LogUtil.LOG_TAG
 
@@ -234,6 +236,12 @@ class BlitzortungHttpDataProvider
                 flags: Flags,
             ): DataReceived {
                 return initializeResult(parameters, history, flags)
+            }
+
+            override fun getClusters(parameters: ClusterParameters): ClusterReceived {
+                // The HTTP data source does not serve clusters; callers must gate on
+                // DataProvider.supportsClusters. This is a defensive no-op.
+                return ClusterReceived(parameters = parameters)
             }
         }
 

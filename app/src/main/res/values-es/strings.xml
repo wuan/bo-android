@@ -159,25 +159,6 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
         <item>100000</item>
     </string-array>
 
-    <string name="count_threshold">Umbral de rayos contados</string>
-
-    <string-array name="count_thresholds">
-        <item>Deshabilitado</item>
-        <item>1</item>
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
-        <item>50</item>
-    </string-array>
-    <string-array name="count_threshold_values">
-        <item>0</item>
-        <item>1</item>
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
-        <item>50</item>
-    </string-array>
-
     <string name="data_source">Origen de datos</string>
 
     <string-array name="data_sources">
@@ -368,6 +349,12 @@ Traducción ruso por: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_size_summary">Define el tamaño del símbolo de ubicación propia</string>
     <string name="keep_zoom_goto_own_location_summary">Ajuste para mantener el zoom actual al centrar la ubicación propia</string>
     <string name="keep_zoom_goto_own_location_title">Mantener zoom</string>
+    <string name="data_view">Vista de datos</string>
+    <string name="show_clusters">Mostrar cúmulos de tormenta</string>
+    <string name="show_clusters_summary">Mostrar los contornos de los cúmulos que resumen la actividad tormentosa (requiere la fuente de datos RPC)</string>
+    <string name="hide_grid">Ocultar datos de rejilla</string>
+    <string name="hide_grid_summary">Ocultar la superposición de rayos/rejilla para mostrar solo los cúmulos (requiere cúmulos). Los datos de rayos se siguen obteniendo para las alertas y el histograma.</string>
+    <string name="cluster_interval">Intervalo de cúmulos</string>
     <string name="not_available">n/d</string>
     <string name="map_scale">Escala del mapa</string>
     <string name="map_scale_summary">Selecciona la escala [%] de las teselas del mapa</string>

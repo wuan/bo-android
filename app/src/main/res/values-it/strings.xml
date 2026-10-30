@@ -157,25 +157,6 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
         <item>100000</item>
     </string-array>
 
-    <string name="count_threshold">Soglia conteggio lampi</string>
-
-    <string-array name="count_thresholds">
-        <item>disabilitata</item>
-        <item>1</item>
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
-        <item>50</item>
-    </string-array>
-    <string-array name="count_threshold_values">
-        <item>0</item>
-        <item>1</item>
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
-        <item>50</item>
-    </string-array>
-
     <string name="data_source">Fonte dei dati</string>
 
     <string-array name="data_sources">
@@ -363,6 +344,12 @@ Traduzione russo di: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_size_summary">Imposta la dimensione del simbolo della posizione</string>
     <string name="keep_zoom_goto_own_location_summary">Impostazione per mantenere lo zoom attuale quando si centra la propria posizione</string>
     <string name="keep_zoom_goto_own_location_title">Mantieni zoom</string>
+    <string name="data_view">Vista dati</string>
+    <string name="show_clusters">Mostra cluster temporaleschi</string>
+    <string name="show_clusters_summary">Mostra i contorni dei cluster che riassumono l\'attività temporalesca (richiede l\'origine dati RPC)</string>
+    <string name="hide_grid">Nascondi dati griglia</string>
+    <string name="hide_grid_summary">Nascondi la sovrapposizione fulmini/griglia in modo da mostrare solo i cluster (richiede i cluster). I dati sui fulmini vengono comunque recuperati per gli avvisi e l\'istogramma.</string>
+    <string name="cluster_interval">Intervallo cluster</string>
     <string name="not_available">n/d</string>
     <string name="map_scale">Scala della mappa</string>
     <string name="map_scale_summary">Seleziona la scala [%] dei riquadri della mappa</string>

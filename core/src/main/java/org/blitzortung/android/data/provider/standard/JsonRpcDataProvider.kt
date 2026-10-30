@@ -29,21 +29,24 @@ import java.util.Locale
 import java.util.TimeZone
 import javax.inject.Inject
 import javax.inject.Singleton
-import org.blitzortung.android.preferences.OnSharedPreferenceChangeListener
-import org.blitzortung.android.preferences.PreferenceKey
-import org.blitzortung.android.preferences.get
+import org.blitzortung.android.data.ClusterParameters
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.History
 import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.beans.Cluster
 import org.blitzortung.android.data.beans.Strike
 import org.blitzortung.android.data.provider.DataProviderException
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.data.DataProvider.DataRetriever
 import org.blitzortung.android.data.provider.data.initializeResult
+import org.blitzortung.android.data.provider.result.ClusterReceived
 import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.jsonrpc.JsonRpcClient
 import org.blitzortung.android.jsonrpc.JsonRpcResponse
+import org.blitzortung.android.preferences.OnSharedPreferenceChangeListener
+import org.blitzortung.android.preferences.PreferenceKey
+import org.blitzortung.android.preferences.get
 import org.blitzortung.android.util.TimeFormat
 import org.json.JSONArray
 import org.json.JSONException
@@ -70,6 +73,8 @@ class JsonRpcDataProvider
 
         override val type: DataProviderType = DataProviderType.RPC
 
+        override val supportsClusters: Boolean = true
+
         override fun reset() {
             nextId = 0
         }
@@ -82,12 +87,12 @@ class JsonRpcDataProvider
             val isIncremental = nextId != 0
             val strikes = ArrayList<Strike>()
             val referenceTimestamp = getReferenceTimestamp(response.data)
-            val strikesArray = response.data.get("s") as JSONArray
+            val strikesArray = response.data.getJSONArray("s")
             for (i in 0 until strikesArray.length()) {
                 strikes.add(dataBuilder.createDefaultStrike(referenceTimestamp, strikesArray.getJSONArray(i)))
             }
             if (response.data.has("next")) {
-                nextId = response.data.get("next") as Int
+                nextId = response.data.getInt("next")
             }
             return result.copy(strikes = strikes, updated = if (isIncremental) strikes.size else -1)
         }
@@ -100,7 +105,7 @@ class JsonRpcDataProvider
             val gridParameters = dataBuilder.createGridParameters(response.data, size)
             val referenceTimestamp = getReferenceTimestamp(response.data)
 
-            val strikesArray = response.data.get("r") as JSONArray
+            val strikesArray = response.data.getJSONArray("r")
             val strikes = ArrayList<Strike>()
             for (i in 0 until strikesArray.length()) {
                 strikes.add(
@@ -113,6 +118,26 @@ class JsonRpcDataProvider
             }
 
             return result.copy(strikes = strikes, gridParameters = gridParameters, referenceTime = referenceTimestamp)
+        }
+
+        private fun addClusterData(
+            response: JsonRpcResponse,
+            result: ClusterReceived,
+        ): ClusterReceived {
+            val referenceTimestamp = getReferenceTimestamp(response.data)
+            val intervalSeconds = response.data.optInt("dt", 0)
+            val clustersArray = response.data.optJSONArray("clusters") ?: JSONArray()
+
+            val clusters = ArrayList<Cluster>()
+            for (i in 0 until clustersArray.length()) {
+                clusters.add(dataBuilder.createCluster(clustersArray.getJSONObject(i)))
+            }
+
+            return result.copy(
+                clusters = clusters,
+                intervalDuration = intervalSeconds / 60,
+                referenceTime = referenceTimestamp,
+            )
         }
 
         @Throws(JSONException::class)
@@ -172,6 +197,27 @@ class JsonRpcDataProvider
                     ),
                 )
                 return result
+            }
+
+            override fun getClusters(parameters: ClusterParameters): ClusterReceived {
+                val result = ClusterReceived(parameters = parameters)
+
+                return try {
+                    val response = JsonRpcData(client, serviceUrl).requestClusters(parameters)
+
+                    Log.v(
+                        LOG_TAG,
+                        "JsonRpcDataProvider: read %d bytes (%d clusters, %s)".format(
+                            client.lastNumberOfTransferredBytes,
+                            response.data.optJSONArray("clusters")?.length() ?: 0,
+                            if (parameters.global) "global" else "local",
+                        ),
+                    )
+
+                    addClusterData(response, result)
+                } catch (e: Exception) {
+                    throw RuntimeException(e)
+                }
             }
 
             override fun getStrikes(

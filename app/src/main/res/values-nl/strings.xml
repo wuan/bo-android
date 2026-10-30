@@ -153,25 +153,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
         <item>100000</item>
     </string-array>
 
-    <string name="count_threshold">Drempel bliksem</string>
-
-    <string-array name="count_thresholds">
-        <item>uitgeschakeld</item>
-        <item>1</item>
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
-        <item>50</item>
-    </string-array>
-    <string-array name="count_threshold_values">
-        <item>0</item>
-        <item>1</item>
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
-        <item>50</item>
-    </string-array>
-
     <string name="data_source">Informatiebron</string>
 
     <string-array name="data_sources">
@@ -298,6 +279,12 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_size_summary">Stel de grootte van het locatiesymbool in</string>
     <string name="keep_zoom_goto_own_location_summary">Instelling huidige zoom niveau behouden wanneer je centreerd naar je eigen locatie</string>
     <string name="keep_zoom_goto_own_location_title">Zoom behouden</string>
+    <string name="data_view">Gegevensweergave</string>
+    <string name="show_clusters">Stormclusters tonen</string>
+    <string name="show_clusters_summary">Clustercontouren tonen die de stormactiviteit samenvatten (vereist de RPC-databron)</string>
+    <string name="hide_grid">Rastergegevens verbergen</string>
+    <string name="hide_grid_summary">De bliksem-/rasterlaag verbergen zodat alleen clusters worden getoond (vereist clusters). Bliksemgegevens worden nog steeds opgehaald voor waarschuwingen en het histogram.</string>
+    <string name="cluster_interval">Clusterinterval</string>
     <string name="not_available">n/b</string>
     <string name="map_scale">Schaal kaart</string>
     <string name="map_scale_summary">Selecteer schaling [%] voor kaart</string>

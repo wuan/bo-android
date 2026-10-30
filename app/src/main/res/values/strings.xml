@@ -164,25 +164,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
         <item>100000</item>
     </string-array>
 
-    <string name="count_threshold">Strike count threshold</string>
-
-    <string-array name="count_thresholds">
-        <item>disabled</item>
-        <item>1</item>
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
-        <item>50</item>
-    </string-array>
-    <string-array name="count_threshold_values">
-        <item>0</item>
-        <item>1</item>
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
-        <item>50</item>
-    </string-array>
-
     <string name="data_source">Data source</string>
     <string name="data_source_summary" translatable="false">%s</string>
 
@@ -320,6 +301,21 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_size_summary">Set the size of the own location symbol</string>
     <string name="keep_zoom_goto_own_location_summary">Setting to keep the current zoom when centering the own location</string>
     <string name="keep_zoom_goto_own_location_title">Keep zoom</string>
+    <string name="data_view">Data view</string>
+    <string name="show_clusters">Show storm clusters</string>
+    <string name="show_clusters_summary">Show cluster outlines summarizing storm activity (requires the RPC data source)</string>
+    <string name="hide_grid">Hide grid data</string>
+    <string name="hide_grid_summary">Hide the lightning strike/grid overlay so only clusters are shown (requires clusters). Strike data is still fetched for alerts and the histogram.</string>
+    <string name="cluster_interval">Cluster interval</string>
+    <string name="cluster_interval_summary" translatable="false">%s</string>
+    <string-array name="cluster_intervals">
+        <item>Match time interval</item>
+        <item>Most recent only</item>
+    </string-array>
+    <string-array name="cluster_interval_values">
+        <item>match</item>
+        <item>latest</item>
+    </string-array>
     <string name="notification_channel_name" translatable="false">Storm Alarms</string>
     <string name="not_available">n/a</string>
     <string name="map_scale">Map scale</string>

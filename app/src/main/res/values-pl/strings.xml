@@ -159,25 +159,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
         <item>100000</item>
     </string-array>
 
-    <string name="count_threshold">Próg liczby wyładowań</string>
-
-    <string-array name="count_thresholds">
-        <item>Wyłączony</item>
-        <item>1 wyładowanie</item>
-        <item>5 wyładowań</item>
-        <item>10 wyładowań</item>
-        <item>25 wyładowań</item>
-        <item>50 wyładowań</item>
-    </string-array>
-    <string-array name="count_threshold_values">
-        <item>0</item>
-        <item>1</item>
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
-        <item>50</item>
-    </string-array>
-
     <string name="data_source">Źródło danych</string>
 
     <string-array name="data_sources">
@@ -307,6 +288,12 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_size_summary">Ustaw rozmiar symbolu własnej lokalizacji</string>
     <string name="keep_zoom_goto_own_location_summary">Ustawienie do utrzymania aktualnego powiększenia podczas centrowania własnej lokalizacji</string>
     <string name="keep_zoom_goto_own_location_title">Utrzymuj powiększenie</string>
+    <string name="data_view">Widok danych</string>
+    <string name="show_clusters">Pokaż komórki burzowe</string>
+    <string name="show_clusters_summary">Pokaż kontury komórek podsumowujące aktywność burzową (wymaga źródła danych RPC)</string>
+    <string name="hide_grid">Ukryj dane siatki</string>
+    <string name="hide_grid_summary">Ukryj nakładkę wyładowań/siatki, aby wyświetlać tylko komórki (wymaga komórek). Dane o wyładowaniach są nadal pobierane na potrzeby alertów i histogramu.</string>
+    <string name="cluster_interval">Interwał komórek</string>
     <string name="not_available">Niedostępne</string>
     <string name="map_scale">Skala mapy</string>
     <string name="map_scale_summary">Wybierz skalowanie [%] kafelków mapy</string>

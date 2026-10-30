@@ -17,11 +17,13 @@ import org.blitzortung.android.alert.Warning
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Mode
 import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.provider.result.ClusterEvent
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.data.provider.result.NoData
 import org.blitzortung.android.data.provider.result.RequestStarted
 import org.blitzortung.android.data.provider.result.StatusUpdate
+import org.blitzortung.android.data.repository.ClusterRepository
 import org.blitzortung.android.data.repository.StrikeDataRepository
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.location.LocationRepository
@@ -38,6 +40,9 @@ class MainViewModelTest {
     private lateinit var strikeDataRepository: StrikeDataRepository
 
     @MockK
+    private lateinit var clusterRepository: ClusterRepository
+
+    @MockK
     private lateinit var locationRepository: LocationRepository
 
     @MockK
@@ -52,10 +57,11 @@ class MainViewModelTest {
         MockKAnnotations.init(this, relaxed = true)
 
         every { strikeDataRepository.observeDataEvents() } returns dataEvents
+        every { clusterRepository.observeClusterEvents() } returns MutableSharedFlow<ClusterEvent>()
         every { locationRepository.observeLocationEvents() } returns MutableSharedFlow<LocationEvent>()
         every { alertRepository.observeAlertEvents() } returns MutableSharedFlow<Warning>()
 
-        uut = MainViewModel(strikeDataRepository, locationRepository, alertRepository)
+        uut = MainViewModel(strikeDataRepository, clusterRepository, locationRepository, alertRepository)
     }
 
     private fun TestScope.collectDataEvents() {

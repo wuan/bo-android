@@ -74,9 +74,13 @@ import org.blitzortung.android.data.AUTO_GRID_SIZE_VALUE
 import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.Mode
 import org.blitzortung.android.data.SequenceValidator
+import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.LOCAL_REGION
+import org.blitzortung.android.data.provider.result.ClusterEvent
+import org.blitzortung.android.data.provider.result.ClusterReceived
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.DataReceived
+import org.blitzortung.android.data.provider.result.NoClusterData
 import org.blitzortung.android.data.provider.result.NoData
 import org.blitzortung.android.data.provider.result.StatusUpdate
 import org.blitzortung.android.dialogs.QuickSettingsDialog
@@ -84,6 +88,7 @@ import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.OwnMapView
+import org.blitzortung.android.map.overlay.ClusterOverlay
 import org.blitzortung.android.map.overlay.FadeOverlay
 import org.blitzortung.android.map.overlay.OwnLocationOverlay
 import org.blitzortung.android.map.overlay.StrikeListOverlay
@@ -108,6 +113,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     internal lateinit var strikeColorHandler: StrikeColorHandler
 
     private lateinit var strikeListOverlay: StrikeListOverlay
+    private lateinit var clusterOverlay: ClusterOverlay
     private lateinit var ownLocationOverlay: OwnLocationOverlay
     private lateinit var fadeOverlay: FadeOverlay
 
@@ -201,6 +207,15 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         }
 
         binding.legendView.invalidate()
+    }
+
+    private fun handleClusterReceived(event: ClusterReceived) {
+        if (event.failed) {
+            return
+        }
+
+        clusterOverlay.setClusters(event.clusters, event.parameters, event.referenceTime, event.intervalDuration)
+        mapFragment.mapView.invalidate()
     }
 
     private lateinit var mapFragment: MapFragment
@@ -420,13 +435,16 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         mapFragment = supportFragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG) as MapFragment
 
         strikeListOverlay = StrikeListOverlay(mapFragment.mapView, strikeColorHandler, ::showStrikePopup)
-        strikeListOverlay.isEnabled = true
+        strikeListOverlay.isEnabled = isGridVisible()
         setHistoricStatusString()
         mapFragment.mapView.addMapListener(strikeListOverlay)
         mapFragment.mapView.addMapListener(dataHandler)
         mapFragment.mapView.addMapListener(binding.regionView)
 
         fadeOverlay = FadeOverlay(strikeColorHandler)
+
+        clusterOverlay = ClusterOverlay(strikeColorHandler)
+        clusterOverlay.isEnabled = preferences.get(PreferenceKey.SHOW_CLUSTERS, false)
 
         ownLocationOverlay = OwnLocationOverlay(this, mapFragment.mapView)
         ownLocationOverlay.isEnabled = true
@@ -442,11 +460,13 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             PreferenceKey.DO_NOT_SLEEP,
             PreferenceKey.BACKGROUND_QUERY_PERIOD,
             PreferenceKey.GRID_SIZE,
+            PreferenceKey.HIDE_GRID,
+            PreferenceKey.SHOW_CLUSTERS,
         )
 
         val overlays = mapFragment.mapView.overlays
 
-        overlays.addAll(listOf(fadeOverlay, strikeListOverlay, ownLocationOverlay))
+        overlays.addAll(listOf(fadeOverlay, clusterOverlay, strikeListOverlay, ownLocationOverlay))
 
         setupCustomViews()
     }
@@ -523,6 +543,11 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                     }
                 }
                 launch {
+                    viewModel.clusterEvents.collect { event ->
+                        dispatchClusterEvent(event)
+                    }
+                }
+                launch {
                     viewModel.locationEvents.collect { event ->
                         event?.let { dispatchLocationEvent(it) }
                     }
@@ -548,6 +573,17 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         historyController.dataConsumer(event)
         binding.histogramView.dataConsumer(event)
         binding.regionView.dataConsumer(event)
+    }
+
+    private fun dispatchClusterEvent(event: ClusterEvent?) {
+        when (event) {
+            is ClusterReceived -> handleClusterReceived(event)
+            NoClusterData -> {
+                clusterOverlay.clear()
+                mapFragment.mapView.invalidate()
+            }
+            null -> Unit
+        }
     }
 
     private fun dispatchLocationEvent(event: LocationEvent) {
@@ -589,7 +625,9 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         super.onStop()
         Log.v(LOG_TAG, "Main.onStop()")
 
-        mapFragment.mapView.overlays.removeAll(setOf(fadeOverlay, ownLocationOverlay, strikeListOverlay))
+        mapFragment.mapView.overlays.removeAll(
+            setOf(fadeOverlay, clusterOverlay, ownLocationOverlay, strikeListOverlay),
+        )
         mapFragment.mapView.removeMapListener(binding.regionView)
         mapFragment.mapView.removeMapListener(ownLocationOverlay)
         mapFragment.mapView.removeMapListener(strikeListOverlay)
@@ -612,6 +650,8 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         viewModel.clearDataCompleted()
 
         strikeListOverlay.clear()
+        clusterOverlay.clear()
+        mapFragment.mapView.invalidate()
     }
 
     override fun onRequestPermissionsResult(
@@ -686,8 +726,45 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 dataHandler.updateGrid(mapFragment.mapView, autoGridSize)
             }
 
+            PreferenceKey.HIDE_GRID,
+            PreferenceKey.DATA_SOURCE,
+            -> {
+                applyGridVisibility()
+            }
+
+            PreferenceKey.SHOW_CLUSTERS -> {
+                val showClusters = sharedPreferences.get(key, false)
+                clusterOverlay.isEnabled = showClusters
+                if (!showClusters) {
+                    clusterOverlay.clear()
+                }
+                applyGridVisibility()
+            }
+
             else -> {}
         }
+    }
+
+    /**
+     * The grid/strike overlay is shown unless clusters are shown (on a provider that
+     * supports them) and the user explicitly hid the grid. This keeps the map from
+     * ending up completely empty when neither overlay would be drawn.
+     */
+    private fun isGridVisible(): Boolean =
+        shouldShowGrid(
+            hideGrid = preferences.get(PreferenceKey.HIDE_GRID, false),
+            showClusters = preferences.get(PreferenceKey.SHOW_CLUSTERS, false),
+            clustersSupported = isClusterDataSource(),
+        )
+
+    private fun isClusterDataSource(): Boolean =
+        preferences
+            .get(PreferenceKey.DATA_SOURCE, DataProviderType.RPC.toString())
+            .equals(DataProviderType.RPC.toString(), ignoreCase = true)
+
+    private fun applyGridVisibility() {
+        strikeListOverlay.isEnabled = isGridVisible()
+        mapFragment.mapView.invalidate()
     }
 
     private fun setHistoricStatusString() {

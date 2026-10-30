@@ -57,6 +57,9 @@ enum class PreferenceKey(val key: String) {
     ANIMATION_INTERVAL_DURATION("animation_interval_duration"),
     ANIMATION_SLEEP_DURATION("animation_sleep_duration"),
     ANIMATION_CYCLE_SLEEP_DURATION("animation_cycle_sleep_duration"),
+    HIDE_GRID("hide_grid"),
+    SHOW_CLUSTERS("show_clusters"),
+    CLUSTER_INTERVAL("cluster_interval"),
     DIAGNOSIS_ENABLED("diagnosis_enabled"),
     ;
 

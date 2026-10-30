@@ -70,6 +70,31 @@
             android:selectable="true"
             android:summary="@string/keep_zoom_goto_own_location_summary"
             android:title="@string/keep_zoom_goto_own_location_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="show_clusters"
+            android:persistent="true"
+            android:selectable="true"
+            android:summary="@string/show_clusters_summary"
+            android:title="@string/show_clusters" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="show_clusters"
+            android:key="hide_grid"
+            android:persistent="true"
+            android:selectable="true"
+            android:summary="@string/hide_grid_summary"
+            android:title="@string/hide_grid" />
+        <ListPreference
+            android:defaultValue="match"
+            android:dependency="show_clusters"
+            android:entries="@array/cluster_intervals"
+            android:entryValues="@array/cluster_interval_values"
+            android:key="cluster_interval"
+            android:persistent="true"
+            android:selectable="true"
+            android:summary="@string/cluster_interval_summary"
+            android:title="@string/cluster_interval" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="animation_settings"

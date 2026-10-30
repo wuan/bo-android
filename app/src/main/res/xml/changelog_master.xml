@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
   <release
+    versionCode="363"
+    versionName="2.6">
+    <feature>Cluster data integration</feature>
+    <feature>Improved service timeouts</feature>
+  </release>
+  <release
     versionCode="349"
     versionName="2.5">
     <feature>Alert view widget</feature>

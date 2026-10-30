@@ -158,25 +158,6 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
         <item>100000</item>
     </string-array>
 
-    <string name="count_threshold">Prah počtu bleskov</string>
-
-    <string-array name="count_thresholds">
-        <item>Vypnuté</item>
-        <item>1</item>
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
-        <item>50</item>
-    </string-array>
-    <string-array name="count_threshold_values">
-        <item>0</item>
-        <item>1</item>
-        <item>5</item>
-        <item>10</item>
-        <item>25</item>
-        <item>50</item>
-    </string-array>
-
     <string name="data_source">Zdroj údajov</string>
 
     <string-array name="data_sources">
@@ -305,6 +286,12 @@ Ruský preklad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="own_location_size_summary">Nastavte veľkosť vlastného symbolu polohy</string>
     <string name="keep_zoom_goto_own_location_summary">Nastavenie pre udržanie aktuálneho priblíženia pri centrovaní na vlastnú polohu</string>
     <string name="keep_zoom_goto_own_location_title">Udržať priblíženie</string>
+    <string name="data_view">Zobrazenie údajov</string>
+    <string name="show_clusters">Zobraziť búrkové clustery</string>
+    <string name="show_clusters_summary">Zobraziť obrysy clusterov zhrňujúce búrkovú aktivitu (vyžaduje zdroj údajov RPC)</string>
+    <string name="hide_grid">Skryť mriežkové údaje</string>
+    <string name="hide_grid_summary">Skryť prekrytie bleskov/mriežky, aby sa zobrazili iba clustery (vyžaduje clustery). Údaje o bleskoch sa naďalej načítavajú pre upozornenia a histogram.</string>
+    <string name="cluster_interval">Interval clusterov</string>
     <string name="changelog">Change log</string>
     <string name="location_permission_required">Pri použití zdroja polohy zariadenia je potrebné povolenie na umiestnenie.</string>
     <string name="location_permission_background_required">Pri použití zdroja umiestnenia zariadenia je potrebné povolenie na umiestnenie na pozadí.</string>
