@@ -27,6 +27,7 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
+import org.blitzortung.android.data.DataArea
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.GridParameters
@@ -86,6 +87,15 @@ class RegionViewTest {
     @Test
     fun onDrawWithGridParametersDrawsRegion() {
         regionView.dataConsumer.invoke(receivedData(gridParameters))
+
+        regionView.draw(canvas)
+    }
+
+    @Test
+    fun onDrawWithDataAreaDrawsCoordinates() {
+        regionView.dataConsumer.invoke(
+            receivedData(gridParameters).copy(parameters = Parameters(dataArea = DataArea(3, 4, 5))),
+        )
 
         regionView.draw(canvas)
     }

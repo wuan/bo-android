@@ -10,6 +10,7 @@ import android.util.Log
 import androidx.preference.PreferenceManager
 import org.blitzortung.android.app.Main.Companion.LOG_TAG
 import org.blitzortung.android.app.R
+import org.blitzortung.android.data.DataArea
 import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.DataReceived
@@ -31,12 +32,14 @@ class RegionView
         private val backgroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
         private val foregroundPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
         private val textPaint: Paint
+        private val leftTextPaint: Paint
         private val defaultForegroundColor: Int
         private val backgroundRect: RectF
         private var mapArea: BoundingBox? = null
         private var zoomLevel: Double? = null
 
         private var gridParameters: GridParameters? = null
+        private var dataArea: DataArea? = null
 
         val dataConsumer = { event: DataEvent ->
             if (event is DataReceived) {
@@ -54,6 +57,11 @@ class RegionView
                     color = defaultForegroundColor
                     textSize = this@RegionView.textSize * SMALL_TEXT_SCALE
                     textAlign = Paint.Align.RIGHT
+                }
+
+            leftTextPaint =
+                Paint(textPaint).apply {
+                    textAlign = Paint.Align.LEFT
                 }
 
             foregroundPaint.strokeWidth = 5f
@@ -90,6 +98,7 @@ class RegionView
                 }
 
                 drawZoomLevel(canvas)
+                drawDataArea(canvas)
             }
         }
 
@@ -118,7 +127,7 @@ class RegionView
             val xdelta = gridParameters.longitudeEnd - gridParameters.longitudeStart
             val ydelta = gridParameters.latitudeStart - gridParameters.latitudeEnd
             val text2 =
-                "%.1f  %.1f".format(
+                "delta: %.1f  %.1f".format(
                     xdelta,
                     ydelta,
                 )
@@ -155,12 +164,24 @@ class RegionView
 
         private fun drawZoomLevel(canvas: Canvas) {
             zoomLevel?.let {
-                val text = "Zoom %.1f".format(it)
+                val text = "zoom %.1f".format(it)
                 canvas.drawText(
                     text,
                     width - 2 * padding,
                     height - 2 * padding,
                     textPaint,
+                )
+            }
+        }
+
+        private fun drawDataArea(canvas: Canvas) {
+            dataArea?.let {
+                val text = "x %d  y %d".format(it.x, it.y)
+                canvas.drawText(
+                    text,
+                    2 * padding,
+                    height - 2 * padding,
+                    leftTextPaint,
                 )
             }
         }
@@ -180,8 +201,10 @@ class RegionView
             if (dataEvent.failed) {
                 visibility = INVISIBLE
                 gridParameters = null
+                dataArea = null
             } else {
                 gridParameters = dataEvent.gridParameters
+                dataArea = dataEvent.parameters.dataArea
 
                 invalidate()
             }
