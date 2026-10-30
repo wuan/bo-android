@@ -311,6 +311,36 @@ class JsonRpcDataProviderTest {
     }
 
     @Test
+    fun getStrikesReadsNextIdFromResponse() {
+        val parameters =
+            Parameters(
+                region = LOCAL_REGION,
+                interval = TimeInterval(offset = -1, duration = 60),
+                countThreshold = 5,
+                gridSize = 5000,
+                dataArea = DataArea(5, 6, 5),
+            )
+
+        val response = JSONObject()
+        response.put("t", "20230326T18:49:34")
+        response.put("s", JSONArray())
+        response.put("next", 5)
+
+        every {
+            client.call(
+                URL(SERVICE_URL),
+                "get_strikes",
+                parameters.intervalDuration,
+                parameters.intervalOffset,
+            )
+        } returns JsonRpcResponse(response)
+
+        val result = uut.retrieveData { getStrikes(parameters, History(), Flags()) }
+
+        assertThat(result.strikes).isEmpty()
+    }
+
+    @Test
     fun getStrikesWrapsJSONException() {
         val parameters = Parameters(region = LOCAL_REGION, dataArea = DataArea(5, 6, 5), gridSize = 5000)
 
@@ -426,6 +456,25 @@ class JsonRpcDataProviderTest {
 
         assertThat(result.clusters).hasSize(2)
         assertThat(result.parameters).isEqualTo(parameters)
+    }
+
+    @Test
+    fun getClustersWrapsExceptions() {
+        val parameters = ClusterParameters(global = true, minuteLength = 10, intervalCount = 6)
+
+        every {
+            client.call(
+                URL(SERVICE_URL),
+                "get_global_clusters",
+                10,
+                0,
+                6,
+            )
+        } throws java.io.IOException("boom")
+
+        val failure = runCatching { uut.retrieveData { getClusters(parameters) } }
+
+        assertThat(failure.exceptionOrNull()).isInstanceOf(RuntimeException::class.java)
     }
 
     private fun createClusterResponse(): JSONObject {

@@ -264,4 +264,23 @@ class LocalDataTest {
         assertThat(uut.dataArea).isEqualTo(DataArea(2, 8, 5))
     }
 
+    @Test
+    fun clusterParametersUseGlobalEndpointWithoutADataArea() {
+        val result = uut.clusterParameters(intervalCount = 6)
+
+        assertThat(result.global).isTrue()
+        assertThat(result.dataArea).isNull()
+        assertThat(result.intervalCount).isEqualTo(6)
+    }
+
+    @Test
+    fun clusterParametersUseLocalEndpointWithADataArea() {
+        uut.update(BoundingBox(46.0, 11.0, 45.0, 10.0))
+
+        val result = uut.clusterParameters(intervalCount = 12)
+
+        assertThat(result.global).isFalse()
+        assertThat(result.dataArea).isEqualTo(DataArea(2, 9, 5))
+        assertThat(result.intervalCount).isEqualTo(12)
+    }
 }

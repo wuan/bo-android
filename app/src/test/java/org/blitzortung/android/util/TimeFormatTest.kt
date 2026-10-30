@@ -46,4 +46,32 @@ class TimeFormatTest {
             .isInstanceOf(IllegalArgumentException::class.java)
             .hasMessage("Unable to parse time string '20120901T20:10'")
     }
+
+    @Test
+    fun testParseClusterTimeTruncatesSubSecondPrecision() {
+        val result = TimeFormat.parseClusterTime("2026-10-01 20:50:00.000000000")
+
+        assertThat(result).isEqualTo(1790887800000L)
+    }
+
+    @Test
+    fun testParseClusterTimePadsShortFractionToMilliseconds() {
+        val result = TimeFormat.parseClusterTime("2026-10-01 20:50:00.5")
+
+        assertThat(result).isEqualTo(1790887800500L)
+    }
+
+    @Test
+    fun testParseClusterTimeWithoutFractionStillFails() {
+        assertThatThrownBy { TimeFormat.parseClusterTime("2026-10-01 20:50:00") }
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage("Unable to parse cluster time string '2026-10-01 20:50:00'")
+    }
+
+    @Test
+    fun testParseClusterTimeWithBadString() {
+        assertThatThrownBy { TimeFormat.parseClusterTime("not a timestamp") }
+            .isInstanceOf(IllegalArgumentException::class.java)
+            .hasMessage("Unable to parse cluster time string 'not a timestamp'")
+    }
 }

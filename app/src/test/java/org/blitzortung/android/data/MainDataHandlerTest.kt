@@ -19,6 +19,8 @@ import org.blitzortung.android.data.cache.DataCache
 import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
 import org.blitzortung.android.data.provider.LocalData
+import org.blitzortung.android.data.provider.result.ClusterEvent
+import org.blitzortung.android.data.provider.result.ClusterReceived
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.NoData
 import org.blitzortung.android.data.provider.result.StatusUpdate
@@ -53,6 +55,8 @@ class MainDataHandlerTest {
 
     private lateinit var receivedEvents: MutableList<DataEvent>
 
+    private lateinit var dataCache: DataCache
+
     private lateinit var uut: MainDataHandler
 
     @Before
@@ -63,11 +67,12 @@ class MainDataHandlerTest {
         val preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 
         this.preferences = preferences
+        dataCache = DataCache()
         uut = MainDataHandler(
             context,
             dataProviderFactory,
             preferences,
-            DataCache(),
+            dataCache,
             localData,
             MainDataScheduler(handler, period),
         )
@@ -222,6 +227,37 @@ class MainDataHandlerTest {
         uut.onSharedPreferenceChanged(preferences, PreferenceKey.CLUSTER_INTERVAL)
 
         assertThat(uut.clusterRequestParameters?.intervalCount).isEqualTo(3)
+    }
+
+    @Test
+    fun clusterConsumerRegistrationAndRemovalIsSupported() {
+        val consumer: (ClusterEvent) -> Unit = { }
+
+        uut.requestClusterUpdates(consumer)
+        uut.removeClusterUpdates(consumer)
+    }
+
+    @Test
+    fun clusterUpdatesServedFromCacheAreBroadcast() {
+        enableClusters()
+
+        val parameters = uut.clusterRequestParameters
+        assertThat(parameters).isNotNull
+        dataCache.putCluster(parameters!!, ClusterReceived(parameters = parameters, referenceTime = 42L))
+
+        val received = mutableListOf<ClusterEvent>()
+        uut.requestClusterUpdates { received.add(it) }
+
+        // Clearing the remembered request parameters (via the preference) re-issues the
+        // request, which is now answered straight from the cache.
+        preferences
+            .edit()
+            .putBoolean(PreferenceKey.SHOW_CLUSTERS.toString(), true)
+            .commit()
+        uut.onSharedPreferenceChanged(preferences, PreferenceKey.SHOW_CLUSTERS)
+
+        assertThat(received.filterIsInstance<ClusterReceived>().map { it.referenceTime })
+            .contains(42L)
     }
 
     private fun enableClusters() {
