@@ -20,6 +20,7 @@ package org.blitzortung.android.data
 
 import android.util.Log
 import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -31,6 +32,7 @@ import org.blitzortung.android.data.provider.result.ClusterReceived
 
 internal class FetchClusterDataTask(
     private val dataProvider: DataProvider,
+    private val backgroundDispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val resultConsumer: (ClusterReceived) -> Unit,
 ) : CoroutineScope {
     private var job: Job = Job()
@@ -48,7 +50,7 @@ internal class FetchClusterDataTask(
         }
 
     private suspend fun doInBackground(parameters: ClusterParameters): ClusterReceived? =
-        withContext(Dispatchers.IO) {
+        withContext(backgroundDispatcher) {
             try {
                 dataProvider.retrieveData { getClusters(parameters) }
             } catch (e: RuntimeException) {
