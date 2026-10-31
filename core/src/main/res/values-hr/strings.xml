@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unit_km">km</string>
+    <string name="unit_miles">mi.</string>
+    <string name="provider_warning">Molimo nemojte koristiti Blitzortung.org kao izvor podataka tijekom učestalih aktivnosti munja jer će doći do degradacije pri prikazu karte.</string>
+    <string name="activity">Aktivnost</string>
+    <string-array name="direction_names">
+        <item>J</item>
+        <item>JZ</item>
+        <item>Z</item>
+        <item>SZ</item>
+        <item>S</item>
+        <item>SI</item>
+        <item>I</item>
+        <item>JI</item>
+    </string-array>
+    <string name="location_provider_disabled">Pružatelj lokacije \'%s\' je isključen.</string>
+</resources>

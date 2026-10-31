@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unit_miles">mi.</string>
+    <string name="unit_km">km</string>
+    <string name="provider_warning">Gebruik Blitzortung.org niet als informatiebron bij hoge activiteit, dit beinvloed prestaties van kaartweergave negatief.</string>
+    <string name="activity">activiteit</string>
+    <string-array name="direction_names">
+        <item>Z</item>
+        <item>ZW</item>
+        <item>W</item>
+        <item>NW</item>
+        <item>N</item>
+        <item>NO</item>
+        <item>O</item>
+        <item>ZO</item>
+    </string-array>
+    <string name="location_provider_disabled">locatie provider \'%s\' is uitgeschakeld</string>
+</resources>

@@ -22,7 +22,6 @@ Igor Dobrača (idobraca@rovinj.net)\nNiederländisch: Jeroen Boersma
 (jeroenboersma@gmail.com)\nPolnisch: Jakub Świątkiewicz (kuba.dex@gmail.com), Agnieszka Cieślak (aga_04@o2.pl)\nRussisch:
 Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@gmail.com)\n
     </string>
-    <string name="activity">Aktivität</string>
     <string name="alarms">Warnungen</string>
     <string name="alarms_not_available">Warnung nicht aktiv\noder\nStandortinformationen nicht vorhanden</string>
     <string name="preferences">Einstellungen</string>
@@ -209,16 +208,6 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="notification_distance_limit">Radiuslimit Benachrichtigung</string>
     <string name="signaling_distance_limit">Radiuslimit Alarmsignal</string>
 
-    <string-array name="direction_names">
-        <item>S</item>
-        <item>SW</item>
-        <item>W</item>
-        <item>NW</item>
-        <item>N</item>
-        <item>NO</item>
-        <item>O</item>
-        <item>SO</item>
-    </string-array>
     <string-array name="distance_limits">
         <item>deaktiviert</item>
         <item>10 km/mi.</item>
@@ -276,12 +265,10 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="alarm_audio_signal">Tonsignal</string>
     <string name="alarm_vibration_signal">Vibration</string>
     <string name="alarm_vibration_signal_summary">Auswahl der Vibrationsdauer für den Alarm</string>
-    <string name="location_provider_disabled">Location-Provider \'%s\' ist deaktiviert</string>
     <string name="service_url">Benutzerdefinierte Service-URL</string>
     <string name="set_manual_location">Setze benutzerdefinierten Ort</string>
     <string name="share_log">E-Mail senden …</string>
     <string name="share_unavailable">E-Mail kann nicht versendet werden.</string>
-    <string name="provider_warning">Bitte nutzen sie die Blitzortung.org Datenquelle nicht bei hoher Blitzaktivität. Die Dastellung der Karte wird möglicherweise verzögert.</string>
     <string name="own_location_size">Größe des Standort-Symbols</string>
     <string name="own_location_size_summary">Einstellung der Größe des Standort-Symbols</string>
     <string name="keep_zoom_goto_own_location_title">Zoom beibehalten</string>
@@ -377,10 +364,8 @@ Ivan Karev (karev.ivan@gmail.com)\nTschechisch: Jakub Mareček (jakubmarecek715@
     <string name="toggle_extended_mode">Erweiterten Modus umschalten</string>
     <string name="alarm_diagram">Blitzwarnungsdiagramm</string>
     <string name="unit_minute">Min.</string>
-    <string name="unit_km">km</string>
     <string name="error_indicator">Fehleranzeige</string>
     <string name="not_available">n/v</string>
-    <string name="unit_miles">mi.</string>
     <string name="osmdroid_storage_warning">Kein beschreibbarer Speicher für die Karte gefunden. Bitte melden.</string>
     <string name="ms">ms</string>
 </resources>

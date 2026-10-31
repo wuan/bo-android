@@ -20,13 +20,13 @@ package org.blitzortung.android.util
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.withStyledAttributes
 import org.blitzortung.android.app.R
 import org.blitzortung.android.app.helper.ViewHelper.pxFromDp
 import org.blitzortung.android.app.helper.ViewHelper.pxFromSp
+import org.blitzortung.android.util.ScreenScaling
 
 // The tablet_scaleable styleable is intentionally shared with ScaledTextView, so it is not named
 // after a single view class.
@@ -57,27 +57,22 @@ open class TabletAwareView(
     constructor(context: Context) : this(context, null, 0)
 
     companion object {
-        fun isTablet(context: Context): Boolean =
-            if (isAtLeast(Build.VERSION_CODES.HONEYCOMB_MR2)) {
-                context.resources.configuration.smallestScreenWidthDp >= 600
-            } else {
-                false
-            }
+        fun isTablet(context: Context): Boolean = ScreenScaling.isTablet(context)
 
-        fun padding(context: Context): Float = padding(isTablet(context))
+        fun padding(context: Context): Float = ScreenScaling.padding(context)
 
-        fun padding(scaleForTablet: Boolean): Float = if (scaleForTablet) 8f else 5f
+        fun padding(scaleForTablet: Boolean): Float = ScreenScaling.padding(scaleForTablet)
 
-        fun textSize(context: Context): Float = textSize(isTablet(context))
+        fun textSize(context: Context): Float = ScreenScaling.textSize(context)
 
-        fun textSize(scaleForTablet: Boolean): Float = 14f * textSizeFactor(scaleForTablet)
+        fun textSize(scaleForTablet: Boolean): Float = ScreenScaling.textSize(scaleForTablet)
 
-        fun sizeFactor(context: Context): Float = sizeFactor(isTablet(context))
+        fun sizeFactor(context: Context): Float = ScreenScaling.sizeFactor(context)
 
-        fun sizeFactor(scaleForTablet: Boolean): Float = if (scaleForTablet) 1.8f else 1f
+        fun sizeFactor(scaleForTablet: Boolean): Float = ScreenScaling.sizeFactor(scaleForTablet)
 
-        fun textSizeFactor(context: Context): Float = textSizeFactor(isTablet(context))
+        fun textSizeFactor(context: Context): Float = ScreenScaling.textSizeFactor(context)
 
-        fun textSizeFactor(scaleForTablet: Boolean): Float = if (scaleForTablet) 1.4f else 1f
+        fun textSizeFactor(scaleForTablet: Boolean): Float = ScreenScaling.textSizeFactor(scaleForTablet)
     }
 }

@@ -32,8 +32,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="legend_grid">Siatka</string>
     <string name="unit_minute">min</string>
-    <string name="unit_km">km</string>
-    <string name="activity">Aktywność</string>
     <string name="alarms">Alarmy</string>
     <string name="alarms_not_available">Alarmy wyłączone\nlub\nbrak informacji o lokalizacji</string>
     <string name="preferences">Preferencje</string>
@@ -223,16 +221,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="notification_distance_limit">Limit odległości dla powiadomienia</string>
     <string name="signaling_distance_limit">Limit odległości dla sygnalizacji</string>
 
-    <string-array name="direction_names">
-        <item>S</item>
-        <item>SW</item>
-        <item>W</item>
-        <item>NW</item>
-        <item>N</item>
-        <item>NE</item>
-        <item>E</item>
-        <item>SE</item>
-    </string-array>
     <string-array name="distance_limits">
         <item>Wyłączony</item>
         <item>10 km/mi.</item>
@@ -290,14 +278,12 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_audio_signal">Sygnał dźwiękowy alarmu</string>
     <string name="alarm_vibration_signal">Czas trwania wibracji alarmu</string>
     <string name="alarm_vibration_signal_summary">Wybierz czas trwania wibracji dla alarmu (w milisekundach)</string>
-    <string name="location_provider_disabled">Dostawca lokalizacji „%s” jest wyłączony</string>
     <string name="service_url">Alternatywny adres URL usługi</string>
     <string name="set_manual_location">Ustaw ręcznie lokalizację</string>
     <string name="error_indicator">Wskaźnik błędu</string>
     <string name="app_log">Logi aplikacji</string>
     <string name="share_log">Wyślij e-mail …</string>
     <string name="share_unavailable">Udostępnianie e-maili jest niedostępne</string>
-    <string name="provider_warning">Nie używaj dostawcy danych Blitzortung.org podczas intensywnej aktywności wyładowań, ponieważ wydajność wyświetlania mapy ulegnie pogorszeniu</string>
     <string name="own_location_size">Rozmiar symbolu własnej lokalizacji</string>
     <string name="own_location_size_summary">Ustaw rozmiar symbolu własnej lokalizacji</string>
     <string name="keep_zoom_goto_own_location_summary">Ustawienie do utrzymania aktualnego powiększenia podczas centrowania własnej lokalizacji</string>
@@ -309,7 +295,6 @@ rosyjski: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="hide_grid_summary">Ukryj nakładkę wyładowań/siatki, aby wyświetlać tylko komórki (wymaga komórek). Dane o wyładowaniach są nadal pobierane na potrzeby alertów i histogramu.</string>
     <string name="cluster_interval">Interwał komórek</string>
     <string name="not_available">Niedostępne</string>
-    <string name="unit_miles">mi.</string>
     <string name="map_scale">Skala mapy</string>
     <string name="map_scale_summary">Wybierz skalowanie [%] kafelków mapy</string>
     <string name="location_permission_required">W przypadku korzystania ze źródła lokalizacji urządzenia wymagane jest uprawnienie do lokalizacji.</string>

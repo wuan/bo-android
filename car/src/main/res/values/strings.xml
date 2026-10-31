@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="car_app_name">Blitzortung</string>
+    <string name="car_status_loading">Loading lightning data</string>
+    <string name="car_alert_closest_strike">Closest strike</string>
+    <string name="car_alert_empty_state">Waiting for lightning data</string>
+    <string name="car_alert_no_location">Location unknown</string>
+    <string name="car_alert_outlying">No strikes in range</string>
+    <string name="car_alert_error">Lightning data unavailable</string>
+    <string name="car_alert_strike_count">%d strikes</string>
+</resources>

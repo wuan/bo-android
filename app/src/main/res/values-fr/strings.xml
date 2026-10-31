@@ -30,7 +30,6 @@ Polonais: Jakub Świątkiewicz (kuba.dex@gmail.com), Agnieszka Cieślak (aga_04@
 Tchèque: Jakub Mareček (jakubmarecek715@gmail.com)\n
 Russe: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
-    <string name="activity">Activité</string>
     <string name="alarms">Alarmes</string>
     <string name="alarms_not_available">Alarmes désactivées</string>
     <string name="preferences">Préférences</string>
@@ -218,16 +217,6 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="notification_distance_limit">Rayon de notification</string>
     <string name="signaling_distance_limit">Rayon de l\'alarme</string>
 
-    <string-array name="direction_names">
-        <item>S</item>
-        <item>SW</item>
-        <item>W</item>
-        <item>NW</item>
-        <item>N</item>
-        <item>NE</item>
-        <item>E</item>
-        <item>SE</item>
-    </string-array>
     <string-array name="distance_limits">
         <item>off</item>
         <item>10 km/mi.</item>
@@ -285,16 +274,13 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_audio_signal">Son de l\'alarme</string>
     <string name="alarm_vibration_signal">Durée du vibreur d\'alarme</string>
     <string name="alarm_vibration_signal_summary">Choisissez la durée du vibreur en cas d\'alarme</string>
-    <string name="location_provider_disabled">Le fournisseur de localisation \'%s\' est désactivé</string>
     <string name="service_url">Url alternative du service</string>
     <string name="set_manual_location">Définir manuellemnt l\'emplacement</string>
     <string name="error_indicator">Indicateur d\'erreur</string>
     <string name="app_log">Logs de l\'application</string>
     <string name="share_log">Envoyer par mail …</string>
     <string name="share_unavailable">L\'envoi par mail est désactivé</string>
-    <string name="unit_km">km</string>
     <string name="unit_minute">min</string>
-    <string name="unit_miles">mi</string>
     <string name="legend_grid">Grille</string>
     <string name="map_scale">Échelle de la carte</string>
     <string name="changelog">Change log</string>
@@ -358,7 +344,6 @@ Russe: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_diagram">Diagramme d\'alerte foudre</string>
     <string name="background_query_toast">Veuillez désactiver l\'optimisation de la batterie pour cette application afin que l\'alerte en arrière-plan fonctionne correctement.</string>
     <string name="open_battery_optimiziation">Veuillez désactiver l\'optimisation de la batterie pour cette application lorsque la requête en arrière-plan est activée. Appuyez sur ANNULER pour désactiver la requête en arrière-plan et sur OK pour accéder au réglage d\'optimisation de la batterie.</string>
-    <string name="provider_warning">N\'utilisez pas le fournisseur de données Blitzortung.org lors d\'une forte activité orageuse, les performances d\'affichage de la carte s\'en trouveraient dégradées.</string>
     <string name="own_location_size">Taille du symbole de position</string>
     <string name="own_location_size_summary">Définir la taille du symbole de position</string>
     <string name="keep_zoom_goto_own_location_summary">Réglage pour conserver le zoom actuel en centrant sur votre position</string>

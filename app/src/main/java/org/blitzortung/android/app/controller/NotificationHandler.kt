@@ -31,6 +31,7 @@ import androidx.core.app.NotificationCompat
 import javax.inject.Inject
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.R
+import org.blitzortung.android.protocol.AlertNotifier
 import org.blitzortung.android.util.isAtLeast
 
 open class NotificationHandler
@@ -38,14 +39,14 @@ open class NotificationHandler
     constructor(
         private val context: Context,
         private val notificationManager: NotificationManager,
-    ) {
+    ) : AlertNotifier {
         init {
             if (isAtLeast(Build.VERSION_CODES.O)) {
                 createNotificationChannel()
             }
         }
 
-        fun sendNotification(notificationText: String) {
+        override fun sendNotification(notificationText: String) {
             val intent =
                 Intent(context, Main::class.java).apply {
                     action = Intent.ACTION_MAIN

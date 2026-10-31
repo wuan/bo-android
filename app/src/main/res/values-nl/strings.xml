@@ -26,7 +26,6 @@ Pools: Jakub Świątkiewicz (kuba.dex@gmail.com), Agnieszka Cieślak (aga_04@o2.
 Italiaans: Michele Locati (michele@locati.it)\n
 Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
-    <string name="activity">activiteit</string>
     <string name="alarms">Meldingen</string>
     <string name="alarms_not_available">Meldingen uitgeschakeld\nof\nlocatie informatie niet beschikbaar</string>
     <string name="preferences">Instellingen</string>
@@ -214,16 +213,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="notification_distance_limit">Notificatie afstandslimiet</string>
     <string name="signaling_distance_limit">Signalering afstandslimiet</string>
 
-    <string-array name="direction_names">
-        <item>Z</item>
-        <item>ZW</item>
-        <item>W</item>
-        <item>NW</item>
-        <item>N</item>
-        <item>NO</item>
-        <item>O</item>
-        <item>ZO</item>
-    </string-array>
     <string-array name="distance_limits">
         <item>uit</item>
         <item>10 km/mi.</item>
@@ -281,13 +270,11 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_audio_signal">Melding geluidsignaal</string>
     <string name="alarm_vibration_signal">Melding vibratieduur</string>
     <string name="alarm_vibration_signal_summary">kies vibratieduur voor een melding</string>
-    <string name="location_provider_disabled">locatie provider \'%s\' is uitgeschakeld</string>
     <string name="service_url">Service URL</string>
     <string name="set_manual_location">Manuele locatie instellen</string>
     <string name="error_indicator">Fout indicator</string>
     <string name="share_log">Stuur email …</string>
     <string name="share_unavailable">E-mail delen is niet beschikbaar.</string>
-    <string name="provider_warning">Gebruik Blitzortung.org niet als informatiebron bij hoge activiteit, dit beinvloed prestaties van kaartweergave negatief.</string>
     <string name="own_location_size">Locatie symbool grootte</string>
     <string name="own_location_size_summary">Stel de grootte van het locatiesymbool in</string>
     <string name="keep_zoom_goto_own_location_summary">Instelling huidige zoom niveau behouden wanneer je centreerd naar je eigen locatie</string>
@@ -299,7 +286,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="hide_grid_summary">De bliksem-/rasterlaag verbergen zodat alleen clusters worden getoond (vereist clusters). Bliksemgegevens worden nog steeds opgehaald voor waarschuwingen en het histogram.</string>
     <string name="cluster_interval">Clusterinterval</string>
     <string name="not_available">n/b</string>
-    <string name="unit_miles">mi.</string>
     <string name="map_scale">Schaal kaart</string>
     <string name="map_scale_summary">Selecteer schaling [%] voor kaart</string>
     <string name="location_permission_required">Locatie delen is nodig om je huidige locatie te bepalen.</string>
@@ -364,7 +350,6 @@ Russisch: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_diagram">Bliksemwaarschuwingsdiagram</string>
     <string name="legend_grid">Raster</string>
     <string name="unit_minute">min</string>
-    <string name="unit_km">km</string>
     <string name="app_log">Applicatielogboek</string>
     <string name="osmdroid_storage_warning">Geen beschrijfbare opslag voor de kaart gevonden. Meld dit.</string>
     <string name="animation_sleep_duration">Pauze tussen stappen</string>
