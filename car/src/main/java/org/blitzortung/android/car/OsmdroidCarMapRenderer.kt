@@ -63,7 +63,16 @@ class OsmdroidCarMapRenderer(
 
     internal val ownLocationOverlay: OwnLocationOverlay = OwnLocationOverlay(carContext, mapView)
 
+    /**
+     * Dimming scrim. Added as the first overlay so it covers the map tiles only,
+     * leaving the strike and grid overlays drawn after it undimmed.
+     */
+    internal val dimOverlay: MapDimOverlay = MapDimOverlay()
+
     init {
+        // Index 0 => drawn directly above the map tiles and below every data
+        // overlay (strikes, grid, own location), so only the background dims.
+        mapView.overlays.add(0, dimOverlay)
         mapView.overlays.add(strikeListOverlay)
         mapView.overlays.add(ownLocationOverlay)
         mapView.addMapListener(strikeListOverlay)
@@ -147,9 +156,8 @@ class OsmdroidCarMapRenderer(
         // Strike details are a phone-only affordance; the car map has no popup.
     }
 
-    override fun setDarkMode(darkMode: Boolean) {
-        val colorFilter = if (darkMode) TilesOverlay.INVERT_COLORS else null
-        mapView.overlayManager.tilesOverlay.setColorFilter(colorFilter)
+    override fun setDimmed(dimmed: Boolean) {
+        dimOverlay.alpha = if (dimmed) DIM_ALPHA else 0
         mapView.invalidate()
     }
 
@@ -222,6 +230,12 @@ class OsmdroidCarMapRenderer(
     internal companion object {
         private const val VIRTUAL_DISPLAY_NAME = "BlitzortungCarMap"
         private const val FLING_DIVISOR = 10f
+
+        /**
+         * Opacity of the dimming scrim over the map background. Strong enough to cut
+         * night glare while leaving the strike and grid layers readable.
+         */
+        private const val DIM_ALPHA = 128
 
         /**
          * Zoom the car map starts at when it first frames the driver's position.

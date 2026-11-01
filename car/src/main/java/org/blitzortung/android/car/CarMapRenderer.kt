@@ -54,7 +54,7 @@ interface CarMapRenderer {
         y: Float,
     )
 
-    fun setDarkMode(darkMode: Boolean)
+    fun setDimmed(dimmed: Boolean)
 
     fun zoomIn()
 

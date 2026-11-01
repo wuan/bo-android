@@ -18,6 +18,10 @@
 
 package org.blitzortung.android.car
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.location.Location
 import androidx.car.app.testing.TestCarContext
 import androidx.preference.PreferenceManager
@@ -30,6 +34,9 @@ import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Overlay
+import org.osmdroid.views.overlay.TilesOverlay
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
@@ -64,6 +71,71 @@ class OsmdroidCarMapRendererTest {
         val renderer = OsmdroidCarMapRenderer(carContext, colorHandler)
 
         assertThat(renderer.strikeListOverlay.colorHandler).isSameAs(colorHandler)
+    }
+
+    @Test
+    fun `the scrim is transparent when the map is not dimmed`() {
+        val renderer = createRenderer()
+
+        renderer.setDimmed(false)
+
+        assertThat(renderer.dimOverlay.alpha).isEqualTo(0)
+    }
+
+    @Test
+    fun `the scrim darkens the map when dimmed`() {
+        val renderer = createRenderer()
+
+        renderer.setDimmed(true)
+
+        assertThat(renderer.dimOverlay.alpha).isGreaterThan(0)
+    }
+
+    @Test
+    fun `the dim overlay is drawn beneath the strike overlay`() {
+        val renderer = createRenderer()
+
+        val overlays = renderer.mapView.overlays
+
+        assertThat(overlays.indexOf(renderer.dimOverlay)).isEqualTo(0)
+        assertThat(overlays.indexOf(renderer.dimOverlay)).isLessThan(overlays.indexOf(renderer.strikeListOverlay))
+    }
+
+    @Test
+    fun `overlays drawn after the dim overlay are not dimmed`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        val magenta = Paint().apply { color = Color.MAGENTA }
+        renderer.mapView.overlays.add(
+            object : Overlay() {
+                override fun draw(
+                    canvas: Canvas?,
+                    mapView: MapView?,
+                    shadow: Boolean,
+                ) {
+                    if (!shadow) {
+                        canvas?.drawRect(canvas.clipBounds, magenta)
+                    }
+                }
+            },
+        )
+        renderer.setDimmed(true)
+
+        val bitmap = Bitmap.createBitmap(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, Bitmap.Config.ARGB_8888)
+        renderer.mapView.overlayManager.onDraw(Canvas(bitmap), renderer.mapView)
+
+        assertThat(bitmap.getPixel(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2)).isEqualTo(Color.MAGENTA)
+    }
+
+    @Test
+    fun `dimming no longer inverts the map tiles`() {
+        val renderer = createRenderer()
+
+        renderer.setDimmed(true)
+
+        val colorFilterField = TilesOverlay::class.java.getDeclaredField("currentColorFilter")
+        colorFilterField.isAccessible = true
+        assertThat(colorFilterField.get(renderer.mapView.overlayManager.tilesOverlay)).isNull()
     }
 
     @Test

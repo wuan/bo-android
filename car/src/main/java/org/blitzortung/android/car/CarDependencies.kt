@@ -38,4 +38,6 @@ interface CarDependencies {
     val alertRepository: AlertRepository
 
     val strikeColorHandler: StrikeColorHandler
+
+    val carSettings: CarSettings
 }

@@ -46,6 +46,7 @@ class CarDependenciesProviderTest {
                 override val locationRepository = locationRepo
                 override val alertRepository = alertRepo
                 override val strikeColorHandler = colorHandler
+                override val carSettings = mockk<CarSettings>()
             }
 
         val resolved = CarDependenciesProvider.dependencies

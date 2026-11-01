@@ -21,17 +21,18 @@ package org.blitzortung.android.car
 import androidx.car.app.AppManager
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
+import androidx.car.app.ScreenManager
 import androidx.car.app.model.Action
 import androidx.car.app.model.ActionStrip
-import androidx.car.app.model.CarIcon
 import androidx.car.app.model.Header
 import androidx.car.app.model.ItemList
 import androidx.car.app.model.ListTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
 import androidx.car.app.navigation.model.MapWithContentTemplate
-import androidx.core.graphics.drawable.IconCompat
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.awaitCancellation
@@ -57,12 +58,32 @@ class BlitzortungMapScreen(
 
     internal var alertListState = CarAlertListState()
 
+    /** Registered observer so a dimming change made in settings redraws the map. */
+    private val onMapDimModeChanged: (MapDimMode) -> Unit = { invalidate() }
+
     init {
         val activeRenderer = renderer
         if (activeRenderer != null) {
             carContext.getCarService(AppManager::class.java).setSurfaceCallback(CarMapSurfaceCallback(activeRenderer))
             observeData(activeRenderer)
         }
+        observeSettings()
+    }
+
+    /**
+     * Watches the car-only preferences so a change made on the settings screen is
+     * reflected on the map when the map becomes visible again.
+     */
+    private fun observeSettings() {
+        val settings = dependencies?.carSettings ?: return
+        settings.observeMapDimMode(onMapDimModeChanged)
+        lifecycle.addObserver(
+            object : DefaultLifecycleObserver {
+                override fun onDestroy(owner: LifecycleOwner) {
+                    settings.removeMapDimModeObserver(onMapDimModeChanged)
+                }
+            },
+        )
     }
 
     private fun observeData(activeRenderer: CarMapRenderer) {
@@ -121,12 +142,18 @@ class BlitzortungMapScreen(
     }
 
     override fun onGetTemplate(): Template {
-        renderer?.setDarkMode(carContext.isDarkMode)
+        renderer?.setDimmed(isMapDimmed())
 
         return MapWithContentTemplate.Builder()
             .setContentTemplate(buildAlertListTemplate())
             .setActionStrip(buildMapActionStrip())
             .build()
+    }
+
+    /** Whether the map surface should be dimmed for the stored mode and car theme. */
+    internal fun isMapDimmed(): Boolean {
+        val mode = dependencies?.carSettings?.mapDimMode ?: MapDimMode.FOLLOW_CAR
+        return mode.isDimmed(carContext.isDarkMode)
     }
 
     private fun buildAlertListTemplate(): ListTemplate {
@@ -152,11 +179,20 @@ class BlitzortungMapScreen(
             .setHeader(
                 Header.Builder()
                     .setTitle(buildHeaderTitle())
+                    .addEndHeaderAction(settingsAction())
                     .build(),
             )
             .setSingleList(itemList)
             .build()
     }
+
+    private fun settingsAction(): Action =
+        Action.Builder()
+            .setIcon(carIcon(carContext, R.drawable.car_settings))
+            .setOnClickListener {
+                carContext.getCarService(ScreenManager::class.java).push(BlitzortungSettingsScreen(carContext))
+            }
+            .build()
 
     /**
      * The header line: the app name, followed by the compact refresh countdown when a
@@ -191,19 +227,16 @@ class BlitzortungMapScreen(
             .addAction(Action.PAN)
             .addAction(
                 Action.Builder()
-                    .setIcon(icon(R.drawable.car_zoom_out))
+                    .setIcon(carIcon(carContext, R.drawable.car_zoom_out))
                     .setOnClickListener { activeRenderer?.zoomOut() }
                     .build(),
             )
             .addAction(
                 Action.Builder()
-                    .setIcon(icon(R.drawable.car_zoom_in))
+                    .setIcon(carIcon(carContext, R.drawable.car_zoom_in))
                     .setOnClickListener { activeRenderer?.zoomIn() }
                     .build(),
             )
             .build()
     }
-
-    private fun icon(resourceId: Int): CarIcon =
-        CarIcon.Builder(IconCompat.createWithResource(carContext, resourceId)).build()
 }

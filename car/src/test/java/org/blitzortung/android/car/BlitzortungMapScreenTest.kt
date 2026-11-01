@@ -43,6 +43,8 @@ import org.robolectric.RuntimeEnvironment
 class BlitzortungMapScreenTest {
     private val alertRepository = mockk<AlertRepository>(relaxed = true)
 
+    private val carSettings by lazy { CarSettings(RuntimeEnvironment.getApplication()) }
+
     @After
     fun tearDown() {
         CarDependenciesProvider.dependencies = null
@@ -109,6 +111,75 @@ class BlitzortungMapScreenTest {
         assertThat(headerTitle(screen)).isEqualTo("Blitzortung Lightning")
     }
 
+    @Test
+    fun `the map header exposes a settings action`() {
+        val screen = createScreen()
+
+        val listTemplate = (screen.onGetTemplate() as MapWithContentTemplate).contentTemplate as ListTemplate
+
+        assertThat(listTemplate.header?.endHeaderActions).isNotEmpty()
+    }
+
+    @Test
+    fun `follow car dims the map when the car reports dark mode`() {
+        registerDependencies()
+        carSettings.mapDimMode = MapDimMode.FOLLOW_CAR
+        RuntimeEnvironment.setQualifiers("+night")
+
+        assertThat(createScreen().isMapDimmed()).isTrue()
+    }
+
+    @Test
+    fun `follow car keeps the map clear when the car reports light mode`() {
+        registerDependencies()
+        carSettings.mapDimMode = MapDimMode.FOLLOW_CAR
+        RuntimeEnvironment.setQualifiers("+notnight")
+
+        assertThat(createScreen().isMapDimmed()).isFalse()
+    }
+
+    @Test
+    fun `on dims the map regardless of the car theme`() {
+        registerDependencies()
+        carSettings.mapDimMode = MapDimMode.ON
+        RuntimeEnvironment.setQualifiers("+notnight")
+
+        assertThat(createScreen().isMapDimmed()).isTrue()
+    }
+
+    @Test
+    fun `off leaves the map clear regardless of the car theme`() {
+        registerDependencies()
+        carSettings.mapDimMode = MapDimMode.OFF
+        RuntimeEnvironment.setQualifiers("+night")
+
+        assertThat(createScreen().isMapDimmed()).isFalse()
+    }
+
+    @Test
+    fun `the dim state is applied to the renderer when the template is built`() {
+        registerDependencies()
+        carSettings.mapDimMode = MapDimMode.ON
+        val screen = createScreen()
+        val renderer = screen.renderer as OsmdroidCarMapRenderer
+
+        screen.onGetTemplate()
+
+        assertThat(renderer.dimOverlay.alpha).isGreaterThan(0)
+    }
+
+    @Test
+    fun `a dimming change is applied to the map on the next template`() {
+        registerDependencies()
+        val screen = createScreen()
+        val renderer = screen.renderer as OsmdroidCarMapRenderer
+
+        carSettings.mapDimMode = MapDimMode.ON
+        screen.onGetTemplate()
+
+        assertThat(renderer.dimOverlay.alpha).isGreaterThan(0)
+    }
+
     private fun headerTitle(screen: BlitzortungMapScreen): String? {
         val mapTemplate = screen.onGetTemplate() as MapWithContentTemplate
         val listTemplate = mapTemplate.contentTemplate as ListTemplate
@@ -122,6 +193,7 @@ class BlitzortungMapScreenTest {
                 override val locationRepository = mockk<LocationRepository>(relaxed = true)
                 override val alertRepository = this@BlitzortungMapScreenTest.alertRepository
                 override val strikeColorHandler = mockk<StrikeColorHandler>(relaxed = true)
+                override val carSettings = this@BlitzortungMapScreenTest.carSettings
             }
     }
 }

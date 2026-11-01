@@ -11,4 +11,10 @@
     <string name="car_alert_strike_count">%d strikes</string>
     <string name="car_status_next_refresh">%1$d / %2$ds</string>
     <string name="car_status_header">%1$s · %2$s</string>
+    <string name="car_settings_title">Settings</string>
+    <string name="car_settings_open">Settings</string>
+    <string name="car_settings_map_dimming">Map dimming</string>
+    <string name="car_dim_follow_car">Follow car</string>
+    <string name="car_dim_on">On</string>
+    <string name="car_dim_off">Off</string>
 </resources>

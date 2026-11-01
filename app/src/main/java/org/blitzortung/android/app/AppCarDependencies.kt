@@ -18,10 +18,12 @@
 
 package org.blitzortung.android.app
 
+import android.content.Context
 import javax.inject.Inject
 import javax.inject.Singleton
 import org.blitzortung.android.alert.AlertRepository
 import org.blitzortung.android.car.CarDependencies
+import org.blitzortung.android.car.CarSettings
 import org.blitzortung.android.data.repository.StrikeDataRepository
 import org.blitzortung.android.location.LocationRepository
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
@@ -39,4 +41,7 @@ class AppCarDependencies
         override val locationRepository: LocationRepository,
         override val alertRepository: AlertRepository,
         override val strikeColorHandler: StrikeColorHandler,
-    ) : CarDependencies
+        context: Context,
+    ) : CarDependencies {
+        override val carSettings: CarSettings = CarSettings(context)
+    }
