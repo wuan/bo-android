@@ -370,15 +370,14 @@ the strike colours to their age in minutes, so the driver can read the colours
 used for strikes. The legend SHALL show only the age colour scale — not the
 region, grid size, or strike count threshold — SHALL be drawn above the strike,
 grid, and dimming overlays, and SHALL NOT be interactive. The legend SHALL be
-shown without any user toggle. The legend SHALL be drawn against the left edge
-of the map surface with its bottom anchored to the map area the host reports as
-visible or stable — not the raw surface corner — so it stays clear of host UI
-such as the alert list and the car bar.
+shown without any user toggle. The legend SHALL be drawn in the top-left of the
+map surface, below the host's status card, so it stays clear of that card even as
+that card grows.
 
 #### Scenario: Legend shown with the map
 
 - **WHEN** the map surface is available
-- **THEN** the map surface SHALL show the age colour legend against the left edge of the map surface, below the alert list and above the car bar, simultaneously with the strikes and the alert list
+- **THEN** the map surface SHALL show the age colour legend in the top-left of the map surface, below the host's status card, simultaneously with the strikes and the alert list
 
 #### Scenario: Legend entries match the strike colours
 

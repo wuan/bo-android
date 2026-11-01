@@ -163,6 +163,7 @@ class BlitzortungMapScreen(
             } ?: ""
 
         val rows = CarAlertListPresenter.rows(alertListState, alertStrings(), unitName)
+        renderer?.setContentRowCount(rows.size)
 
         val itemList =
             ItemList.Builder().apply {

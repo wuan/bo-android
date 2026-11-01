@@ -36,10 +36,10 @@ internal data class LegendEntry(
 )
 
 /**
- * Persistent legend drawn against the left edge of the car map surface,
- * explaining the strike age colours. One row per colour band is drawn as a
- * swatch plus an age label, so the driver can read the colours used for the
- * strikes.
+ * Persistent legend drawn in the top-left of the car map surface, below the
+ * host's status card, explaining the strike age colours. One row per colour band
+ * is drawn as a swatch plus an age label, so the driver can read the colours used
+ * for the strikes.
  *
  * The legend reads the active colours from the strike overlay and the interval
  * from its parameters, so it follows the current colour scheme and animation
@@ -48,12 +48,12 @@ internal data class LegendEntry(
  * preference.
  *
  * The host draws its own UI (the alert list, the header, the car bar) over the
- * map surface. Rather than sit beside the alert list at the top of the map, the
- * legend hugs the left edge and its bottom is anchored to the map area the host
- * reports as stable (falling back to the visible area, then the surface bottom),
- * so it stays clear of the alert list however tall that list grows. Metrics are
- * scaled from the host surface dpi rather than the presentation's resource
- * density, which comes from the car context.
+ * map surface. It reports the top of the unobstructed map area (below the header)
+ * but not the height of the content card, so the legend hugs the left edge and is
+ * offset below the card by [contentRowCount], the number of rows the screen is
+ * currently showing in that card. Metrics are scaled from the host surface dpi
+ * rather than the presentation's resource density, which comes from the car
+ * context.
  */
 internal class CarLegendOverlay(
     context: Context,
@@ -64,8 +64,8 @@ internal class CarLegendOverlay(
     /** Surface density scale relative to the baseline dpi. */
     private var scale = 1f
 
-    /** Surface height in pixels, used as the bottom anchor before any area is reported. */
-    var surfaceHeight: Int = 0
+    /** Number of rows the host's content card currently shows; 0 when it is absent. */
+    var contentRowCount: Int = 0
 
     /** The map area the host designates as stable, or `null` while unknown. */
     private var stableArea: Rect? = null
@@ -96,9 +96,8 @@ internal class CarLegendOverlay(
         }
 
     /**
-     * Records the map area the host guarantees to be visible, so the legend's
-     * bottom stays clear of host chrome such as the car bar. An empty area is
-     * treated as unknown.
+     * Records the map area the host guarantees to be visible, so the legend
+     * starts below the header. An empty area is treated as unknown.
      */
     fun onVisibleAreaChanged(visibleArea: Rect) {
         this.visibleArea = visibleArea.takeUnless { it.isEmpty }
@@ -113,11 +112,14 @@ internal class CarLegendOverlay(
         this.stableArea = stableArea.takeUnless { it.isEmpty }
     }
 
-    /** The area the legend is anchored to, or `null` to fall back to the surface bottom. */
+    /** The area the legend starts below, or `null` to fall back to the surface top. */
     private val anchorArea: Rect?
         get() = stableArea ?: visibleArea
 
     private val panelInset: Float get() = PANEL_INSET_DP * scale
+
+    /** Height of one host status-card row, used to clear the card below its header. */
+    private val contentRowHeight: Float get() = CONTENT_ROW_HEIGHT_DP * scale
 
     private val innerPadding: Float get() = PADDING_DP * scale
 
@@ -155,7 +157,7 @@ internal class CarLegendOverlay(
         }
     }
 
-    /** The panel rectangle in surface pixels, against the left edge above the host's chrome. */
+    /** The panel rectangle in surface pixels, top-left below the host's status card. */
     internal fun panelBounds(): RectF = panelBounds(entries())
 
     private fun panelBounds(rows: List<LegendEntry>): RectF {
@@ -163,8 +165,8 @@ internal class CarLegendOverlay(
         val width = innerPadding + swatchSize + labelGap + textWidth + innerPadding
         val height = innerPadding + rows.size * rowHeight + innerPadding
         val left = panelInset
-        val bottom = (anchorArea?.bottom ?: surfaceHeight).toFloat() - panelInset
-        return RectF(left, bottom - height, left + width, bottom)
+        val top = (anchorArea?.top ?: 0) + contentRowCount * contentRowHeight + panelInset
+        return RectF(left, top, left + width, top + height)
     }
 
     override fun draw(
@@ -213,5 +215,12 @@ internal class CarLegendOverlay(
         const val GAP_DP = 8f
         const val CORNER_RADIUS_DP = 8f
         const val TEXT_SIZE_DP = 12f
+
+        /**
+         * Height of one host status-card row at the baseline dpi. The host does not
+         * report the card's height, so the legend is kept clear below it by this
+         * much for every row the screen is showing.
+         */
+        const val CONTENT_ROW_HEIGHT_DP = 96f
     }
 }

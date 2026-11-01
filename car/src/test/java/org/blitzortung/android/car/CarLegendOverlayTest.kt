@@ -76,63 +76,73 @@ class CarLegendOverlayTest {
     }
 
     @Test
-    fun `hugs the left edge above the surface bottom while no host area is known`() {
+    fun `hugs the left edge`() {
         val (legend, _) = createOverlay()
-        legend.surfaceHeight = SURFACE_HEIGHT
+        legend.onVisibleAreaChanged(Rect(300, 60, 1000, 900))
 
         val bounds = legend.panelBounds()
 
         assertThat(bounds.left).isLessThan(100f)
-        assertThat(bounds.bottom).isEqualTo(SURFACE_HEIGHT.toFloat() - PANEL_INSET)
     }
 
     @Test
-    fun `anchors its bottom to the host's stable area`() {
+    fun `starts below the header when the status card has no rows`() {
         val (legend, _) = createOverlay()
-
-        legend.onStableAreaChanged(Rect(300, 60, 1000, 400))
+        legend.onVisibleAreaChanged(Rect(300, 60, 1000, 900))
 
         val bounds = legend.panelBounds()
-        assertThat(bounds.left).isLessThan(100f)
-        assertThat(bounds.bottom).isEqualTo(400f - PANEL_INSET)
+
+        assertThat(bounds.top).isEqualTo(60f + PANEL_INSET)
     }
 
     @Test
-    fun `falls back to the visible area while no stable area is known`() {
+    fun `drops below the status card by one row per content row`() {
         val (legend, _) = createOverlay()
-
-        legend.onVisibleAreaChanged(Rect(280, 40, 1000, 420))
+        legend.onVisibleAreaChanged(Rect(300, 60, 1000, 900))
+        legend.contentRowCount = 3
 
         val bounds = legend.panelBounds()
-        assertThat(bounds.bottom).isEqualTo(420f - PANEL_INSET)
+
+        assertThat(bounds.top).isEqualTo(60f + 3 * CONTENT_ROW_HEIGHT + PANEL_INSET)
     }
 
     @Test
     fun `prefers the stable area over the visible area`() {
         val (legend, _) = createOverlay()
 
-        legend.onVisibleAreaChanged(Rect(280, 40, 1000, 440))
-        legend.onStableAreaChanged(Rect(300, 60, 1000, 400))
+        legend.onVisibleAreaChanged(Rect(280, 40, 1000, 900))
+        legend.onStableAreaChanged(Rect(300, 90, 1000, 900))
 
         val bounds = legend.panelBounds()
-        assertThat(bounds.bottom).isEqualTo(400f - PANEL_INSET)
+        assertThat(bounds.top).isEqualTo(90f + PANEL_INSET)
+    }
+
+    @Test
+    fun `falls back to the visible area while no stable area is known`() {
+        val (legend, _) = createOverlay()
+
+        legend.onVisibleAreaChanged(Rect(280, 40, 1000, 900))
+
+        val bounds = legend.panelBounds()
+        assertThat(bounds.top).isEqualTo(40f + PANEL_INSET)
     }
 
     @Test
     fun `ignores an empty host area`() {
         val (legend, _) = createOverlay()
-        legend.surfaceHeight = SURFACE_HEIGHT
+        legend.contentRowCount = 2
 
         legend.onStableAreaChanged(Rect(0, 0, 0, 0))
 
         val bounds = legend.panelBounds()
-        assertThat(bounds.bottom).isEqualTo(SURFACE_HEIGHT.toFloat() - PANEL_INSET)
+        assertThat(bounds.top).isEqualTo(2 * CONTENT_ROW_HEIGHT + PANEL_INSET)
     }
 
     private companion object {
-        const val SURFACE_HEIGHT = 1000
-
         /** `CarLegendOverlay.PANEL_INSET_DP` at the default 160 dpi (scale 1). */
         const val PANEL_INSET = 12f
+
+        /** `CarLegendOverlay.CONTENT_ROW_HEIGHT_DP` at the default 160 dpi (scale 1). */
+        const val CONTENT_ROW_HEIGHT = 96f
     }
 }

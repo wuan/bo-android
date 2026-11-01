@@ -158,14 +158,25 @@ class OsmdroidCarMapRendererTest {
     }
 
     @Test
-    fun `the legend hugs the left edge above the host's chrome`() {
+    fun `the legend hugs the left edge below the host's status card`() {
         val renderer = createRenderer()
 
         renderer.onVisibleAreaChanged(Rect(320, 80, VIEWPORT_WIDTH, VIEWPORT_HEIGHT - 40))
 
         val bounds = renderer.legendOverlay.panelBounds()
         assertThat(bounds.left).isLessThan(100f)
-        assertThat(bounds.bottom).isLessThanOrEqualTo((VIEWPORT_HEIGHT - 40).toFloat())
+        assertThat(bounds.top).isGreaterThanOrEqualTo(80f)
+    }
+
+    @Test
+    fun `the legend drops below the host's status card by the reported row count`() {
+        val renderer = createRenderer()
+        renderer.onVisibleAreaChanged(Rect(320, 80, VIEWPORT_WIDTH, VIEWPORT_HEIGHT))
+        val withoutRows = renderer.legendOverlay.panelBounds().top
+
+        renderer.setContentRowCount(3)
+
+        assertThat(renderer.legendOverlay.panelBounds().top).isGreaterThan(withoutRows)
     }
 
     @Test

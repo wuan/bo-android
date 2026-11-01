@@ -108,7 +108,6 @@ class OsmdroidCarMapRenderer(
 
     override fun onSurfaceAvailable(surfaceContainer: SurfaceContainer) {
         legendOverlay.densityDpi = surfaceContainer.dpi
-        legendOverlay.surfaceHeight = surfaceContainer.height
         applyInitialCamera(surfaceContainer.width, surfaceContainer.height)
 
         val display =
@@ -185,6 +184,14 @@ class OsmdroidCarMapRenderer(
         y: Float,
     ) {
         // Strike details are a phone-only affordance; the car map has no popup.
+    }
+
+    override fun setContentRowCount(rowCount: Int) {
+        if (legendOverlay.contentRowCount == rowCount) {
+            return
+        }
+        legendOverlay.contentRowCount = rowCount
+        mapView.invalidate()
     }
 
     override fun setDimmed(dimmed: Boolean) {

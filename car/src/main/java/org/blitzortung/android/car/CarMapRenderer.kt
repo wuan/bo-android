@@ -69,6 +69,13 @@ interface CarMapRenderer {
         y: Float,
     )
 
+    /**
+     * The number of rows the host's content card currently shows. The card is
+     * drawn by the host over the top-left of the surface and its height is not
+     * reported, so surface-drawn UI below it is offset by this count.
+     */
+    fun setContentRowCount(rowCount: Int)
+
     fun setDimmed(dimmed: Boolean)
 
     fun zoomIn()
