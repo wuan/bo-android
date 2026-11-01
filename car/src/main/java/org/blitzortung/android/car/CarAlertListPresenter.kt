@@ -42,24 +42,42 @@ data class CarAlertStrings(
     val noActivityLabel: String,
     val errorLabel: String,
     val strikeCountFormat: String,
-    val nextRefreshFormat: String,
 )
+
+/** The reported time until the next data refresh: seconds remaining of a period. */
+data class CarRefreshCountdown(
+    val remainingSeconds: Int,
+    val periodSeconds: Int,
+) {
+    companion object {
+        /** Parses a `"<remaining>/<period>"` status, or returns null when malformed. */
+        fun parse(status: String): CarRefreshCountdown? {
+            val parts = status.split('/')
+            if (parts.size != 2) {
+                return null
+            }
+            val remaining = parts[0].toIntOrNull() ?: return null
+            val period = parts[1].toIntOrNull() ?: return null
+            return CarRefreshCountdown(remaining, period)
+        }
+    }
+}
 
 /**
  * The alert-list content state: the latest alert [Warning] together with whether
- * any strike data has arrived, whether the last fetch failed, and the seconds
- * remaining until the next data refresh (null when no refresh is scheduled).
+ * any strike data has arrived, whether the last fetch failed, and the reported
+ * countdown to the next data refresh (null when no refresh status is known).
  */
 data class CarAlertListState(
     val warning: Warning = NoData,
     val hasData: Boolean = false,
     val hasError: Boolean = false,
-    val refreshSecondsRemaining: Int? = null,
+    val refreshCountdown: CarRefreshCountdown? = null,
 )
 
 /**
  * Applies a strike-data event to the alert-list state: a `DataReceived` updates the
- * loaded/error flags and a `StatusUpdate` carries the seconds until the next refresh.
+ * loaded/error flags and a `StatusUpdate` carries the countdown to the next refresh.
  * Other events leave the state unchanged.
  */
 internal fun CarAlertListState.reduce(event: DataEvent): CarAlertListState =
@@ -70,14 +88,13 @@ internal fun CarAlertListState.reduce(event: DataEvent): CarAlertListState =
             } else {
                 copy(hasError = false, hasData = true)
             }
-        is StatusUpdate -> copy(refreshSecondsRemaining = event.status.substringBefore('/').toIntOrNull())
+        is StatusUpdate -> copy(refreshCountdown = CarRefreshCountdown.parse(event.status))
         else -> this
     }
 
 /**
- * Maps alert state to the rows shown beside the car map: the time to the next
- * refresh, then the closest strike's distance and bearing, then a row per sector
- * that saw strikes.
+ * Maps alert state to the rows shown beside the car map: the closest strike's
+ * distance and bearing, then a row per sector that saw strikes.
  */
 object CarAlertListPresenter {
     fun rows(
@@ -86,10 +103,6 @@ object CarAlertListPresenter {
         unitName: String,
     ): List<CarAlertRow> {
         val rows = mutableListOf<CarAlertRow>()
-
-        state.refreshSecondsRemaining?.let { seconds ->
-            rows.add(CarAlertRow(strings.nextRefreshFormat.format(seconds), ""))
-        }
 
         when {
             state.hasError -> rows.add(CarAlertRow(strings.errorLabel, ""))

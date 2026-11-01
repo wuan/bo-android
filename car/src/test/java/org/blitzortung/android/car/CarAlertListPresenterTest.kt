@@ -36,7 +36,6 @@ class CarAlertListPresenterTest {
             noActivityLabel = "No current alert",
             errorLabel = "Lightning data unavailable",
             strikeCountFormat = "%d strikes",
-            nextRefreshFormat = "Next update in %d s",
         )
 
     @Test
@@ -93,21 +92,17 @@ class CarAlertListPresenterTest {
     }
 
     @Test
-    fun `shows the refresh countdown as the first row`() {
-        val state = CarAlertListState(hasData = true, refreshSecondsRemaining = 40)
+    fun `does not render a countdown row even when a countdown is present`() {
+        val state =
+            CarAlertListState(
+                warning = localActivity(),
+                hasData = true,
+                refreshCountdown = CarRefreshCountdown(40, 60),
+            )
 
         val rows = CarAlertListPresenter.rows(state, strings, "km")
 
-        assertThat(rows.first()).isEqualTo(CarAlertRow("Next update in 40 s", ""))
-    }
-
-    @Test
-    fun `omits the refresh countdown when none has been reported`() {
-        val state = CarAlertListState(warning = localActivity(), hasData = true)
-
-        val rows = CarAlertListPresenter.rows(state, strings, "km")
-
-        assertThat(rows).doesNotContain(CarAlertRow("Next update in 40 s", ""))
+        assertThat(rows.first().title).isEqualTo("Closest strike")
     }
 
     private fun localActivity(): LocalActivity {

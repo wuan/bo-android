@@ -46,22 +46,23 @@ class CarAlertListReducerTest {
     }
 
     @Test
-    fun `a status update carries the seconds to the next refresh`() {
+    fun `a status update carries the remaining seconds and period`() {
         val state = CarAlertListState().reduce(StatusUpdate("40/60"))
 
-        assertThat(state.refreshSecondsRemaining).isEqualTo(40)
+        assertThat(state.refreshCountdown?.remainingSeconds).isEqualTo(40)
+        assertThat(state.refreshCountdown?.periodSeconds).isEqualTo(60)
     }
 
     @Test
     fun `a malformed status update clears the countdown`() {
-        val state = CarAlertListState(refreshSecondsRemaining = 40).reduce(StatusUpdate("n/a"))
+        val state = CarAlertListState(refreshCountdown = CarRefreshCountdown(40, 60)).reduce(StatusUpdate("n/a"))
 
-        assertThat(state.refreshSecondsRemaining).isNull()
+        assertThat(state.refreshCountdown).isNull()
     }
 
     @Test
     fun `other events leave the state unchanged`() {
-        val initial = CarAlertListState(hasData = true, refreshSecondsRemaining = 12)
+        val initial = CarAlertListState(hasData = true, refreshCountdown = CarRefreshCountdown(12, 60))
 
         assertThat(initial.reduce(RequestStarted())).isEqualTo(initial)
     }

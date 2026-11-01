@@ -19,6 +19,7 @@
 package org.blitzortung.android.car
 
 import androidx.car.app.model.Action
+import androidx.car.app.model.ListTemplate
 import androidx.car.app.navigation.model.MapWithContentTemplate
 import androidx.car.app.testing.TestCarContext
 import io.mockk.mockk
@@ -89,7 +90,29 @@ class BlitzortungMapScreenTest {
 
         screen.handleDataEvent(StatusUpdate("40/60"), activeRenderer = null)
 
-        assertThat(screen.alertListState.refreshSecondsRemaining).isEqualTo(40)
+        assertThat(screen.alertListState.refreshCountdown).isEqualTo(CarRefreshCountdown(40, 60))
+    }
+
+    @Test
+    fun `header shows the app name and the compact countdown when a status is reported`() {
+        val screen = createScreen()
+
+        screen.handleDataEvent(StatusUpdate("40/60"), activeRenderer = null)
+
+        assertThat(headerTitle(screen)).isEqualTo("Blitzortung Lightning · 40 / 60s")
+    }
+
+    @Test
+    fun `header shows only the app name before a status is reported`() {
+        val screen = createScreen()
+
+        assertThat(headerTitle(screen)).isEqualTo("Blitzortung Lightning")
+    }
+
+    private fun headerTitle(screen: BlitzortungMapScreen): String? {
+        val mapTemplate = screen.onGetTemplate() as MapWithContentTemplate
+        val listTemplate = mapTemplate.contentTemplate as ListTemplate
+        return listTemplate.header?.title?.toCharSequence()?.toString()
     }
 
     private fun registerDependencies() {

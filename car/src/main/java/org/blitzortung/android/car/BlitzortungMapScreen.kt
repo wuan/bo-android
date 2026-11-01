@@ -151,11 +151,27 @@ class BlitzortungMapScreen(
         return ListTemplate.Builder()
             .setHeader(
                 Header.Builder()
-                    .setTitle(carContext.getString(R.string.car_app_name))
+                    .setTitle(buildHeaderTitle())
                     .build(),
             )
             .setSingleList(itemList)
             .build()
+    }
+
+    /**
+     * The header line: the app name, followed by the compact refresh countdown when a
+     * refresh status is known.
+     */
+    private fun buildHeaderTitle(): String {
+        val appName = carContext.getString(R.string.car_app_name)
+        val countdown = alertListState.refreshCountdown ?: return appName
+        val countdownText =
+            carContext.getString(
+                R.string.car_status_next_refresh,
+                countdown.remainingSeconds,
+                countdown.periodSeconds,
+            )
+        return carContext.getString(R.string.car_status_header, appName, countdownText)
     }
 
     private fun alertStrings(): CarAlertStrings =
@@ -167,7 +183,6 @@ class BlitzortungMapScreen(
             noActivityLabel = carContext.getString(R.string.car_alert_no_activity),
             errorLabel = carContext.getString(R.string.car_alert_error),
             strikeCountFormat = carContext.getString(R.string.car_alert_strike_count),
-            nextRefreshFormat = carContext.getString(R.string.car_status_next_refresh),
         )
 
     private fun buildMapActionStrip(): ActionStrip {

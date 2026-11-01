@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="car_app_name">Blitzortung</string>
+    <string name="car_app_name">Blitzortung Lightning</string>
     <string name="car_status_loading">Loading lightning data</string>
     <string name="car_alert_closest_strike">Closest strike</string>
     <string name="car_alert_empty_state">Waiting for lightning data</string>
@@ -9,5 +9,6 @@
     <string name="car_alert_no_activity">No current alert</string>
     <string name="car_alert_error">Lightning data unavailable</string>
     <string name="car_alert_strike_count">%d strikes</string>
-    <string name="car_status_next_refresh">Next update in %d s</string>
+    <string name="car_status_next_refresh">%1$d / %2$ds</string>
+    <string name="car_status_header">%1$s · %2$s</string>
 </resources>
