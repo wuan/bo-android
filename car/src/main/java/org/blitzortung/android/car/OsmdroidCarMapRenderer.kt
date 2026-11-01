@@ -25,6 +25,7 @@ import android.hardware.display.VirtualDisplay
 import androidx.car.app.CarContext
 import androidx.car.app.SurfaceContainer
 import androidx.preference.PreferenceManager
+import kotlin.math.max
 import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.overlay.OwnLocationOverlay
@@ -32,6 +33,7 @@ import org.blitzortung.android.map.overlay.StrikeListOverlay
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.TilesOverlay
@@ -43,6 +45,7 @@ import org.osmdroid.views.overlay.TilesOverlay
 class OsmdroidCarMapRenderer(
     private val carContext: CarContext,
     strikeColorHandler: StrikeColorHandler,
+    private val carSettings: CarSettings,
 ) : CarMapRenderer {
     init {
         Configuration.getInstance().apply {
@@ -92,7 +95,12 @@ class OsmdroidCarMapRenderer(
     /** Whether the driver has panned or zoomed, which suppresses the initial framing. */
     private var userMovedMap = false
 
+    /** Whether a stored camera was restored, which suppresses the initial framing. */
+    private var cameraRestored = false
+
     override fun onSurfaceAvailable(surfaceContainer: SurfaceContainer) {
+        applyInitialCamera(surfaceContainer.width, surfaceContainer.height)
+
         val display =
             displayManager.createVirtualDisplay(
                 VIRTUAL_DISPLAY_NAME,
@@ -125,6 +133,7 @@ class OsmdroidCarMapRenderer(
     ) {
         userMovedMap = true
         mapView.controller.scrollBy(-distanceX.toInt(), -distanceY.toInt())
+        storeCamera()
     }
 
     override fun onFling(
@@ -134,6 +143,7 @@ class OsmdroidCarMapRenderer(
         userMovedMap = true
         // osmdroid has no public fling API; approximate it with a proportional scroll.
         mapView.controller.scrollBy((velocityX / FLING_DIVISOR).toInt(), (velocityY / FLING_DIVISOR).toInt())
+        storeCamera()
     }
 
     override fun onScale(
@@ -147,6 +157,7 @@ class OsmdroidCarMapRenderer(
         } else {
             mapView.controller.zoomOutFixing(focusX.toInt(), focusY.toInt())
         }
+        storeCamera()
     }
 
     override fun onClick(
@@ -164,11 +175,13 @@ class OsmdroidCarMapRenderer(
     override fun zoomIn() {
         userMovedMap = true
         mapView.controller.zoomIn()
+        storeCamera()
     }
 
     override fun zoomOut() {
         userMovedMap = true
         mapView.controller.zoomOut()
+        storeCamera()
     }
 
     override fun updateStrikes(event: DataReceived) {
@@ -208,7 +221,7 @@ class OsmdroidCarMapRenderer(
         ownLocationOverlay.locationEventConsumer(event)
 
         val location = event.location() ?: return
-        if (initialLocationFramed || userMovedMap) {
+        if (initialLocationFramed || userMovedMap || cameraRestored) {
             return
         }
         initialLocationFramed = true
@@ -218,6 +231,11 @@ class OsmdroidCarMapRenderer(
         mapView.invalidate()
     }
 
+    private fun storeCamera() {
+        val center = mapView.mapCenter
+        carSettings.storeCamera(CarCamera(center.latitude, center.longitude, mapView.zoomLevelDouble))
+    }
+
     override fun screenPositionOf(
         latitude: Double,
         longitude: Double,
@@ -225,6 +243,46 @@ class OsmdroidCarMapRenderer(
         val point = Point()
         mapView.projection.toPixels(GeoPoint(latitude, longitude), point)
         return point
+    }
+
+    /**
+     * Establishes the camera for the current surface. A stored camera is restored
+     * in preference to the world view; without one the map shows the whole world
+     * covering the viewport, so it is defined even when no location event arrives.
+     */
+    internal fun applyInitialCamera(
+        width: Int,
+        height: Int,
+    ) {
+        if (width <= 0 || height <= 0) return
+
+        val worldZoom = worldViewZoomFor(width, height)
+        mapView.setMinZoomLevel(worldZoom)
+        mapView.setScrollableAreaLimitDouble(WORLD_BOUNDS)
+
+        val storedCamera = carSettings.camera
+        if (storedCamera != null) {
+            cameraRestored = true
+            mapView.controller.setZoom(max(storedCamera.zoom, worldZoom))
+            mapView.controller.setCenter(GeoPoint(storedCamera.latitude, storedCamera.longitude))
+        } else {
+            cameraRestored = false
+            mapView.controller.setZoom(worldZoom)
+            mapView.controller.setCenter(GeoPoint(WORLD_CENTER_LATITUDE, WORLD_CENTER_LONGITUDE))
+        }
+        mapView.invalidate()
+    }
+
+    /** Zoom at which the world covers the viewport in both dimensions. */
+    internal fun worldViewZoomFor(
+        width: Int,
+        height: Int,
+    ): Double {
+        val tileSystem = MapView.getTileSystem()
+        return max(
+            tileSystem.getLongitudeZoom(WORLD_LON_EAST, WORLD_LON_WEST, width),
+            tileSystem.getLatitudeZoom(WORLD_LAT_NORTH, WORLD_LAT_SOUTH, height),
+        )
     }
 
     internal companion object {
@@ -242,5 +300,21 @@ class OsmdroidCarMapRenderer(
          * Closer than the phone's world view so nearby strikes are legible.
          */
         const val DEFAULT_ZOOM_LEVEL = 8.0
+
+        /** North/south extent of the Web-Mercator world. */
+        private const val WORLD_LAT_NORTH = 85.051129
+        private const val WORLD_LAT_SOUTH = -85.051129
+
+        /** East/west extent of the world. */
+        private const val WORLD_LON_EAST = 180.0
+        private const val WORLD_LON_WEST = -180.0
+
+        /** Centre of the world view. */
+        private const val WORLD_CENTER_LATITUDE = 0.0
+        private const val WORLD_CENTER_LONGITUDE = 0.0
+
+        /** Bounding box of the whole world, used to bound panning and zoom. */
+        private val WORLD_BOUNDS =
+            BoundingBox(WORLD_LAT_NORTH, WORLD_LON_EAST, WORLD_LAT_SOUTH, WORLD_LON_WEST)
     }
 }

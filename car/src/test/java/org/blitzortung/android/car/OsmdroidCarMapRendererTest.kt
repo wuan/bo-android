@@ -26,6 +26,8 @@ import android.location.Location
 import androidx.car.app.testing.TestCarContext
 import androidx.preference.PreferenceManager
 import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.pow
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.within
 import org.blitzortung.android.location.LocationUpdate
@@ -34,6 +36,7 @@ import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.util.TileSystem
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Overlay
 import org.osmdroid.views.overlay.TilesOverlay
@@ -42,12 +45,16 @@ import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
 class OsmdroidCarMapRendererTest {
-    private fun createRenderer(): OsmdroidCarMapRenderer {
-        val context = RuntimeEnvironment.getApplication()
+    private fun createRenderer(
+        settings: CarSettings = CarSettings(context()),
+    ): OsmdroidCarMapRenderer {
+        val context = context()
         val carContext = TestCarContext.createCarContext(context)
         val colorHandler = StrikeColorHandler(PreferenceManager.getDefaultSharedPreferences(context))
-        return OsmdroidCarMapRenderer(carContext, colorHandler)
+        return OsmdroidCarMapRenderer(carContext, colorHandler, settings)
     }
+
+    private fun context() = RuntimeEnvironment.getApplication()
 
     @Test
     fun `projects the map centre to the middle of the viewport`() {
@@ -68,7 +75,7 @@ class OsmdroidCarMapRendererTest {
         val carContext = TestCarContext.createCarContext(context)
         val colorHandler = StrikeColorHandler(PreferenceManager.getDefaultSharedPreferences(context))
 
-        val renderer = OsmdroidCarMapRenderer(carContext, colorHandler)
+        val renderer = OsmdroidCarMapRenderer(carContext, colorHandler, CarSettings(context))
 
         assertThat(renderer.strikeListOverlay.colorHandler).isSameAs(colorHandler)
     }
@@ -244,6 +251,133 @@ class OsmdroidCarMapRendererTest {
 
         assertCentredOn(renderer, FIX_LATITUDE, FIX_LONGITUDE)
         assertThat(renderer.mapView.zoomLevelDouble).isEqualTo(OsmdroidCarMapRenderer.DEFAULT_ZOOM_LEVEL)
+    }
+
+    @Test
+    fun `world view covers the viewport`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+
+        renderer.applyInitialCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+
+        val worldPixels = TileSystem.getTileSize() * 2.0.pow(renderer.mapView.zoomLevelDouble)
+        assertThat(worldPixels).isGreaterThanOrEqualTo(max(VIEWPORT_WIDTH, VIEWPORT_HEIGHT).toDouble())
+        assertCentredOn(renderer, 0.0, 0.0)
+    }
+
+    @Test
+    fun `zooming out stops at the world view`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.applyInitialCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        val floor = renderer.mapView.zoomLevelDouble
+
+        repeat(5) { renderer.zoomOut() }
+
+        assertThat(renderer.mapView.zoomLevelDouble).isGreaterThanOrEqualTo(floor)
+        assertThat(renderer.mapView.canZoomOut()).isFalse()
+    }
+
+    @Test
+    fun `panning beyond the world edge is clamped to the bounds`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.applyInitialCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.mapView.controller.setZoom(8.0)
+
+        renderer.onScroll(0f, -200_000f)
+
+        val latitude = renderer.mapView.mapCenter.latitude
+        assertThat(latitude).isBetween(-85.06, 85.06)
+        assertThat(abs(latitude))
+            .describedAs("the map should have reached and stopped at a world edge")
+            .isGreaterThan(84.0)
+    }
+
+    @Test
+    fun `a wider surface yields a higher world view zoom`() {
+        val renderer = createRenderer()
+
+        renderer.mapView.layout(0, 0, 1000, 400)
+        renderer.applyInitialCamera(1000, 400)
+        val wideZoom = renderer.mapView.zoomLevelDouble
+
+        renderer.mapView.layout(0, 0, 400, 400)
+        renderer.applyInitialCamera(400, 400)
+        val narrowZoom = renderer.mapView.zoomLevelDouble
+
+        assertThat(wideZoom).isGreaterThan(narrowZoom)
+    }
+
+    @Test
+    fun `restores a stored camera instead of the world view`() {
+        val settings = CarSettings(context())
+        settings.storeCamera(CarCamera(latitude = 52.0, longitude = 13.0, zoom = 9.0))
+        val renderer = createRenderer(settings)
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+
+        renderer.applyInitialCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+
+        assertThat(renderer.mapView.zoomLevelDouble).isEqualTo(9.0)
+        assertCentredOn(renderer, 52.0, 13.0)
+    }
+
+    @Test
+    fun `a stored zoom below the world view is raised to the floor`() {
+        val settings = CarSettings(context())
+        settings.storeCamera(CarCamera(latitude = 0.0, longitude = 0.0, zoom = 0.5))
+        val renderer = createRenderer(settings)
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+
+        renderer.applyInitialCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+
+        assertThat(renderer.mapView.zoomLevelDouble)
+            .isGreaterThanOrEqualTo(renderer.worldViewZoomFor(VIEWPORT_WIDTH, VIEWPORT_HEIGHT))
+    }
+
+    @Test
+    fun `a restored camera suppresses first-fix framing`() {
+        val settings = CarSettings(context())
+        settings.storeCamera(CarCamera(latitude = 52.0, longitude = 13.0, zoom = 6.0))
+        val renderer = createRenderer(settings)
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.applyInitialCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+
+        renderer.onLocationEvent(fix(FIX_LATITUDE, FIX_LONGITUDE))
+
+        assertCentredOn(renderer, 52.0, 13.0)
+        assertThat(renderer.mapView.zoomLevelDouble).isEqualTo(6.0)
+    }
+
+    @Test
+    fun `panning stores the camera`() {
+        val settings = CarSettings(context())
+        val renderer = createRenderer(settings)
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.applyInitialCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.mapView.controller.setZoom(6.0)
+
+        renderer.onScroll(-SCROLL_DISTANCE, -SCROLL_DISTANCE)
+
+        val stored = settings.camera
+        assertThat(stored).isNotNull
+        assertThat(stored!!.zoom).isEqualTo(6.0)
+        assertThat(stored.latitude).isCloseTo(renderer.mapView.mapCenter.latitude, within(0.001))
+        assertThat(stored.longitude).isCloseTo(renderer.mapView.mapCenter.longitude, within(0.001))
+    }
+
+    @Test
+    fun `zooming stores the camera`() {
+        val settings = CarSettings(context())
+        val renderer = createRenderer(settings)
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.applyInitialCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+
+        renderer.zoomIn()
+
+        val stored = settings.camera
+        assertThat(stored).isNotNull
+        assertThat(stored!!.zoom).isCloseTo(renderer.mapView.zoomLevelDouble, within(0.001))
     }
 
     private fun assertCentredOn(

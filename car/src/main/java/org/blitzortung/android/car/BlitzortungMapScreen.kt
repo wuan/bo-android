@@ -52,7 +52,7 @@ class BlitzortungMapScreen(
     private val dependencies = CarDependenciesProvider.dependencies
 
     internal val renderer: CarMapRenderer? =
-        dependencies?.let { OsmdroidCarMapRenderer(carContext, it.strikeColorHandler) }
+        dependencies?.let { OsmdroidCarMapRenderer(carContext, it.strikeColorHandler, it.carSettings) }
 
     private val locationPermission = CarLocationPermission(carContext)
 

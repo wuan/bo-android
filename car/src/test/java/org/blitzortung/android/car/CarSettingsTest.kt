@@ -20,6 +20,7 @@ package org.blitzortung.android.car
 
 import androidx.preference.PreferenceManager
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.within
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -93,6 +94,49 @@ class CarSettingsTest {
         assertThat(MapDimMode.FOLLOW_CAR.isDimmed(carIsDark = false)).isFalse()
         assertThat(MapDimMode.ON.isDimmed(carIsDark = false)).isTrue()
         assertThat(MapDimMode.OFF.isDimmed(carIsDark = true)).isFalse()
+    }
+
+    @Test
+    fun `no camera is stored by default`() {
+        assertThat(CarSettings(context()).camera).isNull()
+    }
+
+    @Test
+    fun `a stored camera round-trips through the store`() {
+        val settings = CarSettings(context())
+
+        settings.storeCamera(CarCamera(latitude = 52.5, longitude = 13.25, zoom = 7.5))
+
+        val camera = settings.camera
+        assertThat(camera).isNotNull
+        assertThat(camera!!.latitude).isCloseTo(52.5, within(0.0001))
+        assertThat(camera.longitude).isCloseTo(13.25, within(0.0001))
+        assertThat(camera.zoom).isCloseTo(7.5, within(0.0001))
+    }
+
+    @Test
+    fun `a partial camera is treated as not stored`() {
+        val context = context()
+        context
+            .getSharedPreferences(CarSettings.PREFS_NAME, 0)
+            .edit()
+            .putFloat(CarSettings.KEY_CAMERA_LATITUDE, 1f)
+            .putFloat(CarSettings.KEY_CAMERA_LONGITUDE, 2f)
+            .commit()
+
+        assertThat(CarSettings(context).camera).isNull()
+    }
+
+    @Test
+    fun `the camera is not written to the default preferences`() {
+        val context = context()
+
+        CarSettings(context).storeCamera(CarCamera(1.0, 2.0, 3.0))
+
+        val defaults = PreferenceManager.getDefaultSharedPreferences(context)
+        assertThat(defaults.contains(CarSettings.KEY_CAMERA_LATITUDE)).isFalse()
+        assertThat(defaults.contains(CarSettings.KEY_CAMERA_LONGITUDE)).isFalse()
+        assertThat(defaults.contains(CarSettings.KEY_CAMERA_ZOOM)).isFalse()
     }
 
     private fun context() = RuntimeEnvironment.getApplication()

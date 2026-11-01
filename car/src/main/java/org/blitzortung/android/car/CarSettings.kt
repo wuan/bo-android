@@ -50,6 +50,15 @@ enum class MapDimMode {
 }
 
 /**
+ * A stored map camera: the centre coordinate and zoom the map last showed.
+ */
+data class CarCamera(
+    val latitude: Double,
+    val longitude: Double,
+    val zoom: Double,
+)
+
+/**
  * Car-only preferences, kept in a dedicated file so the car experience never
  * shares or overwrites the phone app's default preferences. Screens and the map
  * read and write the same instance, which is provided with the car dependencies.
@@ -78,11 +87,46 @@ class CarSettings(context: Context) {
         mapDimModeObservers.remove(observer)
     }
 
+    /** The stored map camera, or `null` when none has been saved. */
+    val camera: CarCamera?
+        get() {
+            if (!preferences.contains(KEY_CAMERA_LATITUDE) ||
+                !preferences.contains(KEY_CAMERA_LONGITUDE) ||
+                !preferences.contains(KEY_CAMERA_ZOOM)
+            ) {
+                return null
+            }
+            return CarCamera(
+                latitude = preferences.getFloat(KEY_CAMERA_LATITUDE, 0f).toDouble(),
+                longitude = preferences.getFloat(KEY_CAMERA_LONGITUDE, 0f).toDouble(),
+                zoom = preferences.getFloat(KEY_CAMERA_ZOOM, 0f).toDouble(),
+            )
+        }
+
+    /** Stores the map camera so the next session can restore it. */
+    fun storeCamera(camera: CarCamera) {
+        preferences
+            .edit()
+            .putFloat(KEY_CAMERA_LATITUDE, camera.latitude.toFloat())
+            .putFloat(KEY_CAMERA_LONGITUDE, camera.longitude.toFloat())
+            .putFloat(KEY_CAMERA_ZOOM, camera.zoom.toFloat())
+            .apply()
+    }
+
     companion object {
         /** Car-only preferences file; never the app's default preferences. */
         const val PREFS_NAME = "car_settings"
 
         /** Key for the map dimming mode; stored as its name for forward-compatibility. */
         const val KEY_MAP_DIM_MODE = "map_dim_mode"
+
+        /** Key for the stored camera centre latitude. */
+        const val KEY_CAMERA_LATITUDE = "camera_latitude"
+
+        /** Key for the stored camera centre longitude. */
+        const val KEY_CAMERA_LONGITUDE = "camera_longitude"
+
+        /** Key for the stored camera zoom. */
+        const val KEY_CAMERA_ZOOM = "camera_zoom"
     }
 }
