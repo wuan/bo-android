@@ -21,6 +21,7 @@ package org.blitzortung.android.car
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
 import androidx.car.app.ScreenManager
+import androidx.car.app.model.Action
 import androidx.car.app.model.Header
 import androidx.car.app.model.ItemList
 import androidx.car.app.model.ListTemplate
@@ -48,7 +49,12 @@ class BlitzortungSettingsScreen(carContext: CarContext) : Screen(carContext) {
                 .build()
 
         return ListTemplate.Builder()
-            .setHeader(Header.Builder().setTitle(carContext.getString(R.string.car_settings_title)).build())
+            .setHeader(
+                Header.Builder()
+                    .setTitle(carContext.getString(R.string.car_settings_title))
+                    .setStartHeaderAction(Action.BACK)
+                    .build(),
+            )
             .setSingleList(ItemList.Builder().addItem(row).build())
             .build()
     }
@@ -82,7 +88,12 @@ class BlitzortungMapDimSettingScreen(carContext: CarContext) : Screen(carContext
             }.build()
 
         return ListTemplate.Builder()
-            .setHeader(Header.Builder().setTitle(carContext.getString(R.string.car_settings_map_dimming)).build())
+            .setHeader(
+                Header.Builder()
+                    .setTitle(carContext.getString(R.string.car_settings_map_dimming))
+                    .setStartHeaderAction(Action.BACK)
+                    .build(),
+            )
             .setSingleList(itemList)
             .build()
     }

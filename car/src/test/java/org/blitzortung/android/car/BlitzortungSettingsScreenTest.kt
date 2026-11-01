@@ -19,6 +19,8 @@
 package org.blitzortung.android.car
 
 import androidx.car.app.Screen
+import androidx.car.app.model.Action
+import androidx.car.app.model.Header
 import androidx.car.app.model.ListTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.testing.TestCarContext
@@ -89,8 +91,29 @@ class BlitzortungSettingsScreenTest {
         assertThat(carSettings.mapDimMode).isEqualTo(MapDimMode.OFF)
     }
 
+    @Test
+    fun `the settings header offers a back action`() {
+        registerDependencies()
+        val screen = BlitzortungSettingsScreen(carContext())
+
+        assertThat(headerOf(screen).startHeaderAction).isEqualTo(Action.BACK)
+    }
+
+    @Test
+    fun `the dimming choice header offers a back action`() {
+        registerDependencies()
+        val screen = BlitzortungMapDimSettingScreen(carContext())
+
+        assertThat(headerOf(screen).startHeaderAction).isEqualTo(Action.BACK)
+    }
+
     private fun rowsOf(screen: Screen): List<Row> {
         val template = screen.onGetTemplate() as ListTemplate
         return template.singleList?.items.orEmpty().filterIsInstance<Row>()
+    }
+
+    private fun headerOf(screen: Screen): Header {
+        val template = screen.onGetTemplate() as ListTemplate
+        return template.header!!
     }
 }
