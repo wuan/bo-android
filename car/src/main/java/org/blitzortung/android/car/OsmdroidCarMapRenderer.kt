@@ -77,6 +77,12 @@ class OsmdroidCarMapRenderer(
 
     private var presentation: Presentation? = null
 
+    /** Whether the camera has been framed on a location fix; framing happens at most once. */
+    private var initialLocationFramed = false
+
+    /** Whether the driver has panned or zoomed, which suppresses the initial framing. */
+    private var userMovedMap = false
+
     override fun onSurfaceAvailable(surfaceContainer: SurfaceContainer) {
         val display =
             displayManager.createVirtualDisplay(
@@ -108,6 +114,7 @@ class OsmdroidCarMapRenderer(
         distanceX: Float,
         distanceY: Float,
     ) {
+        userMovedMap = true
         mapView.controller.scrollBy(-distanceX.toInt(), -distanceY.toInt())
     }
 
@@ -115,6 +122,7 @@ class OsmdroidCarMapRenderer(
         velocityX: Float,
         velocityY: Float,
     ) {
+        userMovedMap = true
         // osmdroid has no public fling API; approximate it with a proportional scroll.
         mapView.controller.scrollBy((velocityX / FLING_DIVISOR).toInt(), (velocityY / FLING_DIVISOR).toInt())
     }
@@ -124,6 +132,7 @@ class OsmdroidCarMapRenderer(
         focusY: Float,
         scaleFactor: Float,
     ) {
+        userMovedMap = true
         if (scaleFactor >= 1f) {
             mapView.controller.zoomInFixing(focusX.toInt(), focusY.toInt())
         } else {
@@ -145,10 +154,12 @@ class OsmdroidCarMapRenderer(
     }
 
     override fun zoomIn() {
+        userMovedMap = true
         mapView.controller.zoomIn()
     }
 
     override fun zoomOut() {
+        userMovedMap = true
         mapView.controller.zoomOut()
     }
 
@@ -187,6 +198,16 @@ class OsmdroidCarMapRenderer(
 
     override fun onLocationEvent(event: LocationEvent) {
         ownLocationOverlay.locationEventConsumer(event)
+
+        val location = event.location() ?: return
+        if (initialLocationFramed || userMovedMap) {
+            return
+        }
+        initialLocationFramed = true
+
+        mapView.controller.setZoom(DEFAULT_ZOOM_LEVEL)
+        mapView.controller.setCenter(GeoPoint(location.latitude, location.longitude))
+        mapView.invalidate()
     }
 
     override fun screenPositionOf(
@@ -198,8 +219,14 @@ class OsmdroidCarMapRenderer(
         return point
     }
 
-    private companion object {
+    internal companion object {
         private const val VIRTUAL_DISPLAY_NAME = "BlitzortungCarMap"
         private const val FLING_DIVISOR = 10f
+
+        /**
+         * Zoom the car map starts at when it first frames the driver's position.
+         * Closer than the phone's world view so nearby strikes are legible.
+         */
+        const val DEFAULT_ZOOM_LEVEL = 8.0
     }
 }

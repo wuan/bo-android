@@ -23,6 +23,9 @@ import org.blitzortung.android.alert.NoData
 import org.blitzortung.android.alert.NoLocation
 import org.blitzortung.android.alert.Outlying
 import org.blitzortung.android.alert.Warning
+import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.provider.result.DataReceived
+import org.blitzortung.android.data.provider.result.StatusUpdate
 
 /** A single row of the car alert list. */
 data class CarAlertRow(
@@ -36,23 +39,45 @@ data class CarAlertStrings(
     val emptyStateLabel: String,
     val noLocationLabel: String,
     val outlyingLabel: String,
+    val noActivityLabel: String,
     val errorLabel: String,
     val strikeCountFormat: String,
+    val nextRefreshFormat: String,
 )
 
 /**
  * The alert-list content state: the latest alert [Warning] together with whether
- * any strike data has arrived and whether the last fetch failed.
+ * any strike data has arrived, whether the last fetch failed, and the seconds
+ * remaining until the next data refresh (null when no refresh is scheduled).
  */
 data class CarAlertListState(
     val warning: Warning = NoData,
     val hasData: Boolean = false,
     val hasError: Boolean = false,
+    val refreshSecondsRemaining: Int? = null,
 )
 
 /**
- * Maps alert state to the rows shown beside the car map: the closest strike's
- * distance and bearing, then a row per sector that saw strikes.
+ * Applies a strike-data event to the alert-list state: a `DataReceived` updates the
+ * loaded/error flags and a `StatusUpdate` carries the seconds until the next refresh.
+ * Other events leave the state unchanged.
+ */
+internal fun CarAlertListState.reduce(event: DataEvent): CarAlertListState =
+    when (event) {
+        is DataReceived ->
+            if (event.failed) {
+                copy(hasError = true)
+            } else {
+                copy(hasError = false, hasData = true)
+            }
+        is StatusUpdate -> copy(refreshSecondsRemaining = event.status.substringBefore('/').toIntOrNull())
+        else -> this
+    }
+
+/**
+ * Maps alert state to the rows shown beside the car map: the time to the next
+ * refresh, then the closest strike's distance and bearing, then a row per sector
+ * that saw strikes.
  */
 object CarAlertListPresenter {
     fun rows(
@@ -60,20 +85,32 @@ object CarAlertListPresenter {
         strings: CarAlertStrings,
         unitName: String,
     ): List<CarAlertRow> {
-        if (state.hasError) {
-            return listOf(CarAlertRow(strings.errorLabel, ""))
-        }
-        if (!state.hasData) {
-            return listOf(CarAlertRow(strings.emptyStateLabel, ""))
+        val rows = mutableListOf<CarAlertRow>()
+
+        state.refreshSecondsRemaining?.let { seconds ->
+            rows.add(CarAlertRow(strings.nextRefreshFormat.format(seconds), ""))
         }
 
-        return when (val warning = state.warning) {
+        when {
+            state.hasError -> rows.add(CarAlertRow(strings.errorLabel, ""))
+            !state.hasData -> rows.add(CarAlertRow(strings.emptyStateLabel, ""))
+            else -> rows.addAll(alertRows(state.warning, strings, unitName))
+        }
+
+        return rows
+    }
+
+    private fun alertRows(
+        warning: Warning,
+        strings: CarAlertStrings,
+        unitName: String,
+    ): List<CarAlertRow> =
+        when (warning) {
             is LocalActivity -> localActivityRows(warning, strings, unitName)
             Outlying -> listOf(CarAlertRow(strings.outlyingLabel, ""))
             NoData -> listOf(CarAlertRow(strings.emptyStateLabel, ""))
             NoLocation -> listOf(CarAlertRow(strings.noLocationLabel, ""))
         }
-    }
 
     private fun localActivityRows(
         activity: LocalActivity,
@@ -87,7 +124,7 @@ object CarAlertListPresenter {
             val subtitle = "%.0f%s %s".format(activity.closestStrikeDistance, unitName, activity.bearingName)
             rows.add(CarAlertRow(strings.closestStrikeLabel, subtitle))
         } else {
-            rows.add(CarAlertRow(strings.emptyStateLabel, ""))
+            rows.add(CarAlertRow(strings.noActivityLabel, ""))
         }
 
         activity.sectors

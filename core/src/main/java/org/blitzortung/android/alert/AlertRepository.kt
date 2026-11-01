@@ -24,6 +24,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import org.blitzortung.android.alert.handler.AlertHandler
+import org.blitzortung.android.data.provider.result.DataEvent
 
 /**
  * Repository layer that wraps [AlertHandler] and provides a Flow-based API
@@ -53,4 +54,11 @@ class AlertRepository
             }
 
         fun getAlertParameters(): AlertParameters = alertHandler.alertParameters
+
+        /**
+         * Feed a strike-data event into the alert computation, the same way the
+         * phone UI and background service do. Without this the alert state never
+         * advances beyond its initial value.
+         */
+        fun onDataEvent(event: DataEvent) = alertHandler.dataEventConsumer(event)
     }

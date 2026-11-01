@@ -21,7 +21,18 @@ package org.blitzortung.android.car
 import androidx.car.app.model.Action
 import androidx.car.app.navigation.model.MapWithContentTemplate
 import androidx.car.app.testing.TestCarContext
+import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.blitzortung.android.alert.AlertRepository
+import org.blitzortung.android.data.Flags
+import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.provider.result.DataReceived
+import org.blitzortung.android.data.provider.result.StatusUpdate
+import org.blitzortung.android.data.repository.StrikeDataRepository
+import org.blitzortung.android.location.LocationRepository
+import org.blitzortung.android.map.overlay.color.StrikeColorHandler
+import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -29,6 +40,13 @@ import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
 class BlitzortungMapScreenTest {
+    private val alertRepository = mockk<AlertRepository>(relaxed = true)
+
+    @After
+    fun tearDown() {
+        CarDependenciesProvider.dependencies = null
+    }
+
     private fun createScreen(): BlitzortungMapScreen {
         val carContext = TestCarContext.createCarContext(RuntimeEnvironment.getApplication())
         return BlitzortungMapScreen(carContext)
@@ -50,5 +68,37 @@ class BlitzortungMapScreenTest {
         assertThat(actionTypes).contains(Action.TYPE_PAN)
         // Two additional icon-only actions for zooming in and out.
         assertThat(actionTypes).hasSize(3)
+    }
+
+    @Test
+    fun `forwards a data event to the alert repository and marks the data as loaded`() {
+        registerDependencies()
+        val screen = createScreen()
+        val event = DataReceived(parameters = Parameters(), flags = Flags(), failed = false)
+
+        screen.handleDataEvent(event, activeRenderer = null)
+
+        verify { alertRepository.onDataEvent(event) }
+        assertThat(screen.alertListState.hasData).isTrue()
+    }
+
+    @Test
+    fun `a status update sets the refresh countdown`() {
+        registerDependencies()
+        val screen = createScreen()
+
+        screen.handleDataEvent(StatusUpdate("40/60"), activeRenderer = null)
+
+        assertThat(screen.alertListState.refreshSecondsRemaining).isEqualTo(40)
+    }
+
+    private fun registerDependencies() {
+        CarDependenciesProvider.dependencies =
+            object : CarDependencies {
+                override val strikeDataRepository = mockk<StrikeDataRepository>(relaxed = true)
+                override val locationRepository = mockk<LocationRepository>(relaxed = true)
+                override val alertRepository = this@BlitzortungMapScreenTest.alertRepository
+                override val strikeColorHandler = mockk<StrikeColorHandler>(relaxed = true)
+            }
     }
 }

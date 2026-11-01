@@ -33,8 +33,10 @@ class CarAlertListPresenterTest {
             emptyStateLabel = "Waiting for lightning data",
             noLocationLabel = "Location unknown",
             outlyingLabel = "No strikes in range",
+            noActivityLabel = "No current alert",
             errorLabel = "Lightning data unavailable",
             strikeCountFormat = "%d strikes",
+            nextRefreshFormat = "Next update in %d s",
         )
 
     @Test
@@ -81,6 +83,33 @@ class CarAlertListPresenterTest {
         assertThat(rows).containsExactly(CarAlertRow("Location unknown", ""))
     }
 
+    @Test
+    fun `indicates no current alert for a local activity without a closest strike`() {
+        val state = CarAlertListState(warning = localActivityWithoutClosestStrike(), hasData = true)
+
+        val rows = CarAlertListPresenter.rows(state, strings, "km")
+
+        assertThat(rows.first()).isEqualTo(CarAlertRow("No current alert", ""))
+    }
+
+    @Test
+    fun `shows the refresh countdown as the first row`() {
+        val state = CarAlertListState(hasData = true, refreshSecondsRemaining = 40)
+
+        val rows = CarAlertListPresenter.rows(state, strings, "km")
+
+        assertThat(rows.first()).isEqualTo(CarAlertRow("Next update in 40 s", ""))
+    }
+
+    @Test
+    fun `omits the refresh countdown when none has been reported`() {
+        val state = CarAlertListState(warning = localActivity(), hasData = true)
+
+        val rows = CarAlertListPresenter.rows(state, strings, "km")
+
+        assertThat(rows).doesNotContain(CarAlertRow("Next update in 40 s", ""))
+    }
+
     private fun localActivity(): LocalActivity {
         val parameters =
             AlertParameters(
@@ -96,10 +125,47 @@ class CarAlertListPresenterTest {
                 maximumSectorBearing = 90f,
                 ranges =
                     listOf(
-                        AlertSectorRange(rangeMinimum = 0f, rangeMaximum = 10f, strikeCount = 3, latestStrikeTimestamp = 0L),
-                        AlertSectorRange(rangeMinimum = 10f, rangeMaximum = 25f, strikeCount = 2, latestStrikeTimestamp = 0L),
+                        AlertSectorRange(
+                            rangeMinimum = 0f,
+                            rangeMaximum = 10f,
+                            strikeCount = 3,
+                            latestStrikeTimestamp = 0L,
+                        ),
+                        AlertSectorRange(
+                            rangeMinimum = 10f,
+                            rangeMaximum = 25f,
+                            strikeCount = 2,
+                            latestStrikeTimestamp = 0L,
+                        ),
                     ),
                 closestStrikeDistance = 8f,
+            )
+        return LocalActivity(sectors = listOf(sector), parameters = parameters, referenceTime = 0L)
+    }
+
+    private fun localActivityWithoutClosestStrike(): LocalActivity {
+        val parameters =
+            AlertParameters(
+                alarmInterval = 10 * 60 * 1000L,
+                rangeSteps = listOf(10f, 25f),
+                sectorLabels = listOf("N", "NE", "E"),
+                measurementSystem = MeasurementSystem.METRIC,
+            )
+        val sector =
+            AlertSector(
+                label = "NE",
+                minimumSectorBearing = 45f,
+                maximumSectorBearing = 90f,
+                ranges =
+                    listOf(
+                        AlertSectorRange(
+                            rangeMinimum = 0f,
+                            rangeMaximum = 10f,
+                            strikeCount = 1,
+                            latestStrikeTimestamp = 0L,
+                        ),
+                    ),
+                closestStrikeDistance = Float.POSITIVE_INFINITY,
             )
         return LocalActivity(sectors = listOf(sector), parameters = parameters, referenceTime = 0L)
     }

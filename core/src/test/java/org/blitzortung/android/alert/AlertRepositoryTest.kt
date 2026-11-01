@@ -10,6 +10,8 @@ import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.alert.handler.AlertHandler
+import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.provider.result.RequestStarted
 import org.junit.Before
 import org.junit.Test
 
@@ -57,5 +59,16 @@ class AlertRepositoryTest {
         every { alertHandler.alertParameters } returns parameters
 
         assertThat(uut.getAlertParameters()).isSameAs(parameters)
+    }
+
+    @Test
+    fun forwardsDataEventsToTheAlertHandler() {
+        val consumer = mockk<(DataEvent) -> Unit>(relaxed = true)
+        every { alertHandler.dataEventConsumer } returns consumer
+        val event = RequestStarted()
+
+        uut.onDataEvent(event)
+
+        verify { consumer(event) }
     }
 }

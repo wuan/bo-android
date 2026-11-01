@@ -37,6 +37,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
 import org.blitzortung.android.alert.LocalActivity
+import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.DataReceived
 
 /**
@@ -54,7 +55,7 @@ class BlitzortungMapScreen(
 
     private val locationPermission = CarLocationPermission(carContext)
 
-    private var alertListState = CarAlertListState()
+    internal var alertListState = CarAlertListState()
 
     init {
         val activeRenderer = renderer
@@ -71,15 +72,7 @@ class BlitzortungMapScreen(
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     carDependencies.strikeDataRepository.observeDataEvents().collect { event ->
-                        if (event is DataReceived) {
-                            if (event.failed) {
-                                alertListState = alertListState.copy(hasError = true)
-                            } else {
-                                alertListState = alertListState.copy(hasError = false, hasData = true)
-                                activeRenderer.updateStrikes(event)
-                            }
-                            invalidate()
-                        }
+                        handleDataEvent(event, activeRenderer)
                     }
                 }
                 launch {
@@ -108,6 +101,23 @@ class BlitzortungMapScreen(
                 }
             }
         }
+    }
+
+    /**
+     * Applies a strike-data event: feeds the shared alert computation, updates the
+     * alert-list state (loaded/error flags and the refresh countdown), and redraws
+     * the strikes for a successful result.
+     */
+    internal fun handleDataEvent(
+        event: DataEvent,
+        activeRenderer: CarMapRenderer? = renderer,
+    ) {
+        dependencies?.alertRepository?.onDataEvent(event)
+        alertListState = alertListState.reduce(event)
+        if (event is DataReceived && !event.failed) {
+            activeRenderer?.updateStrikes(event)
+        }
+        invalidate()
     }
 
     override fun onGetTemplate(): Template {
@@ -154,8 +164,10 @@ class BlitzortungMapScreen(
             emptyStateLabel = carContext.getString(R.string.car_alert_empty_state),
             noLocationLabel = carContext.getString(R.string.car_alert_no_location),
             outlyingLabel = carContext.getString(R.string.car_alert_outlying),
+            noActivityLabel = carContext.getString(R.string.car_alert_no_activity),
             errorLabel = carContext.getString(R.string.car_alert_error),
             strikeCountFormat = carContext.getString(R.string.car_alert_strike_count),
+            nextRefreshFormat = carContext.getString(R.string.car_status_next_refresh),
         )
 
     private fun buildMapActionStrip(): ActionStrip {

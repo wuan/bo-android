@@ -31,7 +31,9 @@ start it, in addition to the existing phone launcher entry point.
 
 The system SHALL render lightning strikes on the in-car map surface, colored by
 strike age, and SHALL update the rendering as new strike data and location
-changes arrive.
+changes arrive. On the first available location fix the map SHALL frame the
+current position by centering on it at a default zoom, and SHALL preserve the
+user's pan or zoom after that initial framing.
 
 #### Scenario: Strikes rendered by age
 
@@ -48,11 +50,33 @@ changes arrive.
 - **WHEN** the device location changes or becomes available
 - **THEN** the map SHALL indicate the current position relative to the rendered strikes
 
+#### Scenario: Map starts framed on the current position
+
+- **WHEN** the map surface becomes available and a location fix arrives before the user has panned or zoomed
+- **THEN** the map SHALL centre on the current position at the default zoom
+
+#### Scenario: Initial framing happens once
+
+- **WHEN** the map has already framed the current position and a later location update arrives
+- **THEN** the map SHALL update the own-position marker only and SHALL NOT change its centre or zoom
+
+#### Scenario: User navigation is preserved
+
+- **WHEN** the user pans or zooms the map before the first location fix arrives
+- **THEN** the map SHALL NOT recentre or change zoom on that first fix
+
+#### Scenario: No location available
+
+- **WHEN** no location fix is available, for example because access was denied
+- **THEN** the map SHALL leave its centre and zoom unchanged
+
 ### Requirement: Car alert list summarizes proximity alerts
 
 The system SHALL display an alert list alongside the map that reports the closest
 strike's distance and bearing and the per-sector strike counts, and SHALL update
-it as alert state changes.
+it as alert state changes. The list SHALL be derived from the same alert
+computation the phone uses and driven by the received strike data, so that it
+shows a waiting state only while no strike data is available for alerting.
 
 #### Scenario: Closest strike is reported
 
@@ -68,6 +92,16 @@ it as alert state changes.
 
 - **WHEN** no strike remains within range for the alert time window
 - **THEN** the alert list SHALL indicate that there is no current alert
+
+#### Scenario: Alert list reflects received strike data
+
+- **WHEN** strike data has been received and the alert computation reports no local activity
+- **THEN** the alert list SHALL show the matching alert state (for example no strikes in range, or location unknown) and SHALL NOT show the waiting state
+
+#### Scenario: Waiting state only before data arrives
+
+- **WHEN** no strike data has been received yet
+- **THEN** the alert list SHALL show the waiting state
 
 ### Requirement: Car app reuses the existing data layer
 
@@ -141,3 +175,25 @@ alert computation, preference keys, or background service behavior.
 
 - **WHEN** a user uses the app on a phone
 - **THEN** the map, alerts, settings, widget, and background monitoring SHALL behave exactly as before
+
+### Requirement: Car alert list reports the time to the next refresh
+
+While the data handler is in realtime mode and reports its periodic refresh
+status, the car alert list SHALL display the time remaining until the next data
+refresh. It SHALL NOT display a countdown before a refresh status has been
+reported.
+
+#### Scenario: Countdown shown in realtime mode
+
+- **WHEN** the data handler reports its periodic refresh status in realtime mode
+- **THEN** the alert list SHALL show the time remaining until the next refresh
+
+#### Scenario: Countdown follows the reported status
+
+- **WHEN** the reported refresh status changes
+- **THEN** the displayed time to the next refresh SHALL follow the new value
+
+#### Scenario: No countdown before a status is reported
+
+- **WHEN** no refresh status has been reported
+- **THEN** the alert list SHALL NOT show a refresh countdown
