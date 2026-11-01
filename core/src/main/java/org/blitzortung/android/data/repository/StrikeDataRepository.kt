@@ -28,6 +28,7 @@ import org.blitzortung.android.data.Mode
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.cache.CacheSize
 import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.protocol.MapViewport
 
 /**
  * Repository layer that wraps [MainDataHandler] and provides a Flow-based API
@@ -58,6 +59,14 @@ class StrikeDataRepository
             }
 
         fun updateData() = mainDataHandler.updateData()
+
+        /**
+         * Feeds a map viewport to the data layer with the automatic grid size and
+         * the automatic global/local region, ignoring any configured fixed region
+         * or grid size. Exposed for the car experience, which derives both from
+         * the map instead of offering region or grid-size settings.
+         */
+        fun updateViewport(viewport: MapViewport): Boolean = mainDataHandler.updateViewport(viewport)
 
         fun getParameters(): Parameters = mainDataHandler.parameters
 

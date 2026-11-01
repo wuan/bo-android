@@ -32,6 +32,7 @@ import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.overlay.OwnLocationOverlay
 import org.blitzortung.android.map.overlay.StrikeListOverlay
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
+import org.blitzortung.android.protocol.MapViewport
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
@@ -63,9 +64,14 @@ class OsmdroidCarMapRenderer(
             setBuiltInZoomControls(false)
         }
 
-    internal val strikeListOverlay: StrikeListOverlay = StrikeListOverlay(mapView, strikeColorHandler)
+    internal val strikeListOverlay: StrikeListOverlay =
+        StrikeListOverlay(mapView, strikeColorHandler, showDataArea = false)
 
     internal val ownLocationOverlay: OwnLocationOverlay = OwnLocationOverlay(carContext, mapView)
+
+    private val viewport: MapViewport = CarMapViewport(mapView)
+
+    private var viewportListener: ((MapViewport) -> Unit)? = null
 
     /**
      * Dimming scrim. Added as the first overlay so it covers the map tiles only,
@@ -88,6 +94,30 @@ class OsmdroidCarMapRenderer(
         mapView.overlays.add(legendOverlay)
         mapView.addMapListener(strikeListOverlay)
         mapView.addMapListener(ownLocationOverlay)
+
+        // The viewport is meaningless before the map has a size, so the initial
+        // notification (and resize notifications) come from the layout callback.
+        mapView.addOnLayoutChangeListener { _, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+            if (left != oldLeft || top != oldTop || right != oldRight || bottom != oldBottom) {
+                notifyViewportChanged()
+            }
+        }
+    }
+
+    override fun setViewportListener(listener: (MapViewport) -> Unit) {
+        viewportListener = listener
+        notifyViewportChanged()
+    }
+
+    /**
+     * Reports the current viewport to the listener, unless the map has not been
+     * laid out yet (a zero-sized map has no meaningful bounding box).
+     */
+    private fun notifyViewportChanged() {
+        if (mapView.width <= 0 || mapView.height <= 0) {
+            return
+        }
+        viewportListener?.invoke(viewport)
     }
 
     private val displayManager: DisplayManager =
@@ -153,6 +183,7 @@ class OsmdroidCarMapRenderer(
         userMovedMap = true
         mapView.controller.scrollBy(-distanceX.toInt(), -distanceY.toInt())
         storeCamera()
+        notifyViewportChanged()
     }
 
     override fun onFling(
@@ -163,6 +194,7 @@ class OsmdroidCarMapRenderer(
         // osmdroid has no public fling API; approximate it with a proportional scroll.
         mapView.controller.scrollBy((velocityX / FLING_DIVISOR).toInt(), (velocityY / FLING_DIVISOR).toInt())
         storeCamera()
+        notifyViewportChanged()
     }
 
     override fun onScale(
@@ -177,6 +209,7 @@ class OsmdroidCarMapRenderer(
             mapView.controller.zoomOutFixing(focusX.toInt(), focusY.toInt())
         }
         storeCamera()
+        notifyViewportChanged()
     }
 
     override fun onClick(
@@ -203,12 +236,14 @@ class OsmdroidCarMapRenderer(
         userMovedMap = true
         mapView.controller.zoomIn()
         storeCamera()
+        notifyViewportChanged()
     }
 
     override fun zoomOut() {
         userMovedMap = true
         mapView.controller.zoomOut()
         storeCamera()
+        notifyViewportChanged()
     }
 
     override fun updateStrikes(event: DataReceived) {
@@ -256,6 +291,7 @@ class OsmdroidCarMapRenderer(
         mapView.controller.setZoom(DEFAULT_ZOOM_LEVEL)
         mapView.controller.setCenter(GeoPoint(location.latitude, location.longitude))
         mapView.invalidate()
+        notifyViewportChanged()
     }
 
     private fun storeCamera() {
@@ -298,6 +334,7 @@ class OsmdroidCarMapRenderer(
             mapView.controller.setCenter(GeoPoint(WORLD_CENTER_LATITUDE, WORLD_CENTER_LONGITUDE))
         }
         mapView.invalidate()
+        notifyViewportChanged()
     }
 
     /** Zoom at which the world covers the viewport in both dimensions. */

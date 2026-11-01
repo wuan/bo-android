@@ -18,6 +18,7 @@ import org.blitzortung.android.data.MainDataHandler.Companion.REQUEST_STARTED_EV
 import org.blitzortung.android.data.cache.DataCache
 import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
+import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LocalData
 import org.blitzortung.android.data.provider.result.ClusterEvent
 import org.blitzortung.android.data.provider.result.ClusterReceived
@@ -91,6 +92,24 @@ class MainDataHandlerTest {
 
         assertThat(result2).isTrue
         assertThat(uut.parameters.gridSize).isEqualTo(10000)
+    }
+
+    @Test
+    fun updateViewportForcesAutoGridSizeAndGlobalRegion() {
+        preferences.edit().putString(PreferenceKey.REGION.toString(), "1").commit()
+        uut.onSharedPreferenceChanged(this.preferences, PreferenceKey.REGION)
+        assertThat(uut.parameters.region).isEqualTo(1)
+
+        val mapView = mockk<OwnMapView>()
+        every { mapView.viewportIsAnimating } returns false
+        every { mapView.viewportBoundingBox } returns BoundingBox(45.0, 15.0, 40.0, 10.0)
+        every { mapView.viewportZoomLevel } returns 8.0
+
+        uut.updateViewport(mapView)
+
+        assertThat(uut.parameters.region).isEqualTo(GLOBAL_REGION)
+        assertThat(uut.parameters.gridSize).isEqualTo(5000)
+        assertThat(uut.autoGridSize).isTrue
     }
 
     @Test

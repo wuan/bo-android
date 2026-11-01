@@ -43,6 +43,11 @@ class StrikeListOverlay(
     private val mapView: MapView,
     val colorHandler: StrikeColorHandler,
     private val onStrikeTapped: ((MapView, StrikeOverlay, IGeoPoint) -> Boolean)? = null,
+    /**
+     * Whether the boundary of the loaded local data area is outlined. The phone
+     * keeps it enabled; the car turns it off so no data-area outline is drawn.
+     */
+    val showDataArea: Boolean = true,
 ) :
     Overlay(),
     LayerOverlay,
@@ -71,7 +76,7 @@ class StrikeListOverlay(
             }
 
             val paint = Paint()
-            if (usesGrid() && parameters.region != 0) {
+            if (showDataArea && usesGrid() && parameters.region != 0) {
                 paint.color = colorHandler.lineColor
                 paint.style = Style.STROKE
 

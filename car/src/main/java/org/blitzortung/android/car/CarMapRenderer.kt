@@ -23,6 +23,7 @@ import android.graphics.Rect
 import androidx.car.app.SurfaceContainer
 import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.location.LocationEvent
+import org.blitzortung.android.protocol.MapViewport
 
 /**
  * Draws the lightning map onto the surface provided by the car host. Rendering
@@ -33,6 +34,13 @@ interface CarMapRenderer {
     fun onSurfaceAvailable(surfaceContainer: SurfaceContainer)
 
     fun onSurfaceDestroyed(surfaceContainer: SurfaceContainer)
+
+    /**
+     * Registers the listener notified whenever the map viewport (centre, zoom
+     * or size) changes, so the data layer can follow the map. The listener is
+     * invoked once on registration when the viewport is already known.
+     */
+    fun setViewportListener(listener: (MapViewport) -> Unit)
 
     /**
      * The part of the surface the host currently guarantees to be visible, in

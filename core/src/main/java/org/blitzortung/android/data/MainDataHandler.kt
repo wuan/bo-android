@@ -38,6 +38,7 @@ import org.blitzortung.android.data.cache.CacheSize
 import org.blitzortung.android.data.cache.DataCache
 import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
+import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LocalData
 import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.ClusterEvent
@@ -584,6 +585,21 @@ constructor(
             }
         }
         return updatedLocation || updatedAutoGridSize
+    }
+
+    /**
+     * Applies a map viewport using the automatic grid size and the automatic
+     * global/local region, ignoring any configured fixed grid size or classical
+     * region. Used by the car, which has no region or grid-size configuration:
+     * a wide view requests global grid data (squares ≥ 25 km) and a zoomed-in
+     * view requests local data (squares < 25 km) for the viewed area.
+     */
+    fun updateViewport(viewport: MapViewport): Boolean {
+        autoGridSize = true
+        if (parameters.region != GLOBAL_REGION) {
+            parameters = parameters.copy(region = GLOBAL_REGION)
+        }
+        return updateGrid(viewport, true)
     }
 
     fun updateLocation(

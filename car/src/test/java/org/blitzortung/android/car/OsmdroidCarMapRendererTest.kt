@@ -26,14 +26,20 @@ import android.graphics.Rect
 import android.location.Location
 import androidx.car.app.testing.TestCarContext
 import androidx.preference.PreferenceManager
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.pow
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.within
+import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.location.LocationUpdate
 import org.blitzortung.android.location.NoLocation
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
+import org.blitzortung.android.protocol.MapViewport
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.osmdroid.util.GeoPoint
@@ -425,6 +431,70 @@ class OsmdroidCarMapRendererTest {
         assertThat(stored!!.zoom).isCloseTo(renderer.mapView.zoomLevelDouble, within(0.001))
     }
 
+    @Test
+    fun `notifies the viewport listener after a programmatic scroll`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.applyInitialCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        val viewports = mutableListOf<MapViewport>()
+        renderer.setViewportListener { viewports.add(it) }
+        viewports.clear()
+
+        renderer.onScroll(-SCROLL_DISTANCE, -SCROLL_DISTANCE)
+
+        assertThat(viewports).isNotEmpty()
+        assertThat(viewports.last().viewportBoundingBox).isNotNull
+    }
+
+    @Test
+    fun `notifies the viewport listener after a zoom`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.applyInitialCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        val viewports = mutableListOf<MapViewport>()
+        renderer.setViewportListener { viewports.add(it) }
+        viewports.clear()
+
+        renderer.zoomIn()
+
+        assertThat(viewports).isNotEmpty()
+        assertThat(viewports.last().viewportZoomLevel).isEqualTo(renderer.mapView.zoomLevelDouble)
+    }
+
+    @Test
+    fun `does not report a viewport before the map is laid out`() {
+        val renderer = createRenderer()
+        val viewports = mutableListOf<MapViewport>()
+
+        renderer.setViewportListener { viewports.add(it) }
+
+        assertThat(viewports).isEmpty()
+    }
+
+    @Test
+    fun `the car strike overlay does not draw the data-area outline`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.strikeListOverlay.parameters = Parameters(region = LOCAL_REGION)
+        renderer.strikeListOverlay.gridParameters =
+            GridParameters(
+                longitudeStart = 9.0,
+                latitudeStart = 51.0,
+                longitudeDelta = 1.0,
+                latitudeDelta = 1.0,
+                longitudeBins = 2,
+                latitudeBins = 2,
+            )
+        val canvas = mockk<Canvas>(relaxed = true)
+        every { canvas.clipBounds } returns Rect(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+
+        assertThat(renderer.strikeListOverlay.showDataArea).isFalse()
+
+        renderer.strikeListOverlay.draw(canvas, renderer.mapView, false)
+
+        verify(exactly = 0) { canvas.drawLine(any(), any(), any(), any(), any()) }
+    }
+
     private fun assertCentredOn(
         renderer: OsmdroidCarMapRenderer,
         latitude: Double,
@@ -469,5 +539,6 @@ class OsmdroidCarMapRendererTest {
         private const val INITIAL_LATITUDE = 52.0
         private const val INITIAL_LONGITUDE = 13.0
         private const val SCROLL_DISTANCE = 50f
+        private const val LOCAL_REGION = -1
     }
 }

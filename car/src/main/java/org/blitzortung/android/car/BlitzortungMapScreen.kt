@@ -65,9 +65,29 @@ class BlitzortungMapScreen(
         val activeRenderer = renderer
         if (activeRenderer != null) {
             carContext.getCarService(AppManager::class.java).setSurfaceCallback(CarMapSurfaceCallback(activeRenderer))
+            observeViewport(activeRenderer)
             observeData(activeRenderer)
         }
         observeSettings()
+    }
+
+    /**
+     * Reports every map viewport change to the data layer so its grid size and
+     * global/local data area follow the map. The first data request is deferred
+     * until the first viewport notification, so no throwaway request is made
+     * before the map is laid out.
+     */
+    private fun observeViewport(activeRenderer: CarMapRenderer) {
+        val carDependencies = dependencies ?: return
+        var initialViewportReported = false
+        activeRenderer.setViewportListener { viewport ->
+            carDependencies.strikeDataRepository.updateViewport(viewport)
+            if (!initialViewportReported) {
+                initialViewportReported = true
+                carDependencies.strikeDataRepository.start()
+                carDependencies.strikeDataRepository.updateData()
+            }
+        }
     }
 
     /**
@@ -111,9 +131,6 @@ class BlitzortungMapScreen(
                 locationPermission.request {
                     // On denial the configured default/manual location stays the fallback.
                 }
-
-                carDependencies.strikeDataRepository.start()
-                carDependencies.strikeDataRepository.updateData()
 
                 try {
                     awaitCancellation()

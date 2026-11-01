@@ -13,6 +13,7 @@ import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.cache.CacheSize
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.RequestStarted
+import org.blitzortung.android.protocol.MapViewport
 import org.junit.Before
 import org.junit.Test
 
@@ -88,6 +89,15 @@ class StrikeDataRepositoryTest {
         assertThat(uut.isRealtime()).isTrue()
         assertThat(uut.getIntervalDuration()).isEqualTo(60)
         assertThat(uut.getParameters()).isEqualTo(mainDataHandler.parameters)
+    }
+
+    @Test
+    fun updateViewportForwardsTheViewportToTheHandler() {
+        val viewport = mockk<MapViewport>(relaxed = true)
+
+        uut.updateViewport(viewport)
+
+        verify { mainDataHandler.updateViewport(viewport) }
     }
 
     @Test

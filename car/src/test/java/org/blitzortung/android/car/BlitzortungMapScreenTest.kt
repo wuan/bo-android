@@ -43,6 +43,8 @@ import org.robolectric.RuntimeEnvironment
 class BlitzortungMapScreenTest {
     private val alertRepository = mockk<AlertRepository>(relaxed = true)
 
+    private val strikeDataRepository = mockk<StrikeDataRepository>(relaxed = true)
+
     private val carSettings by lazy { CarSettings(RuntimeEnvironment.getApplication()) }
 
     @After
@@ -180,6 +182,37 @@ class BlitzortungMapScreenTest {
         assertThat(renderer.dimOverlay.alpha).isGreaterThan(0)
     }
 
+    @Test
+    fun `a renderer camera change reaches the repository`() {
+        registerDependencies()
+        val screen = createScreen()
+        val renderer = screen.renderer as OsmdroidCarMapRenderer
+
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+
+        verify { strikeDataRepository.updateViewport(any()) }
+    }
+
+    @Test
+    fun `no data request is issued before the first viewport update`() {
+        registerDependencies()
+
+        createScreen()
+
+        verify(exactly = 0) { strikeDataRepository.updateData() }
+    }
+
+    @Test
+    fun `the first viewport update issues a data request`() {
+        registerDependencies()
+        val screen = createScreen()
+        val renderer = screen.renderer as OsmdroidCarMapRenderer
+
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+
+        verify(exactly = 1) { strikeDataRepository.updateData() }
+    }
+
     private fun headerTitle(screen: BlitzortungMapScreen): String? {
         val mapTemplate = screen.onGetTemplate() as MapWithContentTemplate
         val listTemplate = mapTemplate.contentTemplate as ListTemplate
@@ -189,11 +222,16 @@ class BlitzortungMapScreenTest {
     private fun registerDependencies() {
         CarDependenciesProvider.dependencies =
             object : CarDependencies {
-                override val strikeDataRepository = mockk<StrikeDataRepository>(relaxed = true)
+                override val strikeDataRepository = this@BlitzortungMapScreenTest.strikeDataRepository
                 override val locationRepository = mockk<LocationRepository>(relaxed = true)
                 override val alertRepository = this@BlitzortungMapScreenTest.alertRepository
                 override val strikeColorHandler = mockk<StrikeColorHandler>(relaxed = true)
                 override val carSettings = this@BlitzortungMapScreenTest.carSettings
             }
+    }
+
+    private companion object {
+        private const val VIEWPORT_WIDTH = 800
+        private const val VIEWPORT_HEIGHT = 480
     }
 }
