@@ -22,6 +22,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Rect
 import android.location.Location
 import androidx.car.app.testing.TestCarContext
 import androidx.preference.PreferenceManager
@@ -132,6 +133,39 @@ class OsmdroidCarMapRendererTest {
         renderer.mapView.overlayManager.onDraw(Canvas(bitmap), renderer.mapView)
 
         assertThat(bitmap.getPixel(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2)).isEqualTo(Color.MAGENTA)
+    }
+
+    @Test
+    fun `the legend overlay is present and drawn last`() {
+        val renderer = createRenderer()
+        val overlays = renderer.mapView.overlays
+
+        assertThat(overlays).contains(renderer.legendOverlay)
+        assertThat(overlays.indexOf(renderer.legendOverlay)).isEqualTo(overlays.size - 1)
+    }
+
+    @Test
+    fun `the legend is drawn above the dim, strike and location overlays`() {
+        val renderer = createRenderer()
+        val overlays = renderer.mapView.overlays
+        val legendIndex = overlays.indexOf(renderer.legendOverlay)
+
+        assertThat(legendIndex)
+            .describedAs("the legend must be drawn after the scrim so map dimming cannot affect it")
+            .isGreaterThan(overlays.indexOf(renderer.dimOverlay))
+        assertThat(legendIndex).isGreaterThan(overlays.indexOf(renderer.strikeListOverlay))
+        assertThat(legendIndex).isGreaterThan(overlays.indexOf(renderer.ownLocationOverlay))
+    }
+
+    @Test
+    fun `the legend hugs the left edge above the host's chrome`() {
+        val renderer = createRenderer()
+
+        renderer.onVisibleAreaChanged(Rect(320, 80, VIEWPORT_WIDTH, VIEWPORT_HEIGHT - 40))
+
+        val bounds = renderer.legendOverlay.panelBounds()
+        assertThat(bounds.left).isLessThan(100f)
+        assertThat(bounds.bottom).isLessThanOrEqualTo((VIEWPORT_HEIGHT - 40).toFloat())
     }
 
     @Test

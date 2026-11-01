@@ -17,4 +17,5 @@
     <string name="car_dim_follow_car">Follow car</string>
     <string name="car_dim_on">On</string>
     <string name="car_dim_off">Off</string>
+    <string name="car_legend_entry">%1$s %2$d min</string>
 </resources>

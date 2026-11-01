@@ -19,6 +19,7 @@
 package org.blitzortung.android.car
 
 import android.graphics.Point
+import android.graphics.Rect
 import androidx.car.app.SurfaceContainer
 import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.location.LocationEvent
@@ -32,6 +33,20 @@ interface CarMapRenderer {
     fun onSurfaceAvailable(surfaceContainer: SurfaceContainer)
 
     fun onSurfaceDestroyed(surfaceContainer: SurfaceContainer)
+
+    /**
+     * The part of the surface the host currently guarantees to be visible, in
+     * surface pixels. Used to keep surface-drawn UI clear of host chrome such as
+     * the content list.
+     */
+    fun onVisibleAreaChanged(visibleArea: Rect)
+
+    /**
+     * The part of the surface the host designates as stable, in surface pixels.
+     * Preferred over the visible area for persistent UI so it does not move when
+     * transient host UI appears.
+     */
+    fun onStableAreaChanged(stableArea: Rect)
 
     fun onScroll(
         distanceX: Float,

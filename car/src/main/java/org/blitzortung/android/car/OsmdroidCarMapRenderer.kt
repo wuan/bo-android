@@ -20,6 +20,7 @@ package org.blitzortung.android.car
 
 import android.app.Presentation
 import android.graphics.Point
+import android.graphics.Rect
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import androidx.car.app.CarContext
@@ -72,12 +73,19 @@ class OsmdroidCarMapRenderer(
      */
     internal val dimOverlay: MapDimOverlay = MapDimOverlay()
 
+    /**
+     * Strike age colour legend. Added last so it draws above the strike and
+     * dimming overlays and is never dimmed by the scrim.
+     */
+    internal val legendOverlay: CarLegendOverlay = CarLegendOverlay(carContext, strikeListOverlay)
+
     init {
         // Index 0 => drawn directly above the map tiles and below every data
         // overlay (strikes, grid, own location), so only the background dims.
         mapView.overlays.add(0, dimOverlay)
         mapView.overlays.add(strikeListOverlay)
         mapView.overlays.add(ownLocationOverlay)
+        mapView.overlays.add(legendOverlay)
         mapView.addMapListener(strikeListOverlay)
         mapView.addMapListener(ownLocationOverlay)
     }
@@ -99,6 +107,8 @@ class OsmdroidCarMapRenderer(
     private var cameraRestored = false
 
     override fun onSurfaceAvailable(surfaceContainer: SurfaceContainer) {
+        legendOverlay.densityDpi = surfaceContainer.dpi
+        legendOverlay.surfaceHeight = surfaceContainer.height
         applyInitialCamera(surfaceContainer.width, surfaceContainer.height)
 
         val display =
@@ -125,6 +135,16 @@ class OsmdroidCarMapRenderer(
         presentation = null
         virtualDisplay?.release()
         virtualDisplay = null
+    }
+
+    override fun onVisibleAreaChanged(visibleArea: Rect) {
+        legendOverlay.onVisibleAreaChanged(visibleArea)
+        mapView.invalidate()
+    }
+
+    override fun onStableAreaChanged(stableArea: Rect) {
+        legendOverlay.onStableAreaChanged(stableArea)
+        mapView.invalidate()
     }
 
     override fun onScroll(

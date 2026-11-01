@@ -18,6 +18,7 @@
 
 package org.blitzortung.android.car
 
+import android.graphics.Rect
 import androidx.car.app.SurfaceCallback
 import androidx.car.app.SurfaceContainer
 
@@ -31,6 +32,10 @@ class CarMapSurfaceCallback(
 
     override fun onSurfaceDestroyed(surfaceContainer: SurfaceContainer) =
         renderer.onSurfaceDestroyed(surfaceContainer)
+
+    override fun onVisibleAreaChanged(visibleArea: Rect) = renderer.onVisibleAreaChanged(visibleArea)
+
+    override fun onStableAreaChanged(stableArea: Rect) = renderer.onStableAreaChanged(stableArea)
 
     override fun onScroll(
         distanceX: Float,
