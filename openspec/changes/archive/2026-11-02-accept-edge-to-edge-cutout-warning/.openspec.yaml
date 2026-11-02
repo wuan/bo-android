@@ -1,0 +1,7 @@
+schema: spec-driven
+created: 2026-11-02
+
+# No spec-level behavior changes: this records a deliberate decision to accept a
+# Google Play warning and documents its root cause. The window layout behavior is
+# unchanged and already covered by specs/edge-to-edge-display.
+skip_specs: true

@@ -240,6 +240,10 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             Toast.makeText(baseContext, "bad android version", Toast.LENGTH_LONG).show()
         }
 
+        // Known accepted Play warning: this AndroidX helper writes
+        // LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES on API 28-29. See AGENTS.md
+        // ("Edge-to-Edge Display") and
+        // openspec/changes/archive/2026-11-02-accept-edge-to-edge-cutout-warning/.
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
