@@ -48,6 +48,11 @@ Project documentation: https://blitzortung.tryb.de
 
 # Build Android App Bundle (AAB)
 ./gradlew bundleRelease
+
+# Report the R8 optimisation/obfuscation/shrinking rates from the built AABs
+# (compares against the recorded baseline; see docs in the script header)
+./scripts/r8-report.sh            # build both bundles, then report
+./scripts/r8-report.sh --no-build # report from the existing bundles
 ```
 
 ### Installing on device
@@ -276,7 +281,7 @@ The app targets SDK 35+, so Android 15+ forces edge-to-edge; earlier versions op
 - Apply window insets **exactly once per screen** (no duplicated handling, e.g. no `android:fitsSystemWindows="true"` on the root combined with a code listener). Use a single `ViewCompat.setOnApplyWindowInsetsListener`, read `WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()`, and apply the insets as padding to the specific containers that must clear the bars so full-bleed content (e.g. the map) can draw behind them.
 - Because padding changes are delivered on every inset dispatch, use `View.setPadding(...)` with the base padding recomputed (or track the base values) rather than additive `updatePadding`, so repeated dispatches do not accumulate.
 - Overlays drawn inside the map canvas (osmdroid scale bar, copyright) are positioned with raw pixel offsets and do not receive insets; shift their offsets by the bottom system-bar inset.
-- **Known accepted Play warning:** Google Play reports *"Your app uses deprecated APIs or parameters for edge-to-edge"* naming `LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES`. This is knowingly accepted and is **not** an app bug. The constant (value `1`) is written only by AndroidX for pre-Android-15 devices — `androidx.activity.EdgeToEdgeApi28` (reached via `enableEdgeToEdge()`) and `androidx.core.view.WindowCompat.enableEdgeToEdge` — and the `-keep class androidx.** { *; }` rule in `app/proguard-rules.pro` / `automotive/proguard-rules.pro` retains that code in the dex even when it is unreachable. On Android 15+ the same helper sets `ALWAYS`, so behaviour is correct. Do not "fix" it by hand-rolling edge-to-edge or by narrowing the AndroidX keep rule unless Play makes the warning blocking; the bytecode evidence and the rejected-fix plan live in `openspec/changes/archive/2026-11-02-accept-edge-to-edge-cutout-warning/design.md`. (This corrects the earlier guess in the archived `fix-edge-to-edge-display` change that it "originates in AppCompat/Material internals"; that archived note is kept as history.)
+- **Known accepted Play warning:** Google Play reports *"Your app uses deprecated APIs or parameters for edge-to-edge"* naming `LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES`. This is knowingly accepted and is **not** an app bug. The constant (value `1`) is written only by AndroidX for pre-Android-15 devices — `androidx.activity.EdgeToEdgeApi28` (reached via `enableEdgeToEdge()`) and `androidx.core.view.WindowCompat.enableEdgeToEdge`. On Android 15+ the same helper sets `ALWAYS`, so behaviour is correct. Historically the warning was amplified by the blanket `-keep class androidx.** { *; }` rule (then in `app/proguard-rules.pro` / `automotive/proguard-rules.pro`), which retained unreachable AndroidX bytecode in the dex; that rule was **removed** by the `improve-r8-optimization` change, and the shared keep set now lives in `config/proguard/shared-rules.pro` without keeping the whole `androidx` namespace. The warning may still appear on the **phone** artifact, which has a live `enableEdgeToEdge()` reference, but the dead-code retention behind it is gone (the **automotive** artifact should clear). Do **not** hand-roll edge-to-edge to chase the warning — the bytecode evidence and the accepted-warning rationale live in `openspec/changes/archive/2026-11-02-accept-edge-to-edge-cutout-warning/design.md`. (This corrects the earlier guess in the archived `fix-edge-to-edge-display` change that it "originates in AppCompat/Material internals"; that archived note is kept as history.)
 
 ### Threading Model
 

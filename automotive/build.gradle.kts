@@ -5,6 +5,9 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+// Shared R8 rules applied to both the phone and automotive artifacts (design D9).
+val sharedProguardRules = rootProject.file("config/proguard/shared-rules.pro")
+
 android {
     compileSdk = 37
 
@@ -27,6 +30,7 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
+                sharedProguardRules,
                 "proguard-rules.pro",
             )
         }

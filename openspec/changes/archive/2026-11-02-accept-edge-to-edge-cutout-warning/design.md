@@ -62,6 +62,23 @@ The only way to remove the warning is to do both of the following, which is why 
 
 Rejected while the warning is non-blocking; this note is the reference if that changes.
 
+### Update (2026-11-02): the AndroidX keep rule has since been narrowed
+
+The `improve-r8-optimization` change removed `-keep class androidx.** { *; }`
+and `-keep interface androidx.** { *; }` and moved the remaining keep set into
+the shared `config/proguard/shared-rules.pro`. Narrowing the keep rule — D3's
+second option, rejected here only because it was out of scope at the time — was
+therefore carried out. The dead `WindowCompat.enableEdgeToEdge` bytecode that
+D2 attributed to the keep rule is now subject to shrinking, so:
+
+- the **automotive** bundle should clear the deprecated-API warning;
+- the **phone** bundle keeps a live `enableEdgeToEdge()` reference and may still
+  warn.
+
+D3's other option (hand-rolling edge-to-edge) remains discarded. This note
+supersedes the "do not narrow the keep rule" guidance for that rule
+specifically; the accepted-warning rationale above is otherwise unchanged.
+
 ## Risks / Trade-offs
 
 - **Warning persists across releases** → accepted and documented; it is a Play recommendation, not a rejection.
