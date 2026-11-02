@@ -29,8 +29,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string>
     <string name="legend_grid">Квадрат</string>
     <string name="unit_minute">мин.</string>
-    <string name="unit_km">км</string>
-    <string name="activity">активность</string>
     <string name="alarms">Предупреждения</string>
     <string name="alarms_not_available">Предупреждения отключены\nили отсутствует информация\nо месторасположении</string>
     <string name="preferences">Настройки</string>
@@ -220,16 +218,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="notification_distance_limit">Предел расстояния для уведомления</string>
     <string name="signaling_distance_limit">Предел расстояния для сигнала</string>
 
-    <string-array name="direction_names">
-        <item>Ю</item>
-        <item>ЮЗ</item>
-        <item>З</item>
-        <item>СЗ</item>
-        <item>С</item>
-        <item>СВ</item>
-        <item>В</item>
-        <item>ЮВ</item>
-    </string-array>
     <string-array name="distance_limits">
         <item>Выключен</item>
         <item>10 км/миль</item>
@@ -287,14 +275,12 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_audio_signal">Выбор сигнала предупреждений</string>
     <string name="alarm_vibration_signal">Продолжительность вибрации сигнала предупреждения</string>
     <string name="alarm_vibration_signal_summary">Выберите продолжительность вибрации в случае предупреждения, мс</string>
-    <string name="location_provider_disabled">Месторасположение \'%s\' отключено</string>
     <string name="service_url">URL адрес стороннего сервера</string>
     <string name="set_manual_location">Установить месторасположение вручную</string>
     <string name="error_indicator">Ошибка индикатора</string>
     <string name="app_log">Лог приложения</string>
     <string name="share_log">Отправить по email …</string>
     <string name="share_unavailable">Обмен по E-mail не доступен.</string>
-    <string name="provider_warning">Пожалуйста, не используйте Blitzortung.org во время высокой активности молний, так как производительность отображения карты будет снижаться.</string>
     <string name="own_location_size">Символ Вашего месторасположения</string>
     <string name="own_location_size_summary">Установите размер символа Вашего месторасположения</string>
     <string name="keep_zoom_goto_own_location_summary">Установка сохранения Вашего текущего масштаба при центрировании собственного местоположения</string>
@@ -306,7 +292,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="hide_grid_summary">Скрыть слой молний/сетки, чтобы отображались только кластеры (требуются кластеры). Данные о молниях по-прежнему загружаются для предупреждений и гистограммы.</string>
     <string name="cluster_interval">Интервал кластеров</string>
     <string name="not_available">н/д</string>
-    <string name="unit_miles">миль</string>
     <string name="map_scale">Масштаб карты</string>
     <string name="map_scale_summary">Выберите процент масштабирования тайлов карты</string>
     <string name="location_permission_required">Разрешение местоположения требуется при использовании источника местоположения устройства.</string>

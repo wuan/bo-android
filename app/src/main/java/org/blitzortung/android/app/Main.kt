@@ -65,10 +65,10 @@ import org.blitzortung.android.app.permission.requester.BackgroundLocationPermis
 import org.blitzortung.android.app.permission.requester.LocationPermissionRequester
 import org.blitzortung.android.app.permission.requester.NotificationPermissionRequester
 import org.blitzortung.android.app.permission.requester.WakeupPermissionRequester
-import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
-import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.preferences.OnSharedPreferenceChangeListener
+import org.blitzortung.android.preferences.PreferenceKey
 import org.blitzortung.android.app.view.components.StatusComponent
-import org.blitzortung.android.app.view.get
+import org.blitzortung.android.preferences.get
 import org.blitzortung.android.app.viewmodel.MainViewModel
 import org.blitzortung.android.data.AUTO_GRID_SIZE_VALUE
 import org.blitzortung.android.data.MainDataHandler
@@ -93,6 +93,7 @@ import org.blitzortung.android.map.overlay.FadeOverlay
 import org.blitzortung.android.map.overlay.OwnLocationOverlay
 import org.blitzortung.android.map.overlay.StrikeListOverlay
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
+import org.blitzortung.android.map.showStrikePopup
 import org.blitzortung.android.util.LogUtil
 import org.blitzortung.android.util.TabletAwareView
 import org.blitzortung.android.util.isAtLeast
@@ -433,7 +434,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         mapFragment = supportFragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG) as MapFragment
 
-        strikeListOverlay = StrikeListOverlay(mapFragment, strikeColorHandler)
+        strikeListOverlay = StrikeListOverlay(mapFragment.mapView, strikeColorHandler, ::showStrikePopup)
         strikeListOverlay.isEnabled = isGridVisible()
         setHistoricStatusString()
         mapFragment.mapView.addMapListener(strikeListOverlay)
@@ -878,7 +879,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     }
 
     companion object {
-        const val LOG_TAG = "BO_ANDROID"
+        const val LOG_TAG = LogUtil.LOG_TAG
         const val MAP_FRAGMENT_TAG = "org.blitzortung.MAP_FRAGMENT_TAG"
     }
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unit_km">km</string>
+    <string name="unit_miles">mi.</string>
+    <string name="provider_warning">Non usare il provider di dati Blitzortung.org durante una forte attività di fulmini, poiché le prestazioni della mappa peggioreranno.</string>
+    <string name="activity">attività</string>
+    <string-array name="direction_names">
+        <item>S</item>
+        <item>SO</item>
+        <item>O</item>
+        <item>NO</item>
+        <item>N</item>
+        <item>NE</item>
+        <item>E</item>
+        <item>SE</item>
+    </string-array>
+    <string name="location_provider_disabled">fornitore della posizione \'%s\' disabilitato</string>
+</resources>

@@ -1,0 +1,85 @@
+package org.blitzortung.android.data.cache
+
+import android.util.Log
+import java.io.Serializable
+import javax.inject.Inject
+import javax.inject.Singleton
+import org.blitzortung.android.data.ClusterParameters
+import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.provider.result.ClusterReceived
+import org.blitzortung.android.data.provider.result.DataReceived
+import org.blitzortung.android.util.LogUtil.LOG_TAG
+
+@Singleton
+class DataCache
+    @Inject
+    constructor() {
+        val cache = hashMapOf<Parameters, Timestamped<DataReceived>>()
+        val clusterCache = hashMapOf<ClusterParameters, Timestamped<ClusterReceived>>()
+
+        operator fun get(
+            parameters: Parameters,
+            expiryTime: Long = DEFAULT_EXPIRY_TIME,
+        ): DataReceived? {
+            val entry = cache[parameters]
+            return if (entry != null && entry.timestamp < System.currentTimeMillis() - expiryTime) {
+                cache.remove(parameters)
+                null
+            } else {
+                entry?.value
+            }
+        }
+
+        fun put(
+            parameters: Parameters,
+            dataEvent: DataReceived,
+        ) {
+            cache[parameters] = Timestamped(dataEvent.copy(sequenceNumber = null))
+        }
+
+        fun getCluster(
+            parameters: ClusterParameters,
+            expiryTime: Long = CLUSTER_EXPIRY_TIME,
+        ): ClusterReceived? {
+            val entry = clusterCache[parameters] ?: return null
+            if (entry.timestamp < System.currentTimeMillis() - expiryTime) {
+                clusterCache.remove(parameters)
+                return null
+            }
+            return entry.value
+        }
+
+        fun putCluster(
+            parameters: ClusterParameters,
+            dataEvent: ClusterReceived,
+        ) {
+            clusterCache[parameters] = Timestamped(dataEvent.copy(sequenceNumber = null))
+        }
+
+        fun calculateTotalSize(): CacheSize =
+            cache.entries.fold(CacheSize(0, 0)) { acc, entry ->
+                val resultEvent = entry.value.value
+                val strikeCount = resultEvent.strikes?.size ?: 0
+                Log.v(LOG_TAG, "${entry.key} -> $strikeCount")
+                CacheSize(acc.entries + 1, acc.strikes + strikeCount)
+            }
+
+        fun clear() {
+            cache.clear()
+            clusterCache.clear()
+        }
+
+        companion object {
+            const val DEFAULT_EXPIRY_TIME: Long = 5 * 60 * 1000
+
+            /** Clusters are produced every minute, so their cached responses expire faster. */
+            const val CLUSTER_EXPIRY_TIME: Long = 60 * 1000
+        }
+    }
+
+data class Timestamped<T>(val value: T, val timestamp: Long = System.currentTimeMillis()) : Serializable
+
+data class CacheSize(
+    val entries: Int,
+    val strikes: Int,
+)

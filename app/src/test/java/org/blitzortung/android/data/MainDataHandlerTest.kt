@@ -12,12 +12,13 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.preferences.PreferenceKey
 import org.blitzortung.android.createLocationEvent
 import org.blitzortung.android.data.MainDataHandler.Companion.REQUEST_STARTED_EVENT
 import org.blitzortung.android.data.cache.DataCache
 import org.blitzortung.android.data.provider.DataProviderFactory
 import org.blitzortung.android.data.provider.DataProviderType
+import org.blitzortung.android.data.provider.GLOBAL_REGION
 import org.blitzortung.android.data.provider.LocalData
 import org.blitzortung.android.data.provider.result.ClusterEvent
 import org.blitzortung.android.data.provider.result.ClusterReceived
@@ -91,6 +92,24 @@ class MainDataHandlerTest {
 
         assertThat(result2).isTrue
         assertThat(uut.parameters.gridSize).isEqualTo(10000)
+    }
+
+    @Test
+    fun updateViewportForcesAutoGridSizeAndGlobalRegion() {
+        preferences.edit().putString(PreferenceKey.REGION.toString(), "1").commit()
+        uut.onSharedPreferenceChanged(this.preferences, PreferenceKey.REGION)
+        assertThat(uut.parameters.region).isEqualTo(1)
+
+        val mapView = mockk<OwnMapView>()
+        every { mapView.viewportIsAnimating } returns false
+        every { mapView.viewportBoundingBox } returns BoundingBox(45.0, 15.0, 40.0, 10.0)
+        every { mapView.viewportZoomLevel } returns 8.0
+
+        uut.updateViewport(mapView)
+
+        assertThat(uut.parameters.region).isEqualTo(GLOBAL_REGION)
+        assertThat(uut.parameters.gridSize).isEqualTo(5000)
+        assertThat(uut.autoGridSize).isTrue
     }
 
     @Test
@@ -368,8 +387,8 @@ class MainDataHandlerTest {
     fun reactOnScrollWithinDataArea() {
         val mapView = mockk<OwnMapView>()
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
-        every { mapView.boundingBox } returns boundingBox
-        every { mapView.zoomLevelDouble } returns 6.0
+        every { mapView.viewportBoundingBox } returns boundingBox
+        every { mapView.viewportZoomLevel } returns 6.0
         every { localData.update(boundingBox, false) } returns false
 
         val event = ScrollEvent(mapView, 100, 100)
@@ -382,10 +401,10 @@ class MainDataHandlerTest {
     @Test
     fun reactOnScrollLeavingDataArea() {
         val mapView = mockk<OwnMapView>()
-        every { mapView.isAnimating } returns false
+        every { mapView.viewportIsAnimating } returns false
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
-        every { mapView.boundingBox } returns boundingBox
-        every { mapView.zoomLevelDouble } returns 6.0
+        every { mapView.viewportBoundingBox } returns boundingBox
+        every { mapView.viewportZoomLevel } returns 6.0
         every { localData.update(boundingBox, false) } returns true
         val event = ScrollEvent(mapView, 100, 100)
 
@@ -400,10 +419,10 @@ class MainDataHandlerTest {
         val animator = mockk<ValueAnimator>(relaxed = true)
         every { animator.listeners } returns ArrayList<Animator.AnimatorListener>()
         every { mapView.animator() } returns animator
-        every { mapView.isAnimating } returns true
+        every { mapView.viewportIsAnimating } returns true
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
-        every { mapView.boundingBox } returns boundingBox
-        every { mapView.zoomLevelDouble } returns 6.0
+        every { mapView.viewportBoundingBox } returns boundingBox
+        every { mapView.viewportZoomLevel } returns 6.0
         every { localData.update(boundingBox, false) } returns true
         val event = ScrollEvent(mapView, 100, 100)
 
@@ -430,10 +449,10 @@ class MainDataHandlerTest {
     @Test
     fun reactOnZoomWithinDataArea() {
         val mapView = mockk<OwnMapView>()
-        every { mapView.isAnimating } returns false
+        every { mapView.viewportIsAnimating } returns false
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
-        every { mapView.boundingBox } returns boundingBox
-        every { mapView.zoomLevelDouble } returns 6.0
+        every { mapView.viewportBoundingBox } returns boundingBox
+        every { mapView.viewportZoomLevel } returns 6.0
         every { localData.update(boundingBox, false) } returns false
         val event = ZoomEvent(mapView, 6.0)
 
@@ -445,10 +464,10 @@ class MainDataHandlerTest {
     @Test
     fun reactOnZoomlLeavingDataArea() {
         val mapView = mockk<OwnMapView>()
-        every { mapView.isAnimating } returns false
+        every { mapView.viewportIsAnimating } returns false
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
-        every { mapView.boundingBox } returns boundingBox
-        every { mapView.zoomLevelDouble } returns 6.0
+        every { mapView.viewportBoundingBox } returns boundingBox
+        every { mapView.viewportZoomLevel } returns 6.0
         every { localData.update(boundingBox, false) } returns true
         val event = ZoomEvent(mapView, 6.0)
 
@@ -460,10 +479,10 @@ class MainDataHandlerTest {
     @Test
     fun reactOnZoomlUpdateGridSize() {
         val mapView = mockk<OwnMapView>()
-        every { mapView.isAnimating } returns false
+        every { mapView.viewportIsAnimating } returns false
         val boundingBox = BoundingBox(45.0, 15.0, 40.0, 10.0)
-        every { mapView.boundingBox } returns boundingBox
-        every { mapView.zoomLevelDouble } returns 8.0
+        every { mapView.viewportBoundingBox } returns boundingBox
+        every { mapView.viewportZoomLevel } returns 8.0
         every { localData.update(boundingBox, false) } returns false
         val event = ZoomEvent(mapView, 8.0)
 

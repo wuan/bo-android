@@ -34,8 +34,8 @@ import org.blitzortung.android.app.docoverlay.DocBalloonLayout
 import org.blitzortung.android.app.docoverlay.DocBalloonViewBinder
 import org.blitzortung.android.app.docoverlay.IntPoint
 import org.blitzortung.android.app.docoverlay.IntRect
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.get
+import org.blitzortung.android.preferences.PreferenceKey
+import org.blitzortung.android.preferences.get
 
 /**
  * One explanation shown as a balloon: the view it describes plus the text to display.

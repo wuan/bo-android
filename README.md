@@ -19,6 +19,13 @@ The Android App *Blitzortung Lightning Monitor* built from these sources visuali
 
 Please have a look at [the documentation](https://blitzortung.tryb.de) for more information on usage.
 
+## Car support
+
+The app also runs as a Weather-category templated app on **Android Auto** and
+**Android Automotive OS**, showing the live lightning map with the alert list.
+See [doc/car-support.md](doc/car-support.md) for the architecture, testing and
+release process.
+
 ## Development builds
 
 The app defines three build variants:

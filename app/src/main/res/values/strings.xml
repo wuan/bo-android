@@ -35,8 +35,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="project_email" translatable="false">blitzortung@tryb.de</string>
     <string name="legend_grid">Grid</string>
     <string name="unit_minute">min</string>
-    <string name="unit_km">km</string>
-    <string name="activity">activity</string>
     <string name="alarms">Alarms</string>
     <string name="alarms_not_available">Alarms disabled\nor\nLocation information missing</string>
     <string name="preferences">Preferences</string>
@@ -233,16 +231,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="signaling_distance_limit">Signaling distance limit</string>
     <string name="signaling_distance_limit_summary" translatable="false">%s</string>
 
-    <string-array name="direction_names">
-        <item>S</item>
-        <item>SW</item>
-        <item>W</item>
-        <item>NW</item>
-        <item>N</item>
-        <item>NE</item>
-        <item>E</item>
-        <item>SE</item>
-    </string-array>
     <string-array name="distance_limits">
         <item>off</item>
         <item>10 km/mi.</item>
@@ -302,7 +290,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_audio_signal">Alarm audio signal</string>
     <string name="alarm_vibration_signal">Alarm vibration duration</string>
     <string name="alarm_vibration_signal_summary">choose the duration of vibration signaling in alarm case (in milliseconds)</string>
-    <string name="location_provider_disabled">location provider \'%s\' is disabled</string>
     <string name="service_url">Custom Service URL</string>
     <string name="set_manual_location">Set manual location</string>
     <string name="error_indicator">Error indicator</string>
@@ -310,7 +297,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     <string name="app_log">Application log</string>
     <string name="share_log">Send email …</string>
     <string name="share_unavailable">E-mail sharing is not available.</string>
-    <string name="provider_warning">Please do not use the Blitzortung.org data provider during high lightning activity, as the map display performance will degrade.</string>
     <string name="own_location_size">Own location symbol size</string>
     <string name="own_location_size_summary">Set the size of the own location symbol</string>
     <string name="keep_zoom_goto_own_location_summary">Setting to keep the current zoom when centering the own location</string>
@@ -332,7 +318,6 @@ Russian by Ivan Karev (karev.ivan@gmail.com)\n
     </string-array>
     <string name="notification_channel_name" translatable="false">Storm Alarms</string>
     <string name="not_available">n/a</string>
-    <string name="unit_miles">mi.</string>
     <string name="map_scale">Map scale</string>
     <string name="map_scale_summary">Select scaling [%] of map tiles</string>
     <string name="location_permission_required">Location permission is required when using a device location source.</string>

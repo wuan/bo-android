@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unit_km">km</string>
+    <string name="unit_miles">mi.</string>
+    <string name="provider_warning">Bitte nutzen sie die Blitzortung.org Datenquelle nicht bei hoher Blitzaktivität. Die Dastellung der Karte wird möglicherweise verzögert.</string>
+    <string name="activity">Aktivität</string>
+    <string-array name="direction_names">
+        <item>S</item>
+        <item>SW</item>
+        <item>W</item>
+        <item>NW</item>
+        <item>N</item>
+        <item>NO</item>
+        <item>O</item>
+        <item>SO</item>
+    </string-array>
+    <string name="location_provider_disabled">Location-Provider \'%s\' ist deaktiviert</string>
+</resources>

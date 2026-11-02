@@ -13,9 +13,9 @@ import org.blitzortung.android.app.R
 import org.blitzortung.android.app.permission.PermissionRequester
 import org.blitzortung.android.app.permission.PermissionsSupport
 import org.blitzortung.android.app.permission.requester.BackgroundLocationPermissionRequester.Companion.isBackgroundAlertEnabled
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.get
-import org.blitzortung.android.app.view.put
+import org.blitzortung.android.preferences.PreferenceKey
+import org.blitzortung.android.preferences.get
+import org.blitzortung.android.preferences.put
 
 class NotificationPermissionRequester(
     private val activity: Activity,

@@ -174,27 +174,24 @@ class HistogramView
         }
 
         private fun createHistogram(result: DataReceived): IntArray {
-            result.parameters.let { parameters ->
-                if (result.strikes == null) {
-                    return intArrayOf()
+            val parameters = result.parameters
+            val strikes = result.strikes ?: return intArrayOf()
+
+            Log.v(LOG_TAG, "HistogramView create histogram from ${strikes.size} total strikes")
+            val referenceTime = result.referenceTime
+
+            val binInterval = 5
+            val binCount = parameters.intervalDuration / binInterval
+            val histogram = IntArray(binCount)
+
+            strikes.forEach { strike ->
+                val minutes = (referenceTime - strike.timestamp) / 1000 / 60
+                val binIndex = (binCount - 1) - (minutes / binInterval).toInt()
+                if (binIndex in 0 until binCount) {
+                    histogram[binIndex]++
                 }
-
-                Log.v(LOG_TAG, "HistogramView create histogram from ${result.strikes.size} total strikes")
-                val referenceTime = result.referenceTime
-
-                val binInterval = 5
-                val binCount = parameters.intervalDuration / binInterval
-                val histogram = IntArray(binCount)
-
-                result.strikes.forEach { strike ->
-                    val minutes = (referenceTime - strike.timestamp) / 1000 / 60
-                    val binIndex = (binCount - 1) - (minutes / binInterval).toInt()
-                    if (binIndex in 0 until binCount) {
-                        histogram[binIndex]++
-                    }
-                }
-                return histogram
             }
+            return histogram
         }
     }
 

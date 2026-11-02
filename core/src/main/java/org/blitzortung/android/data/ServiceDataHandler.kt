@@ -1,0 +1,99 @@
+/*
+
+   Copyright 2015 Andreas Würl
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+*/
+
+package org.blitzortung.android.data
+
+import android.location.Location
+import android.os.PowerManager
+import android.util.Log
+import javax.inject.Inject
+import javax.inject.Singleton
+import org.blitzortung.android.data.provider.DataProviderFactory
+import org.blitzortung.android.data.provider.DataProviderType
+import org.blitzortung.android.data.provider.LOCAL_REGION
+import org.blitzortung.android.data.provider.LocalData
+import org.blitzortung.android.data.provider.data.DataProvider
+import org.blitzortung.android.data.provider.result.DataEvent
+import org.blitzortung.android.data.provider.result.NoData
+import org.blitzortung.android.location.LocationEvent
+import org.blitzortung.android.protocol.ConsumerContainer
+import org.blitzortung.android.util.LogUtil.LOG_TAG
+
+@Singleton
+class ServiceDataHandler
+@Inject
+constructor(
+    private val wakeLock: PowerManager.WakeLock,
+    dataProviderFactory: DataProviderFactory,
+    private val localData: LocalData,
+) {
+    private var location: Location? = null
+
+    private val dataProvider: DataProvider = dataProviderFactory.getDataProviderForType(DataProviderType.RPC)
+
+    private val parameters =
+        Parameters(
+            region = LOCAL_REGION,
+            gridSize = 5000,
+            interval = TimeInterval.BACKGROUND,
+            countThreshold = 0,
+        )
+
+    private val dataConsumerContainer =
+        object : ConsumerContainer<DataEvent>(NoData) {
+            override fun addedFirstConsumer() {
+                Log.d(LOG_TAG, "ServiceDataHandler: added first data consumer")
+            }
+
+            override fun removedLastConsumer() {
+                Log.d(LOG_TAG, "ServiceDataHandler: removed last data consumer")
+            }
+        }
+
+    val locationEventConsumer: (LocationEvent) -> Unit = { locationEvent ->
+        Log.v(LOG_TAG, "AlertView received location ${locationEvent}")
+        location = locationEvent.location()
+    }
+
+    private val dataMode = DataMode(grid = true, region = false)
+
+    fun updateData() {
+        Log.v(LOG_TAG, "ServiceDataHandler.updateData() $activeParameters $wakeLock")
+        FetchBackgroundDataTask(dataMode, dataProvider, { sendEvent(it) }, wakeLock)
+            .execute(activeParameters)
+    }
+
+    fun requestUpdates(dataConsumer: (DataEvent) -> Unit) {
+        dataConsumerContainer.addConsumer(dataConsumer)
+    }
+
+    fun removeUpdates(dataConsumer: (DataEvent) -> Unit) {
+        dataConsumerContainer.removeConsumer(dataConsumer)
+    }
+
+    private val activeParameters: Parameters
+        get() = localData.updateParameters(parameters.copy(region = LOCAL_REGION), location)
+
+    private fun sendEvent(dataEvent: DataEvent) {
+        dataConsumerContainer.broadcast(dataEvent)
+    }
+
+    companion object {
+        const val WAKELOCK_TIMEOUT = 5000L
+    }
+}

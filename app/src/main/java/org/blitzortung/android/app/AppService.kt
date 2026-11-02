@@ -41,9 +41,9 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.controller.NotificationHandler.Companion.CHANNEL_ID
-import org.blitzortung.android.app.view.OnSharedPreferenceChangeListener
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.get
+import org.blitzortung.android.preferences.OnSharedPreferenceChangeListener
+import org.blitzortung.android.preferences.PreferenceKey
+import org.blitzortung.android.preferences.get
 import org.blitzortung.android.data.repository.ServiceStrikeDataRepository
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.location.LocationRepository

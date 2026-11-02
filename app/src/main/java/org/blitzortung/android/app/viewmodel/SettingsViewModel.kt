@@ -25,7 +25,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.preferences.PreferenceKey
 
 /**
  * SettingsViewModel provides reactive access to preference changes and typed

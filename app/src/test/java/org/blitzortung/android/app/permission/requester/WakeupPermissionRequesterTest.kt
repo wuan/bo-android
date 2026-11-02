@@ -14,8 +14,8 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.app.Main
 import org.blitzortung.android.app.permission.PermissionsSupport
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.put
+import org.blitzortung.android.preferences.PreferenceKey
+import org.blitzortung.android.preferences.put
 import org.blitzortung.android.settings.getString
 import org.junit.Before
 import org.junit.Test

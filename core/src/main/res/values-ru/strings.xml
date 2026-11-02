@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="unit_km">км</string>
+    <string name="unit_miles">миль</string>
+    <string name="provider_warning">Пожалуйста, не используйте Blitzortung.org во время высокой активности молний, так как производительность отображения карты будет снижаться.</string>
+    <string name="activity">активность</string>
+    <string-array name="direction_names">
+        <item>Ю</item>
+        <item>ЮЗ</item>
+        <item>З</item>
+        <item>СЗ</item>
+        <item>С</item>
+        <item>СВ</item>
+        <item>В</item>
+        <item>ЮВ</item>
+    </string-array>
+    <string name="location_provider_disabled">Месторасположение \'%s\' отключено</string>
+</resources>

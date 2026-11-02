@@ -89,7 +89,7 @@ class SymbolRenderer(
         canvas: Canvas,
     ) {
         with(warnText) {
-            color = context.getColor(R.color.RedWarn)
+            color = context.getColor(org.blitzortung.android.R.color.RedWarn)
             textAlign = Align.CENTER
             textSize = DEFAULT_FONT_SIZE.toFloat()
 

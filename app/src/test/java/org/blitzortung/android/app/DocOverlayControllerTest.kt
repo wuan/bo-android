@@ -12,7 +12,7 @@ import android.widget.TextView
 import androidx.core.content.edit
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.app.docoverlay.BalloonTailSide
-import org.blitzortung.android.app.view.PreferenceKey
+import org.blitzortung.android.preferences.PreferenceKey
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

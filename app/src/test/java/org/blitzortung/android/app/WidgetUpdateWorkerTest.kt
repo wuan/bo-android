@@ -28,8 +28,8 @@ import org.blitzortung.android.data.provider.data.DataProvider
 import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.data.provider.standard.JsonRpcDataProvider
 import org.blitzortung.android.app.view.AlarmView
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.put
+import org.blitzortung.android.preferences.PreferenceKey
+import org.blitzortung.android.preferences.put
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.blitzortung.android.util.MeasurementSystem
 import org.junit.Before
@@ -317,7 +317,7 @@ class WidgetUpdateWorkerTest {
         val (statusText, statusColor) = worker.testFetchStrikeData(appComponents, location, mockAlarmView)
 
         assertThat(statusText).isNull()
-        assertThat(statusColor).isEqualTo(context.getColor(org.blitzortung.android.app.R.color.Green))
+        assertThat(statusColor).isEqualTo(context.getColor(org.blitzortung.android.R.color.Green))
     }
 
     private fun createAlertParameters(): AlertParameters =

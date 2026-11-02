@@ -34,7 +34,6 @@ Holandský: Jeroen Boersma (jeroenboersma@gmail.com)\n
 Polský překlad: Jakub Świątkiewicz (kuba.dex@gmail.com), Agnieszka Cieślak (aga_04@o2.pl)\n
 Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
     </string>
-    <string name="activity">aktivita</string>
     <string name="alarms">Alarmy</string>
     <string name="alarms_not_available">Alarmy vypnuty\nnebo\nChybějící informace o pozici</string>
     <string name="preferences">Možnosti</string>
@@ -222,16 +221,6 @@ Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="notification_distance_limit">Limit vzdálenosti pro oznámení</string>
     <string name="signaling_distance_limit">Limit vzdálenosti pro signalizaci</string>
 
-    <string-array name="direction_names">
-        <item>J</item>
-        <item>JZ</item>
-        <item>Z</item>
-        <item>SZ</item>
-        <item>S</item>
-        <item>SV</item>
-        <item>V</item>
-        <item>JV</item>
-    </string-array>
     <string-array name="distance_limits">
         <item>Vypnuto</item>
         <item>10 km/mil</item>
@@ -330,16 +319,13 @@ Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="alarm_diagram">Diagram výstrahy blesků</string>
     <string name="legend_grid">Mřížka</string>
     <string name="unit_minute">min</string>
-    <string name="unit_km">km</string>
     <string name="background_query_toast">Pro plně funkční upozornění na pozadí prosím vypněte optimalizaci baterie pro tuto aplikaci.</string>
     <string name="open_battery_optimiziation">Pokud je povoleno dotazování na pozadí, vypněte prosím optimalizaci baterie pro tuto aplikaci. Stisknutím ZRUŠIT vypnete dotazování na pozadí a stisknutím OK přejdete do nastavení optimalizace baterie.</string>
-    <string name="location_provider_disabled">poskytovatel polohy \'%s\' je vypnutý</string>
     <string name="set_manual_location">Nastavit ruční polohu</string>
     <string name="error_indicator">Indikátor chyby</string>
     <string name="app_log">Protokol aplikace</string>
     <string name="share_log">Poslat e-mail …</string>
     <string name="share_unavailable">Sdílení e-mailem není dostupné.</string>
-    <string name="provider_warning">Nepoužívejte prosím datový zdroj Blitzortung.org při vysoké bleskové aktivitě, výkon zobrazení mapy se sníží.</string>
     <string name="own_location_size">Velikost symbolu vlastní polohy</string>
     <string name="own_location_size_summary">Nastavení velikosti symbolu vlastní polohy</string>
     <string name="keep_zoom_goto_own_location_summary">Nastavení zachování aktuálního přiblížení při vycentrování vlastní polohy</string>
@@ -351,7 +337,6 @@ Ruský překlad: Ivan Karev (karev.ivan@gmail.com)\n
     <string name="hide_grid_summary">Skrýt překryv blesků/mřížky, aby byly zobrazeny pouze clustery (vyžaduje clustery). Data o blescích se stále načítají pro upozornění a histogram.</string>
     <string name="cluster_interval">Interval clusterů</string>
     <string name="not_available">n/a</string>
-    <string name="unit_miles">mi.</string>
     <string name="map_scale">Měřítko mapy</string>
     <string name="map_scale_summary">Vyberte měřítko [%] mapových dlaždic</string>
     <string name="osmdroid_storage_warning">Nelze najít zapisovatelné úložiště pro mapu. Nahlaste prosím.</string>

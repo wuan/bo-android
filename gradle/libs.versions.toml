@@ -16,6 +16,7 @@ coroutines = "1.11.0"
 dagger = "2.60.1"
 # Other
 osmdroid = "6.1.20"
+carApp = "1.7.0"
 
 # Unit testing
 junit = "4.13.2"
@@ -47,6 +48,10 @@ androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-view
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 osmdroid-android = { module = "org.osmdroid:osmdroid-android", version.ref = "osmdroid" }
+androidx-car-app = { module = "androidx.car.app:app", version.ref = "carApp" }
+androidx-car-app-projected = { module = "androidx.car.app:app-projected", version.ref = "carApp" }
+androidx-car-app-automotive = { module = "androidx.car.app:app-automotive", version.ref = "carApp" }
+androidx-car-app-testing = { module = "androidx.car.app:app-testing", version.ref = "carApp" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preference" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }

@@ -34,9 +34,9 @@ import androidx.fragment.app.DialogFragment
 import androidx.preference.PreferenceManager
 import java.util.Locale
 import org.blitzortung.android.app.R
-import org.blitzortung.android.app.view.PreferenceKey
-import org.blitzortung.android.app.view.get
 import org.blitzortung.android.data.provider.DataProviderType
+import org.blitzortung.android.preferences.PreferenceKey
+import org.blitzortung.android.preferences.get
 import org.blitzortung.android.settings.putString
 
 class QuickSettingsDialog : DialogFragment() {

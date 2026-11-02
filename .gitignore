@@ -2,6 +2,9 @@
 *.iml
 /build
 /app/build
+/core/build
+/car/build
+/automotive/build
 /app/release
 /app/*.apk
 /app/*.aab
