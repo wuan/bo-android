@@ -268,6 +268,15 @@ Many components implement `OnSharedPreferenceChangeListener` to react to setting
 
 All activities/fragments use ViewBinding (enabled in build.gradle). Access views via `binding.viewId` instead of `findViewById()`.
 
+### Edge-to-Edge Display
+
+The app targets SDK 35+, so Android 15+ forces edge-to-edge; earlier versions opt in for the same layout. Conventions:
+
+- New activities call `androidx.activity.enableEdgeToEdge()` in `onCreate` before `setContentView`. Do not use `WindowCompat.setDecorFitsSystemWindows(window, false)`.
+- Apply window insets **exactly once per screen** (no duplicated handling, e.g. no `android:fitsSystemWindows="true"` on the root combined with a code listener). Use a single `ViewCompat.setOnApplyWindowInsetsListener`, read `WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()`, and apply the insets as padding to the specific containers that must clear the bars so full-bleed content (e.g. the map) can draw behind them.
+- Because padding changes are delivered on every inset dispatch, use `View.setPadding(...)` with the base padding recomputed (or track the base values) rather than additive `updatePadding`, so repeated dispatches do not accumulate.
+- Overlays drawn inside the map canvas (osmdroid scale bar, copyright) are positioned with raw pixel offsets and do not receive insets; shift their offsets by the bottom system-bar inset.
+
 ### Threading Model
 
 - **Main thread**: UI updates, Handler callbacks

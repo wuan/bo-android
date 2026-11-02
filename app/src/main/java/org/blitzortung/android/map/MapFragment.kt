@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.edit
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -54,6 +56,7 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         private set
     private lateinit var mCopyrightOverlay: CopyrightOverlay
     private lateinit var mScaleBarOverlay: ScaleBarOverlay
+    private var mapCanvasBaseBottomOffset = 0
 
     override fun onAttach(context: Context) {
         AndroidSupportInjection.inject(this)
@@ -80,22 +83,18 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         super.onActivityCreated(savedInstanceState)
 
         val context = this.requireContext()
-        val dm = context.resources.displayMetrics
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
         preferences.registerOnSharedPreferenceChangeListener(this)
 
         mPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-        val bottomOffset = ViewHelper.pxFromDp(context, 64f + 2f).toInt()
+        mapCanvasBaseBottomOffset = ViewHelper.pxFromDp(context, 64f + 2f).toInt()
 
         mCopyrightOverlay = CopyrightOverlay(context)
         mCopyrightOverlay.setTextSize(7)
-        val copyrightOffset = dm.widthPixels / 2 - dm.widthPixels / 10
-        mCopyrightOverlay.setOffset(copyrightOffset, bottomOffset)
         mapView.overlays.add(mCopyrightOverlay)
         mScaleBarOverlay = ScaleBarOverlay(mapView)
-        mScaleBarOverlay.setScaleBarOffset(dm.widthPixels / 2, bottomOffset + ViewHelper.pxFromDp(context, 10f).toInt())
         mScaleBarOverlay.setCentred(true)
         mScaleBarOverlay.setAlignBottom(true)
         mScaleBarOverlay.setEnableAdjustLength(true)
@@ -103,6 +102,12 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         centered.isAccessible = true
         centered.setBoolean(mScaleBarOverlay, true)
         mapView.overlays.add(this.mScaleBarOverlay)
+        updateMapCanvasOverlayOffsets(0)
+
+        ViewCompat.setOnApplyWindowInsetsListener(mapView) { _, insets ->
+            updateMapCanvasOverlayOffsets(insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom)
+            insets
+        }
 
         // disable built in zoom controls
         mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
@@ -132,6 +137,23 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
         mapView.invalidate()
 
         onSharedPreferenceChanged(preferences, PreferenceKey.MAP_TYPE, PreferenceKey.MAP_SCALE)
+    }
+
+    /**
+     * The osmdroid scale bar and copyright text are drawn inside the map canvas using raw pixel
+     * offsets, so they do not react to view insets. Shift both up by the navigation-bar inset so
+     * they stay clear of the system bars.
+     */
+    private fun updateMapCanvasOverlayOffsets(bottomInset: Int) {
+        val dm = requireContext().resources.displayMetrics
+        mCopyrightOverlay.setOffset(
+            dm.widthPixels / 2 - dm.widthPixels / 10,
+            mapCanvasBaseBottomOffset + bottomInset,
+        )
+        mScaleBarOverlay.setScaleBarOffset(
+            dm.widthPixels / 2,
+            mapCanvasBaseBottomOffset + ViewHelper.pxFromDp(requireContext(), 10f).toInt() + bottomInset,
+        )
     }
 
     fun updateForgroundColor(fgcolor: Int) {

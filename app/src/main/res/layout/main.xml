@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:local="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/map_view"
@@ -79,7 +78,8 @@
         android:id="@+id/map_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/upper_row">
+        android:layout_below="@+id/upper_row"
+        android:layout_alignParentBottom="true">
 
         <org.blitzortung.android.app.view.LegendView
             android:id="@+id/legend_view"

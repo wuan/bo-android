@@ -20,6 +20,7 @@ package org.blitzortung.android.app
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.text.format.DateFormat
@@ -32,9 +33,12 @@ import android.widget.ImageButton
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.content.edit
-import androidx.core.view.WindowCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
@@ -229,8 +233,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         Log.v(LOG_TAG, "Main.onCreate()")
 
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
         try {
             super.onCreate(savedInstanceState)
         } catch (e: NoClassDefFoundError) {
@@ -238,9 +240,16 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
             Toast.makeText(baseContext, "bad android version", Toast.LENGTH_LONG).show()
         }
 
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+        )
+
         initializeOsmDroid()
 
         setContentView(binding.root)
+
+        applyWindowInsets()
 
         if (supportFragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG) == null) {
             mapFragment = MapFragment()
@@ -319,6 +328,34 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         docOverlayController = DocOverlayController(binding.root, layoutInflater, preferences, ::createDocTargets)
         docOverlayController.showIfNotShownBefore()
+    }
+
+    /**
+     * Applies the window insets exactly once for the main screen: [MainBinding.upperRow] is pushed
+     * clear of the status bar and display cutout, [MainBinding.mapOverlay] is pushed clear of the
+     * navigation bar and cutout, while the map itself stays full-bleed behind both system bars.
+     * `setPadding` is used (not `updatePadding`) so repeated inset dispatches do not accumulate.
+     */
+    private fun applyWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBarsAndCutout =
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+                )
+            binding.upperRow.setPadding(
+                systemBarsAndCutout.left,
+                systemBarsAndCutout.top,
+                systemBarsAndCutout.right,
+                0,
+            )
+            binding.mapOverlay.setPadding(
+                systemBarsAndCutout.left,
+                0,
+                systemBarsAndCutout.right,
+                systemBarsAndCutout.bottom,
+            )
+            insets
+        }
     }
 
     private fun initializeOsmDroid() {
