@@ -208,15 +208,15 @@ internal class CarLegendOverlay(
         /** Opacity of the dark panel behind the legend rows. */
         const val PANEL_ALPHA = 200
 
-        const val PANEL_INSET_DP = 12f
-        const val PADDING_DP = 16f
-        const val SWATCH_SIZE_DP = 24f
-        const val ROW_HEIGHT_DP = 40f
-        const val GAP_DP = 16f
-        const val CORNER_RADIUS_DP = 16f
+        const val PANEL_INSET_DP = 10f
+        const val PADDING_DP = 12f
+        const val SWATCH_SIZE_DP = 20f
+        const val ROW_HEIGHT_DP = 32f
+        const val GAP_DP = 12f
+        const val CORNER_RADIUS_DP = 12f
 
         /** Legend text size. Sized for legibility at a glance while driving. */
-        const val TEXT_SIZE_DP = 24f
+        const val TEXT_SIZE_DP = 18f
 
         /**
          * Height of one host status-card row at the baseline dpi. The host does not

@@ -24,6 +24,8 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.location.Location
+import android.widget.FrameLayout
+import androidx.car.app.SurfaceContainer
 import androidx.car.app.testing.TestCarContext
 import androidx.preference.PreferenceManager
 import io.mockk.every
@@ -330,6 +332,22 @@ class OsmdroidCarMapRendererTest {
     }
 
     @Test
+    fun `dragging the map moves it with the finger`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.applyInitialCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.mapView.controller.setZoom(ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(CENTER_LATITUDE, CENTER_LONGITUDE))
+
+        // A drag to the left and up reports positive distances; the map content
+        // must follow the finger, so the centre moves east and south.
+        renderer.onScroll(SCROLL_DISTANCE, SCROLL_DISTANCE)
+
+        assertThat(renderer.mapView.mapCenter.longitude).isGreaterThan(CENTER_LONGITUDE)
+        assertThat(renderer.mapView.mapCenter.latitude).isLessThan(CENTER_LATITUDE)
+    }
+
+    @Test
     fun `panning beyond the world edge is clamped to the bounds`() {
         val renderer = createRenderer()
         renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
@@ -398,6 +416,28 @@ class OsmdroidCarMapRendererTest {
 
         assertCentredOn(renderer, 52.0, 13.0)
         assertThat(renderer.mapView.zoomLevelDouble).isEqualTo(6.0)
+    }
+
+    @Test
+    fun `a destroyed surface keeps the map view attached for the next surface`() {
+        val renderer = createRenderer()
+        val presentationRoot = FrameLayout(context())
+        presentationRoot.addView(renderer.mapView)
+
+        renderer.onSurfaceDestroyed(SurfaceContainer(null, VIEWPORT_WIDTH, VIEWPORT_HEIGHT, 160))
+
+        assertThat(renderer.mapView.parent).isSameAs(presentationRoot)
+    }
+
+    @Test
+    fun `releasing the renderer detaches the map view`() {
+        val renderer = createRenderer()
+        val presentationRoot = FrameLayout(context())
+        presentationRoot.addView(renderer.mapView)
+
+        renderer.release()
+
+        assertThat(renderer.mapView.parent).isNull()
     }
 
     @Test

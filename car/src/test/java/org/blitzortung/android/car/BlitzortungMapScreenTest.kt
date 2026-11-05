@@ -68,11 +68,18 @@ class BlitzortungMapScreenTest {
     fun `map action strip offers pan and zoom actions`() {
         val template = createScreen().onGetTemplate() as MapWithContentTemplate
 
-        val actionTypes = template.actionStrip?.actions.orEmpty().map { it.type }
+        val actionTypes = template.mapController?.mapActionStrip?.actions.orEmpty().map { it.type }
 
         assertThat(actionTypes).contains(Action.TYPE_PAN)
         // Two additional icon-only actions for zooming in and out.
         assertThat(actionTypes).hasSize(3)
+    }
+
+    @Test
+    fun `map controls are not placed in the content action strip`() {
+        val template = createScreen().onGetTemplate() as MapWithContentTemplate
+
+        assertThat(template.actionStrip).isNull()
     }
 
     @Test

@@ -29,6 +29,7 @@ import androidx.car.app.model.ItemList
 import androidx.car.app.model.ListTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
+import androidx.car.app.navigation.model.MapController
 import androidx.car.app.navigation.model.MapWithContentTemplate
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
@@ -67,6 +68,13 @@ class BlitzortungMapScreen(
             carContext.getCarService(AppManager::class.java).setSurfaceCallback(CarMapSurfaceCallback(activeRenderer))
             observeViewport(activeRenderer)
             observeData(activeRenderer)
+            lifecycle.addObserver(
+                object : DefaultLifecycleObserver {
+                    override fun onDestroy(owner: LifecycleOwner) {
+                        activeRenderer.release()
+                    }
+                },
+            )
         }
         observeSettings()
     }
@@ -163,9 +171,19 @@ class BlitzortungMapScreen(
 
         return MapWithContentTemplate.Builder()
             .setContentTemplate(buildAlertListTemplate())
-            .setActionStrip(buildMapActionStrip())
+            .setMapController(buildMapController())
             .build()
     }
+
+    /**
+     * Map controls must be attached through the [MapController]: the host only
+     * forwards pan gestures from [androidx.car.app.SurfaceCallback] when the map
+     * action strip contains [Action.PAN].
+     */
+    private fun buildMapController(): MapController =
+        MapController.Builder()
+            .setMapActionStrip(buildMapActionStrip())
+            .build()
 
     /** Whether the map surface should be dimmed for the stored mode and car theme. */
     internal fun isMapDimmed(): Boolean {

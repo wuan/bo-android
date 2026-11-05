@@ -35,6 +35,9 @@ interface CarMapRenderer {
 
     fun onSurfaceDestroyed(surfaceContainer: SurfaceContainer)
 
+    /** Releases the rendering resources. The renderer must not be used afterwards. */
+    fun release()
+
     /**
      * Registers the listener notified whenever the map viewport (centre, zoom
      * or size) changes, so the data layer can follow the map. The listener is

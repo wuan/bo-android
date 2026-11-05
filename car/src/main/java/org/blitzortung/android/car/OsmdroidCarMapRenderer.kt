@@ -23,6 +23,8 @@ import android.graphics.Point
 import android.graphics.Rect
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
+import android.view.Surface
+import android.view.ViewGroup
 import androidx.car.app.CarContext
 import androidx.car.app.SurfaceContainer
 import androidx.preference.PreferenceManager
@@ -38,7 +40,6 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.TilesOverlay
 
 /**
  * Renderer that reuses the phone map's osmdroid overlays by hosting a [MapView]
@@ -127,6 +128,11 @@ class OsmdroidCarMapRenderer(
 
     private var presentation: Presentation? = null
 
+    /** Dimensions of the virtual display, used to resize it for a new surface. */
+    private var surfaceWidth = 0
+    private var surfaceHeight = 0
+    private var surfaceDpi = 0
+
     /** Whether the camera has been framed on a location fix; framing happens at most once. */
     private var initialLocationFramed = false
 
@@ -138,20 +144,70 @@ class OsmdroidCarMapRenderer(
 
     override fun onSurfaceAvailable(surfaceContainer: SurfaceContainer) {
         legendOverlay.densityDpi = surfaceContainer.dpi
-        applyInitialCamera(surfaceContainer.width, surfaceContainer.height)
 
+        surfaceContainer.surface?.let { surface -> showOnSurface(surfaceContainer, surface) }
+    }
+
+    /**
+     * Binds the map to the host surface. The virtual display and presentation are
+     * created once and reused for replacement surfaces: reusing them avoids
+     * re-parenting the shared map view and keeps it alive across surface changes.
+     */
+    private fun showOnSurface(
+        surfaceContainer: SurfaceContainer,
+        surface: Surface,
+    ) {
+        val display = virtualDisplay
+        val currentPresentation = presentation
+        if (display == null || currentPresentation == null) {
+            applyInitialCamera(surfaceContainer.width, surfaceContainer.height)
+            createPresentation(surfaceContainer, surface)
+            return
+        }
+
+        if (surfaceContainer.width != surfaceWidth ||
+            surfaceContainer.height != surfaceHeight ||
+            surfaceContainer.dpi != surfaceDpi
+        ) {
+            updateWorldBounds(surfaceContainer.width, surfaceContainer.height)
+            display.resize(surfaceContainer.width, surfaceContainer.height, surfaceContainer.dpi)
+            surfaceWidth = surfaceContainer.width
+            surfaceHeight = surfaceContainer.height
+            surfaceDpi = surfaceContainer.dpi
+        }
+        display.surface = surface
+        if (!currentPresentation.isShowing) {
+            currentPresentation.show()
+        }
+        mapView.invalidate()
+    }
+
+    private fun createPresentation(
+        surfaceContainer: SurfaceContainer,
+        surface: Surface,
+    ) {
         val display =
             displayManager.createVirtualDisplay(
                 VIRTUAL_DISPLAY_NAME,
                 surfaceContainer.width,
                 surfaceContainer.height,
                 surfaceContainer.dpi,
-                surfaceContainer.surface,
+                surface,
                 0,
             ) ?: return
+
         virtualDisplay = display
 
-        val activeDisplay = display.display ?: return
+        val activeDisplay = display.display
+        if (activeDisplay == null) {
+            display.release()
+            virtualDisplay = null
+            return
+        }
+
+        surfaceWidth = surfaceContainer.width
+        surfaceHeight = surfaceContainer.height
+        surfaceDpi = surfaceContainer.dpi
         presentation =
             Presentation(carContext, activeDisplay).apply {
                 setContentView(mapView)
@@ -160,10 +216,28 @@ class OsmdroidCarMapRenderer(
     }
 
     override fun onSurfaceDestroyed(surfaceContainer: SurfaceContainer) {
+        // Keep the presentation and map view attached. The host destroys the
+        // surface when the map is not visible and supplies a replacement when it
+        // comes back (for example after opening the settings screen). Tearing the
+        // presentation down here loses the map if the host does not re-announce
+        // the surface, and a late destroy callback can race with a newer surface.
+    }
+
+    /**
+     * Releases the presentation and virtual display. The renderer must not be used
+     * afterwards. Detaching the map view is required because [Presentation.dismiss]
+     * keeps its content view attached, which would fail when the view is added to
+     * another window later.
+     */
+    override fun release() {
         presentation?.dismiss()
         presentation = null
+        (mapView.parent as? ViewGroup)?.removeView(mapView)
         virtualDisplay?.release()
         virtualDisplay = null
+        surfaceWidth = 0
+        surfaceHeight = 0
+        surfaceDpi = 0
     }
 
     override fun onVisibleAreaChanged(visibleArea: Rect) {
@@ -181,7 +255,9 @@ class OsmdroidCarMapRenderer(
         distanceY: Float,
     ) {
         userMovedMap = true
-        mapView.controller.scrollBy(-distanceX.toInt(), -distanceY.toInt())
+        // The host reports gesture deltas like GestureDetector: positive values
+        // mean the finger moved left/up, so the map content follows the finger.
+        mapView.controller.scrollBy(distanceX.toInt(), distanceY.toInt())
         storeCamera()
         notifyViewportChanged()
     }
@@ -191,8 +267,12 @@ class OsmdroidCarMapRenderer(
         velocityY: Float,
     ) {
         userMovedMap = true
-        // osmdroid has no public fling API; approximate it with a proportional scroll.
-        mapView.controller.scrollBy((velocityX / FLING_DIVISOR).toInt(), (velocityY / FLING_DIVISOR).toInt())
+        // osmdroid has no public fling API; approximate it with a proportional
+        // scroll in the direction of the fling.
+        mapView.controller.scrollBy(
+            (-velocityX / FLING_DIVISOR).toInt(),
+            (-velocityY / FLING_DIVISOR).toInt(),
+        )
         storeCamera()
         notifyViewportChanged()
     }
@@ -319,9 +399,7 @@ class OsmdroidCarMapRenderer(
     ) {
         if (width <= 0 || height <= 0) return
 
-        val worldZoom = worldViewZoomFor(width, height)
-        mapView.setMinZoomLevel(worldZoom)
-        mapView.setScrollableAreaLimitDouble(WORLD_BOUNDS)
+        val worldZoom = updateWorldBounds(width, height)
 
         val storedCamera = carSettings.camera
         if (storedCamera != null) {
@@ -335,6 +413,23 @@ class OsmdroidCarMapRenderer(
         }
         mapView.invalidate()
         notifyViewportChanged()
+    }
+
+    /**
+     * Updates the panning/zoom limits for the current surface size without
+     * touching the camera, so a surface recreation does not reset the viewport.
+     */
+    private fun updateWorldBounds(
+        width: Int,
+        height: Int,
+    ): Double {
+        if (width <= 0 || height <= 0) {
+            return mapView.minZoomLevel
+        }
+        val worldZoom = worldViewZoomFor(width, height)
+        mapView.setMinZoomLevel(worldZoom)
+        mapView.setScrollableAreaLimitDouble(WORLD_BOUNDS)
+        return worldZoom
     }
 
     /** Zoom at which the world covers the viewport in both dimensions. */

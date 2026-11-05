@@ -140,7 +140,7 @@ class CarLegendOverlayTest {
 
     private companion object {
         /** `CarLegendOverlay.PANEL_INSET_DP` at the default 160 dpi (scale 1). */
-        const val PANEL_INSET = 12f
+        const val PANEL_INSET = 10f
 
         /** `CarLegendOverlay.CONTENT_ROW_HEIGHT_DP` at the default 160 dpi (scale 1). */
         const val CONTENT_ROW_HEIGHT = 96f
