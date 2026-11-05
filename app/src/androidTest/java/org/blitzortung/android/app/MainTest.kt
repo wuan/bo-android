@@ -37,7 +37,7 @@ class MainTest {
     @Test
     fun mainActivity_isLaunched_andMapViewIsDisplayed() {
         waitForAndAcceptLocationPermissionDialog()
-        waitForAndAcceptQuickSettingsDialog()
+        dismissQuickGuideIfShown()
 
         // Check if the map view is displayed using Espresso
         onView(withId(R.id.map_view)).check(matches(isDisplayed()))
@@ -46,7 +46,7 @@ class MainTest {
     @Test
     fun openSettingsFragment_viaTopRightMenu() {
         waitForAndAcceptLocationPermissionDialog()
-        waitForAndAcceptQuickSettingsDialog()
+        dismissQuickGuideIfShown()
 
         onView(withId(R.id.menu)).perform(click())
 
@@ -67,10 +67,11 @@ class MainTest {
         onView(withId(R.id.activity_settings)).check(matches(isDisplayed()))
     }
 
-    private fun waitForAndAcceptQuickSettingsDialog() {
+    private fun dismissQuickGuideIfShown() {
+        val packageName = InstrumentationRegistry.getInstrumentation().targetContext.packageName
         uiDevice
             .wait(
-                Until.findObject(By.text("OK")),
+                Until.findObject(By.res(packageName, "doc_button_got_it")),
                 timeout,
             )?.click()
     }

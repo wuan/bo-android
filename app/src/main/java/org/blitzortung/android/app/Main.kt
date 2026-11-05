@@ -284,9 +284,6 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
 
         buttonColumnHandler.updateButtonColumn()
 
-        if (versionComponent.state == VersionComponent.State.FIRST_RUN) {
-            openQuickSettingsDialog()
-        }
         if (versionComponent.state == VersionComponent.State.FIRST_RUN_AFTER_UPDATE) {
             changeLogComponent.showChangeLogDialog(this)
         }
