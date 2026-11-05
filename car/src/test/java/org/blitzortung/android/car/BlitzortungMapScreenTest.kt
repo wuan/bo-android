@@ -65,21 +65,26 @@ class BlitzortungMapScreenTest {
     }
 
     @Test
-    fun `map action strip offers pan and zoom actions`() {
-        val template = createScreen().onGetTemplate() as MapWithContentTemplate
+    fun `map action strip offers pan, location and zoom actions`() {
+        val screen = createScreen()
+        val template = screen.onGetTemplate() as MapWithContentTemplate
 
-        val actionTypes = template.mapController?.mapActionStrip?.actions.orEmpty().map { it.type }
+        val actions = template.mapController?.mapActionStrip?.actions.orEmpty()
 
-        assertThat(actionTypes).contains(Action.TYPE_PAN)
-        // Two additional icon-only actions for zooming in and out.
-        assertThat(actionTypes).hasSize(3)
+        assertThat(actions.map { it.type })
+            .containsExactly(Action.TYPE_PAN, Action.TYPE_CUSTOM, Action.TYPE_CUSTOM, Action.TYPE_CUSTOM)
+        // The location action sits directly above the zoom out/in actions.
+        assertThat(actions[1]).isSameAs(screen.locationAction)
     }
 
     @Test
     fun `map controls are not placed in the content action strip`() {
         val template = createScreen().onGetTemplate() as MapWithContentTemplate
 
-        assertThat(template.actionStrip).isNull()
+        val actionTypes = template.actionStrip?.actions.orEmpty().map { it.type }
+
+        assertThat(actionTypes).doesNotContain(Action.TYPE_PAN)
+        assertThat(actionTypes).doesNotContain(Action.TYPE_APP_ICON)
     }
 
     @Test
@@ -105,28 +110,49 @@ class BlitzortungMapScreenTest {
     }
 
     @Test
-    fun `header shows the app name and the compact countdown when a status is reported`() {
+    fun `status line shows only the compact countdown when a status is reported`() {
         val screen = createScreen()
 
         screen.handleDataEvent(StatusUpdate("40/60"), activeRenderer = null)
 
-        assertThat(headerTitle(screen)).isEqualTo("Blitzortung Lightning · 40 / 60s")
+        assertThat(screen.buildCountdownText()).isEqualTo("40 / 60s")
     }
 
     @Test
-    fun `header shows only the app name before a status is reported`() {
+    fun `status line is empty before a status is reported`() {
         val screen = createScreen()
 
-        assertThat(headerTitle(screen)).isEqualTo("Blitzortung Lightning")
+        assertThat(screen.buildCountdownText()).isEmpty()
     }
 
     @Test
-    fun `the map header exposes a settings action`() {
+    fun `countdown is drawn on the map surface instead of the host header`() {
+        registerDependencies()
+        val screen = createScreen()
+        val renderer = screen.renderer as OsmdroidCarMapRenderer
+
+        screen.handleDataEvent(StatusUpdate("40/60"))
+
+        assertThat(renderer.legendOverlay.countdown).isEqualTo("40 / 60s")
+        assertThat(headerTitle(screen)).isNull()
+    }
+
+    @Test
+    fun `the content template has no header so the countdown stays small`() {
         val screen = createScreen()
 
         val listTemplate = (screen.onGetTemplate() as MapWithContentTemplate).contentTemplate as ListTemplate
 
-        assertThat(listTemplate.header?.endHeaderActions).isNotEmpty()
+        assertThat(listTemplate.header).isNull()
+    }
+
+    @Test
+    fun `the content action strip exposes the settings action`() {
+        val screen = createScreen()
+
+        val template = screen.onGetTemplate() as MapWithContentTemplate
+
+        assertThat(template.actionStrip?.actions).hasSize(1)
     }
 
     @Test

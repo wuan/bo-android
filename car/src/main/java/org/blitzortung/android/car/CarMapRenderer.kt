@@ -80,18 +80,24 @@ interface CarMapRenderer {
         y: Float,
     )
 
-    /**
-     * The number of rows the host's content card currently shows. The card is
-     * drawn by the host over the top-left of the surface and its height is not
-     * reported, so surface-drawn UI below it is offset by this count.
-     */
-    fun setContentRowCount(rowCount: Int)
-
     fun setDimmed(dimmed: Boolean)
+
+    /**
+     * Sets the refresh countdown drawn on the map surface above the legend. It is
+     * drawn by the app instead of through the host header, so updating it does not
+     * rebuild the host template.
+     */
+    fun setCountdown(countdown: String)
 
     fun zoomIn()
 
     fun zoomOut()
+
+    /**
+     * Centres the map on the latest location fix at the default zoom. Does
+     * nothing while no location is available.
+     */
+    fun goToCurrentLocation()
 
     fun updateStrikes(event: DataReceived)
 

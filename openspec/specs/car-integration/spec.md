@@ -33,7 +33,8 @@ The system SHALL render lightning strikes on the in-car map surface, colored by
 strike age, and SHALL update the rendering as new strike data and location
 changes arrive. On the first available location fix the map SHALL frame the
 current position by centering on it at a default zoom, and SHALL preserve the
-user's pan or zoom after that initial framing.
+user's pan or zoom after that initial framing. The map SHALL offer a location
+action that re-centres on the latest fix at the default zoom.
 
 #### Scenario: Strikes rendered by age
 
@@ -69,6 +70,16 @@ user's pan or zoom after that initial framing.
 
 - **WHEN** no location fix is available, for example because access was denied
 - **THEN** the map SHALL NOT change its centre or zoom in response to the missing location, and SHALL show the stored camera when one exists, or the world view otherwise
+
+#### Scenario: Re-centre on the current position
+
+- **WHEN** the driver uses the map's location action and a location fix is available
+- **THEN** the map SHALL centre on the current position at the default zoom
+
+#### Scenario: Location action without a fix
+
+- **WHEN** the driver uses the map's location action and no location fix is available
+- **THEN** the map SHALL keep its current centre and zoom
 
 ### Requirement: Car alert list summarizes proximity alerts
 
@@ -176,38 +187,45 @@ alert computation, preference keys, or background service behavior.
 - **WHEN** a user uses the app on a phone
 - **THEN** the map, alerts, settings, widget, and background monitoring SHALL behave exactly as before
 
-### Requirement: Car alert list reports the time to the next refresh
+### Requirement: Car map reports the time to the next refresh
 
 While the data handler is in realtime mode and reports its periodic refresh
-status, the car map header SHALL show a compact countdown to the next data
-refresh on the same line as the app name, in the form `<remaining> / <period>s`.
-The countdown SHALL NOT be a separate list row, and SHALL be omitted before a
-refresh status has been reported.
+status, the car map SHALL show a compact countdown to the next data refresh in
+the form `<remaining> / <period>s`. The countdown SHALL be drawn by the app on
+the map surface in the same font size as the legend labels, so it can follow
+the reported status without rebuilding the host template every second. The
+countdown SHALL NOT be a separate list row, SHALL NOT repeat the app name, and
+SHALL be omitted before a refresh status has been reported.
 
 #### Scenario: Countdown shown in realtime mode
 
 - **WHEN** the data handler reports its periodic refresh status in realtime mode
-- **THEN** the map header SHALL show the compact countdown on the same line as the app name
+- **THEN** the map status line SHALL show the compact countdown
 
 #### Scenario: Compact countdown format
 
 - **WHEN** the reported status is 40 seconds remaining of a 60-second period
-- **THEN** the header SHALL show "40 / 60s"
+- **THEN** the status line SHALL show "40 / 60s"
 
 #### Scenario: Countdown follows the reported status
 
 - **WHEN** the reported refresh status changes
 - **THEN** the displayed countdown SHALL follow the new remaining and period values
 
+#### Scenario: Status line does not flicker
+
+- **WHEN** only the refresh countdown changes
+- **THEN** the app SHALL update the status line on the map surface without invalidating the car template
+
 #### Scenario: No separate countdown row
 
-- **WHEN** the countdown is shown in the header
-- **THEN** the first row of the alert list SHALL be an alert row, with no countdown row between the header and the alerts
+- **WHEN** the countdown is shown in the status line
+- **THEN** the first row of the alert list SHALL be an alert row, with no countdown row before the alerts
 
 #### Scenario: No countdown before a status is reported
 
 - **WHEN** no refresh status has been reported
-- **THEN** the header SHALL show only the app name
+- **THEN** the status line SHALL be empty
 
 ### Requirement: Car map dimming
 

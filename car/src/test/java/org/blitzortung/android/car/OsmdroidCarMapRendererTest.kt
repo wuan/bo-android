@@ -144,6 +144,15 @@ class OsmdroidCarMapRendererTest {
     }
 
     @Test
+    fun `the refresh countdown is drawn by the legend panel`() {
+        val renderer = createRenderer()
+
+        renderer.setCountdown("40 / 60s")
+
+        assertThat(renderer.legendOverlay.countdown).isEqualTo("40 / 60s")
+    }
+
+    @Test
     fun `the legend overlay is present and drawn last`() {
         val renderer = createRenderer()
         val overlays = renderer.mapView.overlays
@@ -166,25 +175,14 @@ class OsmdroidCarMapRendererTest {
     }
 
     @Test
-    fun `the legend hugs the left edge below the host's status card`() {
+    fun `the legend sits at the bottom-left of the host's map area`() {
         val renderer = createRenderer()
 
         renderer.onVisibleAreaChanged(Rect(320, 80, VIEWPORT_WIDTH, VIEWPORT_HEIGHT - 40))
 
         val bounds = renderer.legendOverlay.panelBounds()
         assertThat(bounds.left).isLessThan(100f)
-        assertThat(bounds.top).isGreaterThanOrEqualTo(80f)
-    }
-
-    @Test
-    fun `the legend drops below the host's status card by the reported row count`() {
-        val renderer = createRenderer()
-        renderer.onVisibleAreaChanged(Rect(320, 80, VIEWPORT_WIDTH, VIEWPORT_HEIGHT))
-        val withoutRows = renderer.legendOverlay.panelBounds().top
-
-        renderer.setContentRowCount(3)
-
-        assertThat(renderer.legendOverlay.panelBounds().top).isGreaterThan(withoutRows)
+        assertThat(bounds.bottom).isLessThanOrEqualTo(VIEWPORT_HEIGHT - 40f)
     }
 
     @Test
@@ -455,6 +453,48 @@ class OsmdroidCarMapRendererTest {
         assertThat(stored!!.zoom).isEqualTo(6.0)
         assertThat(stored.latitude).isCloseTo(renderer.mapView.mapCenter.latitude, within(0.001))
         assertThat(stored.longitude).isCloseTo(renderer.mapView.mapCenter.longitude, within(0.001))
+    }
+
+    @Test
+    fun `centres and zooms on the current location`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.onLocationEvent(fix(FIX_LATITUDE, FIX_LONGITUDE))
+        renderer.mapView.controller.setZoom(INITIAL_ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(INITIAL_LATITUDE, INITIAL_LONGITUDE))
+
+        renderer.goToCurrentLocation()
+
+        assertCentredOn(renderer, FIX_LATITUDE, FIX_LONGITUDE)
+        assertThat(renderer.mapView.zoomLevelDouble).isEqualTo(OsmdroidCarMapRenderer.DEFAULT_ZOOM_LEVEL)
+    }
+
+    @Test
+    fun `the location action does nothing without a location fix`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.mapView.controller.setZoom(INITIAL_ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(INITIAL_LATITUDE, INITIAL_LONGITUDE))
+
+        renderer.goToCurrentLocation()
+
+        assertThat(renderer.mapView.zoomLevelDouble).isEqualTo(INITIAL_ZOOM)
+        assertCentredOn(renderer, INITIAL_LATITUDE, INITIAL_LONGITUDE)
+    }
+
+    @Test
+    fun `the location action does nothing after the location is lost`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.onLocationEvent(fix(FIX_LATITUDE, FIX_LONGITUDE))
+        renderer.onLocationEvent(NoLocation)
+        renderer.mapView.controller.setZoom(INITIAL_ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(INITIAL_LATITUDE, INITIAL_LONGITUDE))
+
+        renderer.goToCurrentLocation()
+
+        assertThat(renderer.mapView.zoomLevelDouble).isEqualTo(INITIAL_ZOOM)
+        assertCentredOn(renderer, INITIAL_LATITUDE, INITIAL_LONGITUDE)
     }
 
     @Test

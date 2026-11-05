@@ -142,6 +142,9 @@ class OsmdroidCarMapRenderer(
     /** Whether a stored camera was restored, which suppresses the initial framing. */
     private var cameraRestored = false
 
+    /** Latest known location, used by the action that centres on the current position. */
+    private var currentLocation: GeoPoint? = null
+
     override fun onSurfaceAvailable(surfaceContainer: SurfaceContainer) {
         legendOverlay.densityDpi = surfaceContainer.dpi
 
@@ -299,16 +302,16 @@ class OsmdroidCarMapRenderer(
         // Strike details are a phone-only affordance; the car map has no popup.
     }
 
-    override fun setContentRowCount(rowCount: Int) {
-        if (legendOverlay.contentRowCount == rowCount) {
-            return
-        }
-        legendOverlay.contentRowCount = rowCount
+    override fun setDimmed(dimmed: Boolean) {
+        dimOverlay.alpha = if (dimmed) DIM_ALPHA else 0
         mapView.invalidate()
     }
 
-    override fun setDimmed(dimmed: Boolean) {
-        dimOverlay.alpha = if (dimmed) DIM_ALPHA else 0
+    override fun setCountdown(countdown: String) {
+        if (legendOverlay.countdown == countdown) {
+            return
+        }
+        legendOverlay.countdown = countdown
         mapView.invalidate()
     }
 
@@ -323,6 +326,16 @@ class OsmdroidCarMapRenderer(
         userMovedMap = true
         mapView.controller.zoomOut()
         storeCamera()
+        notifyViewportChanged()
+    }
+
+    override fun goToCurrentLocation() {
+        val location = currentLocation ?: return
+        userMovedMap = true
+        mapView.controller.setZoom(DEFAULT_ZOOM_LEVEL)
+        mapView.controller.setCenter(location)
+        storeCamera()
+        mapView.invalidate()
         notifyViewportChanged()
     }
 
@@ -362,7 +375,11 @@ class OsmdroidCarMapRenderer(
     override fun onLocationEvent(event: LocationEvent) {
         ownLocationOverlay.locationEventConsumer(event)
 
-        val location = event.location() ?: return
+        val location = event.location()
+        currentLocation = location?.let { GeoPoint(it.latitude, it.longitude) }
+        if (location == null) {
+            return
+        }
         if (initialLocationFramed || userMovedMap || cameraRestored) {
             return
         }

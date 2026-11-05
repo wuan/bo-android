@@ -24,7 +24,6 @@ import androidx.car.app.Screen
 import androidx.car.app.ScreenManager
 import androidx.car.app.model.Action
 import androidx.car.app.model.ActionStrip
-import androidx.car.app.model.Header
 import androidx.car.app.model.ItemList
 import androidx.car.app.model.ListTemplate
 import androidx.car.app.model.Row
@@ -41,6 +40,7 @@ import kotlinx.coroutines.launch
 import org.blitzortung.android.alert.LocalActivity
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.DataReceived
+import org.blitzortung.android.data.provider.result.StatusUpdate
 
 /**
  * Start screen of the car experience: a map with the alert list rendered beside
@@ -62,12 +62,69 @@ class BlitzortungMapScreen(
     /** Registered observer so a dimming change made in settings redraws the map. */
     private val onMapDimModeChanged: (MapDimMode) -> Unit = { invalidate() }
 
+    /** Countdown text last sent to the renderer, so it is only redrawn when it changes. */
+    private var countdownText: String = ""
+
+    /**
+     * Host template pieces that never change while the screen lives. Reusing them
+     * keeps the host from reloading the action icons on every template rebuild,
+     * which showed up as flicker at startup.
+     */
+    private val settingsAction: Action by lazy {
+        Action.Builder()
+            .setIcon(carIcon(carContext, R.drawable.car_settings))
+            .setOnClickListener {
+                carContext.getCarService(ScreenManager::class.java).push(BlitzortungSettingsScreen(carContext))
+            }
+            .build()
+    }
+
+    private val contentActionStrip: ActionStrip by lazy {
+        ActionStrip.Builder()
+            .addAction(settingsAction)
+            .build()
+    }
+
+    /** Centres the map on the latest location fix; placed above the zoom actions. */
+    internal val locationAction: Action by lazy {
+        Action.Builder()
+            .setIcon(carIcon(carContext, R.drawable.car_my_location))
+            .setOnClickListener { renderer?.goToCurrentLocation() }
+            .build()
+    }
+
+    private val mapActionStrip: ActionStrip by lazy {
+        ActionStrip.Builder()
+            .addAction(Action.PAN)
+            .addAction(locationAction)
+            .addAction(
+                Action.Builder()
+                    .setIcon(carIcon(carContext, R.drawable.car_zoom_out))
+                    .setOnClickListener { renderer?.zoomOut() }
+                    .build(),
+            )
+            .addAction(
+                Action.Builder()
+                    .setIcon(carIcon(carContext, R.drawable.car_zoom_in))
+                    .setOnClickListener { renderer?.zoomIn() }
+                    .build(),
+            )
+            .build()
+    }
+
+    private val mapController: MapController by lazy {
+        MapController.Builder()
+            .setMapActionStrip(mapActionStrip)
+            .build()
+    }
+
     init {
         val activeRenderer = renderer
         if (activeRenderer != null) {
             carContext.getCarService(AppManager::class.java).setSurfaceCallback(CarMapSurfaceCallback(activeRenderer))
             observeViewport(activeRenderer)
             observeData(activeRenderer)
+            applyCountdown(activeRenderer)
             lifecycle.addObserver(
                 object : DefaultLifecycleObserver {
                     override fun onDestroy(owner: LifecycleOwner) {
@@ -126,8 +183,11 @@ class BlitzortungMapScreen(
                 }
                 launch {
                     carDependencies.alertRepository.observeAlertEvents().collect { warning ->
-                        alertListState = alertListState.copy(warning = warning)
-                        invalidate()
+                        val updated = alertListState.copy(warning = warning)
+                        if (updated != alertListState) {
+                            alertListState = updated
+                            invalidate()
+                        }
                     }
                 }
                 launch {
@@ -159,11 +219,19 @@ class BlitzortungMapScreen(
         activeRenderer: CarMapRenderer? = renderer,
     ) {
         dependencies?.alertRepository?.onDataEvent(event)
-        alertListState = alertListState.reduce(event)
+        val updatedState = alertListState.reduce(event)
+        val stateChanged = updatedState != alertListState
+        alertListState = updatedState
         if (event is DataReceived && !event.failed) {
             activeRenderer?.updateStrikes(event)
         }
-        invalidate()
+        if (event is StatusUpdate) {
+            // The countdown lives on the map surface. Rebuilding the host template
+            // once per second made the header and zoom actions flicker.
+            applyCountdown(activeRenderer)
+        } else if (stateChanged) {
+            invalidate()
+        }
     }
 
     override fun onGetTemplate(): Template {
@@ -171,19 +239,10 @@ class BlitzortungMapScreen(
 
         return MapWithContentTemplate.Builder()
             .setContentTemplate(buildAlertListTemplate())
-            .setMapController(buildMapController())
+            .setActionStrip(contentActionStrip)
+            .setMapController(mapController)
             .build()
     }
-
-    /**
-     * Map controls must be attached through the [MapController]: the host only
-     * forwards pan gestures from [androidx.car.app.SurfaceCallback] when the map
-     * action strip contains [Action.PAN].
-     */
-    private fun buildMapController(): MapController =
-        MapController.Builder()
-            .setMapActionStrip(buildMapActionStrip())
-            .build()
 
     /** Whether the map surface should be dimmed for the stored mode and car theme. */
     internal fun isMapDimmed(): Boolean {
@@ -198,7 +257,6 @@ class BlitzortungMapScreen(
             } ?: ""
 
         val rows = CarAlertListPresenter.rows(alertListState, alertStrings(), unitName)
-        renderer?.setContentRowCount(rows.size)
 
         val itemList =
             ItemList.Builder().apply {
@@ -212,38 +270,31 @@ class BlitzortungMapScreen(
             }.build()
 
         return ListTemplate.Builder()
-            .setHeader(
-                Header.Builder()
-                    .setTitle(buildHeaderTitle())
-                    .addEndHeaderAction(settingsAction())
-                    .build(),
-            )
             .setSingleList(itemList)
             .build()
     }
 
-    private fun settingsAction(): Action =
-        Action.Builder()
-            .setIcon(carIcon(carContext, R.drawable.car_settings))
-            .setOnClickListener {
-                carContext.getCarService(ScreenManager::class.java).push(BlitzortungSettingsScreen(carContext))
-            }
-            .build()
-
     /**
-     * The header line: the app name, followed by the compact refresh countdown when a
-     * refresh status is known.
+     * The compact refresh countdown shown above the legend, or an empty string
+     * before a refresh status is known.
      */
-    private fun buildHeaderTitle(): String {
-        val appName = carContext.getString(R.string.car_app_name)
-        val countdown = alertListState.refreshCountdown ?: return appName
-        val countdownText =
-            carContext.getString(
-                R.string.car_status_next_refresh,
-                countdown.remainingSeconds,
-                countdown.periodSeconds,
-            )
-        return carContext.getString(R.string.car_status_header, appName, countdownText)
+    internal fun buildCountdownText(): String {
+        val countdown = alertListState.refreshCountdown ?: return ""
+        return carContext.getString(
+            R.string.car_status_next_refresh,
+            countdown.remainingSeconds,
+            countdown.periodSeconds,
+        )
+    }
+
+    /** Sends the countdown to the renderer when it changed, redrawing only the map surface. */
+    private fun applyCountdown(activeRenderer: CarMapRenderer? = renderer) {
+        val countdown = buildCountdownText()
+        if (countdown == countdownText) {
+            return
+        }
+        countdownText = countdown
+        activeRenderer?.setCountdown(countdown)
     }
 
     private fun alertStrings(): CarAlertStrings =
@@ -256,23 +307,4 @@ class BlitzortungMapScreen(
             errorLabel = carContext.getString(R.string.car_alert_error),
             strikeCountFormat = carContext.getString(R.string.car_alert_strike_count),
         )
-
-    private fun buildMapActionStrip(): ActionStrip {
-        val activeRenderer = renderer
-        return ActionStrip.Builder()
-            .addAction(Action.PAN)
-            .addAction(
-                Action.Builder()
-                    .setIcon(carIcon(carContext, R.drawable.car_zoom_out))
-                    .setOnClickListener { activeRenderer?.zoomOut() }
-                    .build(),
-            )
-            .addAction(
-                Action.Builder()
-                    .setIcon(carIcon(carContext, R.drawable.car_zoom_in))
-                    .setOnClickListener { activeRenderer?.zoomIn() }
-                    .build(),
-            )
-            .build()
-    }
 }

@@ -36,10 +36,16 @@ internal data class LegendEntry(
 )
 
 /**
- * Persistent legend drawn in the top-left of the car map surface, below the
- * host's status card, explaining the strike age colours. One row per colour band
- * is drawn as a swatch plus an age label, so the driver can read the colours used
- * for the strikes.
+ * Persistent panel drawn in the bottom-left of the car map surface, showing the
+ * refresh countdown and a legend that explains the strike age colours. One row per
+ * colour band is drawn as a swatch plus an age label, so the driver can read the
+ * colours used for the strikes.
+ *
+ * The countdown is drawn by the app rather than through the host's map header:
+ * the host controls the header font size and rebuilds the template when the
+ * header text changes. Drawing the countdown here keeps it small, lets it update
+ * without rebuilding the host template every second, and uses the same font size
+ * as the legend labels.
  *
  * The legend reads the active colours from the strike overlay and the interval
  * from its parameters, so it follows the current colour scheme and animation
@@ -48,12 +54,10 @@ internal data class LegendEntry(
  * preference.
  *
  * The host draws its own UI (the alert list, the header, the car bar) over the
- * map surface. It reports the top of the unobstructed map area (below the header)
- * but not the height of the content card, so the legend hugs the left edge and is
- * offset below the card by [contentRowCount], the number of rows the screen is
- * currently showing in that card. Metrics are scaled from the host surface dpi
- * rather than the presentation's resource density, which comes from the car
- * context.
+ * map surface. The panel anchors to the surface's bottom-left corner with the
+ * same inset on both edges, so it stays visually centred in that corner. Metrics
+ * are scaled from the host surface dpi rather than the presentation's resource
+ * density, which comes from the car context.
  */
 internal class CarLegendOverlay(
     context: Context,
@@ -61,11 +65,14 @@ internal class CarLegendOverlay(
 ) : Overlay() {
     private val entryFormat = context.getString(R.string.car_legend_entry)
 
+    /** Status line above the legend, for example the refresh countdown. */
+    var countdown: String = ""
+
     /** Surface density scale relative to the baseline dpi. */
     private var scale = 1f
 
-    /** Number of rows the host's content card currently shows; 0 when it is absent. */
-    var contentRowCount: Int = 0
+    /** Height of the map surface, used to keep the panel's bottom inset symmetric to its left inset. */
+    internal var surfaceHeight: Int = 0
 
     /** The map area the host designates as stable, or `null` while unknown. */
     private var stableArea: Rect? = null
@@ -87,12 +94,21 @@ internal class CarLegendOverlay(
             textSize = TEXT_SIZE_DP
         }
 
+    /** Paint for the status line above the legend rows, at the legend text size. */
+    private val countdownPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
+            isFakeBoldText = true
+            textSize = TEXT_SIZE_DP
+        }
+
     /** Surface density in dpi, set from the host surface; drives all metrics. */
     var densityDpi: Int = DisplayMetrics.DENSITY_DEFAULT
         set(value) {
             field = value
             scale = value / BASE_DENSITY_DPI
             textPaint.textSize = TEXT_SIZE_DP * scale
+            countdownPaint.textSize = TEXT_SIZE_DP * scale
         }
 
     /**
@@ -118,9 +134,6 @@ internal class CarLegendOverlay(
 
     private val panelInset: Float get() = PANEL_INSET_DP * scale
 
-    /** Height of one host status-card row, used to clear the card below its header. */
-    private val contentRowHeight: Float get() = CONTENT_ROW_HEIGHT_DP * scale
-
     private val innerPadding: Float get() = PADDING_DP * scale
 
     private val swatchSize: Float get() = SWATCH_SIZE_DP * scale
@@ -128,6 +141,8 @@ internal class CarLegendOverlay(
     private val rowHeight: Float get() = ROW_HEIGHT_DP * scale
 
     private val labelGap: Float get() = GAP_DP * scale
+
+    private val countdownGap: Float get() = COUNTDOWN_GAP_DP * scale
 
     private val cornerRadius: Float get() = CORNER_RADIUS_DP * scale
 
@@ -157,17 +172,23 @@ internal class CarLegendOverlay(
         }
     }
 
-    /** The panel rectangle in surface pixels, top-left below the host's status card. */
+    /** The panel rectangle in surface pixels, bottom-left of the host's map area. */
     internal fun panelBounds(): RectF = panelBounds(entries())
 
     private fun panelBounds(rows: List<LegendEntry>): RectF {
-        val textWidth = rows.maxOfOrNull { textPaint.measureText(it.label) } ?: 0f
-        val width = innerPadding + swatchSize + labelGap + textWidth + innerPadding
-        val height = innerPadding + rows.size * rowHeight + innerPadding
+        val legendWidth = rows.maxOfOrNull { swatchSize + labelGap + textPaint.measureText(it.label) } ?: 0f
+        val countdownWidth = if (countdown.isBlank()) 0f else countdownPaint.measureText(countdown)
+        val width = innerPadding + maxOf(legendWidth, countdownWidth) + innerPadding
+        val height = innerPadding + countdownHeight + rows.size * rowHeight + innerPadding
+        val bottom = if (surfaceHeight > 0) surfaceHeight.toFloat() else (anchorArea?.bottom ?: 0).toFloat()
         val left = panelInset
-        val top = (anchorArea?.top ?: 0) + contentRowCount * contentRowHeight + panelInset
+        val top = bottom - panelInset - height
         return RectF(left, top, left + width, top + height)
     }
+
+    /** Height of the countdown line, including the gap to the legend rows. */
+    private val countdownHeight: Float
+        get() = if (countdown.isBlank()) 0f else countdownPaint.fontSpacing + countdownGap
 
     override fun draw(
         canvas: Canvas?,
@@ -176,15 +197,22 @@ internal class CarLegendOverlay(
     ) {
         val targetCanvas = canvas ?: return
         val rows = entries()
-        if (shadow || rows.isEmpty()) {
+        if (shadow || (rows.isEmpty() && countdown.isBlank())) {
             return
         }
 
+        mapView?.let { surfaceHeight = it.height }
         val panel = panelBounds(rows)
         targetCanvas.drawRoundRect(panel, cornerRadius, cornerRadius, backgroundPaint)
 
+        val contentTop = panel.top + innerPadding
+        if (countdown.isNotBlank()) {
+            val countdownBaseline = contentTop - countdownPaint.fontMetrics.ascent
+            targetCanvas.drawText(countdown, panel.left + innerPadding, countdownBaseline, countdownPaint)
+        }
+
         rows.forEachIndexed { index, row ->
-            val rowTop = panel.top + innerPadding + index * rowHeight
+            val rowTop = contentTop + countdownHeight + index * rowHeight
             val swatchTop = rowTop + (rowHeight - swatchSize) / 2f
             val swatchRect =
                 RectF(
@@ -208,21 +236,17 @@ internal class CarLegendOverlay(
         /** Opacity of the dark panel behind the legend rows. */
         const val PANEL_ALPHA = 200
 
-        const val PANEL_INSET_DP = 10f
-        const val PADDING_DP = 12f
-        const val SWATCH_SIZE_DP = 20f
-        const val ROW_HEIGHT_DP = 32f
-        const val GAP_DP = 12f
-        const val CORNER_RADIUS_DP = 12f
+        const val PANEL_INSET_DP = 8f
+        const val PADDING_DP = 8f
+        const val SWATCH_SIZE_DP = 16f
+        const val ROW_HEIGHT_DP = 24f
+        const val GAP_DP = 8f
+        const val CORNER_RADIUS_DP = 10f
 
-        /** Legend text size. Sized for legibility at a glance while driving. */
-        const val TEXT_SIZE_DP = 18f
+        /** Text size shared by the countdown line and the legend labels. */
+        const val TEXT_SIZE_DP = 14f
 
-        /**
-         * Height of one host status-card row at the baseline dpi. The host does not
-         * report the card's height, so the legend is kept clear below it by this
-         * much for every row the screen is showing.
-         */
-        const val CONTENT_ROW_HEIGHT_DP = 96f
+        /** Gap between the countdown line and the first legend row. */
+        const val COUNTDOWN_GAP_DP = 4f
     }
 }
