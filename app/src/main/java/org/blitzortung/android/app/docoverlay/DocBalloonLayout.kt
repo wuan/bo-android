@@ -106,7 +106,15 @@ data class PlacedBalloon(
     val bounds: IntRect,
     val tailSide: BalloonTailSide,
     val tailTip: IntPoint,
-)
+) {
+    /** Moves the placement to another coordinate space. */
+    fun translated(dx: Int, dy: Int): PlacedBalloon = PlacedBalloon(
+        id,
+        bounds.translated(dx, dy),
+        tailSide,
+        IntPoint(tailTip.x + dx, tailTip.y + dy),
+    )
+}
 
 /**
  * Deterministic placement of documentation balloons.

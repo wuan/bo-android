@@ -79,6 +79,48 @@ class MainDocOverlayTest {
     }
 
     @Test
+    fun `top row balloons start below the top controls`() {
+        val activity = Robolectric.buildActivity(Main::class.java).setup().get()
+        layoutActivity(activity)
+
+        val container = activity.findViewById<ViewGroup>(R.id.doc_balloon_container)
+        val status = activity.findViewById<View>(R.id.status)
+        val topBalloons = listOf(
+            findBalloon(container, activity.getString(R.string.doc_overlay_status))!!,
+            findBalloon(container, activity.getString(R.string.doc_overlay_buttons))!!,
+            findBalloon(container, activity.getString(R.string.doc_overlay_legend))!!,
+        )
+
+        assertThat(status.bottom).isGreaterThan(0)
+        topBalloons.forEach { balloon ->
+            assertThat(balloon.top)
+                .describedAs("top-row balloon must start below the status row")
+                .isGreaterThanOrEqualTo(status.bottom)
+        }
+    }
+
+    @Test
+    fun `bottom balloons end above the time slider`() {
+        val activity = Robolectric.buildActivity(Main::class.java).setup().get()
+        layoutActivity(activity)
+
+        val container = activity.findViewById<ViewGroup>(R.id.doc_balloon_container)
+        val timeSlider = activity.findViewById<View>(R.id.time_slider)
+        val bottomBalloons = listOf(
+            findBalloon(container, activity.getString(R.string.doc_overlay_time_slider))!!,
+            findBalloon(container, activity.getString(R.string.doc_overlay_histogram))!!,
+            findBalloon(container, activity.getString(R.string.doc_overlay_alert))!!,
+        )
+
+        assertThat(timeSlider.top).isGreaterThan(0)
+        bottomBalloons.forEach { balloon ->
+            assertThat(balloon.top + balloon.height)
+                .describedAs("bottom balloon must end above the time slider")
+                .isLessThanOrEqualTo(timeSlider.top)
+        }
+    }
+
+    @Test
     fun `bottom balloons are stacked time slider below histogram below alert`() {
         val activity = Robolectric.buildActivity(Main::class.java).setup().get()
         layoutActivity(activity)

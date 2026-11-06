@@ -10,6 +10,9 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.content.edit
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.app.docoverlay.BalloonTailSide
 import org.blitzortung.android.preferences.PreferenceKey
@@ -158,6 +161,41 @@ class DocOverlayControllerTest {
     }
 
     @Test
+    fun `balloons are laid out inside the system bar insets`() {
+        val activity = Robolectric.buildActivity(android.app.Activity::class.java).setup().get()
+        val host = FrameLayout(activity)
+        activity.setContentView(host)
+        val target = View(activity).apply { layoutParams = FrameLayout.LayoutParams(100, 40) }
+        host.addView(target)
+        val controllerWithTargets = DocOverlayController(
+            host,
+            LayoutInflater.from(activity),
+            preferences,
+        ) {
+            listOf(DocTarget(target, "status text", BalloonTailSide.TOP))
+        }
+
+        controllerWithTargets.show()
+        // Flush the inset request from show(); Robolectric then dispatches empty window insets.
+        shadowOf(Looper.getMainLooper()).idle()
+        dispatchSystemBarInsets(host, top = 60, bottom = 120)
+        layoutHost(host)
+        shadowOf(Looper.getMainLooper()).idle()
+        layoutHost(host)
+
+        val root = host.findViewById<View>(R.id.doc_overlay_root)
+        val container = host.findViewById<FrameLayout>(R.id.doc_balloon_container)
+        assertThat(container.left).isEqualTo(0)
+        assertThat(container.top).isEqualTo(60)
+        assertThat(container.width).isEqualTo(1080)
+        assertThat(container.height).isEqualTo(1920 - 60 - 120)
+
+        val balloon = container.getChildAt(0)
+        assertThat(container.top + balloon.top).isGreaterThanOrEqualTo(60)
+        assertThat(container.top + balloon.top + balloon.height).isLessThanOrEqualTo(root.height - 120)
+    }
+
+    @Test
     fun `targets that are not visible do not produce balloons`() {
         val activity = Robolectric.buildActivity(android.app.Activity::class.java).setup().get()
         val host = FrameLayout(activity)
@@ -188,6 +226,20 @@ class DocOverlayControllerTest {
             View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.EXACTLY),
         )
         root.layout(0, 0, 1080, 1920)
+    }
+
+    private fun dispatchSystemBarInsets(
+        host: View,
+        left: Int = 0,
+        top: Int = 0,
+        right: Int = 0,
+        bottom: Int = 0,
+    ) {
+        val root = host.findViewById<View>(R.id.doc_overlay_root)
+        val systemBars = WindowInsetsCompat.Type.systemBars()
+        val bars = Insets.of(left, top, right, bottom)
+        val insets = WindowInsetsCompat.Builder().setInsets(systemBars, bars).build()
+        ViewCompat.dispatchApplyWindowInsets(root, insets)
     }
 
     private fun collectTexts(view: ViewGroup?): List<String> {
