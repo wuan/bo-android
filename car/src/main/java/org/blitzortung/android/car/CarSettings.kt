@@ -22,30 +22,42 @@ import android.content.Context
 import android.content.SharedPreferences
 
 /**
- * How the car map surface is dimmed by its translucent overlay.
+ * The direction in which the car map background is shaded. There is no unshaded
+ * value: the car always washes the map so the strike data reads first.
  */
-enum class MapDimMode {
-    /** Dim the map while the car host reports dark mode. */
+enum class MapShading {
+    /** Translucent black scrim with the bright strike palette. */
+    DARK,
+
+    /** Translucent white scrim with the darker strike palette. */
+    BRIGHT,
+}
+
+/**
+ * How the car chooses the map shading direction.
+ */
+enum class MapShadingMode {
+    /** Use dark shading in a dark car theme and bright shading in a light one. */
     FOLLOW_CAR,
 
-    /** Always dim the map. */
-    ON,
+    /** Always shade the map dark. */
+    DARK,
 
-    /** Never dim the map. */
-    OFF,
+    /** Always shade the map bright. */
+    BRIGHT,
     ;
 
-    /** Whether the map should be dimmed for the given car theme. */
-    fun isDimmed(carIsDark: Boolean): Boolean =
+    /** The shading direction for the given car theme. */
+    fun shading(carIsDark: Boolean): MapShading =
         when (this) {
-            ON -> true
-            OFF -> false
-            FOLLOW_CAR -> carIsDark
+            DARK -> MapShading.DARK
+            BRIGHT -> MapShading.BRIGHT
+            FOLLOW_CAR -> if (carIsDark) MapShading.DARK else MapShading.BRIGHT
         }
 
     companion object {
         /** Parses a stored mode name, falling back to [FOLLOW_CAR] when absent or unknown. */
-        fun fromStored(value: String?): MapDimMode = entries.firstOrNull { it.name == value } ?: FOLLOW_CAR
+        fun fromStored(value: String?): MapShadingMode = entries.firstOrNull { it.name == value } ?: FOLLOW_CAR
     }
 }
 
@@ -67,24 +79,24 @@ class CarSettings(context: Context) {
     private val preferences: SharedPreferences =
         context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-    private val mapDimModeObservers = mutableListOf<(MapDimMode) -> Unit>()
+    private val mapShadingModeObservers = mutableListOf<(MapShadingMode) -> Unit>()
 
-    /** The selected map dimming mode; defaults to [MapDimMode.FOLLOW_CAR]. */
-    var mapDimMode: MapDimMode
-        get() = MapDimMode.fromStored(preferences.getString(KEY_MAP_DIM_MODE, null))
+    /** The selected map shading mode; defaults to [MapShadingMode.FOLLOW_CAR]. */
+    var mapShadingMode: MapShadingMode
+        get() = MapShadingMode.fromStored(preferences.getString(KEY_MAP_SHADING_MODE, null))
         set(value) {
-            preferences.edit().putString(KEY_MAP_DIM_MODE, value.name).apply()
-            mapDimModeObservers.toList().forEach { it(value) }
+            preferences.edit().putString(KEY_MAP_SHADING_MODE, value.name).apply()
+            mapShadingModeObservers.toList().forEach { it(value) }
         }
 
-    /** Registers [observer] to be notified whenever the map dimming mode changes. */
-    fun observeMapDimMode(observer: (MapDimMode) -> Unit) {
-        mapDimModeObservers.add(observer)
+    /** Registers [observer] to be notified whenever the map shading mode changes. */
+    fun observeMapShadingMode(observer: (MapShadingMode) -> Unit) {
+        mapShadingModeObservers.add(observer)
     }
 
-    /** Removes a previously registered map dimming mode observer. */
-    fun removeMapDimModeObserver(observer: (MapDimMode) -> Unit) {
-        mapDimModeObservers.remove(observer)
+    /** Removes a previously registered map shading mode observer. */
+    fun removeMapShadingModeObserver(observer: (MapShadingMode) -> Unit) {
+        mapShadingModeObservers.remove(observer)
     }
 
     /** The stored map camera, or `null` when none has been saved. */
@@ -117,8 +129,8 @@ class CarSettings(context: Context) {
         /** Car-only preferences file; never the app's default preferences. */
         const val PREFS_NAME = "car_settings"
 
-        /** Key for the map dimming mode; stored as its name for forward-compatibility. */
-        const val KEY_MAP_DIM_MODE = "map_dim_mode"
+        /** Key for the map shading mode; stored as its name for forward-compatibility. */
+        const val KEY_MAP_SHADING_MODE = "map_shading_mode"
 
         /** Key for the stored camera centre latitude. */
         const val KEY_CAMERA_LATITUDE = "camera_latitude"

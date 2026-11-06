@@ -19,6 +19,7 @@
 package org.blitzortung.android.app
 
 import android.content.Context
+import android.content.SharedPreferences
 import javax.inject.Inject
 import javax.inject.Singleton
 import org.blitzortung.android.alert.AlertRepository
@@ -32,6 +33,10 @@ import org.blitzortung.android.map.overlay.color.StrikeColorHandler
  * Phone application's implementation of the car experience's dependencies,
  * backed by the shared Dagger graph so the car app reuses the same repositories
  * (and therefore the same cache and update scheduling) as the phone UI.
+ *
+ * The car gets its own strike-colour handler over the shared preferences instead
+ * of the phone's singleton: the car sets a shading-derived target override, and
+ * a shared instance would recolour the phone map with it.
  */
 @Singleton
 class AppCarDependencies
@@ -40,8 +45,10 @@ class AppCarDependencies
         override val strikeDataRepository: StrikeDataRepository,
         override val locationRepository: LocationRepository,
         override val alertRepository: AlertRepository,
-        override val strikeColorHandler: StrikeColorHandler,
+        preferences: SharedPreferences,
         context: Context,
     ) : CarDependencies {
+        override val strikeColorHandler: StrikeColorHandler = StrikeColorHandler(preferences)
+
         override val carSettings: CarSettings = CarSettings(context)
     }

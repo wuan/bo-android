@@ -50,14 +50,16 @@ internal data class LegendEntry(
  * The legend reads the active colours from the strike overlay and the interval
  * from its parameters, so it follows the current colour scheme and animation
  * interval without any extra data wiring. It is drawn above every other overlay
- * (including the dimming scrim), is never interactive, and has no show/hide
+ * (including the shading scrim), is never interactive, and has no show/hide
  * preference.
  *
- * The host draws its own UI (the alert list, the header, the car bar) over the
- * map surface. The panel anchors to the surface's bottom-left corner with the
- * same inset on both edges, so it stays visually centred in that corner. Metrics
- * are scaled from the host surface dpi rather than the presentation's resource
- * density, which comes from the car context.
+ * The host draws its own UI (the alert list, the car bar) over the map surface.
+ * The panel anchors to the bottom-left of the host's map area with the same inset
+ * on both edges, so it stays visually centred in that corner. The map area's
+ * bottom comes from the visible/stable area reported by the host, which excludes
+ * host chrome such as the car bar; the surface height is only a fallback while no
+ * area is known. Metrics are scaled from the host surface dpi rather than the
+ * presentation's resource density, which comes from the car context.
  */
 internal class CarLegendOverlay(
     context: Context,
@@ -128,9 +130,25 @@ internal class CarLegendOverlay(
         this.stableArea = stableArea.takeUnless { it.isEmpty }
     }
 
-    /** The area the legend starts below, or `null` to fall back to the surface top. */
+    /** The area the legend must stay inside, or `null` while the host reports none. */
     private val anchorArea: Rect?
         get() = stableArea ?: visibleArea
+
+    /**
+     * The bottom edge of the host's map area in surface pixels. The reported area
+     * excludes host chrome such as the AAOS car bar, unlike the full surface
+     * height, so preferring it keeps the panel inside the usable map area.
+     */
+    private val anchorBottom: Float
+        get() {
+            val areaBottom = anchorArea?.bottom?.toFloat() ?: 0f
+            val surfaceBottom = surfaceHeight.toFloat()
+            return when {
+                areaBottom > 0f && surfaceBottom > 0f -> minOf(areaBottom, surfaceBottom)
+                areaBottom > 0f -> areaBottom
+                else -> surfaceBottom
+            }
+        }
 
     private val panelInset: Float get() = PANEL_INSET_DP * scale
 
@@ -180,9 +198,8 @@ internal class CarLegendOverlay(
         val countdownWidth = if (countdown.isBlank()) 0f else countdownPaint.measureText(countdown)
         val width = innerPadding + maxOf(legendWidth, countdownWidth) + innerPadding
         val height = innerPadding + countdownHeight + rows.size * rowHeight + innerPadding
-        val bottom = if (surfaceHeight > 0) surfaceHeight.toFloat() else (anchorArea?.bottom ?: 0).toFloat()
         val left = panelInset
-        val top = bottom - panelInset - height
+        val top = anchorBottom - panelInset - height
         return RectF(left, top, left + width, top + height)
     }
 

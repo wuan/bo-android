@@ -29,22 +29,22 @@ import androidx.car.app.model.Row
 import androidx.car.app.model.Template
 
 /**
- * Car settings surface: a list of settings, starting with map dimming. New rows
+ * Car settings surface: a list of settings, starting with map shading. New rows
  * are added here as the car experience grows.
  */
 class BlitzortungSettingsScreen(carContext: CarContext) : Screen(carContext) {
     private val carSettings = CarDependenciesProvider.dependencies?.carSettings
 
     override fun onGetTemplate(): Template {
-        val mode = carSettings?.mapDimMode ?: MapDimMode.FOLLOW_CAR
+        val mode = carSettings?.mapShadingMode ?: MapShadingMode.FOLLOW_CAR
 
         val row =
             Row.Builder()
-                .setTitle(carContext.getString(R.string.car_settings_map_dimming))
+                .setTitle(carContext.getString(R.string.car_settings_map_shading))
                 .addText(carContext.getString(mode.labelRes))
                 .setOnClickListener {
                     carContext.getCarService(ScreenManager::class.java)
-                        .push(BlitzortungMapDimSettingScreen(carContext))
+                        .push(BlitzortungMapShadingSettingScreen(carContext))
                 }
                 .build()
 
@@ -61,18 +61,18 @@ class BlitzortungSettingsScreen(carContext: CarContext) : Screen(carContext) {
 }
 
 /**
- * Chooses the map dimming mode: the three options are listed with the current
+ * Chooses the map shading mode: the three options are listed with the current
  * one marked, and selecting one stores it and returns to settings.
  */
-class BlitzortungMapDimSettingScreen(carContext: CarContext) : Screen(carContext) {
+class BlitzortungMapShadingSettingScreen(carContext: CarContext) : Screen(carContext) {
     private val carSettings = CarDependenciesProvider.dependencies?.carSettings
 
     override fun onGetTemplate(): Template {
-        val current = carSettings?.mapDimMode ?: MapDimMode.FOLLOW_CAR
+        val current = carSettings?.mapShadingMode ?: MapShadingMode.FOLLOW_CAR
 
         val itemList =
             ItemList.Builder().apply {
-                MapDimMode.entries.forEach { mode ->
+                MapShadingMode.entries.forEach { mode ->
                     val rowBuilder =
                         Row.Builder()
                             .setTitle(carContext.getString(mode.labelRes))
@@ -90,7 +90,7 @@ class BlitzortungMapDimSettingScreen(carContext: CarContext) : Screen(carContext
         return ListTemplate.Builder()
             .setHeader(
                 Header.Builder()
-                    .setTitle(carContext.getString(R.string.car_settings_map_dimming))
+                    .setTitle(carContext.getString(R.string.car_settings_map_shading))
                     .setStartHeaderAction(Action.BACK)
                     .build(),
             )
@@ -98,16 +98,16 @@ class BlitzortungMapDimSettingScreen(carContext: CarContext) : Screen(carContext
             .build()
     }
 
-    /** Stores the selected map dimming mode. */
-    internal fun selectMode(mode: MapDimMode) {
-        carSettings?.mapDimMode = mode
+    /** Stores the selected map shading mode. */
+    internal fun selectMode(mode: MapShadingMode) {
+        carSettings?.mapShadingMode = mode
     }
 }
 
-private val MapDimMode.labelRes: Int
+private val MapShadingMode.labelRes: Int
     get() =
         when (this) {
-            MapDimMode.FOLLOW_CAR -> R.string.car_dim_follow_car
-            MapDimMode.ON -> R.string.car_dim_on
-            MapDimMode.OFF -> R.string.car_dim_off
+            MapShadingMode.FOLLOW_CAR -> R.string.car_shade_follow_car
+            MapShadingMode.DARK -> R.string.car_shade_dark
+            MapShadingMode.BRIGHT -> R.string.car_shade_bright
         }

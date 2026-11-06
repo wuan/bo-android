@@ -31,12 +31,24 @@ abstract class ColorHandler(private val preferences: SharedPreferences) {
 
     private lateinit var target: ColorTarget
 
+    /**
+     * Optional target that takes precedence over the preference-derived target.
+     * It is resolved inside [updateTarget], so a later [updateTarget] call keeps
+     * the override instead of replacing it with the stored preference. A `null`
+     * value falls back to the preference.
+     */
+    var targetOverride: ColorTarget? = null
+        set(value) {
+            field = value
+            updateTarget()
+        }
+
     init {
         updateTarget()
     }
 
     fun updateTarget() {
-        target = getColorTarget()
+        target = targetOverride ?: getColorTarget()
         colorScheme =
             ColorScheme.valueOf(preferences.get(PreferenceKey.COLOR_SCHEME, ColorScheme.BLITZORTUNG.toString()))
     }

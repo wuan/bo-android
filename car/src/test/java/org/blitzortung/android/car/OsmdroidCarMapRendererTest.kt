@@ -36,10 +36,14 @@ import kotlin.math.max
 import kotlin.math.pow
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.within
+import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Parameters
+import org.blitzortung.android.data.beans.GridElement
 import org.blitzortung.android.data.beans.GridParameters
+import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.location.LocationUpdate
 import org.blitzortung.android.location.NoLocation
+import org.blitzortung.android.map.overlay.color.ColorTarget
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.blitzortung.android.protocol.MapViewport
 import org.junit.Test
@@ -90,35 +94,75 @@ class OsmdroidCarMapRendererTest {
     }
 
     @Test
-    fun `the scrim is transparent when the map is not dimmed`() {
+    fun `the scrim is transparent before any shading is applied`() {
         val renderer = createRenderer()
 
-        renderer.setDimmed(false)
-
-        assertThat(renderer.dimOverlay.alpha).isEqualTo(0)
+        assertThat(renderer.shadeOverlay.alpha).isEqualTo(0)
     }
 
     @Test
-    fun `the scrim darkens the map when dimmed`() {
+    fun `dark shading draws a black scrim over the map`() {
         val renderer = createRenderer()
 
-        renderer.setDimmed(true)
+        renderer.setShading(MapShading.DARK)
 
-        assertThat(renderer.dimOverlay.alpha).isGreaterThan(0)
+        assertThat(renderer.shadeOverlay.color).isEqualTo(Color.BLACK)
+        assertThat(renderer.shadeOverlay.alpha).isEqualTo(MapShadeOverlay.DARK_ALPHA)
     }
 
     @Test
-    fun `the dim overlay is drawn beneath the strike overlay`() {
+    fun `bright shading draws a white scrim over the map`() {
+        val renderer = createRenderer()
+
+        renderer.setShading(MapShading.BRIGHT)
+
+        assertThat(renderer.shadeOverlay.color).isEqualTo(Color.WHITE)
+        assertThat(renderer.shadeOverlay.alpha).isEqualTo(MapShadeOverlay.BRIGHT_ALPHA)
+    }
+
+    @Test
+    fun `dark shading keeps the bright strike palette`() {
+        val renderer = createRenderer()
+
+        renderer.setShading(MapShading.DARK)
+
+        assertThat(renderer.strikeListOverlay.colorHandler.colors)
+            .isEqualTo(renderer.strikeListOverlay.colorHandler.getColors(ColorTarget.SATELLITE))
+    }
+
+    @Test
+    fun `bright shading darkens the strike palette`() {
+        val renderer = createRenderer()
+
+        renderer.setShading(MapShading.BRIGHT)
+
+        assertThat(renderer.strikeListOverlay.colorHandler.colors)
+            .isEqualTo(renderer.strikeListOverlay.colorHandler.getColors(ColorTarget.STREETMAP))
+    }
+
+    @Test
+    fun `changing the shading recolours the strikes`() {
+        val renderer = createRenderer()
+        renderer.setShading(MapShading.DARK)
+        val darkPalette = renderer.strikeListOverlay.colorHandler.colors
+
+        renderer.setShading(MapShading.BRIGHT)
+
+        assertThat(renderer.strikeListOverlay.colorHandler.colors).isNotEqualTo(darkPalette)
+    }
+
+    @Test
+    fun `the shade overlay is drawn beneath the strike overlay`() {
         val renderer = createRenderer()
 
         val overlays = renderer.mapView.overlays
 
-        assertThat(overlays.indexOf(renderer.dimOverlay)).isEqualTo(0)
-        assertThat(overlays.indexOf(renderer.dimOverlay)).isLessThan(overlays.indexOf(renderer.strikeListOverlay))
+        assertThat(overlays.indexOf(renderer.shadeOverlay)).isEqualTo(0)
+        assertThat(overlays.indexOf(renderer.shadeOverlay)).isLessThan(overlays.indexOf(renderer.strikeListOverlay))
     }
 
     @Test
-    fun `overlays drawn after the dim overlay are not dimmed`() {
+    fun `overlays drawn after the shade overlay are not shaded`() {
         val renderer = createRenderer()
         renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
         val magenta = Paint().apply { color = Color.MAGENTA }
@@ -135,7 +179,7 @@ class OsmdroidCarMapRendererTest {
                 }
             },
         )
-        renderer.setDimmed(true)
+        renderer.setShading(MapShading.DARK)
 
         val bitmap = Bitmap.createBitmap(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, Bitmap.Config.ARGB_8888)
         renderer.mapView.overlayManager.onDraw(Canvas(bitmap), renderer.mapView)
@@ -162,14 +206,14 @@ class OsmdroidCarMapRendererTest {
     }
 
     @Test
-    fun `the legend is drawn above the dim, strike and location overlays`() {
+    fun `the legend is drawn above the shade, strike and location overlays`() {
         val renderer = createRenderer()
         val overlays = renderer.mapView.overlays
         val legendIndex = overlays.indexOf(renderer.legendOverlay)
 
         assertThat(legendIndex)
-            .describedAs("the legend must be drawn after the scrim so map dimming cannot affect it")
-            .isGreaterThan(overlays.indexOf(renderer.dimOverlay))
+            .describedAs("the legend must be drawn after the scrim so map shading cannot affect it")
+            .isGreaterThan(overlays.indexOf(renderer.shadeOverlay))
         assertThat(legendIndex).isGreaterThan(overlays.indexOf(renderer.strikeListOverlay))
         assertThat(legendIndex).isGreaterThan(overlays.indexOf(renderer.ownLocationOverlay))
     }
@@ -186,10 +230,33 @@ class OsmdroidCarMapRendererTest {
     }
 
     @Test
-    fun `dimming no longer inverts the map tiles`() {
+    fun `the legend stays above the host's map area bottom once the surface height is known`() {
+        val renderer = createRenderer()
+        renderer.legendOverlay.surfaceHeight = VIEWPORT_HEIGHT
+        val areaBottom = VIEWPORT_HEIGHT - 200
+
+        renderer.onStableAreaChanged(Rect(378, 123, 734, areaBottom))
+
+        val bounds = renderer.legendOverlay.panelBounds()
+        assertThat(bounds.bottom).isLessThanOrEqualTo(areaBottom.toFloat())
+    }
+
+    @Test
+    fun `the legend falls back to the surface bottom while no map area is known`() {
+        val renderer = createRenderer()
+        renderer.legendOverlay.surfaceHeight = VIEWPORT_HEIGHT
+
+        val bounds = renderer.legendOverlay.panelBounds()
+
+        assertThat(bounds.bottom).isLessThanOrEqualTo(VIEWPORT_HEIGHT.toFloat())
+        assertThat(bounds.bottom).isGreaterThan(VIEWPORT_HEIGHT - 100f)
+    }
+
+    @Test
+    fun `shading does not invert the map tiles`() {
         val renderer = createRenderer()
 
-        renderer.setDimmed(true)
+        renderer.setShading(MapShading.DARK)
 
         val colorFilterField = TilesOverlay::class.java.getDeclaredField("currentColorFilter")
         colorFilterField.isAccessible = true
@@ -575,6 +642,49 @@ class OsmdroidCarMapRendererTest {
         verify(exactly = 0) { canvas.drawLine(any(), any(), any(), any(), any()) }
     }
 
+    @Test
+    fun `strikes received before shading use the default palette`() {
+        val renderer = createRenderer()
+
+        renderer.updateStrikes(strikeEvent(updated = -1))
+
+        assertThat(renderer.strikeListOverlay.colorHandler.colors)
+            .isEqualTo(renderer.strikeListOverlay.colorHandler.getColors(ColorTarget.SATELLITE))
+    }
+
+    @Test
+    fun `strikes received after bright shading use the darker palette`() {
+        val renderer = createRenderer()
+        renderer.setShading(MapShading.BRIGHT)
+
+        renderer.updateStrikes(strikeEvent(updated = -1))
+
+        assertThat(renderer.strikeListOverlay.colorHandler.colors)
+            .isEqualTo(renderer.strikeListOverlay.colorHandler.getColors(ColorTarget.STREETMAP))
+    }
+
+    @Test
+    fun `a shading change recolours strikes on the next update`() {
+        val renderer = createRenderer()
+        renderer.setShading(MapShading.DARK)
+        renderer.updateStrikes(strikeEvent(updated = -1))
+
+        renderer.setShading(MapShading.BRIGHT)
+        renderer.updateStrikes(strikeEvent(updated = 1))
+
+        assertThat(renderer.strikeListOverlay.colorHandler.colors)
+            .isEqualTo(renderer.strikeListOverlay.colorHandler.getColors(ColorTarget.STREETMAP))
+    }
+
+    private fun strikeEvent(updated: Int): DataReceived =
+        DataReceived(
+            strikes = listOf(GridElement(REFERENCE_TIME, 10.0, 50.0, 1)),
+            referenceTime = REFERENCE_TIME,
+            updated = updated,
+            parameters = Parameters(),
+            flags = Flags(),
+        )
+
     private fun assertCentredOn(
         renderer: OsmdroidCarMapRenderer,
         latitude: Double,
@@ -620,5 +730,6 @@ class OsmdroidCarMapRendererTest {
         private const val INITIAL_LONGITUDE = 13.0
         private const val SCROLL_DISTANCE = 50f
         private const val LOCAL_REGION = -1
+        private const val REFERENCE_TIME = 1_000_000L
     }
 }

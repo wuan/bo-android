@@ -29,71 +29,91 @@ import org.robolectric.RuntimeEnvironment
 @RunWith(RobolectricTestRunner::class)
 class CarSettingsTest {
     @Test
-    fun `an unset mode defaults to follow car`() {
-        assertThat(CarSettings(context()).mapDimMode).isEqualTo(MapDimMode.FOLLOW_CAR)
+    fun `an unset shading mode defaults to follow car`() {
+        assertThat(CarSettings(context()).mapShadingMode).isEqualTo(MapShadingMode.FOLLOW_CAR)
     }
 
     @Test
-    fun `each mode round-trips through the store`() {
+    fun `each shading mode round-trips through the store`() {
         val settings = CarSettings(context())
 
-        MapDimMode.entries.forEach { mode ->
-            settings.mapDimMode = mode
-            assertThat(settings.mapDimMode).isEqualTo(mode)
+        MapShadingMode.entries.forEach { mode ->
+            settings.mapShadingMode = mode
+            assertThat(settings.mapShadingMode).isEqualTo(mode)
         }
     }
 
     @Test
-    fun `an unknown stored value falls back to follow car`() {
+    fun `an unknown shading value falls back to follow car`() {
         val context = context()
         context
             .getSharedPreferences(CarSettings.PREFS_NAME, 0)
             .edit()
-            .putString(CarSettings.KEY_MAP_DIM_MODE, "SOMETHING_ELSE")
+            .putString(CarSettings.KEY_MAP_SHADING_MODE, "SOMETHING_ELSE")
             .commit()
 
-        assertThat(CarSettings(context).mapDimMode).isEqualTo(MapDimMode.FOLLOW_CAR)
+        assertThat(CarSettings(context).mapShadingMode).isEqualTo(MapShadingMode.FOLLOW_CAR)
     }
 
     @Test
     fun `the setting is not written to the default preferences`() {
         val context = context()
 
-        CarSettings(context).mapDimMode = MapDimMode.ON
+        CarSettings(context).mapShadingMode = MapShadingMode.DARK
 
-        assertThat(PreferenceManager.getDefaultSharedPreferences(context).contains(CarSettings.KEY_MAP_DIM_MODE)).isFalse()
+        assertThat(PreferenceManager.getDefaultSharedPreferences(context).contains(CarSettings.KEY_MAP_SHADING_MODE)).isFalse()
     }
 
     @Test
-    fun `writing a mode notifies a registered observer`() {
+    fun `writing a shading mode notifies a registered observer`() {
         val settings = CarSettings(context())
-        val observed = mutableListOf<MapDimMode>()
-        settings.observeMapDimMode { observed.add(it) }
+        val observed = mutableListOf<MapShadingMode>()
+        settings.observeMapShadingMode { observed.add(it) }
 
-        settings.mapDimMode = MapDimMode.OFF
+        settings.mapShadingMode = MapShadingMode.BRIGHT
 
-        assertThat(observed).containsExactly(MapDimMode.OFF)
+        assertThat(observed).containsExactly(MapShadingMode.BRIGHT)
     }
 
     @Test
     fun `a removed observer is no longer notified`() {
         val settings = CarSettings(context())
-        val observed = mutableListOf<MapDimMode>()
-        val observer: (MapDimMode) -> Unit = { observed.add(it) }
-        settings.observeMapDimMode(observer)
-        settings.removeMapDimModeObserver(observer)
+        val observed = mutableListOf<MapShadingMode>()
+        val observer: (MapShadingMode) -> Unit = { observed.add(it) }
+        settings.observeMapShadingMode(observer)
+        settings.removeMapShadingModeObserver(observer)
 
-        settings.mapDimMode = MapDimMode.ON
+        settings.mapShadingMode = MapShadingMode.DARK
 
         assertThat(observed).isEmpty()
     }
 
     @Test
-    fun `mode maps to a dimmed state`() {
-        assertThat(MapDimMode.FOLLOW_CAR.isDimmed(carIsDark = true)).isTrue()
-        assertThat(MapDimMode.FOLLOW_CAR.isDimmed(carIsDark = false)).isFalse()
-        assertThat(MapDimMode.ON.isDimmed(carIsDark = false)).isTrue()
-        assertThat(MapDimMode.OFF.isDimmed(carIsDark = true)).isFalse()
+    fun `follow car follows the host theme`() {
+        assertThat(MapShadingMode.FOLLOW_CAR.shading(carIsDark = true)).isEqualTo(MapShading.DARK)
+        assertThat(MapShadingMode.FOLLOW_CAR.shading(carIsDark = false)).isEqualTo(MapShading.BRIGHT)
+    }
+
+    @Test
+    fun `dark map always resolves to dark shading`() {
+        assertThat(MapShadingMode.DARK.shading(carIsDark = true)).isEqualTo(MapShading.DARK)
+        assertThat(MapShadingMode.DARK.shading(carIsDark = false)).isEqualTo(MapShading.DARK)
+    }
+
+    @Test
+    fun `bright map always resolves to bright shading`() {
+        assertThat(MapShadingMode.BRIGHT.shading(carIsDark = true)).isEqualTo(MapShading.BRIGHT)
+        assertThat(MapShadingMode.BRIGHT.shading(carIsDark = false)).isEqualTo(MapShading.BRIGHT)
+    }
+
+    @Test
+    fun `every mode resolves to a shading direction`() {
+        assertThat(MapShading.entries).containsExactly(MapShading.DARK, MapShading.BRIGHT)
+
+        MapShadingMode.entries.forEach { mode ->
+            assertThat(mode.shading(carIsDark = true)).isIn(MapShading.DARK, MapShading.BRIGHT)
+            assertThat(mode.shading(carIsDark = false)).isIn(MapShading.DARK, MapShading.BRIGHT)
+        }
     }
 
     @Test

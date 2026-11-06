@@ -80,7 +80,11 @@ interface CarMapRenderer {
         y: Float,
     )
 
-    fun setDimmed(dimmed: Boolean)
+    /**
+     * Shades the map background and selects the matching strike palette. The
+     * shading is retained and re-applied whenever strikes are updated.
+     */
+    fun setShading(shading: MapShading)
 
     /**
      * Sets the refresh countdown drawn on the map surface above the legend. It is

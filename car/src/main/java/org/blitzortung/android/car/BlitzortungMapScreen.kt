@@ -59,8 +59,8 @@ class BlitzortungMapScreen(
 
     internal var alertListState = CarAlertListState()
 
-    /** Registered observer so a dimming change made in settings redraws the map. */
-    private val onMapDimModeChanged: (MapDimMode) -> Unit = { invalidate() }
+    /** Registered observer so a shading change made in settings redraws the map. */
+    private val onMapShadingModeChanged: (MapShadingMode) -> Unit = { invalidate() }
 
     /** Countdown text last sent to the renderer, so it is only redrawn when it changes. */
     private var countdownText: String = ""
@@ -161,11 +161,11 @@ class BlitzortungMapScreen(
      */
     private fun observeSettings() {
         val settings = dependencies?.carSettings ?: return
-        settings.observeMapDimMode(onMapDimModeChanged)
+        settings.observeMapShadingMode(onMapShadingModeChanged)
         lifecycle.addObserver(
             object : DefaultLifecycleObserver {
                 override fun onDestroy(owner: LifecycleOwner) {
-                    settings.removeMapDimModeObserver(onMapDimModeChanged)
+                    settings.removeMapShadingModeObserver(onMapShadingModeChanged)
                 }
             },
         )
@@ -235,7 +235,7 @@ class BlitzortungMapScreen(
     }
 
     override fun onGetTemplate(): Template {
-        renderer?.setDimmed(isMapDimmed())
+        renderer?.setShading(currentShading())
 
         return MapWithContentTemplate.Builder()
             .setContentTemplate(buildAlertListTemplate())
@@ -244,10 +244,10 @@ class BlitzortungMapScreen(
             .build()
     }
 
-    /** Whether the map surface should be dimmed for the stored mode and car theme. */
-    internal fun isMapDimmed(): Boolean {
-        val mode = dependencies?.carSettings?.mapDimMode ?: MapDimMode.FOLLOW_CAR
-        return mode.isDimmed(carContext.isDarkMode)
+    /** The shading direction for the stored mode and the current car theme. */
+    internal fun currentShading(): MapShading {
+        val mode = dependencies?.carSettings?.mapShadingMode ?: MapShadingMode.FOLLOW_CAR
+        return mode.shading(carContext.isDarkMode)
     }
 
     private fun buildAlertListTemplate(): ListTemplate {

@@ -18,7 +18,21 @@
 
 package org.blitzortung.android.map.overlay.color
 
+/**
+ * Which palette treatment to apply to strikes.
+ *
+ * The names are historical (they date from when the phone offered satellite and
+ * street-map tiles). Both the phone and the car always draw MAPNIK tiles, so the
+ * values really select a shading direction:
+ *
+ * - [SATELLITE] is the dark-shading target: the raw bright palette for a dark map.
+ * - [STREETMAP] is the bright-shading target: the same palette darkened to 80%
+ *   for a pale map.
+ */
 enum class ColorTarget {
+    /** Dark-shading palette: the raw bright strike colours. */
     SATELLITE,
+
+    /** Bright-shading palette: strike colours darkened for a pale map. */
     STREETMAP,
 }

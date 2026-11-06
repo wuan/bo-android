@@ -56,4 +56,24 @@ class StrikeColorHandlerTest {
 
         assertThat(textColor).isEqualTo(0xffffffff.toInt())
     }
+
+    @Test
+    fun shouldKeepTheOverriddenTargetAcrossUpdateTargetCalls() {
+        strikeColorHandler.targetOverride = ColorTarget.STREETMAP
+        strikeColorHandler.updateTarget()
+
+        assertThat(strikeColorHandler.colors).isEqualTo(
+            strikeColorHandler.getColors(ColorTarget.STREETMAP),
+        )
+    }
+
+    @Test
+    fun shouldFallBackToThePreferredTargetWhenTheOverrideIsCleared() {
+        strikeColorHandler.targetOverride = ColorTarget.STREETMAP
+        strikeColorHandler.targetOverride = null
+
+        assertThat(strikeColorHandler.colors).isEqualTo(
+            strikeColorHandler.getColors(ColorTarget.SATELLITE),
+        )
+    }
 }

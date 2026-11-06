@@ -33,6 +33,7 @@ import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.overlay.OwnLocationOverlay
 import org.blitzortung.android.map.overlay.StrikeListOverlay
+import org.blitzortung.android.map.overlay.color.ColorTarget
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.blitzortung.android.protocol.MapViewport
 import org.osmdroid.config.Configuration
@@ -74,22 +75,25 @@ class OsmdroidCarMapRenderer(
 
     private var viewportListener: ((MapViewport) -> Unit)? = null
 
+    /** The latest shading direction, re-applied whenever strikes are refreshed. */
+    private var shading: MapShading? = null
+
     /**
-     * Dimming scrim. Added as the first overlay so it covers the map tiles only,
-     * leaving the strike and grid overlays drawn after it undimmed.
+     * Shading scrim. Added as the first overlay so it covers the map tiles only,
+     * leaving the strike and grid overlays drawn after it unshaded.
      */
-    internal val dimOverlay: MapDimOverlay = MapDimOverlay()
+    internal val shadeOverlay: MapShadeOverlay = MapShadeOverlay()
 
     /**
      * Strike age colour legend. Added last so it draws above the strike and
-     * dimming overlays and is never dimmed by the scrim.
+     * shading overlays and is never shaded by the scrim.
      */
     internal val legendOverlay: CarLegendOverlay = CarLegendOverlay(carContext, strikeListOverlay)
 
     init {
         // Index 0 => drawn directly above the map tiles and below every data
-        // overlay (strikes, grid, own location), so only the background dims.
-        mapView.overlays.add(0, dimOverlay)
+        // overlay (strikes, grid, own location), so only the background is shaded.
+        mapView.overlays.add(0, shadeOverlay)
         mapView.overlays.add(strikeListOverlay)
         mapView.overlays.add(ownLocationOverlay)
         mapView.overlays.add(legendOverlay)
@@ -302,9 +306,27 @@ class OsmdroidCarMapRenderer(
         // Strike details are a phone-only affordance; the car map has no popup.
     }
 
-    override fun setDimmed(dimmed: Boolean) {
-        dimOverlay.alpha = if (dimmed) DIM_ALPHA else 0
+    override fun setShading(shading: MapShading) {
+        this.shading = shading
+        applyShading()
         mapView.invalidate()
+    }
+
+    /**
+     * Applies the stored shading to the scrim and the strike palette. It is
+     * called on every strike update, so the first data event after a cold start
+     * or a theme flip paints strikes with the palette for the current direction.
+     */
+    private fun applyShading() {
+        val current = shading ?: return
+        shadeOverlay.applyShading(current)
+        // Dark shading keeps the bright palette; bright shading darkens it so
+        // the near-white newest strikes stay visible on the pale background.
+        strikeListOverlay.colorHandler.targetOverride =
+            when (current) {
+                MapShading.DARK -> ColorTarget.SATELLITE
+                MapShading.BRIGHT -> ColorTarget.STREETMAP
+            }
     }
 
     override fun setCountdown(countdown: String) {
@@ -363,6 +385,9 @@ class OsmdroidCarMapRenderer(
             strikeListOverlay.addStrikes(strikesToAdd)
         }
 
+        // Set the palette before refresh, because refresh() re-reads the phone
+        // preference through updateTarget() and the override must survive that.
+        applyShading()
         strikeListOverlay.refresh()
         mapView.invalidate()
     }
@@ -464,12 +489,6 @@ class OsmdroidCarMapRenderer(
     internal companion object {
         private const val VIRTUAL_DISPLAY_NAME = "BlitzortungCarMap"
         private const val FLING_DIVISOR = 10f
-
-        /**
-         * Opacity of the dimming scrim over the map background. Strong enough to cut
-         * night glare while leaving the strike and grid layers readable.
-         */
-        private const val DIM_ALPHA = 128
 
         /**
          * Zoom the car map starts at when it first frames the driver's position.

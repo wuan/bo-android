@@ -111,14 +111,14 @@ class CarLegendOverlayTest {
     }
 
     @Test
-    fun `uses the surface bottom instead of the host's reported area`() {
+    fun `prefers the host's reported area bottom over the surface height`() {
         val (legend, _) = createOverlay()
         legend.surfaceHeight = 1000
         legend.onVisibleAreaChanged(Rect(300, 60, 1000, 900))
 
         val bounds = legend.panelBounds()
 
-        assertThat(bounds.bottom).isEqualTo(1000f - PANEL_INSET)
+        assertThat(bounds.bottom).isEqualTo(900f - PANEL_INSET)
     }
 
     @Test
@@ -129,6 +129,16 @@ class CarLegendOverlayTest {
         val bounds = legend.panelBounds()
 
         assertThat(bounds.bottom).isEqualTo(900f - PANEL_INSET)
+    }
+
+    @Test
+    fun `uses the surface bottom while no map area is known`() {
+        val (legend, _) = createOverlay()
+        legend.surfaceHeight = 1000
+
+        val bounds = legend.panelBounds()
+
+        assertThat(bounds.bottom).isEqualTo(1000f - PANEL_INSET)
     }
 
     @Test

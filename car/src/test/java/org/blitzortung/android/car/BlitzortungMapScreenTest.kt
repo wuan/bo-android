@@ -18,6 +18,7 @@
 
 package org.blitzortung.android.car
 
+import android.graphics.Color
 import androidx.car.app.model.Action
 import androidx.car.app.model.ListTemplate
 import androidx.car.app.navigation.model.MapWithContentTemplate
@@ -156,63 +157,65 @@ class BlitzortungMapScreenTest {
     }
 
     @Test
-    fun `follow car dims the map when the car reports dark mode`() {
+    fun `follow car shades dark when the car reports dark mode`() {
         registerDependencies()
-        carSettings.mapDimMode = MapDimMode.FOLLOW_CAR
+        carSettings.mapShadingMode = MapShadingMode.FOLLOW_CAR
         RuntimeEnvironment.setQualifiers("+night")
 
-        assertThat(createScreen().isMapDimmed()).isTrue()
+        assertThat(createScreen().currentShading()).isEqualTo(MapShading.DARK)
     }
 
     @Test
-    fun `follow car keeps the map clear when the car reports light mode`() {
+    fun `follow car shades bright when the car reports light mode`() {
         registerDependencies()
-        carSettings.mapDimMode = MapDimMode.FOLLOW_CAR
+        carSettings.mapShadingMode = MapShadingMode.FOLLOW_CAR
         RuntimeEnvironment.setQualifiers("+notnight")
 
-        assertThat(createScreen().isMapDimmed()).isFalse()
+        assertThat(createScreen().currentShading()).isEqualTo(MapShading.BRIGHT)
     }
 
     @Test
-    fun `on dims the map regardless of the car theme`() {
+    fun `dark map shades dark regardless of the car theme`() {
         registerDependencies()
-        carSettings.mapDimMode = MapDimMode.ON
+        carSettings.mapShadingMode = MapShadingMode.DARK
         RuntimeEnvironment.setQualifiers("+notnight")
 
-        assertThat(createScreen().isMapDimmed()).isTrue()
+        assertThat(createScreen().currentShading()).isEqualTo(MapShading.DARK)
     }
 
     @Test
-    fun `off leaves the map clear regardless of the car theme`() {
+    fun `bright map shades bright regardless of the car theme`() {
         registerDependencies()
-        carSettings.mapDimMode = MapDimMode.OFF
+        carSettings.mapShadingMode = MapShadingMode.BRIGHT
         RuntimeEnvironment.setQualifiers("+night")
 
-        assertThat(createScreen().isMapDimmed()).isFalse()
+        assertThat(createScreen().currentShading()).isEqualTo(MapShading.BRIGHT)
     }
 
     @Test
-    fun `the dim state is applied to the renderer when the template is built`() {
+    fun `the shading is applied to the renderer when the template is built`() {
         registerDependencies()
-        carSettings.mapDimMode = MapDimMode.ON
+        carSettings.mapShadingMode = MapShadingMode.DARK
         val screen = createScreen()
         val renderer = screen.renderer as OsmdroidCarMapRenderer
 
         screen.onGetTemplate()
 
-        assertThat(renderer.dimOverlay.alpha).isGreaterThan(0)
+        assertThat(renderer.shadeOverlay.color).isEqualTo(Color.BLACK)
+        assertThat(renderer.shadeOverlay.alpha).isGreaterThan(0)
     }
 
     @Test
-    fun `a dimming change is applied to the map on the next template`() {
+    fun `a shading change is applied to the map on the next template`() {
         registerDependencies()
         val screen = createScreen()
         val renderer = screen.renderer as OsmdroidCarMapRenderer
 
-        carSettings.mapDimMode = MapDimMode.ON
+        carSettings.mapShadingMode = MapShadingMode.BRIGHT
         screen.onGetTemplate()
 
-        assertThat(renderer.dimOverlay.alpha).isGreaterThan(0)
+        assertThat(renderer.shadeOverlay.color).isEqualTo(Color.WHITE)
+        assertThat(renderer.shadeOverlay.alpha).isGreaterThan(0)
     }
 
     @Test

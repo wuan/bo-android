@@ -19,6 +19,7 @@
 package org.blitzortung.android.automotive
 
 import android.content.Context
+import android.content.SharedPreferences
 import javax.inject.Inject
 import javax.inject.Singleton
 import org.blitzortung.android.alert.AlertRepository
@@ -32,6 +33,9 @@ import org.blitzortung.android.map.overlay.color.StrikeColorHandler
  * Android Automotive OS implementation of the car experience's dependencies,
  * backed by the shared `:core` graph so the embedded app reuses the same data,
  * location and alert logic as the phone app.
+ *
+ * The car gets its own strike-colour handler over the shared preferences so its
+ * shading-derived target override cannot affect any other map surface.
  */
 @Singleton
 class AutomotiveCarDependencies
@@ -40,8 +44,10 @@ class AutomotiveCarDependencies
         override val strikeDataRepository: StrikeDataRepository,
         override val locationRepository: LocationRepository,
         override val alertRepository: AlertRepository,
-        override val strikeColorHandler: StrikeColorHandler,
+        preferences: SharedPreferences,
         context: Context,
     ) : CarDependencies {
+        override val strikeColorHandler: StrikeColorHandler = StrikeColorHandler(preferences)
+
         override val carSettings: CarSettings = CarSettings(context)
     }

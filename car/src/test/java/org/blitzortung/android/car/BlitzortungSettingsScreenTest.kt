@@ -59,36 +59,36 @@ class BlitzortungSettingsScreenTest {
     }
 
     @Test
-    fun `settings list shows the map dimming setting with its current value`() {
+    fun `settings list shows the map shading setting with its current value`() {
         registerDependencies()
-        carSettings.mapDimMode = MapDimMode.ON
+        carSettings.mapShadingMode = MapShadingMode.DARK
         val screen = BlitzortungSettingsScreen(carContext())
 
         val rows = rowsOf(screen)
 
         assertThat(rows).hasSize(1)
-        assertThat(rows.first().title?.toString()).isEqualTo("Map dimming")
-        assertThat(rows.first().texts.map { it.toString() }).contains("On")
+        assertThat(rows.first().title?.toString()).isEqualTo("Map shading")
+        assertThat(rows.first().texts.map { it.toString() }).contains("Dark map")
     }
 
     @Test
-    fun `the dimming choice screen offers all three modes`() {
+    fun `the shading choice screen offers all three modes`() {
         registerDependencies()
-        val screen = BlitzortungMapDimSettingScreen(carContext())
+        val screen = BlitzortungMapShadingSettingScreen(carContext())
 
         val titles = rowsOf(screen).map { it.title?.toString() }
 
-        assertThat(titles).containsExactly("Follow car", "On", "Off")
+        assertThat(titles).containsExactly("Follow car", "Dark map", "Bright map")
     }
 
     @Test
     fun `selecting a mode stores it`() {
         registerDependencies()
-        val screen = BlitzortungMapDimSettingScreen(carContext())
+        val screen = BlitzortungMapShadingSettingScreen(carContext())
 
-        screen.selectMode(MapDimMode.OFF)
+        screen.selectMode(MapShadingMode.BRIGHT)
 
-        assertThat(carSettings.mapDimMode).isEqualTo(MapDimMode.OFF)
+        assertThat(carSettings.mapShadingMode).isEqualTo(MapShadingMode.BRIGHT)
     }
 
     @Test
@@ -100,9 +100,9 @@ class BlitzortungSettingsScreenTest {
     }
 
     @Test
-    fun `the dimming choice header offers a back action`() {
+    fun `the shading choice header offers a back action`() {
         registerDependencies()
-        val screen = BlitzortungMapDimSettingScreen(carContext())
+        val screen = BlitzortungMapShadingSettingScreen(carContext())
 
         assertThat(headerOf(screen).startHeaderAction).isEqualTo(Action.BACK)
     }
