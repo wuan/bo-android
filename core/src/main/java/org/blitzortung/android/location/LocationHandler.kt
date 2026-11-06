@@ -43,7 +43,7 @@ class LocationHandler
 @Inject
 constructor(
     private val context: Context,
-    sharedPreferences: SharedPreferences,
+    private val sharedPreferences: SharedPreferences,
 ) : OnSharedPreferenceChangeListener {
     init {
         Log.v(LOG_TAG, "LocationHandler() init")
@@ -59,6 +59,17 @@ constructor(
         }
 
     private var provider: LocationProvider? = null
+
+    /**
+     * A provider selected at runtime instead of the stored [PreferenceKey.LOCATION_MODE].
+     * The car experience uses this to get a usable fix without changing the phone
+     * user's location preference.
+     */
+    private var providerOverride: String? = null
+
+    /** The provider type currently selected, exposed for tests and diagnostics. */
+    internal val providerType: String?
+        get() = provider?.type
 
     private val consumerContainer =
         object : ConsumerContainer<LocationEvent>(NoLocation) {
@@ -81,7 +92,7 @@ constructor(
 
     init {
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-        onSharedPreferenceChanged(sharedPreferences, PreferenceKey.LOCATION_MODE)
+        recreateProvider()
 
         // We need to know when a LocationProvider is enabled/disabled
         val iFilter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
@@ -93,26 +104,50 @@ constructor(
         key: PreferenceKey,
     ) {
         when (key) {
-            PreferenceKey.LOCATION_MODE -> {
-                val providerFactory = { type: String ->
-                    createLocationProvider(
-                        context,
-                        backgroundMode,
-                        { location -> sendLocationUpdate(location) },
-                        type,
-                    )
-                }
-
-                val newProvider = providerFactory(sharedPreferences.get(key, LocationManager.PASSIVE_PROVIDER))
-
-                if (provider?.type != newProvider.type && provider?.isRunning == true) {
-                    enableNewProvider(newProvider)
-                } else {
-                    provider = newProvider
-                }
-            }
+            PreferenceKey.LOCATION_MODE -> recreateProvider()
 
             else -> {}
+        }
+    }
+
+    /**
+     * Switches to [providerName] without changing the stored location preference.
+     * Passing a different provider replaces the current one; calling it again with
+     * the same name is a no-op.
+     */
+    fun useProvider(providerName: String) {
+        if (providerOverride == providerName) {
+            return
+        }
+        providerOverride = providerName
+        recreateProvider()
+    }
+
+    /** Drops the runtime provider override and returns to the stored preference. */
+    fun clearProviderOverride() {
+        if (providerOverride == null) {
+            return
+        }
+        providerOverride = null
+        recreateProvider()
+    }
+
+    private fun recreateProvider() {
+        val providerName =
+            providerOverride
+                ?: sharedPreferences.get(PreferenceKey.LOCATION_MODE, LocationManager.PASSIVE_PROVIDER)
+        val newProvider =
+            createLocationProvider(
+                context,
+                backgroundMode,
+                { location -> sendLocationUpdate(location) },
+                providerName,
+            )
+
+        if (provider?.type != newProvider.type && provider?.isRunning == true) {
+            enableNewProvider(newProvider)
+        } else {
+            provider = newProvider
         }
     }
 

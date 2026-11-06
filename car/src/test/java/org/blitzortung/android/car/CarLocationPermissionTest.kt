@@ -29,6 +29,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.Shadows.shadowOf
 
 @RunWith(RobolectricTestRunner::class)
 class CarLocationPermissionTest {
@@ -46,6 +47,13 @@ class CarLocationPermissionTest {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
             )
+    }
+
+    @Test
+    fun `treats a coarse-only grant as location access`() {
+        shadowOf(context).grantPermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
+
+        assertThat(CarLocationPermission(carContext).isGranted()).isTrue()
     }
 
     @Test

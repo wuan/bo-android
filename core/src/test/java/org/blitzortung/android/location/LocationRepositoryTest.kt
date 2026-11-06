@@ -51,6 +51,19 @@ class LocationRepositoryTest {
         }
 
     @Test
+    fun providerOverrideAndRestartAreDelegated() {
+        uut.useProvider("gps")
+        uut.startLocationUpdates()
+        uut.clearProviderOverride()
+
+        verify {
+            locationHandler.useProvider("gps")
+            locationHandler.start()
+            locationHandler.clearProviderOverride()
+        }
+    }
+
+    @Test
     fun exposesCurrentLocationAndBackgroundMode() {
         val location: Location = Location("test")
         every { locationHandler.location } returns location

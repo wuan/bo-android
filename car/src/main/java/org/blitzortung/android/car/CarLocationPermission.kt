@@ -31,8 +31,9 @@ import androidx.car.app.OnRequestPermissionsListener
 class CarLocationPermission(
     private val carContext: CarContext,
 ) {
+    /** True when the host granted precise or approximate location access. */
     fun isGranted(): Boolean =
-        LOCATION_PERMISSIONS.all {
+        LOCATION_PERMISSIONS.any {
             carContext.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
         }
 
@@ -51,6 +52,10 @@ class CarLocationPermission(
     }
 
     companion object {
-        val LOCATION_PERMISSIONS = listOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+        val LOCATION_PERMISSIONS =
+            listOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+            )
     }
 }

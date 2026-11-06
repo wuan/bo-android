@@ -54,6 +54,15 @@ class LocationRepository
 
         fun getCurrentLocation(): Location? = locationHandler.location
 
+        /** Uses [providerName] instead of the stored location-mode preference. */
+        fun useProvider(providerName: String) = locationHandler.useProvider(providerName)
+
+        /** Returns to the provider selected by the stored location-mode preference. */
+        fun clearProviderOverride() = locationHandler.clearProviderOverride()
+
+        /** Starts the currently selected provider, for example after permission was granted. */
+        fun startLocationUpdates() = locationHandler.start()
+
         fun enableBackgroundMode() = locationHandler.enableBackgroundMode()
 
         fun disableBackgroundMode() = locationHandler.disableBackgroundMode()

@@ -51,8 +51,12 @@ served over HTTP, both applications set `android:usesCleartextTraffic="true"`.
   own-location overlays) is hosted in a `Presentation` on a `VirtualDisplay`
   created from the surface the car host provides, and `SurfaceCallback`
   interactions are forwarded to the map controller.
-- Location is requested through `CarContext.requestPermissions`. When access is
-  denied the configured default/manual location remains the fallback.
+- Location is requested through `CarContext.requestPermissions`. The car uses
+  the GPS provider (falling back to network only when no GPS provider exists)
+  instead of the phone's stored location mode, because Android Automotive OS does
+  not provide a network location provider. When access is denied the configured
+  default/manual location remains the fallback. If the provider was started before
+  the host granted access, it is restarted once permission is available.
 
 ## Testing
 

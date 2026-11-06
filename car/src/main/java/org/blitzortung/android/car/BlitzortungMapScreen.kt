@@ -176,33 +176,46 @@ class BlitzortungMapScreen(
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    carDependencies.strikeDataRepository.observeDataEvents().collect { event ->
-                        handleDataEvent(event, activeRenderer)
-                    }
-                }
-                launch {
-                    carDependencies.alertRepository.observeAlertEvents().collect { warning ->
-                        val updated = alertListState.copy(warning = warning)
-                        if (updated != alertListState) {
-                            alertListState = updated
-                            invalidate()
+                val locationRepository = carDependencies.locationRepository
+                // The car must not inherit the phone's location mode: it may be
+                // network/passive, and Android Automotive OS has no network provider.
+                locationRepository.useProvider(CarLocationProvider.preferred(carContext))
+                try {
+                    launch {
+                        carDependencies.strikeDataRepository.observeDataEvents().collect { event ->
+                            handleDataEvent(event, activeRenderer)
                         }
                     }
-                }
-                launch {
-                    carDependencies.locationRepository.observeLocationEvents().collect { event ->
-                        activeRenderer.onLocationEvent(event)
+                    launch {
+                        carDependencies.alertRepository.observeAlertEvents().collect { warning ->
+                            val updated = alertListState.copy(warning = warning)
+                            if (updated != alertListState) {
+                                alertListState = updated
+                                invalidate()
+                            }
+                        }
                     }
-                }
+                    launch {
+                        locationRepository.observeLocationEvents().collect { event ->
+                            activeRenderer.onLocationEvent(event)
+                        }
+                    }
 
-                locationPermission.request {
-                    // On denial the configured default/manual location stays the fallback.
-                }
+                    locationPermission.request { granted ->
+                        // The provider may have started before the host granted access.
+                        if (granted && lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                            locationRepository.useProvider(CarLocationProvider.preferred(carContext))
+                            locationRepository.startLocationUpdates()
+                        } else if (!granted) {
+                            // Fall back to the configured manual/default location.
+                            locationRepository.clearProviderOverride()
+                            locationRepository.startLocationUpdates()
+                        }
+                    }
 
-                try {
                     awaitCancellation()
                 } finally {
+                    locationRepository.clearProviderOverride()
                     carDependencies.strikeDataRepository.stop()
                 }
             }
