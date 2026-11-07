@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Larger than the phone/Android Auto value: the map legend is read from
+      farther away on an automotive display. Keep this in sync with the default
+      in the :car library.
+    -->
+    <integer name="car_legend_text_size_dp">18</integer>
+</resources>

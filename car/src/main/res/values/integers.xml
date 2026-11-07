@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Text size for the map legend and refresh countdown, in dp at the baseline
+      160 dpi. The value is applied as dp scaled by the host surface dpi rather
+      than as a dimension resource, because the car context density can differ
+      from the surface the map is presented on. The automotive build overrides
+      this with a larger value for the vehicle display distance.
+    -->
+    <integer name="car_legend_text_size_dp">14</integer>
+</resources>

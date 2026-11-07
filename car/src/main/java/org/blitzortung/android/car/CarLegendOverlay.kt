@@ -67,6 +67,13 @@ internal class CarLegendOverlay(
 ) : Overlay() {
     private val entryFormat = context.getString(R.string.car_legend_entry)
 
+    /**
+     * Legend and countdown text size in dp at the baseline density. Read from a
+     * resource so the automotive build can use a larger value for the vehicle
+     * display distance without changing the phone/Android Auto build.
+     */
+    private val baseTextSizeDp: Float = context.resources.getInteger(R.integer.car_legend_text_size_dp).toFloat()
+
     /** Status line above the legend, for example the refresh countdown. */
     var countdown: String = ""
 
@@ -93,7 +100,7 @@ internal class CarLegendOverlay(
     private val textPaint =
         Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.WHITE
-            textSize = TEXT_SIZE_DP
+            textSize = baseTextSizeDp
         }
 
     /** Paint for the status line above the legend rows, at the legend text size. */
@@ -101,16 +108,20 @@ internal class CarLegendOverlay(
         Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.WHITE
             isFakeBoldText = true
-            textSize = TEXT_SIZE_DP
+            textSize = baseTextSizeDp
         }
+
+    /** Effective legend and countdown text size in pixels for the current surface density. */
+    internal val textSizePx: Float
+        get() = textPaint.textSize
 
     /** Surface density in dpi, set from the host surface; drives all metrics. */
     var densityDpi: Int = DisplayMetrics.DENSITY_DEFAULT
         set(value) {
             field = value
             scale = value / BASE_DENSITY_DPI
-            textPaint.textSize = TEXT_SIZE_DP * scale
-            countdownPaint.textSize = TEXT_SIZE_DP * scale
+            textPaint.textSize = baseTextSizeDp * scale
+            countdownPaint.textSize = baseTextSizeDp * scale
         }
 
     /**
@@ -259,9 +270,6 @@ internal class CarLegendOverlay(
         const val ROW_HEIGHT_DP = 24f
         const val GAP_DP = 8f
         const val CORNER_RADIUS_DP = 10f
-
-        /** Text size shared by the countdown line and the legend labels. */
-        const val TEXT_SIZE_DP = 14f
 
         /** Gap between the countdown line and the first legend row. */
         const val COUNTDOWN_GAP_DP = 4f

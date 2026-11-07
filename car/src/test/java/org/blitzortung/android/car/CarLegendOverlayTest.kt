@@ -76,6 +76,23 @@ class CarLegendOverlayTest {
     }
 
     @Test
+    fun `uses the configured text size scaled by the surface density`() {
+        val (legend, _) = createOverlay()
+        val textSizeDp = RuntimeEnvironment.getApplication().resources.getInteger(R.integer.car_legend_text_size_dp)
+
+        legend.densityDpi = 320
+
+        assertThat(legend.textSizePx).isEqualTo(textSizeDp * 2f)
+    }
+
+    @Test
+    fun `uses the phone legend text size by default`() {
+        val textSizeDp = RuntimeEnvironment.getApplication().resources.getInteger(R.integer.car_legend_text_size_dp)
+
+        assertThat(textSizeDp).isEqualTo(14)
+    }
+
+    @Test
     fun `draws the countdown above the legend rows`() {
         val (legend, _) = createOverlay()
         legend.onVisibleAreaChanged(Rect(0, 0, 1000, 900))
