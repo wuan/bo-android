@@ -65,6 +65,12 @@ class BlitzortungMapScreen(
     /** Countdown text last sent to the renderer, so it is only redrawn when it changes. */
     private var countdownText: String = ""
 
+    /** Whether the map has reported a usable viewport that data requests can be based on. */
+    private var viewportKnown = false
+
+    /** Whether the data scheduler is running for the current visible period. */
+    private var dataUpdatesStarted = false
+
     /**
      * Host template pieces that never change while the screen lives. Reusing them
      * keeps the host from reloading the action icons on every template rebuild,
@@ -144,14 +150,30 @@ class BlitzortungMapScreen(
      */
     private fun observeViewport(activeRenderer: CarMapRenderer) {
         val carDependencies = dependencies ?: return
-        var initialViewportReported = false
         activeRenderer.setViewportListener { viewport ->
             carDependencies.strikeDataRepository.updateViewport(viewport)
-            if (!initialViewportReported) {
-                initialViewportReported = true
-                carDependencies.strikeDataRepository.start()
-                carDependencies.strikeDataRepository.updateData()
-            }
+            viewportKnown = true
+            startDataUpdatesIfReady()
+        }
+    }
+
+    /**
+     * Starts the data schedule once the map has a viewport and the screen is
+     * visible. It is called both when the viewport first becomes known and each
+     * time the screen returns to STARTED, so that pushing the settings screen and
+     * popping back resumes the periodic refreshes.
+     */
+    private fun startDataUpdatesIfReady() {
+        if (dataUpdatesStarted || !viewportKnown) {
+            return
+        }
+        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            return
+        }
+        dataUpdatesStarted = true
+        dependencies?.strikeDataRepository?.let { repository ->
+            repository.start()
+            repository.updateData()
         }
     }
 
@@ -201,6 +223,11 @@ class BlitzortungMapScreen(
                         }
                     }
 
+                    // Resume the refresh schedule when coming back from another
+                    // screen; the collectors above are registered again by
+                    // repeatOnLifecycle, but the scheduler was stopped on ON_STOP.
+                    startDataUpdatesIfReady()
+
                     locationPermission.request { granted ->
                         // The provider may have started before the host granted access.
                         if (granted && lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
@@ -215,6 +242,7 @@ class BlitzortungMapScreen(
 
                     awaitCancellation()
                 } finally {
+                    dataUpdatesStarted = false
                     locationRepository.clearProviderOverride()
                     carDependencies.strikeDataRepository.stop()
                 }

@@ -18,11 +18,15 @@
 
 package org.blitzortung.android.car
 
+import android.Manifest
 import android.graphics.Color
+import android.os.Looper
 import androidx.car.app.model.Action
 import androidx.car.app.model.ListTemplate
 import androidx.car.app.navigation.model.MapWithContentTemplate
 import androidx.car.app.testing.TestCarContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleRegistry
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -35,10 +39,12 @@ import org.blitzortung.android.data.repository.StrikeDataRepository
 import org.blitzortung.android.location.LocationRepository
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.Shadows.shadowOf
 
 @RunWith(RobolectricTestRunner::class)
 class BlitzortungMapScreenTest {
@@ -47,6 +53,12 @@ class BlitzortungMapScreenTest {
     private val strikeDataRepository = mockk<StrikeDataRepository>(relaxed = true)
 
     private val carSettings by lazy { CarSettings(RuntimeEnvironment.getApplication()) }
+
+    @Before
+    fun grantLocationPermission() {
+        shadowOf(RuntimeEnvironment.getApplication())
+            .grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
 
     @After
     fun tearDown() {
@@ -232,8 +244,9 @@ class BlitzortungMapScreenTest {
     @Test
     fun `no data request is issued before the first viewport update`() {
         registerDependencies()
+        val screen = createScreen()
 
-        createScreen()
+        startScreen(screen)
 
         verify(exactly = 0) { strikeDataRepository.updateData() }
     }
@@ -242,11 +255,42 @@ class BlitzortungMapScreenTest {
     fun `the first viewport update issues a data request`() {
         registerDependencies()
         val screen = createScreen()
-        val renderer = screen.renderer as OsmdroidCarMapRenderer
+        startScreen(screen)
 
-        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        layoutScreen(screen)
 
         verify(exactly = 1) { strikeDataRepository.updateData() }
+    }
+
+    @Test
+    fun `returning from another screen resumes data updates`() {
+        registerDependencies()
+        val screen = createScreen()
+        startScreen(screen)
+        layoutScreen(screen)
+        verify(exactly = 1) { strikeDataRepository.start() }
+
+        stopScreen(screen)
+        startScreen(screen)
+
+        verify(exactly = 1) { strikeDataRepository.stop() }
+        verify(exactly = 2) { strikeDataRepository.start() }
+        verify(exactly = 2) { strikeDataRepository.updateData() }
+    }
+
+    private fun startScreen(screen: BlitzortungMapScreen) {
+        (screen.lifecycle as LifecycleRegistry).handleLifecycleEvent(Lifecycle.Event.ON_START)
+        shadowOf(Looper.getMainLooper()).idle()
+    }
+
+    private fun stopScreen(screen: BlitzortungMapScreen) {
+        (screen.lifecycle as LifecycleRegistry).handleLifecycleEvent(Lifecycle.Event.ON_STOP)
+        shadowOf(Looper.getMainLooper()).idle()
+    }
+
+    private fun layoutScreen(screen: BlitzortungMapScreen) {
+        val renderer = screen.renderer as OsmdroidCarMapRenderer
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
     }
 
     private fun headerTitle(screen: BlitzortungMapScreen): String? {
