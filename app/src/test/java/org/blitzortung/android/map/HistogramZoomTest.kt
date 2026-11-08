@@ -1,6 +1,7 @@
 package org.blitzortung.android.map
 
 import org.assertj.core.api.Assertions.assertThat
+import org.blitzortung.android.createLocation
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.provider.GLOBAL_REGION
@@ -19,6 +20,7 @@ class HistogramZoomTest {
                 gridParameters = dataArea(),
                 currentZoom = WIDE_ZOOM,
                 viewportPixels = VIEWPORT_PIXELS,
+                currentPosition = null,
             )
 
         assertThat(target.longitude).isEqualTo(DATA_AREA_CENTER_LONGITUDE)
@@ -34,6 +36,7 @@ class HistogramZoomTest {
                 gridParameters = dataArea(),
                 currentZoom = dataAreaZoom(HistogramZoom.LOCAL_DATA_AREA_SPAN_METERS),
                 viewportPixels = VIEWPORT_PIXELS,
+                currentPosition = null,
             )
 
         assertThat(target).isEqualTo(globalTarget())
@@ -47,6 +50,7 @@ class HistogramZoomTest {
                 gridParameters = dataArea(),
                 currentZoom = WIDE_ZOOM,
                 viewportPixels = VIEWPORT_PIXELS,
+                currentPosition = null,
             )
 
         assertThat(target.zoomLevel).isEqualTo(dataAreaZoom(HistogramZoom.REGION_DATA_AREA_SPAN_METERS))
@@ -62,6 +66,7 @@ class HistogramZoomTest {
                 gridParameters = dataArea(),
                 currentZoom = dataAreaZoom(HistogramZoom.LOCAL_DATA_AREA_SPAN_METERS) - 0.75,
                 viewportPixels = VIEWPORT_PIXELS,
+                currentPosition = null,
             )
 
         assertThat(target).isEqualTo(globalTarget())
@@ -75,6 +80,7 @@ class HistogramZoomTest {
                 gridParameters = dataArea(),
                 currentZoom = dataAreaZoom(HistogramZoom.LOCAL_DATA_AREA_SPAN_METERS) + 2.0,
                 viewportPixels = VIEWPORT_PIXELS,
+                currentPosition = null,
             )
 
         assertThat(target.zoomLevel).isEqualTo(dataAreaZoom(HistogramZoom.LOCAL_DATA_AREA_SPAN_METERS))
@@ -88,6 +94,7 @@ class HistogramZoomTest {
                 gridParameters = dataArea(),
                 currentZoom = dataAreaZoom(HistogramZoom.LOCAL_DATA_AREA_SPAN_METERS),
                 viewportPixels = VIEWPORT_PIXELS,
+                currentPosition = null,
             )
 
         assertThat(target).isEqualTo(globalTarget())
@@ -101,9 +108,108 @@ class HistogramZoomTest {
                 gridParameters = null,
                 currentZoom = WIDE_ZOOM,
                 viewportPixels = VIEWPORT_PIXELS,
+                currentPosition = null,
             )
 
         assertThat(target.zoomLevel).isEqualTo(2.5)
+    }
+
+    @Test
+    fun `the global view is centred on the current longitude`() {
+        val target =
+            HistogramZoom.target(
+                parameters = Parameters(region = GLOBAL_REGION),
+                gridParameters = null,
+                currentZoom = WIDE_ZOOM,
+                viewportPixels = VIEWPORT_PIXELS,
+                currentPosition = createLocation(CURRENT_LONGITUDE, HistogramZoom.GLOBAL_LATITUDE),
+            )
+
+        assertThat(target).isEqualTo(globalTarget(CURRENT_LONGITUDE))
+    }
+
+    @Test
+    fun `the global view is centred on the current latitude inside the corridor`() {
+        val target =
+            HistogramZoom.target(
+                parameters = Parameters(region = GLOBAL_REGION),
+                gridParameters = null,
+                currentZoom = WIDE_ZOOM,
+                viewportPixels = VIEWPORT_PIXELS,
+                currentPosition = createLocation(HistogramZoom.GLOBAL_LONGITUDE, CURRENT_LATITUDE),
+            )
+
+        assertThat(target.latitude).isEqualTo(CURRENT_LATITUDE)
+    }
+
+    @Test
+    fun `the global view clamps a northern latitude to the corridor`() {
+        val target =
+            HistogramZoom.target(
+                parameters = Parameters(region = GLOBAL_REGION),
+                gridParameters = null,
+                currentZoom = WIDE_ZOOM,
+                viewportPixels = VIEWPORT_PIXELS,
+                currentPosition = createLocation(HistogramZoom.GLOBAL_LONGITUDE, 51.5),
+            )
+
+        assertThat(target.latitude).isEqualTo(HistogramZoom.GLOBAL_LATITUDE_CORRIDOR)
+    }
+
+    @Test
+    fun `the global view clamps a southern latitude to the corridor`() {
+        val target =
+            HistogramZoom.target(
+                parameters = Parameters(region = GLOBAL_REGION),
+                gridParameters = null,
+                currentZoom = WIDE_ZOOM,
+                viewportPixels = VIEWPORT_PIXELS,
+                currentPosition = createLocation(HistogramZoom.GLOBAL_LONGITUDE, -45.0),
+            )
+
+        assertThat(target.latitude).isEqualTo(-HistogramZoom.GLOBAL_LATITUDE_CORRIDOR)
+    }
+
+    @Test
+    fun `the second tap at the data-area framing centres the global view on the current position`() {
+        val target =
+            HistogramZoom.target(
+                parameters = Parameters(region = LOCAL_REGION),
+                gridParameters = dataArea(),
+                currentZoom = dataAreaZoom(HistogramZoom.LOCAL_DATA_AREA_SPAN_METERS),
+                viewportPixels = VIEWPORT_PIXELS,
+                currentPosition = createLocation(CURRENT_LONGITUDE, CURRENT_LATITUDE),
+            )
+
+        assertThat(target).isEqualTo(globalTarget(CURRENT_LONGITUDE, CURRENT_LATITUDE))
+    }
+
+    @Test
+    fun `the global view without a location keeps the default longitude`() {
+        val target =
+            HistogramZoom.target(
+                parameters = Parameters(region = GLOBAL_REGION),
+                gridParameters = null,
+                currentZoom = WIDE_ZOOM,
+                viewportPixels = VIEWPORT_PIXELS,
+                currentPosition = null,
+            )
+
+        assertThat(target.longitude).isEqualTo(0.0)
+    }
+
+    @Test
+    fun `the global view without a location keeps the default latitude`() {
+        val target =
+            HistogramZoom.target(
+                parameters = Parameters(region = GLOBAL_REGION),
+                gridParameters = null,
+                currentZoom = WIDE_ZOOM,
+                viewportPixels = VIEWPORT_PIXELS,
+                currentPosition = null,
+            )
+
+        assertThat(target.latitude).isEqualTo(0.0)
     }
 
     @Test
@@ -114,6 +220,7 @@ class HistogramZoomTest {
                 gridParameters = globalGrid(),
                 currentZoom = WIDE_ZOOM,
                 viewportPixels = VIEWPORT_PIXELS,
+                currentPosition = null,
             )
 
         assertThat(target).isEqualTo(globalTarget())
@@ -127,6 +234,7 @@ class HistogramZoomTest {
                 gridParameters = null,
                 currentZoom = WIDE_ZOOM,
                 viewportPixels = VIEWPORT_PIXELS,
+                currentPosition = null,
             )
 
         assertThat(target).isEqualTo(globalTarget())
@@ -139,12 +247,14 @@ class HistogramZoomTest {
             latitude = DATA_AREA_CENTER_LATITUDE,
         )
 
-    private fun globalTarget() =
-        HistogramZoomTarget(
-            longitude = HistogramZoom.GLOBAL_LONGITUDE,
-            latitude = HistogramZoom.GLOBAL_LATITUDE,
-            zoomLevel = HistogramZoom.GLOBAL_ZOOM_LEVEL,
-        )
+    private fun globalTarget(
+        longitude: Double = HistogramZoom.GLOBAL_LONGITUDE,
+        latitude: Double = HistogramZoom.GLOBAL_LATITUDE,
+    ) = HistogramZoomTarget(
+        longitude = longitude,
+        latitude = latitude,
+        zoomLevel = HistogramZoom.GLOBAL_ZOOM_LEVEL,
+    )
 
     private fun dataArea(): GridParameters =
         GridParameters(
@@ -172,5 +282,7 @@ class HistogramZoomTest {
         private const val FIXED_REGION = 3
         private const val DATA_AREA_CENTER_LONGITUDE = 10.0
         private const val DATA_AREA_CENTER_LATITUDE = 50.0
+        private const val CURRENT_LONGITUDE = 11.5
+        private const val CURRENT_LATITUDE = 20.0
     }
 }

@@ -16,6 +16,7 @@
 
 package org.blitzortung.android.map
 
+import android.location.Location
 import kotlin.math.abs
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.beans.GridParameters
@@ -34,13 +35,27 @@ data class HistogramZoomTarget(
  * A non-global result first frames its data area. Once the map is already at
  * that framing, the next tap zooms out to the global view, so the action acts
  * as a two-step zoom-out instead of repeatedly re-centring the same data area.
+ * The global view is centred on the current position's longitude when one is
+ * known, so the driver's own area stays in view. Its latitude follows the
+ * current position only inside a corridor, so the fixed zoom never shows past
+ * a pole.
  */
 object HistogramZoom {
     const val LOCAL_DATA_AREA_SPAN_METERS = 1_800_000f
     const val REGION_DATA_AREA_SPAN_METERS = 5_000_000f
     const val GLOBAL_ZOOM_LEVEL = 2.5
     const val GLOBAL_LONGITUDE = 0.0
-    const val GLOBAL_LATITUDE = -30.0
+    const val GLOBAL_LATITUDE = 0.0
+
+    /**
+     * Latitude corridor for the global view. With tiles scaled to the display
+     * density, the world at [GLOBAL_ZOOM_LEVEL] is about 3,800-5,100 px high on
+     * a phone, so the viewport covers roughly 60% of it. The viewport only
+     * reaches the pole edge beyond a centre latitude of about ±55°, so capping
+     * the centre at ±30° keeps a safe margin against the map running over the
+     * north or south pole.
+     */
+    const val GLOBAL_LATITUDE_CORRIDOR = 30.0
 
     private const val DATA_AREA_ZOOM_TOLERANCE = 1.0
 
@@ -49,9 +64,10 @@ object HistogramZoom {
         gridParameters: GridParameters?,
         currentZoom: Double,
         viewportPixels: Int,
+        currentPosition: Location?,
     ): HistogramZoomTarget {
         if (parameters.isGlobal || gridParameters == null || gridParameters.isGlobal) {
-            return globalTarget()
+            return globalTarget(currentPosition)
         }
 
         val spanMeters =
@@ -68,7 +84,7 @@ object HistogramZoom {
             )
 
         return if (abs(currentZoom - dataAreaZoom) < DATA_AREA_ZOOM_TOLERANCE) {
-            globalTarget()
+            globalTarget(currentPosition)
         } else {
             HistogramZoomTarget(
                 longitude = gridParameters.rectCenterLongitude,
@@ -78,10 +94,14 @@ object HistogramZoom {
         }
     }
 
-    private fun globalTarget() =
+    private fun globalTarget(currentPosition: Location?) =
         HistogramZoomTarget(
-            longitude = GLOBAL_LONGITUDE,
-            latitude = GLOBAL_LATITUDE,
+            longitude = currentPosition?.longitude ?: GLOBAL_LONGITUDE,
+            latitude =
+                (currentPosition?.latitude ?: GLOBAL_LATITUDE).coerceIn(
+                    -GLOBAL_LATITUDE_CORRIDOR,
+                    GLOBAL_LATITUDE_CORRIDOR,
+                ),
             zoomLevel = GLOBAL_ZOOM_LEVEL,
         )
 }

@@ -426,6 +426,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 gridParameters = currentResult.gridParameters,
                 currentZoom = mapView.zoomLevelDouble,
                 viewportPixels = min(mapView.width, mapView.height),
+                currentPosition = locationHandler.location,
             )
 
         animateToLocationAndZoom(target.longitude, target.latitude, target.zoomLevel)
