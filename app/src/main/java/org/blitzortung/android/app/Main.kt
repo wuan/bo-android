@@ -428,7 +428,7 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
                 viewportPixels = min(mapView.width, mapView.height),
             )
 
-        animateToLocationAndVisibleSize(target.longitude, target.latitude, target.spanMeters)
+        animateToLocationAndZoom(target.longitude, target.latitude, target.zoomLevel)
     }
 
     private fun openQuickSettingsDialog() {
@@ -441,19 +441,28 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
         latitude: Double,
         spanMeters: Float?,
     ) {
-        Log.d(LOG_TAG, "Main.animateAndZoomTo() %.4f, %.4f, %.0fm".format(longitude, latitude, spanMeters))
-
-        val mapView = mapFragment.mapView
-
         // If no span is provided, we keep the current zoomLevel
         val targetZoomLevel =
             if (spanMeters != null) {
                 mapFragment.calculateTargetZoomLevel(spanMeters, latitude)
             } else {
-                mapView.zoomLevelDouble
+                mapFragment.mapView.zoomLevelDouble
             }
+        animateToLocationAndZoom(longitude, latitude, targetZoomLevel)
+    }
 
-        mapView.controller.animateTo(GeoPoint(latitude, longitude), targetZoomLevel, OwnMapView.DEFAULT_ZOOM_SPEED)
+    private fun animateToLocationAndZoom(
+        longitude: Double,
+        latitude: Double,
+        zoomLevel: Double,
+    ) {
+        Log.d(LOG_TAG, "Main.animateToLocationAndZoom() %.4f, %.4f, %.2f".format(longitude, latitude, zoomLevel))
+
+        mapFragment.mapView.controller.animateTo(
+            GeoPoint(latitude, longitude),
+            zoomLevel,
+            OwnMapView.DEFAULT_ZOOM_SPEED,
+        )
     }
 
     override fun onStart() {

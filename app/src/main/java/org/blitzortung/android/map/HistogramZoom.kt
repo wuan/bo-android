@@ -25,7 +25,7 @@ import org.blitzortung.android.data.provider.LOCAL_REGION
 data class HistogramZoomTarget(
     val longitude: Double,
     val latitude: Double,
-    val spanMeters: Float,
+    val zoomLevel: Double,
 )
 
 /**
@@ -38,7 +38,7 @@ data class HistogramZoomTarget(
 object HistogramZoom {
     const val LOCAL_DATA_AREA_SPAN_METERS = 1_800_000f
     const val REGION_DATA_AREA_SPAN_METERS = 5_000_000f
-    const val GLOBAL_SPAN_METERS = 40_000_000f
+    const val GLOBAL_ZOOM_LEVEL = 2.5
     const val GLOBAL_LONGITUDE = 0.0
     const val GLOBAL_LATITUDE = -30.0
 
@@ -73,7 +73,7 @@ object HistogramZoom {
             HistogramZoomTarget(
                 longitude = gridParameters.rectCenterLongitude,
                 latitude = gridParameters.rectCenterLatitude,
-                spanMeters = spanMeters,
+                zoomLevel = dataAreaZoom,
             )
         }
     }
@@ -82,6 +82,6 @@ object HistogramZoom {
         HistogramZoomTarget(
             longitude = GLOBAL_LONGITUDE,
             latitude = GLOBAL_LATITUDE,
-            spanMeters = GLOBAL_SPAN_METERS,
+            zoomLevel = GLOBAL_ZOOM_LEVEL,
         )
 }

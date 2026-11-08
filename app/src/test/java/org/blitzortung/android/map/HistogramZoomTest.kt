@@ -23,7 +23,7 @@ class HistogramZoomTest {
 
         assertThat(target.longitude).isEqualTo(DATA_AREA_CENTER_LONGITUDE)
         assertThat(target.latitude).isEqualTo(DATA_AREA_CENTER_LATITUDE)
-        assertThat(target.spanMeters).isEqualTo(HistogramZoom.LOCAL_DATA_AREA_SPAN_METERS)
+        assertThat(target.zoomLevel).isEqualTo(dataAreaZoom(HistogramZoom.LOCAL_DATA_AREA_SPAN_METERS))
     }
 
     @Test
@@ -49,7 +49,7 @@ class HistogramZoomTest {
                 viewportPixels = VIEWPORT_PIXELS,
             )
 
-        assertThat(target.spanMeters).isEqualTo(HistogramZoom.REGION_DATA_AREA_SPAN_METERS)
+        assertThat(target.zoomLevel).isEqualTo(dataAreaZoom(HistogramZoom.REGION_DATA_AREA_SPAN_METERS))
         assertThat(target.longitude).isEqualTo(DATA_AREA_CENTER_LONGITUDE)
         assertThat(target.latitude).isEqualTo(DATA_AREA_CENTER_LATITUDE)
     }
@@ -77,7 +77,7 @@ class HistogramZoomTest {
                 viewportPixels = VIEWPORT_PIXELS,
             )
 
-        assertThat(target.spanMeters).isEqualTo(HistogramZoom.LOCAL_DATA_AREA_SPAN_METERS)
+        assertThat(target.zoomLevel).isEqualTo(dataAreaZoom(HistogramZoom.LOCAL_DATA_AREA_SPAN_METERS))
     }
 
     @Test
@@ -91,6 +91,19 @@ class HistogramZoomTest {
             )
 
         assertThat(target).isEqualTo(globalTarget())
+    }
+
+    @Test
+    fun `the global view uses a fixed zoom level`() {
+        val target =
+            HistogramZoom.target(
+                parameters = Parameters(region = GLOBAL_REGION),
+                gridParameters = null,
+                currentZoom = WIDE_ZOOM,
+                viewportPixels = VIEWPORT_PIXELS,
+            )
+
+        assertThat(target.zoomLevel).isEqualTo(2.5)
     }
 
     @Test
@@ -130,7 +143,7 @@ class HistogramZoomTest {
         HistogramZoomTarget(
             longitude = HistogramZoom.GLOBAL_LONGITUDE,
             latitude = HistogramZoom.GLOBAL_LATITUDE,
-            spanMeters = HistogramZoom.GLOBAL_SPAN_METERS,
+            zoomLevel = HistogramZoom.GLOBAL_ZOOM_LEVEL,
         )
 
     private fun dataArea(): GridParameters =
