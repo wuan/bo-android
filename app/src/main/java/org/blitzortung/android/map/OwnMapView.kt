@@ -36,7 +36,6 @@ import org.blitzortung.android.preferences.PreferenceKey
 import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.protocol.MapViewport
 import org.osmdroid.util.BoundingBox
-import org.osmdroid.views.MapController
 import org.osmdroid.views.MapView
 
 class OwnMapView(context: Context) : MapView(context), MapViewport {
@@ -129,14 +128,7 @@ class OwnMapView(context: Context) : MapView(context), MapViewport {
 
     val popup: View by lazy { LayoutInflater.from(context).inflate(R.layout.popup, this, false) }
 
-    private val animatorField = MapController::class.java.getDeclaredField("mCurrentAnimator")
-
-    override fun animator(): ValueAnimator? {
-        if (!isAnimating) return null
-        animatorField.isAccessible = true
-        val value = animatorField.get(controller)
-        return value?.let { value as ValueAnimator }
-    }
+    override fun animator(): ValueAnimator? = MapCameraAnimator.current(this)
 
     companion object {
         const val DEFAULT_ZOOM_SPEED = 500L

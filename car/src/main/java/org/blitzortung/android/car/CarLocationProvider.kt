@@ -20,6 +20,10 @@ package org.blitzortung.android.car
 
 import android.content.Context
 import android.location.LocationManager
+import androidx.preference.PreferenceManager
+import org.blitzortung.android.location.LocationHandler
+import org.blitzortung.android.location.provider.ManualLocationProvider
+import org.blitzortung.android.preferences.PreferenceKey
 
 /**
  * Chooses the location provider for the car experience.
@@ -28,17 +32,31 @@ import android.location.LocationManager
  * network or passive. Android Automotive OS does not provide a network location
  * provider at all, so the car must not depend on the phone preference. GPS is
  * preferred; network is only a fallback for devices without a GPS provider.
+ *
+ * A configured manual location is an explicit user choice and wins over the
+ * device provider, so the car can be pinned to a known position.
  */
 internal object CarLocationProvider {
     fun preferred(context: Context): String {
+        val manualLocationConfigured = isManualLocationConfigured(context)
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val available = locationManager.allProviders
         val enabled = available.filter { locationManager.isProviderEnabled(it) }
-        return preferred(enabled.ifEmpty { available })
+        return preferred(enabled.ifEmpty { available }, manualLocationConfigured)
     }
 
-    internal fun preferred(availableProviders: Collection<String>): String =
+    private fun isManualLocationConfigured(context: Context): Boolean {
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+        return preferences.getString(PreferenceKey.LOCATION_MODE.key, null) == LocationHandler.MANUAL_PROVIDER &&
+            ManualLocationProvider.getManualLocation(preferences) != null
+    }
+
+    internal fun preferred(
+        availableProviders: Collection<String>,
+        manualLocationConfigured: Boolean = false,
+    ): String =
         when {
+            manualLocationConfigured -> LocationHandler.MANUAL_PROVIDER
             LocationManager.GPS_PROVIDER in availableProviders -> LocationManager.GPS_PROVIDER
             LocationManager.NETWORK_PROVIDER in availableProviders -> LocationManager.NETWORK_PROVIDER
             else -> LocationManager.PASSIVE_PROVIDER

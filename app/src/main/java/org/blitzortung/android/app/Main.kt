@@ -48,9 +48,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
 import dagger.android.AndroidInjection
 import javax.inject.Inject
+import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
-import org.blitzortung.android.alert.LocalActivity
+import org.blitzortung.android.alert.AlertZoomTarget
 import org.blitzortung.android.alert.Warning
 import org.blitzortung.android.alert.handler.AlertHandler
 import org.blitzortung.android.app.components.BuildVersion
@@ -79,7 +80,6 @@ import org.blitzortung.android.data.MainDataHandler
 import org.blitzortung.android.data.Mode
 import org.blitzortung.android.data.SequenceValidator
 import org.blitzortung.android.data.provider.DataProviderType
-import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.result.ClusterEvent
 import org.blitzortung.android.data.provider.result.ClusterReceived
 import org.blitzortung.android.data.provider.result.DataEvent
@@ -90,6 +90,7 @@ import org.blitzortung.android.data.provider.result.StatusUpdate
 import org.blitzortung.android.dialogs.QuickSettingsDialog
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.location.LocationHandler
+import org.blitzortung.android.map.HistogramZoom
 import org.blitzortung.android.map.MapFragment
 import org.blitzortung.android.map.OwnMapView
 import org.blitzortung.android.map.overlay.ClusterOverlay
@@ -405,40 +406,29 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private fun onAlertViewClicked() {
         val currentLocation = locationHandler.location ?: return
 
-        val diameter =
+        val targetSpanMeters =
             if (!keepZoomOnGotoOwnLocation) {
-                determineTargetZoomRadius(alertHandler)
+                AlertZoomTarget.framingMeters(alertHandler.alertEvent, alertHandler.alertParameters)
             } else {
                 null
             }
 
-        animateToLocationAndVisibleSize(currentLocation.longitude, currentLocation.latitude, diameter)
+        animateToLocationAndVisibleSize(currentLocation.longitude, currentLocation.latitude, targetSpanMeters)
     }
 
     private fun onHistogramViewClicked() {
         val currentResult = currentResult ?: return
+        val mapView = mapFragment.mapView
 
-        val parameters = currentResult.parameters
-        val gridParameters = currentResult.gridParameters
-        if (!parameters.isGlobal && gridParameters != null) {
-            animateToLocationAndVisibleSize(
-                gridParameters.rectCenterLongitude,
-                gridParameters.rectCenterLatitude,
-                if (parameters.region == LOCAL_REGION) 1800f else 5000f,
+        val target =
+            HistogramZoom.target(
+                parameters = currentResult.parameters,
+                gridParameters = currentResult.gridParameters,
+                currentZoom = mapView.zoomLevelDouble,
+                viewportPixels = min(mapView.width, mapView.height),
             )
-        } else {
-            animateToLocationAndVisibleSize(-30.0, 0.0, 40000f)
-        }
-    }
 
-    private fun determineTargetZoomRadius(alertHandler: AlertHandler): Float {
-        var radius = alertHandler.maxDistance
-
-        val warning = alertHandler.alertEvent
-        if (warning is LocalActivity) {
-            radius = (warning.closestStrikeDistance * 1.2f).coerceIn(50f, radius)
-        }
-        return radius
+        animateToLocationAndVisibleSize(target.longitude, target.latitude, target.spanMeters)
     }
 
     private fun openQuickSettingsDialog() {
@@ -449,16 +439,16 @@ class Main : FragmentActivity(), OnSharedPreferenceChangeListener {
     private fun animateToLocationAndVisibleSize(
         longitude: Double,
         latitude: Double,
-        diameter: Float?,
+        spanMeters: Float?,
     ) {
-        Log.d(LOG_TAG, "Main.animateAndZoomTo() %.4f, %.4f, %.0fkm".format(longitude, latitude, diameter))
+        Log.d(LOG_TAG, "Main.animateAndZoomTo() %.4f, %.4f, %.0fm".format(longitude, latitude, spanMeters))
 
         val mapView = mapFragment.mapView
 
-        // If no diameter is provided, we keep the current zoomLevel
+        // If no span is provided, we keep the current zoomLevel
         val targetZoomLevel =
-            if (diameter != null) {
-                mapFragment.calculateTargetZoomLevel(diameter * 1000f) * 1.0
+            if (spanMeters != null) {
+                mapFragment.calculateTargetZoomLevel(spanMeters, latitude)
             } else {
                 mapView.zoomLevelDouble
             }

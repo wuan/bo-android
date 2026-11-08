@@ -10,8 +10,9 @@ app's data, location and alert logic.
 - **Map** – strikes drawn on an osmdroid map, coloured by age, with the current
   position marked. Pan and zoom with the map action strip (`Pan`, zoom out, zoom
   in).
-- **Alert list** – the closest strike's distance and bearing, then one row per
-  sector with its strike count.
+- **Alert status** – a single line with the closest strike's distance and bearing,
+  or the current alert state when there is no local activity. The status is kept
+  to one line so the map remains the focus.
 - **States** – an empty state before data arrives and an error state when a fetch
   fails. The latest failed result is never shown as current.
 - **Theme** – the map follows the host's light/dark theme.
@@ -51,12 +52,14 @@ served over HTTP, both applications set `android:usesCleartextTraffic="true"`.
   own-location overlays) is hosted in a `Presentation` on a `VirtualDisplay`
   created from the surface the car host provides, and `SurfaceCallback`
   interactions are forwarded to the map controller.
-- Location is requested through `CarContext.requestPermissions`. The car uses
-  the GPS provider (falling back to network only when no GPS provider exists)
-  instead of the phone's stored location mode, because Android Automotive OS does
-  not provide a network location provider. When access is denied the configured
-  default/manual location remains the fallback. If the provider was started before
-  the host granted access, it is restarted once permission is available.
+- Location is requested through `CarContext.requestPermissions`. A configured
+  manual location is an explicit user choice and replaces the device location in
+  the car. Without one, the car uses the GPS provider (falling back to network
+  only when no GPS provider exists) instead of the phone's stored location mode,
+  because Android Automotive OS does not provide a network location provider.
+  When access is denied the configured default/manual location remains the
+  fallback. If the provider was started before the host granted access, it is
+  restarted once permission is available.
 
 ## Testing
 

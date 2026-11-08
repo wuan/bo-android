@@ -18,6 +18,7 @@
 
 package org.blitzortung.android.car
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -28,11 +29,10 @@ import android.widget.FrameLayout
 import androidx.car.app.SurfaceContainer
 import androidx.car.app.testing.TestCarContext
 import androidx.preference.PreferenceManager
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import java.time.Duration
 import kotlin.math.abs
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.within
@@ -43,9 +43,12 @@ import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.location.LocationUpdate
 import org.blitzortung.android.location.NoLocation
+import org.blitzortung.android.map.MapZoom
 import org.blitzortung.android.map.overlay.color.ColorTarget
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.blitzortung.android.protocol.MapViewport
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.osmdroid.util.GeoPoint
@@ -53,11 +56,25 @@ import org.osmdroid.util.TileSystem
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Overlay
 import org.osmdroid.views.overlay.TilesOverlay
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.Shadows.shadowOf
+import org.robolectric.shadows.ShadowChoreographer
 
 @RunWith(RobolectricTestRunner::class)
 class OsmdroidCarMapRendererTest {
+    @Before
+    fun pauseTheAnimationClock() {
+        ShadowChoreographer.setPaused(true)
+        ShadowChoreographer.setFrameDelay(Duration.ofMillis(FRAME_MILLIS))
+    }
+
+    @After
+    fun resumeTheAnimationClock() {
+        ShadowChoreographer.setPaused(false)
+    }
+
     private fun createRenderer(
         settings: CarSettings = CarSettings(context()),
     ): OsmdroidCarMapRenderer {
@@ -530,10 +547,12 @@ class OsmdroidCarMapRendererTest {
         renderer.mapView.controller.setZoom(INITIAL_ZOOM)
         renderer.mapView.controller.setCenter(GeoPoint(INITIAL_LATITUDE, INITIAL_LONGITUDE))
 
-        renderer.goToCurrentLocation()
+        renderer.goToCurrentLocation(TARGET_SPAN_METERS)
+        advanceFrames(renderer, TRANSITION_FRAMES)
 
         assertCentredOn(renderer, FIX_LATITUDE, FIX_LONGITUDE)
-        assertThat(renderer.mapView.zoomLevelDouble).isEqualTo(OsmdroidCarMapRenderer.DEFAULT_ZOOM_LEVEL)
+        assertThat(renderer.mapView.zoomLevelDouble)
+            .isCloseTo(expectedTargetZoom(renderer, TARGET_SPAN_METERS), within(1e-6))
     }
 
     @Test
@@ -543,7 +562,7 @@ class OsmdroidCarMapRendererTest {
         renderer.mapView.controller.setZoom(INITIAL_ZOOM)
         renderer.mapView.controller.setCenter(GeoPoint(INITIAL_LATITUDE, INITIAL_LONGITUDE))
 
-        renderer.goToCurrentLocation()
+        renderer.goToCurrentLocation(TARGET_SPAN_METERS)
 
         assertThat(renderer.mapView.zoomLevelDouble).isEqualTo(INITIAL_ZOOM)
         assertCentredOn(renderer, INITIAL_LATITUDE, INITIAL_LONGITUDE)
@@ -558,7 +577,7 @@ class OsmdroidCarMapRendererTest {
         renderer.mapView.controller.setZoom(INITIAL_ZOOM)
         renderer.mapView.controller.setCenter(GeoPoint(INITIAL_LATITUDE, INITIAL_LONGITUDE))
 
-        renderer.goToCurrentLocation()
+        renderer.goToCurrentLocation(TARGET_SPAN_METERS)
 
         assertThat(renderer.mapView.zoomLevelDouble).isEqualTo(INITIAL_ZOOM)
         assertCentredOn(renderer, INITIAL_LATITUDE, INITIAL_LONGITUDE)
@@ -632,14 +651,31 @@ class OsmdroidCarMapRendererTest {
                 longitudeBins = 2,
                 latitudeBins = 2,
             )
-        val canvas = mockk<Canvas>(relaxed = true)
-        every { canvas.clipBounds } returns Rect(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        val bitmap = Bitmap.createBitmap(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, Bitmap.Config.ARGB_8888)
+        val canvas = LineRecordingCanvas(bitmap)
 
         assertThat(renderer.strikeListOverlay.showDataArea).isFalse()
 
         renderer.strikeListOverlay.draw(canvas, renderer.mapView, false)
 
-        verify(exactly = 0) { canvas.drawLine(any(), any(), any(), any(), any()) }
+        assertThat(canvas.drawnLines).isZero()
+    }
+
+    private class LineRecordingCanvas(
+        bitmap: Bitmap,
+    ) : Canvas(bitmap) {
+        var drawnLines = 0
+
+        override fun drawLine(
+            startX: Float,
+            startY: Float,
+            stopX: Float,
+            stopY: Float,
+            paint: Paint,
+        ) {
+            drawnLines++
+            super.drawLine(startX, startY, stopX, stopY, paint)
+        }
     }
 
     @Test
@@ -676,6 +712,223 @@ class OsmdroidCarMapRendererTest {
             .isEqualTo(renderer.strikeListOverlay.colorHandler.getColors(ColorTarget.STREETMAP))
     }
 
+    @Test
+    fun `animates the location action from the current camera to the target`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.onLocationEvent(fix(FIX_LATITUDE, FIX_LONGITUDE))
+        renderer.mapView.controller.setZoom(INITIAL_ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(INITIAL_LATITUDE, INITIAL_LONGITUDE))
+        val startCentre = GeoPoint(renderer.mapView.mapCenter.latitude, renderer.mapView.mapCenter.longitude)
+        val startZoom = renderer.mapView.zoomLevelDouble
+
+        renderer.goToCurrentLocation(TARGET_SPAN_METERS)
+
+        assertThat(renderer.mapView.mapCenter.latitude).isCloseTo(startCentre.latitude, within(0.001))
+        assertThat(renderer.mapView.mapCenter.longitude).isCloseTo(startCentre.longitude, within(0.001))
+        assertThat(renderer.mapView.zoomLevelDouble).isEqualTo(startZoom)
+
+        advanceFrames(renderer, HALF_TRANSITION_FRAMES)
+
+        assertThat(renderer.mapView.mapCenter.latitude).isBetween(FIX_LATITUDE, startCentre.latitude)
+        assertThat(renderer.mapView.mapCenter.longitude).isBetween(FIX_LONGITUDE, startCentre.longitude)
+        assertThat(renderer.mapView.zoomLevelDouble)
+            .isBetween(startZoom, expectedTargetZoom(renderer, TARGET_SPAN_METERS))
+
+        advanceFrames(renderer, TRANSITION_FRAMES)
+
+        assertCentredOn(renderer, FIX_LATITUDE, FIX_LONGITUDE)
+        assertThat(renderer.mapView.zoomLevelDouble)
+            .isCloseTo(expectedTargetZoom(renderer, TARGET_SPAN_METERS), within(1e-6))
+    }
+
+    @Test
+    fun `settles the location transition exactly once at the end`() {
+        val settings = CarSettings(context())
+        val renderer = createRenderer(settings)
+        attach(renderer)
+        renderer.onLocationEvent(fix(FIX_LATITUDE, FIX_LONGITUDE))
+        renderer.mapView.controller.setZoom(INITIAL_ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(INITIAL_LATITUDE, INITIAL_LONGITUDE))
+        val viewports = mutableListOf<MapViewport>()
+        renderer.setViewportListener { viewports.add(it) }
+        viewports.clear()
+
+        renderer.goToCurrentLocation(TARGET_SPAN_METERS)
+
+        assertThat(settings.camera).isNull()
+        assertThat(viewports).isEmpty()
+
+        advanceFrames(renderer, TRANSITION_FRAMES)
+
+        assertThat(viewports).hasSize(1)
+        val stored = settings.camera
+        assertThat(stored).isNotNull
+        assertThat(stored!!.latitude).isCloseTo(FIX_LATITUDE, within(0.01))
+        assertThat(stored.longitude).isCloseTo(FIX_LONGITUDE, within(0.01))
+        assertThat(stored.zoom).isCloseTo(expectedTargetZoom(renderer, TARGET_SPAN_METERS), within(1e-6))
+        assertThat(viewports.single().viewportZoomLevel)
+            .isCloseTo(expectedTargetZoom(renderer, TARGET_SPAN_METERS), within(1e-6))
+    }
+
+    @Test
+    fun `panning mid-transition stops the move and stores the panned camera`() {
+        val settings = CarSettings(context())
+        val renderer = createRenderer(settings)
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.onLocationEvent(fix(FIX_LATITUDE, FIX_LONGITUDE))
+        renderer.mapView.controller.setZoom(INITIAL_ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(INITIAL_LATITUDE, INITIAL_LONGITUDE))
+        val viewports = mutableListOf<MapViewport>()
+        renderer.setViewportListener { viewports.add(it) }
+        viewports.clear()
+        renderer.goToCurrentLocation(TARGET_SPAN_METERS)
+        advanceFrames(renderer, HALF_TRANSITION_FRAMES)
+
+        val centreBeforePan = renderer.mapView.mapCenter
+        renderer.onScroll(SCROLL_DISTANCE, SCROLL_DISTANCE)
+
+        val centreAfterPan = GeoPoint(renderer.mapView.mapCenter.latitude, renderer.mapView.mapCenter.longitude)
+        assertThat(renderer.mapView.isAnimating).isFalse()
+        assertThat(centreAfterPan.longitude).isGreaterThan(centreBeforePan.longitude)
+        assertThat(centreAfterPan.latitude).isLessThan(centreBeforePan.latitude)
+        assertNotCentredOn(renderer, FIX_LATITUDE, FIX_LONGITUDE)
+
+        val stored = settings.camera
+        assertThat(stored).isNotNull
+        assertThat(stored!!.latitude).isCloseTo(centreAfterPan.latitude, within(0.001))
+        assertThat(stored.longitude).isCloseTo(centreAfterPan.longitude, within(0.001))
+        assertThat(stored.zoom).isCloseTo(renderer.mapView.zoomLevelDouble, within(1e-6))
+
+        val viewportCountAfterPan = viewports.size
+        advanceFrames(renderer, TRANSITION_FRAMES)
+
+        assertThat(renderer.mapView.mapCenter.latitude).isCloseTo(centreAfterPan.latitude, within(0.001))
+        assertThat(renderer.mapView.mapCenter.longitude).isCloseTo(centreAfterPan.longitude, within(0.001))
+        assertThat(viewports).hasSize(viewportCountAfterPan)
+    }
+
+    @Test
+    fun `the zoom action mid-transition stops the move without snapping to the target`() {
+        val settings = CarSettings(context())
+        val renderer = createRenderer(settings)
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.onLocationEvent(fix(FIX_LATITUDE, FIX_LONGITUDE))
+        renderer.mapView.controller.setZoom(INITIAL_ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(INITIAL_LATITUDE, INITIAL_LONGITUDE))
+        renderer.goToCurrentLocation(TARGET_SPAN_METERS)
+        advanceFrames(renderer, HALF_TRANSITION_FRAMES)
+
+        val centreBeforeZoom = GeoPoint(renderer.mapView.mapCenter.latitude, renderer.mapView.mapCenter.longitude)
+        val zoomBeforeZoom = renderer.mapView.zoomLevelDouble
+        renderer.zoomIn()
+
+        val centreAfterZoom = GeoPoint(renderer.mapView.mapCenter.latitude, renderer.mapView.mapCenter.longitude)
+        assertThat(centreAfterZoom.latitude).isCloseTo(centreBeforeZoom.latitude, within(0.1))
+        assertThat(centreAfterZoom.longitude).isCloseTo(centreBeforeZoom.longitude, within(0.1))
+        assertNotCentredOn(renderer, FIX_LATITUDE, FIX_LONGITUDE)
+
+        val stored = settings.camera
+        assertThat(stored).isNotNull
+        assertThat(stored!!.latitude).isCloseTo(centreAfterZoom.latitude, within(0.001))
+        assertThat(stored.longitude).isCloseTo(centreAfterZoom.longitude, within(0.001))
+        assertThat(stored.zoom).isCloseTo(zoomBeforeZoom, within(0.001))
+
+        advanceFrames(renderer, TRANSITION_FRAMES)
+
+        assertThat(renderer.mapView.mapCenter.latitude).isCloseTo(centreAfterZoom.latitude, within(0.1))
+        assertThat(renderer.mapView.mapCenter.longitude).isCloseTo(centreAfterZoom.longitude, within(0.1))
+        assertThat(renderer.mapView.zoomLevelDouble).isCloseTo(zoomBeforeZoom + 1.0, within(0.01))
+    }
+
+    @Test
+    fun `a repeated location action retargets and settles only the second move`() {
+        val settings = CarSettings(context())
+        val renderer = createRenderer(settings)
+        attach(renderer)
+        renderer.onLocationEvent(fix(FIX_LATITUDE, FIX_LONGITUDE))
+        renderer.mapView.controller.setZoom(INITIAL_ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(INITIAL_LATITUDE, INITIAL_LONGITUDE))
+        val viewports = mutableListOf<MapViewport>()
+        renderer.setViewportListener { viewports.add(it) }
+        viewports.clear()
+
+        renderer.goToCurrentLocation(TARGET_SPAN_METERS)
+        renderer.goToCurrentLocation(RETARGET_SPAN_METERS)
+
+        assertThat(settings.camera).isNull()
+        assertThat(viewports).isEmpty()
+
+        advanceFrames(renderer, TRANSITION_FRAMES)
+
+        assertThat(viewports).hasSize(1)
+        assertCentredOn(renderer, FIX_LATITUDE, FIX_LONGITUDE)
+        val stored = settings.camera
+        assertThat(stored).isNotNull
+        assertThat(stored!!.zoom).isCloseTo(expectedTargetZoom(renderer, RETARGET_SPAN_METERS), within(1e-6))
+    }
+
+    @Test
+    fun `releasing during a transition cancels it without settling`() {
+        val settings = CarSettings(context())
+        val renderer = createRenderer(settings)
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.onLocationEvent(fix(FIX_LATITUDE, FIX_LONGITUDE))
+        renderer.mapView.controller.setZoom(INITIAL_ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(INITIAL_LATITUDE, INITIAL_LONGITUDE))
+        val viewports = mutableListOf<MapViewport>()
+        renderer.setViewportListener { viewports.add(it) }
+        viewports.clear()
+        renderer.goToCurrentLocation(TARGET_SPAN_METERS)
+        advanceFrames(renderer, HALF_TRANSITION_FRAMES)
+
+        renderer.release()
+        advanceFrames(renderer, TRANSITION_FRAMES)
+
+        assertThat(settings.camera).isNull()
+        assertThat(viewports).isEmpty()
+    }
+
+    @Test
+    fun `the location action does nothing while the map has no size`() {
+        val settings = CarSettings(context())
+        val renderer = createRenderer(settings)
+        renderer.onLocationEvent(fix(FIX_LATITUDE, FIX_LONGITUDE))
+
+        renderer.goToCurrentLocation(TARGET_SPAN_METERS)
+        advanceFrames(renderer, TRANSITION_FRAMES)
+
+        assertThat(renderer.mapView.isAnimating).isFalse()
+        assertThat(settings.camera).isNull()
+    }
+
+    /** Attaches the map view so `View.post` runs the renderer's settle callback. */
+    private fun attach(renderer: OsmdroidCarMapRenderer) {
+        val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
+        activity.setContentView(renderer.mapView)
+        shadowOf(renderer.mapView.context.mainLooper).idleFor(Duration.ofMillis(100))
+    }
+
+    private fun expectedTargetZoom(
+        renderer: OsmdroidCarMapRenderer,
+        spanMeters: Float,
+    ): Double =
+        MapZoom.zoomForSpan(
+            spanMeters = spanMeters.toDouble(),
+            viewportPixels = min(renderer.mapView.width, renderer.mapView.height),
+            latitude = FIX_LATITUDE,
+        )
+
+    private fun advanceFrames(
+        renderer: OsmdroidCarMapRenderer,
+        count: Int,
+    ) {
+        val looper = shadowOf(renderer.mapView.context.mainLooper)
+        repeat(count) {
+            looper.idleFor(Duration.ofMillis(FRAME_MILLIS))
+        }
+    }
+
     private fun strikeEvent(updated: Int): DataReceived =
         DataReceived(
             strikes = listOf(GridElement(REFERENCE_TIME, 10.0, 50.0, 1)),
@@ -691,8 +944,8 @@ class OsmdroidCarMapRendererTest {
         longitude: Double,
     ) {
         val point = renderer.screenPositionOf(latitude, longitude)
-        assertThat(point.x).isCloseTo(VIEWPORT_WIDTH / 2, within(2))
-        assertThat(point.y).isCloseTo(VIEWPORT_HEIGHT / 2, within(2))
+        assertThat(point.x).isCloseTo(renderer.mapView.width / 2, within(2))
+        assertThat(point.y).isCloseTo(renderer.mapView.height / 2, within(2))
     }
 
     private fun assertNotCentredOn(
@@ -702,7 +955,7 @@ class OsmdroidCarMapRendererTest {
     ) {
         val point = renderer.screenPositionOf(latitude, longitude)
         val offCentre =
-            abs(point.x - VIEWPORT_WIDTH / 2) > 5 || abs(point.y - VIEWPORT_HEIGHT / 2) > 5
+            abs(point.x - renderer.mapView.width / 2) > 5 || abs(point.y - renderer.mapView.height / 2) > 5
         assertThat(offCentre).describedAs("coordinate should not be framed at the viewport centre").isTrue()
     }
 
@@ -731,5 +984,10 @@ class OsmdroidCarMapRendererTest {
         private const val SCROLL_DISTANCE = 50f
         private const val LOCAL_REGION = -1
         private const val REFERENCE_TIME = 1_000_000L
+        private const val TARGET_SPAN_METERS = 500_000f
+        private const val RETARGET_SPAN_METERS = 250_000f
+        private const val FRAME_MILLIS = 16L
+        private const val HALF_TRANSITION_FRAMES = 15
+        private const val TRANSITION_FRAMES = 100
     }
 }

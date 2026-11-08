@@ -9,13 +9,10 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.alert.LocalActivity
-import org.blitzortung.android.alert.Warning
 import org.blitzortung.android.alert.NoData
 import org.blitzortung.android.alert.NoLocation
+import org.blitzortung.android.alert.Warning
 import org.blitzortung.android.alert.data.AlertSector
-import org.blitzortung.android.protocol.AlertNotifier
-import org.blitzortung.android.preferences.PreferenceKey
-import org.blitzortung.android.preferences.put
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.TimeInterval
@@ -24,6 +21,9 @@ import org.blitzortung.android.data.beans.GridParameters
 import org.blitzortung.android.data.provider.LOCAL_REGION
 import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.location.LocationHandler
+import org.blitzortung.android.preferences.PreferenceKey
+import org.blitzortung.android.preferences.put
+import org.blitzortung.android.protocol.AlertNotifier
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -60,7 +60,9 @@ class AlertHandlerTest {
 
     @Test
     fun locationHandlerUpdatesEnabled() {
-        verify { locationHandler.requestUpdates(any()) }
+        // Verify the exact consumer instead of any() on a function type, which
+        // MockK cannot instantiate reliably in the Robolectric sandbox.
+        verify { locationHandler.requestUpdates(uut.locationEventConsumer) }
     }
 
     @Test

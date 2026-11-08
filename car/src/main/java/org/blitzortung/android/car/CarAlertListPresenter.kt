@@ -41,7 +41,6 @@ data class CarAlertStrings(
     val outlyingLabel: String,
     val noActivityLabel: String,
     val errorLabel: String,
-    val strikeCountFormat: String,
 )
 
 /** The reported time until the next data refresh: seconds remaining of a period. */
@@ -93,8 +92,8 @@ internal fun CarAlertListState.reduce(event: DataEvent): CarAlertListState =
     }
 
 /**
- * Maps alert state to the rows shown beside the car map: the closest strike's
- * distance and bearing, then a row per sector that saw strikes.
+ * Maps alert state to the single status row shown beside the car map: the
+ * closest strike's distance and bearing, or the current alert state.
  */
 object CarAlertListPresenter {
     fun rows(
@@ -130,23 +129,16 @@ object CarAlertListPresenter {
         strings: CarAlertStrings,
         unitName: String,
     ): List<CarAlertRow> {
-        val rows = mutableListOf<CarAlertRow>()
-
         val closestStrike = activity.sectorWithClosestStrike
-        if (closestStrike != null) {
-            val subtitle = "%.0f%s %s".format(activity.closestStrikeDistance, unitName, activity.bearingName)
-            rows.add(CarAlertRow(strings.closestStrikeLabel, subtitle))
+        return if (closestStrike != null) {
+            listOf(
+                CarAlertRow(
+                    title = strings.closestStrikeLabel,
+                    subtitle = "%.0f%s %s".format(activity.closestStrikeDistance, unitName, activity.bearingName),
+                ),
+            )
         } else {
-            rows.add(CarAlertRow(strings.noActivityLabel, ""))
+            listOf(CarAlertRow(strings.noActivityLabel, ""))
         }
-
-        activity.sectors
-            .map { sector -> sector.label to sector.ranges.sumOf { range -> range.strikeCount } }
-            .filter { (_, count) -> count > 0 }
-            .forEach { (label, count) ->
-                rows.add(CarAlertRow(label, strings.strikeCountFormat.format(count)))
-            }
-
-        return rows
     }
 }

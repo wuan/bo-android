@@ -37,6 +37,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
+import org.blitzortung.android.alert.AlertZoomTarget
 import org.blitzortung.android.alert.LocalActivity
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.DataReceived
@@ -95,8 +96,25 @@ class BlitzortungMapScreen(
     internal val locationAction: Action by lazy {
         Action.Builder()
             .setIcon(carIcon(carContext, R.drawable.car_my_location))
-            .setOnClickListener { renderer?.goToCurrentLocation() }
+            .setOnClickListener { onLocationAction() }
             .build()
+    }
+
+    /**
+     * Frames the latest location with the shared own-location target policy. The
+     * alert state and parameters are read at press time, so a unit switch or a new
+     * closest strike is reflected by the next press.
+     */
+    internal fun onLocationAction() {
+        val activeRenderer = renderer ?: return
+        val spanMeters = locationTargetSpanMeters() ?: return
+        activeRenderer.goToCurrentLocation(spanMeters)
+    }
+
+    /** The own-location framing span in metres, or null when no alert parameters are available. */
+    internal fun locationTargetSpanMeters(): Float? {
+        val alertRepository = dependencies?.alertRepository ?: return null
+        return AlertZoomTarget.framingMeters(alertListState.warning, alertRepository.getAlertParameters())
     }
 
     private val mapActionStrip: ActionStrip by lazy {
@@ -302,11 +320,10 @@ class BlitzortungMapScreen(
         val itemList =
             ItemList.Builder().apply {
                 rows.forEach { row ->
-                    val rowBuilder = Row.Builder().setTitle(row.title)
-                    if (row.subtitle.isNotBlank()) {
-                        rowBuilder.addText(row.subtitle)
-                    }
-                    addItem(rowBuilder.build())
+                    // One line per warning: keep the detail in the title instead of
+                    // adding a second text line, so more warnings fit on screen.
+                    val title = if (row.subtitle.isBlank()) row.title else "${row.title}: ${row.subtitle}"
+                    addItem(Row.Builder().setTitle(title).build())
                 }
             }.build()
 
@@ -346,6 +363,5 @@ class BlitzortungMapScreen(
             outlyingLabel = carContext.getString(R.string.car_alert_outlying),
             noActivityLabel = carContext.getString(R.string.car_alert_no_activity),
             errorLabel = carContext.getString(R.string.car_alert_error),
-            strikeCountFormat = carContext.getString(R.string.car_alert_strike_count),
         )
 }

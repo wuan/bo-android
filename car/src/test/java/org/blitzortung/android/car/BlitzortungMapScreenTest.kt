@@ -23,14 +23,22 @@ import android.graphics.Color
 import android.os.Looper
 import androidx.car.app.model.Action
 import androidx.car.app.model.ListTemplate
+import androidx.car.app.model.Row
 import androidx.car.app.navigation.model.MapWithContentTemplate
 import androidx.car.app.testing.TestCarContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleRegistry
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.within
+import org.blitzortung.android.alert.AlertParameters
 import org.blitzortung.android.alert.AlertRepository
+import org.blitzortung.android.alert.LocalActivity
+import org.blitzortung.android.alert.NoData
+import org.blitzortung.android.alert.data.AlertSector
+import org.blitzortung.android.alert.data.AlertSectorRange
 import org.blitzortung.android.data.Flags
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.provider.result.DataReceived
@@ -38,6 +46,7 @@ import org.blitzortung.android.data.provider.result.StatusUpdate
 import org.blitzortung.android.data.repository.StrikeDataRepository
 import org.blitzortung.android.location.LocationRepository
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
+import org.blitzortung.android.util.MeasurementSystem
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -148,6 +157,42 @@ class BlitzortungMapScreenTest {
 
         assertThat(renderer.legendOverlay.countdown).isEqualTo("40 / 60s")
         assertThat(headerTitle(screen)).isNull()
+    }
+
+    @Test
+    fun `alert list shows only the closest activity as a single status line`() {
+        val screen = createScreen()
+        screen.alertListState =
+            CarAlertListState(
+                warning =
+                    LocalActivity(
+                        sectors =
+                            listOf(
+                                AlertSector(
+                                    label = "NE",
+                                    minimumSectorBearing = 45f,
+                                    maximumSectorBearing = 90f,
+                                    ranges = listOf(AlertSectorRange(0f, 10f, 3, 0L)),
+                                    closestStrikeDistance = 8f,
+                                ),
+                            ),
+                        parameters = alertParameters(),
+                        referenceTime = 0L,
+                    ),
+                hasData = true,
+            )
+
+        val listTemplate = (screen.onGetTemplate() as MapWithContentTemplate).contentTemplate as ListTemplate
+        val rows =
+            listTemplate
+                .singleList
+                ?.items
+                ?.map { it as Row }
+                .orEmpty()
+
+        assertThat(rows.map { it.title?.toCharSequence()?.toString() })
+            .containsExactly("Closest strike: 8km NE")
+        assertThat(rows).allSatisfy { assertThat(it.texts).isEmpty() }
     }
 
     @Test
@@ -278,6 +323,41 @@ class BlitzortungMapScreenTest {
         verify(exactly = 2) { strikeDataRepository.updateData() }
     }
 
+    @Test
+    fun `the location action frames the outermost alert range`() {
+        registerDependencies()
+        every { alertRepository.getAlertParameters() } returns alertParameters()
+        val screen = createScreen()
+        screen.alertListState = screen.alertListState.copy(warning = NoData)
+
+        assertThat(screen.locationTargetSpanMeters()).isEqualTo(500_000f)
+    }
+
+    @Test
+    fun `the location action frames the closest strike with the shared margin`() {
+        registerDependencies()
+        every { alertRepository.getAlertParameters() } returns alertParameters()
+        val screen = createScreen()
+        screen.alertListState =
+            screen.alertListState.copy(
+                warning =
+                    LocalActivity(
+                        sectors = listOf(AlertSector("N", 0f, 45f, emptyList(), 100f)),
+                        parameters = alertParameters(),
+                        referenceTime = 0L,
+                    ),
+            )
+
+        assertThat(screen.locationTargetSpanMeters()).isCloseTo(200_000f, within(0.01f))
+    }
+
+    @Test
+    fun `the location action has no span without alert parameters`() {
+        val screen = createScreen()
+
+        assertThat(screen.locationTargetSpanMeters()).isNull()
+    }
+
     private fun startScreen(screen: BlitzortungMapScreen) {
         (screen.lifecycle as LifecycleRegistry).handleLifecycleEvent(Lifecycle.Event.ON_START)
         shadowOf(Looper.getMainLooper()).idle()
@@ -309,6 +389,14 @@ class BlitzortungMapScreenTest {
                 override val carSettings = this@BlitzortungMapScreenTest.carSettings
             }
     }
+
+    private fun alertParameters() =
+        AlertParameters(
+            alarmInterval = 600_000L,
+            rangeSteps = listOf(10f, 25f, 50f, 100f, 250f, 500f),
+            sectorLabels = listOf("N", "E", "S", "W"),
+            measurementSystem = MeasurementSystem.METRIC,
+        )
 
     private companion object {
         private const val VIEWPORT_WIDTH = 800

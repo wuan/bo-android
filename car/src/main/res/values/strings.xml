@@ -8,7 +8,6 @@
     <string name="car_alert_outlying">No strikes in range</string>
     <string name="car_alert_no_activity">No current alert</string>
     <string name="car_alert_error">Lightning data unavailable</string>
-    <string name="car_alert_strike_count">%d strikes</string>
     <string name="car_status_next_refresh">%1$d / %2$ds</string>
     <string name="car_settings_title">Settings</string>
     <string name="car_settings_open">Settings</string>

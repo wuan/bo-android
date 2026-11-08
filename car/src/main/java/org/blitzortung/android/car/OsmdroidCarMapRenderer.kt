@@ -18,6 +18,8 @@
 
 package org.blitzortung.android.car
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.app.Presentation
 import android.graphics.Point
 import android.graphics.Rect
@@ -29,8 +31,11 @@ import androidx.car.app.CarContext
 import androidx.car.app.SurfaceContainer
 import androidx.preference.PreferenceManager
 import kotlin.math.max
+import kotlin.math.min
 import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.location.LocationEvent
+import org.blitzortung.android.map.MapCameraAnimator
+import org.blitzortung.android.map.MapZoom
 import org.blitzortung.android.map.overlay.OwnLocationOverlay
 import org.blitzortung.android.map.overlay.StrikeListOverlay
 import org.blitzortung.android.map.overlay.color.ColorTarget
@@ -149,6 +154,12 @@ class OsmdroidCarMapRenderer(
     /** Latest known location, used by the action that centres on the current position. */
     private var currentLocation: GeoPoint? = null
 
+    /**
+     * Token for the current camera move. Bumping it invalidates the animation end
+     * callback of a move that was cancelled or retargeted.
+     */
+    private var cameraGeneration = 0L
+
     override fun onSurfaceAvailable(surfaceContainer: SurfaceContainer) {
         legendOverlay.densityDpi = surfaceContainer.dpi
 
@@ -237,6 +248,8 @@ class OsmdroidCarMapRenderer(
      * another window later.
      */
     override fun release() {
+        cameraGeneration++
+        mapView.controller.stopAnimation(false)
         presentation?.dismiss()
         presentation = null
         (mapView.parent as? ViewGroup)?.removeView(mapView)
@@ -262,11 +275,11 @@ class OsmdroidCarMapRenderer(
         distanceY: Float,
     ) {
         userMovedMap = true
+        interruptTransition()
         // The host reports gesture deltas like GestureDetector: positive values
         // mean the finger moved left/up, so the map content follows the finger.
         mapView.controller.scrollBy(distanceX.toInt(), distanceY.toInt())
-        storeCamera()
-        notifyViewportChanged()
+        settle()
     }
 
     override fun onFling(
@@ -274,14 +287,14 @@ class OsmdroidCarMapRenderer(
         velocityY: Float,
     ) {
         userMovedMap = true
+        interruptTransition()
         // osmdroid has no public fling API; approximate it with a proportional
         // scroll in the direction of the fling.
         mapView.controller.scrollBy(
             (-velocityX / FLING_DIVISOR).toInt(),
             (-velocityY / FLING_DIVISOR).toInt(),
         )
-        storeCamera()
-        notifyViewportChanged()
+        settle()
     }
 
     override fun onScale(
@@ -290,13 +303,13 @@ class OsmdroidCarMapRenderer(
         scaleFactor: Float,
     ) {
         userMovedMap = true
+        interruptTransition()
         if (scaleFactor >= 1f) {
             mapView.controller.zoomInFixing(focusX.toInt(), focusY.toInt())
         } else {
             mapView.controller.zoomOutFixing(focusX.toInt(), focusY.toInt())
         }
-        storeCamera()
-        notifyViewportChanged()
+        settle()
     }
 
     override fun onClick(
@@ -339,25 +352,86 @@ class OsmdroidCarMapRenderer(
 
     override fun zoomIn() {
         userMovedMap = true
+        interruptTransition()
         mapView.controller.zoomIn()
-        storeCamera()
-        notifyViewportChanged()
+        settle()
     }
 
     override fun zoomOut() {
         userMovedMap = true
+        interruptTransition()
         mapView.controller.zoomOut()
-        storeCamera()
-        notifyViewportChanged()
+        settle()
     }
 
-    override fun goToCurrentLocation() {
+    override fun goToCurrentLocation(spanMeters: Float) {
         val location = currentLocation ?: return
+        if (mapView.width <= 0 || mapView.height <= 0) {
+            return
+        }
         userMovedMap = true
-        mapView.controller.setZoom(DEFAULT_ZOOM_LEVEL)
-        mapView.controller.setCenter(location)
+
+        startMove(
+            target = location,
+            targetZoom =
+                MapZoom.zoomForSpan(
+                    spanMeters = spanMeters.toDouble(),
+                    viewportPixels = min(mapView.width, mapView.height),
+                    latitude = location.latitude,
+                ),
+        )
+    }
+
+    /**
+     * Starts an animated camera move to [target] at [targetZoom].
+     *
+     * Any previous move is cancelled without being settled. The generation token
+     * lets only the latest move's animation end store the camera and notify the
+     * viewport listener. If no live animator is available, the target camera is
+     * applied immediately so the move cannot stay half-way.
+     */
+    private fun startMove(
+        target: GeoPoint,
+        targetZoom: Double,
+    ) {
+        cameraGeneration++
+        val generation = cameraGeneration
+        mapView.controller.stopAnimation(false)
+        mapView.controller.animateTo(target, targetZoom, CAMERA_ANIMATION_SPEED)
+
+        val animator = MapCameraAnimator.current(mapView)
+        if (animator == null) {
+            mapView.controller.setZoom(targetZoom)
+            mapView.controller.setCenter(target)
+            mapView.invalidate()
+            settle()
+            return
+        }
+
+        animator.addListener(
+            object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    // Post so the viewport is notified after the animator has fully
+                    // ended, independent of osmdroid's listener ordering.
+                    mapView.post {
+                        if (generation == cameraGeneration) {
+                            settle()
+                        }
+                    }
+                }
+            },
+        )
+    }
+
+    /** Stops a running camera transition without applying its target camera. */
+    private fun interruptTransition() {
+        cameraGeneration++
+        mapView.controller.stopAnimation(false)
+    }
+
+    /** Stores the settled camera and reports it to the viewport listener. */
+    private fun settle() {
         storeCamera()
-        mapView.invalidate()
         notifyViewportChanged()
     }
 
@@ -489,6 +563,9 @@ class OsmdroidCarMapRenderer(
     internal companion object {
         private const val VIRTUAL_DISPLAY_NAME = "BlitzortungCarMap"
         private const val FLING_DIVISOR = 10f
+
+        /** Duration of the animated camera move, matching the phone's map. */
+        const val CAMERA_ANIMATION_SPEED = 500L
 
         /**
          * Zoom the car map starts at when it first frames the driver's position.

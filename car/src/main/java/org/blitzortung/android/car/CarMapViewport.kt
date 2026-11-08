@@ -19,6 +19,7 @@
 package org.blitzortung.android.car
 
 import android.animation.ValueAnimator
+import org.blitzortung.android.map.MapCameraAnimator
 import org.blitzortung.android.protocol.MapViewport
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.MapView
@@ -26,11 +27,9 @@ import org.osmdroid.views.MapView
 /**
  * View-agnostic [MapViewport] adapter over the car's plain osmdroid [MapView].
  *
- * The car's camera is moved programmatically by the renderer and the host
- * surface callback rather than by map animations, so there is never an
- * in-flight camera animation: [viewportIsAnimating] is always `false` and
- * [animator] always returns `null`. The data layer therefore applies a viewport
- * change at once instead of waiting for an animation to end.
+ * The renderer animates the camera for the location action, so the reported
+ * animation state follows the underlying map. The data layer can then defer a
+ * viewport-driven request until an in-flight camera transition has settled.
  */
 internal class CarMapViewport(
     private val mapView: MapView,
@@ -42,7 +41,7 @@ internal class CarMapViewport(
         get() = mapView.boundingBox
 
     override val viewportIsAnimating: Boolean
-        get() = false
+        get() = mapView.isAnimating
 
-    override fun animator(): ValueAnimator? = null
+    override fun animator(): ValueAnimator? = MapCameraAnimator.current(mapView)
 }

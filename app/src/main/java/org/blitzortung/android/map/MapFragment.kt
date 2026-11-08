@@ -195,17 +195,15 @@ class MapFragment : Fragment(), OnSharedPreferenceChangeListener {
 
     val zoomLevel get() = mapView.zoomLevelDouble
 
-    fun calculateTargetZoomLevel(widthInMeters: Float): Double {
-        val equatorLength = 40075004.0 // in meters
-        val widthInPixels = min(mapView.height, mapView.width).toDouble()
-        var metersPerPixel = equatorLength / 256
-        var zoomLevel = 0.0
-        while ((metersPerPixel * widthInPixels) > widthInMeters) {
-            metersPerPixel /= 2.7
-            ++zoomLevel
-        }
-        return zoomLevel - 1.0
-    }
+    fun calculateTargetZoomLevel(
+        spanMeters: Float,
+        latitude: Double,
+    ): Double =
+        MapZoom.zoomForSpan(
+            spanMeters = spanMeters.toDouble(),
+            viewportPixels = min(mapView.height, mapView.width),
+            latitude = latitude,
+        )
 
     override fun onSharedPreferenceChanged(
         sharedPreferences: SharedPreferences,

@@ -31,4 +31,22 @@ class MeasurementSystemTest {
     fun testImperialUnitName() {
         assertThat(MeasurementSystem.IMPERIAL.unitNameString).isEqualTo(R.string.unit_miles)
     }
+
+    @Test
+    fun testMetricRoundTrip() {
+        val value = 123.456f
+
+        assertThat(MeasurementSystem.METRIC.toMeters(value)).isEqualTo(123456f)
+        assertThat(MeasurementSystem.METRIC.calculateDistance(MeasurementSystem.METRIC.toMeters(value)))
+            .isEqualTo(value)
+    }
+
+    @Test
+    fun testImperialRoundTrip() {
+        val value = 2f
+
+        assertThat(MeasurementSystem.IMPERIAL.toMeters(value)).isEqualTo(2 * 1609.344f)
+        assertThat(MeasurementSystem.IMPERIAL.calculateDistance(MeasurementSystem.IMPERIAL.toMeters(value)))
+            .isEqualTo(value)
+    }
 }

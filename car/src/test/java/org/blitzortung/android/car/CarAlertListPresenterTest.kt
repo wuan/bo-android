@@ -35,7 +35,6 @@ class CarAlertListPresenterTest {
             outlyingLabel = "No strikes in range",
             noActivityLabel = "No current alert",
             errorLabel = "Lightning data unavailable",
-            strikeCountFormat = "%d strikes",
         )
 
     @Test
@@ -49,12 +48,12 @@ class CarAlertListPresenterTest {
     }
 
     @Test
-    fun `reports the strike count per sector`() {
+    fun `shows only the closest activity as a single status row`() {
         val state = CarAlertListState(warning = localActivity(), hasData = true)
 
         val rows = CarAlertListPresenter.rows(state, strings, "km")
 
-        assertThat(rows).contains(CarAlertRow("NE", "5 strikes"))
+        assertThat(rows).containsExactly(CarAlertRow("Closest strike", "8km NE"))
     }
 
     @Test
@@ -88,7 +87,7 @@ class CarAlertListPresenterTest {
 
         val rows = CarAlertListPresenter.rows(state, strings, "km")
 
-        assertThat(rows.first()).isEqualTo(CarAlertRow("No current alert", ""))
+        assertThat(rows).containsExactly(CarAlertRow("No current alert", ""))
     }
 
     @Test

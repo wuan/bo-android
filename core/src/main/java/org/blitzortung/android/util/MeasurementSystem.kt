@@ -29,4 +29,7 @@ enum class MeasurementSystem(
     ;
 
     fun calculateDistance(meters: Float): Float = meters / factor
+
+    /** Converts a distance in this system's unit (kilometres or miles) back to metres. */
+    fun toMeters(value: Float): Float = value * factor
 }

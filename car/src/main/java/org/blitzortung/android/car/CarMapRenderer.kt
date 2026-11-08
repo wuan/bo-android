@@ -98,10 +98,12 @@ interface CarMapRenderer {
     fun zoomOut()
 
     /**
-     * Centres the map on the latest location fix at the default zoom. Does
-     * nothing while no location is available.
+     * Animates the map to the latest location fix, framing [spanMeters] of ground
+     * distance across the shorter viewport side. Does nothing while no location is
+     * available. Driver navigation interrupts the transition, and invoking it again
+     * retargets it.
      */
-    fun goToCurrentLocation()
+    fun goToCurrentLocation(spanMeters: Float)
 
     fun updateStrikes(event: DataReceived)
 
