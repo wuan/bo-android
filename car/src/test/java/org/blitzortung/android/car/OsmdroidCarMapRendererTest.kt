@@ -414,6 +414,115 @@ class OsmdroidCarMapRendererTest {
     }
 
     @Test
+    fun `pinching out zooms out`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.mapView.controller.setZoom(ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(CENTER_LATITUDE, CENTER_LONGITUDE))
+
+        renderer.onScale(FOCUS_X, FOCUS_Y, 0.5f)
+
+        assertThat(renderer.mapView.zoomLevelDouble).isCloseTo(ZOOM - 1.0, within(1e-6))
+    }
+
+    @Test
+    fun `pinching in zooms in`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.mapView.controller.setZoom(ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(CENTER_LATITUDE, CENTER_LONGITUDE))
+
+        renderer.onScale(FOCUS_X, FOCUS_Y, 2f)
+
+        assertThat(renderer.mapView.zoomLevelDouble).isCloseTo(ZOOM + 1.0, within(1e-6))
+    }
+
+    @Test
+    fun `a neutral pinch event does not zoom`() {
+        // The host reports a scale factor of exactly 1 at the start of every
+        // gesture. Treating it as a zoom-in step made pinch-out gestures
+        // cancel themselves out on Android Auto.
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.mapView.controller.setZoom(ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(CENTER_LATITUDE, CENTER_LONGITUDE))
+
+        renderer.onScale(FOCUS_X, FOCUS_Y, 1f)
+
+        assertThat(renderer.mapView.zoomLevelDouble).isEqualTo(ZOOM)
+    }
+
+    @Test
+    fun `pinch zoom follows the gesture scale`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.mapView.controller.setZoom(ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(CENTER_LATITUDE, CENTER_LONGITUDE))
+
+        renderer.onScale(FOCUS_X, FOCUS_Y, 0.5f)
+        renderer.onScale(FOCUS_X, FOCUS_Y, 0.5f)
+
+        // Two halvings of the finger distance zoom out by two levels in total.
+        assertThat(renderer.mapView.zoomLevelDouble).isCloseTo(ZOOM - 2.0, within(1e-6))
+    }
+
+    @Test
+    fun `pinch zoom keeps the gesture focus fixed`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.mapView.controller.setZoom(ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(CENTER_LATITUDE, CENTER_LONGITUDE))
+        val focused = renderer.mapView.projection.fromPixels(FOCUS_X.toInt(), FOCUS_Y.toInt())
+
+        renderer.onScale(FOCUS_X, FOCUS_Y, 2f)
+
+        val projected = renderer.mapView.projection.toPixels(GeoPoint(focused.latitude, focused.longitude), null)
+        assertThat(projected.x).isCloseTo(FOCUS_X.toInt(), within(2))
+        assertThat(projected.y).isCloseTo(FOCUS_Y.toInt(), within(2))
+    }
+
+    @Test
+    fun `pinch zoom without a focus keeps the centre`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.mapView.controller.setZoom(ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(CENTER_LATITUDE, CENTER_LONGITUDE))
+
+        renderer.onScale(-1f, -1f, 2f)
+
+        assertThat(renderer.mapView.zoomLevelDouble).isCloseTo(ZOOM + 1.0, within(1e-6))
+        assertCentredOn(renderer, CENTER_LATITUDE, CENTER_LONGITUDE)
+    }
+
+    @Test
+    fun `pinching out stops at the world view`() {
+        val renderer = createRenderer()
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.applyInitialCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        val floor = renderer.mapView.zoomLevelDouble
+
+        renderer.onScale(FOCUS_X, FOCUS_Y, 0.5f)
+
+        assertThat(renderer.mapView.zoomLevelDouble).isCloseTo(floor, within(1e-6))
+        assertThat(renderer.mapView.canZoomOut()).isFalse()
+    }
+
+    @Test
+    fun `pinching stores the zoomed camera`() {
+        val settings = CarSettings(context())
+        val renderer = createRenderer(settings)
+        renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
+        renderer.mapView.controller.setZoom(ZOOM)
+        renderer.mapView.controller.setCenter(GeoPoint(CENTER_LATITUDE, CENTER_LONGITUDE))
+
+        renderer.onScale(FOCUS_X, FOCUS_Y, 0.5f)
+
+        val stored = settings.camera
+        assertThat(stored).isNotNull
+        assertThat(stored!!.zoom).isCloseTo(ZOOM - 1.0, within(1e-6))
+    }
+
+    @Test
     fun `dragging the map moves it with the finger`() {
         val renderer = createRenderer()
         renderer.mapView.layout(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT)
@@ -982,6 +1091,8 @@ class OsmdroidCarMapRendererTest {
         private const val INITIAL_LATITUDE = 52.0
         private const val INITIAL_LONGITUDE = 13.0
         private const val SCROLL_DISTANCE = 50f
+        private const val FOCUS_X = 200f
+        private const val FOCUS_Y = 150f
         private const val LOCAL_REGION = -1
         private const val REFERENCE_TIME = 1_000_000L
         private const val TARGET_SPAN_METERS = 500_000f

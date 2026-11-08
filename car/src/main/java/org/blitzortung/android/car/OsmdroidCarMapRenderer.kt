@@ -30,8 +30,10 @@ import android.view.ViewGroup
 import androidx.car.app.CarContext
 import androidx.car.app.SurfaceContainer
 import androidx.preference.PreferenceManager
+import kotlin.math.log2
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 import org.blitzortung.android.data.provider.result.DataReceived
 import org.blitzortung.android.location.LocationEvent
 import org.blitzortung.android.map.MapCameraAnimator
@@ -304,12 +306,57 @@ class OsmdroidCarMapRenderer(
     ) {
         userMovedMap = true
         interruptTransition()
-        if (scaleFactor >= 1f) {
-            mapView.controller.zoomInFixing(focusX.toInt(), focusY.toInt())
-        } else {
-            mapView.controller.zoomOutFixing(focusX.toInt(), focusY.toInt())
-        }
+        scaleBy(focusX, focusY, scaleFactor)
         settle()
+    }
+
+    /**
+     * Applies the zoom change of a pinch event.
+     *
+     * A scale factor of exactly `1` is a neutral event and must not zoom: the
+     * host sends one at the start of every gesture, and treating it as a zoom
+     * step made short pinch-out gestures cancel themselves out. The zoom change
+     * is the base-2 logarithm of the factor, so pinch events accumulate to the
+     * gesture's actual ratio, a double tap reported as factor `2` zooms one
+     * level, and a factor below `1` zooms out.
+     */
+    private fun scaleBy(
+        focusX: Float,
+        focusY: Float,
+        scaleFactor: Float,
+    ) {
+        val zoomDelta =
+            if (scaleFactor.isFinite() && scaleFactor > 0f) log2(scaleFactor.toDouble()) else 0.0
+        val fromZoom = mapView.zoomLevelDouble
+        val toZoom = (fromZoom + zoomDelta).coerceIn(mapView.minZoomLevel, mapView.maxZoomLevel)
+        if (zoomDelta != 0.0 && toZoom != fromZoom) {
+            // Keep the map point under the fingers fixed. A negative focus means
+            // the host could not report the gesture focus, so the zoom stays centred.
+            val focusPoint = focusPointOf(focusX, focusY)
+            mapView.controller.setZoom(toZoom)
+            if (focusPoint != null) {
+                val projected = mapView.projection.toPixels(focusPoint, null)
+                mapView.controller.scrollBy(
+                    (projected.x - focusX).roundToInt(),
+                    (projected.y - focusY).roundToInt(),
+                )
+            }
+            mapView.invalidate()
+        }
+    }
+
+    /** Geographic point below a host-reported gesture focus, or null if unavailable. */
+    private fun focusPointOf(
+        focusX: Float,
+        focusY: Float,
+    ): GeoPoint? {
+        val x = focusX.toInt()
+        val y = focusY.toInt()
+        if (!Rect(0, 0, mapView.width, mapView.height).contains(x, y)) {
+            return null
+        }
+        val point = mapView.projection.fromPixels(x, y)
+        return GeoPoint(point.latitude, point.longitude)
     }
 
     override fun onClick(
