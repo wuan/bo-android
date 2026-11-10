@@ -160,6 +160,40 @@ class AlertDataHandlerTest {
     }
 
     @Test
+    fun testLatestTimestampWithinLimitIncludesStrikeInsideTheLimit() {
+        parameters = parameters.copy(rangeSteps = listOf(10f, 25f, 50f), sectorLabels = listOf("N"))
+        strike = strike.copy(timestamp = now)
+        every { location.distanceTo(any()) } returns 5000f
+
+        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now) as LocalActivity
+
+        assertThat(alertDataHandler.getLatestTimstampWithin(25f, result)).isEqualTo(now)
+    }
+
+    @Test
+    fun testLatestTimestampWithinLimitIgnoresStrikeOutsideTheLimit() {
+        parameters = parameters.copy(rangeSteps = listOf(10f, 25f, 50f), sectorLabels = listOf("N"))
+        strike = strike.copy(timestamp = now)
+        every { location.distanceTo(any()) } returns 30000f
+
+        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now) as LocalActivity
+
+        assertThat(alertDataHandler.getLatestTimstampWithin(25f, result)).isEqualTo(0L)
+    }
+
+    @Test
+    fun testLatestTimestampWithinLimitIncludesStrikeInRangeSpanningTheLimit() {
+        parameters =
+            parameters.copy(rangeSteps = listOf(10f, 25f, 50f, 100f, 250f, 500f), sectorLabels = listOf("N"))
+        strike = strike.copy(timestamp = now)
+        every { location.distanceTo(any()) } returns 120000f
+
+        val result = alertDataHandler.checkStrikes(Strikes(listOf(strike)), location, parameters, now) as LocalActivity
+
+        assertThat(alertDataHandler.getLatestTimstampWithin(150f, result)).isEqualTo(now)
+    }
+
+    @Test
     fun testGridDataWithoutAlert() {
         strike = strike.copy(timestamp = now, longitude = 10.5, latitude = 49.8)
         location = createLocation(10.5, 49.5)

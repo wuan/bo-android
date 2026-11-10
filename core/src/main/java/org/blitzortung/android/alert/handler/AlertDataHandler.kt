@@ -169,7 +169,7 @@ open class AlertDataHandler
             sector: AlertSector,
         ): Long {
             return sector.ranges
-                .filter { distanceLimit <= it.rangeMaximum }.maxOfOrNull { it.latestStrikeTimestamp } ?: 0L
+                .filter { it.rangeMinimum < distanceLimit }.maxOfOrNull { it.latestStrikeTimestamp } ?: 0L
         }
 
         private fun createSectors(alertParameters: AlertParameters): List<AggregatingAlertSector> {

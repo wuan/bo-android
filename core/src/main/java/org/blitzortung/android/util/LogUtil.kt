@@ -7,8 +7,15 @@ import java.util.Locale
 object LogUtil {
     const val LOG_TAG = "BO_ANDROID"
 
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
+    /** Formats epoch milliseconds for log messages; not thread-safe by design, see [formatTimestamp]. */
+    internal val timestampFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
 
     val timestamp: String
-        get() = dateFormat.format(Date())
+        get() = timestampFormat.format(Date())
+
+    /** Formats [epochMillis] (typically a strike timestamp) for diagnostics. */
+    fun formatTimestamp(epochMillis: Long): String =
+        synchronized(timestampFormat) {
+            timestampFormat.format(Date(epochMillis))
+        }
 }

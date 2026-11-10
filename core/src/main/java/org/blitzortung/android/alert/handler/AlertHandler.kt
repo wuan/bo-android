@@ -42,8 +42,9 @@ import org.blitzortung.android.location.LocationHandler
 import org.blitzortung.android.location.LocationUpdate
 import org.blitzortung.android.protocol.AlertNotifier
 import org.blitzortung.android.protocol.ConsumerContainer
-import org.blitzortung.android.util.MeasurementSystem
+import org.blitzortung.android.util.LogUtil
 import org.blitzortung.android.util.LogUtil.LOG_TAG
+import org.blitzortung.android.util.MeasurementSystem
 
 @Singleton
 class AlertHandler
@@ -217,26 +218,69 @@ constructor(
         if (alertEnabled && warning is LocalActivity) {
             if (warning.closestStrikeDistance <= signalingDistanceLimit) {
                 alertSignal(warning)
+            } else {
+                val closestStrike = formatDistance(warning.closestStrikeDistance)
+                val signalingLimit = formatDistance(signalingDistanceLimit)
+                Log.v(
+                    LOG_TAG,
+                    "AlertHandler.processResult() no signal, closest strike $closestStrike " +
+                        "beyond signaling limit $signalingLimit",
+                )
             }
             if (warning.closestStrikeDistance <= notificationDistanceLimit) {
                 alertNotification(warning)
             }
+        } else if (warning is LocalActivity) {
+            Log.v(LOG_TAG, "AlertHandler.processResult() no signal, alerts disabled")
         }
         broadcastResult(warning)
     }
 
     private fun alertSignal(alertResult: LocalActivity) {
         val signalingLatestTimestamp = alertDataHandler.getLatestTimstampWithin(signalingDistanceLimit, alertResult)
+        val strikeTimestamp = formatTimestamp(signalingLatestTimestamp)
         if (signalingLatestTimestamp > signalingLastTimestamp + signalingThresholdTime) {
-            Log.d(LOG_TAG, "AlertHandler.alertSignal() signal ${signalingLatestTimestamp / 1000}")
+            val within = formatDistance(signalingDistanceLimit)
+            val closest = formatDistance(alertResult.closestStrikeDistance)
+            Log.i(
+                LOG_TAG,
+                "AlertHandler.alertSignal() signal for strike at $strikeTimestamp (within $within, closest $closest)",
+            )
             alertSignal.emitSignal()
             signalingLastTimestamp = signalingLatestTimestamp
         } else {
+            val suppressedFor = formatDuration(signalingLatestTimestamp - signalingLastTimestamp)
+            val suppressionTime = formatDuration(signalingThresholdTime)
             Log.d(
                 LOG_TAG,
-                "AlertHandler.alertSignal() skipped - ${(signalingLatestTimestamp - signalingLastTimestamp) / 1000}, " +
-                    "threshold: ${signalingThresholdTime / 1000}",
+                "AlertHandler.alertSignal() skipped for strike at $strikeTimestamp - " +
+                    "suppressed for another $suppressedFor (suppression time $suppressionTime)",
             )
+        }
+    }
+
+    private fun formatTimestamp(timestamp: Long): String =
+        if (timestamp > 0) {
+            LogUtil.formatTimestamp(timestamp)
+        } else {
+            "n/a"
+        }
+
+    private fun formatDistance(distance: Float): String {
+        val unit = context.resources.getString(alertParameters.measurementSystem.unitNameString)
+        return if (distance == Float.POSITIVE_INFINITY) {
+            "n/a"
+        } else {
+            "%.1f%s".format(distance, unit)
+        }
+    }
+
+    private fun formatDuration(duration: Long): String {
+        val clampedDuration = duration.coerceAtLeast(0)
+        return if (clampedDuration < 1000) {
+            "${clampedDuration}ms"
+        } else {
+            "%ds".format(clampedDuration / 1000)
         }
     }
 
