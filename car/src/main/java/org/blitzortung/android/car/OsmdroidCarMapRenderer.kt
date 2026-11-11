@@ -389,11 +389,11 @@ class OsmdroidCarMapRenderer(
             }
     }
 
-    override fun setCountdown(countdown: String) {
-        if (legendOverlay.countdown == countdown) {
+    override fun setDataTime(dataTime: String) {
+        if (legendOverlay.dataTime == dataTime) {
             return
         }
-        legendOverlay.countdown = countdown
+        legendOverlay.dataTime = dataTime
         mapView.invalidate()
     }
 

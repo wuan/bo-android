@@ -91,12 +91,11 @@ class CarAlertListPresenterTest {
     }
 
     @Test
-    fun `does not render a countdown row even when a countdown is present`() {
+    fun `does not render a data timestamp as an alert row`() {
         val state =
             CarAlertListState(
                 warning = localActivity(),
                 hasData = true,
-                refreshCountdown = CarRefreshCountdown(40, 60),
             )
 
         val rows = CarAlertListPresenter.rows(state, strings, "km")

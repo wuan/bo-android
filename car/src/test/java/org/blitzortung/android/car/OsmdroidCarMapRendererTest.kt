@@ -205,12 +205,12 @@ class OsmdroidCarMapRendererTest {
     }
 
     @Test
-    fun `the refresh countdown is drawn by the legend panel`() {
+    fun `the data timestamp is drawn by the legend panel`() {
         val renderer = createRenderer()
 
-        renderer.setCountdown("40 / 60s")
+        renderer.setDataTime("Data 12:34:56")
 
-        assertThat(renderer.legendOverlay.countdown).isEqualTo("40 / 60s")
+        assertThat(renderer.legendOverlay.dataTime).isEqualTo("Data 12:34:56")
     }
 
     @Test

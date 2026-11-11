@@ -87,11 +87,11 @@ interface CarMapRenderer {
     fun setShading(shading: MapShading)
 
     /**
-     * Sets the refresh countdown drawn on the map surface above the legend. It is
+     * Sets the data timestamp drawn on the map surface above the legend. It is
      * drawn by the app instead of through the host header, so updating it does not
      * rebuild the host template.
      */
-    fun setCountdown(countdown: String)
+    fun setDataTime(dataTime: String)
 
     fun zoomIn()
 

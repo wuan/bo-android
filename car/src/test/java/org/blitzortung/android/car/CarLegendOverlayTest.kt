@@ -18,12 +18,16 @@
 
 package org.blitzortung.android.car
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Rect
 import androidx.preference.PreferenceManager
 import org.assertj.core.api.Assertions.assertThat
 import org.blitzortung.android.data.Parameters
 import org.blitzortung.android.data.TimeInterval
 import org.blitzortung.android.map.overlay.StrikeListOverlay
+import org.blitzortung.android.map.overlay.color.ColorTarget
 import org.blitzortung.android.map.overlay.color.StrikeColorHandler
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,46 +37,92 @@ import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
 class CarLegendOverlayTest {
-    private fun createOverlay(intervalDuration: Int = 60): Pair<CarLegendOverlay, StrikeListOverlay> {
+    private fun createOverlay(
+        intervalDuration: Int = 60,
+        palette: IntArray? = null,
+    ): Pair<CarLegendOverlay, StrikeListOverlay> {
         val context = RuntimeEnvironment.getApplication()
         val colorHandler = StrikeColorHandler(PreferenceManager.getDefaultSharedPreferences(context))
+        val effectiveHandler =
+            if (palette == null) {
+                colorHandler
+            } else {
+                object : StrikeColorHandler(PreferenceManager.getDefaultSharedPreferences(context)) {
+                    override fun getColors(target: ColorTarget): IntArray = palette
+                }
+            }
         val mapView = MapView(context)
         val strikesOverlay =
-            StrikeListOverlay(mapView, colorHandler).apply {
+            StrikeListOverlay(mapView, effectiveHandler).apply {
                 parameters = Parameters(interval = TimeInterval(duration = intervalDuration))
             }
         return CarLegendOverlay(context, strikesOverlay) to strikesOverlay
     }
 
     @Test
-    fun `shows one row per strike colour`() {
+    fun `band uses the active strike colours from newest to oldest`() {
         val (legend, strikesOverlay) = createOverlay()
 
-        assertThat(legend.entries()).hasSize(strikesOverlay.colorHandler.numberOfColors)
-    }
-
-    @Test
-    fun `rows use the active strike colours`() {
-        val (legend, strikesOverlay) = createOverlay()
-
-        assertThat(legend.entries().map { it.color })
+        assertThat(legend.band()?.colors)
             .containsExactlyElementsOf(strikesOverlay.colorHandler.colors.toList())
     }
 
     @Test
-    fun `labels each band with the age it represents`() {
+    fun `labels a 60 minute interval at zero, half and full age`() {
         val (legend, _) = createOverlay(intervalDuration = 60)
 
-        assertThat(legend.entries().map { it.label })
-            .containsExactly("< 10 min", "< 20 min", "< 30 min", "< 40 min", "< 50 min", "> 50 min")
+        assertThat(legend.band()?.labels).containsExactly("0 min", "−30 min", "−60 min")
     }
 
     @Test
-    fun `labels follow the active interval`() {
+    fun `labels a 30 minute interval at zero, half and full age`() {
         val (legend, _) = createOverlay(intervalDuration = 30)
 
-        assertThat(legend.entries().map { it.label })
-            .containsExactly("< 5 min", "< 10 min", "< 15 min", "< 20 min", "< 25 min", "> 25 min")
+        assertThat(legend.band()?.labels).containsExactly("0 min", "−15 min", "−30 min")
+    }
+
+    @Test
+    fun `band height follows the colour count`() {
+        val (sixColourLegend, _) = createOverlay()
+        val (fourColourLegend, _) =
+            createOverlay(palette = intArrayOf(Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE))
+
+        assertThat(sixColourLegend.bandBounds()?.height()).isEqualTo(6 * 24f)
+        assertThat(fourColourLegend.bandBounds()?.height()).isEqualTo(4 * 24f)
+    }
+
+    @Test
+    fun `panel reserves half a text line above and below the band`() {
+        val (legend, _) = createOverlay()
+        val bandBounds = legend.bandBounds()!!
+
+        val panelBounds = legend.panelBounds()
+
+        assertThat(bandBounds.top - panelBounds.top).isGreaterThanOrEqualTo(legend.labelOverhangPx)
+        assertThat(panelBounds.bottom - bandBounds.bottom).isGreaterThanOrEqualTo(legend.labelOverhangPx)
+    }
+
+    @Test
+    fun `reuses the band gradient while the palette and bounds are unchanged`() {
+        val (legend, _) = createOverlay()
+        val canvas = Canvas(Bitmap.createBitmap(400, 400, Bitmap.Config.ARGB_8888))
+
+        legend.draw(canvas, null, false)
+        legend.draw(canvas, null, false)
+
+        assertThat(legend.gradientBuilds).isEqualTo(1)
+    }
+
+    @Test
+    fun `rebuilds the band gradient when the density changes`() {
+        val (legend, _) = createOverlay()
+        val canvas = Canvas(Bitmap.createBitmap(400, 400, Bitmap.Config.ARGB_8888))
+        legend.draw(canvas, null, false)
+
+        legend.densityDpi = 320
+        legend.draw(canvas, null, false)
+
+        assertThat(legend.gradientBuilds).isEqualTo(2)
     }
 
     @Test
@@ -89,21 +139,21 @@ class CarLegendOverlayTest {
     fun `uses the phone legend text size by default`() {
         val textSizeDp = RuntimeEnvironment.getApplication().resources.getInteger(R.integer.car_legend_text_size_dp)
 
-        assertThat(textSizeDp).isEqualTo(14)
+        assertThat(textSizeDp).isEqualTo(16)
     }
 
     @Test
-    fun `draws the countdown above the legend rows`() {
+    fun `draws the data timestamp above the legend`() {
         val (legend, _) = createOverlay()
         legend.onVisibleAreaChanged(Rect(0, 0, 1000, 900))
-        legend.countdown = "40 / 60s"
+        legend.dataTime = "Data 12:34:56"
 
         val bounds = legend.panelBounds()
-        legend.countdown = ""
-        val boundsWithoutCountdown = legend.panelBounds()
+        legend.dataTime = ""
+        val boundsWithoutDataTime = legend.panelBounds()
 
-        assertThat(bounds.height()).isGreaterThan(boundsWithoutCountdown.height())
-        assertThat(bounds.bottom).isEqualTo(boundsWithoutCountdown.bottom)
+        assertThat(bounds.height()).isGreaterThan(boundsWithoutDataTime.height())
+        assertThat(bounds.bottom).isEqualTo(boundsWithoutDataTime.bottom)
     }
 
     @Test

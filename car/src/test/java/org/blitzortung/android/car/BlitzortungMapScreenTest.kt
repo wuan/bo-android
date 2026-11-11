@@ -31,6 +31,7 @@ import androidx.lifecycle.LifecycleRegistry
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import java.util.Calendar
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.within
 import org.blitzortung.android.alert.AlertParameters
@@ -122,40 +123,74 @@ class BlitzortungMapScreenTest {
     }
 
     @Test
-    fun `a status update sets the refresh countdown`() {
+    fun `a status update leaves the alert-list state unchanged`() {
         registerDependencies()
         val screen = createScreen()
+        val initial = screen.alertListState
 
         screen.handleDataEvent(StatusUpdate("40/60"), activeRenderer = null)
 
-        assertThat(screen.alertListState.refreshCountdown).isEqualTo(CarRefreshCountdown(40, 60))
+        assertThat(screen.alertListState).isEqualTo(initial)
     }
 
     @Test
-    fun `status line shows only the compact countdown when a status is reported`() {
+    fun `a status update does not change the host template`() {
+        registerDependencies()
         val screen = createScreen()
+        val initialTemplate = templateDescription(screen)
 
         screen.handleDataEvent(StatusUpdate("40/60"), activeRenderer = null)
 
-        assertThat(screen.buildCountdownText()).isEqualTo("40 / 60s")
+        assertThat(templateDescription(screen)).isEqualTo(initialTemplate)
     }
 
     @Test
-    fun `status line is empty before a status is reported`() {
+    fun `status line shows the timestamp of the latest successful result`() {
         val screen = createScreen()
 
-        assertThat(screen.buildCountdownText()).isEmpty()
+        screen.handleDataEvent(dataEvent(localTime(12, 34, 56)), activeRenderer = null)
+
+        assertThat(screen.buildDataTimeText()).isEqualTo("Data 12:34:56")
     }
 
     @Test
-    fun `countdown is drawn on the map surface instead of the host header`() {
+    fun `a newer successful result replaces the timestamp`() {
+        val screen = createScreen()
+        screen.handleDataEvent(dataEvent(localTime(12, 34, 56)), activeRenderer = null)
+
+        screen.handleDataEvent(dataEvent(localTime(12, 35, 10)), activeRenderer = null)
+
+        assertThat(screen.buildDataTimeText()).isEqualTo("Data 12:35:10")
+    }
+
+    @Test
+    fun `a failed result keeps the last timestamp`() {
+        val screen = createScreen()
+        screen.handleDataEvent(dataEvent(localTime(12, 34, 56)), activeRenderer = null)
+
+        screen.handleDataEvent(dataEvent(localTime(13, 0, 0), failed = true), activeRenderer = null)
+
+        assertThat(screen.buildDataTimeText()).isEqualTo("Data 12:34:56")
+    }
+
+    @Test
+    fun `status line is empty before a successful result`() {
+        val screen = createScreen()
+
+        screen.handleDataEvent(dataEvent(localTime(12, 34, 56), failed = true), activeRenderer = null)
+
+        assertThat(screen.buildDataTimeText()).isEmpty()
+    }
+
+    @Test
+    fun `the data timestamp is drawn on the map surface instead of the host header`() {
         registerDependencies()
         val screen = createScreen()
         val renderer = screen.renderer as OsmdroidCarMapRenderer
 
-        screen.handleDataEvent(StatusUpdate("40/60"))
+        screen.handleDataEvent(dataEvent(localTime(12, 34, 56)))
 
-        assertThat(renderer.legendOverlay.countdown).isEqualTo("40 / 60s")
+        assertThat(renderer.legendOverlay.dataTime).isEqualTo("Data 12:34:56")
         assertThat(headerTitle(screen)).isNull()
     }
 
@@ -196,7 +231,7 @@ class BlitzortungMapScreenTest {
     }
 
     @Test
-    fun `the content template has no header so the countdown stays small`() {
+    fun `the content template has no header so the status line stays small`() {
         val screen = createScreen()
 
         val listTemplate = (screen.onGetTemplate() as MapWithContentTemplate).contentTemplate as ListTemplate
@@ -379,6 +414,9 @@ class BlitzortungMapScreenTest {
         return listTemplate.header?.title?.toCharSequence()?.toString()
     }
 
+    /** A description of the host template the screen currently builds. */
+    private fun templateDescription(screen: BlitzortungMapScreen): String = screen.onGetTemplate().toString()
+
     private fun registerDependencies() {
         CarDependenciesProvider.dependencies =
             object : CarDependencies {
@@ -389,6 +427,27 @@ class BlitzortungMapScreenTest {
                 override val carSettings = this@BlitzortungMapScreenTest.carSettings
             }
     }
+
+    private fun dataEvent(
+        referenceTime: Long,
+        failed: Boolean = false,
+    ) = DataReceived(
+        parameters = Parameters(),
+        flags = Flags(),
+        failed = failed,
+        referenceTime = referenceTime,
+    )
+
+    /** A local time of day on an arbitrary date, as epoch milliseconds. */
+    private fun localTime(
+        hour: Int,
+        minute: Int,
+        second: Int,
+    ): Long =
+        Calendar.getInstance().apply {
+            set(2000, Calendar.JANUARY, 1, hour, minute, second)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
 
     private fun alertParameters() =
         AlertParameters(

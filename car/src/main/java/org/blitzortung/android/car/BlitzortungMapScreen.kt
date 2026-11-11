@@ -35,13 +35,16 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
 import org.blitzortung.android.alert.AlertZoomTarget
 import org.blitzortung.android.alert.LocalActivity
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.DataReceived
-import org.blitzortung.android.data.provider.result.StatusUpdate
 
 /**
  * Start screen of the car experience: a map with the alert list rendered beside
@@ -63,8 +66,11 @@ class BlitzortungMapScreen(
     /** Registered observer so a shading change made in settings redraws the map. */
     private val onMapShadingModeChanged: (MapShadingMode) -> Unit = { invalidate() }
 
-    /** Countdown text last sent to the renderer, so it is only redrawn when it changes. */
-    private var countdownText: String = ""
+    /** Data timestamp last sent to the renderer, so it is only redrawn when it changes. */
+    private var dataTimeText: String = ""
+
+    /** Reference time of the latest successful data result, or null until one arrives. */
+    private var dataReferenceTime: Long? = null
 
     /** Whether the map has reported a usable viewport that data requests can be based on. */
     private var viewportKnown = false
@@ -148,7 +154,7 @@ class BlitzortungMapScreen(
             carContext.getCarService(AppManager::class.java).setSurfaceCallback(CarMapSurfaceCallback(activeRenderer))
             observeViewport(activeRenderer)
             observeData(activeRenderer)
-            applyCountdown(activeRenderer)
+            applyDataTime(activeRenderer)
             lifecycle.addObserver(
                 object : DefaultLifecycleObserver {
                     override fun onDestroy(owner: LifecycleOwner) {
@@ -270,8 +276,8 @@ class BlitzortungMapScreen(
 
     /**
      * Applies a strike-data event: feeds the shared alert computation, updates the
-     * alert-list state (loaded/error flags and the refresh countdown), and redraws
-     * the strikes for a successful result.
+     * alert-list state (loaded/error flags and the data timestamp), and redraws the
+     * strikes for a successful result.
      */
     internal fun handleDataEvent(
         event: DataEvent,
@@ -283,12 +289,10 @@ class BlitzortungMapScreen(
         alertListState = updatedState
         if (event is DataReceived && !event.failed) {
             activeRenderer?.updateStrikes(event)
+            dataReferenceTime = event.referenceTime
+            applyDataTime(activeRenderer)
         }
-        if (event is StatusUpdate) {
-            // The countdown lives on the map surface. Rebuilding the host template
-            // once per second made the header and zoom actions flicker.
-            applyCountdown(activeRenderer)
-        } else if (stateChanged) {
+        if (stateChanged) {
             invalidate()
         }
     }
@@ -333,26 +337,27 @@ class BlitzortungMapScreen(
     }
 
     /**
-     * The compact refresh countdown shown above the legend, or an empty string
-     * before a refresh status is known.
+     * The data timestamp shown above the legend, or an empty string before a
+     * successful data result has been received.
      */
-    internal fun buildCountdownText(): String {
-        val countdown = alertListState.refreshCountdown ?: return ""
+    internal fun buildDataTimeText(): String {
+        val referenceTime = dataReferenceTime ?: return ""
+        val formatter = SimpleDateFormat(DATA_TIME_PATTERN, Locale.getDefault())
+        formatter.timeZone = TimeZone.getDefault()
         return carContext.getString(
-            R.string.car_status_next_refresh,
-            countdown.remainingSeconds,
-            countdown.periodSeconds,
+            R.string.car_status_data_time,
+            formatter.format(Date(referenceTime)),
         )
     }
 
-    /** Sends the countdown to the renderer when it changed, redrawing only the map surface. */
-    private fun applyCountdown(activeRenderer: CarMapRenderer? = renderer) {
-        val countdown = buildCountdownText()
-        if (countdown == countdownText) {
+    /** Sends the data timestamp to the renderer when it changed, redrawing only the map surface. */
+    private fun applyDataTime(activeRenderer: CarMapRenderer? = renderer) {
+        val dataTime = buildDataTimeText()
+        if (dataTime == dataTimeText) {
             return
         }
-        countdownText = countdown
-        activeRenderer?.setCountdown(countdown)
+        dataTimeText = dataTime
+        activeRenderer?.setDataTime(dataTime)
     }
 
     private fun alertStrings(): CarAlertStrings =
@@ -364,4 +369,9 @@ class BlitzortungMapScreen(
             noActivityLabel = carContext.getString(R.string.car_alert_no_activity),
             errorLabel = carContext.getString(R.string.car_alert_error),
         )
+
+    private companion object {
+        /** Fixed 24-hour time of day for the data timestamp. */
+        const val DATA_TIME_PATTERN = "HH:mm:ss"
+    }
 }

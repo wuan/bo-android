@@ -25,7 +25,6 @@ import org.blitzortung.android.alert.Outlying
 import org.blitzortung.android.alert.Warning
 import org.blitzortung.android.data.provider.result.DataEvent
 import org.blitzortung.android.data.provider.result.DataReceived
-import org.blitzortung.android.data.provider.result.StatusUpdate
 
 /** A single row of the car alert list. */
 data class CarAlertRow(
@@ -43,41 +42,20 @@ data class CarAlertStrings(
     val errorLabel: String,
 )
 
-/** The reported time until the next data refresh: seconds remaining of a period. */
-data class CarRefreshCountdown(
-    val remainingSeconds: Int,
-    val periodSeconds: Int,
-) {
-    companion object {
-        /** Parses a `"<remaining>/<period>"` status, or returns null when malformed. */
-        fun parse(status: String): CarRefreshCountdown? {
-            val parts = status.split('/')
-            if (parts.size != 2) {
-                return null
-            }
-            val remaining = parts[0].toIntOrNull() ?: return null
-            val period = parts[1].toIntOrNull() ?: return null
-            return CarRefreshCountdown(remaining, period)
-        }
-    }
-}
-
 /**
  * The alert-list content state: the latest alert [Warning] together with whether
- * any strike data has arrived, whether the last fetch failed, and the reported
- * countdown to the next data refresh (null when no refresh status is known).
+ * any strike data has arrived and whether the last fetch failed.
  */
 data class CarAlertListState(
     val warning: Warning = NoData,
     val hasData: Boolean = false,
     val hasError: Boolean = false,
-    val refreshCountdown: CarRefreshCountdown? = null,
 )
 
 /**
  * Applies a strike-data event to the alert-list state: a `DataReceived` updates the
- * loaded/error flags and a `StatusUpdate` carries the countdown to the next refresh.
- * Other events leave the state unchanged.
+ * loaded/error flags. Other events, including refresh `StatusUpdate`s, leave the
+ * state unchanged because the car reads data freshness from the data timestamp.
  */
 internal fun CarAlertListState.reduce(event: DataEvent): CarAlertListState =
     when (event) {
@@ -87,7 +65,6 @@ internal fun CarAlertListState.reduce(event: DataEvent): CarAlertListState =
             } else {
                 copy(hasError = false, hasData = true)
             }
-        is StatusUpdate -> copy(refreshCountdown = CarRefreshCountdown.parse(event.status))
         else -> this
     }
 

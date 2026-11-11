@@ -21,31 +21,37 @@ package org.blitzortung.android.car
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
+import android.graphics.Shader
 import android.util.DisplayMetrics
 import org.blitzortung.android.map.overlay.StrikeListOverlay
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Overlay
 
-/** A single legend row: the strike colour band and the age it represents. */
-internal data class LegendEntry(
-    val color: Int,
-    val label: String,
+/**
+ * The continuous strike-age band: the active palette from newest to oldest and
+ * the three age labels from the top of the band to the bottom.
+ */
+internal data class LegendBand(
+    val colors: List<Int>,
+    val labels: List<String>,
 )
 
 /**
  * Persistent panel drawn in the bottom-left of the car map surface, showing the
- * refresh countdown and a legend that explains the strike age colours. One row per
- * colour band is drawn as a swatch plus an age label, so the driver can read the
- * colours used for the strikes.
+ * timestamp of the current data and a legend that explains the strike age
+ * colours. The legend is one continuous vertical band built from the active
+ * palette, labelled at the top, middle and bottom of the interval, so the driver
+ * can read the colours used for the strikes.
  *
- * The countdown is drawn by the app rather than through the host's map header:
- * the host controls the header font size and rebuilds the template when the
- * header text changes. Drawing the countdown here keeps it small, lets it update
- * without rebuilding the host template every second, and uses the same font size
- * as the legend labels.
+ * The data timestamp is drawn by the app rather than through the host's map
+ * header: the host controls the header font size and rebuilds the template when
+ * the header text changes. Drawing the timestamp here keeps it small, lets it
+ * update without rebuilding the host template, and uses the same font size as
+ * the legend labels.
  *
  * The legend reads the active colours from the strike overlay and the interval
  * from its parameters, so it follows the current colour scheme and animation
@@ -65,17 +71,19 @@ internal class CarLegendOverlay(
     context: Context,
     private val strikesOverlay: StrikeListOverlay,
 ) : Overlay() {
-    private val entryFormat = context.getString(R.string.car_legend_entry)
+    private val ageNowLabel = context.getString(R.string.car_legend_age_now)
+
+    private val ageMinutesFormat = context.getString(R.string.car_legend_age_minutes)
 
     /**
-     * Legend and countdown text size in dp at the baseline density. Read from a
+     * Legend and status-line text size in dp at the baseline density. Read from a
      * resource so the automotive build can use a larger value for the vehicle
      * display distance without changing the phone/Android Auto build.
      */
     private val baseTextSizeDp: Float = context.resources.getInteger(R.integer.car_legend_text_size_dp).toFloat()
 
-    /** Status line above the legend, for example the refresh countdown. */
-    var countdown: String = ""
+    /** Status line above the legend, for example `Data 12:34:56`. */
+    var dataTime: String = ""
 
     /** Surface density scale relative to the baseline dpi. */
     private var scale = 1f
@@ -95,7 +103,8 @@ internal class CarLegendOverlay(
             alpha = PANEL_ALPHA
         }
 
-    private val swatchPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    /** Paints the colour band; only its shader changes between frames. */
+    private val bandPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     private val textPaint =
         Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -103,17 +112,23 @@ internal class CarLegendOverlay(
             textSize = baseTextSizeDp
         }
 
-    /** Paint for the status line above the legend rows, at the legend text size. */
-    private val countdownPaint =
-        Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.WHITE
-            isFakeBoldText = true
-            textSize = baseTextSizeDp
-        }
+    /** Cached band gradient, rebuilt only when the palette, bounds or density changes. */
+    private var gradient: LinearGradient? = null
+    private var gradientColors: List<Int>? = null
+    private var gradientBounds: RectF? = null
+    private var gradientScale = 0f
 
-    /** Effective legend and countdown text size in pixels for the current surface density. */
+    /** Number of gradient shaders built; tests use it to verify the shader cache. */
+    internal var gradientBuilds: Int = 0
+        private set
+
+    /** Effective legend and status-line text size in pixels for the current surface density. */
     internal val textSizePx: Float
         get() = textPaint.textSize
+
+    /** Half a text line, reserved above and below the band for the label overhang. */
+    internal val labelOverhangPx: Float
+        get() = textPaint.fontSpacing / 2f
 
     /** Surface density in dpi, set from the host surface; drives all metrics. */
     var densityDpi: Int = DisplayMetrics.DENSITY_DEFAULT
@@ -121,7 +136,6 @@ internal class CarLegendOverlay(
             field = value
             scale = value / BASE_DENSITY_DPI
             textPaint.textSize = baseTextSizeDp * scale
-            countdownPaint.textSize = baseTextSizeDp * scale
         }
 
     /**
@@ -165,58 +179,77 @@ internal class CarLegendOverlay(
 
     private val innerPadding: Float get() = PADDING_DP * scale
 
-    private val swatchSize: Float get() = SWATCH_SIZE_DP * scale
+    private val bandWidth: Float get() = BAND_WIDTH_DP * scale
 
     private val rowHeight: Float get() = ROW_HEIGHT_DP * scale
 
     private val labelGap: Float get() = GAP_DP * scale
 
-    private val countdownGap: Float get() = COUNTDOWN_GAP_DP * scale
+    private val dataTimeGap: Float get() = DATA_TIME_GAP_DP * scale
 
     private val cornerRadius: Float get() = CORNER_RADIUS_DP * scale
 
     /**
-     * One entry per active strike colour: the band colour and the age it
-     * represents. The bounding labels mirror the phone legend: each band is
-     * `< (index + 1) * bandMinutes` and the last band is
-     * `> (colors - 1) * bandMinutes`.
+     * The continuous strike-age band for the active palette and interval. The
+     * colours run from newest (top) to oldest (bottom), and the labels are
+     * `0 min`, half the interval, and the full interval.
      */
-    fun entries(): List<LegendEntry> {
+    fun band(): LegendBand? {
         val colorHandler = strikesOverlay.colorHandler
         val numberOfColors = colorHandler.numberOfColors
-        if (numberOfColors <= 0) {
-            return emptyList()
+        val intervalMinutes = strikesOverlay.parameters.intervalDuration
+        if (numberOfColors <= 0 || intervalMinutes <= 0) {
+            return null
         }
-        val minutesPerColor = strikesOverlay.parameters.intervalDuration / numberOfColors
-        return (0 until numberOfColors).map { index ->
-            val isLastValue = index == numberOfColors - 1
-            LegendEntry(
-                color = colorHandler.getColor(index),
-                label =
-                    entryFormat.format(
-                        if (isLastValue) ">" else "<",
-                        (index + if (isLastValue) 0 else 1) * minutesPerColor,
-                    ),
-            )
-        }
+        return LegendBand(
+            colors = colorHandler.colors.toList(),
+            labels =
+                listOf(
+                    ageNowLabel,
+                    ageMinutesFormat.format(intervalMinutes / 2),
+                    ageMinutesFormat.format(intervalMinutes),
+                ),
+        )
     }
 
     /** The panel rectangle in surface pixels, bottom-left of the host's map area. */
-    internal fun panelBounds(): RectF = panelBounds(entries())
+    internal fun panelBounds(): RectF = panelBounds(band())
 
-    private fun panelBounds(rows: List<LegendEntry>): RectF {
-        val legendWidth = rows.maxOfOrNull { swatchSize + labelGap + textPaint.measureText(it.label) } ?: 0f
-        val countdownWidth = if (countdown.isBlank()) 0f else countdownPaint.measureText(countdown)
-        val width = innerPadding + maxOf(legendWidth, countdownWidth) + innerPadding
-        val height = innerPadding + countdownHeight + rows.size * rowHeight + innerPadding
+    private fun panelBounds(band: LegendBand?): RectF {
+        val legendWidth =
+            band?.let {
+                bandWidth + labelGap + (it.labels.maxOfOrNull { label -> textPaint.measureText(label) } ?: 0f)
+            } ?: 0f
+        val dataTimeWidth = if (dataTime.isBlank()) 0f else textPaint.measureText(dataTime)
+        val width = innerPadding + maxOf(legendWidth, dataTimeWidth) + innerPadding
+        val bandContentHeight =
+            band?.let { labelOverhangPx + bandHeight(it.colors.size) + labelOverhangPx } ?: 0f
+        val height = innerPadding + dataTimeHeight + bandContentHeight + innerPadding
         val left = panelInset
         val top = anchorBottom - panelInset - height
         return RectF(left, top, left + width, top + height)
     }
 
-    /** Height of the countdown line, including the gap to the legend rows. */
-    private val countdownHeight: Float
-        get() = if (countdown.isBlank()) 0f else countdownPaint.fontSpacing + countdownGap
+    /** The colour band rectangle in surface pixels, or `null` while no palette is known. */
+    internal fun bandBounds(): RectF? {
+        val band = band() ?: return null
+        return bandBounds(band, panelBounds(band))
+    }
+
+    private fun bandBounds(
+        band: LegendBand,
+        panel: RectF,
+    ): RectF {
+        val top = panel.top + innerPadding + dataTimeHeight + labelOverhangPx
+        val left = panel.left + innerPadding
+        return RectF(left, top, left + bandWidth, top + bandHeight(band.colors.size))
+    }
+
+    private fun bandHeight(numberOfColors: Int): Float = numberOfColors * rowHeight
+
+    /** Height of the status line, including the gap to the legend. */
+    private val dataTimeHeight: Float
+        get() = if (dataTime.isBlank()) 0f else textPaint.fontSpacing + dataTimeGap
 
     override fun draw(
         canvas: Canvas?,
@@ -224,54 +257,94 @@ internal class CarLegendOverlay(
         shadow: Boolean,
     ) {
         val targetCanvas = canvas ?: return
-        val rows = entries()
-        if (shadow || (rows.isEmpty() && countdown.isBlank())) {
+        val band = band()
+        if (shadow || (band == null && dataTime.isBlank())) {
             return
         }
 
         mapView?.let { surfaceHeight = it.height }
-        val panel = panelBounds(rows)
+        val panel = panelBounds(band)
         targetCanvas.drawRoundRect(panel, cornerRadius, cornerRadius, backgroundPaint)
 
         val contentTop = panel.top + innerPadding
-        if (countdown.isNotBlank()) {
-            val countdownBaseline = contentTop - countdownPaint.fontMetrics.ascent
-            targetCanvas.drawText(countdown, panel.left + innerPadding, countdownBaseline, countdownPaint)
+        if (dataTime.isNotBlank()) {
+            val dataTimeBaseline = contentTop - textPaint.fontMetrics.ascent
+            targetCanvas.drawText(dataTime, panel.left + innerPadding, dataTimeBaseline, textPaint)
         }
 
-        rows.forEachIndexed { index, row ->
-            val rowTop = contentTop + countdownHeight + index * rowHeight
-            val swatchTop = rowTop + (rowHeight - swatchSize) / 2f
-            val swatchRect =
-                RectF(
-                    panel.left + innerPadding,
-                    swatchTop,
-                    panel.left + innerPadding + swatchSize,
-                    swatchTop + swatchSize,
-                )
-            swatchPaint.color = row.color
-            targetCanvas.drawRect(swatchRect, swatchPaint)
-
-            val textBaseline = rowTop + rowHeight / 2f - (textPaint.descent() + textPaint.ascent()) / 2f
-            targetCanvas.drawText(row.label, swatchRect.right + labelGap, textBaseline, textPaint)
+        if (band != null) {
+            drawBand(targetCanvas, band, bandBounds(band, panel))
         }
+    }
+
+    private fun drawBand(
+        canvas: Canvas,
+        band: LegendBand,
+        bounds: RectF,
+    ) {
+        bandPaint.shader = gradientFor(band, bounds)
+        canvas.drawRect(bounds, bandPaint)
+        bandPaint.shader = null
+
+        band.labels.forEachIndexed { index, label ->
+            val centerY = bounds.top + bounds.height() * LABEL_FRACTIONS[index]
+            val textBaseline = centerY - (textPaint.descent() + textPaint.ascent()) / 2f
+            canvas.drawText(label, bounds.right + labelGap, textBaseline, textPaint)
+        }
+    }
+
+    /** The band gradient, reusing the cached shader while its inputs are unchanged. */
+    private fun gradientFor(
+        band: LegendBand,
+        bounds: RectF,
+    ): LinearGradient {
+        val cached = gradient
+        if (cached != null &&
+            gradientColors == band.colors &&
+            gradientBounds == bounds &&
+            gradientScale == scale
+        ) {
+            return cached
+        }
+
+        val created =
+            LinearGradient(
+                bounds.left,
+                bounds.top,
+                bounds.left,
+                bounds.bottom,
+                band.colors.toIntArray(),
+                null,
+                Shader.TileMode.CLAMP,
+            )
+        gradient = created
+        gradientColors = band.colors
+        gradientBounds = RectF(bounds)
+        gradientScale = scale
+        gradientBuilds++
+        return created
     }
 
     private companion object {
         /** Baseline dpi the metric constants are expressed in. */
         const val BASE_DENSITY_DPI = 160f
 
-        /** Opacity of the dark panel behind the legend rows. */
+        /** Opacity of the dark panel behind the legend. */
         const val PANEL_ALPHA = 200
 
         const val PANEL_INSET_DP = 8f
         const val PADDING_DP = 8f
-        const val SWATCH_SIZE_DP = 16f
+
+        /** Band width; 30% narrower than the original 16 dp swatch. */
+        const val BAND_WIDTH_DP = 11.2f
         const val ROW_HEIGHT_DP = 24f
         const val GAP_DP = 8f
         const val CORNER_RADIUS_DP = 10f
 
-        /** Gap between the countdown line and the first legend row. */
-        const val COUNTDOWN_GAP_DP = 4f
+        /** Vertical positions of the three age labels: top, middle, bottom. */
+        val LABEL_FRACTIONS = floatArrayOf(0f, 0.5f, 1f)
+
+        /** Gap between the status line and the legend. */
+        const val DATA_TIME_GAP_DP = 4f
     }
 }

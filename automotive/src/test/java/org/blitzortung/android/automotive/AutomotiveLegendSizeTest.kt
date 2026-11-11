@@ -33,6 +33,6 @@ class AutomotiveLegendSizeTest {
 
         val textSizeDp = context.resources.getInteger(CarR.integer.car_legend_text_size_dp)
 
-        assertThat(textSizeDp).isEqualTo(18)
+        assertThat(textSizeDp).isEqualTo(20)
     }
 }

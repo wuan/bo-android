@@ -5,5 +5,5 @@
       farther away on an automotive display. Keep this in sync with the default
       in the :car library.
     -->
-    <integer name="car_legend_text_size_dp">18</integer>
+    <integer name="car_legend_text_size_dp">20</integer>
 </resources>
